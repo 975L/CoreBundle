@@ -149,7 +149,6 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'title' => 'Titre de section',
                     'slug' => 'titre-de-section',
                     'content' => '<p>Contenu de la section.</p>',
-                    'image' => '',
                 ],
             ],
             'video' => [

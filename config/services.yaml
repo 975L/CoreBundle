@@ -247,6 +247,7 @@ services:
               form: c975L\UiBundle\Form\Block\TextSectionType
               template: '@c975LUi/blocks/TextSection.html.twig'
               category: 'label.category_text'
+              media_types: 'image/*'
               priority: 100
               pickable: true
               cacheable: true

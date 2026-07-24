@@ -15,6 +15,7 @@ use Imagine\Image\Box;
 use Vich\UploaderBundle\Event\Event;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichPrivateFileInterface;
+use c975L\UiBundle\Entity\Media;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -60,6 +61,16 @@ class VichPdfThumbnailListener
         $pdfPath = $this->parameterBag->get('kernel.project_dir') . '/public/' . $filename;
 
         if (!$this->filesystem->exists($pdfPath)) {
+            return;
+        }
+
+        // A Sync import already carries this PDF's thumbnail in its archive (see BlockDataImporter) - reuse it
+        // as-is instead of re-running Ghostscript, which may not even be available on this host (see below)
+        if ($entity instanceof Media && null !== $entity->getImportedThumbnailPath()) {
+            if ($this->filesystem->exists($entity->getImportedThumbnailPath())) {
+                $this->filesystem->copy($entity->getImportedThumbnailPath(), self::toWebpPath($pdfPath), true);
+            }
+
             return;
         }
 

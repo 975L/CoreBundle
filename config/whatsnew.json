@@ -36,6 +36,11 @@
                 "en": "Fixed uploading a PDF document failing on some hosting providers",
                 "fr": "Correction de l'envoi d'un document PDF qui échouait chez certains hébergeurs",
                 "es": "Corregido el envío de un documento PDF que fallaba en algunos proveedores de alojamiento"
+            },
+            {
+                "en": "Text sections now let you upload an image directly, instead of typing its URL by hand",
+                "fr": "Les sections de texte permettent désormais d'ajouter une image directement, sans avoir à saisir son URL",
+                "es": "Las secciones de texto ahora permiten añadir una imagen directamente, sin necesidad de escribir su URL"
             }
         ]
     },

@@ -1,9 +1,9 @@
-{# <twig:c975LUi:Text:Section title="{{ title }}" slug="{{ slug }}" content="{{ content }}" [image="{{ image }}"]/> #}
+{# <twig:c975LUi:Text:Section title="{{ title }}" slug="{{ slug }}" content="{{ content }}" [src="{{ vich_uploader_asset(media) }}"] [alt="{{ media.alt }}"]/> #}
 <section class="text-section" id="{{ slug }}">
     <div class="section-wrap">
         {% if title %}<h2>{{ title }}</h2>{% endif %}
-        {% if image is defined %}
-            <twig:c975LUi:Image:Image src="{{ image }}" class="img-rounded img-responsive"/>
+        {% if src is defined and src %}
+            <twig:c975LUi:Image:Image imgSrc="{{ src }}" alt="{{ alt|default('') }}" class="img-rounded img-responsive"/>
         {% endif %}
         {# content is authored via Trix (TrixEditorType), which already encodes its own line breaks as
            <div>/<br> - nl2br would additionally convert the insignificant newlines between Trix's <div>

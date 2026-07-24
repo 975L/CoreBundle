@@ -1,5 +1,10 @@
 # ChangeLog
 
+## v1.9.15
+
+- `text_section` now uses a real Media upload (`media_types: 'image/*'`) instead of a raw `image` URL field (24/07/2026)
+- Added `Media::$importedThumbnailPath`, letting `VichPdfThumbnailListener` reuse a Sync import's pre-generated PDF thumbnail instead of re-running Ghostscript (24/07/2026)
+
 ## v1.9.14
 
 - Fixed `VichImageResizeListener::processFixedIcon()` crashing content import when re-importing a site graphic whose stored file is already in its fixed-icon format (e.g. favicon.ico), now skips reprocessing instead (24/07/2026)

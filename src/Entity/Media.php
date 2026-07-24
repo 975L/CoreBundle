@@ -136,6 +136,9 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     #[ORM\ManyToOne]
     private ?User $user = null;
 
+    // Transient, never persisted - set by SiteBundle's BlockDataImporter when a Sync import's archive already carries a pre-generated PDF thumbnail, so VichPdfThumbnailListener can copy it as-is instead of re-running Ghostscript, unavailable on some hosts (e.g. Infomaniak)
+    private ?string $importedThumbnailPath = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -378,6 +381,18 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getImportedThumbnailPath(): ?string
+    {
+        return $this->importedThumbnailPath;
+    }
+
+    public function setImportedThumbnailPath(?string $importedThumbnailPath): self
+    {
+        $this->importedThumbnailPath = $importedThumbnailPath;
 
         return $this;
     }

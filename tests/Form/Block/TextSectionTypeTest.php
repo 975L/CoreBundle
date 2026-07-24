@@ -68,17 +68,16 @@ class TextSectionTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['title', 'slug', 'content', 'image'] as $field) {
+        foreach (['title', 'slug', 'content'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the TextSection form");
         }
     }
 
-    public function testTitleAndImageAreOptional(): void
+    public function testTitleIsOptional(): void
     {
         $added = $this->buildAddedFields();
 
         $this->assertFalse($added['title']['required']);
-        $this->assertFalse($added['image']['required']);
     }
 
     public function testSubmitListenerDerivesSlugFromTitle(): void

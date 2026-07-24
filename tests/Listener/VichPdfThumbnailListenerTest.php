@@ -64,4 +64,52 @@ class VichPdfThumbnailListenerTest extends TestCase
 
         $this->assertFileDoesNotExist($this->projectDir . '/public/doc.webp');
     }
+
+    // A Sync import (see SiteBundle's BlockDataImporter) sets this before the file is even uploaded, so the
+    // thumbnail carried in the export archive is reused as-is - no Ghostscript involved, works even when it's
+    // unavailable on the target host
+    public function testOnPostUploadCopiesTheImportedThumbnailInsteadOfGeneratingOne(): void
+    {
+        $pdfPath = $this->projectDir . '/public/doc.pdf';
+        file_put_contents($pdfPath, '%PDF-1.4');
+
+        $importedThumbnailPath = $this->projectDir . '/imported-thumbnail.webp';
+        file_put_contents($importedThumbnailPath, 'fake-webp-bytes');
+
+        $media = new Media();
+        $media->setFilename('doc.pdf');
+        $media->setFile(new File($pdfPath));
+        $media->setImportedThumbnailPath($importedThumbnailPath);
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichPdfThumbnailListener($parameterBag);
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $this->assertFileExists($this->projectDir . '/public/doc.webp');
+        $this->assertSame('fake-webp-bytes', file_get_contents($this->projectDir . '/public/doc.webp'));
+
+        unlink($importedThumbnailPath);
+        unlink($this->projectDir . '/public/doc.webp');
+    }
+
+    public function testOnPostUploadDoesNothingWhenTheImportedThumbnailPathDoesNotExist(): void
+    {
+        $pdfPath = $this->projectDir . '/public/doc.pdf';
+        file_put_contents($pdfPath, '%PDF-1.4');
+
+        $media = new Media();
+        $media->setFilename('doc.pdf');
+        $media->setFile(new File($pdfPath));
+        $media->setImportedThumbnailPath($this->projectDir . '/missing-thumbnail.webp');
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichPdfThumbnailListener($parameterBag);
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $this->assertFileDoesNotExist($this->projectDir . '/public/doc.webp');
+    }
 }

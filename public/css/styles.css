@@ -635,9 +635,15 @@ img.white {
 .expertise-banner,
 .process-steps,
 .portfolio-grid,
-.collection-grid,
-.text-section {
+.collection-grid {
   padding-top: clamp(48px, 8vw, 84px);
+}
+
+/* Lighter than the other page sections above: text_section commonly opens a page (e.g. a logo +
+   a couple of paragraphs right under the page's own <h1>), where the same 48-84px reads as dead
+   whitespace instead of the breathing room a heavier section (hero, cards...) needs */
+.text-section {
+  padding-top: clamp(24px, 4vw, 48px);
 }
 
 /* Any of the kinds above, used as a flex_columns slot instead of a top-level page block, must lose
@@ -1950,3 +1956,5 @@ img.white {
   font-style: italic;
   color: var(--primary);
 }
+
+/*# sourceMappingURL=styles.css.map */

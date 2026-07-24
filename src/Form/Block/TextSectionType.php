@@ -38,10 +38,6 @@ class TextSectionType extends AbstractType
             ])
             ->add('content', TrixEditorType::class, [
                 'label' => 'label.content',
-            ])
-            ->add('image', TextType::class, [
-                'label'    => 'label.image',
-                'required' => false,
             ]);
 
         $builder->addEventListener(

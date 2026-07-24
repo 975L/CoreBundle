@@ -12,6 +12,8 @@ Symfony bundle providing the c975L ecosystem's shared front-end foundation — d
 
 The shared foundation every c975L satellite bundle builds on, alongside [ConfigBundle](https://github.com/975L/ConfigBundle): the Block system, media library, shared CSS/JS registries, Forms and Emails all live here so [SiteBundle](https://github.com/975L/SiteBundle), [ShopBundle](https://github.com/975L/ShopBundle), [BookBundle](https://github.com/975L/BookBundle), [GalleryBundle](https://github.com/975L/GalleryBundle) and [SocialBundle](https://github.com/975L/SocialBundle) don't each reinvent them. A satellite bundle adds its own block kind (`BlockRegistryPass`), stylesheet (`StylesheetRegistryPass`) or form action (`FormActionRegistry`) without ever touching UiBundle's code — just tag a service.
 
+See it in action at [975l.com/pages/ui-bundle](https://975l.com/pages/ui-bundle), and browse every block kind live in the [block gallery](https://975l.com/pages/blocks).
+
 ---
 
 ## Features
