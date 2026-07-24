@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v1.9.17
+
+- Fixed `.hero__media` collapsing to a tiny blob on narrow viewports (24/07/2026)
+
 ## v1.9.16
 
 - Added `Twig\TrixExtension`'s `trix_inline` filter, stripping Trix's block-level wrapping `<div>`s so rich text can be used inside phrasing-only contexts like `<h1>` (24/07/2026)

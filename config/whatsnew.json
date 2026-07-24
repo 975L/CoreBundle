@@ -23,6 +23,11 @@
                 "es": "Corregidos el texto y la imagen del banner de cabecera que no se centraban en móvil"
             },
             {
+                "en": "Fixed the header banner's image shrinking to a tiny blob on smaller screens",
+                "fr": "Correction de l'image de la bannière d'en-tête qui se réduisait à un minuscule point sur les petits écrans",
+                "es": "Corregida la imagen del banner de cabecera, que se reducía a un pequeño punto en pantallas más pequeñas"
+            },
+            {
                 "en": "Fixed the progress bar not showing any fill",
                 "fr": "Correction de la barre de progression qui n'affichait aucun remplissage",
                 "es": "Corregida la barra de progreso, que no mostraba ningún relleno"

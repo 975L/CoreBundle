@@ -205,8 +205,15 @@ $page-section-bp-lg: 1025px;
     flex-wrap: wrap;
 }
 
+// width:100% (not just max-width) matters here: below $page-section-bp-md, .hero .section-wrap uses
+// justify-items:center, so this grid item isn't stretched and would otherwise size from its own child -
+// but that child (img below) also has a percentage width, with nothing definite to resolve against. That
+// circular dependency collapses the whole card to a few px (rendering as a tiny rounded blob, not a
+// broken image). Giving .hero__media a definite width itself (resolved against the grid track) breaks the
+// cycle; above the breakpoint, justify-items:normal (stretch) already provides one for free
 .hero__media {
     position: relative;
+    width: 100%;
     max-width: 520px;
 }
 
