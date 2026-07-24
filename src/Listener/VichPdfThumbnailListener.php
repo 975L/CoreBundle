@@ -72,6 +72,11 @@ class VichPdfThumbnailListener
 
     private function generateThumbnail(string $pdfPath, int $width): void
     {
+        // exec() est désactivé sur certains hébergements mutualisés (ex. Infomaniak) : pas de thumbnail plutôt qu'un crash
+        if (!function_exists('exec')) {
+            return;
+        }
+
         $webpPath = self::toWebpPath($pdfPath);
         $tmpPng = sys_get_temp_dir() . '/' . uniqid() . '.png';
 

@@ -31,6 +31,11 @@
                 "en": "The dashboard guided tour's \"Block showcase\" and \"Donovan\" steps now have a description",
                 "fr": "Les étapes « Vitrine des blocks » et « Donovan » de la visite guidée du tableau de bord ont désormais une description",
                 "es": "Los pasos «Vitrina de bloques» y «Donovan» del recorrido guiado del panel de control ahora tienen una descripción"
+            },
+            {
+                "en": "Fixed uploading a PDF document failing on some hosting providers",
+                "fr": "Correction de l'envoi d'un document PDF qui échouait chez certains hébergeurs",
+                "es": "Corregido el envío de un documento PDF que fallaba en algunos proveedores de alojamiento"
             }
         ]
     },

@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v1.9.13
+
+- Fixed `VichPdfThumbnailListener` crashing content import when `exec()` is disabled (e.g. Infomaniak managed hosting), now skips the thumbnail instead (24/07/2026)
+
 ## v1.9.12
 
 - Added `ImportmapProvider`, declaring `controllers-admin.js`/`controllers.js`'s importmap.php entries for ConfigBundle's `c975l:config:check-importmap` (24/07/2026)

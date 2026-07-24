@@ -753,6 +753,7 @@ works just as well.
 When a `.pdf` file is uploaded through VichUploader on **any entity** (no interface required), the bundle automatically generates a `.webp` thumbnail of the first page next to it (`document.pdf` → `document.webp` - the extension is replaced, not appended), via Ghostscript + Imagine/GD.
 
 - **Requires Ghostscript** (`gs`) installed on the server. If missing, the thumbnail generation silently fails — the PDF upload itself is unaffected.
+- **Requires `exec()`** to be enabled. On managed hosting where it's disabled (e.g. Infomaniak), thumbnail generation is skipped the same way — the PDF upload itself is unaffected.
 - **Skipped for private files** — entities implementing `VichPrivateFileInterface` (e.g. a paid download in a shop) are not thumbnailed, since there's no public preview use case for them.
 - **Thumbnail width** defaults to `400px`, or reuses `getImageWidth()` if the entity also implements `VichImageResizableInterface`.
 
