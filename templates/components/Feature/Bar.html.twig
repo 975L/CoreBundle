@@ -1,9 +1,11 @@
 {# Static usage: <twig:c975LUi:Feature:Bar items="{{ [{title: '...', text: '...'}] }}" [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/FeatureBar.html.twig #}
-<section class="feature-bar"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# A <div>, not a <section>: this band never carries a heading of its own (see .feature-bar comment
+   in sass/_page-sections.scss), and a headingless <section> is invalid per the HTML spec #}
+<div class="feature-bar"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="feature-bar__grid">
         {% for item in items %}
             <div class="feature-bar__item"><b>{{ item.title }}</b>{{ item.text }}</div>
         {% endfor %}
     </div>
-</section>
+</div>

@@ -12,7 +12,7 @@
     <div class="section-wrap">
         <div class="hero__text">
             {% if badge %}<span class="hero__badge">{{ badge }}</span>{% endif %}
-            <h1 class="hero__title">{{ title|raw }}</h1>
+            <h1 class="hero__title">{{ title|trix_inline }}</h1>
             {% if subtitle %}<div class="hero__sub">{{ subtitle|raw }}</div>{% endif %}
             <div class="hero__cta">
                 <a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>

@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.9.16
+
+- Added `Twig\TrixExtension`'s `trix_inline` filter, stripping Trix's block-level wrapping `<div>`s so rich text can be used inside phrasing-only contexts like `<h1>` (24/07/2026)
+- `Hero/Hero.html.twig`'s title now goes through `trix_inline` instead of raw output (24/07/2026)
+- Fixed `Card`/`CollectionItem`/`Process/Steps` wrapping raw Trix content in a `<p>`, invalid since Trix already wraps it in its own block-level `<div>` (24/07/2026)
+- `Feature/Bar.html.twig` now renders a `<div>` instead of a headingless `<section>` (24/07/2026)
+
 ## v1.9.15
 
 - `text_section` now uses a real Media upload (`media_types: 'image/*'`) instead of a raw `image` URL field (24/07/2026)

@@ -31,7 +31,9 @@
                 <twig:c975LUi:Image:Link src="{{ resolvedImageUrl }}" class="{{ block.media|length > 0 ? block.media|first.cssClasses|join(' ') : '' }}" url="{{ url }}" target="{{ target|default('') }}" alt="{{ title }}"/>
             {% endif %}
             <div class="card-data">
-                {% if content %}<p class="text-center">{{ content|raw|nl2br }}</p>{% endif %}
+                {# A <div>, not a <p>: "content" is raw Trix HTML, already wrapped in its own block-level
+                   <div> - nesting that inside a <p> is invalid (see Expertise/Banner.html.twig) #}
+                {% if content %}<div class="text-center">{{ content|raw|nl2br }}</div>{% endif %}
                 {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
             </div>
         </twig:c975LUi:Card:Card>

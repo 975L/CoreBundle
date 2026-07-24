@@ -41,6 +41,16 @@
                 "en": "Text sections now let you upload an image directly, instead of typing its URL by hand",
                 "fr": "Les sections de texte permettent désormais d'ajouter une image directement, sans avoir à saisir son URL",
                 "es": "Las secciones de texto ahora permiten añadir una imagen directamente, sin necesidad de escribir su URL"
+            },
+            {
+                "en": "Fixed rich text in Card, Collection item and Process step blocks sometimes losing its formatting (colors, styles)",
+                "fr": "Correction du texte enrichi des blocs Carte, Élément de collection et Étape de processus qui perdait parfois sa mise en forme (couleurs, styles)",
+                "es": "Corregido el texto enriquecido de los bloques Tarjeta, Elemento de colección y Etapa de proceso que a veces perdía su formato (colores, estilos)"
+            },
+            {
+                "en": "Fixed the header banner's title sometimes displaying formatting marks instead of properly formatted text",
+                "fr": "Correction du titre de la bannière d'en-tête qui affichait parfois des marques de mise en forme au lieu d'un texte correctement formaté",
+                "es": "Corregido el título del banner de cabecera que a veces mostraba marcas de formato en lugar de texto correctamente formateado"
             }
         ]
     },
