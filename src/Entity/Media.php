@@ -399,7 +399,7 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     // Non-null only for roles needing a fixed target size/format (see FIXED_ICON_SPECS)
     public function getFixedIconSpec(): ?array
     {
-        return self::FIXED_ICON_SPECS[$this->role] ?? null;
+        return null !== $this->role ? (self::FIXED_ICON_SPECS[$this->role] ?? null) : null;
     }
 
     // Rejects SVG (and any other non-raster format) for FIXED_ICON_SPECS roles - see FIXED_ICON_ALLOWED_MIME_TYPES

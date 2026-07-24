@@ -1,5 +1,10 @@
 # ChangeLog
 
+## v1.9.14
+
+- Fixed `VichImageResizeListener::processFixedIcon()` crashing content import when re-importing a site graphic whose stored file is already in its fixed-icon format (e.g. favicon.ico), now skips reprocessing instead (24/07/2026)
+- Fixed `Media::getFixedIconSpec()` triggering a "null as array offset" deprecation for every upload of a role-less (block) media (24/07/2026)
+
 ## v1.9.13
 
 - Fixed `VichPdfThumbnailListener` crashing content import when `exec()` is disabled (e.g. Infomaniak managed hosting), now skips the thumbnail instead (24/07/2026)

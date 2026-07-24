@@ -27,6 +27,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 #[AsEventListener(event: 'vich_uploader.post_upload', method: 'onPostUpload')]
 class VichImageResizeListener
 {
+    // Formats Imagine\Gd can actually read as a source - notably excludes 'ico', which FIXED_ICON_SPECS can only ever produce (see wrapAsIco()), never consume. A site_graphic export/import roundtrip (see SiteBundle's SiteGraphicExportProvider) re-feeds a role=favicon Media's already-converted .ico file back in as if it were a fresh upload, which would otherwise crash the whole import
+    private const READABLE_EXTENSIONS = ['jpg', 'png', 'gif', 'webp'];
+
     private Filesystem $filesystem;
 
     public function __construct(
@@ -47,15 +50,17 @@ class VichImageResizeListener
         }
 
         if ($entity instanceof VichImageResizableInterface) {
+            $extension = $entity->getFile()->getExtension();
+
             if ($entity instanceof Media && null !== ($spec = $entity->getFixedIconSpec())) {
-                $this->processFixedIcon($entity, $absolutePath, $spec);
+                if (in_array($extension, self::READABLE_EXTENSIONS, true)) {
+                    $this->processFixedIcon($entity, $absolutePath, $spec);
+                }
 
                 return;
             }
 
-            $extension = $entity->getFile()->getExtension();
-
-            if (in_array($extension, ['jpg', 'png', 'gif', 'webp'])) {
+            if (in_array($extension, self::READABLE_EXTENSIONS, true)) {
                 $this->processImage($entity, $absolutePath);
             }
 
