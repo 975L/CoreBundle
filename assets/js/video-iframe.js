@@ -8,7 +8,13 @@
 import { Controller } from "@hotwired/stimulus";
 import { createNoncedStyleElement } from "./nonced-style-element.js";
 
-// Deliberately not coupled to any particular consent-banner implementation or bundle - reacts to an optional external contract instead: a `[data-controller~="cookieConsent"]` element present in the page, a `window.CookieConsent` global exposing vanilla-cookieconsent v3's API (https://cookieconsent.orestbida.com/), and its `cc:onConsent`/`cc:onChange` DOM events. c975l/site-bundle's `<twig:c975LSite:General:CookieConsent/>` is one such provider, but any consuming app's own banner satisfying the same contract works just as well - no composer dependency on it either way.
+// c975l/site-bundle registers its own banner as "cookie-consent", but the Stimulus identifier is a free choice for whoever provides the banner - both the dasherized and the camelCase spelling are matched here so the contract can't silently break on a casing difference. A missed match is not a harmless no-op: connect() would conclude the page has no banner at all and render the iframe straight away, pulling ~1 MB of YouTube before any consent has been given.
+const CONSENT_BANNER_SELECTOR = '[data-controller~="cookie-consent"], [data-controller~="cookieConsent"]';
+
+// Only injects the iframe once the figure is about to enter the viewport - the player is ~1 MB of third-party JavaScript, which otherwise dominates the whole page's transfer weight for a visitor who never scrolls down to it. `iframe.loading = "lazy"` is not enough on its own: the browser only honours it for an iframe far enough down the page, and the element still belongs to the initial load when it is inserted on connect(). 200px of margin so the player is ready by the time it is actually scrolled into view.
+const ROOT_MARGIN = "200px";
+
+// Deliberately not coupled to any particular consent-banner implementation or bundle - reacts to an optional external contract instead: a banner element matching CONSENT_BANNER_SELECTOR present in the page, a `window.CookieConsent` global exposing vanilla-cookieconsent v3's API (https://cookieconsent.orestbida.com/), and its `cc:onConsent`/`cc:onChange` DOM events. c975l/site-bundle's `<twig:c975LSite:General:CookieConsent/>` is one such provider, but any consuming app's own banner satisfying the same contract works just as well - no composer dependency on it either way.
 export default class extends Controller {
     static targets = ["placeholder"];
     static values = { src: String, title: String, width: String, height: String };
@@ -17,13 +23,13 @@ export default class extends Controller {
         this.onConsent = this.onConsent.bind(this);
 
         // No consent banner on this page - never block content on a site that doesn't use one
-        if (!document.querySelector('[data-controller~="cookieConsent"]')) {
-            this.renderIframe();
+        if (!document.querySelector(CONSENT_BANNER_SELECTOR)) {
+            this.scheduleIframe();
             return;
         }
 
         if (window.CookieConsent && window.CookieConsent.acceptedCategory("content")) {
-            this.renderIframe();
+            this.scheduleIframe();
             return;
         }
 
@@ -33,9 +39,14 @@ export default class extends Controller {
     }
 
     disconnect() {
+        this.stopListening();
+        this.observer?.disconnect();
+        this.sizingStyleEl?.remove();
+    }
+
+    stopListening() {
         window.removeEventListener("cc:onConsent", this.onConsent);
         window.removeEventListener("cc:onChange", this.onConsent);
-        this.sizingStyleEl?.remove();
     }
 
     accept() {
@@ -45,13 +56,30 @@ export default class extends Controller {
 
     onConsent() {
         if (window.CookieConsent?.acceptedCategory("content")) {
-            this.renderIframe();
+            this.scheduleIframe();
         }
     }
 
+    // Consent is settled, the player may now be loaded - defers to the first time the figure nears the viewport (see ROOT_MARGIN). A visitor who clicks the placeholder's own "accept" button is looking straight at it, so the observer fires immediately in that case
+    scheduleIframe() {
+        this.stopListening();
+
+        if (!("IntersectionObserver" in window)) {
+            this.renderIframe();
+            return;
+        }
+
+        this.observer = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) {
+                this.renderIframe();
+            }
+        }, { rootMargin: ROOT_MARGIN });
+        this.observer.observe(this.element);
+    }
+
     renderIframe() {
-        window.removeEventListener("cc:onConsent", this.onConsent);
-        window.removeEventListener("cc:onChange", this.onConsent);
+        this.stopListening();
+        this.observer?.disconnect();
 
         // Same 16/9 assumption as the pre-consent placeholder's CSS aspect-ratio (sass/_images.scss)
         // - only one side is ever configured in practice, so the other is derived to keep it from

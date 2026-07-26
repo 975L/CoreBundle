@@ -21,9 +21,12 @@
             <span class="img-above {{ classLabel|default('') }}">{{ label|raw }}</span>
             <br>
         {% endif %}
+        {# An empty "alt" is the author declaring the image decorative, so it is doubled with aria-hidden:
+           an alt="" alone is reported as a missing alternative by accessibility checks (see SiteBundle's
+           ContentQualityClient) rather than read as a deliberate decorative marker #}
         <img src="{{ imgSrc }}"
             class="img {{ imgResponsive }} {{ class|default('') }}"
-            alt="{{ alt|default('') }}"
+            alt="{{ alt|default('') }}"{% if alt|default('') == '' %} aria-hidden="true"{% endif %}
             {% if width is defined and width != '' %}width="{{ width }}"{% endif %}
             {% if height is defined and height != '' %}height="{{ height }}"{% endif %}
             {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>

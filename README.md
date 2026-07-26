@@ -64,7 +64,11 @@ php bin/console doctrine:migrations:migrate
 
 `controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
 
+Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `imageCompare`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
+
 The `confetti` controller loads its `canvas-confetti` library from the copy vendored in this bundle (`public/js/confetti.browser.min.js`) rather than from a CDN. Point it elsewhere with `data-confetti-script-value="/your/own/path.js"` on the same element.
+
+The `videoIframe` controller never injects its iframe before consent has been given, and then only once the element nears the viewport. It looks for a consent banner registered as either `cookie-consent` (what SiteBundle's `<twig:c975LSite:General:CookieConsent/>` writes) or `cookieConsent`; with no banner in the page at all it treats the content as unrestricted and loads it on approach.
 
 Their `importmap.php` entries are added automatically the first time you `composer update` after installing UiBundle — see [Contributing importmap entries from other bundles](https://github.com/975L/ConfigBundle#contributing-importmap-entries-from-other-bundles) in ConfigBundle's README, nothing to add by hand.
 
@@ -554,6 +558,8 @@ Both keys are the consuming app's own, entered as `sensitive` config (encrypted 
 `BlockExtension::renderBlock()` (called by the `render_block()` Twig function, itself used by the `<twig:c975LUi:Blocks:Block>` component) caches each block's rendered HTML in `cache.app` (via `TagAwareCacheInterface`), keyed by `block_render_{id}_{locale}` with an infinite TTL - no re-render, no DB round trip for the block's own data, on every subsequent hit across every visitor. `BlockCacheInvalidationListener` (`src/Listener/`) invalidates it automatically: it listens to `postUpdate`/`preRemove` on both `Block` and `Media` (an image/audio/video swap doesn't touch the parent `Block`'s own fields, so it has to be watched too) and calls `$cache->invalidateTags(['block_{id}'])`. This fires for *any* origin - EasyAdmin, an importer, another bundle - since it's a Doctrine listener on the entity class itself, not tied to a specific controller.
 
 Locale is part of the cache key because a kind's template can render different content per `app.request.locale` even though `Block::$data` didn't change (e.g. SiteBundle's `legal_model`, which includes a different legal-text template per locale).
+
+The key carries **no template version**, so a release that only changes a Twig template invalidates nothing on its own — every page would keep serving the markup built by the previous release. `BlockCacheClearer` (`src/Service/`) covers that: it implements Symfony's `CacheClearerInterface`, so `bin/console cache:clear` invalidates the whole `blocks_all` tag. Any deployment already running `cache:clear` therefore picks up template changes with no step of its own, and nothing needs to be repeated in each site's deploy script. The dashboard's own "clear cache" shortcut (`BlockShortcutController`) stays available for clearing it by hand between deployments.
 
 **Set `cacheable: false` on a kind whenever its rendered output isn't a pure function of `(Block::$id, Block::$data, locale)`** - i.e. whenever caching it under its own block id could serve stale or wrong-visitor content:
 

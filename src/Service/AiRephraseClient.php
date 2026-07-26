@@ -40,11 +40,18 @@ class AiRephraseClient
     ];
 
     // Same closed-list principle as STYLES - $length always indexes this map. Independent from the
-    // "expanded" style above: style controls tone, this controls length, and either can be combined
+    // "expanded" style above: style controls tone, this controls length, and either can be combined.
+    // An explicit paragraph count rather than a relative "shorter"/"longer": an editor writing page
+    // content knows how much room the block has, where "a bit longer" gives an unpredictable result.
+    // "social_summary" is the odd one out - it targets the "Social network summary" field (see
+    // SiteBundle's PageCrudController), i.e. what ends up in the meta description and in a share card
     private const LENGTHS = [
         'same' => ' Keep approximately the same length.',
-        'shorter' => ' Make it noticeably shorter and more concise.',
-        'longer' => ' Make it noticeably longer, adding more detail.',
+        'paragraph_1' => ' Rewrite it as exactly one paragraph.',
+        'paragraph_2' => ' Rewrite it as exactly two paragraphs, separated by a blank line.',
+        'paragraph_3' => ' Rewrite it as exactly three paragraphs, separated by a blank line.',
+        'paragraph_4' => ' Rewrite it as exactly four paragraphs, separated by a blank line.',
+        'social_summary' => ' Condense it into a single summary of at most 155 characters, meant to be used as a meta description and as the text of a social network share card: plain text on one line, no quotes, no hashtags, no emoji, no trailing ellipsis.',
     ];
 
     public function __construct(
@@ -133,7 +140,9 @@ class AiRephraseClient
             ],
             'json' => [
                 'model' => $model,
-                'max_tokens' => 1024,
+                // Anthropic requires it (the OpenAI-compatible call below leaves it to the provider's own
+                // default) - roomy enough for the longest LENGTHS entry ("paragraph_4") not to be cut off
+                'max_tokens' => 2048,
                 'messages' => [
                     ['role' => 'user', 'content' => $this->prompt($text, $styleInstruction, $lengthInstruction)],
                 ],

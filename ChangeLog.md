@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.10.1
+
+- Added `Service\BlockCacheClearer`, invalidating the block render cache on `cache:clear` so a deployment shipping a changed template no longer serves the previous markup (26/07/2026)
+- Added `BlockCacheClearerTest`/`BlockCacheClearerRegistrationTest`, locking the `kernel.cache_clearer` autoconfiguration (26/07/2026)
+- Fixed the `videoIframe` controller loading YouTube without consent, querying `cookieConsent` where the banner registers as `cookie-consent` (26/07/2026)
+- The video iframe is now injected only when its element nears the viewport, instead of on page load (26/07/2026)
+- `controllers.js` now imports `blockEditOverlay`/`captcha`/`confetti`/`imageCompare`/`slider`/`videoIframe` dynamically, dropping their `modulepreload` from every public page (26/07/2026)
+- Front-end lazy controllers are re-checked on `turbo:load` (26/07/2026)
+- Added the `Hero` component's `width`/`height` options (26/07/2026)
+- The `Hero` component's image now carries its intrinsic `width`/`height` and `fetchpriority="high"` (26/07/2026)
+- The `Hero` component's slideshow images now carry their intrinsic `width`/`height` (26/07/2026)
+- The `Portfolio:Grid` component's thumbnails now carry their intrinsic `width`/`height` and `loading="lazy"` (26/07/2026)
+- The `document_download` block's thumbnail is now `loading="lazy"` (26/07/2026)
+- The `collection_item` block's portfolio image now carries its intrinsic `width`/`height` and `loading="lazy"` (26/07/2026)
+- The `card`/`collection_item` blocks now pass their media's intrinsic `width`/`height` to `Image:Link` (26/07/2026)
+- Added `VideoIframeConsentSelectorTest`, locking the consent selector and the deferred injection (26/07/2026)
+- Fixed `blocks/Hero.html.twig` raising a Twig `SyntaxError` (500 on every page carrying a hero block), a comment sitting between two attributes of the `<twig:...>` tag (26/07/2026)
+- The honeypot field's decoy label is no longer handed to the translator (`translation_domain: false`), which reported it as a missing translation key on every public form (26/07/2026)
+
 ## v1.10
 
 - Added `Service\MediaDimensionsFiller`, keeping a media's auto-detected size when both dimension inputs are submitted blank (26/07/2026)

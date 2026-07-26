@@ -25,7 +25,10 @@
                 {% set tag = m.url ? 'a' : 'div' %}
                 <{{ tag }} class="portfolio-grid__project"{% if m.url %} href="{{ m.url }}" target="_blank" rel="noopener"{% endif %}>
                     <div class="portfolio-grid__project-img">
-                        <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}">
+                        {# A projects grid is never the first thing on a page, so every thumbnail is lazy - and
+                           carries its auto-detected pixel size (see MediaDimensionsFiller), which reserves the
+                           box before the file arrives and stops the grid reflowing as each image lands #}
+                        <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %} loading="lazy">
                     </div>
                     <div class="portfolio-grid__project-body">
                         <h3 class="portfolio-grid__project-title">{{ m.label }}</h3>

@@ -85,6 +85,8 @@ class FormBotProtection
 
         $builder->add($this->honeypotFieldName($request), null, [
             'label' => $label,
+            // The label is a decoy picked at random from HONEYPOT_LABELS, never seen by a human and meaningless to translate - without this, the form theme hands it to the translator, which reports one missing key per label the honeypot happens to pick (see ConfigBundle's c975l:dev-profile:run, which is what surfaced it)
+            'translation_domain' => false,
             'label_attr' => ['style' => $offscreen],
             'required' => false,
             'mapped' => false,

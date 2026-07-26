@@ -5,11 +5,15 @@
    "imageUrl" is never exposed in CardType's form - a real "card" Block never sets it, only kept here
    as a harmless no-op fallback (see CollectionItem.html.twig, this block's counterpart for items whose
    image is managed by another bundle's own entity rather than a real attached Media). #}
-{% set resolvedImageUrl = block.media|length > 0 ? vich_uploader_asset(block.media|first) : imageUrl|default(null) %}
+{% set cardMedia = block.media|length > 0 ? block.media|first : null %}
+{% set resolvedImageUrl = cardMedia ? vich_uploader_asset(cardMedia) : imageUrl|default(null) %}
 {% if resolvedImageUrl or url %}
     <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" level="{{ level|default('') }}" class="{{ class|default([])|join(' ') }}">
         {% if resolvedImageUrl %}
-            <twig:c975LUi:Image:Link src="{{ resolvedImageUrl }}" class="{{ block.media|length > 0 ? block.media|first.cssClasses|join(' ') : '' }}" url="{{ url }}" target="{{ target|default('') }}" alt="{{ title }}"/>
+            {# The auto-detected pixel size (see MediaDimensionsFiller), so the card reserves its image's box
+               before the file arrives - a grid of cards otherwise reflows as each one lands. Nothing to pass
+               when the image comes from "imageUrl", which is a bare string owned by another bundle's entity #}
+            <twig:c975LUi:Image:Link src="{{ resolvedImageUrl }}" class="{{ cardMedia ? cardMedia.cssClasses|join(' ') : '' }}" url="{{ url }}" target="{{ target|default('') }}" alt="{{ title }}" width="{{ cardMedia ? cardMedia.intrinsicWidth : '' }}" height="{{ cardMedia ? cardMedia.intrinsicHeight : '' }}"/>
         {% endif %}
         <div class="card-data">
             {# A <div>, not a <p>: "content" is raw Trix HTML, already wrapped in its own block-level

@@ -4,6 +4,10 @@
    Hero/Hero.html.twig for the pure-CSS crossfade this feeds, no randomness/caching concern involved #}
 {% set medias = block.media %}
 {% set media = medias|length == 1 ? medias|first : null %}
+{# "width"/"height" below carry the auto-detected pixel size, not the free-text width/height an author may
+   have set to a "50%" the browser can't reserve a box from (see Media::getIntrinsicWidth()/MediaDimensionsFiller).
+   Kept out of the tag itself: the <twig:...> syntax parses attributes only, a comment between two of them
+   raises "Expected attribute name" #}
 <twig:c975LUi:Hero:Hero
     badge="{{ badge|default('') }}"
     title="{{ title }}"
@@ -17,6 +21,8 @@
     statLabel="{{ statLabel|default('') }}"
     src="{{ media ? vich_uploader_asset(media) : '' }}"
     alt="{{ media ? media.alt : '' }}"
+    width="{{ media ? media.intrinsicWidth : '' }}"
+    height="{{ media ? media.intrinsicHeight : '' }}"
     medias="{{ medias|length > 1 ? medias : [] }}"
     hasBackgroundImage="{{ hasBackgroundImage|default(false) }}"
     id="{{ anchor_id }}"

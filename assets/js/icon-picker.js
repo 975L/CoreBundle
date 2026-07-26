@@ -28,7 +28,9 @@ function render(picker, query) {
         img.width = 24;
         img.height = 24;
         img.loading = 'lazy';
+        // Decorative: the <span> appended right after it already names the icon
         img.alt = '';
+        img.setAttribute('aria-hidden', 'true');
         const span = document.createElement('span');
         span.textContent = i.name;
         btn.appendChild(img);

@@ -3,6 +3,26 @@
         "date": "2026-07-26",
         "description": [
             {
+                "en": "Deploying a design change now takes effect right away, without having to clear the blocks cache by hand",
+                "fr": "Déployer une modification de design prend désormais effet immédiatement, sans avoir à vider le cache des blocs à la main",
+                "es": "Desplegar un cambio de diseño ahora surte efecto de inmediato, sin tener que vaciar a mano la caché de bloques"
+            },
+            {
+                "en": "Embedded videos are no longer loaded before consent has been given, and only once you scroll near them",
+                "fr": "Les vidéos intégrées ne sont plus chargées avant le consentement, et seulement lorsque vous approchez d'elles en faisant défiler la page",
+                "es": "Los vídeos incrustados ya no se cargan antes de dar el consentimiento, y solo cuando se acerca a ellos al desplazarse"
+            },
+            {
+                "en": "Public pages now only download the scripts they actually use",
+                "fr": "Les pages publiques ne téléchargent plus que les scripts qu'elles utilisent réellement",
+                "es": "Las páginas públicas ahora solo descargan los scripts que realmente utilizan"
+            },
+            {
+                "en": "Images now reserve their space before loading, so the page no longer jumps as they appear",
+                "fr": "Les images réservent désormais leur place avant leur chargement, la page ne saute donc plus à mesure qu'elles apparaissent",
+                "es": "Las imágenes ahora reservan su espacio antes de cargarse, por lo que la página ya no salta a medida que aparecen"
+            },
+            {
                 "en": "Fixed the Donovan assistant's question box and the AI rephrase button never sending anything",
                 "fr": "Correction de l'encart de questions de l'assistant Donovan et du bouton de reformulation IA qui n'envoyaient jamais rien",
                 "es": "Corregidos el cuadro de preguntas del asistente Donovan y el botón de reformulación IA, que nunca enviaban nada"

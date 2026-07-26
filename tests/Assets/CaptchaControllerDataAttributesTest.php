@@ -43,13 +43,19 @@ class CaptchaControllerDataAttributesTest extends TestCase
         }
     }
 
-    // "app.register('captcha', CaptchaController)" -> "captcha"
+    // The identifier the barrel binds captcha.js to, whether it registers it eagerly ("app.register('captcha', CaptchaController)")
+    // or lazily ("captcha: () => import('./js/captcha.js')", see LAZY_CONTROLLERS) - both spellings keep the same contract with the widget
     private function registeredIdentifier(): string
     {
-        preg_match("/app\.register\('([a-z0-9-]+)', CaptchaController\)/", $this->read(self::CONTROLLERS_BARREL), $matches);
-        $this->assertNotEmpty($matches, sprintf('CaptchaController is not registered in "%s".', self::CONTROLLERS_BARREL));
+        $barrel = $this->read(self::CONTROLLERS_BARREL);
 
-        return $matches[1];
+        foreach (["/app\.register\('([a-z0-9-]+)', CaptchaController\)/", "/([a-z0-9-]+):\s*\(\)\s*=>\s*import\('\.\/js\/captcha\.js'\)/"] as $pattern) {
+            if (preg_match($pattern, $barrel, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        $this->fail(sprintf('captcha.js is not registered in "%s", under any identifier.', self::CONTROLLERS_BARREL));
     }
 
     // "static values = { siteKey: String, action: String }" -> ["siteKey", "action"]

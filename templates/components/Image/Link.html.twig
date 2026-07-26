@@ -20,7 +20,10 @@
             <span class="img-above {{ classLabel|default("") }}">{{ label|raw }}</span>
             <br>
         {% endif %}
-        <img src="{{ absolute_url(asset(src)) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}" {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+        {# Same rule as Image.html.twig: an empty "alt" is doubled with aria-hidden, so accessibility checks
+           read it as a deliberate decorative marker instead of a missing alternative. The link keeps its own
+           name through the "ariaLabel" computed above, which never comes from the image when alt is empty #}
+        <img src="{{ absolute_url(asset(src)) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}"{% if alt|default("") == "" %} aria-hidden="true"{% endif %} {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         {% if not above and label != '' %}
             <br>
             <span class="img-below {{ classLabel|default("") }}">{{ label|raw }}</span>

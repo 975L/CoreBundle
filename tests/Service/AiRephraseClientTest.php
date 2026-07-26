@@ -285,7 +285,10 @@ class AiRephraseClientTest extends TestCase
             $this->createUsageTracker(),
         );
 
-        $this->assertSame(['same', 'shorter', 'longer'], $client->getLengths());
+        $this->assertSame(
+            ['same', 'paragraph_1', 'paragraph_2', 'paragraph_3', 'paragraph_4', 'social_summary'],
+            $client->getLengths()
+        );
     }
 
     public function testRephraseWithLengthAddsItsInstructionToThePrompt(): void
@@ -313,9 +316,42 @@ class AiRephraseClientTest extends TestCase
             $this->createUsageTracker(),
         );
 
-        $client->rephrase('Some text.', 'neutral', 'shorter');
+        $client->rephrase('Some text.', 'neutral', 'paragraph_3');
 
-        $this->assertStringContainsString('noticeably shorter', $sentBody);
+        $this->assertStringContainsString('exactly three paragraphs', $sentBody);
+    }
+
+    // The one length that isn't just a paragraph count: it targets the "Social network summary" field
+    // (meta description/share card), so its instruction must carry the character cap
+    public function testRephraseWithSocialSummaryLengthAsksForACappedOneLineSummary(): void
+    {
+        $sentBody = null;
+        $httpClient = new MockHttpClient(
+            function (string $method, string $url, array $options) use (&$sentBody) {
+                $sentBody = $options['body'];
+
+                return new MockResponse(
+                    json_encode(['content' => [['text' => 'Rephrased text.']]]),
+                    ['http_code' => 200]
+                );
+            }
+        );
+
+        $client = new AiRephraseClient(
+            $httpClient,
+            $this->createConfigService([
+                'ui-ai-assistant-rephrase-provider' => 'anthropic',
+                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
+                'ui-ai-assistant-rephrase-model' => null,
+            ]),
+            $this->createStub(LoggerInterface::class),
+            $this->createUsageTracker(),
+        );
+
+        $client->rephrase('Some text.', 'neutral', 'social_summary');
+
+        $this->assertStringContainsString('at most 155 characters', $sentBody);
+        $this->assertStringContainsString('meta description', $sentBody);
     }
 
     public function testRephraseWithUnknownLengthFallsBackToSame(): void

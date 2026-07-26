@@ -975,12 +975,24 @@
                 <target>Same length</target>
             </trans-unit>
             <trans-unit id="282">
-                <source>label.ai_rephrase_length_shorter</source>
-                <target>Shorter</target>
+                <source>label.ai_rephrase_length_paragraph_1</source>
+                <target>1 paragraph</target>
             </trans-unit>
             <trans-unit id="283">
-                <source>label.ai_rephrase_length_longer</source>
-                <target>Longer</target>
+                <source>label.ai_rephrase_length_paragraph_2</source>
+                <target>2 paragraphs</target>
+            </trans-unit>
+            <trans-unit id="540">
+                <source>label.ai_rephrase_length_paragraph_3</source>
+                <target>3 paragraphs</target>
+            </trans-unit>
+            <trans-unit id="541">
+                <source>label.ai_rephrase_length_paragraph_4</source>
+                <target>4 paragraphs</target>
+            </trans-unit>
+            <trans-unit id="542">
+                <source>label.ai_rephrase_length_social_summary</source>
+                <target>Social network summary</target>
             </trans-unit>
             <trans-unit id="238">
                 <source>label.ai_rephrase_button</source>
