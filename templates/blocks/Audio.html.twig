@@ -1,2 +1,5 @@
-{# Adapter for the dynamic Block system — resolves the media file into the Audio component #}
-<twig:c975LUi:Audio:Audio src="{{ block.media|first ? vich_uploader_asset(block.media|first) : '' }}" type="{{ type }}"/>
+{# Adapter for the dynamic Block system — resolves the uploaded media, file and format alike, into the Audio component #}
+{% set audio = block.media|first %}
+{% if audio %}
+    <twig:c975LUi:Audio:Audio src="{{ vich_uploader_asset(audio) }}" type="{{ audio.mimeType }}"/>
+{% endif %}

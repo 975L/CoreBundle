@@ -9,43 +9,30 @@
 namespace c975L\UiBundle\Form\Block;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+// The video file and its optional cover image are uploaded as block medias (see the "ui.block.video" tag in config/services.yaml), so this form only carries the player's own display options - neither the file path nor the format is asked for anymore, blocks/Video.html.twig reads both back from the uploaded Media itself (its stored mimeType)
 class VideoType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('src', TextType::class, [
-                'label' => 'label.video_src',
-            ])
-            ->add('type', ChoiceType::class, [
-                'label'   => 'label.format',
-                'choices' => [
-                    'MP4'  => 'video/mp4',
-                    'WebM' => 'video/webm',
-                    'OGG'  => 'video/ogg',
+            // A single multi-select (same removable-tags widget as BlockClassChoiceType) rather than three separate checkboxes
+            ->add('options', ChoiceType::class, [
+                'label'    => 'label.video_options',
+                'help'     => 'label.video_options_help',
+                'choices'  => [
+                    'label.autoplay' => 'autoplay',
+                    'label.muted'    => 'muted',
+                    'label.loop'     => 'loop',
                 ],
-            ])
-            ->add('poster', TextType::class, [
-                'label'    => 'label.poster',
+                'multiple' => true,
+                'expanded' => false,
                 'required' => false,
-            ])
-            ->add('autoplay', CheckboxType::class, [
-                'label'    => 'label.autoplay',
-                'required' => false,
-            ])
-            ->add('muted', CheckboxType::class, [
-                'label'    => 'label.muted',
-                'required' => false,
-            ])
-            ->add('loop', CheckboxType::class, [
-                'label'    => 'label.loop',
-                'required' => false,
+                'attr'     => ['data-ea-widget' => 'ea-autocomplete'],
             ])
             ->add('width', TextType::class, [
                 'label'    => 'label.width',

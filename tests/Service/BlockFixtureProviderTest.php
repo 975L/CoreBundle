@@ -25,20 +25,21 @@ class BlockFixtureProviderTest extends TestCase
         );
     }
 
-    // "audio"'s type must match one of AudioType's real choices - its media is auto-attached generically by BlockFixtureMediaAttacher (any "audio/*" mediaType), so the fixture only needs the "type" field
-    public function testAudioFixtureUsesARealFormatChoice(): void
+    // "audio" carries no data at all: its file (and the format read off it) is auto-attached generically by BlockFixtureMediaAttacher, any "audio/*" mediaType
+    public function testAudioFixtureCarriesNoData(): void
     {
         $fixtures = (new BlockFixtureProvider())->getFixtures();
 
-        $this->assertSame('audio/mpeg', $fixtures['audio']['']['type']);
+        $this->assertSame([], $fixtures['audio']['']);
     }
 
-    // Leading "/": Video.html.twig outputs this "src" raw (unlike PLACEHOLDER_VIDEO's other use as a Media filename, resolved by vich_uploader_asset()) - the gallery's preview iframe has no <base href> to make a bare relative path resolve correctly, so it must already be root-relative
-    public function testVideoFixtureUsesTheSharedPlaceholderVideoAsset(): void
+    // "video" carries no file path nor format anymore: both come from the Media auto-attached by BlockFixtureMediaAttacher (any "video/*" mediaType), so the fixture only needs the player's own options - "muted" so a gallery page full of blocks stays silent
+    public function testVideoFixtureOnlyCarriesPlaybackOptions(): void
     {
         $fixtures = (new BlockFixtureProvider())->getFixtures();
 
-        $this->assertSame('/' . BlockFixtureMediaAttacher::PLACEHOLDER_VIDEO, $fixtures['video']['']['src']);
+        $this->assertSame(['options', 'width', 'height'], array_keys($fixtures['video']['']));
+        $this->assertContains('muted', $fixtures['video']['']['options']);
     }
 
     // video_iframe just renders any URL in an <iframe> (see Video/Iframe.html.twig) - a raw video file navigated to directly would autoplay with sound via the browser's own player, so this uses the muted HTML wrapper instead of PLACEHOLDER_VIDEO directly. Leading "/" for the same reason as above.

@@ -1,2 +1,7 @@
-{# Adapter for the dynamic Block system — maps Block data to the Video:Video component #}
-<twig:c975LUi:Video:Video src="{{ src }}" type="{{ type }}" poster="{{ poster }}" autoplay="{{ autoplay }}" muted="{{ muted }}" loop="{{ loop }}" width="{{ width }}" height="{{ height }}"/>
+{# Adapter for the dynamic Block system — resolves the uploaded medias into the Video:Video component: the video file itself plus, optionally, an image used as its cover (poster) #}
+{% set video = block.media|filter(item => item.mimeType starts with 'video/')|first %}
+{% set poster = block.media|filter(item => item.mimeType starts with 'image/')|first %}
+{% set options = options|default([]) %}
+{% if video %}
+    <twig:c975LUi:Video:Video src="{{ vich_uploader_asset(video) }}" type="{{ video.mimeType }}" poster="{{ poster ? vich_uploader_asset(poster) : '' }}" autoplay="{{ 'autoplay' in options }}" muted="{{ 'muted' in options }}" loop="{{ 'loop' in options }}" width="{{ width|default('') }}" height="{{ height|default('') }}"/>
+{% endif %}

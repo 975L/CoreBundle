@@ -310,9 +310,9 @@
                 <source>label.force_download</source>
                 <target>Forzar Descarga</target>
             </trans-unit>
-            <trans-unit id="73">
-                <source>label.format</source>
-                <target>Formato</target>
+            <trans-unit id="534">
+                <source>label.audio_media_help</source>
+                <target>Suba el archivo de audio (MP3, OGG o WAV)</target>
             </trans-unit>
             <trans-unit id="74">
                 <source>label.height</source>
@@ -320,7 +320,7 @@
             </trans-unit>
             <trans-unit id="75">
                 <source>label.height_help</source>
-                <target>ej.: 100px, 50%</target>
+                <target>Detectada automáticamente al subir, en píxeles</target>
             </trans-unit>
             <trans-unit id="76">
                 <source>label.hook</source>
@@ -445,10 +445,6 @@
             <trans-unit id="97">
                 <source>label.postal_code</source>
                 <target>Código postal</target>
-            </trans-unit>
-            <trans-unit id="98">
-                <source>label.poster</source>
-                <target>Imagen de portada</target>
             </trans-unit>
             <trans-unit id="99">
                 <source>label.price_range</source>
@@ -582,9 +578,29 @@
                 <source>label.used_in</source>
                 <target>Usado en</target>
             </trans-unit>
-            <trans-unit id="132">
-                <source>label.video_src</source>
-                <target>Ruta del archivo de vídeo</target>
+            <trans-unit id="535">
+                <source>label.video_file</source>
+                <target>Archivo de vídeo</target>
+            </trans-unit>
+            <trans-unit id="536">
+                <source>label.video_file_or_poster</source>
+                <target>Archivo de vídeo o imagen de portada</target>
+            </trans-unit>
+            <trans-unit id="537">
+                <source>label.video_poster</source>
+                <target>Imagen de portada</target>
+            </trans-unit>
+            <trans-unit id="531">
+                <source>label.video_media_help</source>
+                <target>Suba el archivo de vídeo (MP4, WebM u OGG) y, opcionalmente, una imagen que sirva de portada del reproductor</target>
+            </trans-unit>
+            <trans-unit id="532">
+                <source>label.video_options</source>
+                <target>Opciones de reproducción</target>
+            </trans-unit>
+            <trans-unit id="533">
+                <source>label.video_options_help</source>
+                <target>La mayoría de los navegadores solo permiten la reproducción automática en un vídeo silenciado</target>
             </trans-unit>
             <trans-unit id="133">
                 <source>label.video_url</source>
@@ -604,7 +620,7 @@
             </trans-unit>
             <trans-unit id="136">
                 <source>label.width_help</source>
-                <target>ej.: 100px, 50%</target>
+                <target>Detectada automáticamente al subir, en píxeles</target>
             </trans-unit>
             <trans-unit id="137">
                 <source>label.animation</source>

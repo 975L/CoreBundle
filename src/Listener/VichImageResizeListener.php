@@ -20,6 +20,7 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMultiSizeImageInterface;
+use c975L\UiBundle\Service\ImageDimensionsReader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -34,6 +35,7 @@ class VichImageResizeListener
 
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
+        private readonly ImageDimensionsReader $imageDimensionsReader,
     ) {
         $this->filesystem = new Filesystem();
     }
@@ -51,18 +53,18 @@ class VichImageResizeListener
 
         if ($entity instanceof VichImageResizableInterface) {
             $extension = $entity->getFile()->getExtension();
+            $spec = $entity instanceof Media ? $entity->getFixedIconSpec() : null;
 
-            if ($entity instanceof Media && null !== ($spec = $entity->getFixedIconSpec())) {
-                if (in_array($extension, self::READABLE_EXTENSIONS, true)) {
-                    $this->processFixedIcon($entity, $absolutePath, $spec);
-                }
-
-                return;
-            }
-
+            // A file GD can't decode (an svg, or the already-converted .ico a content_import roundtrip re-feeds as a fresh upload) is left exactly as uploaded - only its dimensions are recorded below
             if (in_array($extension, self::READABLE_EXTENSIONS, true)) {
-                $this->processImage($entity, $absolutePath);
+                if (null !== $spec) {
+                    $this->processFixedIcon($entity, $absolutePath, $spec);
+                } else {
+                    $this->processImage($entity, $absolutePath);
+                }
             }
+
+            $this->storeDimensions($entity, $absolutePath);
 
             return;
         }
@@ -96,6 +98,22 @@ class VichImageResizeListener
         if (method_exists($entity, 'setSize')) {
             $entity->setSize((new SplFileInfo($absolutePath))->getSize());
         }
+    }
+
+    // Records the stored file's own pixel size on the entity, read after any resizing/cropping so the numbers describe the file actually served, not the upload. Admin-editable afterwards (see MediaUploadType), hence a plain overwrite here - a new upload makes any previously entered value stale. Guarded by method_exists because the width/height columns belong to Media, not to VichImageResizableInterface, which other bundles' entities also implement
+    private function storeDimensions(object $entity, string $absolutePath): void
+    {
+        if (!method_exists($entity, 'setWidth') || !method_exists($entity, 'setHeight')) {
+            return;
+        }
+
+        $dimensions = $this->imageDimensionsReader->read($absolutePath);
+        if (null === $dimensions) {
+            return;
+        }
+
+        $entity->setWidth((string) $dimensions['width']);
+        $entity->setHeight((string) $dimensions['height']);
     }
 
     // Sibling files next to the entity's own stored (medium) image: a square outbound-cropped thumbnail for grid displays, and a proportionally-resized highres version for zoom - both derived from a copy() of the original so the shared $media instance stays untouched for the medium resize that follows in processImage(). Filenames match what VichMultiSizeImageInterface consumers derive themselves from their own stored filename (see e.g. GalleryBundle's GalleryPhoto::getThumbnailFilename()/getHighresFilename()).

@@ -8,13 +8,18 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
+    static values = {
+        // Points at the copy vendored in this bundle's public/ - self-hosted rather than pulled from a CDN, which would hand a third party every visitor's IP and force an external script-src host into the site's CSP
+        script: { type: String, default: "/bundles/c975lui/js/confetti.browser.min.js" },
+    };
+
     connect() {
         document.addEventListener("DOMContentLoaded", this.onDomContentLoaded.bind(this));
     }
 
     onDomContentLoaded() {
-        // https://github.com/catdad/canvas-confetti
-        this.loadScript("https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js", () => {
+        // https://github.com/catdad/canvas-confetti (ISC)
+        this.loadScript(this.scriptValue, () => {
             confetti({ particleCount: 500, disableForReducedMotion: true });
         });
     }

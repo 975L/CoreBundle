@@ -1,5 +1,26 @@
 # ChangeLog
 
+## v1.9.18
+
+- Added a `priority` option to the `Image`/`Icon`/`Link` components, rendering `loading="eager" fetchpriority="high"` instead of `loading="lazy"` (26/07/2026)
+- Fixed `a.btn` overriding `.btn-secondary`'s and `.btn-link`'s own text color (26/07/2026)
+- `canvas-confetti` is now served from the bundle instead of jsDelivr (26/07/2026)
+- Added the `confetti` controller's `script` value, overriding the library's path (26/07/2026)
+- Added `Service\ImageDimensionsReader`, reading an image file's pixel size (26/07/2026)
+- `VichImageResizeListener` now fills `Media::$width`/`$height` on upload, from the stored file (26/07/2026)
+- Added `c975l:ui:media-dimensions`, backfilling the `Media` rows that have no dimensions yet (26/07/2026)
+- Added `MediaRepository::findWithoutDimensions()` (26/07/2026)
+- The media form's width/height help text now says the values are auto-detected pixels, instead of suggesting `100px, 50%` (26/07/2026)
+- The `Image`/`Link` components now keep `img-responsive` alongside explicit width/height, dropping it only for a height given without a width (26/07/2026)
+- The `video` block now reads its file and format from an uploaded media instead of a `src`/`type` data field, breaking for blocks saved before (26/07/2026)
+- The `video` block's cover image is now an uploaded `image/*` media instead of a `poster` path field (26/07/2026)
+- The `video` block's `autoplay`/`muted`/`loop` checkboxes are now a single `options` multi-select (26/07/2026)
+- The `audio` block now reads its format from the uploaded media instead of a `type` data field, breaking for blocks saved before (26/07/2026)
+- The `video`/`audio` kinds now declare an explicit `media_types` list instead of the `video/*`/`audio/*` wildcard (26/07/2026)
+- `MediaUploadType` now labels a `video` block's uploads by mimetype and hides the per-image display metadata (26/07/2026)
+- `BlockFixtureMediaAttacher` now attaches a single video for a kind listing several video mimetypes (26/07/2026)
+- `BlockFixtureMediaAttacher`'s placeholder images now carry a `mimeType` (26/07/2026)
+
 ## v1.9.17
 
 - Fixed `.hero__media` collapsing to a tiny blob on narrow viewports (24/07/2026)

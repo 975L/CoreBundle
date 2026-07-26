@@ -1,9 +1,18 @@
-{# Static usage : <twig:c975LUi:Image:Image src="your-path/file.ext" [label=""] [class=""] [classLabel=""] [alt=""] [width=""] [height=""] [above=false] /> #}
+{# Static usage : <twig:c975LUi:Image:Image src="your-path/file.ext" [label=""] [class=""] [classLabel=""] [alt=""] [width=""] [height=""] [above=false] [priority=false] /> #}
 {# or with an already-resolved URL : <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" .../> #}
 
 {% set above = above|default(false)|to_bool %}
 {% set label = label|default('') %}
-{% set imgResponsive = (height is not defined or height == '') and (width is not defined or width == '') ? 'img-responsive' : '' %}
+{# "priority": set it on the one above-the-fold image likely to be the LCP element. Lazy-loading that
+   image delays its request until layout, which pushes the LCP back by a full round-trip #}
+{% set priority = priority|default(false)|to_bool %}
+{# "img-responsive" (max-width: 100%; height: auto) and explicit width/height attributes are meant to be combined,
+   not chosen between: the attributes give the browser the ratio to reserve before the file is downloaded (no layout
+   shift), the class keeps the image fluid once it's there. Every Media now carries its own pixel size (see
+   VichImageResizeListener), so both are the normal case. The one combination that conflicts is a height with no
+   width - "height: auto" would override it and render the image at its intrinsic size - so the class is dropped there #}
+{% set heightOnly = height is defined and height != '' and (width is not defined or width == '') %}
+{% set imgResponsive = heightOnly ? '' : 'img-responsive' %}
 {% set imgSrc = imgSrc|default(src is defined and src ? absolute_url(asset(src)) : '') %}
 
 {% if imgSrc %}
@@ -17,7 +26,7 @@
             alt="{{ alt|default('') }}"
             {% if width is defined and width != '' %}width="{{ width }}"{% endif %}
             {% if height is defined and height != '' %}height="{{ height }}"{% endif %}
-            loading="lazy">
+            {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         {% if not above and label != '' %}
             <br>
             <span class="img-below {{ classLabel|default('') }}">{{ label|raw }}</span>

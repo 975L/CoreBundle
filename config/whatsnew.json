@@ -1,5 +1,45 @@
 [
     {
+        "date": "2026-07-26",
+        "description": [
+            {
+                "en": "Image dimensions are now detected on upload, so pages no longer jump as images load",
+                "fr": "Les dimensions des images sont désormais détectées à l'envoi, les pages ne sautent plus au chargement des images",
+                "es": "Las dimensiones de las imágenes se detectan ahora al subirlas, por lo que las páginas ya no saltan al cargarse"
+            },
+            {
+                "en": "A video block is now created by uploading the video file itself, with no path or format to fill in",
+                "fr": "Un block vidéo se crée désormais en envoyant directement le fichier vidéo, sans chemin ni format à renseigner",
+                "es": "Un bloque de vídeo se crea ahora subiendo directamente el archivo de vídeo, sin ruta ni formato que rellenar"
+            },
+            {
+                "en": "A video block's cover image is now uploaded like any other image, instead of being typed in as a path",
+                "fr": "L'image de couverture d'un block vidéo s'envoie désormais comme n'importe quelle image, au lieu d'être saisie sous forme de chemin",
+                "es": "La imagen de portada de un bloque de vídeo se sube ahora como cualquier otra imagen, en lugar de escribirse como una ruta"
+            },
+            {
+                "en": "A video block's autoplay, mute and loop settings are now picked together from a single list",
+                "fr": "Les options de lecture automatique, sourdine et boucle d'un block vidéo se choisissent désormais dans une seule liste",
+                "es": "Las opciones de reproducción automática, silencio y bucle de un bloque de vídeo se eligen ahora en una sola lista"
+            },
+            {
+                "en": "An audio block is now created by uploading the file alone, with no format to choose",
+                "fr": "Un block audio se crée désormais en envoyant le seul fichier, sans format à choisir",
+                "es": "Un bloque de audio se crea ahora subiendo únicamente el archivo, sin formato que elegir"
+            },
+            {
+                "en": "Fixed secondary and link buttons showing barely readable text",
+                "fr": "Correction des boutons secondaires et liens dont le texte était à peine lisible",
+                "es": "Corregidos los botones secundarios y de enlace cuyo texto era apenas legible"
+            },
+            {
+                "en": "The confetti animation no longer loads anything from an external service",
+                "fr": "L'animation de confettis ne charge plus rien depuis un service externe",
+                "es": "La animación de confeti ya no carga nada desde un servicio externo"
+            }
+        ]
+    },
+    {
         "date": "2026-07-24",
         "description": [
             {

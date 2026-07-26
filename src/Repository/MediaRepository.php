@@ -51,4 +51,15 @@ class MediaRepository extends ServiceEntityRepository
 
         return $this->find($ids[array_rand($ids)]);
     }
+
+    // @return Media[] Rows whose width or height is still unset - what MediaDimensionsCommand backfills. An empty string counts as unset: the admin form (see MediaUploadType) submits one for a field left blank, where an untouched row holds null
+    public function findWithoutDimensions(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.width IS NULL OR m.width = :empty OR m.height IS NULL OR m.height = :empty')
+            ->setParameter('empty', '')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

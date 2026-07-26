@@ -53,6 +53,9 @@ class BlockFixtureMediaAttacher
             return;
         }
 
+        // A kind can list several video mimetypes ("video/mp4,video/webm...", see the "video" kind) - that's one accepted upload, not one placeholder each
+        $videoAttached = false;
+
         foreach ($this->registry->getMediaTypes($kind) as $mediaType) {
             if (str_starts_with($mediaType, 'image/')) {
                 $count = $this->imageCount($kind, $variant);
@@ -62,8 +65,9 @@ class BlockFixtureMediaAttacher
             }
 
             // Skipped for "freeflow", already busy demonstrating its own layout with more images, see imageCount()
-            if ('freeflow' !== $variant && str_starts_with($mediaType, 'video/')) {
+            if ('freeflow' !== $variant && !$videoAttached && str_starts_with($mediaType, 'video/')) {
                 $block->addMedia($this->placeholderVideo());
+                $videoAttached = true;
             }
 
             if (str_starts_with($mediaType, 'audio/')) {
@@ -122,8 +126,10 @@ class BlockFixtureMediaAttacher
         $filename = self::PLACEHOLDER_IMAGES[$this->photoCursor % count(self::PLACEHOLDER_IMAGES)];
         ++$this->photoCursor;
 
+        // mimeType set like every other placeholder below: templates telling media apart by it (e.g. blocks/Video.html.twig picking the cover image out of the block's medias) would otherwise never match a fixture image
         return (new Media())
             ->setFilename($filename)
+            ->setMimeType('image/webp')
             ->setAlt('Photo d\'exemple');
     }
 

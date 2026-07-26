@@ -29,8 +29,11 @@ class MediaUploadType extends AbstractType
     {
         $acceptedTypes = null !== $options['accept'] ? explode(',', $options['accept']) : [];
         $isImage = in_array('image/*', $acceptedTypes, true);
-        $isVideo = in_array('video/*', $acceptedTypes, true);
+        // Matches an explicit list ("video/mp4,video/webm...", see the "video" block kind) as well as the "video/*" wildcard
+        $isVideo = [] !== preg_grep('#^video/#', $acceptedTypes);
         $isSlider = 'slider' === $options['context'];
+        // A "video" block's medias are just its video file and (optionally) an image used as the player's cover - none of the per-image display metadata below applies to either of them, the block's own form already carries the player's width/height
+        $isVideoBlock = 'video' === $options['context'];
         $isCards = 'card' === $options['context'];
         $isBannerTitle = 'banner_title' === $options['context'];
         $isPortfolioGrid = 'portfolio_grid' === $options['context'];
@@ -39,7 +42,7 @@ class MediaUploadType extends AbstractType
         // Placeholder type, always overridden in the PRE_SET_DATA listener below once the entry's real data (and mimetype, for an existing upload) is known - added here first only so "file" keeps rendering as the form's first field (re-adding a field under the same name replaces it in place rather than moving it to the end).
         $builder
             ->add('file', VichFileType::class, [
-                'label' => false,
+                'label' => $this->fileLabel($isVideoBlock, null),
                 'required' => false,
                 'allow_delete' => true,
                 'download_label' => false,
@@ -51,7 +54,7 @@ class MediaUploadType extends AbstractType
             ]);
 
         // cssClasses applies to a Card's teaser image too (see templates/blocks/Card.html.twig), so it stays out of the "!$isCards" group below
-        if ($isImage) {
+        if ($isImage && !$isVideoBlock) {
             $builder->add('cssClasses', ImageClassChoiceType::class);
         }
 
@@ -65,7 +68,7 @@ class MediaUploadType extends AbstractType
         }
 
         // Per-image display metadata, only relevant when the uploaded file is an image - none of the rest applies to a Card's teaser image: alt comes from the card's own title, there's no caption/sizing/rights markup for a card teaser Field order/set kept in parity with MediaCrudController (the Media library's own edit form)
-        if ($isImage && !$isCards) {
+        if ($isImage && !$isCards && !$isVideoBlock) {
             $builder->add('alt', TextType::class, [
                 'label' => 'label.alt_text',
                 'required' => false,
@@ -130,7 +133,7 @@ class MediaUploadType extends AbstractType
 
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
-            function (PreSetDataEvent $event) use ($isImage, $isVideo, $options): void {
+            function (PreSetDataEvent $event) use ($isImage, $isVideo, $isVideoBlock, $options): void {
                 $media = $event->getData();
 
                 // Unmapped, only used server-side to reconcile submitted entries against existing rows by ID (see BlockType's PRE_SUBMIT listener) - positional/identity diffing is unreliable once nested dynamic sub-forms are involved. Must be added here with "data" set directly: setting it via setData() after a static add() gets overwritten by the default mapper for unmapped fields, which falls back to the field's original (empty) "data" option.
@@ -147,7 +150,7 @@ class MediaUploadType extends AbstractType
                     : ($isImage && !$isVideo);
 
                 $event->getForm()->add('file', $useImageType ? VichImageType::class : VichFileType::class, [
-                    'label' => false,
+                    'label' => $this->fileLabel($isVideoBlock, $mimeType),
                     'required' => false,
                     'allow_delete' => true,
                     'download_label' => false,
@@ -156,6 +159,20 @@ class MediaUploadType extends AbstractType
                 ]);
             }
         );
+    }
+
+    // Every other kind leaves its uploads unlabelled (a row is self-explanatory: one image among images, one PDF among PDFs), but a "video" block's two rows are two different things - the video file and the image used as the player's cover - and nothing else in the row says which is which, so each one is named after its own mimetype. A brand new row has no file yet, hence no mimetype: it's labelled with both, which is also what tells the admin a cover can be added at all
+    private function fileLabel(bool $isVideoBlock, ?string $mimeType): string|bool
+    {
+        if (!$isVideoBlock) {
+            return false;
+        }
+
+        if (null === $mimeType) {
+            return 'label.video_file_or_poster';
+        }
+
+        return str_starts_with($mimeType, 'image/') ? 'label.video_poster' : 'label.video_file';
     }
 
     public function configureOptions(OptionsResolver $resolver): void

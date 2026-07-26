@@ -89,6 +89,28 @@ class BlockFixtureMediaAttacherTest extends TestCase
         $this->assertSame(BlockFixtureMediaAttacher::PLACEHOLDER_VIDEO, $block->getMedia()->last()->getFilename());
     }
 
+    // "video" lists its accepted formats one by one ("video/mp4,video/webm,video/ogg", see services.yaml) - that's still a single video upload, plus one image standing in for the player's cover
+    public function testVideoKindGetsOneVideoAndOneCoverImage(): void
+    {
+        $attacher = new BlockFixtureMediaAttacher($this->createRegistry(['video/mp4', 'video/webm', 'video/ogg', 'image/*']));
+        $block = (new Block())->setKind('video');
+
+        $attacher->attach($block, 'video');
+
+        $medias = $block->getMedia();
+        $this->assertCount(2, $medias);
+        $this->assertSame(BlockFixtureMediaAttacher::PLACEHOLDER_VIDEO, $medias->first()->getFilename());
+        $this->assertContains($medias->last()->getFilename(), BlockFixtureMediaAttacher::PLACEHOLDER_IMAGES);
+    }
+
+    // blocks/Video.html.twig tells the cover image apart from the video by mimetype - a placeholder image with none would never be picked up as a cover
+    public function testPlaceholderImagesCarryAMimeType(): void
+    {
+        $attacher = new BlockFixtureMediaAttacher($this->createRegistry(['image/*']));
+
+        $this->assertSame('image/webp', $attacher->nextPlaceholderImage()->getMimeType());
+    }
+
     // article is tagged media_multi_upload too, but wants 3 images specifically (Laurent's call), more than the generic multi-upload default of 2
     public function testArticleGetsThreeImages(): void
     {

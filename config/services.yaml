@@ -68,7 +68,9 @@ services:
               form: c975L\UiBundle\Form\Block\AudioType
               template: '@c975LUi/blocks/Audio.html.twig'
               category: 'label.category_media'
-              media_types: 'audio/*'
+              # Explicit list rather than "audio/*", same reasoning as the "video" kind below: these are the formats every browser's <audio> can play, and the block's own form no longer asks for the format, it's read back from the uploaded file's mimeType
+              media_types: 'audio/mpeg,audio/ogg,audio/wav'
+              media_help: 'label.audio_media_help'
               priority: 70
               pickable: true
               cacheable: true
@@ -262,7 +264,9 @@ services:
               form: c975L\UiBundle\Form\Block\VideoType
               template: '@c975LUi/blocks/Video.html.twig'
               category: 'label.category_media'
-              media_types: 'video/*'
+              # Explicit list rather than "video/*": these three are the formats every browser's <video> can actually play, and it's this list that fills the upload's "accept" - the block's own form no longer asks for the format, it's read back from the uploaded file's mimeType. "image/*" is the optional cover image (poster), see blocks/Video.html.twig
+              media_types: 'video/mp4,video/webm,video/ogg,image/*'
+              media_help: 'label.video_media_help'
               priority: 80
               pickable: true
               cacheable: true

@@ -9,23 +9,14 @@
 namespace c975L\UiBundle\Form\Block;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+// Deliberately field-less (same reasoning as VideoType): an "audio" block is entirely defined by the file uploaded as its media (see the "ui.block.audio" tag in config/services.yaml), format included - blocks/Audio.html.twig reads both back from the Media itself, so there's nothing left to ask the editor. Kept as a real FormType because every block kind is registered with one
 class AudioType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('type', ChoiceType::class, [
-                'label'   => 'label.format',
-                'choices' => [
-                    'MP3' => 'audio/mpeg',
-                    'OGG' => 'audio/ogg',
-                    'WAV' => 'audio/wav',
-                ],
-            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

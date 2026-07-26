@@ -35,10 +35,9 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'content' => '<p>Ceci est un exemple de message de danger.</p>',
                 ],
             ],
+            // No data at all: the whole block is the file auto-attached by BlockFixtureMediaAttacher (any "audio/*" mediaType), format included
             'audio' => [
-                '' => [
-                    'type' => 'audio/mpeg',
-                ],
+                '' => [],
             ],
             'article' => [
                 '' => [
@@ -151,15 +150,10 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'content' => '<p>Contenu de la section.</p>',
                 ],
             ],
+            // Its video file and cover image are auto-attached generically by BlockFixtureMediaAttacher (any "video/*" then "image/*" mediaType), so the fixture only needs the player's own options
             'video' => [
                 '' => [
-                    // Leading "/": unlike PLACEHOLDER_VIDEO's other use as a Media filename (resolved by vich_uploader_asset()), Video.html.twig outputs this "src" completely raw - on a real front-end page SiteBundle's sitewide <base href> makes a bare relative path resolve correctly anyway, but the block gallery's preview iframe has no such <base>, so a relative path there resolves against the gallery page's own URL instead and 404s (Laurent: "video ne fonctionne pas" - the native player showed but nothing played)
-                    'src' => '/' . BlockFixtureMediaAttacher::PLACEHOLDER_VIDEO,
-                    'type' => 'video/mp4',
-                    'poster' => '',
-                    'autoplay' => false,
-                    'muted' => true,
-                    'loop' => false,
+                    'options' => ['muted'],
                     'width' => '',
                     'height' => '',
                 ],

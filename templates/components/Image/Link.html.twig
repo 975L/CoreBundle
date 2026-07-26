@@ -1,10 +1,11 @@
-{# <twig:c975LUimage:Link [label=""] src="your-path/file.ext" url="yourdomain.ext" [class="your-css-classes"] [classLabel="your-css-classes-label"] [alt=""] [width="width"] [height="height"] [target=""] [above="true"]/> #}
+{# <twig:c975LUimage:Link [label=""] src="your-path/file.ext" url="yourdomain.ext" [class="your-css-classes"] [classLabel="your-css-classes-label"] [alt=""] [width="width"] [height="height"] [target=""] [above="true"] [priority=false]/> #}
 {% set label = label | default("") %}
 {% set above = above | default(false) | to_bool %}
-{% set imgResponsive = "" %}
-{% if height is not defined and width is not defined %}
-    {% set imgResponsive = "img-responsive" %}
-{% endif %}
+{# "priority": set it on an above-the-fold image, so it is not lazy-loaded (see Image.html.twig) #}
+{% set priority = priority | default(false) | to_bool %}
+{# Same rule as Image.html.twig: "img-responsive" and explicit dimensions are combined, except for a height with no width, where "height: auto" would override it #}
+{% set heightOnly = height is defined and height != "" and (width is not defined or width == "") %}
+{% set imgResponsive = heightOnly ? "" : "img-responsive" %}
 {# No "url": nothing to link to, so this must not render as an <a> at all - a href="" would be a dead link that still looks clickable #}
 {% set tag = url ? 'a' : 'span' %}
 <p class="text-center">
@@ -13,7 +14,7 @@
             <span class="img-above {{ classLabel|default("") }}">{{ label|raw }}</span>
             <br>
         {% endif %}
-        <img src="{{ absolute_url(asset(src)) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}" {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} loading="lazy">
+        <img src="{{ absolute_url(asset(src)) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}" {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         {% if not above and label != '' %}
             <br>
             <span class="img-below {{ classLabel|default("") }}">{{ label|raw }}</span>

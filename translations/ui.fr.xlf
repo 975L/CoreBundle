@@ -311,9 +311,9 @@
                 <source>label.force_download</source>
                 <target>Forcer le téléchargement</target>
             </trans-unit>
-            <trans-unit id="73">
-                <source>label.format</source>
-                <target>Format</target>
+            <trans-unit id="534">
+                <source>label.audio_media_help</source>
+                <target>Déposez le fichier audio (MP3, OGG ou WAV)</target>
             </trans-unit>
             <trans-unit id="74">
                 <source>label.height</source>
@@ -321,7 +321,7 @@
             </trans-unit>
             <trans-unit id="75">
                 <source>label.height_help</source>
-                <target>ex. : 100px, 50%</target>
+                <target>Détectée automatiquement à l'envoi, en pixels</target>
             </trans-unit>
             <trans-unit id="76">
                 <source>label.hook</source>
@@ -446,10 +446,6 @@
             <trans-unit id="97">
                 <source>label.postal_code</source>
                 <target>Code postal</target>
-            </trans-unit>
-            <trans-unit id="98">
-                <source>label.poster</source>
-                <target>Image de couverture</target>
             </trans-unit>
             <trans-unit id="99">
                 <source>label.price_range</source>
@@ -583,9 +579,29 @@
                 <source>label.used_in</source>
                 <target>Utilisé dans</target>
             </trans-unit>
-            <trans-unit id="132">
-                <source>label.video_src</source>
-                <target>Chemin du fichier vidéo</target>
+            <trans-unit id="535">
+                <source>label.video_file</source>
+                <target>Fichier vidéo</target>
+            </trans-unit>
+            <trans-unit id="536">
+                <source>label.video_file_or_poster</source>
+                <target>Fichier vidéo ou image de couverture</target>
+            </trans-unit>
+            <trans-unit id="537">
+                <source>label.video_poster</source>
+                <target>Image de couverture</target>
+            </trans-unit>
+            <trans-unit id="531">
+                <source>label.video_media_help</source>
+                <target>Déposez le fichier vidéo (MP4, WebM ou OGG) et, si vous le souhaitez, une image servant de couverture au lecteur</target>
+            </trans-unit>
+            <trans-unit id="532">
+                <source>label.video_options</source>
+                <target>Options de lecture</target>
+            </trans-unit>
+            <trans-unit id="533">
+                <source>label.video_options_help</source>
+                <target>La plupart des navigateurs n'autorisent la lecture automatique que sur une vidéo muette</target>
             </trans-unit>
             <trans-unit id="133">
                 <source>label.video_url</source>
@@ -605,7 +621,7 @@
             </trans-unit>
             <trans-unit id="136">
                 <source>label.width_help</source>
-                <target>ex. : 100px, 50%</target>
+                <target>Détectée automatiquement à l'envoi, en pixels</target>
             </trans-unit>
             <trans-unit id="137">
                 <source>label.animation</source>

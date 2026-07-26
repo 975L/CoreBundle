@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\VichImageResizeListener;
+use c975L\UiBundle\Service\ImageDimensionsReader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -60,9 +61,51 @@ class VichImageResizeListenerTest extends TestCase
         $parameterBag = $this->createStub(ParameterBagInterface::class);
         $parameterBag->method('get')->willReturn($this->projectDir);
 
-        $listener = new VichImageResizeListener($parameterBag);
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader());
         $listener->onPostUpload(new Event($media, $this->createMapping()));
 
         $this->assertSame('not-a-gd-decodable-ico', file_get_contents($icoPath));
+    }
+
+    // Every <img> needs its intrinsic size to reserve its box before the file arrives, so an upload records it - the "img-responsive" class only keeps the image fluid, it can't tell the browser the proportions in advance
+    public function testOnPostUploadStoresTheStoredFileDimensions(): void
+    {
+        $pngPath = $this->projectDir . '/public/photo.png';
+        imagepng(imagecreatetruecolor(1200, 800), $pngPath);
+
+        $media = new Media();
+        $media->setFilename('photo.png');
+        $media->setFile(new File($pngPath));
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader());
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        // Not the uploaded 1200x800: processImage() downscales to the entity's own getImageWidth() first, and the recorded size has to describe the file actually served
+        $this->assertSame((string) $media->getImageWidth(), $media->getWidth());
+        $this->assertSame((string) (int) ($media->getImageWidth() * 800 / 1200), $media->getHeight());
+    }
+
+    // An svg is never resized (GD can't decode it), but it still has to carry its dimensions
+    public function testOnPostUploadStoresDimensionsOfAFileItDoesNotProcess(): void
+    {
+        $svgPath = $this->projectDir . '/public/logo.svg';
+        file_put_contents($svgPath, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150"></svg>');
+
+        $media = new Media();
+        $media->setFilename('logo.svg');
+        $media->setFile(new File($svgPath));
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader());
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $this->assertSame('300', $media->getWidth());
+        $this->assertSame('150', $media->getHeight());
+        $this->assertStringContainsString('<svg', (string) file_get_contents($svgPath));
     }
 }

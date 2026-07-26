@@ -69,6 +69,35 @@ class MediaUploadTypeTest extends TestCase
         return $added;
     }
 
+    // Same PRE_SET_DATA capture as above, but keeping each field's options instead of its type - "file"'s label is decided there too, from the entry's own mimetype
+    private function buildFileOptionsForEntry(?string $accept, ?string $context, ?Media $media): array
+    {
+        $added = [];
+        $listener = null;
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnSelf();
+        $builder->method('addEventListener')->willReturnCallback(
+            function (string $eventName, callable $callback) use (&$listener, $builder) {
+                $listener = $callback;
+
+                return $builder;
+            }
+        );
+
+        $type = new MediaUploadType();
+        $type->buildForm($builder, ['accept' => $accept, 'context' => $context]);
+
+        $form = $this->createStub(FormInterface::class);
+        $form->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$added, $form) {
+            $added[$name] = $options;
+
+            return $form;
+        });
+        $listener(new PreSetDataEvent($form, $media));
+
+        return $added['file'];
+    }
+
     public function testBuildFormAlwaysAddsFileAndPositionFields(): void
     {
         $added = $this->buildFieldNames(null, null);
@@ -198,6 +227,48 @@ class MediaUploadTypeTest extends TestCase
         foreach (['width', 'height', 'above'] as $field) {
             $this->assertArrayNotHasKey($field, $added, "\"$field\" should not be added for the \"portfolio_grid\" context");
         }
+    }
+
+    // A "video" block's medias are its video file and an image used as the player's cover - neither is a captioned figure, and the block's own form already carries the player's width/height
+    public function testBuildFormForVideoContextAddsNoImageMetadataAtAll(): void
+    {
+        $added = $this->buildFieldNames('video/mp4,video/webm,video/ogg,image/*', 'video');
+
+        foreach (['cssClasses', 'alt', 'label', 'width', 'height', 'above', 'credits', 'rightsReserved'] as $field) {
+            $this->assertArrayNotHasKey($field, $added, "\"$field\" should not be added for the \"video\" context");
+        }
+    }
+
+    // A "video" block's two rows are the video file and the player's cover image - unlabelled, nothing in the row says which is which, and nothing tells the admin a cover can be added at all
+    public function testVideoContextNamesEachUploadAfterItsOwnMimeType(): void
+    {
+        $image = new Media();
+        $image->setMimeType('image/webp');
+        $video = new Media();
+        $video->setMimeType('video/mp4');
+        $accept = 'video/mp4,video/webm,video/ogg,image/*';
+
+        $this->assertSame('label.video_poster', $this->buildFileOptionsForEntry($accept, 'video', $image)['label']);
+        $this->assertSame('label.video_file', $this->buildFileOptionsForEntry($accept, 'video', $video)['label']);
+        $this->assertSame('label.video_file_or_poster', $this->buildFileOptionsForEntry($accept, 'video', new Media())['label']);
+    }
+
+    // Every other kind keeps its uploads unlabelled - a row among rows of the same nature is self-explanatory
+    public function testOtherContextsKeepTheirUploadsUnlabelled(): void
+    {
+        $image = new Media();
+        $image->setMimeType('image/webp');
+
+        $this->assertFalse($this->buildFileOptionsForEntry('image/*,video/*', 'slider', $image)['label']);
+        $this->assertFalse($this->buildFileOptionsForEntry('image/*', null, new Media())['label']);
+    }
+
+    // The accept list spells the video formats out one by one instead of using "video/*" - a brand-new entry (no mimetype yet) must still default to VichFileType, not to the image widget
+    public function testPreSetDataFallsBackToVichFileTypeForAnExplicitVideoFormatList(): void
+    {
+        $added = $this->buildFieldNamesForEntry('video/mp4,video/webm,video/ogg,image/*', 'video', new Media());
+
+        $this->assertSame(VichFileType::class, $added['file']);
     }
 
     // A standalone Image block (context null, e.g. the "image" kind) gets the full metadata set
