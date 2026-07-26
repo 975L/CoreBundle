@@ -1,5 +1,10 @@
 # ChangeLog
 
+## v1.10.2
+
+- Fixed `.hero__media img` declaring no `height`, letting the intrinsic `height` attribute added in v1.10.1 override its `aspect-ratio` and blow up every hero (26/07/2026)
+- Added `ImageAspectRatioHeightTest`, locking every `img` sass rule setting an `aspect-ratio` to also declare its `height` (26/07/2026)
+
 ## v1.10.1
 
 - Added `Service\BlockCacheClearer`, invalidating the block render cache on `cache:clear` so a deployment shipping a changed template no longer serves the previous markup (26/07/2026)

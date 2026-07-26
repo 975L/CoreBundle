@@ -232,6 +232,10 @@ $page-section-bp-lg: 1025px;
     object-fit: contain;
     background: var(--card-background);
     width: 100%;
+    // Mandatory alongside the width/height attributes the Hero now writes (see Hero/Hero.html.twig): those
+    // map to CSS *presentational hints*, so an unstyled "height" lets height="800" win and the box stretches
+    // to 800px, ignoring the aspect-ratio above. Declaring it here overrides the hint and keeps the 4/3.2 box
+    height: auto;
 }
 
 // Decorative crossfade for a Hero with several media attached (see Hero/Hero.html.twig). Each <img> is

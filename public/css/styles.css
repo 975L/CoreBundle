@@ -816,6 +816,7 @@ img.white {
   object-fit: contain;
   background: var(--card-background);
   width: 100%;
+  height: auto;
 }
 
 .hero__media--slideshow {

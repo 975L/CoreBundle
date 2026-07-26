@@ -91,6 +91,11 @@
                 "en": "A hero block can now render its title as an h2, for a page whose template already shows its own title",
                 "fr": "Un block hero peut désormais afficher son titre en h2, pour une page dont le gabarit affiche déjà son propre titre",
                 "es": "Un bloque hero puede ahora mostrar su título como h2, para una página cuya plantilla ya muestra su propio título"
+            },
+            {
+                "en": "Hero block images are shown at their proper size again, instead of stretching out of their frame",
+                "fr": "Les images d'un block hero s'affichent à nouveau à la bonne taille, au lieu de déborder de leur cadre",
+                "es": "Las imágenes de un bloque hero vuelven a mostrarse con el tamaño correcto, en lugar de desbordar su marco"
             }
         ]
     },
