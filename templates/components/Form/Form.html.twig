@@ -2,13 +2,15 @@
 {# Dynamic usage : {{ render_block(block) }} — via FormBlock.html.twig #}
 {% trans_default_domain 'ui' %}
 
-<section>
+{# A <div>, not a <section>: this block never carries a heading of its own (the page around it names the
+   form), and a headingless <section> is what the W3C validator asks to be a <div> instead #}
+<div>
     {% for label, messages in app.flashes(['success', 'danger']) %}
         {% for message in messages %}
             <div class="alert alert-{{ label }}">{{ message|trans }}</div>
         {% endfor %}
     {% endfor %}
-    {# "hidden" excluded: a required-but-invisible field (e.g. Recaptcha3Type, which extends HiddenType and never
+    {# "hidden" excluded: a required-but-invisible field (e.g. CaptchaType, which extends HiddenType and never
        overrides its "required" default) must never trigger this note - the visitor never sees an asterisk for it #}
     {% set hasRequired = false %}
     {% for child in form %}
@@ -27,4 +29,4 @@
             </p>
         {% endif %}
     {{ form_end(form) }}
-</section>
+</div>

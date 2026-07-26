@@ -313,6 +313,17 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
         return $this;
     }
 
+    // $width/$height are admin-typed display values ("50%", "100px", "auto" are all valid there), while HTML's width/height attributes only accept a bare pixel count and silently discard anything else - these two return the value only when it is one, so a template can tell "intrinsic dimensions known" from "some css length"
+    public function getIntrinsicWidth(): ?int
+    {
+        return ctype_digit((string) $this->width) ? (int) $this->width : null;
+    }
+
+    public function getIntrinsicHeight(): ?int
+    {
+        return ctype_digit((string) $this->height) ? (int) $this->height : null;
+    }
+
     public function getCssClasses(): array
     {
         return $this->cssClasses ?? [];

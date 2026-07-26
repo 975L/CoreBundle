@@ -2,12 +2,20 @@
 {# Dynamic usage (Block system): see templates/blocks/PortfolioGrid.html.twig #}
 {# Per-project title/text/link come straight from each media's own label/description/url (see
    MediaUploadType's "portfolio_grid" context) - no separate collection to keep in sync with the medias #}
-<section class="portfolio-grid"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
+   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig). With no
+   title, the eyebrow becomes that heading, same rule as Section/_head.html.twig #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="portfolio-grid"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         <div class="portfolio-grid__head">
             <div>
-                {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
-                {% if title %}<h2 class="section-title">{{ title }}</h2>{% endif %}
+                {% if title|default('') %}
+                    {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+                    <h2 class="section-title">{{ title }}</h2>
+                {% elseif eyebrow|default('') %}
+                    <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+                {% endif %}
             </div>
             {% if linkLabel and linkUrl %}<a class="section-btn section-btn--ghost" href="{{ linkUrl }}">{{ linkLabel }}</a>{% endif %}
         </div>
@@ -27,4 +35,4 @@
             {% endfor %}
         </div>
     </div>
-</section>
+</{{ tag }}>

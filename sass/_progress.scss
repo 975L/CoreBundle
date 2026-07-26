@@ -30,6 +30,15 @@
     z-index: 1;
 }
 
+/* One class per whole percent, the server-computed width being applied through a class rather than a
+   style attribute (never covered by a CSP nonce) or a <style> element (only valid inside <head>) - the
+   101 rules are near-free once gzipped, and unlike a JS-driven width they need no reflow after paint */
+@for $i from 0 through 100 {
+    .progress-bar--w#{$i} {
+        width: $i * 1%;
+    }
+}
+
 .progress-text {
     position: absolute;
     left: 0;

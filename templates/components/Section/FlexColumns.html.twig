@@ -4,18 +4,16 @@
    own nested slots with no wrapper of its own (see blocks/FlexColumn.html.twig), so it stacks
    naturally inside this same ".flex-columns__col" div - unlike this bundle's other Section/*
    components there is no meaningful static/plain-array usage for this one. #}
-<section class="flex-columns-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
+   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig) #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="flex-columns-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
-        {% if eyebrow or title %}
-            <div class="section-head">
-                {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
-                {% if title %}<h2 class="section-title">{{ title }}</h2>{% endif %}
-            </div>
-        {% endif %}
+        {{ include('@c975LUi/components/Section/_head.html.twig') }}
         <div class="flex-columns">
             {% for slot in slots %}
                 <div class="flex-columns__col">{{ render_block(slot) }}</div>
             {% endfor %}
         </div>
     </div>
-</section>
+</{{ tag }}>

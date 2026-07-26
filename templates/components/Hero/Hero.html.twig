@@ -1,26 +1,35 @@
-{# Static usage: <twig:c975LUi:Hero:Hero title="..." primaryLabel="..." primaryUrl="..." [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [id=""] [medias=[]] [hasBackgroundImage=false]/> #}
+{# Static usage: <twig:c975LUi:Hero:Hero title="..." primaryLabel="..." primaryUrl="..." [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [id=""] [medias=[]] [hasBackgroundImage=false] [level="h1"]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Hero.html.twig #}
 {% set medias = medias|default([]) %}
 {% set hasBackgroundImage = hasBackgroundImage|default(false)|to_bool %}
+{# "h1" by default, the hero usually opening the page and carrying its real title - "h2" for a hero
+   placed under a page template that prints its own <h1>, several <h1> on one page being reported by
+   every screen reader as as many top-level headings #}
+{% set level = level|default('h1') %}
 {# Background mode always uses a single, static image (the first media attached) - the side-by-side
    slideshow only makes sense next to the text, not full-bleed behind it #}
 {% set bgSrc = hasBackgroundImage ? (medias|length ? vich_uploader_asset(medias|first) : src) : '' %}
-{# Same absolute_url(asset()) double-wrap as Banner/Title.html.twig - needed so the CSS background-image
-   url resolves correctly under SiteBundle's sitewide <base href> #}
-{% set bgImgSrc = bgSrc ? absolute_url(asset(bgSrc)) : '' %}
-<section class="hero{{ bgImgSrc ? ' hero--has-bg' : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}{% if bgImgSrc %} style="background-image:url('{{ bgImgSrc }}')"{% endif %}>
+<section class="hero{{ bgSrc ? ' hero--has-bg' : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    {% if bgSrc %}
+        {# A real <img> rather than a CSS background-image: the latter needs a style attribute, which a
+           CSP nonce never covers (only <style>/<link> *elements* are). alt="" as it is purely decorative
+           - the text laid over it carries the meaning - and eager/high priority as a hero backdrop is
+           the page's LCP element whenever it opens the page. Stacking is handled in _page-sections.scss
+           (.hero__bg below the ::before overlay, both below .section-wrap) #}
+        <img class="hero__bg" src="{{ bgSrc }}" alt="" fetchpriority="high">
+    {% endif %}
     <div class="section-wrap">
         <div class="hero__text">
             {% if badge %}<span class="hero__badge">{{ badge }}</span>{% endif %}
-            <h1 class="hero__title">{{ title|trix_inline }}</h1>
+            <{{ level }} class="hero__title">{{ title|trix_inline }}</{{ level }}>
             {% if subtitle %}<div class="hero__sub">{{ subtitle|raw }}</div>{% endif %}
             <div class="hero__cta">
                 <a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>
                 {% if secondaryLabel and secondaryUrl %}<a class="section-btn section-btn--ghost" href="{{ secondaryUrl }}">{{ secondaryLabel }}</a>{% endif %}
             </div>
-            {% if bgImgSrc and statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
+            {% if bgSrc and statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
         </div>
-        {% if not bgImgSrc %}
+        {% if not bgSrc %}
             {% if medias|length > 1 %}
                 {# Several media attached: cycle through all of them, pure CSS (.hero__media--slideshow in
                    _page-sections.scss), no next/prev/dots control - each <img> is alt="" (decorative: the

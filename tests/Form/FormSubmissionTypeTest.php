@@ -11,10 +11,11 @@ namespace c975L\UiBundle\Tests\Form;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Form\CaptchaType;
 use c975L\UiBundle\Form\FormSubmissionType;
+use c975L\UiBundle\Service\CaptchaVerifier;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
-use Karser\Recaptcha3Bundle\Form\Recaptcha3Type;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -37,6 +38,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormSubmissionTypeTest extends TestCase
@@ -76,7 +78,9 @@ class FormSubmissionTypeTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturn('read');
 
-        return new FormSubmissionType(new FormBotProtection($configService), $configService, $requestStack, $translator);
+        $captchaVerifier = new CaptchaVerifier($this->createStub(HttpClientInterface::class), $configService, $requestStack);
+
+        return new FormSubmissionType(new FormBotProtection($configService), $configService, $requestStack, $translator, $captchaVerifier);
     }
 
     private function buildAddedFields(array $fields, bool $offerReceiveCopy = false, bool $gdpr = false, bool $recaptcha = false, array $prefill = []): array
@@ -278,21 +282,20 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertTrue($added['gdpr']['options']['required']);
     }
 
-    public function testRecaptchaFieldAddedOnlyWhenBothKeysConfigured(): void
+    public function testCaptchaFieldAddedOnlyWhenBothKeysConfigured(): void
     {
         $this->assertArrayNotHasKey('captcha', $this->buildAddedFields([], recaptcha: false));
 
         $added = $this->buildAddedFields([], recaptcha: true);
-        $this->assertSame(Recaptcha3Type::class, $added['captcha']['type']);
+        $this->assertSame(CaptchaType::class, $added['captcha']['type']);
     }
 
-    // nelmio/security-bundle isn't installed here (a soft/optional dependency, like ContactFormBundle's own ContactFormFactory) - $cspListener stays null, so the nonce is null too rather than erroring
-    public function testRecaptchaFieldHasNoNonceWhenCspListenerNotAvailable(): void
+    // The action name is reported to Google alongside the token, letting the admin console tell a generic Form's submissions apart from contact/register/reset
+    public function testCaptchaFieldCarriesTheUiFormActionName(): void
     {
         $added = $this->buildAddedFields([], recaptcha: true);
 
-        $this->assertArrayHasKey('script_nonce_csp', $added['captcha']['options']);
-        $this->assertNull($added['captcha']['options']['script_nonce_csp']);
+        $this->assertSame('ui_form', $added['captcha']['options']['action_name']);
     }
 
     // See FormPrefillHelper - a field matching a prefill key gets its value as initial data and becomes readonly (still submitted, just not editable), same UX as ContactFormBundle's own locked "subject" field

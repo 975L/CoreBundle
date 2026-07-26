@@ -9,12 +9,14 @@
 namespace c975L\UiBundle\Form\Block;
 
 use Symfony\Component\Form\AbstractType;
+use c975L\UiBundle\Form\BlockClassChoiceType;
+use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// The video file and its optional cover image are uploaded as block medias (see the "ui.block.video" tag in config/services.yaml), so this form only carries the player's own display options - neither the file path nor the format is asked for anymore, blocks/Video.html.twig reads both back from the uploaded Media itself (its stored mimeType)
+// The video file and its optional cover image are uploaded as block medias (see the "ui.block.video" tag in config/services.yaml), so this form only carries the player's own display options - neither the file path nor the format is asked for anymore, blocks/Video.html.twig reads both back from the uploaded Media itself (its stored mimeType). The title/description/width/height/class fields are deliberately the same as VideoIframeType's, both kinds rendering the same <figure> structure
 class VideoType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -34,6 +36,14 @@ class VideoType extends AbstractType
                 'required' => false,
                 'attr'     => ['data-ea-widget' => 'ea-autocomplete'],
             ])
+            ->add('title', TextType::class, [
+                'label'    => 'label.title',
+                'required' => false,
+            ])
+            ->add('description', TrixEditorType::class, [
+                'label'    => 'label.description',
+                'required' => false,
+            ])
             ->add('width', TextType::class, [
                 'label'    => 'label.width',
                 'required' => false,
@@ -41,7 +51,8 @@ class VideoType extends AbstractType
             ->add('height', TextType::class, [
                 'label'    => 'label.height',
                 'required' => false,
-            ]);
+            ])
+            ->add('class', BlockClassChoiceType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -3,6 +3,21 @@
         "date": "2026-07-26",
         "description": [
             {
+                "en": "Fixed the Donovan assistant's question box and the AI rephrase button never sending anything",
+                "fr": "Correction de l'encart de questions de l'assistant Donovan et du bouton de reformulation IA qui n'envoyaient jamais rien",
+                "es": "Corregidos el cuadro de preguntas del asistente Donovan y el botón de reformulación IA, que nunca enviaban nada"
+            },
+            {
+                "en": "Saving an image with its width and height left empty no longer erases the size detected on upload",
+                "fr": "Enregistrer une image en laissant sa largeur et sa hauteur vides n'efface plus la taille détectée à l'envoi",
+                "es": "Guardar una imagen dejando su anchura y altura vacías ya no borra el tamaño detectado al subirla"
+            },
+            {
+                "en": "Pages carrying a form load much faster: the anti-spam check is now only downloaded when a visitor actually starts filling the form in, and no longer places a Google cookie on people who never submit anything",
+                "fr": "Les pages contenant un formulaire se chargent bien plus vite : la protection anti-spam n'est désormais téléchargée que lorsqu'un visiteur commence réellement à remplir le formulaire, et ne dépose plus de cookie Google chez ceux qui n'envoient rien",
+                "es": "Las páginas con formulario cargan mucho más rápido: la protección antispam solo se descarga cuando el visitante empieza realmente a rellenar el formulario, y ya no deja una cookie de Google a quienes no envían nada"
+            },
+            {
                 "en": "Image dimensions are now detected on upload, so pages no longer jump as images load",
                 "fr": "Les dimensions des images sont désormais détectées à l'envoi, les pages ne sautent plus au chargement des images",
                 "es": "Las dimensiones de las imágenes se detectan ahora al subirlas, por lo que las páginas ya no saltan al cargarse"
@@ -41,6 +56,21 @@
                 "en": "Screen readers now announce an image link by its own caption instead of just saying \"image\"",
                 "fr": "Les lecteurs d'écran annoncent désormais une image cliquable par sa propre légende, au lieu de dire simplement « image »",
                 "es": "Los lectores de pantalla anuncian ahora una imagen enlazada por su propio pie de foto, en lugar de decir solo «imagen»"
+            },
+            {
+                "en": "A video block now takes a title, a description and css classes, like an embedded video block",
+                "fr": "Un block vidéo accepte désormais un titre, une description et des classes css, comme un block vidéo intégrée",
+                "es": "Un bloque de vídeo acepta ahora un título, una descripción y clases css, como un bloque de vídeo incrustado"
+            },
+            {
+                "en": "An audio block now takes a title, a description and css classes too",
+                "fr": "Un block audio accepte lui aussi désormais un titre, une description et des classes css",
+                "es": "Un bloque de audio acepta ahora también un título, una descripción y clases css"
+            },
+            {
+                "en": "A hero block can now render its title as an h2, for a page whose template already shows its own title",
+                "fr": "Un block hero peut désormais afficher son titre en h2, pour une page dont le gabarit affiche déjà son propre titre",
+                "es": "Un bloque hero puede ahora mostrar su título como h2, para una página cuya plantilla ya muestra su propio título"
             }
         ]
     },

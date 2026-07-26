@@ -590,6 +590,14 @@
                 <source>label.video_poster</source>
                 <target>Cover image</target>
             </trans-unit>
+            <trans-unit id="538">
+                <source>label.hero_title_level</source>
+                <target>Heading level of the title</target>
+            </trans-unit>
+            <trans-unit id="539">
+                <source>label.hero_title_level_help</source>
+                <target>h1 when this hero opens the page and carries its title, h2 when the page template already prints its own title above it.</target>
+            </trans-unit>
             <trans-unit id="531">
                 <source>label.video_media_help</source>
                 <target>Upload the video file (MP4, WebM or OGG) and, optionally, an image used as the player's cover</target>

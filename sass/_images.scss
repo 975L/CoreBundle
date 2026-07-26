@@ -81,14 +81,21 @@ img.white {
     border-radius: var(--radius-btn);
 }
 
-.video-iframe-figure {
+// Shared by the "video", "video_iframe" and "audio" blocks, all three rendering the same <figure>/title/description structure
+.video-figure,
+.video-iframe-figure,
+.audio-figure {
     margin: 0;
 }
 
-.video-iframe-title {
+.video-title,
+.video-iframe-title,
+.audio-title {
     margin-bottom: 0.5rem;
 }
 
-.video-iframe-description {
+.video-description,
+.video-iframe-description,
+.audio-description {
     margin-top: 0.5rem;
 }

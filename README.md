@@ -412,8 +412,37 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 - **The `form` block kind** (`Form\Block\FormPickerType`, template `components/Form/FormBlock.html.twig`) embeds any `Form` by name, anywhere a block can go. Rendering and submission handling is done by **`Controller\FormController`** (routes `ui_form_submit`/`ui_form_fragment`), not the block itself.
 - **`Contract\FormActionInterface`**/**`Registry\FormActionRegistry`** let a bundle process a `Form`'s submission (tagged provider, one `getKey()` per implementation) without UiBundle knowing what that action actually does - `Form::$action` stores which key handles a given form, `Form::$actionConfig` (raw JSON, editable straight from `FormCrudController`) is free-shape config read only by that action.
 - **`Service\SendEmailFormAction`** (key `send_email`) is the built-in provider: it lets a form built purely through the admin still notify someone by email, configured via `actionConfig`'s `to`/`from`/`replyTo`/`subject`/`template`/`senderEmailField`/`offerReceiveCopy` (all optional - unset ones fall back to the site-wide `email-*` config keys/a default template), or `emailTemplate` (an `EmailTemplate` name, see "Email builder" below) to send a compiled `EmailTemplate` instead of `template`. It's backed by a generic **`Service\EmailService`** (`Model\EmailSendRequest` in, bool out, `getLastError()`/`consumeDebugPreview()` for the `ROLE_SUPER_ADMIN` + `email-debug` preview instead of a silent real send). Implement `Contract\DebugPreviewCapableInterface` on your own action to get the same debug-preview behavior.
-- **Protection**, shared with every other c975L public form (contact/register/reset): a rotating honeypot + submission-timing check (`Service\FormBotProtection`, merges what used to be separate SiteBundle/ContactFormBundle implementations), site-wide GDPR checkbox and reCAPTCHA v3 (`Service\ReCaptchaFactory`/`Form\Extension\Recaptcha3TypeExtension`, a no-op unless `karser/karser-recaptcha3-bundle` is registered), and an optional shared rate limiter (`Service\RateLimiterGuard`, configure `limiter.ui_form` in `config/packages/rate_limiter.yaml` to enable it - unconfigured, nothing is rate-limited). Every `email`-typed field also gets a live MX/A DNS check (`Validator\Constraints\DnsEmail`) on top of format/`Assert\Email` validation, and every required `checkbox`-typed field uses `IsTrue` (an unchecked box isn't `NotBlank`).
+- **Protection**, shared with every other c975L public form (contact/register/reset): a rotating honeypot + submission-timing check (`Service\FormBotProtection`, merges what used to be separate SiteBundle/ContactFormBundle implementations), site-wide GDPR checkbox and reCAPTCHA v3 (`Service\CaptchaVerifier`/`Form\CaptchaType`, a no-op unless the `recaptcha3-site-key`/`recaptcha3-secret-key` ConfigBundle keys are both filled in - see [reCAPTCHA](#recaptcha)), and an optional shared rate limiter (`Service\RateLimiterGuard`, configure `limiter.ui_form` in `config/packages/rate_limiter.yaml` to enable it - unconfigured, nothing is rate-limited). Every `email`-typed field also gets a live MX/A DNS check (`Validator\Constraints\DnsEmail`) on top of format/`Assert\Email` validation, and every required `checkbox`-typed field uses `IsTrue` (an unchecked box isn't `NotBlank`).
 - **`Service\FormPrefillHelper`** lets app code pre-fill (and lock) a `Form`'s field(s) from session right before redirecting a visitor to it (e.g. a listing page's "Contact us about this" link setting the `subject` field) - no query string needed, cleared automatically once the submission succeeds.
+
+### reCAPTCHA
+
+reCAPTCHA v3 is implemented here rather than pulled from a third-party bundle - `karser/karser-recaptcha3-bundle` was dropped, as the only part of it this ecosystem ever used was a single POST to Google's `siteverify` endpoint, while three compiler passes/type extensions existed solely to feed it ConfigBundle's values.
+
+| Piece | Role |
+| --- | --- |
+| `Service\CaptchaVerifier` | Reads the keys, POSTs the token to `siteverify`, compares the score to the threshold. Fails closed: an unverifiable token is rejected, never waved through |
+| `Form\CaptchaType` | The hidden field itself (`getParent()` is `HiddenType`), unmapped, unlabelled, carrying a `Validator\Constraints\Captcha` |
+| `Validator\Constraints\Captcha`/`CaptchaValidator` | Server-side check. Silent when no keys are configured - nothing was rendered to solve |
+| `templates/form/captcha_theme.html.twig` | The widget, registered app-wide from `c975LUiBundle::prependExtension()` |
+| `assets/js/captcha.js` | The `captcha` Stimulus controller |
+
+Three ConfigBundle keys drive it, all under the *security* group: `recaptcha3-site-key`, `recaptcha3-secret-key` and the optional `recaptcha3-score-threshold` (defaults to `0.5`; `0` is a valid value meaning "accept everything"). With either key missing, `CaptchaType` renders a bare hidden input, the validator stays silent and nothing is ever requested from Google.
+
+**Google's `api.js` is only fetched once the visitor actually interacts with the form**, and the token is only requested on submit. Loading it upfront - what the widget it replaces did - cost ~765 KB and ~1.5 s of main thread on every page carrying a form, and dropped a `_GRECAPTCHA` third-party cookie on visitors who never submitted anything. Asking for the token at submit time also means it is always fresh, where a token grabbed on page load expires after two minutes. If Google is blocked or unreachable, the form is submitted anyway with an empty token and the server decides - a visitor is never left on a page that silently refuses to submit.
+
+Because nothing inline is emitted, the widget needs no CSP nonce. Under a strict CSP, `script-src` still needs `www.google.com` and `www.gstatic.com`, and `frame-src` needs `www.google.com`.
+
+Adding it to your own form type:
+
+```php
+use c975L\UiBundle\Form\CaptchaType;
+
+$builder->add('captcha', CaptchaType::class, [
+    // Reported to Google alongside the token, so the admin console can break scores down per form
+    'action_name' => 'contact',
+]);
+```
 
 ---
 
@@ -731,7 +760,7 @@ as plain text, same as today.
 
 ### Video and audio blocks: driven by the uploaded file
 
-The `video` and `audio` kinds carry no file path and no format field of their own: both are read back from the uploaded `Media` (its stored `mimeType`). `video` accepts `video/mp4,video/webm,video/ogg` plus an optional `image/*` used as the player's cover, told apart by mimetype in `blocks/Video.html.twig`; `audio` accepts `audio/mpeg,audio/ogg,audio/wav`. `VideoType` keeps only the player's own display options (`options`: `autoplay`/`muted`/`loop`, plus `width`/`height`), `AudioType` is field-less.
+The `video` and `audio` kinds carry no file path and no format field of their own: both are read back from the uploaded `Media` (its stored `mimeType`). `video` accepts `video/mp4,video/webm,video/ogg` plus an optional `image/*` used as the player's cover, told apart by mimetype in `blocks/Video.html.twig`; `audio` accepts `audio/mpeg,audio/ogg,audio/wav`. `VideoType` keeps only the player's own display fields — `options` (`autoplay`/`muted`/`loop`) plus the same `title`/`description`/`width`/`height`/`class` as `VideoIframeType`, and `AudioType` the same `title`/`description`/`class` (no `width`/`height`, an `<audio>` element has no such attributes). All three kinds render the same `<figure>` / `<h3 …-title>` / `<figcaption …-description>` structure, on a `video-`, `video-iframe-` or `audio-` class prefix sharing one set of sass rules (see `sass/_images.scss`).
 
 > **Breaking:** blocks of these kinds saved before this change stored a raw `src`/`type` (and `poster`) in their data with no media attached, and render nothing now. Re-upload the file on each one — there is no automatic migration.
 
@@ -822,7 +851,20 @@ UiBundle does **not** register a menu entry for it: `c975l/config-bundle` (which
 
 Attaching more than one `Media` to a `hero` block switches it from a single static image to a pure-CSS crossfade slideshow cycling through all of them (no JS, disabled under `prefers-reduced-motion`) - see `.hero__media--slideshow` in `sass/_page-sections.scss`. A single attached media keeps the plain static image.
 
-A `hero` block's "Show image as a full-width background" toggle (`HeroType::$hasBackgroundImage`) instead shows the first attached image full-bleed behind the centered text, dropping the side-by-side layout and slideshow - see `.hero--has-bg` in `sass/_page-sections.scss`.
+A `hero` block's "Show image as a full-width background" toggle (`HeroType::$hasBackgroundImage`) instead shows the first attached image full-bleed behind the centered text, dropping the side-by-side layout and slideshow - see `.hero--has-bg` in `sass/_page-sections.scss`. That backdrop is a real `<img class="hero__bg">` rather than a CSS `background-image`: a background needs a `style` attribute, which a CSP nonce never covers (nonces only ever apply to `<style>`/`<link>` *elements*).
+
+A `hero` block's "Heading level of the title" field (`HeroType::$titleLevel`) picks between `h1` and `h2`. Leave it on `h1` when the hero opens the page and carries its real title; switch it to `h2` when the page template already prints its own `<h1>` above the blocks, two `<h1>` on one page being announced by screen readers as two top-level headings.
+
+### Headings and the `<section>` element
+
+Every section-level kind whose title is optional (`section_cards`, `flex_columns`, `section_features`, `portfolio_grid`, `collection`) follows the same two rules, both of them what the W3C validator asks for:
+
+- with an eyebrow but no title, the eyebrow *is* the section's heading and renders as `<h2 class="section-eyebrow">` instead of `<p>` — it keeps its exact eyebrow look, and the slots' own `<h3>` no longer skip a level down from the page's `<h1>`;
+- with neither, the wrapper renders as a `<div>` instead of a headingless `<section>` (same rule already applied to `text_section`, `feature_bar` and the `form` block).
+
+`cta_band`, `expertise_banner` and `process_steps` are not concerned: their title is a required form field, so their `<h2>` is always there.
+
+A `card` block's own **Level** field stays the editor's call — picking `h3` for a card sitting under a section that has no heading at all still skips a level.
 
 ### Image dimensions and layout shift
 
@@ -831,6 +873,10 @@ Every upload records the stored file's own pixel size in `Media::$width`/`$heigh
 This is what removes the layout shift Lighthouse reports as CLS, and the `img-responsive` class can't do it: `max-width: 100%; height: auto` keeps an image fluid, but tells the browser nothing about its proportions *before* the file is downloaded — so the box collapses to nothing and the rest of the page jumps once the image arrives. The two are meant to be combined, not chosen between: the attributes let the browser derive an `aspect-ratio` and reserve the right rectangle, then `height: auto` takes over for the actual rendering. Filling them changes nothing visually.
 
 Both fields stay editable in the media form, pre-filled with the detected values. Raster formats are measured with `getimagesize()`; an SVG is read from its `width`/`height` attributes, falling back to its `viewBox` when those are absent or expressed in relative units (`100%`, `em`). A media with nothing measurable (PDF, audio, video) simply keeps empty fields.
+
+Because they stay editable, both forms exposing them (`Form\MediaUploadType` for a Block's uploads, `Controller\Management\MediaCrudController` for the media library) run **`Service\MediaDimensionsFiller`** on submit: an entry saved with *both* inputs blank means "unknown" and gets the detected size back, rather than erasing it. A single filled field is enough to leave the media alone — a width typed without a height is a deliberate pair.
+
+Being admin-typed, those fields also accept a CSS length (`50%`, `100px`, `auto`), which an HTML `width`/`height` attribute silently discards. **`Media::getIntrinsicWidth()`/`getIntrinsicHeight()`** return the value only when it's a bare pixel count, so a template can tell a known intrinsic size from a CSS length.
 
 Medias uploaded before this existed keep empty fields until you backfill them:
 

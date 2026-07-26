@@ -25,20 +25,20 @@ class BlockFixtureProviderTest extends TestCase
         );
     }
 
-    // "audio" carries no data at all: its file (and the format read off it) is auto-attached generically by BlockFixtureMediaAttacher, any "audio/*" mediaType
-    public function testAudioFixtureCarriesNoData(): void
+    // "audio" carries no file nor format: both are auto-attached generically by BlockFixtureMediaAttacher (any "audio/*" mediaType), so the fixture only needs the player's own display fields
+    public function testAudioFixtureOnlyCarriesDisplayFields(): void
     {
         $fixtures = (new BlockFixtureProvider())->getFixtures();
 
-        $this->assertSame([], $fixtures['audio']['']);
+        $this->assertSame(['title', 'description', 'class'], array_keys($fixtures['audio']['']));
     }
 
-    // "video" carries no file path nor format anymore: both come from the Media auto-attached by BlockFixtureMediaAttacher (any "video/*" mediaType), so the fixture only needs the player's own options - "muted" so a gallery page full of blocks stays silent
-    public function testVideoFixtureOnlyCarriesPlaybackOptions(): void
+    // "video" carries no file path nor format anymore: both come from the Media auto-attached by BlockFixtureMediaAttacher (any "video/*" mediaType), so the fixture only needs the player's own display fields, the same ones as "video_iframe" - "muted" so a gallery page full of blocks stays silent
+    public function testVideoFixtureOnlyCarriesDisplayFields(): void
     {
         $fixtures = (new BlockFixtureProvider())->getFixtures();
 
-        $this->assertSame(['options', 'width', 'height'], array_keys($fixtures['video']['']));
+        $this->assertSame(['options', 'title', 'description', 'width', 'height', 'class'], array_keys($fixtures['video']['']));
         $this->assertContains('muted', $fixtures['video']['']['options']);
     }
 

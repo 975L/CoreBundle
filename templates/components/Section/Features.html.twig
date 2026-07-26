@@ -1,17 +1,15 @@
 {# Static usage: <twig:c975LUi:Section:Features cards="{{ [{icon: '', title: '...', text: '...'}] }}" [eyebrow=""] [title=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/SectionFeatures.html.twig #}
-<section class="section-features-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
+   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig) #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="section-features-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
-        {% if eyebrow or title %}
-            <div class="section-head">
-                {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
-                {% if title %}<h2 class="section-title">{{ title }}</h2>{% endif %}
-            </div>
-        {% endif %}
+        {{ include('@c975LUi/components/Section/_head.html.twig') }}
         <div class="section-features">
             {% for c in cards %}
                 <twig:c975LUi:Card:Card title="{{ c.title }}" level="h3" icon="{{ c.icon ? [c.icon, '', 22, 22] : [] }}" content="{{ c.text }}"/>
             {% endfor %}
         </div>
     </div>
-</section>
+</{{ tag }}>

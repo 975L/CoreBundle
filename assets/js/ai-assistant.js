@@ -10,10 +10,12 @@ import { Controller } from "@hotwired/stimulus";
 // Minimal chat log for the dashboard assistant page - posts to AiAssistantController::ask(), nothing
 // is stored client-side beyond the current page's DOM (a reload clears the log)
 //
-// Deliberately not using Stimulus's `static targets`/`static values` sugar: both proved unreliable in
-// production for the sibling ai-rephrase.js controller (values reading back empty, targets reporting
-// "missing" despite the matching data-* attributes being correctly present in the rendered HTML - root
-// cause still unclear). Plain querySelector scoped to this.element sidesteps whatever that issue is.
+// Deliberately not using Stimulus's `static targets`/`static values` sugar: with a camelCase identifier
+// ("aiAssistant") Stimulus looks for the non-dasherized "data-aiassistant-*" attributes, which is easy
+// to get wrong on the template side. Plain dataset/querySelector scoped to this.element sidesteps that,
+// but it means the names below are the contract: _ai_assistant_widget.html.twig MUST write the
+// dasherized "data-ai-assistant-*" form, or askUrl reads back empty and inputEl is null (a null input
+// makes ask() return before fetch(), so the box looks dead with no request at all).
 export default class extends Controller {
     get askUrl() {
         return this.element.dataset.aiAssistantAskUrlValue || '';

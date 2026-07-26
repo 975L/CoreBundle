@@ -10,7 +10,9 @@
 namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Service\MediaDimensionsFiller;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -25,6 +27,11 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MediaUploadType extends AbstractType
 {
+    public function __construct(
+        private readonly MediaDimensionsFiller $mediaDimensionsFiller,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $acceptedTypes = null !== $options['accept'] ? explode(',', $options['accept']) : [];
@@ -99,7 +106,8 @@ class MediaUploadType extends AbstractType
                             'required' => false,
                             // Bootstrap 5's native toggle-switch look (see bootstrap_5_layout.html.twig's checkbox_widget block) instead of a plain checkbox - same widget EasyAdmin's own BooleanField uses (BooleanConfigurator sets this same label_attr class)
                             'label_attr' => ['class' => 'checkbox-switch'],
-                        ]);
+                        ])
+                        ->addEventListener(FormEvents::POST_SUBMIT, $this->refillDimensions(...));
                 }
             }
 
@@ -159,6 +167,16 @@ class MediaUploadType extends AbstractType
                 ]);
             }
         );
+    }
+
+    // An entry submitted with both dimension inputs blank keeps the size auto-detected on upload instead of erasing it - see MediaDimensionsFiller, which the media library's own form (MediaCrudController) shares
+    private function refillDimensions(PostSubmitEvent $event): void
+    {
+        $media = $event->getData();
+
+        if ($media instanceof Media) {
+            $this->mediaDimensionsFiller->fillIfBlank($media);
+        }
     }
 
     // Every other kind leaves its uploads unlabelled (a row is self-explanatory: one image among images, one PDF among PDFs), but a "video" block's two rows are two different things - the video file and the image used as the player's cover - and nothing else in the row says which is which, so each one is named after its own mimetype. A brand new row has no file yet, hence no mimetype: it's labelled with both, which is also what tells the admin a cover can be added at all

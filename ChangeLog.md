@@ -1,5 +1,38 @@
 # ChangeLog
 
+## v1.10
+
+- Added `Service\MediaDimensionsFiller`, keeping a media's auto-detected size when both dimension inputs are submitted blank (26/07/2026)
+- `MediaUploadType`'s and `MediaCrudController`'s constructors take a `MediaDimensionsFiller` (26/07/2026) [BC-Break]
+- Added `Media::getIntrinsicWidth()`/`getIntrinsicHeight()`, returning the width/height only when it is a bare pixel count (26/07/2026)
+- Replaced `karser/karser-recaptcha3-bundle` with `CaptchaVerifier`/`CaptchaType`/`Validator\Constraints\Captcha` and the `captcha` Stimulus controller (26/07/2026) [BC-Break]
+- Google's `api.js` is now only fetched on the first interaction with the form (26/07/2026)
+- The captcha token is now requested at submit time, instead of on page load (26/07/2026)
+- Removed `ReCaptchaFactory`, `Recaptcha3TypeExtension`, `RecaptchaPass` and `CspListenerPass` (26/07/2026) [BC-Break]
+- `FormSubmissionType`'s constructor takes a `CaptchaVerifier` instead of an optional `ContentSecurityPolicyListener` (26/07/2026) [BC-Break]
+- `c975LUiBundle` now registers `form/captcha_theme.html.twig` as an app-wide form theme (26/07/2026)
+- The captcha widget renders no inline `<script>`, so it needs no CSP nonce (26/07/2026)
+- Added `CaptchaWidgetRenderTest`/`CaptchaControllerDataAttributesTest`, rendering the widget and locking its data-* attributes to the controller (26/07/2026)
+- Added `c975LUiBundleTest`, locking the captcha form theme's app-wide registration (26/07/2026)
+- Fixed Donovan's dashboard question box never sending its request, `_ai_assistant_widget.html.twig` writing `data-aiassistant-*` instead of `data-ai-assistant-*` (26/07/2026)
+- Fixed the rephrase button the same way, `_ai_rephrase.html.twig` writing `data-airephrase-*` instead of `data-ai-rephrase-*` (26/07/2026)
+- Added `tests/Assets/AiControllerDataAttributesTest`, checking each AI controller's templates write every `data-*` attribute its JS reads (26/07/2026)
+- Added `title`/`description`/`class` to the `video` block's form, aligning it on the `video_iframe` block (26/07/2026)
+- The `Video:Video` component now renders a `<figure>` with an optional title and description, same structure as `Video:Iframe` (26/07/2026)
+- Added `title`/`description`/`class` to the `audio` block's form, until now field-less (26/07/2026)
+- The `Audio:Audio` component now renders a `<figure>` with an optional title and description, and accepts a `class` (26/07/2026)
+- `sass/_images.scss`'s `video-iframe-` figure rules are now shared with the `video-` and `audio-` prefixes (26/07/2026)
+- The `Progress:Bar` component now applies its width through a `progress-bar--w*` class instead of an inline `<style>` element (26/07/2026)
+- Added `.progress-bar--w0` to `--w100` to `sass/_progress.scss` (26/07/2026)
+- The `Progress:Bar` component no longer generates a random `id` (26/07/2026)
+- The `Section:Cards`/`Section:FlexColumns`/`Section:Features`/`Portfolio:Grid`/`Collection:Grid` components now render their eyebrow as the section's `<h2>` when no title is set (26/07/2026)
+- The same components now render a `<div>` instead of a headingless `<section>` when they have neither eyebrow nor title (26/07/2026)
+- Added `templates/components/Section/_head.html.twig`, shared by the three `Section:*` components (26/07/2026)
+- The `Form:Form` component now renders a `<div>` instead of a headingless `<section>` (26/07/2026)
+- The `Hero` component's background image is now a real `<img class="hero__bg">` instead of an inline `style` attribute (26/07/2026)
+- Added the `hero` block's `titleLevel` field, rendering the title as `<h1>` or `<h2>` (26/07/2026)
+- The `document_download` block's thumbnail no longer carries a trailing slash (26/07/2026)
+
 ## v1.9.19
 
 - The `Image:Link` component's `aria-label` now falls back to the visible label, then to the image's `alt`, instead of the hardcoded "image" (26/07/2026)
@@ -202,7 +235,7 @@
 
 - Merged branch commit/push problem (19/07/2026)
 
-## v1.8.
+## v1.8
 
 - Added `Form`/`FormField` entities (`site_form`/`site_form_field` tables) and `FormFieldType`, a shared sortable field-collection system (18/07/2026)
 - Added `Form::$action` and `FormActionInterface`/`FormActionRegistry` (18/07/2026)
@@ -254,7 +287,7 @@
 
 ## v1.7.1
 
-- Corrected link https://975l.com/pages/blocks (17/07/2026)
+- Corrected link <https://975l.com/pages/blocks> (17/07/2026)
 
 ## v1.7
 
@@ -374,7 +407,7 @@
 - Added media to Card Block (10/07/2026)
 - Added resize/namig for favicon.ico and apple-touch-icon.png (10/07/2026)
 
-## v1.4.5
+## v1.4.5
 
 - Added automatic CSS injection for EasyAdmin management pages (08/07/2026)
 - Added possibility to upload user defined error images (08/07/2026)
@@ -406,7 +439,7 @@
 - Added description for Blocks (04/07/2026)
 - Corrected deletion of physical file when deleting media in Block (04/07/2026)
 
-## v1.4.1
+## v1.4.1
 
 - Fixed media files (image, etc.) not being saved when picking a block kind with media on a form not yet multipart (04/07/2026)
 - Fixed Slider display for title and text (04/07/2026)
@@ -452,6 +485,6 @@
 
 - Updated composer.json (24/06/2026)
 
-## v0.1
+## v0.1
 
 - Creation of bundle (24/06/2026)

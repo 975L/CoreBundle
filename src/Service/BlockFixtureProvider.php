@@ -35,9 +35,13 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'content' => '<p>Ceci est un exemple de message de danger.</p>',
                 ],
             ],
-            // No data at all: the whole block is the file auto-attached by BlockFixtureMediaAttacher (any "audio/*" mediaType), format included
+            // Its file is auto-attached by BlockFixtureMediaAttacher (any "audio/*" mediaType), format included, so the fixture only needs the player's own display fields
             'audio' => [
-                '' => [],
+                '' => [
+                    'title' => 'Ambient loop',
+                    'description' => 'A short instrumental excerpt.',
+                    'class' => [],
+                ],
             ],
             'article' => [
                 '' => [
@@ -154,8 +158,11 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
             'video' => [
                 '' => [
                     'options' => ['muted'],
+                    'title' => 'Product demo',
+                    'description' => 'A short walkthrough of the main features.',
                     'width' => '',
                     'height' => '',
+                    'class' => [],
                 ],
             ],
             // Its "src" is any URL rendered directly in an <iframe> (see Video/Iframe.html.twig) - not limited to a YouTube/Vimeo-style embed, so the same self-hosted placeholder as "video" works fine here too (browsers show their native player for a media file in an iframe)

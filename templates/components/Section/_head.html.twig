@@ -1,0 +1,18 @@
+{# Shared head for the Section:* components (Cards, FlexColumns, Features), whose markup is identical -
+   and with it the same heading rule everywhere: with no title set, the eyebrow becomes the section's
+   own heading (a <h2> rather than a <p>), so the <section> is never headingless and the slots' <h3>
+   never skip a level down from the page's <h1>. Kept as a <h2 class="section-eyebrow"> with no
+   .section-title class, so it still looks exactly like the eyebrow it is (see sass/_page-sections.scss,
+   where .section-eyebrow pins the font-weight a <h2> would otherwise get from the browser). #}
+{% set eyebrow = eyebrow|default('') %}
+{% set title = title|default('') %}
+{% if eyebrow or title %}
+    <div class="section-head">
+        {% if title %}
+            {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+            <h2 class="section-title">{{ title }}</h2>
+        {% else %}
+            <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+        {% endif %}
+    </div>
+{% endif %}

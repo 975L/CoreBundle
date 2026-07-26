@@ -9,14 +9,27 @@
 namespace c975L\UiBundle\Form\Block;
 
 use Symfony\Component\Form\AbstractType;
+use c975L\UiBundle\Form\BlockClassChoiceType;
+use c975L\UiBundle\Form\TrixEditorType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Deliberately field-less (same reasoning as VideoType): an "audio" block is entirely defined by the file uploaded as its media (see the "ui.block.audio" tag in config/services.yaml), format included - blocks/Audio.html.twig reads both back from the Media itself, so there's nothing left to ask the editor. Kept as a real FormType because every block kind is registered with one
+// The file and its format both come from the media uploaded on the block (see the "ui.block.audio" tag in config/services.yaml), so this form only carries the same title/description/class display fields as VideoType/VideoIframeType - no width/height, an <audio> element has no such attributes
 class AudioType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder
+            ->add('title', TextType::class, [
+                'label'    => 'label.title',
+                'required' => false,
+            ])
+            ->add('description', TrixEditorType::class, [
+                'label'    => 'label.description',
+                'required' => false,
+            ])
+            ->add('class', BlockClassChoiceType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

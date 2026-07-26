@@ -4,18 +4,16 @@
    sass/_cards.scss) instead of a dedicated grid, the same fixed-width flex row bare consecutive "card"
    blocks already get in the page flow (see Blocks.html.twig) - so a slot renders identically whether
    it sits here or bare in the page, this section only adds the eyebrow/title/anchor around it. #}
-<section class="section-cards-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
+   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig) #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="section-cards-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
-        {% if eyebrow or title %}
-            <div class="section-head">
-                {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
-                {% if title %}<h2 class="section-title">{{ title }}</h2>{% endif %}
-            </div>
-        {% endif %}
+        {{ include('@c975LUi/components/Section/_head.html.twig') }}
         <div class="cards">
             {% for slot in slots %}
                 {{ render_block(slot) }}
             {% endfor %}
         </div>
     </div>
-</section>
+</{{ tag }}>

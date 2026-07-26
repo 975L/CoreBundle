@@ -12,9 +12,14 @@ namespace c975L\UiBundle\Tests\Form;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\ImageClassChoiceType;
 use c975L\UiBundle\Form\MediaUploadType;
+use c975L\UiBundle\Service\ImageDimensionsReader;
+use c975L\UiBundle\Service\MediaDimensionsFiller;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichFileType;
@@ -22,6 +27,41 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MediaUploadTypeTest extends TestCase
 {
+    private string $projectDir;
+
+    protected function setUp(): void
+    {
+        $this->projectDir = sys_get_temp_dir() . '/media-upload-type-test-' . uniqid();
+        (new Filesystem())->mkdir($this->projectDir . '/public/medias');
+    }
+
+    protected function tearDown(): void
+    {
+        (new Filesystem())->remove($this->projectDir);
+    }
+
+    private function createType(): MediaUploadType
+    {
+        return new MediaUploadType(new MediaDimensionsFiller(new ImageDimensionsReader(), $this->projectDir));
+    }
+
+    // Records every listener buildForm() registers, keyed by event name - the type registers more than one (PRE_SET_DATA for the "file" widget, POST_SUBMIT for the dimensions), so each helper below picks the one it actually exercises
+    private function captureListeners(object $builder, ?string $accept, ?string $context): array
+    {
+        $listeners = [];
+        $builder->method('addEventListener')->willReturnCallback(
+            function (string $eventName, callable $callback) use (&$listeners, $builder) {
+                $listeners[$eventName] = $callback;
+
+                return $builder;
+            }
+        );
+
+        $this->createType()->buildForm($builder, ['accept' => $accept, 'context' => $context]);
+
+        return $listeners;
+    }
+
     // buildForm() only branches on $options['accept']/$options['context'] - a mocked builder that just records "add()" calls is enough to assert which fields end up on the form, without having to resolve VichImageType/VichFileType's own (Vich-bundle) constructor dependencies. "file"'s *final* type is decided later, in the PRE_SET_DATA listener (see buildFieldNamesForEntry()) - buildForm() itself only ever adds a VichFileType placeholder, so it keeps rendering as the first field.
     private function buildFieldNames(?string $accept, ?string $context): array
     {
@@ -34,8 +74,7 @@ class MediaUploadTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        $type = new MediaUploadType();
-        $type->buildForm($builder, ['accept' => $accept, 'context' => $context]);
+        $this->createType()->buildForm($builder, ['accept' => $accept, 'context' => $context]);
 
         return $added;
     }
@@ -44,19 +83,9 @@ class MediaUploadTypeTest extends TestCase
     private function buildFieldNamesForEntry(?string $accept, ?string $context, ?Media $media): array
     {
         $added = [];
-        $listener = null;
         $builder = $this->createStub(FormBuilderInterface::class);
         $builder->method('add')->willReturnSelf();
-        $builder->method('addEventListener')->willReturnCallback(
-            function (string $eventName, callable $callback) use (&$listener, $builder) {
-                $listener = $callback;
-
-                return $builder;
-            }
-        );
-
-        $type = new MediaUploadType();
-        $type->buildForm($builder, ['accept' => $accept, 'context' => $context]);
+        $listeners = $this->captureListeners($builder, $accept, $context);
 
         $form = $this->createStub(FormInterface::class);
         $form->method('add')->willReturnCallback(function (string $name, ?string $type = null) use (&$added, $form) {
@@ -64,7 +93,7 @@ class MediaUploadTypeTest extends TestCase
 
             return $form;
         });
-        $listener(new PreSetDataEvent($form, $media));
+        $listeners[FormEvents::PRE_SET_DATA](new PreSetDataEvent($form, $media));
 
         return $added;
     }
@@ -73,19 +102,9 @@ class MediaUploadTypeTest extends TestCase
     private function buildFileOptionsForEntry(?string $accept, ?string $context, ?Media $media): array
     {
         $added = [];
-        $listener = null;
         $builder = $this->createStub(FormBuilderInterface::class);
         $builder->method('add')->willReturnSelf();
-        $builder->method('addEventListener')->willReturnCallback(
-            function (string $eventName, callable $callback) use (&$listener, $builder) {
-                $listener = $callback;
-
-                return $builder;
-            }
-        );
-
-        $type = new MediaUploadType();
-        $type->buildForm($builder, ['accept' => $accept, 'context' => $context]);
+        $listeners = $this->captureListeners($builder, $accept, $context);
 
         $form = $this->createStub(FormInterface::class);
         $form->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$added, $form) {
@@ -93,7 +112,7 @@ class MediaUploadTypeTest extends TestCase
 
             return $form;
         });
-        $listener(new PreSetDataEvent($form, $media));
+        $listeners[FormEvents::PRE_SET_DATA](new PreSetDataEvent($form, $media));
 
         return $added['file'];
     }
@@ -285,9 +304,89 @@ class MediaUploadTypeTest extends TestCase
         }
     }
 
+    // Fires the POST_SUBMIT listener with $media as the entry's submitted data
+    private function submitEntry(?string $accept, ?string $context, Media $media): void
+    {
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnSelf();
+        $listeners = $this->captureListeners($builder, $accept, $context);
+
+        $listeners[FormEvents::POST_SUBMIT](new PostSubmitEvent($this->createStub(FormInterface::class), $media));
+    }
+
+    private function writePng(string $filename, int $width, int $height): void
+    {
+        imagepng(imagecreatetruecolor($width, $height), $this->projectDir . '/public/' . $filename);
+    }
+
+    private function createUploadedMedia(string $filename): Media
+    {
+        $media = new Media();
+        $media->setFilename($filename);
+
+        return $media;
+    }
+
+    // The bug this covers: saving a block whose width/height inputs were rendered empty (a form opened before MediaDimensionsCommand ever filled them) wrote null over the auto-detected size, silently losing it
+    public function testPostSubmitRefillsBlankDimensionsFromTheStoredFile(): void
+    {
+        $this->writePng('medias/photo.png', 800, 600);
+        $media = $this->createUploadedMedia('medias/photo.png');
+
+        $this->submitEntry('image/*', null, $media);
+
+        $this->assertSame('800', $media->getWidth());
+        $this->assertSame('600', $media->getHeight());
+    }
+
+    // A width typed by the admin (height deliberately left blank to keep the ratio) is a chosen pair, not a gap to fill - overwriting the height with the file's own would stretch the image
+    public function testPostSubmitLeavesAnAdminTypedDimensionAlone(): void
+    {
+        $this->writePng('medias/photo.png', 800, 600);
+        $media = $this->createUploadedMedia('medias/photo.png');
+        $media->setWidth('300');
+
+        $this->submitEntry('image/*', null, $media);
+
+        $this->assertSame('300', $media->getWidth());
+        $this->assertNull($media->getHeight());
+    }
+
+    // A brand-new entry has no stored file yet (Vich only moves it on flush), and a non-image has no dimensions to read at all - both leave the entry untouched rather than failing the submission
+    public function testPostSubmitLeavesAnEntryWithNoReadableFileUntouched(): void
+    {
+        $this->submitEntry('image/*', null, new Media());
+        $media = $this->createUploadedMedia('medias/gone.png');
+
+        $this->submitEntry('image/*', null, $media);
+
+        $this->assertNull($media->getWidth());
+        $this->assertNull($media->getHeight());
+    }
+
+    // Contexts with no width/height field to blank in the first place (card, slider, portfolio_grid...) never register the listener
+    public function testPostSubmitListenerIsOnlyRegisteredWhereTheDimensionFieldsAre(): void
+    {
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnSelf();
+
+        $this->assertArrayHasKey(FormEvents::POST_SUBMIT, $this->captureListeners($builder, 'image/*', null));
+
+        foreach (['card', 'slider', 'banner_title', 'portfolio_grid', 'video'] as $context) {
+            $builder = $this->createStub(FormBuilderInterface::class);
+            $builder->method('add')->willReturnSelf();
+
+            $this->assertArrayNotHasKey(
+                FormEvents::POST_SUBMIT,
+                $this->captureListeners($builder, 'image/*', $context),
+                "the \"$context\" context has no width/height field to protect"
+            );
+        }
+    }
+
     public function testConfigureOptionsDefaultsToMediaDataClassAndNullAcceptContext(): void
     {
-        $type = new MediaUploadType();
+        $type = $this->createType();
         $resolver = new OptionsResolver();
         $type->configureOptions($resolver);
 

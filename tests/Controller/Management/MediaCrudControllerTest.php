@@ -12,10 +12,14 @@ namespace c975L\UiBundle\Tests\Controller\Management;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Registry\MediaUsageRegistry;
+use c975L\UiBundle\Service\ImageDimensionsReader;
+use c975L\UiBundle\Service\MediaDimensionsFiller;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MediaCrudControllerTest extends TestCase
@@ -25,7 +29,29 @@ class MediaCrudControllerTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
-        return new MediaCrudController($this->createStub(MediaUsageRegistry::class), $translator, $projectDir);
+        return new MediaCrudController(
+            $this->createStub(MediaUsageRegistry::class),
+            $translator,
+            new MediaDimensionsFiller(new ImageDimensionsReader(), $projectDir),
+            $projectDir
+        );
+    }
+
+    // Same protection as MediaUploadType's: the media library's own form exposes width/height too, and saving a row whose inputs were rendered blank used to erase the size auto-detected on upload
+    public function testUpdateEntityKeepsTheAutoDetectedDimensionsOfAMediaSavedWithBlankInputs(): void
+    {
+        $projectDir = sys_get_temp_dir() . '/media-crud-test-' . uniqid();
+        (new Filesystem())->mkdir($projectDir . '/public/medias');
+        imagepng(imagecreatetruecolor(640, 480), $projectDir . '/public/medias/photo.png');
+
+        $media = new Media();
+        $media->setFilename('medias/photo.png');
+
+        $this->createController($projectDir)->updateEntity($this->createStub(EntityManagerInterface::class), $media);
+
+        (new Filesystem())->remove($projectDir);
+        $this->assertSame('640', $media->getWidth());
+        $this->assertSame('480', $media->getHeight());
     }
 
     // Creating a Media with no Block (e.g. for a bundle showcase) is reserved to super admins - regular admins keep adding media the normal way, through a Block's own form

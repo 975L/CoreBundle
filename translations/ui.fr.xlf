@@ -591,6 +591,14 @@
                 <source>label.video_poster</source>
                 <target>Image de couverture</target>
             </trans-unit>
+            <trans-unit id="538">
+                <source>label.hero_title_level</source>
+                <target>Niveau de titre</target>
+            </trans-unit>
+            <trans-unit id="539">
+                <source>label.hero_title_level_help</source>
+                <target>h1 quand ce hero ouvre la page et en porte le titre, h2 quand le gabarit de page affiche déjà son propre titre au-dessus.</target>
+            </trans-unit>
             <trans-unit id="531">
                 <source>label.video_media_help</source>
                 <target>Déposez le fichier vidéo (MP4, WebM ou OGG) et, si vous le souhaitez, une image servant de couverture au lecteur</target>

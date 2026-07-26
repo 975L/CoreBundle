@@ -11,10 +11,9 @@ namespace c975L\UiBundle\Form;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Service\CaptchaVerifier;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
-use Karser\Recaptcha3Bundle\Form\Recaptcha3Type;
-use Nelmio\SecurityBundle\EventListener\ContentSecurityPolicyListener;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -37,7 +36,7 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot (always), GDPR/recaptcha (site-wide config, same keys contact/register/reset already read), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy")
+// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot (always), GDPR/captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy")
 class FormSubmissionType extends AbstractType
 {
     public function __construct(
@@ -45,8 +44,7 @@ class FormSubmissionType extends AbstractType
         private readonly ConfigServiceInterface $configService,
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
-        // Optional: only present if nelmio/security-bundle is installed and registered - without it, recaptcha's inline script has no nonce to match a strict CSP, exactly like ContactFormBundle's own ContactFormFactory/ContactFormType already handle it
-        private readonly ?ContentSecurityPolicyListener $cspListener = null,
+        private readonly CaptchaVerifier $captchaVerifier,
     ) {
     }
 
@@ -122,12 +120,9 @@ class FormSubmissionType extends AbstractType
             ]);
         }
 
-        $recaptchaSiteKey = $this->configService->hasParameter('recaptcha3-site-key') ? $this->configService->get('recaptcha3-site-key') : $this->configService->getContainerParameter('karser_recaptcha3.site_key');
-        $recaptchaSecretKey = $this->configService->hasParameter('recaptcha3-secret-key') ? $this->configService->get('recaptcha3-secret-key') : $this->configService->getContainerParameter('karser_recaptcha3.secret_key');
-        if ($recaptchaSiteKey && $recaptchaSecretKey) {
-            $builder->add('captcha', Recaptcha3Type::class, [
+        if ($this->captchaVerifier->isEnabled()) {
+            $builder->add('captcha', CaptchaType::class, [
                 'action_name' => 'ui_form',
-                'script_nonce_csp' => $this->cspListener?->getNonce('script'),
             ]);
         }
 

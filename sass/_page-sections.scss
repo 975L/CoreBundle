@@ -11,8 +11,11 @@ $page-section-bp-lg: 1025px;
     padding-right: clamp(20px, 5vw, 64px);
 }
 
+/* font-weight pinned rather than left to the tag: with no title set, the eyebrow is rendered as the
+   section's own <h2> (see components/Section/_head.html.twig) and would otherwise come out bold */
 .section-eyebrow {
     font-family: var(--font-family-accent);
+    font-weight: 400;
     font-size: 12.5px;
     letter-spacing: .14em;
     text-transform: uppercase;
@@ -323,9 +326,18 @@ $page-section-bp-lg: 1025px;
     width: 100vw;
     margin-left: -50vw;
     margin-right: -50vw;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+}
+
+// The backdrop itself, a real <img> rather than a background-image (which would need a style attribute,
+// never covered by a CSP nonce - see Hero.html.twig). z-index pinned on all three layers: the img comes
+// after the ::before in tree order, so without it the backdrop would paint over its own overlay
+.hero.hero--has-bg .hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
 }
 
 // Fixed dark overlay so the text stays readable regardless of the uploaded image - a ::before (not an
@@ -335,10 +347,12 @@ $page-section-bp-lg: 1025px;
     position: absolute;
     inset: 0;
     background-color: rgba(0, 0, 0, .45);
+    z-index: 1;
 }
 
 .hero.hero--has-bg .section-wrap {
     position: relative;
+    z-index: 2;
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;

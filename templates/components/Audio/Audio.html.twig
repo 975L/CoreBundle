@@ -1,6 +1,10 @@
-{# Static usage : <twig:c975LUi:Audio:Audio src="your-path/file.ext" type="audio/mpeg"/> #}
-
-<audio controls>
-    <source src="{{ src }}" type="{{ type|default('audio/mpeg') }}">
-    <p>{{ 'label.audio_not_supported'|trans({}, "site") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "site") }}</a></p>
-</audio>
+{# Static usage : <twig:c975LUi:Audio:Audio src="your-path/file.ext" type="audio/mpeg" [title="optional title"] [description="optional description"] [class="your-css-classes"]/> #}
+{# Same <figure>/title/description structure as Video:Video and Video:Iframe, so every media block is captioned identically #}
+<figure class="audio-figure">
+    {% if title is defined and title %}<h3 class="audio-title">{{ title }}</h3>{% endif %}
+    <audio controls class="{{ class|default([])|join(' ') }}">
+        <source src="{{ src }}" type="{{ type|default('audio/mpeg') }}">
+        <p>{{ 'label.audio_not_supported'|trans({}, "site") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "site") }}</a></p>
+    </audio>
+    {% if description is defined and description %}<figcaption class="audio-description text">{{ description|raw }}</figcaption>{% endif %}
+</figure>

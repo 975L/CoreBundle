@@ -91,7 +91,7 @@ export default class extends Controller {
         }
     }
 
-    handleMenuLinkClick(event) {
+    handleMenuLinkClick() {
         const button = this.element.querySelector(".menu-toggle");
         if (button.getAttribute("aria-expanded") === "true") {
             this.close(button);

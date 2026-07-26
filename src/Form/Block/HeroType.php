@@ -12,6 +12,7 @@ use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,6 +37,15 @@ class HeroType extends AbstractType
             // TrixEditorType (not a plain TextType) so an editor can emphasize a word (<em>) the same way the reference design highlights it in red - see blocks/Hero.html.twig / _hero__title em
             ->add('title', TrixEditorType::class, [
                 'label' => 'label.title',
+            ])
+            // The hero usually opens the page and carries its real title, hence the h1 default - h2 is for a
+            // hero sitting under a page template that already prints its own h1, two h1 on one page being
+            // announced by screen readers as two top-level headings
+            ->add('titleLevel', ChoiceType::class, [
+                'label' => 'label.hero_title_level',
+                'help' => 'label.hero_title_level_help',
+                'choices' => ['h1' => 'h1', 'h2' => 'h2'],
+                'placeholder' => false,
             ])
             // TrixEditorType too, same reason as "title" above - a few words can be emphasized in the subtitle
             ->add('subtitle', TrixEditorType::class, [

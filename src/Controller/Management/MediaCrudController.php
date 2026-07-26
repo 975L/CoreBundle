@@ -15,6 +15,8 @@ use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\UiBundle\Form\MediaUsagesType;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use c975L\UiBundle\Registry\MediaUsageRegistry;
+use c975L\UiBundle\Service\MediaDimensionsFiller;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -42,6 +44,7 @@ class MediaCrudController extends AbstractCrudController
     public function __construct(
         private readonly MediaUsageRegistry $mediaUsageRegistry,
         private readonly TranslatorInterface $translator,
+        private readonly MediaDimensionsFiller $mediaDimensionsFiller,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
     ) {
@@ -50,6 +53,25 @@ class MediaCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Media::class;
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        if ($entityInstance instanceof Media) {
+            $this->mediaDimensionsFiller->fillIfBlank($entityInstance);
+        }
+
+        parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    // Same protection as MediaUploadType's own POST_SUBMIT listener: this form exposes the very same width/height fields, so saving a row whose inputs were rendered blank would erase the size auto-detected on upload
+    public function updateEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
+    {
+        if ($entityInstance instanceof Media) {
+            $this->mediaDimensionsFiller->fillIfBlank($entityInstance);
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 
     public function configureCrud(Crud $crud): Crud

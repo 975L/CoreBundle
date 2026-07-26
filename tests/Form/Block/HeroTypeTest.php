@@ -14,6 +14,7 @@ use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -43,7 +44,7 @@ class HeroTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['badge', 'title', 'subtitle', 'hasBackgroundImage', 'primaryLabel', 'primaryUrl', 'secondaryLabel', 'secondaryUrl', 'statValue', 'statLabel', 'anchor'] as $field) {
+        foreach (['badge', 'title', 'titleLevel', 'subtitle', 'hasBackgroundImage', 'primaryLabel', 'primaryUrl', 'secondaryLabel', 'secondaryUrl', 'statValue', 'statLabel', 'anchor'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the Hero form");
         }
     }
@@ -70,6 +71,17 @@ class HeroTypeTest extends TestCase
         $this->assertSame(TrixEditorType::class, $this->addedTypes['title']);
         $this->assertSame(TrixEditorType::class, $this->addedTypes['subtitle']);
         $this->assertSame(CheckboxType::class, $this->addedTypes['hasBackgroundImage']);
+    }
+
+    // "titleLevel" only ever offers h1/h2, with no empty choice: a hero always has a heading, the field
+    // only picks which level it takes so a page template printing its own <h1> doesn't end up with two
+    public function testTitleLevelIsAnH1OrH2ChoiceWithNoPlaceholder(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame(ChoiceType::class, $this->addedTypes['titleLevel']);
+        $this->assertSame(['h1' => 'h1', 'h2' => 'h2'], $added['titleLevel']['choices']);
+        $this->assertFalse($added['titleLevel']['placeholder']);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

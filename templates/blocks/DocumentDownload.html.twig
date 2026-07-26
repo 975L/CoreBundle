@@ -19,7 +19,9 @@
        download button for whoever actually wants the file. #}
     <a class="document-download" href="{{ vich_uploader_asset(media) }}" target="_blank" rel="noopener">
         {% if thumbnailPath %}
-            <img class="document-download__thumb" src="{{ asset(thumbnailPath) }}" alt=""/>
+            {# Decorative: the link's own visible label already names the document, an alt here would have a
+               screen reader announce that same name twice #}
+            <img class="document-download__thumb" src="{{ asset(thumbnailPath) }}" alt="">
         {% else %}
             <span class="document-download__thumb document-download__thumb--empty"></span>
         {% endif %}

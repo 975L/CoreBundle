@@ -54,4 +54,29 @@ class MediaTest extends TestCase
 
         $this->assertSame(1200, $media->getImageWidth());
     }
+
+    public function testGetIntrinsicDimensionsReturnTheValueWhenItIsABarePixelCount(): void
+    {
+        $media = (new Media())->setWidth('600')->setHeight('120');
+
+        $this->assertSame(600, $media->getIntrinsicWidth());
+        $this->assertSame(120, $media->getIntrinsicHeight());
+    }
+
+    // The admin fields are free text, and a css length in an HTML width/height attribute is silently discarded by browsers - see getIntrinsicWidth()
+    public function testGetIntrinsicDimensionsReturnNullForACssLength(): void
+    {
+        $media = (new Media())->setWidth('50%')->setHeight('100px');
+
+        $this->assertNull($media->getIntrinsicWidth());
+        $this->assertNull($media->getIntrinsicHeight());
+    }
+
+    public function testGetIntrinsicDimensionsReturnNullWhenUnset(): void
+    {
+        $media = new Media();
+
+        $this->assertNull($media->getIntrinsicWidth());
+        $this->assertNull($media->getIntrinsicHeight());
+    }
 }

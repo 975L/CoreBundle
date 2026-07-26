@@ -1,23 +1,23 @@
 {# Attached next to a Trix editor, an opted-in plain form textarea (see block_theme.html.twig), or the
    free-standing textarea on the AI Assistant page itself - expects "field_id", the DOM id of whichever
    textarea it targets #}
-{# Stimulus derives value/target attribute names from the controller identifier as registered
-   ("aiRephrase" in assets/controllers.js), not a dasherized form of it - only each value's
-   own name gets dasherized. So these must read "airephrase-*", not "ai-rephrase-*", or
-   every value silently falls back to its type default ("") #}
+{# The controller reads these itself (plain dataset/querySelector, no Stimulus targets/values sugar -
+   see assets/js/ai-rephrase.js), so the names below are ordinary data-* attributes and only have to
+   match what that file looks for: the dasherized "ai-rephrase-*" form. Only "data-controller"/
+   "data-action" use the registered identifier "aiRephrase" #}
 <div class="ai-rephrase"
      data-controller="aiRephrase"
-     data-airephrase-url-value="{{ path('management_ui_ai_assistant_rephrase') }}"
-     data-airephrase-csrf-token-value="{{ csrf_token('management_ui_ai_assistant_rephrase') }}"
-     data-airephrase-textarea-id-value="{{ field_id }}"
-     data-airephrase-suggestion-label-value="{{ 'label.ai_rephrase_suggestion_label'|trans({}, 'ui') }}"
+     data-ai-rephrase-url-value="{{ path('management_ui_ai_assistant_rephrase') }}"
+     data-ai-rephrase-csrf-token-value="{{ csrf_token('management_ui_ai_assistant_rephrase') }}"
+     data-ai-rephrase-textarea-id-value="{{ field_id }}"
+     data-ai-rephrase-suggestion-label-value="{{ 'label.ai_rephrase_suggestion_label'|trans({}, 'ui') }}"
 >
-    <select class="form-select form-select-sm ai-rephrase__style" data-airephrase-target="style">
+    <select class="form-select form-select-sm ai-rephrase__style" data-ai-rephrase-target="style">
         {% for style in ai_rephrase_styles() %}
             <option value="{{ style }}">{{ ('label.ai_rephrase_style_' ~ style)|trans({}, 'ui') }}</option>
         {% endfor %}
     </select>
-    <select class="form-select form-select-sm ai-rephrase__length" data-airephrase-target="length">
+    <select class="form-select form-select-sm ai-rephrase__length" data-ai-rephrase-target="length">
         {% for length in ai_rephrase_lengths() %}
             <option value="{{ length }}">{{ ('label.ai_rephrase_length_' ~ length)|trans({}, 'ui') }}</option>
         {% endfor %}
@@ -25,12 +25,12 @@
     <button type="button"
             class="btn btn-sm btn-outline-secondary ai-rephrase__button"
             data-action="aiRephrase#run"
-            data-airephrase-target="button"
+            data-ai-rephrase-target="button"
     >
         {{ 'label.ai_rephrase_button'|trans({'%name%': ai_assistant_name()}, 'ui') }}
     </button>
     <span class="ai-rephrase__error text-danger small d-none"
-          data-airephrase-target="error"
+          data-ai-rephrase-target="error"
           data-message="{{ 'label.ai_rephrase_error'|trans({}, 'ui') }}"
     ></span>
 </div>

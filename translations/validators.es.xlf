@@ -10,6 +10,10 @@
                 <source>text.email_domain_unreachable</source>
                 <target>El dominio de esta dirección de correo no parece aceptar correo</target>
             </trans-unit>
+            <trans-unit id="3">
+                <source>text.captcha_failed</source>
+                <target>No se ha podido verificar que su envío proviene de una persona, inténtelo de nuevo</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

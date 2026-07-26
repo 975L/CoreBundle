@@ -13,10 +13,11 @@ import { Controller } from "@hotwired/stimulus";
 // validation (see Readme "AI Assistant") - a failure just surfaces the error message below, the button
 // itself stays enabled for another try.
 //
-// Deliberately not using Stimulus's `static targets`/`static values` sugar: both were unreliable in
-// production on this controller (values reading back empty, targets reporting "missing" despite the
-// matching data-* attributes being correctly present in the rendered HTML - root cause still unclear).
-// Plain querySelector scoped to this.element sidesteps whatever that issue is.
+// Deliberately not using Stimulus's `static targets`/`static values` sugar: with a camelCase identifier
+// ("aiRephrase") Stimulus looks for the non-dasherized "data-airephrase-*" attributes, which is easy to
+// get wrong on the template side. Plain dataset/querySelector scoped to this.element sidesteps that,
+// but it means the names below are the contract: _ai_rephrase.html.twig MUST write the dasherized
+// "data-ai-rephrase-*" form, or every value reads back empty and every target is null.
 export default class extends Controller {
     get textareaId() {
         return this.element.dataset.aiRephraseTextareaIdValue || '';

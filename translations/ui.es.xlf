@@ -590,6 +590,14 @@
                 <source>label.video_poster</source>
                 <target>Imagen de portada</target>
             </trans-unit>
+            <trans-unit id="538">
+                <source>label.hero_title_level</source>
+                <target>Nivel de título</target>
+            </trans-unit>
+            <trans-unit id="539">
+                <source>label.hero_title_level_help</source>
+                <target>h1 cuando este hero abre la página y lleva su título, h2 cuando la plantilla de página ya muestra su propio título encima.</target>
+            </trans-unit>
             <trans-unit id="531">
                 <source>label.video_media_help</source>
                 <target>Suba el archivo de vídeo (MP4, WebM u OGG) y, opcionalmente, una imagen que sirva de portada del reproductor</target>

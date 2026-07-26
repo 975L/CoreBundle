@@ -15,14 +15,12 @@ use c975L\UiBundle\DependencyInjection\Compiler\BlockFixtureProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockOwnerResolverPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
-use c975L\UiBundle\DependencyInjection\Compiler\CspListenerPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailLayoutProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FontProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormActionProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormThemeRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\GalleryShowcaseProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\MediaUsageProviderPass;
-use c975L\UiBundle\DependencyInjection\Compiler\RecaptchaPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ScriptAdminRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ScriptRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetManagementRegistryPass;
@@ -55,8 +53,6 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new FontProviderPass());
         $container->addCompilerPass(new FormThemeRegistryPass());
         $container->addCompilerPass(new FormActionProviderPass());
-        $container->addCompilerPass(new RecaptchaPass());
-        $container->addCompilerPass(new CspListenerPass());
     }
 
     public function prependExtension(ContainerConfigurator $configurator, ContainerBuilder $container): void
@@ -69,7 +65,12 @@ class c975LUiBundle extends AbstractBundle
             ],
         ]);
 
-        // Not registered via the app-wide twig.form_themes config: EasyAdmin renders every CRUD form with "... only", which ignores that config entirely (see FormThemeProviderInterface) - these are instead contributed to FormThemeRegistry via UiFormThemeProvider and picked up by ConfigBundle's DashboardController::configureCrud()
+        // The admin form themes are NOT registered here: EasyAdmin renders every CRUD form with "... only", which ignores this config entirely (see FormThemeProviderInterface) - they are instead contributed to FormThemeRegistry via UiFormThemeProvider and picked up by ConfigBundle's DashboardController::configureCrud(). CaptchaType only ever appears in public forms, which are rendered by plain Twig, so the app-wide config is the right place for it (and what karser/karser-recaptcha3-bundle did for the widget this one replaces)
+        if ($container->hasExtension('twig')) {
+            $container->prependExtensionConfig('twig', [
+                'form_themes' => ['@c975LUi/form/captcha_theme.html.twig'],
+            ]);
+        }
 
         if ($container->hasExtension('vich_uploader')) {
             $container->prependExtensionConfig('vich_uploader', [

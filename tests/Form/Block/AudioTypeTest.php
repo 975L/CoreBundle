@@ -16,8 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AudioTypeTest extends TestCase
 {
-    // The block is entirely defined by its uploaded media, format included - asking for the format again in this form would just be a second, contradictory source of truth
-    public function testBuildFormAddsNoFieldAtAll(): void
+    private function buildAddedFields(): array
     {
         $added = [];
         $builder = $this->createStub(FormBuilderInterface::class);
@@ -29,7 +28,23 @@ class AudioTypeTest extends TestCase
 
         (new AudioType())->buildForm($builder, []);
 
-        $this->assertSame([], $added);
+        return $added;
+    }
+
+    // Only display fields, the same ones as the video kinds - no width/height, an <audio> element has no such attributes
+    public function testBuildFormAddsExpectedFields(): void
+    {
+        $this->assertSame(['title', 'description', 'class'], array_keys($this->buildAddedFields()));
+    }
+
+    // The file and its format both come from the uploaded media - asking for either again in this form would just be a second, contradictory source of truth
+    public function testBuildFormDoesNotAskForTheFileOrItsFormat(): void
+    {
+        $added = $this->buildAddedFields();
+
+        foreach (['src', 'type'] as $field) {
+            $this->assertArrayNotHasKey($field, $added, "\"$field\" comes from the uploaded media, not from the Audio form");
+        }
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

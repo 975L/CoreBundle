@@ -9,6 +9,7 @@
 
 namespace c975L\UiBundle\Tests\Form\Block;
 
+use c975L\UiBundle\Form\Block\VideoIframeType;
 use c975L\UiBundle\Form\Block\VideoType;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -35,7 +36,24 @@ class VideoTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        $this->assertSame(['options', 'width', 'height'], array_keys($added));
+        $this->assertSame(['options', 'title', 'description', 'width', 'height', 'class'], array_keys($added));
+    }
+
+    // The display fields are deliberately the same as the "video_iframe" kind's, both rendering the same <figure>/title/description structure
+    public function testDisplayFieldsMatchTheVideoIframeForm(): void
+    {
+        $iframeAdded = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$iframeAdded, $builder) {
+            $iframeAdded[$name] = $options;
+
+            return $builder;
+        });
+        (new VideoIframeType())->buildForm($builder, []);
+
+        $shared = ['title', 'description', 'width', 'height', 'class'];
+        $this->assertSame($shared, array_values(array_intersect(array_keys($iframeAdded), $shared)));
+        $this->assertSame($shared, array_values(array_intersect(array_keys($this->buildAddedFields()), $shared)));
     }
 
     // The video file, its format and its cover image all come from the block's own medias now - asking for any of them again in this form would just be a second, contradictory source of truth
