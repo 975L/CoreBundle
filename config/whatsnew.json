@@ -36,6 +36,11 @@
                 "en": "The confetti animation no longer loads anything from an external service",
                 "fr": "L'animation de confettis ne charge plus rien depuis un service externe",
                 "es": "La animación de confeti ya no carga nada desde un servicio externo"
+            },
+            {
+                "en": "Screen readers now announce an image link by its own caption instead of just saying \"image\"",
+                "fr": "Les lecteurs d'écran annoncent désormais une image cliquable par sa propre légende, au lieu de dire simplement « image »",
+                "es": "Los lectores de pantalla anuncian ahora una imagen enlazada por su propio pie de foto, en lugar de decir solo «imagen»"
             }
         ]
     },

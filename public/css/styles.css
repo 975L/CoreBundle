@@ -428,7 +428,6 @@ label[for=contact_form_username],
   display: block;
   width: 100%;
   height: auto;
-  -webkit-user-drag: none;
   user-select: none;
 }
 
@@ -1493,7 +1492,7 @@ img.white {
   margin: -1px;
   padding: 0;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
@@ -1830,10 +1829,6 @@ img.white {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.slider-freeflow .slider-list::-webkit-scrollbar {
-  display: none;
 }
 
 .slider-freeflow .slider-item {

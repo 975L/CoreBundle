@@ -6,7 +6,8 @@
     margin: -1px;
     padding: 0;
     overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+    // clip-path rather than the older clip: rect(): same result, and clip is deprecated (flagged by the W3C CSS validator)
+    clip-path: inset(50%);
     white-space: nowrap;
     border: 0;
 }
@@ -359,13 +360,10 @@
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    // Scrolling is the interaction; the bar itself is redundant next to buttons/dots
+    // Scrolling is the interaction; the bar itself is redundant next to buttons/dots. scrollbar-width alone:
+    // it's the standard property, now supported by every current engine, where -ms-overflow-style (Edge legacy)
+    // and ::-webkit-scrollbar were both vendor extensions the W3C CSS validator flags
     scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
 }
 
 .slider-freeflow .slider-item {

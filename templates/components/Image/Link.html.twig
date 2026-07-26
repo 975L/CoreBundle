@@ -8,8 +8,14 @@
 {% set imgResponsive = heightOnly ? "" : "img-responsive" %}
 {# No "url": nothing to link to, so this must not render as an <a> at all - a href="" would be a dead link that still looks clickable #}
 {% set tag = url ? 'a' : 'span' %}
+{# The link's accessible name: an explicit "ariaLabel", else the visible "label" (stripped of the html
+   it may carry), else the image's own "alt". The former hardcoded fallback had every image link on the
+   site announce itself as "image", overriding the label rendered right next to it. Nothing to name it
+   with: no attribute at all rather than a meaningless one, letting the img's alt name the link. Only
+   ever set on the <a>, aria-label is ignored on a plain <span> #}
+{% set ariaLabel = ariaLabel|default('') is not empty ? ariaLabel : (label != '' ? label|striptags : alt|default('')) %}
 <p class="text-center">
-    <{{ tag }}{% if url %} href="{{ url }}"{% if target is defined and target != "" %} target="{{ target }}"{% endif %}{% endif %} aria-label="{{ ariaLabel|default('image') }}">
+    <{{ tag }}{% if url %} href="{{ url }}"{% if target is defined and target != "" %} target="{{ target }}"{% endif %}{% if ariaLabel != '' %} aria-label="{{ ariaLabel }}"{% endif %}{% endif %}>
         {% if above and label != '' %}
             <span class="img-above {{ classLabel|default("") }}">{{ label|raw }}</span>
             <br>

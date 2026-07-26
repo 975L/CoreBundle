@@ -15,7 +15,8 @@
     display: block;
     width: 100%;
     height: auto;
-    -webkit-user-drag: none;
+    // No -webkit-user-drag here: both <img> already carry draggable="false" (see ImageCompare.html.twig),
+    // which does the same in every browser rather than WebKit only, and isn't a vendor extension
     user-select: none;
 }
 

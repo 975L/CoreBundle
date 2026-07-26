@@ -1,5 +1,10 @@
 {# <twig:c975LUi:Text:Section title="{{ title }}" slug="{{ slug }}" content="{{ content }}" [src="{{ vich_uploader_asset(media) }}"] [alt="{{ media.alt }}"]/> #}
-<section class="text-section" id="{{ slug }}">
+{# <section> only when there is a heading to go with it, a plain <div> otherwise - HTML's own advice for a
+   grouping with no heading (and what the W3C validator asks for), this block commonly opening a page with
+   just a logo and a paragraph right under the page's own <h1>, where a second heading would be redundant.
+   id only when the anchor slug is set: an empty id="" is invalid HTML, and a duplicate of every other one #}
+{% set tag = title ? 'section' : 'div' %}
+<{{ tag }} class="text-section"{% if slug|default('') %} id="{{ slug }}"{% endif %}>
     <div class="section-wrap">
         {% if title %}<h2>{{ title }}</h2>{% endif %}
         {% if src is defined and src %}
@@ -10,4 +15,4 @@
            tags into extra visible <br>, doubling up line breaks and producing blank lines #}
         {{ content|raw }}
     </div>
-</section>
+</{{ tag }}>

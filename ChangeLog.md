@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.9.19
+
+- The `Image:Link` component's `aria-label` now falls back to the visible label, then to the image's `alt`, instead of the hardcoded "image" (26/07/2026)
+- The `Image:Link` component no longer writes an `aria-label` on the `<span>` rendered when there is no url (26/07/2026)
+- The `Text:Section` component now renders a `<div>` instead of a headingless `<section>` (26/07/2026)
+- The `Text:Section` component now only writes its `id` when a slug is set (26/07/2026)
+- The `Card` component now only writes its `id` and `data-animation` attributes when they are set (26/07/2026)
+- `.visuallyhidden` now uses `clip-path: inset(50%)` instead of the deprecated `clip: rect()` (26/07/2026)
+- Dropped `-ms-overflow-style` and `::-webkit-scrollbar` from `.slider-list`, `scrollbar-width` covering every current engine (26/07/2026)
+- Dropped `-webkit-user-drag` from `.image-compare-img`, the images already carrying `draggable="false"` (26/07/2026)
+
 ## v1.9.18
 
 - Added a `priority` option to the `Image`/`Icon`/`Link` components, rendering `loading="eager" fetchpriority="high"` instead of `loading="lazy"` (26/07/2026)
