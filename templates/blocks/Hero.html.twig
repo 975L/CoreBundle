@@ -25,5 +25,6 @@
     height="{{ media ? media.intrinsicHeight : '' }}"
     medias="{{ medias|length > 1 ? medias : [] }}"
     hasBackgroundImage="{{ hasBackgroundImage|default(false) }}"
+    background="{{ background|default('') }}"
     id="{{ anchor_id }}"
 />

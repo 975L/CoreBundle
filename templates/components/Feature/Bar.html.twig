@@ -1,9 +1,15 @@
-{# Static usage: <twig:c975LUi:Feature:Bar items="{{ [{title: '...', text: '...'}] }}" [id=""]/> #}
+{# Static usage: <twig:c975LUi:Feature:Bar items="{{ [{title: '...', text: '...'}] }}" [background=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/FeatureBar.html.twig #}
+{# Optional colored flat (see .section--bg-* in sass/_page-sections.scss). Matched against the three known
+   variants rather than interpolated as-is: the value comes from a block's stored data, which must never be
+   able to write an arbitrary class name into the markup #}
+{% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
 {# A <div>, not a <section>: this band never carries a heading of its own (see .feature-bar comment
    in sass/_page-sections.scss), and a headingless <section> is invalid per the HTML spec #}
-<div class="feature-bar"{% if id is defined and id %} id="{{ id }}"{% endif %}>
-    <div class="feature-bar__grid">
+<div class="feature-bar{{ background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    {# data-count so the row takes exactly as many columns as it has entries instead of trailing empty
+       ones, the band being sized for five (see the responsive rules in sass/_page-sections.scss) #}
+    <div class="feature-bar__grid" data-count="{{ items|length }}">
         {% for item in items %}
             <div class="feature-bar__item"><b>{{ item.title }}</b>{{ item.text }}</div>
         {% endfor %}

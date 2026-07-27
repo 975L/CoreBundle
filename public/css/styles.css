@@ -662,6 +662,12 @@ img.white {
   padding-top: clamp(24px, 4vw, 48px);
 }
 
+.text-section.section--bg-muted,
+.text-section.section--bg-primary,
+.text-section.section--bg-dark {
+  padding-bottom: clamp(24px, 4vw, 48px);
+}
+
 /* Any of the kinds above, used as a flex_columns slot instead of a top-level page block, must lose
    that same top padding - it was sized for "first thing in its own vertical stack on the page", not
    for sitting flush against a column's other slots, and would otherwise misalign the column against
@@ -713,14 +719,14 @@ img.white {
 }
 
 .section-btn--ghost {
-  color: var(--text);
-  border-bottom: 2px solid var(--primary);
+  color: var(--section-text, var(--text));
+  border-bottom: 2px solid var(--section-accent, var(--primary));
   border-radius: 0;
   padding-bottom: 3px;
 }
 
 .section-btn--ghost:hover {
-  color: var(--text);
+  color: var(--section-text, var(--text));
   text-decoration: none;
 }
 
@@ -733,6 +739,85 @@ img.white {
 .section-btn--dark:hover {
   color: var(--button-color);
   text-decoration: none;
+}
+
+/* ---- colored background, opt-in per section ---- */
+.section--bg-muted,
+.section--bg-primary,
+.section--bg-dark {
+  position: relative;
+  left: var(--section-flat-offset, 50%);
+  right: var(--section-flat-offset, 50%);
+  width: var(--section-flat-width, 100vw);
+  margin-left: var(--section-flat-margin-x, -50vw);
+  margin-right: var(--section-flat-margin-x, -50vw);
+  background-color: var(--section-background);
+}
+
+.flex-columns__col .section--bg-muted,
+.flex-columns__col .section--bg-primary,
+.flex-columns__col .section--bg-dark {
+  left: auto;
+  right: auto;
+  width: auto;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.section--bg-muted {
+  --section-background: var(--section-bg-muted, var(--surface-alt));
+  --section-border: var(--border-color);
+  --section-text: var(--text);
+  --section-text-soft: var(--label-color);
+  --section-accent: var(--primary);
+  --section-overlay: var(--surface-accent);
+}
+
+.section--bg-primary,
+.section--bg-dark {
+  --section-text: var(--white);
+  --section-text-soft: color-mix(in srgb, var(--white) 78%, var(--section-background));
+  --section-accent: color-mix(in srgb, var(--white) 88%, var(--section-background));
+  --section-border: color-mix(in srgb, var(--white) 22%, transparent);
+  --section-overlay: color-mix(in srgb, var(--white) 16%, transparent);
+}
+
+.section--bg-primary {
+  --section-background: var(--section-bg-primary, var(--primary));
+}
+
+.section--bg-dark {
+  --section-background: var(--section-bg-dark, var(--text));
+}
+
+.section--bg-primary,
+.section--bg-primary *,
+.section--bg-dark,
+.section--bg-dark * {
+  color: var(--section-text);
+}
+
+.section--bg-primary a:hover,
+.section--bg-dark a:hover {
+  color: var(--section-text);
+}
+
+.section--bg-primary .section-eyebrow,
+.section--bg-dark .section-eyebrow {
+  color: var(--section-accent);
+}
+
+.section--bg-primary .section-btn--primary,
+.section--bg-dark .section-btn--primary {
+  background: var(--white);
+  color: var(--section-btn-color, var(--primary));
+  box-shadow: none;
+}
+
+.section--bg-primary .section-btn--primary:hover,
+.section--bg-dark .section-btn--primary:hover {
+  background: var(--section-text-soft);
+  color: var(--section-btn-color, var(--primary));
 }
 
 /* ---- hero ---- */
@@ -755,8 +840,8 @@ img.white {
   font-size: 12.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--primary);
-  background: var(--surface-accent);
+  color: var(--section-text, var(--primary));
+  background: var(--section-overlay, var(--surface-accent));
   padding: 7px 13px;
   border-radius: var(--radius-btn);
   margin-bottom: 26px;
@@ -765,11 +850,11 @@ img.white {
 .hero__title {
   font-family: var(--font-family-title);
   font-weight: 500;
-  letter-spacing: -0.01em;
-  font-size: clamp(40px, 6vw, 66px);
-  line-height: 1.03;
+  letter-spacing: var(--hero-title-letter-spacing, -0.01em);
+  font-size: var(--hero-title-size, clamp(40px, 6vw, 66px));
+  line-height: var(--hero-title-line-height, 1.03);
   margin: 0 0 24px;
-  color: var(--text);
+  color: var(--section-text, var(--text));
 }
 
 .hero__title > div,
@@ -781,14 +866,14 @@ img.white {
 }
 
 .hero__title em {
-  color: var(--primary);
+  color: var(--section-accent, var(--primary));
   font-style: italic;
 }
 
 .hero__sub {
-  font-size: 19px;
-  color: var(--label-color);
-  max-width: 480px;
+  font-size: var(--hero-sub-size, 19px);
+  color: var(--section-text-soft, var(--label-color));
+  max-width: var(--hero-sub-max-width, 480px);
   margin: 0 0 34px;
 }
 
@@ -929,11 +1014,14 @@ img.white {
 
 .hero.hero--has-bg {
   position: relative;
-  left: 50%;
-  right: 50%;
-  width: 100vw;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  left: var(--section-flat-offset, 50%);
+  right: var(--section-flat-offset, 50%);
+  width: var(--section-flat-width, 100vw);
+  margin-left: var(--section-flat-margin-x, -50vw);
+  margin-right: var(--section-flat-margin-x, -50vw);
+  --section-text: var(--white);
+  --section-text-soft: var(--white);
+  --section-overlay: rgba(255, 255, 255, .15);
 }
 
 .hero.hero--has-bg .hero__bg {
@@ -965,16 +1053,6 @@ img.white {
   max-width: 720px;
 }
 
-.hero.hero--has-bg .hero__badge {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-}
-
-.hero.hero--has-bg .hero__title,
-.hero.hero--has-bg .hero__sub {
-  color: #fff;
-}
-
 .hero.hero--has-bg .hero__sub {
   margin-left: auto;
   margin-right: auto;
@@ -991,9 +1069,22 @@ img.white {
 
 /* ---- feature_bar ---- */
 .feature-bar {
-  background: var(--surface-alt);
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--section-background, var(--surface-alt));
+  border-top: 1px solid var(--section-border, var(--border-color));
+  border-bottom: 1px solid var(--section-border, var(--border-color));
+}
+
+.feature-bar.section--bg-primary,
+.feature-bar.section--bg-dark {
+  border-top: none;
+  border-bottom: none;
+}
+
+.feature-bar.section--bg-muted .feature-bar__grid,
+.feature-bar.section--bg-primary .feature-bar__grid,
+.feature-bar.section--bg-dark .feature-bar__grid {
+  max-width: var(--body-max-width, 1440px);
+  margin: 0 auto;
 }
 
 .feature-bar__grid {
@@ -1001,17 +1092,21 @@ img.white {
   grid-template-columns: repeat(2, 1fr);
 }
 
+.feature-bar__grid[data-count="1"] {
+  grid-template-columns: 1fr;
+}
+
 .feature-bar__item {
   padding: 24px 26px;
   border-right: 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--section-border, var(--border-color));
   font-size: 14px;
-  color: var(--label-color);
+  color: var(--section-text-soft, var(--label-color));
 }
 
 .feature-bar__item b {
   display: block;
-  color: var(--text);
+  color: var(--section-text, var(--text));
   font-family: var(--font-family-title);
   font-size: 17px;
   margin-bottom: 3px;
@@ -1290,8 +1385,11 @@ img.white {
   .feature-bar__grid {
     grid-template-columns: repeat(3, 1fr);
   }
+  .feature-bar__grid[data-count="2"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .feature-bar__item {
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--section-border, var(--border-color));
     border-bottom: none;
   }
   .feature-bar__item:last-child {
@@ -1301,7 +1399,7 @@ img.white {
     border-right: 0;
   }
   .feature-bar__item:nth-child(n+4) {
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--section-border, var(--border-color));
   }
   .section-features,
   .section-steps,
@@ -1347,8 +1445,14 @@ img.white {
   .feature-bar__grid {
     grid-template-columns: repeat(5, 1fr);
   }
-  .feature-bar__item:nth-child(3) {
-    border-right: 1px solid var(--border-color);
+  .feature-bar__grid[data-count="3"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .feature-bar__grid[data-count="4"] {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .feature-bar__item:nth-child(3):not(:last-child) {
+    border-right: 1px solid var(--section-border, var(--border-color));
   }
   .feature-bar__item:nth-child(n+4) {
     border-top: none;
@@ -1854,6 +1958,22 @@ img.white {
   color: #0056b3;
 }
 
+/* RICH TEXT */
+b,
+strong,
+i,
+em,
+u,
+s,
+del,
+ins,
+sub,
+sup,
+small,
+span {
+  color: inherit;
+}
+
 /* SIZES */
 .width-100,
 .width-125,
@@ -2091,9 +2211,7 @@ img.white {
 }
 
 .slider-title a,
-.slider-title a strong,
-.slider-text a,
-.slider-text a strong {
+.slider-text a {
   color: #fff;
   text-decoration: none;
 }

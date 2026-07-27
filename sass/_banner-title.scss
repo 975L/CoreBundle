@@ -6,9 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Full-bleed breakout (stretches past the page's normal content container), same technique as
-// _slider.scss's freeflow layout - kept CSS-only here (no --slider-freeflow-vw/JS) since this block
-// is static, at the cost of the same few-pixels-of-scrollbar edge case freeflow's raw fallback has
+// Full-bleed breakout past the page container, same technique as _slider.scss's freeflow but CSS-only
 .banner-title {
     position: relative;
     left: 50%;

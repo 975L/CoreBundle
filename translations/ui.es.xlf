@@ -1430,6 +1430,30 @@
                 <source>label.block_showcase_help</source>
                 <target>Una galería de todos los tipos de bloques disponibles, con una vista previa en vivo de cada uno - útil para elegir cuál añadir a una página</target>
             </trans-unit>
+            <trans-unit id="543">
+                <source>label.section_background</source>
+                <target>Fondo de la sección</target>
+            </trans-unit>
+            <trans-unit id="544">
+                <source>label.section_background_help</source>
+                <target>Pinta la sección como un plano de ancho completo: los textos, filetes y botones que contiene se invierten automáticamente para seguir siendo legibles.</target>
+            </trans-unit>
+            <trans-unit id="545">
+                <source>label.section_background_none</source>
+                <target>Ninguno (fondo de página)</target>
+            </trans-unit>
+            <trans-unit id="546">
+                <source>label.section_background_muted</source>
+                <target>Gris claro</target>
+            </trans-unit>
+            <trans-unit id="547">
+                <source>label.section_background_primary</source>
+                <target>Color principal</target>
+            </trans-unit>
+            <trans-unit id="548">
+                <source>label.section_background_dark</source>
+                <target>Oscuro</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -20,6 +20,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class HeroType extends AbstractType
 {
     use HasAnchorFieldTrait;
+    use HasBackgroundFieldTrait;
 
     public function __construct(private readonly BlockAnchorSlugger $anchorSlugger)
     {
@@ -57,7 +58,13 @@ class HeroType extends AbstractType
                 'help' => 'label.hero_background_image_help',
                 'required' => false,
                 'label_attr' => ['class' => 'checkbox-switch'],
-            ])
+            ]);
+
+        // Placed right after the background image it competes with: a hero showing one ignores the flat
+        // (see components/Hero/Hero.html.twig), the image already painting the whole section
+        $this->addBackgroundField($builder);
+
+        $builder
             ->add('primaryLabel', TextType::class, [
                 'label' => 'label.primary_label',
             ])

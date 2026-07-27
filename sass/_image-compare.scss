@@ -15,13 +15,11 @@
     display: block;
     width: 100%;
     height: auto;
-    // No -webkit-user-drag here: both <img> already carry draggable="false" (see ImageCompare.html.twig),
-    // which does the same in every browser rather than WebKit only, and isn't a vendor extension
+    // No -webkit-user-drag: both <img> carry draggable="false", same effect without a vendor extension
     user-select: none;
 }
 
-// The "after" image is in normal flow (it sizes the frame); "before" is stacked on top of it and
-// clipped to --image-compare-position, itself kept in sync with the range input by image-compare.js
+// "after" sizes the frame; "before" is stacked over it, clipped to --image-compare-position
 .image-compare-before {
     position: absolute;
     inset: 0;
@@ -96,9 +94,7 @@
     right: 10px;
 }
 
-// The native range input is the accessible/keyboard driver of --image-compare-position (see
-// image-compare.js's "update" action) - kept visible but unobtrusive under the frame rather than
-// invisibly overlaid on it, so both dragging the frame and using the range control stay obvious
+// Keyboard driver of --image-compare-position, kept visible under the frame rather than overlaid on it
 .image-compare-range {
     display: block;
     width: 100%;

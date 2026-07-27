@@ -1,12 +1,24 @@
-{# <twig:c975LUi:Text:Section title="{{ title }}" slug="{{ slug }}" content="{{ content }}" [src="{{ vich_uploader_asset(media) }}"] [alt="{{ media.alt }}"]/> #}
+{# <twig:c975LUi:Text:Section title="{{ title }}" slug="{{ slug }}" content="{{ content }}" [eyebrow=""] [src="{{ vich_uploader_asset(media) }}"] [alt="{{ media.alt }}"] [background=""]/> #}
+{% set eyebrow = eyebrow|default('') %}
 {# <section> only when there is a heading to go with it, a plain <div> otherwise - HTML's own advice for a
    grouping with no heading (and what the W3C validator asks for), this block commonly opening a page with
    just a logo and a paragraph right under the page's own <h1>, where a second heading would be redundant.
    id only when the anchor slug is set: an empty id="" is invalid HTML, and a duplicate of every other one #}
-{% set tag = title ? 'section' : 'div' %}
-<{{ tag }} class="text-section"{% if slug|default('') %} id="{{ slug }}"{% endif %}>
+{% set tag = (title or eyebrow) ? 'section' : 'div' %}
+{# Optional colored flat (see .section--bg-* in sass/_page-sections.scss). Matched against the three known
+   variants rather than interpolated as-is: the value comes from a block's stored data, which must never be
+   able to write an arbitrary class name into the markup #}
+{% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<{{ tag }} class="text-section{{ background }}"{% if slug|default('') %} id="{{ slug }}"{% endif %}>
     <div class="section-wrap">
-        {% if title %}<h2>{{ title }}</h2>{% endif %}
+        {# Same heading rule as the Section:* components (see components/Section/_head.html.twig): with no
+           title, the eyebrow is the section's own heading and becomes the <h2>, keeping its eyebrow look #}
+        {% if title %}
+            {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+            <h2>{{ title }}</h2>
+        {% elseif eyebrow %}
+            <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+        {% endif %}
         {% if src is defined and src %}
             <twig:c975LUi:Image:Image imgSrc="{{ src }}" alt="{{ alt|default('') }}" class="img-rounded img-responsive"/>
         {% endif %}

@@ -6,8 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Same reasoning as .block-animation (see _animations-media.scss): stays transparent to the
-// parent's own grid/flex layout, only exists to host data-block-id/data-block-edit-url.
+// Transparent to the parent's layout (as .block-animation), only hosts data-block-id/data-block-edit-url
 .block-editable {
     display: contents;
 }
@@ -30,8 +29,7 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease;
-    // Right-aligns onto the block's own right edge (see block-edit-overlay.js position()) regardless
-    // of the button's own width, which varies with its translated label.
+    // Right-aligns on the block's edge whatever the width of its translated label
     transform: translateX(-100%);
 }
 
@@ -40,9 +38,7 @@
     pointer-events: auto;
 }
 
-// SiteBundle's link styles (_links.scss: "a:hover, a:visited:hover { color: var(--link-color); ... }")
-// outrank a bare ".block-edit-overlay-btn" on specificity (element+pseudo-class beats a single class) -
-// repeated here as ".block-edit-overlay-btn:hover"/":visited" (class+pseudo-class) to stay on --button-color.
+// The theme's "a:hover"/"a:visited" outrank a bare class, so they are repeated at the same specificity
 .block-edit-overlay-btn,
 .block-edit-overlay-btn:hover,
 .block-edit-overlay-btn:visited,
@@ -56,9 +52,7 @@
     outline-offset: 2px;
 }
 
-// SiteBundle's typography reset (`* { color: var(--text); }`) sets color on every element,
-// including the icon/label below - plain CSS inheritance from .block-edit-overlay-btn loses to
-// that explicit rule, so it's overridden back here for every descendant instead.
+// The theme colors every element directly, so inheritance is restated for the icon/label
 .block-edit-overlay-btn * {
     color: inherit;
 }

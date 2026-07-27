@@ -44,7 +44,7 @@ class HeroTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['badge', 'title', 'titleLevel', 'subtitle', 'hasBackgroundImage', 'primaryLabel', 'primaryUrl', 'secondaryLabel', 'secondaryUrl', 'statValue', 'statLabel', 'anchor'] as $field) {
+        foreach (['badge', 'title', 'titleLevel', 'subtitle', 'hasBackgroundImage', 'background', 'primaryLabel', 'primaryUrl', 'secondaryLabel', 'secondaryUrl', 'statValue', 'statLabel', 'anchor'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the Hero form");
         }
     }

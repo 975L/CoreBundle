@@ -1,5 +1,27 @@
 # ChangeLog
 
+## v1.11.0
+
+- Added `--section-flat-offset`/`--section-flat-width`/`--section-flat-margin-x`, the colored flats' full-bleed breakout (27/07/2026)
+- `.hero--has-bg` reads the same three (27/07/2026)
+- Added `--hero-title-size`/`-letter-spacing`/`-line-height` and `--hero-sub-size`/`--hero-sub-max-width` (27/07/2026)
+- Added the `eyebrow` field to the `text_section` block (27/07/2026)
+- The `Text:Section` component takes an `eyebrow` prop (27/07/2026)
+- With no title, a `text_section`'s eyebrow becomes the section's `<h2>`, as the `Section:*` components (27/07/2026)
+- `TextSectionType` now derives the anchor slug from the eyebrow when the block has no title (27/07/2026)
+- Added the `background` field to the `hero`/`feature_bar`/`text_section` blocks, painting the section as a full-width colored flat - light grey, primary color or dark (27/07/2026)
+- Added the `.section--bg-muted`/`--bg-primary`/`--bg-dark` variants to `sass/_page-sections.scss`, inverting the text, dividers, chips and buttons a flat holds (27/07/2026)
+- Added `Form\Block\HasBackgroundFieldTrait`, the opt-in any other section kind uses to offer the same field (27/07/2026)
+- The `Hero`/`Feature:Bar`/`Text:Section` components take a `background` prop (27/07/2026)
+- `.hero--has-bg` now expresses its own inversion through the same `--section-*` properties (27/07/2026)
+- Fixed a `feature_bar` holding fewer than five entries trailing as many empty columns to its right (27/07/2026)
+- Fixed the divider hanging off the right edge of a three-entry `feature_bar` from 1025px up (27/07/2026)
+- Added `SectionBackgroundTest`, locking the variant whitelist, the block adapters passing the value on, and every rule reading a `--section-*` property with its neutral fallback (27/07/2026)
+- Added `sass/_rich-text.scss`, putting `color: inherit` back on `<b>`/`<strong>`/`<em>` and the other inline formatting tags (27/07/2026)
+- Fixed a bolded word in a hero title turning black instead of keeping the color of the text around it (27/07/2026)
+- Removed the `.slider-title a strong`/`.slider-text a strong` rules, the new base layer covering them (27/07/2026)
+- Added `RichTextInheritColorTest`, locking those rules in the compiled stylesheets (27/07/2026)
+
 ## v1.10.2
 
 - Fixed `.hero__media img` declaring no `height`, letting the intrinsic `height` attribute added in v1.10.1 override its `aspect-ratio` and blow up every hero (26/07/2026)

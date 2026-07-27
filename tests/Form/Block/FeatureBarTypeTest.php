@@ -33,6 +33,7 @@ class FeatureBarTypeTest extends TestCase
         (new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
 
         $this->assertArrayHasKey('items', $added);
+        $this->assertArrayHasKey('background', $added);
         $this->assertSame(CollectionType::class, $added['items']['type']);
         $this->assertSame(FeatureItemType::class, $added['items']['options']['entry_type']);
         $this->assertTrue($added['items']['options']['allow_add']);

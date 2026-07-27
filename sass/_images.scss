@@ -53,17 +53,12 @@ img.white {
     filter: invert(99%) sepia(16%) saturate(3%) hue-rotate(50deg) brightness(103%) contrast(100%);
 }
 
-// The iframe itself stays a plain inline replaced element (no width/height forced on it, see
-// video-iframe.js) - without this, it hugs the container's left edge like any inline content
-// instead of centering, since display:block alone (from .img-responsive) doesn't center inline children
+// The iframe stays an inline replaced element, so it takes its parent's text-align to be centered
 .video-iframe-consent {
     text-align: center;
 }
 
-// Responsive cap only - the actual per-instance width/height come from a real px value set by
-// video-iframe.js via a higher-specificity #id-scoped rule (see createNoncedStyleElement() there),
-// which is what actually overrides c975l/site-bundle's generic "iframe { width; aspect-ratio }"
-// (sass/_iframe.scss, applies to every bare <iframe> site-wide)
+// Responsive cap only - the real width/height come from video-iframe.js's #id-scoped rule
 .video-iframe-consent iframe {
     max-width: 100%;
 }
@@ -81,7 +76,7 @@ img.white {
     border-radius: var(--radius-btn);
 }
 
-// Shared by the "video", "video_iframe" and "audio" blocks, all three rendering the same <figure>/title/description structure
+// Shared by the "video", "video_iframe" and "audio" blocks, all three rendering the same <figure>
 .video-figure,
 .video-iframe-figure,
 .audio-figure {

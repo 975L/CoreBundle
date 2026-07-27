@@ -68,7 +68,7 @@ class TextSectionTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['title', 'slug', 'content'] as $field) {
+        foreach (['eyebrow', 'title', 'slug', 'content', 'background'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the TextSection form");
         }
     }
@@ -78,6 +78,13 @@ class TextSectionTypeTest extends TestCase
         $added = $this->buildAddedFields();
 
         $this->assertFalse($added['title']['required']);
+    }
+
+    public function testEyebrowIsOptional(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertFalse($added['eyebrow']['required']);
     }
 
     public function testSubmitListenerDerivesSlugFromTitle(): void
@@ -92,6 +99,21 @@ class TextSectionTypeTest extends TestCase
         $data = $this->fireSubmit(['title' => '']);
 
         $this->assertSame('', $data['slug']);
+    }
+
+    // Without a title the eyebrow is the section's own heading, so the anchor follows it rather than disappearing
+    public function testSubmitListenerDerivesSlugFromEyebrowWhenTitleIsEmpty(): void
+    {
+        $data = $this->fireSubmit(['title' => '', 'eyebrow' => 'Notre manifeste']);
+
+        $this->assertSame('notre-manifeste', $data['slug']);
+    }
+
+    public function testSubmitListenerPrefersTitleOverEyebrowForSlug(): void
+    {
+        $data = $this->fireSubmit(['title' => 'Nos services', 'eyebrow' => 'Ce que nous faisons']);
+
+        $this->assertSame('nos-services', $data['slug']);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

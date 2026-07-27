@@ -20,6 +20,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TextSectionType extends AbstractType
 {
+    use HasBackgroundFieldTrait;
+
     public function __construct(
         private readonly BlockAnchorSlugger $anchorSlugger
     ) {
@@ -28,11 +30,15 @@ class TextSectionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('eyebrow', TextType::class, [
+                'label'    => 'label.eyebrow',
+                'required' => false,
+            ])
             ->add('title', TextType::class, [
                 'label'    => 'label.title',
                 'required' => false,
             ])
-            // Not user-editable: derived from the title below, used as the in-page anchor
+            // Not user-editable: derived from the title above, or from the eyebrow when there is none, used as the in-page anchor
             ->add('slug', HiddenType::class, [
                 'required' => false,
             ])
@@ -40,11 +46,14 @@ class TextSectionType extends AbstractType
                 'label' => 'label.content',
             ]);
 
+        $this->addBackgroundField($builder);
+
         $builder->addEventListener(
             FormEvents::SUBMIT,
             function (FormEvent $event): void {
                 $data = $event->getData();
-                $data['slug'] = $this->anchorSlugger->slugify(null, $data['title'] ?? null) ?? '';
+                // The eyebrow takes over as the slug's source when there is no title: it is then the section's own heading (see components/Text/Section.html.twig), and the in-page anchor must not vanish just because the heading was typed in the other field
+                $data['slug'] = $this->anchorSlugger->slugify($data['title'] ?? null, $data['eyebrow'] ?? null) ?? '';
                 $event->setData($data);
             }
         );

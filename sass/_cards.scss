@@ -8,12 +8,8 @@
     gap: 20px;
 }
 
-// A run of consecutive "card" blocks renders as a bare ".cards" row with no ".section"/".section-wrap"
-// around it (see Blocks.html.twig), unlike every other top-level block kind - so on its own it never
-// aligned with the page's own max-width/padding rhythm (sass/_page-sections.scss). Only constrain it
-// in that exact bare context: ".blocks" is ".blocks > .cards" here (not just ".cards") because ".cards"
-// is reused *inside* an existing ".section-wrap" by the collection block's default variant (see
-// Collection/Grid.html.twig) and must not double up there.
+// A run of "card" blocks renders as a bare ".cards" with no ".section-wrap" around it, so it needs the
+// page's own measure - scoped to ".blocks >", ".cards" being reused inside a ".section-wrap" elsewhere
 .blocks > .cards {
     box-sizing: border-box;
     max-width: 1312px;
@@ -22,9 +18,7 @@
     padding-right: clamp(20px, 5vw, 64px);
 }
 
-// 380px (not 400px): three cards + two 20px gaps (1180px) need to fit inside ".section-wrap"'s own
-// 1184px content measure (sass/_page-sections.scss) so a row of three cards lines up with every
-// other section on the page instead of needing its container widened past the page's own rhythm.
+// 380px, not 400px: three cards + two 20px gaps must fit ".section-wrap"'s 1184px measure
 .card {
     margin: 1em auto;
     width: clamp(300px, 380px, 90vw);
@@ -35,8 +29,7 @@
     flex-direction: column;
 }
 
-// ".cards" already spaces its children via "gap" - without this, a card's own "margin" stacks on
-// top of that gap, making rows sit further apart than cards within the same row
+// ".cards" already spaces its children with "gap" - a card's own margin would stack on top of it
 .cards > .card {
     margin: 0;
 }
@@ -52,12 +45,7 @@ h2.card-header {
     border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
 
-// Title link (e.g. a collection item's card, see CollectionItem.html.twig) - without these, two
-// global rules with the same specificity win on any directly-matched element regardless of source
-// order: the universal "*" (sass/_typography.scss) sets font-family to the body font instead of
-// the inherited h2 title font, and "a:hover" (sass/_links.scss) sets color back to var(--primary),
-// invisible on this var(--primary) background; underline on hover gives it the same clickable
-// "preview" as links in .card-body
+// Title link: the theme's "*" and "a:hover" match it directly and beat inheritance, hence restated here
 .card-header a,
 .card-header a:visited {
     color: inherit;

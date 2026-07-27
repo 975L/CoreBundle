@@ -1,4 +1,4 @@
-{# Static usage: <twig:c975LUi:Hero:Hero title="..." primaryLabel="..." primaryUrl="..." [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [hasBackgroundImage=false] [level="h1"]/> #}
+{# Static usage: <twig:c975LUi:Hero:Hero title="..." primaryLabel="..." primaryUrl="..." [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [hasBackgroundImage=false] [background=""] [level="h1"]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Hero.html.twig #}
 {% set medias = medias|default([]) %}
 {% set hasBackgroundImage = hasBackgroundImage|default(false)|to_bool %}
@@ -9,7 +9,12 @@
 {# Background mode always uses a single, static image (the first media attached) - the side-by-side
    slideshow only makes sense next to the text, not full-bleed behind it #}
 {% set bgSrc = hasBackgroundImage ? (medias|length ? vich_uploader_asset(medias|first) : src) : '' %}
-<section class="hero{{ bgSrc ? ' hero--has-bg' : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# Optional colored flat (see .section--bg-* in sass/_page-sections.scss). Matched against the three
+   known variants rather than interpolated as-is: the value comes from a block's stored data, which must
+   never be able to write an arbitrary class name into the markup. Ignored when a background image is
+   set, that variant painting the section itself #}
+{% set background = not bgSrc and background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<section class="hero{{ bgSrc ? ' hero--has-bg' : background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     {% if bgSrc %}
         {# A real <img> rather than a CSS background-image: the latter needs a style attribute, which a
            CSP nonce never covers (only <style>/<link> *elements* are). alt="" as it is purely decorative

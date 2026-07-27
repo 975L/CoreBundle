@@ -6,12 +6,8 @@
  * with this source code in the file LICENSE.
  */
 
-// A Block collection's own items area (the page/menu's top-level "blocks", or a container's "slots" -
-// see assets/js/ea-sortable.js) gets a visible drop zone: EasyAdmin renders it with no real size of its
-// own when empty (just a small "no items" line - see empty_collection in its form theme), leaving nothing
-// to aim a drag at otherwise.
-// Not a direct child: EasyAdmin wraps the widget in its own ".form-widget" div between the row
-// (carrying data-block-collection) and ".ea-form-collection-items" (see form_theme.html.twig's form_row)
+// Visible drop zone: an empty EasyAdmin collection has no size of its own, nothing to aim a drag at.
+// Not a direct child, EasyAdmin wrapping the widget in its own ".form-widget" div
 [data-block-collection] .ea-form-collection-items {
     min-height: 56px;
     border: 1px dashed transparent;
@@ -19,8 +15,7 @@
     transition: border-color .15s ease, background-color .15s ease;
 }
 
-// Toggled by ea-sortable.js on every OTHER eligible field the moment a compatible drag starts, so where a
-// dragged block can legally be dropped is obvious at a glance instead of guessed at
+// Toggled by ea-sortable.js on every other eligible field when a compatible drag starts
 .ui-drop-target {
     border-color: var(--bs-primary, #0d6efd) !important;
     background-color: rgba(13, 110, 253, 0.06);

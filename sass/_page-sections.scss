@@ -59,6 +59,14 @@ $page-section-bp-lg: 1025px;
     padding-top: clamp(24px, 4vw, 48px);
 }
 
+// Unlike the kinds above this one has no bottom padding, enough on the page background but not on a
+// colored flat, where the text would sit flush against the edge - so the band closes itself
+.text-section.section--bg-muted,
+.text-section.section--bg-primary,
+.text-section.section--bg-dark {
+    padding-bottom: clamp(24px, 4vw, 48px);
+}
+
 /* Any of the kinds above, used as a flex_columns slot instead of a top-level page block, must lose
    that same top padding - it was sized for "first thing in its own vertical stack on the page", not
    for sitting flush against a column's other slots, and would otherwise misalign the column against
@@ -110,16 +118,15 @@ $page-section-bp-lg: 1025px;
 }
 
 .section-btn--ghost {
-    color: var(--text);
-    border-bottom: 2px solid var(--primary);
+    color: var(--section-text, var(--text));
+    border-bottom: 2px solid var(--section-accent, var(--primary));
     border-radius: 0;
     padding-bottom: 3px;
 }
 
-// Without this, SiteBundle's global "a:hover" (sass/_links.scss) wins on hover and switches
-// the text to --link-color with an underline, since .section-btn--ghost has no :hover of its own
+// Else the theme's global "a:hover" wins, this class having no :hover of its own
 .section-btn--ghost:hover {
-    color: var(--text);
+    color: var(--section-text, var(--text));
     text-decoration: none;
 }
 
@@ -129,17 +136,113 @@ $page-section-bp-lg: 1025px;
     padding: 11px 20px;
 }
 
-// Same reason as .section-btn--ghost:hover above - SiteBundle's global "a:hover" would otherwise win
+// Same reason as .section-btn--ghost:hover above
 .section-btn--dark:hover {
     color: var(--button-color);
     text-decoration: none;
 }
 
+/* ---- colored background, opt-in per section ---- */
+// A flat-colored section inverts everything it holds, not just its background - each variant only
+// redefines the properties below, which every rule in this file reads with its own neutral fallback
+// Same breakout as .hero--has-bg below: the flat has to bleed past the body's --body-max-width, else it
+// paints a centered stripe between a full-width navbar and footer on any screen wider than that.
+// The three tokens carry that breakout's own values as fallbacks: a design framing its page inside
+// --body-max-width (navbar and footer included, see SiteBundle's --navbar-width/--footer-width) sets them
+// to auto/auto/0 instead, the flats then painting their own box like any other section
+.section--bg-muted,
+.section--bg-primary,
+.section--bg-dark {
+    position: relative;
+    left: var(--section-flat-offset, 50%);
+    right: var(--section-flat-offset, 50%);
+    width: var(--section-flat-width, 100vw);
+    margin-left: var(--section-flat-margin-x, -50vw);
+    margin-right: var(--section-flat-margin-x, -50vw);
+    background-color: var(--section-background);
+}
+
+// Same reasoning as the .flex-columns__col resets above: a flat used as a column slot paints its column,
+// not the page - the breakout would otherwise pull it out of the section holding it
+.flex-columns__col .section--bg-muted,
+.flex-columns__col .section--bg-primary,
+.flex-columns__col .section--bg-dark {
+    left: auto;
+    right: auto;
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.section--bg-muted {
+    --section-background: var(--section-bg-muted, var(--surface-alt));
+    --section-border: var(--border-color);
+    // Restated rather than inherited: a muted flat nested in a primary/dark one would otherwise keep its
+    // white text. Each value is the neutral the rules already fall back to, so a standalone one is unchanged
+    --section-text: var(--text);
+    --section-text-soft: var(--label-color);
+    --section-accent: var(--primary);
+    --section-overlay: var(--surface-accent);
+}
+
+// Everything but the background is shared, both flats being dark enough to carry white text - the
+// derived tones are mixed back into the flat's own color rather than fixed, staying in tune with it
+.section--bg-primary,
+.section--bg-dark {
+    --section-text: var(--white);
+    --section-text-soft: color-mix(in srgb, var(--white) 78%, var(--section-background));
+    --section-accent: color-mix(in srgb, var(--white) 88%, var(--section-background));
+    --section-border: color-mix(in srgb, var(--white) 22%, transparent);
+    --section-overlay: color-mix(in srgb, var(--white) 16%, transparent);
+}
+
+.section--bg-primary {
+    --section-background: var(--section-bg-primary, var(--primary));
+}
+
+.section--bg-dark {
+    --section-background: var(--section-bg-dark, var(--text));
+}
+
+// The theme writes a color on every element instead of letting it inherit, so a flat has to repaint its
+// descendants too, hence the "*" - declared before the per-kind rules, which refine it on source order
+.section--bg-primary,
+.section--bg-primary *,
+.section--bg-dark,
+.section--bg-dark * {
+    color: var(--section-text);
+}
+
+// Same reason as .section-btn--ghost:hover: the theme's "a:hover" outranks the blanket rule above, so a
+// link inside a flat's rich text would flip back to --link-color - the underline is left to the theme
+.section--bg-primary a:hover,
+.section--bg-dark a:hover {
+    color: var(--section-text);
+}
+
+// Declared at the top of this file, so the blanket rule above would win on source order
+.section--bg-primary .section-eyebrow,
+.section--bg-dark .section-eyebrow {
+    color: var(--section-accent);
+}
+
+// The primary CTA is a --primary flat itself, so on a colored band it inverts and drops its shadow
+.section--bg-primary .section-btn--primary,
+.section--bg-dark .section-btn--primary {
+    background: var(--white);
+    color: var(--section-btn-color, var(--primary));
+    box-shadow: none;
+}
+
+.section--bg-primary .section-btn--primary:hover,
+.section--bg-dark .section-btn--primary:hover {
+    background: var(--section-text-soft);
+    color: var(--section-btn-color, var(--primary));
+}
+
 /* ---- hero ---- */
-// justify-items/text-align: center is the stacked (single-column) default - .hero__media's
-// max-width and the text content don't fill the track's stretch width, so without it they'd
-// hug the left edge instead of centering under one another. Reset to normal/left once the
-// $page-section-bp-md query below puts text and media back side by side in two columns.
+// Centering is the stacked (single-column) default, neither the media nor the text filling the track -
+// reset once the $page-section-bp-md query below puts them back side by side
 .hero .section-wrap {
     display: grid;
     grid-template-columns: 1fr;
@@ -159,27 +262,28 @@ $page-section-bp-lg: 1025px;
     font-size: 12.5px;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: var(--primary);
-    background: var(--surface-accent);
+    color: var(--section-text, var(--primary));
+    background: var(--section-overlay, var(--surface-accent));
     padding: 7px 13px;
     border-radius: var(--radius-btn);
     margin-bottom: 26px;
 }
 
+// The hero's typographic scale goes through tokens (declared nowhere, each rule carrying its own value
+// as the fallback): it is the one place a design routinely wants bigger and tighter than the rest of the
+// site, and had to be rewritten rule by rule in every app's own stylesheet until now
 .hero__title {
     font-family: var(--font-family-title);
     font-weight: 500;
-    letter-spacing: -0.01em;
-    font-size: clamp(40px, 6vw, 66px);
-    line-height: 1.03;
+    letter-spacing: var(--hero-title-letter-spacing, -0.01em);
+    font-size: var(--hero-title-size, clamp(40px, 6vw, 66px));
+    line-height: var(--hero-title-line-height, 1.03);
     margin: 0 0 24px;
-    color: var(--text);
+    color: var(--section-text, var(--text));
 }
 
-// TrixEditor always wraps its output in a <div>, even for a single line - unwrap it from the
-// box model so the div never needs its own styling to match the h1 (mirrors .block-editable).
-// Some engines (older WebKit) don't inherit through display:contents reliably, so restate the
-// typography explicitly instead of trusting inheritance alone.
+// TrixEditor always wraps its output in a <div> - unwrapped from the box model so it needs no styling
+// of its own, with the typography restated, display: contents not inheriting reliably everywhere
 .hero__title > div,
 .hero__sub > div {
     display: contents;
@@ -189,14 +293,14 @@ $page-section-bp-lg: 1025px;
 }
 
 .hero__title em {
-    color: var(--primary);
+    color: var(--section-accent, var(--primary));
     font-style: italic;
 }
 
 .hero__sub {
-    font-size: 19px;
-    color: var(--label-color);
-    max-width: 480px;
+    font-size: var(--hero-sub-size, 19px);
+    color: var(--section-text-soft, var(--label-color));
+    max-width: var(--hero-sub-max-width, 480px);
     margin: 0 0 34px;
 }
 
@@ -208,12 +312,8 @@ $page-section-bp-lg: 1025px;
     flex-wrap: wrap;
 }
 
-// width:100% (not just max-width) matters here: below $page-section-bp-md, .hero .section-wrap uses
-// justify-items:center, so this grid item isn't stretched and would otherwise size from its own child -
-// but that child (img below) also has a percentage width, with nothing definite to resolve against. That
-// circular dependency collapses the whole card to a few px (rendering as a tiny rounded blob, not a
-// broken image). Giving .hero__media a definite width itself (resolved against the grid track) breaks the
-// cycle; above the breakpoint, justify-items:normal (stretch) already provides one for free
+// width, not just max-width: unstretched by justify-items: center below the breakpoint, this item would
+// size from a child that is itself a percentage - a circular dependency collapsing the card to a few px
 .hero__media {
     position: relative;
     width: 100%;
@@ -227,25 +327,17 @@ $page-section-bp-lg: 1025px;
     box-shadow: var(--box-shadow);
     border: 6px solid var(--card-background);
     aspect-ratio: 4 / 3.2;
-    // contain (not cover): an uploaded image whose ratio isn't already ~4/3.2 gets letterboxed inside
-    // the card instead of cropped/truncated - keeps the box size predictable for the grid layout below
+    // contain, not cover: an off-ratio upload is letterboxed rather than cropped
     object-fit: contain;
     background: var(--card-background);
     width: 100%;
-    // Mandatory alongside the width/height attributes the Hero now writes (see Hero/Hero.html.twig): those
-    // map to CSS *presentational hints*, so an unstyled "height" lets height="800" win and the box stretches
-    // to 800px, ignoring the aspect-ratio above. Declaring it here overrides the hint and keeps the 4/3.2 box
+    // Mandatory alongside the img's height attribute, a presentational hint that would otherwise win
+    // over the aspect-ratio above and stretch the box (locked by ImageAspectRatioHeightTest)
     height: auto;
 }
 
-// Decorative crossfade for a Hero with several media attached (see Hero/Hero.html.twig). Each <img> is
-// stacked absolute (inset: 0) and stays hidden (opacity: 0) except during its own turn - "turn length"
-// is a fixed 6s/slide, so the loop's total animation-duration has to grow with the actual slide count.
-// CSS keyframes can't read that count dynamically, and per-instance inline style/JS-computed values are
-// blocked outright under a nonce-based CSP (see assets/js/nonced-style-element.js) - so instead this
-// enumerates the handful of counts a Hero realistically has (2-6) via the plain data-count HTML
-// attribute (not a CSP concern, unlike a style attribute), entirely static/compiled CSS, no JS at all.
-// Beyond 6 slides, the fallback duration below still plays (just proportionally faster per image).
+// Decorative crossfade, each <img> hidden except during its own 6s turn - the total duration grows with
+// the slide count, which keyframes can't read, hence the 2-6 counts enumerated from a data-count below
 .hero__media--slideshow {
     aspect-ratio: 4 / 3.2;
 }
@@ -279,9 +371,7 @@ $page-section-bp-lg: 1025px;
     93%, 100% { opacity: 0; transform: translateX(-16px); }
 }
 
-// WCAG 2.2.2-conscious default: an editor-facing decorative crossfade has no visible pause control
-// (deliberate, see Hero/Hero.html.twig), so the one mechanism available to opt out is respected fully -
-// anyone whose OS reports a motion sensitivity preference gets a static hero, first image only, instead
+// The crossfade has no visible pause control, so this is the only way to opt out of it (WCAG 2.2.2)
 @media (prefers-reduced-motion: reduce) {
     .hero__media--slideshow img {
         animation: none;
@@ -320,21 +410,24 @@ $page-section-bp-lg: 1025px;
     color: var(--label-color);
 }
 
-// Full-bleed background-image variant (see Hero.html.twig hasBackgroundImage), same breakout technique
-// as .banner-title - kept as a modifier on .hero rather than a separate component: the text/CTA markup
-// is identical, only the layout (centered, no side image) and colors (overlay-driven) change
+// Full-bleed background-image variant, same breakout as .banner-title - a modifier rather than a
+// component of its own, the markup being identical, only the layout and colors change
 .hero.hero--has-bg {
     position: relative;
-    left: 50%;
-    right: 50%;
-    width: 100vw;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    left: var(--section-flat-offset, 50%);
+    right: var(--section-flat-offset, 50%);
+    width: var(--section-flat-width, 100vw);
+    margin-left: var(--section-flat-margin-x, -50vw);
+    margin-right: var(--section-flat-margin-x, -50vw);
+    // Same inversion as the .section--bg-* flats, but with fixed values, there being no flat color here
+    // to mix into. --section-accent is left unset on purpose, the accent color holding over a photo
+    --section-text: var(--white);
+    --section-text-soft: var(--white);
+    --section-overlay: rgba(255, 255, 255, .15);
 }
 
-// The backdrop itself, a real <img> rather than a background-image (which would need a style attribute,
-// never covered by a CSP nonce - see Hero.html.twig). z-index pinned on all three layers: the img comes
-// after the ::before in tree order, so without it the backdrop would paint over its own overlay
+// A real <img>, a background-image needing a style attribute no CSP nonce ever covers. z-index pinned on
+// all three layers, the img coming after its ::before overlay in tree order
 .hero.hero--has-bg .hero__bg {
     position: absolute;
     inset: 0;
@@ -344,8 +437,7 @@ $page-section-bp-lg: 1025px;
     z-index: 0;
 }
 
-// Fixed dark overlay so the text stays readable regardless of the uploaded image - a ::before (not an
-// extra wrapper element like .banner-title-overlay) since Hero.html.twig has no dedicated overlay div
+// Fixed dark overlay so the text stays readable whatever the image - a ::before, there being no wrapper
 .hero.hero--has-bg::before {
     content: '';
     position: absolute;
@@ -366,16 +458,6 @@ $page-section-bp-lg: 1025px;
     max-width: 720px;
 }
 
-.hero.hero--has-bg .hero__badge {
-    background: rgba(255, 255, 255, .15);
-    color: #fff;
-}
-
-.hero.hero--has-bg .hero__title,
-.hero.hero--has-bg .hero__sub {
-    color: #fff;
-}
-
 .hero.hero--has-bg .hero__sub {
     margin-left: auto;
     margin-right: auto;
@@ -392,9 +474,26 @@ $page-section-bp-lg: 1025px;
 
 /* ---- feature_bar ---- */
 .feature-bar {
-    background: var(--surface-alt);
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+    background: var(--section-background, var(--surface-alt));
+    border-top: 1px solid var(--section-border, var(--border-color));
+    border-bottom: 1px solid var(--section-border, var(--border-color));
+}
+
+// A colored band is already separated from its surroundings by its own color, hairlines redundant
+.feature-bar.section--bg-primary,
+.feature-bar.section--bg-dark {
+    border-top: none;
+    border-bottom: none;
+}
+
+// The only kind carrying the flats that holds no .section-wrap of its own: without this it would be the
+// one whose inner layout changes once the flat breaks out of --body-max-width, its items spreading edge
+// to edge while an uncolored band keeps the page width
+.feature-bar.section--bg-muted .feature-bar__grid,
+.feature-bar.section--bg-primary .feature-bar__grid,
+.feature-bar.section--bg-dark .feature-bar__grid {
+    max-width: var(--body-max-width, 1440px);
+    margin: 0 auto;
 }
 
 .feature-bar__grid {
@@ -402,17 +501,21 @@ $page-section-bp-lg: 1025px;
     grid-template-columns: repeat(2, 1fr);
 }
 
+.feature-bar__grid[data-count="1"] {
+    grid-template-columns: 1fr;
+}
+
 .feature-bar__item {
     padding: 24px 26px;
     border-right: 0;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--section-border, var(--border-color));
     font-size: 14px;
-    color: var(--label-color);
+    color: var(--section-text-soft, var(--label-color));
 }
 
 .feature-bar__item b {
     display: block;
-    color: var(--text);
+    color: var(--section-text, var(--text));
     font-family: var(--font-family-title);
     font-size: 17px;
     margin-bottom: 3px;
@@ -425,8 +528,7 @@ $page-section-bp-lg: 1025px;
     gap: 24px;
 }
 
-// Each item reuses the shared .card component (see Section/Features.html.twig) - .card's own width/margin
-// are tuned for the flex ".cards" row it usually sits in, so override both to let it fill its grid cell
+// Items reuse .card, whose width/margin are tuned for the flex ".cards" row, not for a grid cell
 .section-features .card {
     width: 100%;
     margin: 0;
@@ -588,8 +690,7 @@ $page-section-bp-lg: 1025px;
     text-decoration: none;
 }
 
-// Overrides sass/_links.scss's global "a:hover" underline - this anchor wraps the whole card
-// (image + title + text), not a text link, so underlining it on hover reads as broken, not clickable
+// Overrides the theme's "a:hover" underline: this anchor wraps a whole card, not a run of text
 .portfolio-grid__project:hover,
 .portfolio-grid__project:visited:hover {
     text-decoration: none;
@@ -605,7 +706,7 @@ $page-section-bp-lg: 1025px;
     display: block;
     width: 100%;
     height: 100%;
-    // contain (not cover): same reasoning as .hero__media img above - avoids cropping project screenshots
+    // contain, not cover: same reasoning as .hero__media img, screenshots must not be cropped
     object-fit: contain;
     background: var(--card-background);
     transition: transform .4s ease;
@@ -699,8 +800,14 @@ $page-section-bp-lg: 1025px;
         grid-template-columns: repeat(3, 1fr);
     }
 
+    // A bar holding fewer entries than the row has columns would trail empty ones, so each count below
+    // it takes exactly as many columns as it has items (data-count, as .hero__media--slideshow)
+    .feature-bar__grid[data-count="2"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
     .feature-bar__item {
-        border-right: 1px solid var(--border-color);
+        border-right: 1px solid var(--section-border, var(--border-color));
         border-bottom: none;
     }
 
@@ -713,7 +820,7 @@ $page-section-bp-lg: 1025px;
     }
 
     .feature-bar__item:nth-child(n+4) {
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--section-border, var(--border-color));
     }
 
     .section-features,
@@ -771,8 +878,18 @@ $page-section-bp-lg: 1025px;
         grid-template-columns: repeat(5, 1fr);
     }
 
-    .feature-bar__item:nth-child(3) {
-        border-right: 1px solid var(--border-color);
+    // Same as the palier above, up to the five columns this row is sized for
+    .feature-bar__grid[data-count="3"] {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .feature-bar__grid[data-count="4"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    // Item 3 ends the first row of five and gets its divider back, unless it is also the last one
+    .feature-bar__item:nth-child(3):not(:last-child) {
+        border-right: 1px solid var(--section-border, var(--border-color));
     }
 
     .feature-bar__item:nth-child(n+4) {

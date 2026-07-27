@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-07-27",
+        "description": [
+            {
+                "en": "The text section block now has an eyebrow field, the small uppercase line above the title already offered by the other section blocks",
+                "fr": "Le bloc section de texte dispose désormais d'un champ surtitre, la petite ligne en majuscules au-dessus du titre déjà proposée par les autres blocs de section",
+                "es": "El bloque sección de texto ahora tiene un campo antetítulo, la pequeña línea en mayúsculas sobre el título que ya ofrecen los demás bloques de sección"
+            },
+            {
+                "en": "The hero, feature bar and text section blocks can now be painted on a full-width colored flat, whose text and buttons invert automatically to stay readable",
+                "fr": "Les blocs héros, bandeau de points forts et section de texte peuvent désormais être peints sur un aplat de couleur pleine largeur, dont les textes et boutons s'inversent automatiquement pour rester lisibles",
+                "es": "Los bloques héroe, barra de puntos fuertes y sección de texto ahora pueden pintarse sobre un fondo de color a todo lo ancho, cuyos textos y botones se invierten automáticamente para seguir siendo legibles"
+            },
+            {
+                "en": "Putting a word in bold or italics no longer changes its color - it now keeps the color of the text around it, even on a colored background",
+                "fr": "Mettre un mot en gras ou en italique ne change plus sa couleur - il garde désormais celle du texte qui l'entoure, y compris sur un fond coloré",
+                "es": "Poner una palabra en negrita o cursiva ya no cambia su color: ahora conserva el del texto que la rodea, incluso sobre un fondo de color"
+            }
+        ]
+    },
+    {
         "date": "2026-07-26",
         "description": [
             {

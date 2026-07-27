@@ -17,6 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class FeatureBarType extends AbstractType
 {
     use HasAnchorFieldTrait;
+    use HasBackgroundFieldTrait;
 
     public function __construct(private readonly BlockAnchorSlugger $anchorSlugger)
     {
@@ -26,6 +27,7 @@ class FeatureBarType extends AbstractType
     {
         // No "title" field on this kind - the anchor field must be typed explicitly, no slug fallback
         $this->addAnchorField($builder, $this->anchorSlugger);
+        $this->addBackgroundField($builder);
 
         $builder->add('items', CollectionType::class, [
             'label' => 'label.items',

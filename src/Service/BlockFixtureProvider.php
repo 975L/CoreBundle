@@ -149,6 +149,7 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
             ],
             'text_section' => [
                 '' => [
+                    'eyebrow' => 'Surtitre de section',
                     'title' => 'Titre de section',
                     'slug' => 'titre-de-section',
                     'content' => '<p>Contenu de la section.</p>',

@@ -1431,6 +1431,30 @@
                 <source>label.block_showcase_help</source>
                 <target>Une galerie de tous les types de blocks disponibles, avec un aperçu en direct de chacun - utile pour choisir lequel ajouter à une page</target>
             </trans-unit>
+            <trans-unit id="543">
+                <source>label.section_background</source>
+                <target>Fond de la section</target>
+            </trans-unit>
+            <trans-unit id="544">
+                <source>label.section_background_help</source>
+                <target>Peint la section en aplat pleine largeur - les textes, filets et boutons qu'elle contient s'inversent automatiquement pour rester lisibles.</target>
+            </trans-unit>
+            <trans-unit id="545">
+                <source>label.section_background_none</source>
+                <target>Aucun (fond de page)</target>
+            </trans-unit>
+            <trans-unit id="546">
+                <source>label.section_background_muted</source>
+                <target>Gris clair</target>
+            </trans-unit>
+            <trans-unit id="547">
+                <source>label.section_background_primary</source>
+                <target>Couleur principale</target>
+            </trans-unit>
+            <trans-unit id="548">
+                <source>label.section_background_dark</source>
+                <target>Foncé</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

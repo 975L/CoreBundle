@@ -282,6 +282,55 @@ No `services.yaml` entry is needed for `BlockAnchorSlugger` itself: it's autowir
 
 ---
 
+## Colored backgrounds
+
+The `hero`, `feature_bar` and `text_section` kinds carry an optional **Background** field, painting the section as a full-width flat: **light grey**, the site's **primary color**, or **dark**. It exists because a colored band can't be expressed as a token: a section painted with one has to invert everything it holds - title, muted text, eyebrow, dividers, translucent chips, and the primary CTA, which is itself a `--primary` flat and turns white-on-color over one.
+
+Each variant redefines a handful of custom properties, and every section rule reads them with its own neutral value as the fallback:
+
+| Property | Read by | Neutral fallback |
+|---|---|---|
+| `--section-background` | the section's own background | its usual one (page background, `--surface-alt`…) |
+| `--section-text` | titles, `<b>` figures, the blanket color of everything inside a flat | `--text` |
+| `--section-text-soft` | subtitles, legends, muted copy | `--label-color` |
+| `--section-accent` | eyebrow, emphasized word of a title, ghost button's rule | `--primary` |
+| `--section-border` | dividers and hairlines | `--border-color` |
+| `--section-overlay` | badges and translucent chips | `--surface-accent` |
+
+A flat bleeds full-viewport-width past `--body-max-width`, else it paints a centered stripe between a full-width navbar and footer. That breakout is itself three tokens, each read with its own value as the fallback: `--section-flat-offset` (`50%`), `--section-flat-width` (`100vw`) and `--section-flat-margin-x` (`-50vw`) - `.hero--has-bg` reads the same three. A design framing its whole page inside `--body-max-width` (navbar and footer included, see SiteBundle's `--navbar-width`/`--footer-width`) sets them to `auto`/`auto`/`0` in its `theme.css`, and the flats paint their own box like any other section.
+
+So a section with no background set renders exactly as it did before the option existed - that's what `SectionBackgroundTest` locks. Only the three backgrounds themselves are tokens (`--section-bg-muted`, `--section-bg-primary`, `--section-bg-dark`, declared in SiteBundle's `sass/_variables.scss` and restated in a site's own `theme.css`); every tone a variant derives is mixed back into whichever color is set there, so retuning one line retunes the whole variant.
+
+Note the blanket `.section--bg-primary *` rule: SiteBundle's `sass/_typography.scss` writes `color` on **every** element rather than letting it inherit, so a flat has to repaint its descendants instead of just setting its own color. The per-kind rules come later in the file and refine it on equal specificity.
+
+That same `*` rule is why `sass/_rich-text.scss` exists: it puts `color: inherit` back on the inline formatting tags a rich text editor produces (`<b>`, `<strong>`, `<i>`, `<em>`, `<u>`, `<s>`, `<del>`, `<ins>`, `<sub>`, `<sup>`, `<small>`, `<span>`), so bolding a word inside a white hero title no longer turns it black. `<a>` is deliberately left out - a link keeps its own color. `RichTextInheritColorTest` locks those rules in the compiled stylesheets.
+
+To offer the same field on another section kind, `use HasBackgroundFieldTrait` and call `addBackgroundField($builder)` from `buildForm()`:
+
+```php
+use c975L\UiBundle\Form\Block\HasBackgroundFieldTrait;
+
+class MySectionType extends AbstractType
+{
+    use HasBackgroundFieldTrait;
+
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $this->addBackgroundField($builder);
+        // ...your own fields...
+    }
+}
+```
+
+Then have the component match the stored value against the known variants before turning it into a class - never interpolate it as-is, it comes from a Block's `data` column:
+
+```twig
+{% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<section class="my-section{{ background }}">...</section>
+```
+
+---
+
 ## Registering a custom block kind
 
 Run `bin/console c975l:ui:block:create` (requires `symfony/maker-bundle` in `require-dev`) to scaffold the FormType, template and test below for a new kind - it prints the `services.yaml` snippet to add once it's done. The rest of this section describes what that snippet means and the manual steps if you'd rather write them yourself.
@@ -859,14 +908,18 @@ Attaching more than one `Media` to a `hero` block switches it from a single stat
 
 A `hero` block's "Show image as a full-width background" toggle (`HeroType::$hasBackgroundImage`) instead shows the first attached image full-bleed behind the centered text, dropping the side-by-side layout and slideshow - see `.hero--has-bg` in `sass/_page-sections.scss`. That backdrop is a real `<img class="hero__bg">` rather than a CSS `background-image`: a background needs a `style` attribute, which a CSP nonce never covers (nonces only ever apply to `<style>`/`<link>` *elements*).
 
+A hero's typographic scale is retunable without touching its rules, through five custom properties each read with the bundle's own value as its fallback: `--hero-title-size` (`clamp(40px, 6vw, 66px)`), `--hero-title-letter-spacing` (`-0.01em`), `--hero-title-line-height` (`1.03`), `--hero-sub-size` (`19px`) and `--hero-sub-max-width` (`480px`). They are declared nowhere, so a site setting none of them renders exactly as before - a design wanting a bigger, tighter hero sets them in its own `theme.css` instead of restating `.hero__title`/`.hero__sub`.
+
 A `hero` block's "Heading level of the title" field (`HeroType::$titleLevel`) picks between `h1` and `h2`. Leave it on `h1` when the hero opens the page and carries its real title; switch it to `h2` when the page template already prints its own `<h1>` above the blocks, two `<h1>` on one page being announced by screen readers as two top-level headings.
 
 ### Headings and the `<section>` element
 
-Every section-level kind whose title is optional (`section_cards`, `flex_columns`, `section_features`, `portfolio_grid`, `collection`) follows the same two rules, both of them what the W3C validator asks for:
+Every section-level kind whose title is optional (`section_cards`, `flex_columns`, `section_features`, `portfolio_grid`, `collection`, `text_section`) follows the same two rules, both of them what the W3C validator asks for:
 
 - with an eyebrow but no title, the eyebrow *is* the section's heading and renders as `<h2 class="section-eyebrow">` instead of `<p>` — it keeps its exact eyebrow look, and the slots' own `<h3>` no longer skip a level down from the page's `<h1>`;
-- with neither, the wrapper renders as a `<div>` instead of a headingless `<section>` (same rule already applied to `text_section`, `feature_bar` and the `form` block).
+- with neither, the wrapper renders as a `<div>` instead of a headingless `<section>` (same rule already applied to `feature_bar` and the `form` block).
+
+`text_section` derives its in-page anchor from that same heading: from the title, or from the eyebrow when there is no title (`TextSectionType`), so moving a heading from one field to the other doesn't silently drop the anchor other pages may link to.
 
 `cta_band`, `expertise_banner` and `process_steps` are not concerned: their title is a required form field, so their `<h2>` is always there.
 
