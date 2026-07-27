@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v1.11.1
+
+- Replaced ids by hash in translations (27/07/2026)
+
 ## v1.11.0
 
 - Added `--section-flat-offset`/`--section-flat-width`/`--section-flat-margin-x`, the colored flats' full-bleed breakout (27/07/2026)

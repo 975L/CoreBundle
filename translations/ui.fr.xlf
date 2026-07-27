@@ -1,1459 +1,1458 @@
 <?xml version="1.0"?>
-<xliff version="1.2"
-    xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="ui.en.xlf">
         <body>
-            <trans-unit id="1">
-                <source>label.alert_kind</source>
-                <target>Type d'alerte</target>
-            </trans-unit>
-            <trans-unit id="2">
-                <source>label.all_rights_reserved</source>
-                <target>© Tous droits réservés</target>
-            </trans-unit>
-            <trans-unit id="3">
-                <source>label.alt_text</source>
-                <target>Texte Alternatif</target>
-            </trans-unit>
-            <trans-unit id="4">
-                <source>label.attached_to_block</source>
-                <target>Rattaché au bloc #%id% (%kind%)</target>
-            </trans-unit>
-            <trans-unit id="5">
-                <source>label.autoplay</source>
-                <target>Lecture automatique</target>
-            </trans-unit>
-            <trans-unit id="6">
-                <source>label.block_alert</source>
-                <target>Alerte</target>
-            </trans-unit>
-            <trans-unit id="7">
-                <source>label.block_alert_description</source>
-                <target>Message encadré coloré (info, succès, alerte, erreur)</target>
-            </trans-unit>
-            <trans-unit id="8">
-                <source>label.block_article</source>
-                <target>Article</target>
-            </trans-unit>
-            <trans-unit id="9">
-                <source>label.block_article_description</source>
-                <target>Texte enrichi avec image, pour un contenu éditorial classique</target>
-            </trans-unit>
-            <trans-unit id="10">
-                <source>label.block_audio</source>
-                <target>Audio</target>
-            </trans-unit>
-            <trans-unit id="11">
-                <source>label.block_audio_description</source>
-                <target>Lecteur audio intégré à partir d'un fichier</target>
-            </trans-unit>
-            <trans-unit id="156">
-                <source>label.block_banner_title</source>
-                <target>Bannière titre</target>
-            </trans-unit>
-            <trans-unit id="157">
-                <source>label.block_banner_title_description</source>
-                <target>Titre plein écran sur une image de fond</target>
-            </trans-unit>
-            <trans-unit id="12">
-                <source>label.block_button</source>
-                <target>Bouton</target>
-            </trans-unit>
-            <trans-unit id="13">
-                <source>label.block_button_description</source>
-                <target>Bouton lien avec icône, cible et style personnalisables</target>
-            </trans-unit>
-            <trans-unit id="14">
-                <source>label.block_card</source>
-                <target>Carte</target>
-            </trans-unit>
-            <trans-unit id="15">
-                <source>label.block_card_description</source>
-                <target>Carte avec titre et contenu, image et bouton optionnels</target>
-            </trans-unit>
-            <trans-unit id="213">
-                <source>label.block_document_download</source>
-                <target>Document à télécharger</target>
-            </trans-unit>
-            <trans-unit id="214">
-                <source>label.block_document_download_description</source>
-                <target>Carte de téléchargement PDF avec vignette automatique</target>
-            </trans-unit>
-            <trans-unit id="16">
-                <source>label.block_image</source>
-                <target>Image</target>
-            </trans-unit>
-            <trans-unit id="17">
-                <source>label.block_image_description</source>
-                <target>Image seule avec légende et crédits</target>
-            </trans-unit>
-            <trans-unit id="18">
-                <source>label.block_kind</source>
-                <target>Type de bloc</target>
-            </trans-unit>
-            <trans-unit id="158">
-                <source>label.block_media_required</source>
-                <target>Une image est nécessaire pour ce type de bloc.</target>
-            </trans-unit>
-            <trans-unit id="19">
-                <source>label.block_progress_bar</source>
-                <target>Barre de progression</target>
-            </trans-unit>
-            <trans-unit id="20">
-                <source>label.block_progress_bar_description</source>
-                <target>Barre de progression affichant un pourcentage</target>
-            </trans-unit>
-            <trans-unit id="21">
-                <source>label.block_rich_snippet</source>
-                <target>Rich Snippet SEO</target>
-            </trans-unit>
-            <trans-unit id="22">
-                <source>label.block_rich_snippet_description</source>
-                <target>Données structurées SEO (adresse, horaires, prix...)</target>
-            </trans-unit>
-            <trans-unit id="23">
-                <source>label.block_slider</source>
-                <target>Slider d'images/vidéos</target>
-            </trans-unit>
-            <trans-unit id="24">
-                <source>label.block_slider_description</source>
-                <target>Diaporama d'images et vidéos avec légendes et crédits par slide</target>
-            </trans-unit>
-            <trans-unit id="25">
-                <source>label.block_text_readmore</source>
-                <target>Texte avec Lire plus</target>
-            </trans-unit>
-            <trans-unit id="26">
-                <source>label.block_text_readmore_description</source>
-                <target>Texte long avec un lien Lire plus / Lire moins</target>
-            </trans-unit>
-            <trans-unit id="27">
-                <source>label.block_text_section</source>
-                <target>Section texte</target>
-            </trans-unit>
-            <trans-unit id="28">
-                <source>label.block_text_section_description</source>
-                <target>Simple section de texte enrichi</target>
-            </trans-unit>
-            <trans-unit id="29">
-                <source>label.block_video</source>
-                <target>Vidéo</target>
-            </trans-unit>
-            <trans-unit id="30">
-                <source>label.block_video_description</source>
-                <target>Lecteur vidéo intégré à partir d'un fichier</target>
-            </trans-unit>
-            <trans-unit id="31">
-                <source>label.block_video_iframe</source>
-                <target>Vidéo externe (iframe)</target>
-            </trans-unit>
-            <trans-unit id="32">
-                <source>label.block_video_iframe_description</source>
-                <target>Vidéo externe intégrée via iframe (YouTube, Vimeo...)</target>
-            </trans-unit>
-            <trans-unit id="33">
-                <source>label.blocks</source>
-                <target>Blocs</target>
-            </trans-unit>
-            <trans-unit id="34">
-                <source>label.button_label</source>
-                <target>Libellé du bouton</target>
-            </trans-unit>
-            <trans-unit id="35">
-                <source>label.button_label_help</source>
-                <target>Si vide, affiche l'URL</target>
-            </trans-unit>
-            <trans-unit id="36">
-                <source>label.caption</source>
-                <target>Légende</target>
-            </trans-unit>
-            <trans-unit id="37">
-                <source>label.caption_above</source>
-                <target>Légende au-dessus</target>
-            </trans-unit>
-            <trans-unit id="38">
-                <source>label.caption_help</source>
-                <target>Laisser vide si non utilisé</target>
-            </trans-unit>
-            <trans-unit id="39">
-                <source>label.category_elements</source>
-                <target>Éléments</target>
-            </trans-unit>
-            <trans-unit id="40">
-                <source>label.category_general</source>
-                <target>Général</target>
-            </trans-unit>
-            <trans-unit id="41">
-                <source>label.category_media</source>
-                <target>Média</target>
-            </trans-unit>
-            <trans-unit id="42">
-                <source>label.category_seo</source>
-                <target>SEO</target>
-            </trans-unit>
-            <trans-unit id="43">
-                <source>label.category_text</source>
-                <target>Texte</target>
-            </trans-unit>
-            <trans-unit id="44">
-                <source>label.choose_block_kind</source>
-                <target>Choisir le type de bloc</target>
-            </trans-unit>
-            <trans-unit id="45">
-                <source>label.city</source>
-                <target>Ville</target>
-            </trans-unit>
-            <trans-unit id="46">
-                <source>label.content</source>
-                <target>Contenu</target>
-            </trans-unit>
-            <trans-unit id="47">
-                <source>label.country</source>
-                <target>Pays</target>
-            </trans-unit>
-            <trans-unit id="48">
-                <source>label.country_code</source>
-                <target>Code pays (ex. : FR)</target>
-            </trans-unit>
-            <trans-unit id="49">
-                <source>label.credits</source>
-                <target>Crédits</target>
-            </trans-unit>
-            <trans-unit id="50">
-                <source>label.credits_help</source>
-                <target>Laisser vide si non utilisé</target>
-            </trans-unit>
-            <trans-unit id="51">
-                <source>label.css_class_circle</source>
-                <target>Cercle</target>
-            </trans-unit>
-            <trans-unit id="52">
-                <source>label.css_class_rounded</source>
-                <target>Coins arrondis</target>
-            </trans-unit>
-            <trans-unit id="53">
-                <source>label.css_class_shadow</source>
-                <target>Ombre portée</target>
-            </trans-unit>
-            <trans-unit id="54">
-                <source>label.css_class_square</source>
-                <target>Carré (recadrée)</target>
-            </trans-unit>
-            <trans-unit id="55">
-                <source>label.css_class_thumbnail</source>
-                <target>Vignette (bordure)</target>
-            </trans-unit>
-            <trans-unit id="56">
-                <source>label.css_class_width_100</source>
-                <target>Largeur 100px</target>
-            </trans-unit>
-            <trans-unit id="57">
-                <source>label.css_class_width_125</source>
-                <target>Largeur 125px</target>
-            </trans-unit>
-            <trans-unit id="58">
-                <source>label.css_class_width_150</source>
-                <target>Largeur 150px</target>
-            </trans-unit>
-            <trans-unit id="59">
-                <source>label.css_class_width_200</source>
-                <target>Largeur 200px</target>
-            </trans-unit>
-            <trans-unit id="60">
-                <source>label.css_class_width_250</source>
-                <target>Largeur 250px</target>
-            </trans-unit>
-            <trans-unit id="61">
-                <source>label.css_class_width_300</source>
-                <target>Largeur 300px</target>
-            </trans-unit>
-            <trans-unit id="62">
-                <source>label.css_class_width_350</source>
-                <target>Largeur 350px</target>
-            </trans-unit>
-            <trans-unit id="63">
-                <source>label.css_class_width_400</source>
-                <target>Largeur 400px</target>
-            </trans-unit>
-            <trans-unit id="64">
-                <source>label.css_class_width_450</source>
-                <target>Largeur 450px</target>
-            </trans-unit>
-            <trans-unit id="65">
-                <source>label.css_class_width_500</source>
-                <target>Largeur 500px</target>
-            </trans-unit>
-            <trans-unit id="66">
-                <source>label.css_classes</source>
-                <target>Classes CSS</target>
-            </trans-unit>
-            <trans-unit id="67">
-                <source>label.css_classes_help</source>
-                <target>Sélectionnez les styles à appliquer</target>
-            </trans-unit>
-            <trans-unit id="68">
-                <source>label.danger</source>
-                <target>Danger</target>
-            </trans-unit>
-            <trans-unit id="69">
-                <source>label.description</source>
-                <target>Description</target>
-            </trans-unit>
-            <trans-unit id="70">
-                <source>label.detail</source>
-                <target>Détail</target>
-            </trans-unit>
-            <trans-unit id="71">
-                <source>label.file</source>
-                <target>Fichier</target>
-            </trans-unit>
-            <trans-unit id="72">
-                <source>label.force_download</source>
-                <target>Forcer le téléchargement</target>
-            </trans-unit>
-            <trans-unit id="534">
-                <source>label.audio_media_help</source>
-                <target>Déposez le fichier audio (MP3, OGG ou WAV)</target>
-            </trans-unit>
-            <trans-unit id="74">
-                <source>label.height</source>
-                <target>Hauteur</target>
-            </trans-unit>
-            <trans-unit id="75">
-                <source>label.height_help</source>
-                <target>Détectée automatiquement à l'envoi, en pixels</target>
-            </trans-unit>
-            <trans-unit id="76">
-                <source>label.hook</source>
-                <target>Phrase d'accroche</target>
-            </trans-unit>
-            <trans-unit id="77">
-                <source>label.icon</source>
-                <target>Icône</target>
-            </trans-unit>
-            <trans-unit id="78">
-                <source>label.icon_path</source>
-                <target>Chemin de l'icône (optionnel)</target>
-            </trans-unit>
-            <trans-unit id="198">
-                <source>label.id</source>
-                <target>ID</target>
-            </trans-unit>
-            <trans-unit id="79">
-                <source>label.identifier</source>
-                <target>Identifiant</target>
-            </trans-unit>
-            <trans-unit id="80">
-                <source>label.identifier_help</source>
-                <target>Sans espaces, accents, majuscules ni caractères spéciaux</target>
-            </trans-unit>
-            <trans-unit id="81">
-                <source>label.image</source>
-                <target>Image</target>
-            </trans-unit>
-            <trans-unit id="82">
-                <source>label.information</source>
-                <target>Information</target>
-            </trans-unit>
-            <trans-unit id="83">
-                <source>label.inline</source>
-                <target>Afficher en ligne (sans balise p)</target>
-            </trans-unit>
-            <trans-unit id="84">
-                <source>label.kind</source>
-                <target>Type</target>
-            </trans-unit>
-            <trans-unit id="161">
-                <source>label.layout</source>
-                <target>Disposition</target>
-            </trans-unit>
-            <trans-unit id="162">
-                <source>label.layout_default</source>
-                <target>Standard</target>
-            </trans-unit>
-            <trans-unit id="163">
-                <source>label.layout_freeflow</source>
-                <target>Débordement</target>
-            </trans-unit>
-            <trans-unit id="164">
-                <source>label.layout_help</source>
-                <target>Standard : une slide à la fois. Débordement : toutes côte à côte, hors écran.</target>
-            </trans-unit>
-            <trans-unit id="85">
-                <source>label.link</source>
-                <target>Lien</target>
-            </trans-unit>
-            <trans-unit id="86">
-                <source>label.loop</source>
-                <target>Boucle</target>
-            </trans-unit>
-            <trans-unit id="159">
-                <source>label.max_height</source>
-                <target>Hauteur maximale</target>
-            </trans-unit>
-            <trans-unit id="160">
-                <source>label.max_height_help</source>
-                <target>En pixels, laisser vide pour une hauteur automatique</target>
-            </trans-unit>
-            <trans-unit id="87">
-                <source>label.media</source>
-                <target>Media</target>
-            </trans-unit>
-            <trans-unit id="88">
-                <source>label.media_help</source>
-                <target>Pour un fichier unique (Image/Vidéo/Audio), seul le premier compte</target>
-            </trans-unit>
-            <trans-unit id="89">
-                <source>label.media_library</source>
-                <target>Bibliothèque de médias</target>
-            </trans-unit>
-            <trans-unit id="165">
-                <source>label.media_multi_upload</source>
-                <target>Ajouter plusieurs fichiers</target>
-            </trans-unit>
-            <trans-unit id="166">
-                <source>label.media_multi_upload_help</source>
-                <target>Sélectionnez plusieurs fichiers pour les ajouter en une fois</target>
-            </trans-unit>
-            <trans-unit id="90">
-                <source>label.muted</source>
-                <target>Muet</target>
-            </trans-unit>
-            <trans-unit id="91">
-                <source>label.name</source>
-                <target>Nom</target>
-            </trans-unit>
-            <trans-unit id="92">
-                <source>label.new_tab</source>
-                <target>Nouvel Onglet</target>
-            </trans-unit>
-            <trans-unit id="93">
-                <source>label.not_used_anywhere</source>
-                <target>Pas encore utilisé</target>
-            </trans-unit>
-            <trans-unit id="94">
-                <source>label.opening_hours</source>
-                <target>Horaires</target>
-            </trans-unit>
-            <trans-unit id="95">
-                <source>label.phone</source>
-                <target>Téléphone</target>
-            </trans-unit>
-            <trans-unit id="96">
-                <source>label.position</source>
-                <target>Position</target>
-            </trans-unit>
-            <trans-unit id="97">
-                <source>label.postal_code</source>
-                <target>Code postal</target>
-            </trans-unit>
-            <trans-unit id="99">
-                <source>label.price_range</source>
-                <target>Fourchette de prix</target>
-            </trans-unit>
-            <trans-unit id="100">
-                <source>label.primary</source>
-                <target>Primaire</target>
-            </trans-unit>
-            <trans-unit id="101">
-                <source>label.progress_percent</source>
-                <target>Pourcentage (0-100)</target>
-            </trans-unit>
-            <trans-unit id="102">
-                <source>label.ratio</source>
-                <target>Ratio</target>
-            </trans-unit>
-            <trans-unit id="103">
-                <source>label.ratio_16_9</source>
-                <target>16:9</target>
-            </trans-unit>
-            <trans-unit id="104">
-                <source>label.ratio_1_1</source>
-                <target>1:1 (carré)</target>
-            </trans-unit>
-            <trans-unit id="105">
-                <source>label.ratio_21_9</source>
-                <target>21:9 (panoramique)</target>
-            </trans-unit>
-            <trans-unit id="106">
-                <source>label.ratio_2_3</source>
-                <target>2:3 (portrait)</target>
-            </trans-unit>
-            <trans-unit id="107">
-                <source>label.ratio_3_2</source>
-                <target>3:2</target>
-            </trans-unit>
-            <trans-unit id="108">
-                <source>label.ratio_3_4</source>
-                <target>3:4 (portrait)</target>
-            </trans-unit>
-            <trans-unit id="109">
-                <source>label.ratio_4_3</source>
-                <target>4:3</target>
-            </trans-unit>
-            <trans-unit id="110">
-                <source>label.ratio_9_16</source>
-                <target>9:16 (story)</target>
-            </trans-unit>
-            <trans-unit id="111">
-                <source>label.ratio_free</source>
-                <target>Libre</target>
-            </trans-unit>
-            <trans-unit id="112">
-                <source>label.ratio_help</source>
-                <target>Libre garde le ratio naturel de l'image ; un ratio fixe la recadre</target>
-            </trans-unit>
-            <trans-unit id="113">
-                <source>label.rights_reserved</source>
-                <target>Droits réservés</target>
-            </trans-unit>
-            <trans-unit id="114">
-                <source>label.same_window</source>
-                <target>Même Fenêtre</target>
-            </trans-unit>
-            <trans-unit id="115">
-                <source>label.schema_type</source>
-                <target>Type Schema.org</target>
-            </trans-unit>
-            <trans-unit id="116">
-                <source>label.search_block_kind</source>
-                <target>Rechercher un type de bloc...</target>
-            </trans-unit>
-            <trans-unit id="117">
-                <source>label.search_icon</source>
-                <target>Rechercher une icône...</target>
-            </trans-unit>
-            <trans-unit id="118">
-                <source>label.secondary</source>
-                <target>Secondaire</target>
-            </trans-unit>
-            <trans-unit id="119">
-                <source>label.show_percent</source>
-                <target>Afficher le pourcentage</target>
-            </trans-unit>
-            <trans-unit id="120">
-                <source>label.slide_duration</source>
-                <target>Durée entre slides en ms (0 = manuel)</target>
-            </trans-unit>
-            <trans-unit id="121">
-                <source>label.slides</source>
-                <target>Diapositives</target>
-            </trans-unit>
-            <trans-unit id="122">
-                <source>label.slug</source>
-                <target>Slug</target>
-            </trans-unit>
-            <trans-unit id="123">
-                <source>label.street_address</source>
-                <target>Rue</target>
-            </trans-unit>
-            <trans-unit id="124">
-                <source>label.style</source>
-                <target>Style</target>
-            </trans-unit>
-            <trans-unit id="125">
-                <source>label.success</source>
-                <target>Succès</target>
-            </trans-unit>
-            <trans-unit id="126">
-                <source>label.target</source>
-                <target>Cible</target>
-            </trans-unit>
-            <trans-unit id="127">
-                <source>label.text</source>
-                <target>Texte</target>
-            </trans-unit>
-            <trans-unit id="128">
-                <source>label.title</source>
-                <target>Titre</target>
-            </trans-unit>
-            <trans-unit id="129">
-                <source>label.title_level</source>
-                <target>Niveau de titre</target>
-            </trans-unit>
-            <trans-unit id="130">
-                <source>label.url</source>
-                <target>URL</target>
-            </trans-unit>
-            <trans-unit id="131">
-                <source>label.used_in</source>
-                <target>Utilisé dans</target>
-            </trans-unit>
-            <trans-unit id="535">
-                <source>label.video_file</source>
-                <target>Fichier vidéo</target>
-            </trans-unit>
-            <trans-unit id="536">
-                <source>label.video_file_or_poster</source>
-                <target>Fichier vidéo ou image de couverture</target>
-            </trans-unit>
-            <trans-unit id="537">
-                <source>label.video_poster</source>
-                <target>Image de couverture</target>
-            </trans-unit>
-            <trans-unit id="538">
-                <source>label.hero_title_level</source>
-                <target>Niveau de titre</target>
-            </trans-unit>
-            <trans-unit id="539">
-                <source>label.hero_title_level_help</source>
-                <target>h1 quand ce hero ouvre la page et en porte le titre, h2 quand le gabarit de page affiche déjà son propre titre au-dessus.</target>
-            </trans-unit>
-            <trans-unit id="531">
-                <source>label.video_media_help</source>
-                <target>Déposez le fichier vidéo (MP4, WebM ou OGG) et, si vous le souhaitez, une image servant de couverture au lecteur</target>
-            </trans-unit>
-            <trans-unit id="532">
-                <source>label.video_options</source>
-                <target>Options de lecture</target>
-            </trans-unit>
-            <trans-unit id="533">
-                <source>label.video_options_help</source>
-                <target>La plupart des navigateurs n'autorisent la lecture automatique que sur une vidéo muette</target>
-            </trans-unit>
-            <trans-unit id="133">
-                <source>label.video_url</source>
-                <target>URL de la vidéo (YouTube, Vimeo...)</target>
-            </trans-unit>
-            <trans-unit id="524">
-                <source>label.video_no_cookie</source>
-                <target>Utiliser la version sans cookie (YouTube uniquement)</target>
-            </trans-unit>
-            <trans-unit id="134">
-                <source>label.warning</source>
-                <target>Avertissement</target>
-            </trans-unit>
-            <trans-unit id="135">
-                <source>label.width</source>
-                <target>Largeur</target>
-            </trans-unit>
-            <trans-unit id="136">
-                <source>label.width_help</source>
-                <target>Détectée automatiquement à l'envoi, en pixels</target>
-            </trans-unit>
-            <trans-unit id="137">
-                <source>label.animation</source>
-                <target>Animation</target>
-            </trans-unit>
-            <trans-unit id="138">
-                <source>label.animation_help</source>
-                <target>Effet d'entrée joué quand le bloc entre dans l'écran au défilement</target>
-            </trans-unit>
-            <trans-unit id="139">
-                <source>label.animation_none</source>
-                <target>Aucune</target>
-            </trans-unit>
-            <trans-unit id="140">
-                <source>label.animation_fade_in</source>
-                <target>Fondu</target>
-            </trans-unit>
-            <trans-unit id="141">
-                <source>label.animation_fade_in_bottom</source>
-                <target>Fondu depuis le bas</target>
-            </trans-unit>
-            <trans-unit id="142">
-                <source>label.animation_fade_in_top</source>
-                <target>Fondu depuis le haut</target>
-            </trans-unit>
-            <trans-unit id="143">
-                <source>label.animation_fade_in_left</source>
-                <target>Fondu depuis la gauche</target>
-            </trans-unit>
-            <trans-unit id="144">
-                <source>label.animation_fade_in_right</source>
-                <target>Fondu depuis la droite</target>
-            </trans-unit>
-            <trans-unit id="145">
-                <source>label.animation_slide_in_left</source>
-                <target>Glissement depuis la gauche</target>
-            </trans-unit>
-            <trans-unit id="146">
-                <source>label.animation_slide_in_right</source>
-                <target>Glissement depuis la droite</target>
-            </trans-unit>
-            <trans-unit id="147">
-                <source>label.animation_zoom_in</source>
-                <target>Zoom avant</target>
-            </trans-unit>
-            <trans-unit id="148">
-                <source>label.fixed_icon_invalid_format</source>
-                <target>SVG non supporté pour ce rôle - utilisez une image PNG, JPG, GIF ou WEBP</target>
-            </trans-unit>
-            <trans-unit id="149">
-                <source>label.block_clear_cache</source>
-                <target>Vider le cache des blocks</target>
-            </trans-unit>
-            <trans-unit id="150">
+            <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
                 <target>Cache des blocks vidé</target>
             </trans-unit>
-            <trans-unit id="151">
-                <source>label.info_media</source>
-                <target>Tous les médias téléversés (pages, blocks, graphismes du site). Modifiez la légende, le texte alternatif ou les crédits d'un média ; les graphiques globaux du site (favicon, logo...) restent en lecture seule ici et se gèrent depuis Graphiques du site.</target>
-            </trans-unit>
-            <trans-unit id="167">
-                <source>label.category_sections</source>
-                <target>Sections de page</target>
-            </trans-unit>
-            <trans-unit id="168">
-                <source>label.block_hero</source>
-                <target>Hero</target>
-            </trans-unit>
-            <trans-unit id="169">
-                <source>label.block_hero_description</source>
-                <target>Bandeau d'accroche avec titre, sous-titre, boutons d'action et image</target>
-            </trans-unit>
-            <trans-unit id="170">
-                <source>label.block_feature_bar</source>
-                <target>Bande de réassurance</target>
-            </trans-unit>
-            <trans-unit id="171">
-                <source>label.block_feature_bar_description</source>
-                <target>Rangée d'arguments courts (titre + légende)</target>
-            </trans-unit>
-            <trans-unit id="172">
-                <source>label.block_section_features</source>
-                <target>Grille d'atouts</target>
-            </trans-unit>
-            <trans-unit id="173">
-                <source>label.block_section_features_description</source>
-                <target>Titre de section suivi d'une grille d'atouts (icône, titre, texte)</target>
-            </trans-unit>
-            <trans-unit id="174">
-                <source>label.block_expertise_banner</source>
-                <target>Bandeau d'expertise</target>
-            </trans-unit>
-            <trans-unit id="175">
-                <source>label.block_expertise_banner_description</source>
-                <target>Panneau sombre avec texte et liste de tags</target>
-            </trans-unit>
-            <trans-unit id="176">
-                <source>label.block_process_steps</source>
-                <target>Étapes de méthode</target>
-            </trans-unit>
-            <trans-unit id="177">
-                <source>label.block_process_steps_description</source>
-                <target>Titre de section suivi d'étapes numérotées</target>
-            </trans-unit>
-            <trans-unit id="178">
-                <source>label.block_cta_band</source>
-                <target>Bandeau d'appel à l'action</target>
-            </trans-unit>
-            <trans-unit id="179">
-                <source>label.block_cta_band_description</source>
-                <target>Panneau centré avec titre, texte et bouton</target>
-            </trans-unit>
-            <trans-unit id="180">
-                <source>label.badge</source>
-                <target>Badge</target>
-            </trans-unit>
-            <trans-unit id="181">
-                <source>label.subtitle</source>
-                <target>Sous-titre</target>
-            </trans-unit>
-            <trans-unit id="182">
-                <source>label.primary_label</source>
-                <target>Libellé du bouton principal</target>
-            </trans-unit>
-            <trans-unit id="183">
-                <source>label.primary_url</source>
-                <target>URL du bouton principal</target>
-            </trans-unit>
-            <trans-unit id="184">
-                <source>label.secondary_label</source>
-                <target>Libellé du bouton secondaire</target>
-            </trans-unit>
-            <trans-unit id="185">
-                <source>label.secondary_url</source>
-                <target>URL du bouton secondaire</target>
-            </trans-unit>
-            <trans-unit id="186">
-                <source>label.stat_value</source>
-                <target>Valeur du chiffre clé</target>
-            </trans-unit>
-            <trans-unit id="187">
-                <source>label.stat_label</source>
-                <target>Légende du chiffre clé</target>
-            </trans-unit>
-            <trans-unit id="188">
-                <source>label.eyebrow</source>
-                <target>Surtitre</target>
-            </trans-unit>
-            <trans-unit id="189">
-                <source>label.items</source>
-                <target>Arguments</target>
-            </trans-unit>
-            <trans-unit id="190">
-                <source>label.cards</source>
-                <target>Cartes</target>
-            </trans-unit>
-            <trans-unit id="191">
-                <source>label.tags</source>
-                <target>Tags</target>
-            </trans-unit>
-            <trans-unit id="192">
-                <source>label.steps</source>
-                <target>Étapes</target>
-            </trans-unit>
-            <trans-unit id="193">
-                <source>label.cta_label</source>
-                <target>Libellé du bouton</target>
-            </trans-unit>
-            <trans-unit id="194">
-                <source>label.step_number</source>
-                <target>Étape %number%</target>
-            </trans-unit>
-            <trans-unit id="195">
-                <source>label.block_portfolio_grid</source>
-                <target>Grille de réalisations</target>
-            </trans-unit>
-            <trans-unit id="196">
-                <source>label.block_portfolio_grid_description</source>
-                <target>Grille de projets illustrés avec liens externes</target>
-            </trans-unit>
-            <trans-unit id="197">
-                <source>label.link_label</source>
-                <target>Libellé du lien</target>
-            </trans-unit>
-            <trans-unit id="199">
-                <source>label.block_image_compare</source>
-                <target>Comparateur avant/après</target>
-            </trans-unit>
-            <trans-unit id="200">
-                <source>label.block_image_compare_description</source>
-                <target>Curseur glissant pour comparer deux images, avant/après</target>
-            </trans-unit>
-            <trans-unit id="201">
-                <source>label.start_position</source>
-                <target>Position de départ</target>
-            </trans-unit>
-            <trans-unit id="202">
-                <source>label.start_position_help</source>
-                <target>Position initiale du curseur de comparaison, en pourcentage (0 à 100)</target>
-            </trans-unit>
-            <trans-unit id="203">
-                <source>label.before_label</source>
-                <target>Libellé Avant</target>
-            </trans-unit>
-            <trans-unit id="204">
-                <source>label.after_label</source>
-                <target>Libellé Après</target>
-            </trans-unit>
-            <trans-unit id="205">
-                <source>label.compare_position</source>
-                <target>Position du curseur de comparaison</target>
-            </trans-unit>
-            <trans-unit id="206">
-                <source>label.block_collection</source>
-                <target>Collection</target>
-            </trans-unit>
-            <trans-unit id="207">
-                <source>label.block_collection_description</source>
-                <target>Éléments d'une collection externe (livres, produits, projets...)</target>
-            </trans-unit>
-            <trans-unit id="208">
-                <source>label.source</source>
-                <target>Source</target>
-            </trans-unit>
-            <trans-unit id="209">
-                <source>label.limit</source>
-                <target>Nombre maximum affiché</target>
-            </trans-unit>
-            <trans-unit id="210">
-                <source>label.collection_limit_help</source>
-                <target>Laisser vide pour tout afficher</target>
-            </trans-unit>
-            <trans-unit id="215">
-                <source>label.video_iframe_consent_required</source>
-                <target>Ce contenu provient d'un site tiers (YouTube ou similaire) et nécessite votre consentement pour être affiché.</target>
-            </trans-unit>
-            <trans-unit id="216">
-                <source>label.video_iframe_accept</source>
-                <target>Afficher le contenu</target>
-            </trans-unit>
-            <trans-unit id="217">
-                <source>label.block_showcase</source>
-                <target>Vitrine des blocks</target>
-            </trans-unit>
-            <trans-unit id="218">
-                <source>label.no_collection_source_available</source>
-                <target>Aucune source de collection disponible pour le moment</target>
-            </trans-unit>
-            <trans-unit id="219">
-                <source>label.detail_page</source>
-                <target>Page de détail</target>
-            </trans-unit>
-            <trans-unit id="220">
-                <source>label.detail_page_help</source>
-                <target>Slug de la Page de détail des items (ex. "blocks-detail"). Vide si aucune.</target>
-            </trans-unit>
-            <trans-unit id="221">
-                <source>label.anchor</source>
-                <target>Ancre</target>
-            </trans-unit>
-            <trans-unit id="222">
-                <source>label.anchor_help</source>
-                <target>Identifiant court pour lier le menu à cette section (ex. "services"). Vide = déduit du titre.</target>
-            </trans-unit>
-            <trans-unit id="223">
-                <source>label.variant</source>
-                <target>Présentation</target>
-            </trans-unit>
-            <trans-unit id="224">
-                <source>label.variant_help</source>
-                <target>Mode d'affichage des items, appliqué à toute la collection.</target>
-            </trans-unit>
-            <trans-unit id="225">
-                <source>label.variant_card</source>
-                <target>Carte (par défaut)</target>
-            </trans-unit>
-            <trans-unit id="226">
-                <source>label.variant_portfolio</source>
-                <target>Grille portfolio</target>
-            </trans-unit>
-            <trans-unit id="227">
-                <source>label.hero_media_max</source>
-                <target>Une section hero peut contenir au maximum {{ limit }} images.</target>
-            </trans-unit>
-            <trans-unit id="510">
-                <source>label.hero_background_image</source>
-                <target>Afficher l'image en fond, pleine largeur</target>
-            </trans-unit>
-            <trans-unit id="511">
-                <source>label.hero_background_image_help</source>
-                <target>Utilise la première image ajoutée en fond pleine largeur derrière le texte, au lieu de l'afficher à côté.</target>
-            </trans-unit>
-            <trans-unit id="230">
-                <source>label.ai_assistant_question</source>
-                <target>Posez une question sur le système de blocks…</target>
-            </trans-unit>
-            <trans-unit id="231">
-                <source>label.ai_assistant_ask</source>
-                <target>Demander</target>
-            </trans-unit>
-            <trans-unit id="232">
-                <source>label.ai_rephrase_usage_this_month</source>
-                <target>Reformulation IA ce mois : %input% tokens entrée, %output% sortie.</target>
-            </trans-unit>
-            <trans-unit id="233">
-                <source>label.ai_assistant_subtitle</source>
-                <target>Posez vos questions sur le système de blocks</target>
-            </trans-unit>
-            <trans-unit id="234">
-                <source>label.ai_rephrase_style_neutral</source>
-                <target>Neutre</target>
-            </trans-unit>
-            <trans-unit id="235">
-                <source>label.ai_rephrase_style_professional</source>
-                <target>Professionnel</target>
-            </trans-unit>
-            <trans-unit id="236">
-                <source>label.ai_rephrase_style_friendly</source>
-                <target>Enjoué</target>
-            </trans-unit>
-            <trans-unit id="237">
-                <source>label.ai_rephrase_style_concise</source>
-                <target>Concis</target>
-            </trans-unit>
-            <trans-unit id="269">
-                <source>label.ai_rephrase_style_persuasive</source>
-                <target>Persuasif</target>
-            </trans-unit>
-            <trans-unit id="270">
-                <source>label.ai_rephrase_style_simple</source>
-                <target>Simple</target>
-            </trans-unit>
-            <trans-unit id="271">
-                <source>label.ai_rephrase_style_enthusiastic</source>
-                <target>Enthousiaste</target>
-            </trans-unit>
-            <trans-unit id="272">
-                <source>label.ai_rephrase_style_expanded</source>
-                <target>Détaillé</target>
-            </trans-unit>
-            <trans-unit id="281">
-                <source>label.ai_rephrase_length_same</source>
-                <target>Même longueur</target>
-            </trans-unit>
-            <trans-unit id="282">
-                <source>label.ai_rephrase_length_paragraph_1</source>
-                <target>1 paragraphe</target>
-            </trans-unit>
-            <trans-unit id="283">
-                <source>label.ai_rephrase_length_paragraph_2</source>
-                <target>2 paragraphes</target>
-            </trans-unit>
-            <trans-unit id="540">
-                <source>label.ai_rephrase_length_paragraph_3</source>
-                <target>3 paragraphes</target>
-            </trans-unit>
-            <trans-unit id="541">
-                <source>label.ai_rephrase_length_paragraph_4</source>
-                <target>4 paragraphes</target>
-            </trans-unit>
-            <trans-unit id="542">
-                <source>label.ai_rephrase_length_social_summary</source>
-                <target>Résumé réseaux sociaux</target>
-            </trans-unit>
-            <trans-unit id="238">
-                <source>label.ai_rephrase_button</source>
-                <target>Reformuler avec %name%</target>
-            </trans-unit>
-            <trans-unit id="239">
-                <source>label.ai_rephrase_error</source>
-                <target>La reformulation a échoué - vérifiez la clé IA configurée</target>
-            </trans-unit>
-            <trans-unit id="240">
-                <source>label.ai_assistant_menu_suffix</source>
-                <target>Agent IA</target>
-            </trans-unit>
-            <trans-unit id="241">
-                <source>label.ai_assistant_dashboard_section_title</source>
-                <target>Assistant du tableau de bord</target>
-            </trans-unit>
-            <trans-unit id="242">
-                <source>label.ai_assistant_setup_intro</source>
-                <target>Pose des questions sur le système de blocks. Pas encore activé :</target>
-            </trans-unit>
-            <trans-unit id="243">
-                <source>label.ai_assistant_setup_step_enabled</source>
-                <target>Activez « Assistant IA du tableau de bord »</target>
-            </trans-unit>
-            <trans-unit id="244">
-                <source>label.ai_assistant_setup_step_endpoint</source>
-                <target>Renseignez son endpoint</target>
-            </trans-unit>
-            <trans-unit id="245">
-                <source>label.ai_assistant_setup_step_token</source>
-                <target>Renseignez son jeton</target>
-            </trans-unit>
-            <trans-unit id="247">
-                <source>label.ai_rephrase_section_title</source>
-                <target>Reformulation de contenu</target>
-            </trans-unit>
-            <trans-unit id="248">
-                <source>label.ai_rephrase_setup_intro</source>
-                <target>Reformule les champs de texte avec votre propre clé IA. Pas encore activé :</target>
-            </trans-unit>
-            <trans-unit id="249">
-                <source>label.ai_rephrase_setup_step_provider</source>
-                <target>Renseignez un fournisseur (anthropic, openai ou euria)</target>
-            </trans-unit>
-            <trans-unit id="250">
-                <source>label.ai_rephrase_setup_step_key</source>
-                <target>Renseignez une clé API</target>
-            </trans-unit>
-            <trans-unit id="251">
-                <source>label.ai_assistant_setup_credentials_help</source>
-                <target>Endpoint et jeton fournis par l'opérateur de votre backend IA - demandez-les-lui.</target>
-            </trans-unit>
-            <trans-unit id="252">
-                <source>label.ai_rephrase_get_key_intro</source>
-                <target>Où trouver une clé API, selon le fournisseur choisi ci-dessus :</target>
-            </trans-unit>
-            <trans-unit id="253">
-                <source>label.ai_rephrase_get_key_anthropic</source>
-                <target>Menu « API Keys » → Create Key (facturation à l'usage)</target>
-            </trans-unit>
-            <trans-unit id="254">
-                <source>label.ai_rephrase_get_key_openai</source>
-                <target>Menu « API keys » → Create new secret key (facturation à l'usage)</target>
-            </trans-unit>
-            <trans-unit id="255">
-                <source>label.ai_rephrase_get_key_euria</source>
-                <target>« AI Tools » → créer un produit → générer un token (1M crédits offerts le 1er mois). Modèle conseillé : mistralai/Mistral-Small-4-119B-2603</target>
-            </trans-unit>
-            <trans-unit id="256">
-                <source>label.ai_rephrase_freeform_intro</source>
-                <target>Reformulez n'importe quel texte avec votre propre clé IA.</target>
-            </trans-unit>
-            <trans-unit id="257">
-                <source>label.ai_rephrase_setup_step_base_uri</source>
-                <target>Renseignez l'URL de base (requise pour euria)</target>
-            </trans-unit>
-            <trans-unit id="258">
-                <source>label.ai_rephrase_setup_model_optional</source>
-                <target>Optionnel -</target>
-            </trans-unit>
-            <trans-unit id="259">
-                <source>label.ai_rephrase_setup_step_model</source>
-                <target>changer le modèle (un défaut raisonnable est utilisé sinon)</target>
-            </trans-unit>
-            <trans-unit id="289">
-                <source>label.ai_rephrase_setup_step_model_required</source>
-                <target>définir le modèle (obligatoire pour Euria - conseillé : mistralai/Mistral-Small-4-119B-2603)</target>
-            </trans-unit>
-            <trans-unit id="260">
-                <source>label.field_label</source>
-                <target>Libellé</target>
-            </trans-unit>
-            <trans-unit id="261">
-                <source>label.field_type</source>
-                <target>Type</target>
-            </trans-unit>
-            <trans-unit id="262">
-                <source>label.field_type_text</source>
-                <target>Texte</target>
-            </trans-unit>
-            <trans-unit id="263">
-                <source>label.field_type_textarea</source>
-                <target>Texte long</target>
-            </trans-unit>
-            <trans-unit id="264">
-                <source>label.field_type_email</source>
-                <target>Email</target>
-            </trans-unit>
-            <trans-unit id="265">
-                <source>label.field_type_checkbox</source>
-                <target>Case à cocher</target>
-            </trans-unit>
-            <trans-unit id="266">
-                <source>label.field_placeholder</source>
-                <target>Texte indicatif</target>
-            </trans-unit>
-            <trans-unit id="267">
-                <source>label.field_required</source>
-                <target>Obligatoire</target>
-            </trans-unit>
-            <trans-unit id="268">
-                <source>label.ai_rephrase_suggestion_label</source>
-                <target>Proposition de texte reformulé :</target>
-            </trans-unit>
-            <trans-unit id="273">
-                <source>label.block_form</source>
-                <target>Formulaire</target>
-            </trans-unit>
-            <trans-unit id="274">
-                <source>label.block_form_description</source>
-                <target>Insère un formulaire personnalisé, choisi par son nom</target>
-            </trans-unit>
-            <trans-unit id="275">
-                <source>label.category_forms</source>
-                <target>Formulaires</target>
-            </trans-unit>
-            <trans-unit id="276">
-                <source>label.form_picker_name</source>
-                <target>Formulaire</target>
-            </trans-unit>
-            <trans-unit id="277">
-                <source>label.choose_form</source>
-                <target>Choisir un formulaire</target>
-            </trans-unit>
-            <trans-unit id="278">
-                <source>label.send</source>
-                <target>Envoyer</target>
-            </trans-unit>
-            <trans-unit id="279">
-                <source>label.form_submitted</source>
-                <target>Merci, votre envoi a bien été reçu.</target>
-            </trans-unit>
-            <trans-unit id="280">
-                <source>label.form_submission_failed</source>
-                <target>Une erreur est survenue, votre envoi n'a pas pu être traité.</target>
-            </trans-unit>
-            <trans-unit id="284">
-                <source>label.forms</source>
-                <target>Formulaires</target>
-            </trans-unit>
-            <trans-unit id="285">
-                <source>label.action_help</source>
-                <target>Ce qui se passe quand ce formulaire est soumis</target>
-            </trans-unit>
-            <trans-unit id="286">
-                <source>label.action_config</source>
-                <target>Configuration de l'action (JSON)</target>
-            </trans-unit>
-            <trans-unit id="287">
-                <source>label.action_config_help</source>
-                <target>Optionnel, selon l'action - ex. "send_email" : to, from, subject, template, senderEmailField, receiveCopy</target>
-            </trans-unit>
-            <trans-unit id="288">
-                <source>label.fields</source>
-                <target>Champs</target>
-            </trans-unit>
-            <trans-unit id="324">
-                <source>label.action</source>
-                <target>Action</target>
-            </trans-unit>
-            <trans-unit id="325">
-                <source>label.restricted</source>
-                <target>Restreint</target>
-            </trans-unit>
-            <trans-unit id="290">
-                <source>label.receive_copy</source>
-                <target>Recevoir une copie</target>
-            </trans-unit>
-            <trans-unit id="291">
-                <source>text.too_many_attempts</source>
-                <target>Trop de tentatives, merci de réessayer plus tard.</target>
-            </trans-unit>
-            <trans-unit id="292">
-                <source>label.field_type_password</source>
-                <target>Mot de passe</target>
-            </trans-unit>
-            <trans-unit id="293">
-                <source>label.field_type_password_repeated</source>
-                <target>Mot de passe (avec confirmation)</target>
-            </trans-unit>
-            <trans-unit id="294">
-                <source>label.field_type_url</source>
-                <target>URL</target>
-            </trans-unit>
-            <trans-unit id="295">
-                <source>label.field_type_tel</source>
-                <target>Téléphone</target>
-            </trans-unit>
-            <trans-unit id="296">
-                <source>label.field_type_number</source>
-                <target>Nombre</target>
-            </trans-unit>
-            <trans-unit id="297">
-                <source>label.field_type_date</source>
-                <target>Date</target>
-            </trans-unit>
-            <trans-unit id="298">
-                <source>label.password_confirm</source>
-                <target>Confirmation du mot de passe</target>
-            </trans-unit>
-            <trans-unit id="299">
-                <source>text.password_mismatch</source>
-                <target>Les mots de passe ne correspondent pas</target>
-            </trans-unit>
-            <trans-unit id="300">
-                <source>label.email_templates</source>
-                <target>Modèles d'email</target>
-            </trans-unit>
-            <trans-unit id="301">
-                <source>label.email_blocks</source>
-                <target>Blocs</target>
-            </trans-unit>
-            <trans-unit id="302">
-                <source>label.email_block_type</source>
-                <target>Type de bloc</target>
-            </trans-unit>
-            <trans-unit id="303">
-                <source>label.email_block_type_heading</source>
-                <target>Titre</target>
-            </trans-unit>
-            <trans-unit id="304">
-                <source>label.email_block_type_text</source>
-                <target>Texte</target>
-            </trans-unit>
-            <trans-unit id="305">
-                <source>label.email_block_type_button</source>
-                <target>Bouton</target>
-            </trans-unit>
-            <trans-unit id="306">
-                <source>label.email_block_type_image</source>
-                <target>Image</target>
-            </trans-unit>
-            <trans-unit id="307">
-                <source>label.email_block_type_divider</source>
-                <target>Séparateur</target>
-            </trans-unit>
-            <trans-unit id="308">
-                <source>label.email_block_type_spacer</source>
-                <target>Espacement</target>
-            </trans-unit>
-            <trans-unit id="309">
-                <source>label.email_block_type_fields_table</source>
-                <target>Tableau des champs soumis</target>
-            </trans-unit>
-            <trans-unit id="310">
-                <source>label.email_block_heading</source>
-                <target>Titre</target>
-            </trans-unit>
-            <trans-unit id="311">
-                <source>label.email_block_heading_help</source>
-                <target>Utilisé par les blocs "Titre"</target>
-            </trans-unit>
-            <trans-unit id="312">
-                <source>label.email_block_level</source>
-                <target>Taille du titre</target>
-            </trans-unit>
-            <trans-unit id="313">
-                <source>label.email_block_content</source>
-                <target>Contenu</target>
-            </trans-unit>
-            <trans-unit id="314">
-                <source>label.email_block_content_help</source>
-                <target>Bloc "Texte" : texte brut, un paragraphe par ligne vide</target>
-            </trans-unit>
-            <trans-unit id="315">
-                <source>label.email_block_label</source>
-                <target>Libellé</target>
-            </trans-unit>
-            <trans-unit id="316">
-                <source>label.email_block_label_help</source>
-                <target>Utilisé par les blocs "Bouton"</target>
-            </trans-unit>
-            <trans-unit id="317">
-                <source>label.email_block_url</source>
-                <target>URL</target>
-            </trans-unit>
-            <trans-unit id="318">
-                <source>label.email_block_url_help</source>
-                <target>Blocs "Bouton"/"Image" - accepte {{ signed_url }}, ou un chemin relatif (ex. /medias/logo.webp) complété par la config "site-url".</target>
-            </trans-unit>
-            <trans-unit id="319">
-                <source>label.email_block_alt</source>
-                <target>Texte alternatif</target>
-            </trans-unit>
-            <trans-unit id="320">
-                <source>label.email_block_alt_help</source>
-                <target>Utilisé par les blocs "Image"</target>
-            </trans-unit>
-            <trans-unit id="321">
-                <source>label.email_block_height</source>
-                <target>Hauteur (px)</target>
-            </trans-unit>
-            <trans-unit id="322">
-                <source>label.email_block_height_help</source>
-                <target>Utilisé par les blocs "Espacement"</target>
-            </trans-unit>
-            <trans-unit id="323">
-                <source>label.edit</source>
-                <target>Editer</target>
-            </trans-unit>
-            <trans-unit id="326">
-                <source>label.form_field_templates</source>
-                <target>Modèles de champs</target>
-            </trans-unit>
-            <trans-unit id="327">
-                <source>label.info_form_gdpr</source>
-                <target>Case RGPD ajoutée automatiquement aux formulaires, selon %link_open%cette clé%link_close%.</target>
-            </trans-unit>
-            <trans-unit id="328">
-                <source>label.info_form_field_template</source>
-                <target>Champs prêts à l'emploi pour construire un formulaire. Créez, modifiez ou supprimez un modèle ; un modèle restreint garde son nom fixe mais reste modifiable et n'est jamais supprimable.</target>
-            </trans-unit>
-            <trans-unit id="500">
-                <source>label.form_disabled</source>
-                <target>Ce formulaire n'est pas disponible pour le moment.</target>
-            </trans-unit>
-            <trans-unit id="501">
-                <source>label.form_enabled</source>
-                <target>Actif</target>
-            </trans-unit>
-            <trans-unit id="502">
-                <source>label.field_required_default</source>
-                <target>Obligatoire par défaut</target>
-            </trans-unit>
-            <trans-unit id="503">
-                <source>label.field_required_default_help</source>
-                <target>Valeur de départ copiée dans le champ ajouté - modifiable ensuite par formulaire, sans effet rétroactif sur ce modèle.</target>
-            </trans-unit>
-            <trans-unit id="504">
-                <source>label.form_picker_disabled_suffix</source>
-                <target> (désactivé)</target>
-            </trans-unit>
-            <trans-unit id="505">
-                <source>label.form_field_template_picker_placeholder</source>
-                <target>Ajouter depuis un modèle…</target>
-            </trans-unit>
-            <trans-unit id="506">
-                <source>label.field_url</source>
-                <target>Lien (optionnel)</target>
-            </trans-unit>
-            <trans-unit id="507">
-                <source>label.field_url_link</source>
-                <target>lire</target>
-            </trans-unit>
-            <trans-unit id="508">
-                <source>text.form_required_note</source>
-                <target>* Champ requis</target>
-            </trans-unit>
-            <trans-unit id="509">
-                <source>label.info_email_debug</source>
-                <target>Un ROLE_SUPER_ADMIN voit un aperçu au lieu de l'envoi réel tant que %link_open%cette clé%link_close% est activée.</target>
-            </trans-unit>
-            <trans-unit id="512">
-                <source>label.block_flex_columns</source>
-                <target>Colonnes flexibles</target>
-            </trans-unit>
-            <trans-unit id="513">
-                <source>label.block_flex_columns_description</source>
-                <target>Titre de section suivi de colonnes flexibles, chacune un block existant au choix</target>
-            </trans-unit>
-            <trans-unit id="514">
-                <source>label.slots</source>
-                <target>Colonnes</target>
-            </trans-unit>
-            <trans-unit id="515">
-                <source>label.info_form</source>
-                <target>Formulaires du site (contact, newsletter...), chacun avec ses propres champs et son action d'envoi. Créez, modifiez ou supprimez un formulaire ; un formulaire restreint garde son nom fixe et ne peut pas être supprimé.</target>
-            </trans-unit>
-            <trans-unit id="516">
-                <source>label.info_email_template</source>
-                <target>Modèles d'e-mails du site, chacun composé de blocs de contenu. Créez, modifiez ou prévisualisez un modèle ; un modèle restreint garde son nom fixe et ne peut pas être supprimé.</target>
-            </trans-unit>
-            <trans-unit id="521">
-                <source>label.block_flex_column</source>
-                <target>Colonne</target>
-            </trans-unit>
-            <trans-unit id="522">
-                <source>label.block_flex_column_description</source>
-                <target>Regroupe plusieurs blocks dans une colonne d'une section "Colonnes flexibles"</target>
-            </trans-unit>
-            <trans-unit id="519">
-                <source>label.file_name</source>
-                <target>Nom du fichier</target>
-            </trans-unit>
-            <trans-unit id="520">
-                <source>label.file_name_help</source>
-                <target>Utilisé pour nommer le fichier stocké. Sert aussi de titre à la carte de téléchargement si plusieurs fichiers sont attachés.</target>
-            </trans-unit>
-            <trans-unit id="523">
-                <source>label.document_download_media_help</source>
-                <target>Un fichier = une carte de téléchargement. Attachez plusieurs fichiers pour proposer plusieurs documents ; donnez alors à chacun un "Nom du fichier" distinct, il servira de titre à sa carte.</target>
-            </trans-unit>
-            <trans-unit id="525">
-                <source>label.block_section_cards</source>
-                <target>Grille de cartes</target>
-            </trans-unit>
-            <trans-unit id="526">
-                <source>label.block_section_cards_description</source>
-                <target>Titre de section suivi d'un empilement de blocs Carte complets (image, lien, bouton...)</target>
-            </trans-unit>
-            <trans-unit id="527">
-                <source>flash.block_moved</source>
-                <target>Bloc déplacé</target>
-            </trans-unit>
-            <trans-unit id="528">
+            <trans-unit id="nUlFj1t">
                 <source>flash.block_move_failed</source>
                 <target>Le déplacement du bloc a échoué</target>
             </trans-unit>
-            <trans-unit id="529">
-                <source>label.slots_cards</source>
-                <target>Cartes</target>
+            <trans-unit id="7AVJlDV">
+                <source>flash.block_moved</source>
+                <target>Bloc déplacé</target>
             </trans-unit>
-            <trans-unit id="530">
+            <trans-unit id="5ZMPsA1">
+                <source>label.action</source>
+                <target>Action</target>
+            </trans-unit>
+            <trans-unit id="vUB71DX">
+                <source>label.action_config</source>
+                <target>Configuration de l'action (JSON)</target>
+            </trans-unit>
+            <trans-unit id="b1lgVCs">
+                <source>label.action_config_help</source>
+                <target>Optionnel, selon l'action - ex. "send_email" : to, from, subject, template, senderEmailField, receiveCopy</target>
+            </trans-unit>
+            <trans-unit id="3x6lvCI">
+                <source>label.action_help</source>
+                <target>Ce qui se passe quand ce formulaire est soumis</target>
+            </trans-unit>
+            <trans-unit id="iro8szH">
+                <source>label.after_label</source>
+                <target>Libellé Après</target>
+            </trans-unit>
+            <trans-unit id="M0SU0On">
+                <source>label.ai_assistant_ask</source>
+                <target>Demander</target>
+            </trans-unit>
+            <trans-unit id="U3i0V7W">
+                <source>label.ai_assistant_dashboard_section_title</source>
+                <target>Assistant du tableau de bord</target>
+            </trans-unit>
+            <trans-unit id="yJ_8hXS">
+                <source>label.ai_assistant_menu_suffix</source>
+                <target>Agent IA</target>
+            </trans-unit>
+            <trans-unit id="Ohcg3dV">
+                <source>label.ai_assistant_question</source>
+                <target>Posez une question sur le système de blocks…</target>
+            </trans-unit>
+            <trans-unit id="dUHWBt0">
+                <source>label.ai_assistant_setup_credentials_help</source>
+                <target>Endpoint et jeton fournis par l'opérateur de votre backend IA - demandez-les-lui.</target>
+            </trans-unit>
+            <trans-unit id="M_RyUU0">
+                <source>label.ai_assistant_setup_intro</source>
+                <target>Pose des questions sur le système de blocks. Pas encore activé :</target>
+            </trans-unit>
+            <trans-unit id="Ueq8Dbo">
+                <source>label.ai_assistant_setup_step_enabled</source>
+                <target>Activez « Assistant IA du tableau de bord »</target>
+            </trans-unit>
+            <trans-unit id="wA18Cg5">
+                <source>label.ai_assistant_setup_step_endpoint</source>
+                <target>Renseignez son endpoint</target>
+            </trans-unit>
+            <trans-unit id="FU9E2qy">
+                <source>label.ai_assistant_setup_step_token</source>
+                <target>Renseignez son jeton</target>
+            </trans-unit>
+            <trans-unit id="ZQt.2mZ">
+                <source>label.ai_assistant_subtitle</source>
+                <target>Posez vos questions sur le système de blocks</target>
+            </trans-unit>
+            <trans-unit id="nSvy0he">
+                <source>label.ai_rephrase_button</source>
+                <target>Reformuler avec %name%</target>
+            </trans-unit>
+            <trans-unit id="enuoD98">
+                <source>label.ai_rephrase_error</source>
+                <target>La reformulation a échoué - vérifiez la clé IA configurée</target>
+            </trans-unit>
+            <trans-unit id="BibrD4_">
+                <source>label.ai_rephrase_freeform_intro</source>
+                <target>Reformulez n'importe quel texte avec votre propre clé IA.</target>
+            </trans-unit>
+            <trans-unit id="lbTeDuW">
+                <source>label.ai_rephrase_get_key_anthropic</source>
+                <target>Menu « API Keys » → Create Key (facturation à l'usage)</target>
+            </trans-unit>
+            <trans-unit id="FmJ_zJA">
+                <source>label.ai_rephrase_get_key_euria</source>
+                <target>« AI Tools » → créer un produit → générer un token (1M crédits offerts le 1er mois). Modèle conseillé : mistralai/Mistral-Small-4-119B-2603</target>
+            </trans-unit>
+            <trans-unit id="PtpvV2Y">
+                <source>label.ai_rephrase_get_key_intro</source>
+                <target>Où trouver une clé API, selon le fournisseur choisi ci-dessus :</target>
+            </trans-unit>
+            <trans-unit id="R470bGE">
+                <source>label.ai_rephrase_get_key_openai</source>
+                <target>Menu « API keys » → Create new secret key (facturation à l'usage)</target>
+            </trans-unit>
+            <trans-unit id="HcPTRy4">
+                <source>label.ai_rephrase_length_paragraph_1</source>
+                <target>1 paragraphe</target>
+            </trans-unit>
+            <trans-unit id="aH168ks">
+                <source>label.ai_rephrase_length_paragraph_2</source>
+                <target>2 paragraphes</target>
+            </trans-unit>
+            <trans-unit id="GPEIzUN">
+                <source>label.ai_rephrase_length_paragraph_3</source>
+                <target>3 paragraphes</target>
+            </trans-unit>
+            <trans-unit id="2F_RIiS">
+                <source>label.ai_rephrase_length_paragraph_4</source>
+                <target>4 paragraphes</target>
+            </trans-unit>
+            <trans-unit id="IBSUMh0">
+                <source>label.ai_rephrase_length_same</source>
+                <target>Même longueur</target>
+            </trans-unit>
+            <trans-unit id="BY92Pns">
+                <source>label.ai_rephrase_length_social_summary</source>
+                <target>Résumé réseaux sociaux</target>
+            </trans-unit>
+            <trans-unit id="QiHYMJE">
+                <source>label.ai_rephrase_section_title</source>
+                <target>Reformulation de contenu</target>
+            </trans-unit>
+            <trans-unit id="mmRyhFV">
+                <source>label.ai_rephrase_setup_intro</source>
+                <target>Reformule les champs de texte avec votre propre clé IA. Pas encore activé :</target>
+            </trans-unit>
+            <trans-unit id="41oFAKN">
+                <source>label.ai_rephrase_setup_model_optional</source>
+                <target>Optionnel -</target>
+            </trans-unit>
+            <trans-unit id="lnnGqK7">
+                <source>label.ai_rephrase_setup_step_base_uri</source>
+                <target>Renseignez l'URL de base (requise pour euria)</target>
+            </trans-unit>
+            <trans-unit id="_eIfjEL">
+                <source>label.ai_rephrase_setup_step_key</source>
+                <target>Renseignez une clé API</target>
+            </trans-unit>
+            <trans-unit id="OdvK_mS">
+                <source>label.ai_rephrase_setup_step_model</source>
+                <target>changer le modèle (un défaut raisonnable est utilisé sinon)</target>
+            </trans-unit>
+            <trans-unit id="xBoqLs1">
+                <source>label.ai_rephrase_setup_step_model_required</source>
+                <target>définir le modèle (obligatoire pour Euria - conseillé : mistralai/Mistral-Small-4-119B-2603)</target>
+            </trans-unit>
+            <trans-unit id="g1CSOaz">
+                <source>label.ai_rephrase_setup_step_provider</source>
+                <target>Renseignez un fournisseur (anthropic, openai ou euria)</target>
+            </trans-unit>
+            <trans-unit id="K9cs9xu">
+                <source>label.ai_rephrase_style_concise</source>
+                <target>Concis</target>
+            </trans-unit>
+            <trans-unit id="JU3oJpv">
+                <source>label.ai_rephrase_style_enthusiastic</source>
+                <target>Enthousiaste</target>
+            </trans-unit>
+            <trans-unit id="ghwFkCg">
+                <source>label.ai_rephrase_style_expanded</source>
+                <target>Détaillé</target>
+            </trans-unit>
+            <trans-unit id="rayT1j6">
+                <source>label.ai_rephrase_style_friendly</source>
+                <target>Enjoué</target>
+            </trans-unit>
+            <trans-unit id="B8OD9BS">
+                <source>label.ai_rephrase_style_neutral</source>
+                <target>Neutre</target>
+            </trans-unit>
+            <trans-unit id="fZ27AgE">
+                <source>label.ai_rephrase_style_persuasive</source>
+                <target>Persuasif</target>
+            </trans-unit>
+            <trans-unit id="hyknADH">
+                <source>label.ai_rephrase_style_professional</source>
+                <target>Professionnel</target>
+            </trans-unit>
+            <trans-unit id="y6grKIM">
+                <source>label.ai_rephrase_style_simple</source>
+                <target>Simple</target>
+            </trans-unit>
+            <trans-unit id="RxS7h2_">
+                <source>label.ai_rephrase_suggestion_label</source>
+                <target>Proposition de texte reformulé :</target>
+            </trans-unit>
+            <trans-unit id="SfCl424">
+                <source>label.ai_rephrase_usage_this_month</source>
+                <target>Reformulation IA ce mois : %input% tokens entrée, %output% sortie.</target>
+            </trans-unit>
+            <trans-unit id="DnqwII7">
+                <source>label.alert_kind</source>
+                <target>Type d'alerte</target>
+            </trans-unit>
+            <trans-unit id="vbyuEEV">
+                <source>label.all_rights_reserved</source>
+                <target>© Tous droits réservés</target>
+            </trans-unit>
+            <trans-unit id="ZeoyzAJ">
+                <source>label.alt_text</source>
+                <target>Texte Alternatif</target>
+            </trans-unit>
+            <trans-unit id="PmT6SQr">
+                <source>label.anchor</source>
+                <target>Ancre</target>
+            </trans-unit>
+            <trans-unit id="ufovuez">
+                <source>label.anchor_help</source>
+                <target>Identifiant court pour lier le menu à cette section (ex. "services"). Vide = déduit du titre.</target>
+            </trans-unit>
+            <trans-unit id="Qw41.0s">
+                <source>label.animation</source>
+                <target>Animation</target>
+            </trans-unit>
+            <trans-unit id="JGaBfn3">
+                <source>label.animation_fade_in</source>
+                <target>Fondu</target>
+            </trans-unit>
+            <trans-unit id="HYnd45z">
+                <source>label.animation_fade_in_bottom</source>
+                <target>Fondu depuis le bas</target>
+            </trans-unit>
+            <trans-unit id="lxRnK0D">
+                <source>label.animation_fade_in_left</source>
+                <target>Fondu depuis la gauche</target>
+            </trans-unit>
+            <trans-unit id="lwfHCPG">
+                <source>label.animation_fade_in_right</source>
+                <target>Fondu depuis la droite</target>
+            </trans-unit>
+            <trans-unit id="TCWadfp">
+                <source>label.animation_fade_in_top</source>
+                <target>Fondu depuis le haut</target>
+            </trans-unit>
+            <trans-unit id="rKMQJOU">
+                <source>label.animation_help</source>
+                <target>Effet d'entrée joué quand le bloc entre dans l'écran au défilement</target>
+            </trans-unit>
+            <trans-unit id="9iWaqu4">
+                <source>label.animation_none</source>
+                <target>Aucune</target>
+            </trans-unit>
+            <trans-unit id="_fWwjgq">
+                <source>label.animation_slide_in_left</source>
+                <target>Glissement depuis la gauche</target>
+            </trans-unit>
+            <trans-unit id="Mzl7Qsx">
+                <source>label.animation_slide_in_right</source>
+                <target>Glissement depuis la droite</target>
+            </trans-unit>
+            <trans-unit id="dS_p9re">
+                <source>label.animation_zoom_in</source>
+                <target>Zoom avant</target>
+            </trans-unit>
+            <trans-unit id="vmcoEjK">
+                <source>label.attached_to_block</source>
+                <target>Rattaché au bloc #%id% (%kind%)</target>
+            </trans-unit>
+            <trans-unit id="y8V5g.l">
+                <source>label.audio_media_help</source>
+                <target>Déposez le fichier audio (MP3, OGG ou WAV)</target>
+            </trans-unit>
+            <trans-unit id="SXeZ5Tg">
+                <source>label.autoplay</source>
+                <target>Lecture automatique</target>
+            </trans-unit>
+            <trans-unit id="taGjIwv">
+                <source>label.badge</source>
+                <target>Badge</target>
+            </trans-unit>
+            <trans-unit id="3RQoM3j">
+                <source>label.before_label</source>
+                <target>Libellé Avant</target>
+            </trans-unit>
+            <trans-unit id="h3s2JeO">
+                <source>label.block_alert</source>
+                <target>Alerte</target>
+            </trans-unit>
+            <trans-unit id="kgPP_WT">
+                <source>label.block_alert_description</source>
+                <target>Message encadré coloré (info, succès, alerte, erreur)</target>
+            </trans-unit>
+            <trans-unit id="PhL7j8v">
+                <source>label.block_article</source>
+                <target>Article</target>
+            </trans-unit>
+            <trans-unit id="y5di6Da">
+                <source>label.block_article_description</source>
+                <target>Texte enrichi avec image, pour un contenu éditorial classique</target>
+            </trans-unit>
+            <trans-unit id="ZV5skX4">
+                <source>label.block_audio</source>
+                <target>Audio</target>
+            </trans-unit>
+            <trans-unit id="DPtpV2F">
+                <source>label.block_audio_description</source>
+                <target>Lecteur audio intégré à partir d'un fichier</target>
+            </trans-unit>
+            <trans-unit id="vZ4r_TG">
+                <source>label.block_banner_title</source>
+                <target>Bannière titre</target>
+            </trans-unit>
+            <trans-unit id="mrR4xZH">
+                <source>label.block_banner_title_description</source>
+                <target>Titre plein écran sur une image de fond</target>
+            </trans-unit>
+            <trans-unit id="lWfyux5">
+                <source>label.block_button</source>
+                <target>Bouton</target>
+            </trans-unit>
+            <trans-unit id="Wmp8c5v">
+                <source>label.block_button_description</source>
+                <target>Bouton lien avec icône, cible et style personnalisables</target>
+            </trans-unit>
+            <trans-unit id="hx8R41l">
+                <source>label.block_card</source>
+                <target>Carte</target>
+            </trans-unit>
+            <trans-unit id=".3RQG.T">
+                <source>label.block_card_description</source>
+                <target>Carte avec titre et contenu, image et bouton optionnels</target>
+            </trans-unit>
+            <trans-unit id="As0wFKi">
+                <source>label.block_clear_cache</source>
+                <target>Vider le cache des blocks</target>
+            </trans-unit>
+            <trans-unit id="oNRe7ra">
+                <source>label.block_collection</source>
+                <target>Collection</target>
+            </trans-unit>
+            <trans-unit id="3Jvr6rD">
+                <source>label.block_collection_description</source>
+                <target>Éléments d'une collection externe (livres, produits, projets...)</target>
+            </trans-unit>
+            <trans-unit id="bsmLvZG">
+                <source>label.block_cta_band</source>
+                <target>Bandeau d'appel à l'action</target>
+            </trans-unit>
+            <trans-unit id="Cxlk5Fm">
+                <source>label.block_cta_band_description</source>
+                <target>Panneau centré avec titre, texte et bouton</target>
+            </trans-unit>
+            <trans-unit id="TB1..KE">
+                <source>label.block_document_download</source>
+                <target>Document à télécharger</target>
+            </trans-unit>
+            <trans-unit id="usj0ynl">
+                <source>label.block_document_download_description</source>
+                <target>Carte de téléchargement PDF avec vignette automatique</target>
+            </trans-unit>
+            <trans-unit id="bVISlaX">
+                <source>label.block_expertise_banner</source>
+                <target>Bandeau d'expertise</target>
+            </trans-unit>
+            <trans-unit id="5fesXvj">
+                <source>label.block_expertise_banner_description</source>
+                <target>Panneau sombre avec texte et liste de tags</target>
+            </trans-unit>
+            <trans-unit id="wwgapeb">
+                <source>label.block_feature_bar</source>
+                <target>Bande de réassurance</target>
+            </trans-unit>
+            <trans-unit id="MoHlt5.">
+                <source>label.block_feature_bar_description</source>
+                <target>Rangée d'arguments courts (titre + légende)</target>
+            </trans-unit>
+            <trans-unit id="HukIExg">
+                <source>label.block_flex_column</source>
+                <target>Colonne</target>
+            </trans-unit>
+            <trans-unit id="AgAapZS">
+                <source>label.block_flex_column_description</source>
+                <target>Regroupe plusieurs blocks dans une colonne d'une section "Colonnes flexibles"</target>
+            </trans-unit>
+            <trans-unit id="wTHlzdj">
+                <source>label.block_flex_columns</source>
+                <target>Colonnes flexibles</target>
+            </trans-unit>
+            <trans-unit id="ywC8FXr">
+                <source>label.block_flex_columns_description</source>
+                <target>Titre de section suivi de colonnes flexibles, chacune un block existant au choix</target>
+            </trans-unit>
+            <trans-unit id="VW1LdXQ">
+                <source>label.block_form</source>
+                <target>Formulaire</target>
+            </trans-unit>
+            <trans-unit id="gt4MsPl">
+                <source>label.block_form_description</source>
+                <target>Insère un formulaire personnalisé, choisi par son nom</target>
+            </trans-unit>
+            <trans-unit id="vS0y_SI">
+                <source>label.block_hero</source>
+                <target>Hero</target>
+            </trans-unit>
+            <trans-unit id="Q1pxRji">
+                <source>label.block_hero_description</source>
+                <target>Bandeau d'accroche avec titre, sous-titre, boutons d'action et image</target>
+            </trans-unit>
+            <trans-unit id="G2WuVyp">
+                <source>label.block_image</source>
+                <target>Image</target>
+            </trans-unit>
+            <trans-unit id="vldrPHe">
+                <source>label.block_image_compare</source>
+                <target>Comparateur avant/après</target>
+            </trans-unit>
+            <trans-unit id="VvjSa6l">
+                <source>label.block_image_compare_description</source>
+                <target>Curseur glissant pour comparer deux images, avant/après</target>
+            </trans-unit>
+            <trans-unit id="oOl_Afv">
+                <source>label.block_image_description</source>
+                <target>Image seule avec légende et crédits</target>
+            </trans-unit>
+            <trans-unit id="RWsirqJ">
+                <source>label.block_kind</source>
+                <target>Type de bloc</target>
+            </trans-unit>
+            <trans-unit id="QVfWY7f">
+                <source>label.block_media_required</source>
+                <target>Une image est nécessaire pour ce type de bloc.</target>
+            </trans-unit>
+            <trans-unit id="zClb.Hs">
+                <source>label.block_portfolio_grid</source>
+                <target>Grille de réalisations</target>
+            </trans-unit>
+            <trans-unit id="U0.BNoy">
+                <source>label.block_portfolio_grid_description</source>
+                <target>Grille de projets illustrés avec liens externes</target>
+            </trans-unit>
+            <trans-unit id="7utMlyj">
+                <source>label.block_process_steps</source>
+                <target>Étapes de méthode</target>
+            </trans-unit>
+            <trans-unit id="IDyPib2">
+                <source>label.block_process_steps_description</source>
+                <target>Titre de section suivi d'étapes numérotées</target>
+            </trans-unit>
+            <trans-unit id="hOGW1n.">
+                <source>label.block_progress_bar</source>
+                <target>Barre de progression</target>
+            </trans-unit>
+            <trans-unit id="9dhuRA6">
+                <source>label.block_progress_bar_description</source>
+                <target>Barre de progression affichant un pourcentage</target>
+            </trans-unit>
+            <trans-unit id="t1Udkxa">
+                <source>label.block_rich_snippet</source>
+                <target>Rich Snippet SEO</target>
+            </trans-unit>
+            <trans-unit id="61xxUnk">
+                <source>label.block_rich_snippet_description</source>
+                <target>Données structurées SEO (adresse, horaires, prix...)</target>
+            </trans-unit>
+            <trans-unit id="lfFkpqd">
+                <source>label.block_section_cards</source>
+                <target>Grille de cartes</target>
+            </trans-unit>
+            <trans-unit id="JGjBAw6">
+                <source>label.block_section_cards_description</source>
+                <target>Titre de section suivi d'un empilement de blocs Carte complets (image, lien, bouton...)</target>
+            </trans-unit>
+            <trans-unit id="nicqRAF">
+                <source>label.block_section_features</source>
+                <target>Grille d'atouts</target>
+            </trans-unit>
+            <trans-unit id="QV38vzS">
+                <source>label.block_section_features_description</source>
+                <target>Titre de section suivi d'une grille d'atouts (icône, titre, texte)</target>
+            </trans-unit>
+            <trans-unit id="CaDaMse">
+                <source>label.block_showcase</source>
+                <target>Vitrine des blocks</target>
+            </trans-unit>
+            <trans-unit id="8e_hG_b">
                 <source>label.block_showcase_help</source>
                 <target>Une galerie de tous les types de blocks disponibles, avec un aperçu en direct de chacun - utile pour choisir lequel ajouter à une page</target>
             </trans-unit>
-            <trans-unit id="543">
+            <trans-unit id="qY3htPq">
+                <source>label.block_slider</source>
+                <target>Slider d'images/vidéos</target>
+            </trans-unit>
+            <trans-unit id="tg4Ac7t">
+                <source>label.block_slider_description</source>
+                <target>Diaporama d'images et vidéos avec légendes et crédits par slide</target>
+            </trans-unit>
+            <trans-unit id="7Ix0upV">
+                <source>label.block_text_readmore</source>
+                <target>Texte avec Lire plus</target>
+            </trans-unit>
+            <trans-unit id="QJul.49">
+                <source>label.block_text_readmore_description</source>
+                <target>Texte long avec un lien Lire plus / Lire moins</target>
+            </trans-unit>
+            <trans-unit id="kbV7qQg">
+                <source>label.block_text_section</source>
+                <target>Section texte</target>
+            </trans-unit>
+            <trans-unit id="ysms.Go">
+                <source>label.block_text_section_description</source>
+                <target>Simple section de texte enrichi</target>
+            </trans-unit>
+            <trans-unit id="75SOdh8">
+                <source>label.block_video</source>
+                <target>Vidéo</target>
+            </trans-unit>
+            <trans-unit id="iXzS_mG">
+                <source>label.block_video_description</source>
+                <target>Lecteur vidéo intégré à partir d'un fichier</target>
+            </trans-unit>
+            <trans-unit id="UbocQXH">
+                <source>label.block_video_iframe</source>
+                <target>Vidéo externe (iframe)</target>
+            </trans-unit>
+            <trans-unit id="kn9rxUI">
+                <source>label.block_video_iframe_description</source>
+                <target>Vidéo externe intégrée via iframe (YouTube, Vimeo...)</target>
+            </trans-unit>
+            <trans-unit id="OncQEBy">
+                <source>label.blocks</source>
+                <target>Blocs</target>
+            </trans-unit>
+            <trans-unit id="Veb3Xov">
+                <source>label.button_label</source>
+                <target>Libellé du bouton</target>
+            </trans-unit>
+            <trans-unit id="005PUha">
+                <source>label.button_label_help</source>
+                <target>Si vide, affiche l'URL</target>
+            </trans-unit>
+            <trans-unit id="hf84S_z">
+                <source>label.caption</source>
+                <target>Légende</target>
+            </trans-unit>
+            <trans-unit id="ok3xrBt">
+                <source>label.caption_above</source>
+                <target>Légende au-dessus</target>
+            </trans-unit>
+            <trans-unit id="zIIun3q">
+                <source>label.caption_help</source>
+                <target>Laisser vide si non utilisé</target>
+            </trans-unit>
+            <trans-unit id="gTzWFQi">
+                <source>label.cards</source>
+                <target>Cartes</target>
+            </trans-unit>
+            <trans-unit id="OIBxzL2">
+                <source>label.category_elements</source>
+                <target>Éléments</target>
+            </trans-unit>
+            <trans-unit id="g_xnymx">
+                <source>label.category_forms</source>
+                <target>Formulaires</target>
+            </trans-unit>
+            <trans-unit id="pEtdnUp">
+                <source>label.category_general</source>
+                <target>Général</target>
+            </trans-unit>
+            <trans-unit id="d1._mOj">
+                <source>label.category_media</source>
+                <target>Média</target>
+            </trans-unit>
+            <trans-unit id="dtctwtg">
+                <source>label.category_sections</source>
+                <target>Sections de page</target>
+            </trans-unit>
+            <trans-unit id="NPiHsbs">
+                <source>label.category_seo</source>
+                <target>SEO</target>
+            </trans-unit>
+            <trans-unit id="rNkvkGH">
+                <source>label.category_text</source>
+                <target>Texte</target>
+            </trans-unit>
+            <trans-unit id="FmMAhdO">
+                <source>label.choose_block_kind</source>
+                <target>Choisir le type de bloc</target>
+            </trans-unit>
+            <trans-unit id="_vIEuOe">
+                <source>label.choose_form</source>
+                <target>Choisir un formulaire</target>
+            </trans-unit>
+            <trans-unit id="MXpeMi7">
+                <source>label.city</source>
+                <target>Ville</target>
+            </trans-unit>
+            <trans-unit id="Z2OPJRi">
+                <source>label.collection_limit_help</source>
+                <target>Laisser vide pour tout afficher</target>
+            </trans-unit>
+            <trans-unit id="jfLIJSU">
+                <source>label.compare_position</source>
+                <target>Position du curseur de comparaison</target>
+            </trans-unit>
+            <trans-unit id="f7w7ZE0">
+                <source>label.content</source>
+                <target>Contenu</target>
+            </trans-unit>
+            <trans-unit id="dVpp9GV">
+                <source>label.country</source>
+                <target>Pays</target>
+            </trans-unit>
+            <trans-unit id="rhXgMnd">
+                <source>label.country_code</source>
+                <target>Code pays (ex. : FR)</target>
+            </trans-unit>
+            <trans-unit id="efSspGE">
+                <source>label.credits</source>
+                <target>Crédits</target>
+            </trans-unit>
+            <trans-unit id="5jHwDZM">
+                <source>label.credits_help</source>
+                <target>Laisser vide si non utilisé</target>
+            </trans-unit>
+            <trans-unit id="Q0reZxI">
+                <source>label.css_class_circle</source>
+                <target>Cercle</target>
+            </trans-unit>
+            <trans-unit id="Pk4K_qq">
+                <source>label.css_class_rounded</source>
+                <target>Coins arrondis</target>
+            </trans-unit>
+            <trans-unit id="XUngOt2">
+                <source>label.css_class_shadow</source>
+                <target>Ombre portée</target>
+            </trans-unit>
+            <trans-unit id="HuQhojJ">
+                <source>label.css_class_square</source>
+                <target>Carré (recadrée)</target>
+            </trans-unit>
+            <trans-unit id="rfgXZtK">
+                <source>label.css_class_thumbnail</source>
+                <target>Vignette (bordure)</target>
+            </trans-unit>
+            <trans-unit id="L_FTusH">
+                <source>label.css_class_width_100</source>
+                <target>Largeur 100px</target>
+            </trans-unit>
+            <trans-unit id="GP_pSvR">
+                <source>label.css_class_width_125</source>
+                <target>Largeur 125px</target>
+            </trans-unit>
+            <trans-unit id="S0JPVfl">
+                <source>label.css_class_width_150</source>
+                <target>Largeur 150px</target>
+            </trans-unit>
+            <trans-unit id="EZT1KD6">
+                <source>label.css_class_width_200</source>
+                <target>Largeur 200px</target>
+            </trans-unit>
+            <trans-unit id="lhUGuQS">
+                <source>label.css_class_width_250</source>
+                <target>Largeur 250px</target>
+            </trans-unit>
+            <trans-unit id="r6z.dbq">
+                <source>label.css_class_width_300</source>
+                <target>Largeur 300px</target>
+            </trans-unit>
+            <trans-unit id="kZu9jPS">
+                <source>label.css_class_width_350</source>
+                <target>Largeur 350px</target>
+            </trans-unit>
+            <trans-unit id="14m.DkO">
+                <source>label.css_class_width_400</source>
+                <target>Largeur 400px</target>
+            </trans-unit>
+            <trans-unit id="byunT9o">
+                <source>label.css_class_width_450</source>
+                <target>Largeur 450px</target>
+            </trans-unit>
+            <trans-unit id="4s3Piiv">
+                <source>label.css_class_width_500</source>
+                <target>Largeur 500px</target>
+            </trans-unit>
+            <trans-unit id="YB09_6U">
+                <source>label.css_classes</source>
+                <target>Classes CSS</target>
+            </trans-unit>
+            <trans-unit id="cZ3ULNf">
+                <source>label.css_classes_help</source>
+                <target>Sélectionnez les styles à appliquer</target>
+            </trans-unit>
+            <trans-unit id="frpVRdg">
+                <source>label.cta_label</source>
+                <target>Libellé du bouton</target>
+            </trans-unit>
+            <trans-unit id="N05sbUe">
+                <source>label.danger</source>
+                <target>Danger</target>
+            </trans-unit>
+            <trans-unit id="Zb4xuOb">
+                <source>label.description</source>
+                <target>Description</target>
+            </trans-unit>
+            <trans-unit id="0.g7Tcu">
+                <source>label.detail</source>
+                <target>Détail</target>
+            </trans-unit>
+            <trans-unit id="noigMYa">
+                <source>label.detail_page</source>
+                <target>Page de détail</target>
+            </trans-unit>
+            <trans-unit id="IzGNrfq">
+                <source>label.detail_page_help</source>
+                <target>Slug de la Page de détail des items (ex. "blocks-detail"). Vide si aucune.</target>
+            </trans-unit>
+            <trans-unit id="dqONr5r">
+                <source>label.document_download_media_help</source>
+                <target>Un fichier = une carte de téléchargement. Attachez plusieurs fichiers pour proposer plusieurs documents ; donnez alors à chacun un "Nom du fichier" distinct, il servira de titre à sa carte.</target>
+            </trans-unit>
+            <trans-unit id="1vyz2Yp">
+                <source>label.edit</source>
+                <target>Editer</target>
+            </trans-unit>
+            <trans-unit id="2yOsQwt">
+                <source>label.email_block_alt</source>
+                <target>Texte alternatif</target>
+            </trans-unit>
+            <trans-unit id="m8gmgju">
+                <source>label.email_block_alt_help</source>
+                <target>Utilisé par les blocs "Image"</target>
+            </trans-unit>
+            <trans-unit id="9tTmK_c">
+                <source>label.email_block_content</source>
+                <target>Contenu</target>
+            </trans-unit>
+            <trans-unit id="kx2920k">
+                <source>label.email_block_content_help</source>
+                <target>Bloc "Texte" : texte brut, un paragraphe par ligne vide</target>
+            </trans-unit>
+            <trans-unit id="6Qeq_j5">
+                <source>label.email_block_heading</source>
+                <target>Titre</target>
+            </trans-unit>
+            <trans-unit id="mmNOvXv">
+                <source>label.email_block_heading_help</source>
+                <target>Utilisé par les blocs "Titre"</target>
+            </trans-unit>
+            <trans-unit id="uZj2jIP">
+                <source>label.email_block_height</source>
+                <target>Hauteur (px)</target>
+            </trans-unit>
+            <trans-unit id="5bORkdb">
+                <source>label.email_block_height_help</source>
+                <target>Utilisé par les blocs "Espacement"</target>
+            </trans-unit>
+            <trans-unit id="5Uu4z4a">
+                <source>label.email_block_label</source>
+                <target>Libellé</target>
+            </trans-unit>
+            <trans-unit id="ynNAvLE">
+                <source>label.email_block_label_help</source>
+                <target>Utilisé par les blocs "Bouton"</target>
+            </trans-unit>
+            <trans-unit id="1.nnpZV">
+                <source>label.email_block_level</source>
+                <target>Taille du titre</target>
+            </trans-unit>
+            <trans-unit id="APwN_P_">
+                <source>label.email_block_type</source>
+                <target>Type de bloc</target>
+            </trans-unit>
+            <trans-unit id="anOPkl0">
+                <source>label.email_block_type_button</source>
+                <target>Bouton</target>
+            </trans-unit>
+            <trans-unit id="y3c19vA">
+                <source>label.email_block_type_divider</source>
+                <target>Séparateur</target>
+            </trans-unit>
+            <trans-unit id=".gwMhKu">
+                <source>label.email_block_type_fields_table</source>
+                <target>Tableau des champs soumis</target>
+            </trans-unit>
+            <trans-unit id="MiC7rY2">
+                <source>label.email_block_type_heading</source>
+                <target>Titre</target>
+            </trans-unit>
+            <trans-unit id="xwVOhi1">
+                <source>label.email_block_type_image</source>
+                <target>Image</target>
+            </trans-unit>
+            <trans-unit id="PgFPB.F">
+                <source>label.email_block_type_spacer</source>
+                <target>Espacement</target>
+            </trans-unit>
+            <trans-unit id="0WOspfI">
+                <source>label.email_block_type_text</source>
+                <target>Texte</target>
+            </trans-unit>
+            <trans-unit id="LOWmfEh">
+                <source>label.email_block_url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="RVuCAKX">
+                <source>label.email_block_url_help</source>
+                <target>Blocs "Bouton"/"Image" - accepte {{ signed_url }}, ou un chemin relatif (ex. /medias/logo.webp) complété par la config "site-url".</target>
+            </trans-unit>
+            <trans-unit id="l3sqAHz">
+                <source>label.email_blocks</source>
+                <target>Blocs</target>
+            </trans-unit>
+            <trans-unit id="btmHLEL">
+                <source>label.email_templates</source>
+                <target>Modèles d'email</target>
+            </trans-unit>
+            <trans-unit id="VTM8IxQ">
+                <source>label.eyebrow</source>
+                <target>Surtitre</target>
+            </trans-unit>
+            <trans-unit id="aSdYCtp">
+                <source>label.field_label</source>
+                <target>Libellé</target>
+            </trans-unit>
+            <trans-unit id="4E9MVsf">
+                <source>label.field_placeholder</source>
+                <target>Texte indicatif</target>
+            </trans-unit>
+            <trans-unit id="GvBwpCn">
+                <source>label.field_required</source>
+                <target>Obligatoire</target>
+            </trans-unit>
+            <trans-unit id="Ukddqgx">
+                <source>label.field_required_default</source>
+                <target>Obligatoire par défaut</target>
+            </trans-unit>
+            <trans-unit id="dXx62_i">
+                <source>label.field_required_default_help</source>
+                <target>Valeur de départ copiée dans le champ ajouté - modifiable ensuite par formulaire, sans effet rétroactif sur ce modèle.</target>
+            </trans-unit>
+            <trans-unit id="CeXhLuW">
+                <source>label.field_type</source>
+                <target>Type</target>
+            </trans-unit>
+            <trans-unit id="M6FCi_L">
+                <source>label.field_type_checkbox</source>
+                <target>Case à cocher</target>
+            </trans-unit>
+            <trans-unit id="i_1FF7D">
+                <source>label.field_type_date</source>
+                <target>Date</target>
+            </trans-unit>
+            <trans-unit id="t1joywv">
+                <source>label.field_type_email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="QAHrzzP">
+                <source>label.field_type_number</source>
+                <target>Nombre</target>
+            </trans-unit>
+            <trans-unit id="jh4LNZD">
+                <source>label.field_type_password</source>
+                <target>Mot de passe</target>
+            </trans-unit>
+            <trans-unit id="W8d8wUD">
+                <source>label.field_type_password_repeated</source>
+                <target>Mot de passe (avec confirmation)</target>
+            </trans-unit>
+            <trans-unit id="geUIki.">
+                <source>label.field_type_tel</source>
+                <target>Téléphone</target>
+            </trans-unit>
+            <trans-unit id="jkCOy15">
+                <source>label.field_type_text</source>
+                <target>Texte</target>
+            </trans-unit>
+            <trans-unit id="TaahD6y">
+                <source>label.field_type_textarea</source>
+                <target>Texte long</target>
+            </trans-unit>
+            <trans-unit id="t.S8ima">
+                <source>label.field_type_url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="0SwMN5n">
+                <source>label.field_url</source>
+                <target>Lien (optionnel)</target>
+            </trans-unit>
+            <trans-unit id="VSQ1Vkt">
+                <source>label.field_url_link</source>
+                <target>lire</target>
+            </trans-unit>
+            <trans-unit id="RWFrajX">
+                <source>label.fields</source>
+                <target>Champs</target>
+            </trans-unit>
+            <trans-unit id="DmcAvc0">
+                <source>label.file</source>
+                <target>Fichier</target>
+            </trans-unit>
+            <trans-unit id="hYgYtv3">
+                <source>label.file_name</source>
+                <target>Nom du fichier</target>
+            </trans-unit>
+            <trans-unit id="PrnCmc_">
+                <source>label.file_name_help</source>
+                <target>Utilisé pour nommer le fichier stocké. Sert aussi de titre à la carte de téléchargement si plusieurs fichiers sont attachés.</target>
+            </trans-unit>
+            <trans-unit id="ubt8hID">
+                <source>label.fixed_icon_invalid_format</source>
+                <target>SVG non supporté pour ce rôle - utilisez une image PNG, JPG, GIF ou WEBP</target>
+            </trans-unit>
+            <trans-unit id="atiwZVV">
+                <source>label.force_download</source>
+                <target>Forcer le téléchargement</target>
+            </trans-unit>
+            <trans-unit id="NwThH9S">
+                <source>label.form_disabled</source>
+                <target>Ce formulaire n'est pas disponible pour le moment.</target>
+            </trans-unit>
+            <trans-unit id="MIzqoNl">
+                <source>label.form_enabled</source>
+                <target>Actif</target>
+            </trans-unit>
+            <trans-unit id="aHJ.yX_">
+                <source>label.form_field_template_picker_placeholder</source>
+                <target>Ajouter depuis un modèle…</target>
+            </trans-unit>
+            <trans-unit id="PTqH6C7">
+                <source>label.form_field_templates</source>
+                <target>Modèles de champs</target>
+            </trans-unit>
+            <trans-unit id="PR6XC0B">
+                <source>label.form_picker_disabled_suffix</source>
+                <target> (désactivé)</target>
+            </trans-unit>
+            <trans-unit id="Z0p9Gpw">
+                <source>label.form_picker_name</source>
+                <target>Formulaire</target>
+            </trans-unit>
+            <trans-unit id="OD0CMev">
+                <source>label.form_submission_failed</source>
+                <target>Une erreur est survenue, votre envoi n'a pas pu être traité.</target>
+            </trans-unit>
+            <trans-unit id="0azLXwc">
+                <source>label.form_submitted</source>
+                <target>Merci, votre envoi a bien été reçu.</target>
+            </trans-unit>
+            <trans-unit id="EptgKcw">
+                <source>label.forms</source>
+                <target>Formulaires</target>
+            </trans-unit>
+            <trans-unit id="7YLjRTG">
+                <source>label.height</source>
+                <target>Hauteur</target>
+            </trans-unit>
+            <trans-unit id="bsXW2bW">
+                <source>label.height_help</source>
+                <target>Détectée automatiquement à l'envoi, en pixels</target>
+            </trans-unit>
+            <trans-unit id="HNLe9LP">
+                <source>label.hero_background_image</source>
+                <target>Afficher l'image en fond, pleine largeur</target>
+            </trans-unit>
+            <trans-unit id="KPqN5C4">
+                <source>label.hero_background_image_help</source>
+                <target>Utilise la première image ajoutée en fond pleine largeur derrière le texte, au lieu de l'afficher à côté.</target>
+            </trans-unit>
+            <trans-unit id="UOjLBIH">
+                <source>label.hero_media_max</source>
+                <target>Une section hero peut contenir au maximum {{ limit }} images.</target>
+            </trans-unit>
+            <trans-unit id="7uubg0.">
+                <source>label.hero_title_level</source>
+                <target>Niveau de titre</target>
+            </trans-unit>
+            <trans-unit id="1WgTvBQ">
+                <source>label.hero_title_level_help</source>
+                <target>h1 quand ce hero ouvre la page et en porte le titre, h2 quand le gabarit de page affiche déjà son propre titre au-dessus.</target>
+            </trans-unit>
+            <trans-unit id="p_CIk0t">
+                <source>label.hook</source>
+                <target>Phrase d'accroche</target>
+            </trans-unit>
+            <trans-unit id="lqEFtzf">
+                <source>label.icon</source>
+                <target>Icône</target>
+            </trans-unit>
+            <trans-unit id="lld2Fga">
+                <source>label.icon_path</source>
+                <target>Chemin de l'icône (optionnel)</target>
+            </trans-unit>
+            <trans-unit id="jGMjpWb">
+                <source>label.id</source>
+                <target>ID</target>
+            </trans-unit>
+            <trans-unit id="O9m6y0C">
+                <source>label.identifier</source>
+                <target>Identifiant</target>
+            </trans-unit>
+            <trans-unit id="LsG34kN">
+                <source>label.identifier_help</source>
+                <target>Sans espaces, accents, majuscules ni caractères spéciaux</target>
+            </trans-unit>
+            <trans-unit id="O_0K8EM">
+                <source>label.image</source>
+                <target>Image</target>
+            </trans-unit>
+            <trans-unit id="wufmcmY">
+                <source>label.info_email_debug</source>
+                <target>Un ROLE_SUPER_ADMIN voit un aperçu au lieu de l'envoi réel tant que %link_open%cette clé%link_close% est activée.</target>
+            </trans-unit>
+            <trans-unit id="3u1hIgT">
+                <source>label.info_email_template</source>
+                <target>Modèles d'e-mails du site, chacun composé de blocs de contenu. Créez, modifiez ou prévisualisez un modèle ; un modèle restreint garde son nom fixe et ne peut pas être supprimé.</target>
+            </trans-unit>
+            <trans-unit id="ryIqK8x">
+                <source>label.info_form</source>
+                <target>Formulaires du site (contact, newsletter...), chacun avec ses propres champs et son action d'envoi. Créez, modifiez ou supprimez un formulaire ; un formulaire restreint garde son nom fixe et ne peut pas être supprimé.</target>
+            </trans-unit>
+            <trans-unit id="SKYFMvl">
+                <source>label.info_form_field_template</source>
+                <target>Champs prêts à l'emploi pour construire un formulaire. Créez, modifiez ou supprimez un modèle ; un modèle restreint garde son nom fixe mais reste modifiable et n'est jamais supprimable.</target>
+            </trans-unit>
+            <trans-unit id="Cdp6GrZ">
+                <source>label.info_form_gdpr</source>
+                <target>Case RGPD ajoutée automatiquement aux formulaires, selon %link_open%cette clé%link_close%.</target>
+            </trans-unit>
+            <trans-unit id="Rj7vT.7">
+                <source>label.info_media</source>
+                <target>Tous les médias téléversés (pages, blocks, graphismes du site). Modifiez la légende, le texte alternatif ou les crédits d'un média ; les graphiques globaux du site (favicon, logo...) restent en lecture seule ici et se gèrent depuis Graphiques du site.</target>
+            </trans-unit>
+            <trans-unit id="tuC.GA7">
+                <source>label.information</source>
+                <target>Information</target>
+            </trans-unit>
+            <trans-unit id="XWd5FgF">
+                <source>label.inline</source>
+                <target>Afficher en ligne (sans balise p)</target>
+            </trans-unit>
+            <trans-unit id="HBJI6qv">
+                <source>label.items</source>
+                <target>Arguments</target>
+            </trans-unit>
+            <trans-unit id="NdoELG0">
+                <source>label.kind</source>
+                <target>Type</target>
+            </trans-unit>
+            <trans-unit id="cazagrU">
+                <source>label.layout</source>
+                <target>Disposition</target>
+            </trans-unit>
+            <trans-unit id="G5YCcSc">
+                <source>label.layout_default</source>
+                <target>Standard</target>
+            </trans-unit>
+            <trans-unit id="Yu9kLYA">
+                <source>label.layout_freeflow</source>
+                <target>Débordement</target>
+            </trans-unit>
+            <trans-unit id="_bVYSgu">
+                <source>label.layout_help</source>
+                <target>Standard : une slide à la fois. Débordement : toutes côte à côte, hors écran.</target>
+            </trans-unit>
+            <trans-unit id="vW5NwgU">
+                <source>label.limit</source>
+                <target>Nombre maximum affiché</target>
+            </trans-unit>
+            <trans-unit id="ut_.nR5">
+                <source>label.link</source>
+                <target>Lien</target>
+            </trans-unit>
+            <trans-unit id="c7Md7WI">
+                <source>label.link_label</source>
+                <target>Libellé du lien</target>
+            </trans-unit>
+            <trans-unit id="vWpOH7s">
+                <source>label.loop</source>
+                <target>Boucle</target>
+            </trans-unit>
+            <trans-unit id="z9uF1b7">
+                <source>label.max_height</source>
+                <target>Hauteur maximale</target>
+            </trans-unit>
+            <trans-unit id="HC6BXIl">
+                <source>label.max_height_help</source>
+                <target>En pixels, laisser vide pour une hauteur automatique</target>
+            </trans-unit>
+            <trans-unit id="hC0xs1.">
+                <source>label.media</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="5JB.rhD">
+                <source>label.media_help</source>
+                <target>Pour un fichier unique (Image/Vidéo/Audio), seul le premier compte</target>
+            </trans-unit>
+            <trans-unit id="qSNIB62">
+                <source>label.media_library</source>
+                <target>Bibliothèque de médias</target>
+            </trans-unit>
+            <trans-unit id="ViqheWp">
+                <source>label.media_multi_upload</source>
+                <target>Ajouter plusieurs fichiers</target>
+            </trans-unit>
+            <trans-unit id="WR7vwm2">
+                <source>label.media_multi_upload_help</source>
+                <target>Sélectionnez plusieurs fichiers pour les ajouter en une fois</target>
+            </trans-unit>
+            <trans-unit id="bBt_4n5">
+                <source>label.muted</source>
+                <target>Muet</target>
+            </trans-unit>
+            <trans-unit id="aSiMEIt">
+                <source>label.name</source>
+                <target>Nom</target>
+            </trans-unit>
+            <trans-unit id="LjUTZw0">
+                <source>label.new_tab</source>
+                <target>Nouvel Onglet</target>
+            </trans-unit>
+            <trans-unit id="xOMkNTu">
+                <source>label.no_collection_source_available</source>
+                <target>Aucune source de collection disponible pour le moment</target>
+            </trans-unit>
+            <trans-unit id="qOJK2CP">
+                <source>label.not_used_anywhere</source>
+                <target>Pas encore utilisé</target>
+            </trans-unit>
+            <trans-unit id="IBymOD8">
+                <source>label.opening_hours</source>
+                <target>Horaires</target>
+            </trans-unit>
+            <trans-unit id="hz5aZk6">
+                <source>label.password_confirm</source>
+                <target>Confirmation du mot de passe</target>
+            </trans-unit>
+            <trans-unit id="KXf3t5l">
+                <source>label.phone</source>
+                <target>Téléphone</target>
+            </trans-unit>
+            <trans-unit id="Rfi.GLm">
+                <source>label.position</source>
+                <target>Position</target>
+            </trans-unit>
+            <trans-unit id="Pmyk5As">
+                <source>label.postal_code</source>
+                <target>Code postal</target>
+            </trans-unit>
+            <trans-unit id="wqV.yBO">
+                <source>label.price_range</source>
+                <target>Fourchette de prix</target>
+            </trans-unit>
+            <trans-unit id="NZ3n3re">
+                <source>label.primary</source>
+                <target>Primaire</target>
+            </trans-unit>
+            <trans-unit id="QActmhs">
+                <source>label.primary_label</source>
+                <target>Libellé du bouton principal</target>
+            </trans-unit>
+            <trans-unit id="D5HPeKU">
+                <source>label.primary_url</source>
+                <target>URL du bouton principal</target>
+            </trans-unit>
+            <trans-unit id="DKWkb19">
+                <source>label.progress_percent</source>
+                <target>Pourcentage (0-100)</target>
+            </trans-unit>
+            <trans-unit id="8NHfPcl">
+                <source>label.ratio</source>
+                <target>Ratio</target>
+            </trans-unit>
+            <trans-unit id="ZyXs0V7">
+                <source>label.ratio_16_9</source>
+                <target>16:9</target>
+            </trans-unit>
+            <trans-unit id="2Dd5Jrs">
+                <source>label.ratio_1_1</source>
+                <target>1:1 (carré)</target>
+            </trans-unit>
+            <trans-unit id="UvlE6Sl">
+                <source>label.ratio_21_9</source>
+                <target>21:9 (panoramique)</target>
+            </trans-unit>
+            <trans-unit id="Kjif37J">
+                <source>label.ratio_2_3</source>
+                <target>2:3 (portrait)</target>
+            </trans-unit>
+            <trans-unit id="2b1M_U1">
+                <source>label.ratio_3_2</source>
+                <target>3:2</target>
+            </trans-unit>
+            <trans-unit id="cJJ9bun">
+                <source>label.ratio_3_4</source>
+                <target>3:4 (portrait)</target>
+            </trans-unit>
+            <trans-unit id="7Ll0Ym6">
+                <source>label.ratio_4_3</source>
+                <target>4:3</target>
+            </trans-unit>
+            <trans-unit id="_tveAG8">
+                <source>label.ratio_9_16</source>
+                <target>9:16 (story)</target>
+            </trans-unit>
+            <trans-unit id="PQpF61w">
+                <source>label.ratio_free</source>
+                <target>Libre</target>
+            </trans-unit>
+            <trans-unit id="0RFcVRF">
+                <source>label.ratio_help</source>
+                <target>Libre garde le ratio naturel de l'image ; un ratio fixe la recadre</target>
+            </trans-unit>
+            <trans-unit id="oNE5b8K">
+                <source>label.receive_copy</source>
+                <target>Recevoir une copie</target>
+            </trans-unit>
+            <trans-unit id="_iSWIYI">
+                <source>label.restricted</source>
+                <target>Restreint</target>
+            </trans-unit>
+            <trans-unit id="uKaQklK">
+                <source>label.rights_reserved</source>
+                <target>Droits réservés</target>
+            </trans-unit>
+            <trans-unit id="bMMjC9k">
+                <source>label.same_window</source>
+                <target>Même Fenêtre</target>
+            </trans-unit>
+            <trans-unit id="lIBbVVe">
+                <source>label.schema_type</source>
+                <target>Type Schema.org</target>
+            </trans-unit>
+            <trans-unit id="fPfYMVc">
+                <source>label.search_block_kind</source>
+                <target>Rechercher un type de bloc...</target>
+            </trans-unit>
+            <trans-unit id="CHMbXyk">
+                <source>label.search_icon</source>
+                <target>Rechercher une icône...</target>
+            </trans-unit>
+            <trans-unit id="knthYeK">
+                <source>label.secondary</source>
+                <target>Secondaire</target>
+            </trans-unit>
+            <trans-unit id="zan9Usw">
+                <source>label.secondary_label</source>
+                <target>Libellé du bouton secondaire</target>
+            </trans-unit>
+            <trans-unit id="CqXEJAM">
+                <source>label.secondary_url</source>
+                <target>URL du bouton secondaire</target>
+            </trans-unit>
+            <trans-unit id="LqQIe5o">
                 <source>label.section_background</source>
                 <target>Fond de la section</target>
             </trans-unit>
-            <trans-unit id="544">
+            <trans-unit id="S3aOJc1">
+                <source>label.section_background_dark</source>
+                <target>Foncé</target>
+            </trans-unit>
+            <trans-unit id="dG59CiC">
                 <source>label.section_background_help</source>
                 <target>Peint la section en aplat pleine largeur - les textes, filets et boutons qu'elle contient s'inversent automatiquement pour rester lisibles.</target>
             </trans-unit>
-            <trans-unit id="545">
-                <source>label.section_background_none</source>
-                <target>Aucun (fond de page)</target>
-            </trans-unit>
-            <trans-unit id="546">
+            <trans-unit id="gxWXTr3">
                 <source>label.section_background_muted</source>
                 <target>Gris clair</target>
             </trans-unit>
-            <trans-unit id="547">
+            <trans-unit id="UcA_IiR">
+                <source>label.section_background_none</source>
+                <target>Aucun (fond de page)</target>
+            </trans-unit>
+            <trans-unit id="r82HE3G">
                 <source>label.section_background_primary</source>
                 <target>Couleur principale</target>
             </trans-unit>
-            <trans-unit id="548">
-                <source>label.section_background_dark</source>
-                <target>Foncé</target>
+            <trans-unit id="8wG6aGH">
+                <source>label.send</source>
+                <target>Envoyer</target>
+            </trans-unit>
+            <trans-unit id="M2zj2An">
+                <source>label.show_percent</source>
+                <target>Afficher le pourcentage</target>
+            </trans-unit>
+            <trans-unit id="_ukBYp5">
+                <source>label.slide_duration</source>
+                <target>Durée entre slides en ms (0 = manuel)</target>
+            </trans-unit>
+            <trans-unit id="WTG_sdU">
+                <source>label.slides</source>
+                <target>Diapositives</target>
+            </trans-unit>
+            <trans-unit id="JSH4l3s">
+                <source>label.slots</source>
+                <target>Colonnes</target>
+            </trans-unit>
+            <trans-unit id="dVwFNwZ">
+                <source>label.slots_cards</source>
+                <target>Cartes</target>
+            </trans-unit>
+            <trans-unit id="0kGqgMZ">
+                <source>label.slug</source>
+                <target>Slug</target>
+            </trans-unit>
+            <trans-unit id="Pv_ZKGY">
+                <source>label.source</source>
+                <target>Source</target>
+            </trans-unit>
+            <trans-unit id="3D9cZ_b">
+                <source>label.start_position</source>
+                <target>Position de départ</target>
+            </trans-unit>
+            <trans-unit id="XGg3CFc">
+                <source>label.start_position_help</source>
+                <target>Position initiale du curseur de comparaison, en pourcentage (0 à 100)</target>
+            </trans-unit>
+            <trans-unit id="7vavDKv">
+                <source>label.stat_label</source>
+                <target>Légende du chiffre clé</target>
+            </trans-unit>
+            <trans-unit id="PrNxLVX">
+                <source>label.stat_value</source>
+                <target>Valeur du chiffre clé</target>
+            </trans-unit>
+            <trans-unit id="FkNEdr1">
+                <source>label.step_number</source>
+                <target>Étape %number%</target>
+            </trans-unit>
+            <trans-unit id="zE4iFSo">
+                <source>label.steps</source>
+                <target>Étapes</target>
+            </trans-unit>
+            <trans-unit id="LBLIQe_">
+                <source>label.street_address</source>
+                <target>Rue</target>
+            </trans-unit>
+            <trans-unit id="XWMpUxP">
+                <source>label.style</source>
+                <target>Style</target>
+            </trans-unit>
+            <trans-unit id="Vttl6XU">
+                <source>label.subtitle</source>
+                <target>Sous-titre</target>
+            </trans-unit>
+            <trans-unit id="04zDTq_">
+                <source>label.success</source>
+                <target>Succès</target>
+            </trans-unit>
+            <trans-unit id="p8ZavMW">
+                <source>label.tags</source>
+                <target>Tags</target>
+            </trans-unit>
+            <trans-unit id="FAw4doM">
+                <source>label.target</source>
+                <target>Cible</target>
+            </trans-unit>
+            <trans-unit id="zDdJoWc">
+                <source>label.text</source>
+                <target>Texte</target>
+            </trans-unit>
+            <trans-unit id="ZIbme0L">
+                <source>label.title</source>
+                <target>Titre</target>
+            </trans-unit>
+            <trans-unit id="EE5wbzn">
+                <source>label.title_level</source>
+                <target>Niveau de titre</target>
+            </trans-unit>
+            <trans-unit id="mcQ1Bzu">
+                <source>label.url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="WEtNrDf">
+                <source>label.used_in</source>
+                <target>Utilisé dans</target>
+            </trans-unit>
+            <trans-unit id="0wLkovt">
+                <source>label.variant</source>
+                <target>Présentation</target>
+            </trans-unit>
+            <trans-unit id="KqQ5azR">
+                <source>label.variant_card</source>
+                <target>Carte (par défaut)</target>
+            </trans-unit>
+            <trans-unit id="db5EUws">
+                <source>label.variant_help</source>
+                <target>Mode d'affichage des items, appliqué à toute la collection.</target>
+            </trans-unit>
+            <trans-unit id="29S6.HK">
+                <source>label.variant_portfolio</source>
+                <target>Grille portfolio</target>
+            </trans-unit>
+            <trans-unit id="pt4FACS">
+                <source>label.video_file</source>
+                <target>Fichier vidéo</target>
+            </trans-unit>
+            <trans-unit id="zu9yC8P">
+                <source>label.video_file_or_poster</source>
+                <target>Fichier vidéo ou image de couverture</target>
+            </trans-unit>
+            <trans-unit id="5dQP9xW">
+                <source>label.video_iframe_accept</source>
+                <target>Afficher le contenu</target>
+            </trans-unit>
+            <trans-unit id="wBwi8fo">
+                <source>label.video_iframe_consent_required</source>
+                <target>Ce contenu provient d'un site tiers (YouTube ou similaire) et nécessite votre consentement pour être affiché.</target>
+            </trans-unit>
+            <trans-unit id="cXYQ_gN">
+                <source>label.video_media_help</source>
+                <target>Déposez le fichier vidéo (MP4, WebM ou OGG) et, si vous le souhaitez, une image servant de couverture au lecteur</target>
+            </trans-unit>
+            <trans-unit id="j2.KKFd">
+                <source>label.video_no_cookie</source>
+                <target>Utiliser la version sans cookie (YouTube uniquement)</target>
+            </trans-unit>
+            <trans-unit id="M9btWjW">
+                <source>label.video_options</source>
+                <target>Options de lecture</target>
+            </trans-unit>
+            <trans-unit id="tXt9_R.">
+                <source>label.video_options_help</source>
+                <target>La plupart des navigateurs n'autorisent la lecture automatique que sur une vidéo muette</target>
+            </trans-unit>
+            <trans-unit id="3_3BeFr">
+                <source>label.video_poster</source>
+                <target>Image de couverture</target>
+            </trans-unit>
+            <trans-unit id="4aBckcp">
+                <source>label.video_url</source>
+                <target>URL de la vidéo (YouTube, Vimeo...)</target>
+            </trans-unit>
+            <trans-unit id="WcOat7C">
+                <source>label.warning</source>
+                <target>Avertissement</target>
+            </trans-unit>
+            <trans-unit id="K0YHYQb">
+                <source>label.width</source>
+                <target>Largeur</target>
+            </trans-unit>
+            <trans-unit id="6BAKM_y">
+                <source>label.width_help</source>
+                <target>Détectée automatiquement à l'envoi, en pixels</target>
+            </trans-unit>
+            <trans-unit id="UAH_ycC">
+                <source>text.form_required_note</source>
+                <target>* Champ requis</target>
+            </trans-unit>
+            <trans-unit id="G1fcoic">
+                <source>text.password_mismatch</source>
+                <target>Les mots de passe ne correspondent pas</target>
+            </trans-unit>
+            <trans-unit id="we221_t">
+                <source>text.too_many_attempts</source>
+                <target>Trop de tentatives, merci de réessayer plus tard.</target>
             </trans-unit>
         </body>
     </file>

@@ -2,117 +2,117 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="site_config.en.xlf">
         <body>
-            <trans-unit id="1">
+            <trans-unit id="GS_2sku">
                 <source>description.ai_assistant_dashboard_enabled</source>
                 <target>Enable (true) or disable (false) the dashboard AI assistant</target>
             </trans-unit>
-            <trans-unit id="2">
+            <trans-unit id="f2Stp0E">
                 <source>description.ai_assistant_dashboard_endpoint</source>
                 <target>URL of the AI backend receiving dashboard questions. Empty = disabled (no default backend shipped).</target>
             </trans-unit>
-            <trans-unit id="3">
-                <source>description.ai_assistant_dashboard_token</source>
-                <target>Bearer token sent to the dashboard AI assistant endpoint</target>
-            </trans-unit>
-            <trans-unit id="4">
-                <source>description.ai_assistant_rephrase_provider</source>
-                <target>AI provider for the rephrase button: anthropic, openai or euria</target>
-            </trans-unit>
-            <trans-unit id="5">
-                <source>description.ai_assistant_rephrase_api_key</source>
-                <target>API key for the chosen provider, billed to its owner</target>
-            </trans-unit>
-            <trans-unit id="6">
-                <source>description.ai_assistant_rephrase_base_uri</source>
-                <target>Base URI of the OpenAI-compatible API, required only for euria</target>
-            </trans-unit>
-            <trans-unit id="7">
-                <source>description.ai_assistant_rephrase_model</source>
-                <target>Rephrase model id - optional for Anthropic/OpenAI (sensible default), required for Euria (unstable catalog, no safe default)</target>
-            </trans-unit>
-            <trans-unit id="8">
-                <source>label.ui_ai_assistant_dashboard_enabled</source>
-                <target>Donovan (Q&amp;A) - Enabled</target>
-            </trans-unit>
-            <trans-unit id="9">
-                <source>label.ui_ai_assistant_dashboard_endpoint</source>
-                <target>Donovan (Q&amp;A) - Endpoint</target>
-            </trans-unit>
-            <trans-unit id="10">
-                <source>label.ui_ai_assistant_dashboard_token</source>
-                <target>Donovan (Q&amp;A) - Token</target>
-            </trans-unit>
-            <trans-unit id="11">
-                <source>label.ui_ai_assistant_rephrase_provider</source>
-                <target>Donovan (Site) - LLM provider</target>
-            </trans-unit>
-            <trans-unit id="12">
-                <source>label.ui_ai_assistant_rephrase_api_key</source>
-                <target>Donovan (Site) - LLM API key</target>
-            </trans-unit>
-            <trans-unit id="13">
-                <source>label.ui_ai_assistant_rephrase_base_uri</source>
-                <target>Donovan (Site) - Base URI</target>
-            </trans-unit>
-            <trans-unit id="14">
-                <source>label.ui_ai_assistant_rephrase_model</source>
-                <target>Donovan (Site) - LLM model</target>
-            </trans-unit>
-            <trans-unit id="15">
-                <source>label.ai_rephrase_failure_alert</source>
-                <target>AI rephrase feature failed on its last attempt</target>
-            </trans-unit>
-            <trans-unit id="16">
-                <source>description.ai_rephrase_failure_alert</source>
-                <target>Check the configured AI rephrase provider and API key</target>
-            </trans-unit>
-            <trans-unit id="19">
-                <source>label.ai_assistant_dashboard_not_enabled</source>
-                <target>Dashboard AI assistant not enabled</target>
-            </trans-unit>
-            <trans-unit id="20">
+            <trans-unit id="h8OG.GR">
                 <source>description.ai_assistant_dashboard_not_enabled</source>
                 <target>Enable it and set an endpoint and token to activate it</target>
             </trans-unit>
-            <trans-unit id="21">
-                <source>label.ai_rephrase_not_enabled</source>
-                <target>AI rephrase feature not enabled</target>
+            <trans-unit id="JK32Qas">
+                <source>description.ai_assistant_dashboard_token</source>
+                <target>Bearer token sent to the dashboard AI assistant endpoint</target>
             </trans-unit>
-            <trans-unit id="22">
+            <trans-unit id="et.XNnu">
+                <source>description.ai_assistant_rephrase_api_key</source>
+                <target>API key for the chosen provider, billed to its owner</target>
+            </trans-unit>
+            <trans-unit id="_bGjWVc">
+                <source>description.ai_assistant_rephrase_base_uri</source>
+                <target>Base URI of the OpenAI-compatible API, required only for euria</target>
+            </trans-unit>
+            <trans-unit id="bWfhcXt">
+                <source>description.ai_assistant_rephrase_model</source>
+                <target>Rephrase model id - optional for Anthropic/OpenAI (sensible default), required for Euria (unstable catalog, no safe default)</target>
+            </trans-unit>
+            <trans-unit id="ArNa8qa">
+                <source>description.ai_assistant_rephrase_provider</source>
+                <target>AI provider for the rephrase button: anthropic, openai or euria</target>
+            </trans-unit>
+            <trans-unit id="NF06pAx">
+                <source>description.ai_rephrase_failure_alert</source>
+                <target>Check the configured AI rephrase provider and API key</target>
+            </trans-unit>
+            <trans-unit id="BXljqwk">
                 <source>description.ai_rephrase_not_enabled</source>
                 <target>Set a provider and API key to enable rephrasing</target>
             </trans-unit>
-            <trans-unit id="23">
-                <source>label.email_debug</source>
-                <target>Email - Debug mode</target>
-            </trans-unit>
-            <trans-unit id="24">
+            <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
                 <target>When enabled, a ROLE_SUPER_ADMIN sees a preview instead of a real send</target>
             </trans-unit>
-            <trans-unit id="25">
-                <source>label.recaptcha3_site_key</source>
-                <target>ReCaptcha - Site key</target>
+            <trans-unit id="re7MGHJ">
+                <source>description.recaptcha3_score_threshold</source>
+                <target>Score threshold (between 0 and 1) below which ReCaptcha v3 considers the submission suspicious</target>
             </trans-unit>
-            <trans-unit id="26">
-                <source>description.recaptcha3_site_key</source>
-                <target>Site key for ReCaptcha v3</target>
-            </trans-unit>
-            <trans-unit id="27">
-                <source>label.recaptcha3_secret_key</source>
-                <target>ReCaptcha - Secret key</target>
-            </trans-unit>
-            <trans-unit id="28">
+            <trans-unit id="n0vSdf_">
                 <source>description.recaptcha3_secret_key</source>
                 <target>Secret key for ReCaptcha v3</target>
             </trans-unit>
-            <trans-unit id="29">
+            <trans-unit id="mGj2Whf">
+                <source>description.recaptcha3_site_key</source>
+                <target>Site key for ReCaptcha v3</target>
+            </trans-unit>
+            <trans-unit id="Fd2PHDs">
+                <source>label.ai_assistant_dashboard_not_enabled</source>
+                <target>Dashboard AI assistant not enabled</target>
+            </trans-unit>
+            <trans-unit id="RFJ8N8R">
+                <source>label.ai_rephrase_failure_alert</source>
+                <target>AI rephrase feature failed on its last attempt</target>
+            </trans-unit>
+            <trans-unit id="H21MUkk">
+                <source>label.ai_rephrase_not_enabled</source>
+                <target>AI rephrase feature not enabled</target>
+            </trans-unit>
+            <trans-unit id=".HY9J1w">
+                <source>label.email_debug</source>
+                <target>Email - Debug mode</target>
+            </trans-unit>
+            <trans-unit id="DRvJXiP">
                 <source>label.recaptcha3_score_threshold</source>
                 <target>ReCaptcha - Score threshold</target>
             </trans-unit>
-            <trans-unit id="30">
-                <source>description.recaptcha3_score_threshold</source>
-                <target>Score threshold (between 0 and 1) below which ReCaptcha v3 considers the submission suspicious</target>
+            <trans-unit id=".Pi.fDj">
+                <source>label.recaptcha3_secret_key</source>
+                <target>ReCaptcha - Secret key</target>
+            </trans-unit>
+            <trans-unit id="Ps.ODsR">
+                <source>label.recaptcha3_site_key</source>
+                <target>ReCaptcha - Site key</target>
+            </trans-unit>
+            <trans-unit id="ZkdMN2x">
+                <source>label.ui_ai_assistant_dashboard_enabled</source>
+                <target>Donovan (Q&amp;A) - Enabled</target>
+            </trans-unit>
+            <trans-unit id="umye009">
+                <source>label.ui_ai_assistant_dashboard_endpoint</source>
+                <target>Donovan (Q&amp;A) - Endpoint</target>
+            </trans-unit>
+            <trans-unit id="hTKz9St">
+                <source>label.ui_ai_assistant_dashboard_token</source>
+                <target>Donovan (Q&amp;A) - Token</target>
+            </trans-unit>
+            <trans-unit id="b01mpQ2">
+                <source>label.ui_ai_assistant_rephrase_api_key</source>
+                <target>Donovan (Site) - LLM API key</target>
+            </trans-unit>
+            <trans-unit id="ipeseMe">
+                <source>label.ui_ai_assistant_rephrase_base_uri</source>
+                <target>Donovan (Site) - Base URI</target>
+            </trans-unit>
+            <trans-unit id="tfKSd09">
+                <source>label.ui_ai_assistant_rephrase_model</source>
+                <target>Donovan (Site) - LLM model</target>
+            </trans-unit>
+            <trans-unit id="nUpavak">
+                <source>label.ui_ai_assistant_rephrase_provider</source>
+                <target>Donovan (Site) - LLM provider</target>
             </trans-unit>
         </body>
     </file>

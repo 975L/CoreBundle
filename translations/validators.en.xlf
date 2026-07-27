@@ -2,17 +2,17 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="validators.en.xlf">
         <body>
-            <trans-unit id="1">
+            <trans-unit id="57FGRQf">
+                <source>text.captcha_failed</source>
+                <target>Your submission could not be verified as human, please try again</target>
+            </trans-unit>
+            <trans-unit id="6FTtLRx">
                 <source>text.checkbox_required</source>
                 <target>You must check this box.</target>
             </trans-unit>
-            <trans-unit id="2">
+            <trans-unit id="ihtG6M4">
                 <source>text.email_domain_unreachable</source>
                 <target>This email address's domain does not seem to accept mail</target>
-            </trans-unit>
-            <trans-unit id="3">
-                <source>text.captcha_failed</source>
-                <target>Your submission could not be verified as human, please try again</target>
             </trans-unit>
         </body>
     </file>
