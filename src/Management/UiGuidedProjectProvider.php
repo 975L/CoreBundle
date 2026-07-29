@@ -63,7 +63,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
                 [
                     'label' => 'label.guided_step_ui_media_save',
-                    'highlight' => '.action-save',
+                    'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_ui_media_reuse',
@@ -109,7 +109,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
                 [
                     'label' => 'label.guided_step_ui_form_save',
-                    'highlight' => '.action-save',
+                    'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_ui_form_place',
@@ -145,7 +145,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
                 [
                     'label' => 'label.guided_step_ui_email_template_save',
-                    'highlight' => '.action-save',
+                    'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_ui_email_template_check',

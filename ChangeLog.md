@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.12.2
+
+Fix the guided save steps highlighting a button EasyAdmin never names
+
+- Fixed the guided steps highlighting `.action-save`, EasyAdmin naming that button `action-saveAndReturn` (29/07/2026)
+- Added `UiGuidedProjectProviderTest` coverage locking every `.action-*` highlight to a declared EasyAdmin action (29/07/2026)
+
 ## v1.12.1
 
 Added the guided projects for the media, form and email screens

@@ -9,6 +9,7 @@
 namespace c975L\UiBundle\Tests\Management;
 
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -93,6 +94,53 @@ class UiGuidedProjectProviderTest extends TestCase
             ['MediaCrudController', 'FormCrudController', 'EmailTemplateCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
+    }
+
+    // EasyAdmin names a button `action-` . the action's own name, so a selector naming an action it does not declare highlights nothing
+    public function testEveryActionHighlightNamesAnEasyAdminAction(): void
+    {
+        $names = $this->easyAdminActionNames();
+
+        foreach ($this->createProvider()->getGuidedProjects() as $project) {
+            foreach ($project['steps'] as $index => $step) {
+                if (!isset($step['highlight']) || !str_starts_with($step['highlight'], '.action-')) {
+                    continue;
+                }
+
+                $this->assertContains(
+                    substr($step['highlight'], \strlen('.action-')),
+                    $names,
+                    sprintf('Step %d of "%s" highlights "%s", an action EasyAdmin does not declare', $index, $project['slug'], $step['highlight'])
+                );
+            }
+        }
+    }
+
+    // The save button of a form is `saveAndReturn`, EasyAdmin declaring no action plainly named `save`
+    public function testTheSaveStepsHighlightTheSaveAndReturnButton(): void
+    {
+        $highlights = [];
+        foreach ($this->createProvider()->getGuidedProjects() as $project) {
+            foreach ($project['steps'] as $step) {
+                if (str_ends_with($step['label'], '_save')) {
+                    $highlights[] = $step['highlight'];
+                }
+            }
+        }
+
+        $this->assertSame(['.action-saveAndReturn', '.action-saveAndReturn', '.action-saveAndReturn'], $highlights);
+    }
+
+    private function easyAdminActionNames(): array
+    {
+        $names = [];
+        foreach ((new \ReflectionClass(Action::class))->getConstants() as $name => $value) {
+            if (!str_starts_with($name, 'TYPE_')) {
+                $names[] = $value;
+            }
+        }
+
+        return $names;
     }
 
     // A label or description with no translation reads as its own key in the panel
