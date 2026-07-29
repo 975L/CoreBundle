@@ -11,13 +11,22 @@ namespace c975L\UiBundle\Contract;
 use c975L\UiBundle\Entity\Block;
 use Doctrine\Common\Collections\Collection;
 
-// Each entity that owns blocks must implement this interface (see Readme)
+/**
+ * Each entity that owns blocks must implement this interface (see Readme)
+ */
 interface HasBlocksInterface
 {
+    /**
+     * @return Collection<int, Block>
+     */
     public function getBlocks(): Collection;
+
     public function addBlock(Block $block): static;
+
     public function removeBlock(Block $block): static;
 
-    // Same as removeBlock() but never queues the block for deletion, for relocating it elsewhere
+    /**
+     * Same as removeBlock() but never queues the block for deletion, for relocating it elsewhere
+     */
     public function detachBlock(Block $block): static;
 }

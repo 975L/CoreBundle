@@ -8,11 +8,18 @@
  */
 namespace c975L\UiBundle\Contract;
 
-// Makes a bundle's own HasBlocksInterface entity reachable by BlockMoveController without a dependency on it
+/**
+ * Makes a bundle's own HasBlocksInterface entity reachable by BlockMoveController without a dependency on it
+ */
 interface BlockOwnerResolverInterface
 {
-    // $ownerType: a short stable string chosen by the implementing bundle, round-tripped verbatim
+    /**
+     * @param string $ownerType a short stable string chosen by the implementing bundle, round-tripped verbatim
+     */
     public function supports(string $ownerType): bool;
 
+    /**
+     * Returns null when this resolver owns $ownerType but has no entity for $ownerId
+     */
     public function find(string $ownerType, int $ownerId): ?HasBlocksInterface;
 }

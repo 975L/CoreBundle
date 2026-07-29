@@ -8,8 +8,15 @@
  */
 namespace c975L\UiBundle\Contract;
 
-// Wraps an EmailTemplateRenderer body in the app's own branded layout, so preview and real send match
+/**
+ * Wraps an EmailTemplateRenderer body in the app's own branded layout, so preview and real send match
+ */
 interface EmailLayoutProviderInterface
 {
+    /**
+     * @param string $bodyHtml the already-rendered, email-safe body
+     *
+     * @return string the same body wrapped in the app's layout, ready to send
+     */
     public function wrap(string $bodyHtml): string;
 }

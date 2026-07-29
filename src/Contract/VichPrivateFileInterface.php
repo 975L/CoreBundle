@@ -10,7 +10,13 @@
 
 namespace c975L\UiBundle\Contract;
 
+/**
+ * Marks an entity whose uploaded file lives outside public/, served only through a controller (see PrivateFileResponseFactoryInterface) rather than by the web server
+ */
 interface VichPrivateFileInterface
 {
+    /**
+     * @return string directory relative to the project root (e.g. "private/books"), never starting with "public"
+     */
     public function getPrivateDirectory(): string;
 }

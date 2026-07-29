@@ -10,5 +10,12 @@ namespace c975L\UiBundle\Contract;
 
 interface BundleScriptAdminProviderInterface
 {
+    /**
+     * Returns the JS modules to load on the EasyAdmin management dashboard, as AssetMapper import names
+     * (e.g. "@c975l/my-bundle/controllers-admin.js"). Each one needs a matching importmap.php entry,
+     * usually declared through ConfigBundle's ImportmapProviderInterface::getAdminImportmapEntries().
+     *
+     * @return string[]
+     */
     public function getAdminScripts(): array;
 }

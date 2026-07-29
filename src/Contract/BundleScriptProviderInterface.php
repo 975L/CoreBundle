@@ -10,5 +10,12 @@ namespace c975L\UiBundle\Contract;
 
 interface BundleScriptProviderInterface
 {
+    /**
+     * Returns the JS modules to load on the site's front-end, as AssetMapper import names
+     * (e.g. "@c975l/my-bundle/controllers.js"). Each one needs a matching importmap.php entry,
+     * usually declared through ConfigBundle's ImportmapProviderInterface::getImportmapEntries().
+     *
+     * @return string[]
+     */
     public function getScripts(): array;
 }

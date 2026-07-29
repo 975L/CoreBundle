@@ -8,9 +8,15 @@
  */
 namespace c975L\UiBundle\Contract;
 
-// Implement to feed a block showcase (see BlockFixtureRegistry) with sample data for the block kinds a bundle registers via the "ui.block" tag, letting satellite bundles show their own kinds there without UiBundle knowing about them
+/**
+ * Implement to feed a block showcase (see BlockFixtureRegistry) with sample data for the block kinds a bundle registers via the "ui.block" tag, letting satellite bundles show their own kinds there without UiBundle knowing about them
+ */
 interface BlockFixtureProviderInterface
 {
-    // kind => [variant label => data], "data" has the same shape Block::setData() stores; a kind with a single unlabelled example can use '' as its only variant key
+    /**
+     * "data" has the same shape Block::setData() stores; a kind with a single unlabelled example can use '' as its only variant key
+     *
+     * @return array<string, array<string, array<string, mixed>>> block kind => variant label => data
+     */
     public function getFixtures(): array;
 }

@@ -2,6 +2,66 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="ui.en.xlf">
         <body>
+            <trans-unit id="QAAW6KH">
+                <source>description.guided_project_ui_email_template</source>
+                <target>Reprendre le contenu d'un e-mail que le site envoie, comme on reprend une page</target>
+            </trans-unit>
+            <trans-unit id="mdUTrNv">
+                <source>description.guided_project_ui_form</source>
+                <target>Construire un formulaire champ par champ, puis le poser dans une page</target>
+            </trans-unit>
+            <trans-unit id="uJW0NPA">
+                <source>description.guided_project_ui_media</source>
+                <target>Mettre une image dans la médiathèque une bonne fois, et la réutiliser partout</target>
+            </trans-unit>
+            <trans-unit id="zxZzGhU">
+                <source>description.guided_step_ui_email_template_blocks</source>
+                <target>Mêmes blocks que dans une page ; l'habillage, lui, vient de la charte du site.</target>
+            </trans-unit>
+            <trans-unit id="y1jNFHF">
+                <source>description.guided_step_ui_email_template_check</source>
+                <target>Déclenchez l'e-mail depuis le site (une demande de mot de passe oublié, par exemple) pour le lire dans une vraie boîte.</target>
+            </trans-unit>
+            <trans-unit id="Qj7imei">
+                <source>description.guided_step_ui_email_template_open</source>
+                <target>Les e-mails que le site envoie sont composés de blocks, exactement comme une page.</target>
+            </trans-unit>
+            <trans-unit id="WdMcqav">
+                <source>description.guided_step_ui_form_action</source>
+                <target>L'action décide de ce qui se passe à la soumission : envoyer un e-mail, inscrire quelqu'un, réinitialiser un mot de passe.</target>
+            </trans-unit>
+            <trans-unit id="KgGbEW5">
+                <source>description.guided_step_ui_form_fields</source>
+                <target>Un champ par information demandée, et rien de plus : chaque champ en trop coûte des réponses.</target>
+            </trans-unit>
+            <trans-unit id="VCImx1K">
+                <source>description.guided_step_ui_form_name</source>
+                <target>Ce nom est celui que vous retrouverez dans le block de formulaire.</target>
+            </trans-unit>
+            <trans-unit id="UsF2mKW">
+                <source>description.guided_step_ui_form_open</source>
+                <target>Un formulaire se construit ici, indépendamment de la page qui l'affichera.</target>
+            </trans-unit>
+            <trans-unit id="d48MvaE">
+                <source>description.guided_step_ui_form_place</source>
+                <target>Ajoutez un block de formulaire à une page, et choisissez celui que vous venez de créer.</target>
+            </trans-unit>
+            <trans-unit id="RDmEru5">
+                <source>description.guided_step_ui_media_alt</source>
+                <target>Le texte alternatif est ce que lisent les lecteurs d'écran, et ce que le bilan de santé signale quand il manque.</target>
+            </trans-unit>
+            <trans-unit id="c8dJg4g">
+                <source>description.guided_step_ui_media_file</source>
+                <target>L'image est redimensionnée et renommée à l'enregistrement : inutile de la préparer avant.</target>
+            </trans-unit>
+            <trans-unit id=".imAjIX">
+                <source>description.guided_step_ui_media_open</source>
+                <target>Toutes les images du site en un seul endroit : une image téléversée une fois sert dans autant de blocks qu'on veut.</target>
+            </trans-unit>
+            <trans-unit id="rZ020hF">
+                <source>description.guided_step_ui_media_reuse</source>
+                <target>Dans le block d'une page, choisissez-la dans la médiathèque plutôt que de la téléverser à nouveau.</target>
+            </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
                 <target>Cache des blocks vidé</target>
@@ -1021,6 +1081,90 @@
             <trans-unit id="EptgKcw">
                 <source>label.forms</source>
                 <target>Formulaires</target>
+            </trans-unit>
+            <trans-unit id="j0VRPpz">
+                <source>label.guided_project_ui_email_template</source>
+                <target>Personnaliser un e-mail</target>
+            </trans-unit>
+            <trans-unit id="3Fft64_">
+                <source>label.guided_project_ui_form</source>
+                <target>Créer un formulaire</target>
+            </trans-unit>
+            <trans-unit id="FtKKNNJ">
+                <source>label.guided_project_ui_media</source>
+                <target>Téléverser une image</target>
+            </trans-unit>
+            <trans-unit id="PB512zY">
+                <source>label.guided_step_ui_email_template_blocks</source>
+                <target>Modifier son contenu</target>
+            </trans-unit>
+            <trans-unit id="3aTC5K2">
+                <source>label.guided_step_ui_email_template_check</source>
+                <target>Le voir pour de vrai</target>
+            </trans-unit>
+            <trans-unit id="bg69z38">
+                <source>label.guided_step_ui_email_template_edit</source>
+                <target>Ouvrir un modèle</target>
+            </trans-unit>
+            <trans-unit id="Xc6DkDW">
+                <source>label.guided_step_ui_email_template_open</source>
+                <target>Ouvrir les modèles d'e-mail</target>
+            </trans-unit>
+            <trans-unit id="Z9rpyhM">
+                <source>label.guided_step_ui_email_template_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="L0azB6X">
+                <source>label.guided_step_ui_form_action</source>
+                <target>Choisir ce qu'il déclenche</target>
+            </trans-unit>
+            <trans-unit id="X4RitF7">
+                <source>label.guided_step_ui_form_fields</source>
+                <target>Ajouter les champs</target>
+            </trans-unit>
+            <trans-unit id="KTKHTlN">
+                <source>label.guided_step_ui_form_name</source>
+                <target>Le nommer</target>
+            </trans-unit>
+            <trans-unit id="kWp5g6w">
+                <source>label.guided_step_ui_form_new</source>
+                <target>Créer un formulaire</target>
+            </trans-unit>
+            <trans-unit id="ZwXHcDY">
+                <source>label.guided_step_ui_form_open</source>
+                <target>Ouvrir les formulaires</target>
+            </trans-unit>
+            <trans-unit id="SDXqkqS">
+                <source>label.guided_step_ui_form_place</source>
+                <target>Le poser dans une page</target>
+            </trans-unit>
+            <trans-unit id="GAmp352">
+                <source>label.guided_step_ui_form_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="p04wYUK">
+                <source>label.guided_step_ui_media_alt</source>
+                <target>Décrire l'image</target>
+            </trans-unit>
+            <trans-unit id="djlrG7S">
+                <source>label.guided_step_ui_media_file</source>
+                <target>Choisir le fichier</target>
+            </trans-unit>
+            <trans-unit id="NuH7Bc_">
+                <source>label.guided_step_ui_media_new</source>
+                <target>Téléverser une image</target>
+            </trans-unit>
+            <trans-unit id="r.hPN1d">
+                <source>label.guided_step_ui_media_open</source>
+                <target>Ouvrir la médiathèque</target>
+            </trans-unit>
+            <trans-unit id="i9J5GNX">
+                <source>label.guided_step_ui_media_reuse</source>
+                <target>La réutiliser</target>
+            </trans-unit>
+            <trans-unit id="Sr6aDii">
+                <source>label.guided_step_ui_media_save</source>
+                <target>Enregistrer</target>
             </trans-unit>
             <trans-unit id="7YLjRTG">
                 <source>label.height</source>

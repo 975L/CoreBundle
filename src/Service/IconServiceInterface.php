@@ -9,6 +9,8 @@ namespace c975L\UiBundle\Service;
 
 interface IconServiceInterface
 {
-    // This method returns an array of icons, where the keys are the icon names and the values are the paths to the icon files.
+    /**
+     * @return array<string, string> icon name => public path to its SVG file
+     */
     public function getIcons(): array;
 }

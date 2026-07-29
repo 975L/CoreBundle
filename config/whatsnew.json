@@ -3,6 +3,16 @@
         "date": "2026-07-29",
         "description": [
             {
+                "en": "The dashboard now offers guided projects for the shared screens: uploading an image into the media library and reusing it, building a form field by field, and tailoring an e-mail the site sends",
+                "fr": "Le tableau de bord propose désormais des parcours guidés pour les écrans partagés : téléverser une image dans la médiathèque et la réutiliser, construire un formulaire champ par champ, et personnaliser un e-mail que le site envoie",
+                "es": "El panel ofrece ahora recorridos guiados para las pantallas compartidas: subir una imagen a la mediateca y reutilizarla, construir un formulario campo a campo y personalizar un correo que el sitio envía"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-29",
+        "description": [
+            {
                 "en": "The eye button showing or hiding a password, and the checks warning that a password is too weak or that the two you typed differ, now work on every form of the site instead of only on the sign-up one",
                 "fr": "Le bouton œil qui affiche ou masque un mot de passe, ainsi que les contrôles signalant un mot de passe trop faible ou deux saisies différentes, fonctionnent désormais sur tous les formulaires du site et non plus seulement sur celui d'inscription",
                 "es": "El botón de ojo que muestra u oculta una contraseña, así como las comprobaciones que avisan de una contraseña demasiado débil o de dos entradas distintas, ahora funcionan en todos los formularios del sitio y no solo en el de registro"

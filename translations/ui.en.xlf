@@ -2,6 +2,66 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="en" datatype="plaintext" original="ui.en.xlf">
         <body>
+            <trans-unit id="QAAW6KH">
+                <source>description.guided_project_ui_email_template</source>
+                <target>Rework the content of an e-mail the site sends, the same way a page is reworked</target>
+            </trans-unit>
+            <trans-unit id="mdUTrNv">
+                <source>description.guided_project_ui_form</source>
+                <target>Build a form field by field, then drop it into a page</target>
+            </trans-unit>
+            <trans-unit id="uJW0NPA">
+                <source>description.guided_project_ui_media</source>
+                <target>Put an image in the media library once and for all, and reuse it everywhere</target>
+            </trans-unit>
+            <trans-unit id="zxZzGhU">
+                <source>description.guided_step_ui_email_template_blocks</source>
+                <target>The same blocks as in a page; the styling itself comes from the site's own charter.</target>
+            </trans-unit>
+            <trans-unit id="y1jNFHF">
+                <source>description.guided_step_ui_email_template_check</source>
+                <target>Trigger the e-mail from the site (a forgotten-password request, say) to read it in a real inbox.</target>
+            </trans-unit>
+            <trans-unit id="Qj7imei">
+                <source>description.guided_step_ui_email_template_open</source>
+                <target>The e-mails the site sends are made of blocks, exactly like a page.</target>
+            </trans-unit>
+            <trans-unit id="WdMcqav">
+                <source>description.guided_step_ui_form_action</source>
+                <target>The action decides what happens on submit: sending an e-mail, signing somebody up, resetting a password.</target>
+            </trans-unit>
+            <trans-unit id="KgGbEW5">
+                <source>description.guided_step_ui_form_fields</source>
+                <target>One field per piece of information asked for, and no more: every extra field costs answers.</target>
+            </trans-unit>
+            <trans-unit id="VCImx1K">
+                <source>description.guided_step_ui_form_name</source>
+                <target>This name is the one you will find again in the form block.</target>
+            </trans-unit>
+            <trans-unit id="UsF2mKW">
+                <source>description.guided_step_ui_form_open</source>
+                <target>A form is built here, independently of the page that will show it.</target>
+            </trans-unit>
+            <trans-unit id="d48MvaE">
+                <source>description.guided_step_ui_form_place</source>
+                <target>Add a form block to a page, and pick the one you have just created.</target>
+            </trans-unit>
+            <trans-unit id="RDmEru5">
+                <source>description.guided_step_ui_media_alt</source>
+                <target>The alternative text is what screen readers read, and what the health check reports when it is missing.</target>
+            </trans-unit>
+            <trans-unit id="c8dJg4g">
+                <source>description.guided_step_ui_media_file</source>
+                <target>The image is resized and renamed on save: no need to prepare it beforehand.</target>
+            </trans-unit>
+            <trans-unit id=".imAjIX">
+                <source>description.guided_step_ui_media_open</source>
+                <target>Every image of the site in one place: an image uploaded once serves in as many blocks as you like.</target>
+            </trans-unit>
+            <trans-unit id="rZ020hF">
+                <source>description.guided_step_ui_media_reuse</source>
+                <target>In a page's block, pick it from the media library rather than uploading it again.</target>
+            </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
                 <target>Blocks cache cleared</target>
@@ -1021,6 +1081,90 @@
             <trans-unit id="EptgKcw">
                 <source>label.forms</source>
                 <target>Forms</target>
+            </trans-unit>
+            <trans-unit id="j0VRPpz">
+                <source>label.guided_project_ui_email_template</source>
+                <target>Tailor an e-mail</target>
+            </trans-unit>
+            <trans-unit id="3Fft64_">
+                <source>label.guided_project_ui_form</source>
+                <target>Create a form</target>
+            </trans-unit>
+            <trans-unit id="FtKKNNJ">
+                <source>label.guided_project_ui_media</source>
+                <target>Upload an image</target>
+            </trans-unit>
+            <trans-unit id="PB512zY">
+                <source>label.guided_step_ui_email_template_blocks</source>
+                <target>Change its content</target>
+            </trans-unit>
+            <trans-unit id="3aTC5K2">
+                <source>label.guided_step_ui_email_template_check</source>
+                <target>See it for real</target>
+            </trans-unit>
+            <trans-unit id="bg69z38">
+                <source>label.guided_step_ui_email_template_edit</source>
+                <target>Open a template</target>
+            </trans-unit>
+            <trans-unit id="Xc6DkDW">
+                <source>label.guided_step_ui_email_template_open</source>
+                <target>Open the e-mail templates</target>
+            </trans-unit>
+            <trans-unit id="Z9rpyhM">
+                <source>label.guided_step_ui_email_template_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="L0azB6X">
+                <source>label.guided_step_ui_form_action</source>
+                <target>Pick what it triggers</target>
+            </trans-unit>
+            <trans-unit id="X4RitF7">
+                <source>label.guided_step_ui_form_fields</source>
+                <target>Add the fields</target>
+            </trans-unit>
+            <trans-unit id="KTKHTlN">
+                <source>label.guided_step_ui_form_name</source>
+                <target>Name it</target>
+            </trans-unit>
+            <trans-unit id="kWp5g6w">
+                <source>label.guided_step_ui_form_new</source>
+                <target>Create a form</target>
+            </trans-unit>
+            <trans-unit id="ZwXHcDY">
+                <source>label.guided_step_ui_form_open</source>
+                <target>Open the forms</target>
+            </trans-unit>
+            <trans-unit id="SDXqkqS">
+                <source>label.guided_step_ui_form_place</source>
+                <target>Drop it into a page</target>
+            </trans-unit>
+            <trans-unit id="GAmp352">
+                <source>label.guided_step_ui_form_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="p04wYUK">
+                <source>label.guided_step_ui_media_alt</source>
+                <target>Describe the image</target>
+            </trans-unit>
+            <trans-unit id="djlrG7S">
+                <source>label.guided_step_ui_media_file</source>
+                <target>Pick the file</target>
+            </trans-unit>
+            <trans-unit id="NuH7Bc_">
+                <source>label.guided_step_ui_media_new</source>
+                <target>Upload an image</target>
+            </trans-unit>
+            <trans-unit id="r.hPN1d">
+                <source>label.guided_step_ui_media_open</source>
+                <target>Open the media library</target>
+            </trans-unit>
+            <trans-unit id="i9J5GNX">
+                <source>label.guided_step_ui_media_reuse</source>
+                <target>Reuse it</target>
+            </trans-unit>
+            <trans-unit id="Sr6aDii">
+                <source>label.guided_step_ui_media_save</source>
+                <target>Save</target>
             </trans-unit>
             <trans-unit id="7YLjRTG">
                 <source>label.height</source>

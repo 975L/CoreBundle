@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.12.1
+
+Added the guided projects for the media, form and email screens
+
+- Added `UiGuidedProjectProvider`, contributing this bundle's guided projects to the dashboard (29/07/2026)
+- Added the "Téléverser une image", "Créer un formulaire" and "Personnaliser un e-mail" projects (29/07/2026)
+- Added the `label.guided_project_ui_*`/`label.guided_step_ui_*` translations and their `description.` pairs (29/07/2026)
+- Every `src/Contract/` interface now documents itself through a PHPDoc block, in place of a `//` comment (29/07/2026)
+- Added the array shape each of them returns, previously described in prose (29/07/2026)
+- `IconServiceInterface` and `PrivateFileResponseFactoryInterface` follow the same (29/07/2026)
+- Added `UiGuidedProjectProviderTest` (29/07/2026)
+
 ## v1.12.0
 
 - Constraint messages now live in the `validators` catalogue, the one the validator translates them in (29/07/2026)
