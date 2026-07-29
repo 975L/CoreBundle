@@ -71,9 +71,8 @@ class FormBotProtection
         );
     }
 
-    // Honeypot: real users never see or fill this field (hidden inline, no dependency on any CSS framework class being available), so any non-empty value here means a bot filled every input blindly
-    // $request is nullable: callers building this form outside a live HTTP request (RequestStack::getCurrentRequest()
-    // returns null there) simply skip the honeypot rather than crashing
+    // Honeypot, hidden inline so it needs no CSS framework: a non-empty value means a bot filled everything
+    // $request is nullable, a caller outside a live HTTP request skipping the honeypot rather than crashing
     public function addHoneypotField(FormBuilderInterface $builder, ?Request $request): void
     {
         if (null === $request) {

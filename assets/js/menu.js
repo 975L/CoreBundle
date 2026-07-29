@@ -26,8 +26,7 @@ export default class extends Controller {
             link.addEventListener("click", this.boundHandleMenuLinkClick);
         });
 
-        // Toggles the "scrolled" navbar state (see SiteBundle's --navbar-*-scrolled/.menu.is-scrolled) -
-        // called immediately too, since Turbo can restore a mid-page scroll position on navigation
+        // Called immediately too: Turbo can restore a mid-page scroll position on navigation
         this.boundHandleScroll = this.handleScroll.bind(this);
         window.addEventListener("scroll", this.boundHandleScroll);
         this.handleScroll();

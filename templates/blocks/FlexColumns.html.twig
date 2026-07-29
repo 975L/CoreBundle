@@ -1,6 +1,2 @@
-{# Adapter for the dynamic Block system — maps Block data to the Section:FlexColumns component.
-   "slots" isn't part of Block::$data like the other fields here: it's the real nested-Block relation
-   (see Entity/Block.php), read straight off "block" instead. Each slot becomes one column - either a
-   plain block (a single-element column) or a "flex_column" wrapping several (see README's
-   "Container kinds" section). #}
+{# "slots" is the nested-Block relation, not part of Block::$data, so it is read straight off "block" #}
 <twig:c975LUi:Section:FlexColumns eyebrow="{{ eyebrow|default('') }}" title="{{ title|default('') }}" slots="{{ block.slots }}" id="{{ anchor_id }}"/>

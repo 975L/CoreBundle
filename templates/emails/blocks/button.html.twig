@@ -1,12 +1,4 @@
-{# "Bulletproof" table-based button - the standard email-safe pattern. Everything stays inline (Outlook strips
-   most <style> rules and ignores CSS on <table>/<td> unless it's already inline) - including background-color/color,
-   so the button still renders correctly in _wrapper.html.twig's standalone fallback (no EmailLayoutProviderInterface
-   registered, so nothing inlines its <style> block for us). "btn"/"btn-primary" are also kept as classes so a real
-   theme (wrapped through EmailLayoutProviderInterface, e.g. SiteBundle's own CSS inliner) can still override these
-   defaults with its own brand color. "border-spacing:0;margin:0" on the inner table blocks the site's generic
-   "table{border-spacing:10px;margin:0 auto 1em auto}" rule from adding unwanted gaps around the button;
-   align="center" replaces that same rule's auto-centering (HTML attribute, not CSS - Outlook-safe); "box-shadow:none"
-   is set inline to override ".btn"'s own theme box-shadow, which reads badly on a small bulletproof button #}
+{# "Bulletproof" table button: everything inline, Outlook ignoring CSS on <table>/<td> that isn't; the classes stay so a real theme can still override #}
 <tr>
     <td style="padding:0 24px 24px;text-align:center;">
         <table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="border-spacing:0;margin:0 auto;">

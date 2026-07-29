@@ -39,9 +39,7 @@ class HeroType extends AbstractType
             ->add('title', TrixEditorType::class, [
                 'label' => 'label.title',
             ])
-            // The hero usually opens the page and carries its real title, hence the h1 default - h2 is for a
-            // hero sitting under a page template that already prints its own h1, two h1 on one page being
-            // announced by screen readers as two top-level headings
+            // h2 for a hero sitting under a page template that already prints its own h1
             ->add('titleLevel', ChoiceType::class, [
                 'label' => 'label.hero_title_level',
                 'help' => 'label.hero_title_level_help',
@@ -60,16 +58,18 @@ class HeroType extends AbstractType
                 'label_attr' => ['class' => 'checkbox-switch'],
             ]);
 
-        // Placed right after the background image it competes with: a hero showing one ignores the flat
-        // (see components/Hero/Hero.html.twig), the image already painting the whole section
+        // Right after the background image it competes with, a hero showing one ignoring the flat
         $this->addBackgroundField($builder);
 
         $builder
+            // Optional: a hero with no call to action is legitimate, the template dropping the whole row
             ->add('primaryLabel', TextType::class, [
                 'label' => 'label.primary_label',
+                'required' => false,
             ])
             ->add('primaryUrl', TextType::class, [
                 'label' => 'label.primary_url',
+                'required' => false,
             ])
             ->add('secondaryLabel', TextType::class, [
                 'label' => 'label.secondary_label',

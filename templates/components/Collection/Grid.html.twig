@@ -1,18 +1,8 @@
 {# Static usage: <twig:c975LUi:Collection:Grid items="{{ [...] }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [variant=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Collection.html.twig #}
-{# Each entry in "items" is already-rendered HTML - one never-persisted "collection_item" Block per
-   item (see CollectionExtension::renderItems()). Default variant reuses the same ".cards" flex wrap as
-   several manually placed "card" blocks (see templates/components/Blocks/Blocks.html.twig,
-   sass/_cards.scss); the "portfolio" variant needs its items' own ".portfolio-grid__project" markup
-   (see CollectionItem.html.twig) laid out in PortfolioGrid's own CSS grid instead, or they'd wrap in
-   this flexbox at whatever width each item's content happens to need - inconsistent with a real
-   PortfolioGrid block sitting elsewhere on the same page. Same reasoning for the head markup below:
-   the "portfolio" variant reuses PortfolioGrid's own ".portfolio-grid__head" (eyebrow + "voir tout"
-   link), eyebrow/linkLabel/linkUrl are otherwise ignored - the default variant only ever shows title. #}
+{# Each "items" entry is already-rendered HTML; the "portfolio" variant borrows PortfolioGrid's grid and head so it matches a real one on the same page #}
 {% set isPortfolio = variant is defined and variant == 'portfolio' %}
-{# <section> only when a heading is rendered below, a plain <div> otherwise - HTML's own advice for a
-   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig). The
-   default variant only ever shows the title, so only the portfolio one can be headed by its eyebrow #}
+{# A headingless <section> is invalid HTML; only the portfolio variant can be headed by its eyebrow #}
 {% set hasHeading = title|default('') or (isPortfolio and eyebrow|default('')) %}
 {% set tag = hasHeading ? 'section' : 'div' %}
 <{{ tag }} class="collection-grid{{ isPortfolio ? ' collection-grid--portfolio' : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>

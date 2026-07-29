@@ -243,10 +243,6 @@
   animation: zoomIn 1s ease-in-out both;
 }
 
-/* Block-level entrance wrapper (see Blocks/Block.html.twig): .block-animation itself is
-   display:contents (defined in _animations-media.scss) so it never becomes the flex/grid item
-   in place of the block's own element (e.g. .cards relies on .card being a direct child) -
-   the animation is applied to that real child via "> *" instead of to the wrapper. */
 .block-animation.slide-in-left > * {
   animation: slideInFromLeft 0.5s ease-out both;
 }
@@ -279,23 +275,14 @@
   animation: zoomIn 1s ease-in-out both;
 }
 
-/* Block-level entrance wrapper (see Blocks/Block.html.twig) - display:contents makes it
-   transparent to the parent's layout (flex/grid: e.g. .cards needs .card as its direct child,
-   not this wrapper), so the block's real element becomes the actual flex/grid item, exactly as
-   if the wrapper didn't exist. The opacity/animation therefore target that child ("> *"), not
-   the wrapper itself, since a display:contents element generates no box to animate. */
 .block-animation {
   display: contents;
 }
 
-/* Same reasoning as .block-animation above, one level up: the Blocks/Blocks.html.twig wrapper only
-   exists to host the animateScroll Stimulus controller, and must stay transparent so each block is
-   the parent's direct flex/grid child (e.g. footer/navbar center each menu link individually) */
 .blocks {
   display: contents;
 }
 
-/* Hidden until animate-scroll.js swaps this for the animation class */
 .block-animation.hidden > * {
   opacity: 0;
 }
@@ -311,4 +298,6 @@
   .block-animation.hidden > * {
     opacity: 1;
   }
-}/*# sourceMappingURL=animations.css.map */
+}
+
+/*# sourceMappingURL=animations.css.map */

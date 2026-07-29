@@ -66,8 +66,7 @@ class MenuProviderTest extends TestCase
         $this->assertSame('label.block_showcase_help', $links['block_showcase']['description']);
     }
 
-    // 'role' matches AiAssistantController::index()'s own minimum bar ("site-role-admin") - a plain
-    // editor can no longer act on either section, so no point showing them the link at all
+    // 'role' matches the page's own minimum bar, a plain editor being unable to act on either section
     public function testGetLinksReturnsTheAiAssistantLinkWithTheHardcodedNameTranslatedSuffixAndRole(): void
     {
         $provider = new MenuProvider($this->createConfigService(), $this->createTranslator('AI Agent'));

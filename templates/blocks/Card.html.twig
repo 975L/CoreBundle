@@ -1,23 +1,14 @@
-{# Adapter for the dynamic Block system — maps Block data to the Card component.
-   With a media (see media_types on this block's tag) and/or a url set, renders an image + button
-   teaser instead of the plain content box - same "media travels with its own block" mechanism as
-   Article, just one image per card instead of a gallery.
-   "imageUrl" is never exposed in CardType's form - a real "card" Block never sets it, only kept here
-   as a harmless no-op fallback (see CollectionItem.html.twig, this block's counterpart for items whose
-   image is managed by another bundle's own entity rather than a real attached Media). #}
+{# Adapter mapping Block data to the Card component; "imageUrl" is a no-op fallback for CollectionItem #}
 {% set cardMedia = block.media|length > 0 ? block.media|first : null %}
 {% set resolvedImageUrl = cardMedia ? vich_uploader_asset(cardMedia) : imageUrl|default(null) %}
 {% if resolvedImageUrl or url %}
     <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" level="{{ level|default('') }}" class="{{ class|default([])|join(' ') }}">
         {% if resolvedImageUrl %}
-            {# The auto-detected pixel size (see MediaDimensionsFiller), so the card reserves its image's box
-               before the file arrives - a grid of cards otherwise reflows as each one lands. Nothing to pass
-               when the image comes from "imageUrl", which is a bare string owned by another bundle's entity #}
+            {# Pixel size reserves the image's box; nothing to pass when the image is a bare "imageUrl" string #}
             <twig:c975LUi:Image:Link src="{{ resolvedImageUrl }}" class="{{ cardMedia ? cardMedia.cssClasses|join(' ') : '' }}" url="{{ url }}" target="{{ target|default('') }}" alt="{{ title }}" width="{{ cardMedia ? cardMedia.intrinsicWidth : '' }}" height="{{ cardMedia ? cardMedia.intrinsicHeight : '' }}"/>
         {% endif %}
         <div class="card-data">
-            {# A <div>, not a <p>: "content" is raw Trix HTML, already wrapped in its own block-level
-               <div> - nesting that inside a <p> is invalid (see Expertise/Banner.html.twig) #}
+            {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
             {% if content %}<div class="text-center">{{ content|raw|nl2br }}</div>{% endif %}
             {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
         </div>

@@ -20,11 +20,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-// Two independent AJAX endpoints, each gated by its own config and its own role (see Readme "AI
-// Assistant"): ask() forwards to AiAssistantClientInterface (dashboard help, a shared/mutualized
-// backend - kept to ROLE_SUPER_ADMIN), rephrase() forwards to AiRephraseClient (the site's own
-// key/budget - "site-role-admin" is enough, nothing persisted). Neither shares state with the other -
-// a site can enable one without the other.
+// Two independent endpoints, each with its own config and role: a site can enable one without the other
 class AiAssistantController extends AbstractController
 {
     // EasyAdmin prefixes these with the Dashboard's own route name
@@ -52,11 +48,7 @@ class AiAssistantController extends AbstractController
     ) {
     }
 
-    // Custom admin page (not tied to any entity), linked from MenuProvider::getLinks() and from every
-    // AiAlertProvider alert - shown even when nothing is configured yet, so the page itself is the
-    // "what do I do" landing spot rather than dropping an editor straight into the raw Config list.
-    // Gated at "site-role-admin" (the lower of the two bars below) - the template itself hides the
-    // dashboard section entirely for a viewer without ROLE_SUPER_ADMIN
+    // Shown even when nothing is configured, the page itself being the setup landing spot
     #[AdminRoute(path: '/ui/ai-assistant', name: 'ui_ai_assistant_index')]
     public function index(): Response
     {
@@ -72,8 +64,7 @@ class AiAssistantController extends AbstractController
         ]);
     }
 
-    // {slug: edit url}, one entry per LINKED_SLUGS - batched in one query rather than one per slug, then
-    // resolved through ConfigEditUrlResolver (shared with Twig\ConfigLinkExtension's own single-slug case)
+    // {slug: edit url} for LINKED_SLUGS, batched in one query rather than one per slug
     private function configLinks(): array
     {
         $configsBySlug = [];
@@ -89,11 +80,7 @@ class AiAssistantController extends AbstractController
         return $links;
     }
 
-    // Slugs still needing attention - lets the template hide a setup step the moment its own value is
-    // filled in, instead of showing all-or-nothing for a whole feature (e.g. dashboard-enabled and
-    // -endpoint already set, only -token missing, shouldn't re-prompt for the first two).
-    // "-base-uri" and "-model" are only blocking for euria (see AiRephraseClient::isEnabled()) -
-    // anthropic/openai each call a fixed, hardcoded URI and fall back to a sensible default model instead
+    // Per-slug rather than all-or-nothing, so a filled-in step stops being prompted; "-base-uri"/"-model" only block euria
     private function missingSlugs(): array
     {
         $blockingSlugs = self::LINKED_SLUGS;
@@ -115,9 +102,7 @@ class AiAssistantController extends AbstractController
     )]
     public function ask(Request $request): JsonResponse
     {
-        // Stricter than the page itself and than rephrase(): this calls the mutualized, Laurent-paid
-        // backend (see AiAssistantClient/Readme) - kept to ROLE_SUPER_ADMIN to bound who can spend
-        // against a shared resource, not per-site config since every site shares the same concern
+        // Stricter than rephrase(): this spends against a shared backend, not the site's own budget
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
 
         if (!$this->isCsrfTokenValid(self::ASK_ROUTE, $request->headers->get('X-CSRF-Token'))) {
@@ -143,8 +128,7 @@ class AiAssistantController extends AbstractController
     )]
     public function rephrase(Request $request): JsonResponse
     {
-        // Calls the site's own key/budget (see AiRephraseClient), not a shared resource - the lower
-        // "site-role-admin" bar is enough, still above a plain editor
+        // The site's own key and budget, so the lower bar is enough, still above a plain editor
         $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
 
         if (!$this->isCsrfTokenValid(self::REPHRASE_ROUTE, $request->headers->get('X-CSRF-Token'))) {
@@ -156,9 +140,7 @@ class AiAssistantController extends AbstractController
             return new JsonResponse(['error' => 'empty_text'], 400);
         }
 
-        // AiRephraseClient::rephrase() falls back to "neutral"/"same" for any key outside its closed
-        // STYLES/LENGTHS lists, so an unexpected/tampered value here is harmless - no need to validate it
-        // twice
+        // Not validated here: rephrase() falls back to "neutral"/"same" for anything outside its closed lists
         $style = (string) $request->request->get('style', 'neutral');
         $length = (string) $request->request->get('length', 'same');
 

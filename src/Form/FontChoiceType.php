@@ -13,11 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Generic font-family picker, not tied to ConfigBundle - any bundle/app form can `add('font', FontChoiceType::class)`
-// to offer a select built from whatever FontRegistry knows (see FontProviderInterface/FontProviderPass). Its
-// 'choices' default is lazily computed from the registry but stays a normal ChoiceType option, so a caller
-// needing to keep a stale/no-longer-declared value selectable (e.g. ConfigCrudController) can still pass its
-// own merged 'choices' via setFormTypeOptions()
+// Font picker built from FontRegistry; 'choices' stays a normal option so a caller can merge in a stale value
 class FontChoiceType extends AbstractType
 {
     public function __construct(private readonly FontRegistry $fontRegistry) {}

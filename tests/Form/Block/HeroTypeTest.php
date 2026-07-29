@@ -49,21 +49,24 @@ class HeroTypeTest extends TestCase
         }
     }
 
-    public function testOnlyPrimaryCtaAndTitleAreRequired(): void
+    // Only the title is required: a hero with no call to action is a legitimate composition
+    public function testOnlyTheTitleIsRequired(): void
     {
         $added = $this->buildAddedFields();
 
+        $this->assertArrayNotHasKey('required', $added['title']);
         $this->assertFalse($added['badge']['required']);
         $this->assertFalse($added['subtitle']['required']);
         $this->assertFalse($added['hasBackgroundImage']['required']);
+        $this->assertFalse($added['primaryLabel']['required']);
+        $this->assertFalse($added['primaryUrl']['required']);
         $this->assertFalse($added['secondaryLabel']['required']);
         $this->assertFalse($added['secondaryUrl']['required']);
         $this->assertFalse($added['statValue']['required']);
         $this->assertFalse($added['statLabel']['required']);
     }
 
-    // "title" and "subtitle" both go through Trix (not a plain textarea/text input) so an editor can
-    // emphasize a word - "hasBackgroundImage" is a plain checkbox toggling the full-width background layout
+    // Title and subtitle go through Trix so a word can be emphasized; the background toggle is a checkbox
     public function testTitleAndSubtitleUseTrixEditorAndBackgroundIsACheckbox(): void
     {
         $this->buildAddedFields();
@@ -73,8 +76,7 @@ class HeroTypeTest extends TestCase
         $this->assertSame(CheckboxType::class, $this->addedTypes['hasBackgroundImage']);
     }
 
-    // "titleLevel" only ever offers h1/h2, with no empty choice: a hero always has a heading, the field
-    // only picks which level it takes so a page template printing its own <h1> doesn't end up with two
+    // h1/h2 with no empty choice: a hero always has a heading, the field only picks its level
     public function testTitleLevelIsAnH1OrH2ChoiceWithNoPlaceholder(): void
     {
         $added = $this->buildAddedFields();

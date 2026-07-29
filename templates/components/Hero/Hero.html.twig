@@ -1,26 +1,16 @@
-{# Static usage: <twig:c975LUi:Hero:Hero title="..." primaryLabel="..." primaryUrl="..." [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [hasBackgroundImage=false] [background=""] [level="h1"]/> #}
+{# Static usage: <twig:c975LUi:Hero:Hero title="..." [primaryLabel=""] [primaryUrl=""] [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [hasBackgroundImage=false] [background=""] [level="h1"]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Hero.html.twig #}
 {% set medias = medias|default([]) %}
 {% set hasBackgroundImage = hasBackgroundImage|default(false)|to_bool %}
-{# "h1" by default, the hero usually opening the page and carrying its real title - "h2" for a hero
-   placed under a page template that prints its own <h1>, several <h1> on one page being reported by
-   every screen reader as as many top-level headings #}
+{# "h2" when the page template already prints its own <h1> #}
 {% set level = level|default('h1') %}
-{# Background mode always uses a single, static image (the first media attached) - the side-by-side
-   slideshow only makes sense next to the text, not full-bleed behind it #}
+{# Background mode uses a single static image, the slideshow only making sense next to the text #}
 {% set bgSrc = hasBackgroundImage ? (medias|length ? vich_uploader_asset(medias|first) : src) : '' %}
-{# Optional colored flat (see .section--bg-* in sass/_page-sections.scss). Matched against the three
-   known variants rather than interpolated as-is: the value comes from a block's stored data, which must
-   never be able to write an arbitrary class name into the markup. Ignored when a background image is
-   set, that variant painting the section itself #}
+{# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
 {% set background = not bgSrc and background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
 <section class="hero{{ bgSrc ? ' hero--has-bg' : background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     {% if bgSrc %}
-        {# A real <img> rather than a CSS background-image: the latter needs a style attribute, which a
-           CSP nonce never covers (only <style>/<link> *elements* are). alt="" as it is purely decorative
-           - the text laid over it carries the meaning - and eager/high priority as a hero backdrop is
-           the page's LCP element whenever it opens the page. Stacking is handled in _page-sections.scss
-           (.hero__bg below the ::before overlay, both below .section-wrap) #}
+        {# A real <img>: a CSS background-image needs a style attribute no CSP nonce covers #}
         <img class="hero__bg" src="{{ bgSrc }}" alt="" aria-hidden="true" fetchpriority="high">
     {% endif %}
     <div class="section-wrap">
@@ -28,23 +18,22 @@
             {% if badge %}<span class="hero__badge">{{ badge }}</span>{% endif %}
             <{{ level }} class="hero__title">{{ title|trix_inline }}</{{ level }}>
             {% if subtitle %}<div class="hero__sub">{{ subtitle|raw }}</div>{% endif %}
-            <div class="hero__cta">
-                <a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>
-                {% if secondaryLabel and secondaryUrl %}<a class="section-btn section-btn--ghost" href="{{ secondaryUrl }}">{{ secondaryLabel }}</a>{% endif %}
-            </div>
+            {# Both label and url required: either alone prints a broken button, and the row hides when neither is set #}
+            {% set hasPrimary = primaryLabel|default('') and primaryUrl|default('') %}
+            {% set hasSecondary = secondaryLabel|default('') and secondaryUrl|default('') %}
+            {% if hasPrimary or hasSecondary %}
+                <div class="hero__cta">
+                    {% if hasPrimary %}<a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>{% endif %}
+                    {% if hasSecondary %}<a class="section-btn section-btn--ghost" href="{{ secondaryUrl }}">{{ secondaryLabel }}</a>{% endif %}
+                </div>
+            {% endif %}
             {% if bgSrc and statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
         </div>
         {% if not bgSrc %}
             {% if medias|length > 1 %}
-                {# Several media attached: cycle through all of them, pure CSS (.hero__media--slideshow in
-                   _page-sections.scss), no next/prev/dots control - each <img> is alt="" (decorative: the
-                   text carries the meaning, not which photo happens to be showing) and the crossfade is
-                   disabled entirely under prefers-reduced-motion, freezing on the first image instead #}
+                {# Pure-CSS crossfade, no control of its own; disabled under prefers-reduced-motion #}
                 <div class="hero__media hero__media--slideshow" data-count="{{ medias|length }}">
-                    {# width/height straight off each Media's auto-detected pixel size (see MediaDimensionsFiller),
-                       not its free-text width/height which may hold a "50%" the browser can't use to reserve a box.
-                       Only the first frame gets fetchpriority - the crossfade needs the others eagerly too, but
-                       competing for high priority would delay the one actually painted first (the LCP candidate) #}
+                    {# Intrinsic pixel size, not the free-text width/height which may hold an unusable "50%" #}
                     {% for m in medias %}
                         <img src="{{ vich_uploader_asset(m) }}" alt="" aria-hidden="true"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %}{% if loop.first %} fetchpriority="high"{% endif %}>
                     {% endfor %}
@@ -52,10 +41,7 @@
                 </div>
             {% elseif src %}
                 <div class="hero__media">
-                    {# Same rule as Image.html.twig: an empty "alt" is doubled with aria-hidden, so it reads as a deliberate decorative marker #}
-                    {# The hero image sits above the fold and is the page's LCP element whenever the hero opens the
-                       page, so it stays eager and asks for high priority - and carries its pixel size, giving the
-                       browser the ratio to reserve before the file arrives instead of reflowing the whole hero #}
+                    {# Eager and high priority: the hero image is the page's LCP element #}
                     <img src="{{ src }}" alt="{{ alt }}"{% if alt|default('') == '' %} aria-hidden="true"{% endif %}{% if width|default('') %} width="{{ width }}"{% endif %}{% if height|default('') %} height="{{ height }}"{% endif %} fetchpriority="high">
                     {% if statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
                 </div>

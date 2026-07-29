@@ -64,8 +64,7 @@ class VichPdfThumbnailListener
             return;
         }
 
-        // A Sync import already carries this PDF's thumbnail in its archive (see BlockDataImporter) - reuse it
-        // as-is instead of re-running Ghostscript, which may not even be available on this host (see below)
+        // An imported thumbnail is reused as-is, Ghostscript not even being available on every host
         if ($entity instanceof Media && null !== $entity->getImportedThumbnailPath()) {
             if ($this->filesystem->exists($entity->getImportedThumbnailPath())) {
                 $this->filesystem->copy($entity->getImportedThumbnailPath(), self::toWebpPath($pdfPath), true);

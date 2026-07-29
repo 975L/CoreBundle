@@ -8,9 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Namespace-scoped override: PHP resolves an unqualified function_exists() call made from
-// c975L\UiBundle\Listener against this definition before falling back to the global one,
-// letting the test simulate a managed host with exec() disabled without touching the real ini.
+// Namespace-scoped override of function_exists(), simulating a host with exec() disabled
 namespace c975L\UiBundle\Listener;
 
 function function_exists(string $function): bool

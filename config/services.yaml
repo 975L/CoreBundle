@@ -225,6 +225,20 @@ services:
               pickable: true
               cacheable: true
 
+    ui.block.text_hook:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: text_hook
+              label: "label.block_text_hook"
+              description: "label.block_text_hook_description"
+              form: c975L\UiBundle\Form\Block\TextHookType
+              template: '@c975LUi/blocks/TextHook.html.twig'
+              category: 'label.category_text'
+              priority: 95
+              pickable: true
+              cacheable: true
+
     ui.block.text_readmore:
         class: stdClass
         tags:
@@ -347,12 +361,18 @@ services:
               pickable: true
               cacheable: false
               container: true
+              slot_context: 'flex_columns_slot'
 
     # A single flex_columns column, itself grouping several other blocks (its own "slots") - only ever
-    # meant to be picked as a flex_columns row's own slot (contexts restricts it to BlockRegistry::SLOT_CONTEXT),
-    # though it stays technically pickable at the top level too since "contexts" can't hide a kind from
-    # a context-less picker (see BlockRegistry::groupedByCategory()) - harmless if it ever is, it just
-    # renders its slots with no wrapper of its own.
+    # meant to be picked as a flex_columns row's own slot (contexts restricts it to
+    # BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT, which is exclusive, so it is also the ONLY kind offered there).
+    # Every real picker passes a context (PageCrudController 'page', MenuCrudController 'menu',
+    # BlockFormController the container's own slot context), so this kind only ever shows up in a
+    # flex_columns row's slots - a context-less caller would still list it, harmless if it ever happens,
+    # it just renders its slots with no wrapper of its own.
+    # Its priority only ever ranks it in such a context-less picker, never in a row's slots, where the
+    # exclusive context already leaves it alone in the list - so it stays where every other kind of the
+    # "sections" category puts it, rather than opening one it has no business opening.
     ui.block.flex_column:
         class: stdClass
         tags:
@@ -367,7 +387,7 @@ services:
               pickable: true
               cacheable: false
               container: true
-              contexts: 'flex_slot'
+              contexts: 'flex_columns_slot'
               slot_context: 'flex_slot_nested'
 
     # A stack of full "card" blocks (or any other kind) with a section-level eyebrow/title/anchor - same

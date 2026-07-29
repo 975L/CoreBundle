@@ -14,9 +14,7 @@ use c975L\UiBundle\Service\EmailTemplateRenderer;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-// Lets an app/bundle's own email layout (e.g. SiteBundle's fullLayout.html.twig - Menu-driven header/footer,
-// site-wide emails.min.css/inline_css) embed a named EmailTemplate's compiled body inline, instead of hand-writing
-// markup in a scaffold-copied Twig template - see EmailTemplateRenderer::renderBody()
+// Embeds a named EmailTemplate's compiled body inside an app's own email layout
 class EmailTemplateExtension extends AbstractExtension
 {
     public function __construct(
@@ -32,8 +30,7 @@ class EmailTemplateExtension extends AbstractExtension
         ];
     }
 
-    // Silently renders nothing when "$name" isn't found - a missing/renamed EmailTemplate must never break the
-    // email it's embedded into (account validation, password reset...), only leave that section blank
+    // Renders nothing when unknown: a renamed template must leave a section blank, never break the email
     public function renderEmailTemplateBody(string $name, array $variables = []): string
     {
         $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name]);

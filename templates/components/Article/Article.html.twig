@@ -8,9 +8,7 @@
 {% set detail = detail|default(article.detail|default('')) %}
 {% set mediaList = mediaList|default(article is defined ? article.medias|default([]) : []) %}
 {% set id = id|default('') %}
-{# uid: technical suffix (e.g. the block's own id) to keep the slider's internal id unique
-   when several instances could share the same slug (e.g. a duplicated block) - it must NOT
-   affect the article's own id, which is used as a public anchor (#article-{slug}) #}
+{# uid keeps the slider's internal id unique across duplicated blocks; it must not touch the article's own public anchor #}
 {% set uid = uid|default('') %}
 
 <article class="site-article"{% if id %} id="{{ id }}"{% endif %}>
@@ -18,6 +16,7 @@
     {% if mediaList|length > 0 %}
         <twig:c975LUi:Slider:Slider media="{{ mediaList }}" id="{{ (id is defined and id) ? id ~ (uid ? '-' ~ uid : '') ~ '-slider' : 'article-' ~ slug }}" duration="3500"/>
     {% endif %}
-    {{ hook|raw|nl2br }}
+    {# Same look as a standalone text_hook; the slider reads the same hook but keeps its own text style #}
+    {% if hook %}<div class="text-hook">{{ hook|raw|nl2br }}</div>{% endif %}
     {{ content|raw|nl2br }}
 </article>

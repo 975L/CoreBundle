@@ -42,28 +42,16 @@ class BlockType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('kind', ChoiceType::class, [
-                'label' => 'label.block_kind',
-                'choices' => $this->registry->groupedByCategory($options['context']),
-                'choice_translation_domain' => false,
-                'placeholder' => 'label.choose_block_kind',
-                'attr' => [
-                    'data-controller'            => 'block',
-                    'data-block-kind-url-value'  => $this->router->generate('ui_block_data_form'),
-                    'data-action'                => 'change->block#loadData',
-                    'data-ea-widget'             => 'ea-autocomplete',
-                ],
-                'row_attr' => ['data-kind-row' => ''],
-            ])
-            ->add('position', HiddenType::class, [
-                'attr' => ['class' => 'ui-sort-position'],
-            ]);
+        $this->addKindField($builder, $options['context']);
+
+        $builder->add('position', HiddenType::class, [
+            'attr' => ['class' => 'ui-sort-position'],
+        ]);
 
         // Load the sub-form `data` dynamically according to the block kind
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
-            function (PreSetDataEvent $event): void {
+            function (PreSetDataEvent $event) use ($options): void {
                 $block = $event->getData();
 
                 CollectionReconciler::addIdField($event->getForm(), $block instanceof Block ? $block->getId() : null);
@@ -72,6 +60,7 @@ class BlockType extends AbstractType
                 if (null !== $block) {
                     $kind = is_object($block) ? $block->getKind() : ($block['kind'] ?? null);
                     if ($kind && $this->registry->has($kind)) {
+                        $this->addKindField($event->getForm(), $options['context'], $kind);
                         $this->addDataSubForm($event->getForm(), $kind);
                         if ($this->registry->hasMediaTypes($kind)) {
                             $this->addMediaSubForm($event->getForm(), $kind);
@@ -147,6 +136,35 @@ class BlockType extends AbstractType
         );
     }
 
+    // The kind picker, added from buildForm() and rebuilt from PRE_SET_DATA when the block already holds a kind
+    private function addKindField(FormBuilderInterface|FormInterface $form, ?string $context, ?string $legacyKind = null): void
+    {
+        $choices = $this->registry->groupedByCategory($context);
+
+        // A kind its context no longer lists is put back for this one form, else ChoiceType would reject it on submit and lock the editor out
+        $isLegacy = null !== $legacyKind && !$this->registry->isAllowedInContext($legacyKind, $context);
+        if ($isLegacy) {
+            $choices[$this->registry->getCategory($legacyKind)][$this->registry->getLabel($legacyKind)] = $legacyKind;
+        }
+
+        $form->add('kind', ChoiceType::class, [
+            'label' => 'label.block_kind',
+            'help' => $isLegacy ? 'label.block_kind_legacy_slot_help' : null,
+            // Both legacy-kind messages are warnings, not neutral field hints - the markup carrying that is in the translation, so each locale keeps a single string to review
+            'help_html' => true,
+            'choices' => $choices,
+            'choice_translation_domain' => false,
+            'placeholder' => 'label.choose_block_kind',
+            'attr' => [
+                'data-controller'            => 'block',
+                'data-block-kind-url-value'  => $this->router->generate('ui_block_data_form'),
+                'data-action'                => 'change->block#loadData',
+                'data-ea-widget'             => 'ea-autocomplete',
+            ],
+            'row_attr' => ['data-kind-row' => ''],
+        ]);
+    }
+
     private function addAnimationField(FormInterface $form): void
     {
         $form->add('animation', AnimationChoiceType::class, [
@@ -167,7 +185,7 @@ class BlockType extends AbstractType
         $accept = implode(',', $this->registry->getMediaTypes($kind));
 
         $constraints = 'hero' === $kind
-            ? [new Count(max: self::HERO_MEDIA_MAX, maxMessage: 'label.hero_media_max')]
+            ? [new Count(max: self::HERO_MEDIA_MAX, maxMessage: 'text.hero_media_max')]
             : [];
 
         $form->add('medias', CollectionType::class, [
@@ -195,26 +213,23 @@ class BlockType extends AbstractType
         }
     }
 
-    // A container kind's (e.g. "flex_columns", "flex_column") nested Block rows - each entry goes through
-    // this very same BlockType, recursively, one kind-picker + data/media sub-form per slot.
-    // BlockRegistry::getSlotContext($kind) keeps a slot from picking a container kind back by default
-    // (bounding the recursion), except the one kind explicitly allowed to nest one level deeper.
-    // $container is passed in explicitly (never fetched via $form->getData() in here) because this is
-    // also called from BlockType's own PRE_SET_DATA listener on this very form - calling getData() on a
-    // form from within its own PRE_SET_DATA listener throws "A cycle was detected" (Symfony requires
-    // reading the event's own data instead while that event is still being processed)
+    // Nested Block rows, recursively through this same type; $container is passed in rather than read via getData(), which throws "A cycle was detected" inside PRE_SET_DATA
     private function addSlotsSubForm(FormInterface $form, string $kind, ?Block $container): void
     {
-        // "data-block-container-id" (this container Block's own id) is what lets ea-sortable.js/
-        // BlockMoveController tell one container's slots apart from another's, or from the page's own
-        // top-level "blocks" field - only set once this container is itself already persisted (a slot
-        // can't be dragged into a container that doesn't exist in the DB yet to relocate it against)
+        // Only set once persisted: a slot can't be dragged into a container with no id to relocate against
         $containerId = $container?->getId();
+        $slotContext = $this->registry->getSlotContext($kind);
+
+        // Surfaced on the container's own row too, so the editor needn't expand every slot to find it
+        $legacySlots = $this->legacySlotLabels($container, $slotContext);
 
         $form->add('slots', CollectionType::class, [
             'label' => 'section_cards' === $kind ? 'label.slots_cards' : 'label.slots',
+            'help' => [] === $legacySlots ? null : 'label.slots_legacy_kinds_help',
+            'help_html' => true,
+            'help_translation_parameters' => ['%blocks%' => implode(', ', $legacySlots)],
             'entry_type' => self::class,
-            'entry_options' => ['context' => $this->registry->getSlotContext($kind)],
+            'entry_options' => ['context' => $slotContext],
             'allow_add' => true,
             'allow_delete' => true,
             'by_reference' => false,
@@ -224,6 +239,21 @@ class BlockType extends AbstractType
                 'data-block-container-id' => $containerId,
             ] : [],
         ]);
+    }
+
+    // Worded exactly as the accordion headers, so the warning names blocks the editor can actually find
+    private function legacySlotLabels(?Block $container, ?string $context): array
+    {
+        $labels = [];
+        foreach ($container?->getSlots() ?? [] as $slot) {
+            $kind = $slot->getKind();
+            if (null !== $kind && $this->registry->has($kind) && !$this->registry->isAllowedInContext($kind, $context)) {
+                // Escaped here rather than by Twig: the help text is rendered as HTML (help_html), and a block's own title, which its __toString() appends, is editor-provided content
+                $labels[] = htmlspecialchars((string) $slot, ENT_QUOTES, 'UTF-8');
+            }
+        }
+
+        return $labels;
     }
 
     // Consumes the "mediaUpload" multi-file input (if any), splicing its files into "medias" - see MultiUploadMerger for the actual entry-building logic

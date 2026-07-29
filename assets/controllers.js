@@ -7,13 +7,14 @@ const app = startStimulusApp();
 app.register('animateScroll', AnimateScrollController);
 app.register('menu', MenuController);
 
-// Controllers only a handful of pages ever use, imported dynamically so they stay off the critical path. AssetMapper marks a dynamic import() as lazy: the module still gets an importmap entry (so it resolves at runtime) but no <link rel="modulepreload">, which is what was pulling every one of these down on every public page - a plain text page was fetching the slider, the captcha and the confetti library before painting.
-// Keys are the Stimulus identifiers as registered - kebab-case for "captcha" and camelCase for the rest, matching what the templates write in data-controller (see CaptchaControllerDataAttributesTest for why that identifier can't be renamed freely).
+// Dynamic import() so AssetMapper marks these lazy: an importmap entry, but no <link rel="modulepreload">
+// Keys are the Stimulus identifiers as registered, matching what the templates write in data-controller
 const LAZY_CONTROLLERS = {
     blockEditOverlay: () => import('./js/block-edit-overlay.js'),
     captcha: () => import('./js/captcha.js'),
     confetti: () => import('./js/confetti.js'),
     imageCompare: () => import('./js/image-compare.js'),
+    password: () => import('./js/password.js'),
     slider: () => import('./js/slider.js'),
     videoIframe: () => import('./js/video-iframe.js'),
 };

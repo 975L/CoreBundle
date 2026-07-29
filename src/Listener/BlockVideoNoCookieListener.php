@@ -16,9 +16,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 
-// The "noCookie" checkbox (VideoIframeType) only expresses editor intent - the actual youtube-nocookie.com
-// rewrite happens here, once, before the URL reaches the DB. Iframe.html.twig renders src as-is, so an
-// unchecked box keeps whatever URL the editor entered (including a regular, cookie-setting YouTube URL).
+// The youtube-nocookie.com rewrite happens here, once, before the URL reaches the DB
 #[AsDoctrineListener(event: Events::prePersist)]
 #[AsDoctrineListener(event: Events::preUpdate)]
 class BlockVideoNoCookieListener
@@ -30,8 +28,7 @@ class BlockVideoNoCookieListener
         $this->rewriteSrc($args->getObject());
     }
 
-    // Same recomputeSingleEntityChangeSet() requirement as BlockUserListener::preUpdate() - Doctrine
-    // already snapshot the changeset by the time this fires, so a plain setData() call would be dropped
+    // Doctrine already snapshot the changeset by now, so a plain setData() would be dropped
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $entity = $args->getObject();

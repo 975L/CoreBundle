@@ -11,10 +11,7 @@ namespace c975L\UiBundle\Tests\Templates;
 
 use PHPUnit\Framework\TestCase;
 
-// Locks the three guarantees the "background" section option rests on (see HasBackgroundFieldTrait and
-// .section--bg-* in sass/_page-sections.scss): the class it writes can only ever be one of the three known
-// variants, every kind offering the field actually hands it to its component, and a section carrying no
-// variant at all renders exactly as it did before the option existed.
+// Locks the three guarantees the "background" option rests on, variants, adapters and fallbacks
 class SectionBackgroundTest extends TestCase
 {
     // The kinds offering the option: component template => block adapter
@@ -26,10 +23,7 @@ class SectionBackgroundTest extends TestCase
 
     private const VARIANTS = ['muted', 'primary', 'dark'];
 
-    // The value reaches the component straight out of a Block's stored "data" JSON, which an editor - or
-    // anything that ever writes to that column - controls: interpolating it into the class attribute as-is
-    // would let it write arbitrary classes into the page. Every component must match it against the three
-    // known variants first.
+    // The value comes from stored block data, so every component must match it against the known variants
     public function testEveryComponentMatchesTheValueAgainstTheKnownVariantsBeforeBuildingTheClass(): void
     {
         foreach (array_keys(self::KINDS) as $component) {
@@ -62,17 +56,13 @@ class SectionBackgroundTest extends TestCase
         }
     }
 
-    // The whole point of the mechanism: the variants only ever redefine custom properties, and every rule
-    // reading one of them states its own neutral value as the fallback. A property read without a fallback
-    // outside a variant's own block would leave that rule with no value at all on a plain section - which
-    // is exactly how this option would silently break every page already published.
+    // Every rule reading a variant property must state its own neutral fallback, or a plain section breaks
     public function testEveryRuleReadingASectionPropertyStatesItsNeutralFallback(): void
     {
         $checked = 0;
 
         foreach ($this->declarationsBySelector() as [$selector, $declaration]) {
-            // Inside a variant's own block (or the background-image hero, which sets the same properties),
-            // the properties are being defined, not consumed
+            // Inside a variant's own block the properties are being defined, not consumed
             if (str_contains($selector, 'section--bg-') || str_contains($selector, 'hero--has-bg')) {
                 continue;
             }
@@ -92,8 +82,7 @@ class SectionBackgroundTest extends TestCase
         $this->assertGreaterThan(0, $checked, 'No section property read at all, the test itself is broken.');
     }
 
-    // Each variant must define every property the rules above read, or a flat would invert only part of
-    // what it holds - a white title over a white button, say
+    // Each variant must define every property read above, else a flat inverts only part of what it holds
     public function testEveryColoredVariantDefinesTheWholeSetOfProperties(): void
     {
         $scss = $this->scss();

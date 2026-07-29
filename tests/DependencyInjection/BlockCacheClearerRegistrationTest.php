@@ -17,12 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\CacheClearer\CacheClearerInterface;
 
-// BlockCacheClearer carries no tag of its own: it relies on services.yaml's "autoconfigure: true" plus
-// FrameworkBundle's autoconfiguration of CacheClearerInterface to land in "kernel.cache_clearer". Both are
-// invisible from the class itself, so excluding Service/ from the resource glob, or turning autoconfigure
-// off, would silently stop every deployment from invalidating the block render cache with nothing failing
-// anywhere - pages would just keep serving markup from the previous release. This loads the bundle's real
-// services.yaml and applies the same autoconfiguration FrameworkBundle registers.
+// BlockCacheClearer carries no tag: it relies on autoconfigure, invisible from the class itself
 class BlockCacheClearerRegistrationTest extends TestCase
 {
     public function testTheClearerIsAutoconfiguredIntoTheKernelCacheClearerTag(): void

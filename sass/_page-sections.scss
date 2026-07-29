@@ -4,15 +4,17 @@ $page-section-bp-sm: 621px;
 $page-section-bp-md: 861px;
 $page-section-bp-lg: 1025px;
 
+// One measure for the whole page: --body-max-width, declared by SiteBundle, restated for UiBundle alone
 .section-wrap {
-    max-width: 1312px;
+    // Restated for UiBundle alone, else the gutters add to the measure instead of fitting inside it
+    box-sizing: border-box;
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
     margin: 0 auto;
-    padding-left: clamp(20px, 5vw, 64px);
-    padding-right: clamp(20px, 5vw, 64px);
+    padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
 }
 
-/* font-weight pinned rather than left to the tag: with no title set, the eyebrow is rendered as the
-   section's own <h2> (see components/Section/_head.html.twig) and would otherwise come out bold */
+// font-weight pinned: with no title the eyebrow becomes the section's <h2> and would come out bold
 .section-eyebrow {
     font-family: var(--font-family-accent);
     font-weight: 400;
@@ -37,12 +39,12 @@ $page-section-bp-lg: 1025px;
     max-width: 640px;
 }
 
-/* Vertical rhythm between stacked block sections - every section-level block kind gets the same
-   top spacing so gaps stay consistent regardless of which kinds end up next to each other on a
-   page. .hero and .cta-band aren't in this list: they already set their own top+bottom padding
-   below, since they're the kinds most often placed first/last on a page. .feature-bar is
-   deliberately excluded too - it's a full-bleed border-only band, not a padded section.
-   .flex-columns-section is excluded as well: it has no page-level top spacing of its own to add. */
+// Cancels SiteBundle's page-wide "section { margin: 1em auto }", which parts two flats meant to touch
+main :is(.blocks, .block-animation, .block-editable) > section {
+    margin: 0;
+}
+
+// Shared vertical rhythm; .hero/.cta-band/.feature-bar/.flex-columns-section handle their own
 .section-features-section,
 .section-cards-section,
 .expertise-banner,
@@ -52,25 +54,19 @@ $page-section-bp-lg: 1025px;
     padding-top: clamp(48px, 8vw, 84px);
 }
 
-/* Lighter than the other page sections above: text_section commonly opens a page (e.g. a logo +
-   a couple of paragraphs right under the page's own <h1>), where the same 48-84px reads as dead
-   whitespace instead of the breathing room a heavier section (hero, cards...) needs */
+// Lighter than the sections above: text_section commonly opens a page, right under its own <h1>
 .text-section {
     padding-top: clamp(24px, 4vw, 48px);
 }
 
-// Unlike the kinds above this one has no bottom padding, enough on the page background but not on a
-// colored flat, where the text would sit flush against the edge - so the band closes itself
+// Only on a flat: without it the text would sit flush against the band's bottom edge
 .text-section.section--bg-muted,
 .text-section.section--bg-primary,
 .text-section.section--bg-dark {
     padding-bottom: clamp(24px, 4vw, 48px);
 }
 
-/* Any of the kinds above, used as a flex_columns slot instead of a top-level page block, must lose
-   that same top padding - it was sized for "first thing in its own vertical stack on the page", not
-   for sitting flush against a column's other slots, and would otherwise misalign the column against
-   its siblings (see Container kinds > flex_columns in the README). */
+// As a column slot the page-level top padding would misalign the column against its siblings
 .flex-columns__col > .section-features-section,
 .flex-columns__col > .section-cards-section,
 .flex-columns__col > .expertise-banner,
@@ -81,13 +77,7 @@ $page-section-bp-lg: 1025px;
     padding-top: 0;
 }
 
-/* Same reasoning as the padding-top reset above, but for ".section-wrap" itself: the outer
-   ".flex-columns-section" already applies its own ".section-wrap" horizontal gutter once (see
-   Section/FlexColumns.html.twig) - any of the kinds above, slotted into a column, brings its own
-   nested ".section-wrap" too, which would otherwise add that same 20-64px gutter a second time
-   inside a column that's already much narrower than the page. Placed after every other
-   ".section-wrap"-related rule in this file (in particular ".collection-grid .section-wrap" below)
-   so it wins the cascade on equal specificity regardless of source order there. */
+// The outer section already applied the gutter once; kept last so it wins on equal specificity
 .flex-columns__col .section-wrap {
     max-width: none;
     padding-left: 0;
@@ -143,13 +133,7 @@ $page-section-bp-lg: 1025px;
 }
 
 /* ---- colored background, opt-in per section ---- */
-// A flat-colored section inverts everything it holds, not just its background - each variant only
-// redefines the properties below, which every rule in this file reads with its own neutral fallback
-// Same breakout as .hero--has-bg below: the flat has to bleed past the body's --body-max-width, else it
-// paints a centered stripe between a full-width navbar and footer on any screen wider than that.
-// The three tokens carry that breakout's own values as fallbacks: a design framing its page inside
-// --body-max-width (navbar and footer included, see SiteBundle's --navbar-width/--footer-width) sets them
-// to auto/auto/0 instead, the flats then painting their own box like any other section
+// Full-bleed past --body-max-width, else the flat paints a centered stripe under a full-width navbar
 .section--bg-muted,
 .section--bg-primary,
 .section--bg-dark {
@@ -162,8 +146,7 @@ $page-section-bp-lg: 1025px;
     background-color: var(--section-background);
 }
 
-// Same reasoning as the .flex-columns__col resets above: a flat used as a column slot paints its column,
-// not the page - the breakout would otherwise pull it out of the section holding it
+// A flat used as a column slot paints its column, so it drops the breakout above
 .flex-columns__col .section--bg-muted,
 .flex-columns__col .section--bg-primary,
 .flex-columns__col .section--bg-dark {
@@ -177,16 +160,14 @@ $page-section-bp-lg: 1025px;
 .section--bg-muted {
     --section-background: var(--section-bg-muted, var(--surface-alt));
     --section-border: var(--border-color);
-    // Restated rather than inherited: a muted flat nested in a primary/dark one would otherwise keep its
-    // white text. Each value is the neutral the rules already fall back to, so a standalone one is unchanged
+    // Restated, not inherited: a muted flat nested in a dark one would otherwise keep its white text
     --section-text: var(--text);
     --section-text-soft: var(--label-color);
     --section-accent: var(--primary);
     --section-overlay: var(--surface-accent);
 }
 
-// Everything but the background is shared, both flats being dark enough to carry white text - the
-// derived tones are mixed back into the flat's own color rather than fixed, staying in tune with it
+// Shared: both flats are dark enough for white text, the derived tones mixed back into their own color
 .section--bg-primary,
 .section--bg-dark {
     --section-text: var(--white);
@@ -204,8 +185,7 @@ $page-section-bp-lg: 1025px;
     --section-background: var(--section-bg-dark, var(--text));
 }
 
-// The theme writes a color on every element instead of letting it inherit, so a flat has to repaint its
-// descendants too, hence the "*" - declared before the per-kind rules, which refine it on source order
+// "*" because the theme colors every element instead of letting it inherit
 .section--bg-primary,
 .section--bg-primary *,
 .section--bg-dark,
@@ -213,8 +193,7 @@ $page-section-bp-lg: 1025px;
     color: var(--section-text);
 }
 
-// Same reason as .section-btn--ghost:hover: the theme's "a:hover" outranks the blanket rule above, so a
-// link inside a flat's rich text would flip back to --link-color - the underline is left to the theme
+// The theme's "a:hover" outranks the blanket rule above; the underline is left to the theme
 .section--bg-primary a:hover,
 .section--bg-dark a:hover {
     color: var(--section-text);
@@ -241,8 +220,7 @@ $page-section-bp-lg: 1025px;
 }
 
 /* ---- hero ---- */
-// Centering is the stacked (single-column) default, neither the media nor the text filling the track -
-// reset once the $page-section-bp-md query below puts them back side by side
+// Centering is the stacked default, reset once the breakpoint below puts media and text side by side
 .hero .section-wrap {
     display: grid;
     grid-template-columns: 1fr;
@@ -269,9 +247,7 @@ $page-section-bp-lg: 1025px;
     margin-bottom: 26px;
 }
 
-// The hero's typographic scale goes through tokens (declared nowhere, each rule carrying its own value
-// as the fallback): it is the one place a design routinely wants bigger and tighter than the rest of the
-// site, and had to be rewritten rule by rule in every app's own stylesheet until now
+// Tokens declared nowhere, each rule carrying its own fallback: a design routinely retunes the hero alone
 .hero__title {
     font-family: var(--font-family-title);
     font-weight: 500;
@@ -282,8 +258,7 @@ $page-section-bp-lg: 1025px;
     color: var(--section-text, var(--text));
 }
 
-// TrixEditor always wraps its output in a <div> - unwrapped from the box model so it needs no styling
-// of its own, with the typography restated, display: contents not inheriting reliably everywhere
+// TrixEditor always wraps its output in a <div>; typography restated, display:contents not inheriting everywhere
 .hero__title > div,
 .hero__sub > div {
     display: contents;
@@ -312,8 +287,7 @@ $page-section-bp-lg: 1025px;
     flex-wrap: wrap;
 }
 
-// width, not just max-width: unstretched by justify-items: center below the breakpoint, this item would
-// size from a child that is itself a percentage - a circular dependency collapsing the card to a few px
+// width, not just max-width: sizing from a percentage child collapses the box to a few px
 .hero__media {
     position: relative;
     width: 100%;
@@ -331,13 +305,11 @@ $page-section-bp-lg: 1025px;
     object-fit: contain;
     background: var(--card-background);
     width: 100%;
-    // Mandatory alongside the img's height attribute, a presentational hint that would otherwise win
-    // over the aspect-ratio above and stretch the box (locked by ImageAspectRatioHeightTest)
+    // Mandatory: the img's height attribute is a presentational hint that would beat the aspect-ratio above
     height: auto;
 }
 
-// Decorative crossfade, each <img> hidden except during its own 6s turn - the total duration grows with
-// the slide count, which keyframes can't read, hence the 2-6 counts enumerated from a data-count below
+// Crossfade, 6s per slide; keyframes can't read the slide count, hence the data-count list below
 .hero__media--slideshow {
     aspect-ratio: 4 / 3.2;
 }
@@ -410,8 +382,7 @@ $page-section-bp-lg: 1025px;
     color: var(--label-color);
 }
 
-// Full-bleed background-image variant, same breakout as .banner-title - a modifier rather than a
-// component of its own, the markup being identical, only the layout and colors change
+// Full-bleed background-image variant, same breakout as .banner-title
 .hero.hero--has-bg {
     position: relative;
     left: var(--section-flat-offset, 50%);
@@ -419,15 +390,13 @@ $page-section-bp-lg: 1025px;
     width: var(--section-flat-width, 100vw);
     margin-left: var(--section-flat-margin-x, -50vw);
     margin-right: var(--section-flat-margin-x, -50vw);
-    // Same inversion as the .section--bg-* flats, but with fixed values, there being no flat color here
-    // to mix into. --section-accent is left unset on purpose, the accent color holding over a photo
+    // Fixed values, there being no flat color to mix into; --section-accent is left unset on purpose
     --section-text: var(--white);
     --section-text-soft: var(--white);
     --section-overlay: rgba(255, 255, 255, .15);
 }
 
-// A real <img>, a background-image needing a style attribute no CSP nonce ever covers. z-index pinned on
-// all three layers, the img coming after its ::before overlay in tree order
+// A real <img>: a background-image needs a style attribute no CSP nonce covers
 .hero.hero--has-bg .hero__bg {
     position: absolute;
     inset: 0;
@@ -486,13 +455,11 @@ $page-section-bp-lg: 1025px;
     border-bottom: none;
 }
 
-// The only kind carrying the flats that holds no .section-wrap of its own: without this it would be the
-// one whose inner layout changes once the flat breaks out of --body-max-width, its items spreading edge
-// to edge while an uncolored band keeps the page width
+// The only flat-carrying kind with no .section-wrap, so it restates the measure the breakout removes
 .feature-bar.section--bg-muted .feature-bar__grid,
 .feature-bar.section--bg-primary .feature-bar__grid,
 .feature-bar.section--bg-dark .feature-bar__grid {
-    max-width: var(--body-max-width, 1440px);
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
     margin: 0 auto;
 }
 
@@ -505,19 +472,23 @@ $page-section-bp-lg: 1025px;
     grid-template-columns: 1fr;
 }
 
+// Centered: flush-left reads as a stray indent inside an equal-width cell of a divided row
 .feature-bar__item {
     padding: 24px 26px;
     border-right: 0;
     border-bottom: 1px solid var(--section-border, var(--border-color));
     font-size: 14px;
+    text-align: center;
     color: var(--section-text-soft, var(--label-color));
 }
 
+// Sized and weighted as a title, not left at the UA's bold, so a site retunes it through the same token
 .feature-bar__item b {
     display: block;
     color: var(--section-text, var(--text));
     font-family: var(--font-family-title);
-    font-size: 17px;
+    font-weight: var(--font-title-weight);
+    font-size: 24px;
     margin-bottom: 3px;
 }
 
@@ -534,22 +505,17 @@ $page-section-bp-lg: 1025px;
     margin: 0;
 }
 
-/* ---- section_cards ----
-   A stack of full "card" blocks (see Form/Block/SectionCardsType) - unlike section_features above,
-   this reuses ".cards" as-is (sass/_cards.scss), the same fixed-width flex row bare consecutive "card"
-   blocks already get in the page flow, so no grid rules of its own are needed here. Cards are sized
-   (sass/_cards.scss) to fit three per row inside the plain ".section-wrap" measure, so no widening
-   is needed here either - it stays aligned with every other section on the page. */
+/* ---- section_cards ---- */
+// Reuses ".cards" as-is, already sized to fit three per row inside the ".section-wrap" measure
 
-/* ---- flex_columns ----
-   Deliberately flex/wrap instead of a fixed 2- or 3-column grid: each slot is a full block of its
-   own (see Block::$slots), so column count follows whatever content editors actually put in, rather
-   than a rigid layout the block itself would have to pick a column-count for. */
+/* ---- flex_columns - flex/wrap, not a fixed grid: column count follows the slots editors add ---- */
+// The gutter is a custom property because the per-column widths below subtract it from their percentage
 .flex-columns {
+    --flex-columns-gap: 32px;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 32px;
+    gap: var(--flex-columns-gap);
 }
 
 .flex-columns__col {
@@ -560,9 +526,8 @@ $page-section-bp-lg: 1025px;
     gap: 20px;
 }
 
-/* ---- expertise_banner ----
-   Deliberately dark regardless of the site's light/dark mode - a contrast panel, not a themed
-   surface - hence --surface-inverse/--text-on-inverse instead of --background/--text. */
+/* ---- expertise_banner ---- */
+// Dark whatever the site's mode: a contrast panel, not a themed surface
 .expertise-banner__inner {
     background: var(--surface-inverse);
     border-radius: var(--radius-panel);
@@ -594,13 +559,7 @@ $page-section-bp-lg: 1025px;
     margin: 0;
 }
 
-/* SiteBundle's global "* { color: var(--text); }" (_typography.scss) directly matches every element,
-   including any unclassed tag inside the raw Trix HTML above - a direct match always overrides an
-   inherited color, so each of those inner elements needs its own explicit override back to
-   --text-on-inverse, not just .expertise-banner__text itself. Only color, so no other Trix-emitted
-   styling (spacing, font-size on a nested block) is disturbed. Needs the wrapper to actually be a <div>
-   (see Banner.html.twig) - a <p> wrapper around already block-level raw HTML gets silently split by the
-   browser's own HTML parser, and this selector can only reach real *descendants*. */
+// SiteBundle's global "*" rule matches each Trix tag directly, beating inheritance; needs a <div> wrapper
 .expertise-banner__text * {
     color: var(--text-on-inverse);
 }
@@ -734,10 +693,8 @@ $page-section-bp-lg: 1025px;
     line-height: 1.5;
 }
 
-/* ---- collection - default variant's items render as "card" blocks, reusing .cards/.card
-   (sass/_cards.scss); the "portfolio" variant uses .portfolio-grid__grid's own fluid 1fr columns
-   instead (see CollectionItem.html.twig). Cards are sized (sass/_cards.scss) to fit three per row
-   inside the plain ".section-wrap" measure, so it stays aligned with every other section. ---- */
+/* ---- collection ---- */
+// Default variant reuses .cards/.card; the "portfolio" variant uses .portfolio-grid__grid instead
 
 .collection-grid__head {
     margin-bottom: 36px;
@@ -800,8 +757,7 @@ $page-section-bp-lg: 1025px;
         grid-template-columns: repeat(3, 1fr);
     }
 
-    // A bar holding fewer entries than the row has columns would trail empty ones, so each count below
-    // it takes exactly as many columns as it has items (data-count, as .hero__media--slideshow)
+    // Each count takes exactly as many columns as it has items, else the row trails empty ones
     .feature-bar__grid[data-count="2"] {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -870,6 +826,14 @@ $page-section-bp-lg: 1025px;
         grid-template-columns: 1fr 1fr;
         gap: 48px;
         padding: 52px 56px;
+    }
+
+    // Width in twelfths, each unit handing back the (12 - n)/12 of the gutter it doesn't need so any set summing to 12 fills the row
+    @for $span from 1 through 12 {
+        .flex-columns__col--#{$span} {
+            --flex-columns-span: #{$span};
+            flex: 0 0 calc(100% * var(--flex-columns-span) / 12 - var(--flex-columns-gap) * (12 - var(--flex-columns-span)) / 12);
+        }
     }
 }
 

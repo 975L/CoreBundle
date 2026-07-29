@@ -1,5 +1,95 @@
 [
     {
+        "date": "2026-07-29",
+        "description": [
+            {
+                "en": "The eye button showing or hiding a password, and the checks warning that a password is too weak or that the two you typed differ, now work on every form of the site instead of only on the sign-up one",
+                "fr": "Le bouton œil qui affiche ou masque un mot de passe, ainsi que les contrôles signalant un mot de passe trop faible ou deux saisies différentes, fonctionnent désormais sur tous les formulaires du site et non plus seulement sur celui d'inscription",
+                "es": "El botón de ojo que muestra u oculta una contraseña, así como las comprobaciones que avisan de una contraseña demasiado débil o de dos entradas distintas, ahora funcionan en todos los formularios del sitio y no solo en el de registro"
+            },
+            {
+                "en": "Fixed the eye button sliding out of the password field as soon as an error message appeared underneath it",
+                "fr": "Correction du bouton œil qui se décalait hors du champ mot de passe dès qu'un message d'erreur apparaissait en dessous",
+                "es": "Corregido el botón de ojo que se desplazaba fuera del campo de contraseña en cuanto aparecía un mensaje de error debajo"
+            },
+            {
+                "en": "A field now turns green once what you typed is what was expected, and red otherwise, in place of the blue outline shown whatever the content",
+                "fr": "Un champ passe désormais au vert quand ce que vous avez saisi correspond à ce qui était attendu, et au rouge sinon, à la place du contour bleu affiché quel que soit le contenu",
+                "es": "Un campo ahora se pone verde cuando lo que ha escrito coincide con lo esperado, y rojo en caso contrario, en lugar del contorno azul mostrado fuera cual fuera el contenido"
+            },
+            {
+                "en": "Fixed the forms of a site in dark mode: the text typed in a field was nearly unreadable, the field had no visible outline of its own and the show/hide password eye was black on black",
+                "fr": "Correction des formulaires d'un site en mode sombre : le texte saisi dans un champ était à peine lisible, le champ n'avait aucun contour visible et l'œil d'affichage du mot de passe était noir sur noir",
+                "es": "Corregidos los formularios de un sitio en modo oscuro: el texto escrito en un campo era apenas legible, el campo no tenía ningún contorno visible y el ojo para mostrar la contraseña era negro sobre negro"
+            },
+            {
+                "en": "A new “Lead-in paragraph” block sets an introduction apart from the text that follows, marked by a colored bar down its side",
+                "fr": "Un nouveau bloc « Paragraphe d'accroche » met en avant une introduction par rapport au texte qui suit, signalée par une barre colorée sur son côté",
+                "es": "Un nuevo bloque «Párrafo de entrada» destaca una introducción respecto al texto que sigue, señalada por una barra de color en su lateral"
+            },
+            {
+                "en": "Emails sent by the site now keep their colors and their layout in Gmail, Outlook and on mobile, instead of arriving as plain unstyled text",
+                "fr": "Les emails envoyés par le site conservent désormais leurs couleurs et leur mise en page dans Gmail, Outlook et sur mobile, au lieu d'arriver en texte brut sans style",
+                "es": "Los correos enviados por el sitio conservan ahora sus colores y su diseño en Gmail, Outlook y en el móvil, en lugar de llegar como texto sin formato"
+            },
+            {
+                "en": "An invalid or valid field now also shows a ✗ or a ✓, so its state is never given by color alone",
+                "fr": "Un champ invalide ou valide affiche aussi un ✗ ou un ✓, afin que son état ne soit jamais donné par la seule couleur",
+                "es": "Un campo inválido o válido muestra también un ✗ o un ✓, para que su estado nunca dependa solo del color"
+            },
+            {
+                "en": "A field your browser filled in for you is now checked like one you typed yourself",
+                "fr": "Un champ rempli automatiquement par votre navigateur est désormais contrôlé comme un champ que vous auriez saisi vous-même",
+                "es": "Un campo rellenado automáticamente por su navegador se comprueba ahora igual que uno escrito por usted"
+            },
+            {
+                "en": "Fixed the submit button of a form becoming clickable again while the password still failed its own check",
+                "fr": "Correction du bouton d'envoi d'un formulaire redevenant cliquable alors que le mot de passe ne passait toujours pas son propre contrôle",
+                "es": "Corregido el botón de envío de un formulario que volvía a ser pulsable mientras la contraseña seguía sin superar su propia comprobación"
+            },
+            {
+                "en": "Fixed your password manager offering an existing password on a sign-up form after you showed then hid what you had typed",
+                "fr": "Correction de votre gestionnaire de mots de passe proposant un mot de passe existant sur un formulaire d'inscription après avoir affiché puis masqué votre saisie",
+                "es": "Corregido el gestor de contraseñas que proponía una contraseña existente en un formulario de registro tras mostrar y volver a ocultar lo escrito"
+            },
+            {
+                "en": "Fixed a raw code being shown in place of the message when adding a sixth argument to a reassurance bar or a seventh image to a hero",
+                "fr": "Correction d'un code brut affiché à la place du message lors de l'ajout d'un sixième argument à une bande de réassurance ou d'une septième image à un hero",
+                "es": "Corregido un código en bruto mostrado en lugar del mensaje al añadir un sexto argumento a una barra de argumentos o una séptima imagen a un hero"
+            },
+            {
+                "en": "Fixed a rule being dropped from each stylesheet the site assembles, leaving parts of a page unstyled",
+                "fr": "Correction d'une règle perdue dans chacune des feuilles de style assemblées par le site, laissant des parties de page sans style",
+                "es": "Corregida una regla perdida en cada hoja de estilos que el sitio ensambla, dejando partes de una página sin estilo"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-28",
+        "description": [
+            {
+                "en": "A \"Flexible columns\" section is now filled with \"Column\" blocks, each holding whichever blocks you put inside it",
+                "fr": "Une section « Colonnes flexibles » se remplit désormais de blocs « Colonne », chacun accueillant les blocs que vous y placez",
+                "es": "Una sección «Columnas flexibles» ahora se rellena con bloques «Columna», cada uno con los bloques que coloque dentro"
+            },
+            {
+                "en": "Each column can now be given its own width, from 1 to 12 units of the row, instead of always sharing it evenly - a row is full when its columns add up to 12",
+                "fr": "Chaque colonne peut désormais recevoir sa propre largeur, de 1 à 12 unités de la rangée, au lieu de toujours la partager à parts égales - une rangée est pleine quand ses colonnes totalisent 12",
+                "es": "Ahora puede darse a cada columna su propia anchura, de 1 a 12 unidades de la fila, en lugar de repartirla siempre a partes iguales - una fila está llena cuando sus columnas suman 12"
+            },
+            {
+                "en": "A hero block no longer needs a button: leave a label or its link empty and the button disappears, along with the whole row when you set neither",
+                "fr": "Un bloc héros n'exige plus de bouton : laissez un libellé ou son lien vide et le bouton disparaît, ainsi que toute la rangée si vous n'en renseignez aucun",
+                "es": "Un bloque héroe ya no exige un botón: deje vacío un texto o su enlace y el botón desaparece, junto con toda la fila si no rellena ninguno"
+            },
+            {
+                "en": "Two colored sections placed one after the other now touch, instead of showing a strip of page background between them",
+                "fr": "Deux sections colorées placées l'une après l'autre se touchent désormais, au lieu de laisser apparaître une bande de fond de page entre elles",
+                "es": "Dos secciones de color colocadas una tras otra ahora se tocan, en lugar de dejar ver una franja de fondo de página entre ellas"
+            }
+        ]
+    },
+    {
         "date": "2026-07-27",
         "description": [
             {

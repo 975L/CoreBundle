@@ -22,10 +22,7 @@ class AiUsage
     #[ORM\Column]
     private ?int $id = null;
 
-    // Format "YYYY-MM" - name is backtick-quoted because "year_month" is a reserved MariaDB keyword
-    // (the composite INTERVAL unit, e.g. "INTERVAL 1 YEAR_MONTH") - without this, CREATE TABLE quotes
-    // it defensively but the ORM's own generated INSERT/UPDATE does not, breaking at runtime (same
-    // pitfall already hit and fixed in 975l.com's own AiHelpSiteUsage - missed here first time round)
+    // "YYYY-MM"; backtick-quoted because "year_month" is a reserved MariaDB keyword the ORM's INSERT wouldn't quote
     #[ORM\Column(name: '`year_month`', length: 7, unique: true)]
     private string $yearMonth;
 

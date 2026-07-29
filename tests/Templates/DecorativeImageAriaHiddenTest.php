@@ -13,10 +13,7 @@ use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-// An alt="" is the standard way of marking an image decorative, but accessibility checks (see SiteBundle's
-// ContentQualityClient) report it as a missing alternative rather than reading it as deliberate - which is
-// how every icon of the site ended up flagged. The convention is therefore alt="" aria-hidden="true", both
-// written together, and this locks it: a template writing a bare alt="" fails here.
+// alt="" alone is reported as a missing alternative, so it is always doubled with aria-hidden
 class DecorativeImageAriaHiddenTest extends TestCase
 {
     public function testEveryEmptyAltIsDoubledWithAriaHidden(): void

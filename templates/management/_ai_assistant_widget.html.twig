@@ -1,14 +1,5 @@
-{#
- # The question/answer box itself - the same partial used by the dedicated AI Assistant page
- # (_ai_assistant_base.html.twig, once "enabled") and by the dashboard's Donovan card
- # (_donovan_dashboard_widget.html.twig). Caller is responsible for the isEnabled()/ROLE_SUPER_ADMIN
- # gating (see AiAssistantController::index() and DonovanWidgetProvider) - this partial assumes both
- # are already true.
- #}
-{# The controller reads these itself (plain dataset/querySelector, no Stimulus targets/values sugar -
-   see assets/js/ai-assistant.js), so the names below are ordinary data-* attributes and only have to
-   match what that file looks for: the dasherized "ai-assistant-*" form. Only "data-controller"/
-   "data-action" use the registered identifier "aiAssistant" #}
+{# The question/answer box; the caller owns the isEnabled()/ROLE_SUPER_ADMIN gating #}
+{# Plain data-* attributes, not Stimulus targets/values: ai-assistant.js reads them via querySelector #}
 <div class="ai-assistant"
      data-controller="aiAssistant"
      data-ai-assistant-ask-url-value="{{ path('management_ui_ai_assistant_ask') }}"

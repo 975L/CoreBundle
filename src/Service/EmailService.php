@@ -147,8 +147,7 @@ class EmailService
         );
 
         if (1 === preg_match('/<body[^>]*>/i', $renderedEmail)) {
-            // preg_replace_callback, not preg_replace: the subject-derived $banner can contain "$" followed by a
-            // digit, which preg_replace's replacement string would misinterpret as a regex backreference
+            // _callback, not preg_replace: a "$1" in $banner would be read as a backreference
             return preg_replace_callback('/<body[^>]*>/i', static fn (array $matches): string => $matches[0] . $banner, $renderedEmail, 1);
         }
 

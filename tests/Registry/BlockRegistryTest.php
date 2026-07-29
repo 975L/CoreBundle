@@ -223,9 +223,7 @@ class BlockRegistryTest extends TestCase
         $this->assertArrayHasKey('label.flex_columns[ui]', $grouped);
     }
 
-    // "flex_columns" has no "contexts" restriction of its own, so it must stay pickable in a real, named,
-    // non-slot context too (e.g. SiteBundle's Page block picker calling groupedByCategory('page')) - not
-    // just when no context is passed at all
+    // With no "contexts" of its own it must stay pickable in a real named context, not only in none
     public function testGroupedByCategoryIncludesUnrestrictedContainerKindsInANamedOrdinaryContext(): void
     {
         $registry = new BlockRegistry($this->createTranslator());
@@ -259,10 +257,7 @@ class BlockRegistryTest extends TestCase
         $this->assertSame(BlockRegistry::NESTED_SLOT_CONTEXT, $registry->getSlotContext('flex_column'));
     }
 
-    // A container kind may opt back in to being offered inside one specific slot context (and only that
-    // one) via its own "contexts" - "flex_column" is meant to nest one level inside "flex_columns" (its
-    // own slots, picked with SLOT_CONTEXT), but must stay excluded from its own kind of slot picker
-    // (NESTED_SLOT_CONTEXT), same as any other container - no column-in-column
+    // A container may opt into one slot context only, so a column still can't hold another column
     public function testGroupedByCategoryLetsAContainerOptIntoOneSpecificSlotContext(): void
     {
         $registry = new BlockRegistry($this->createTranslator());
@@ -285,8 +280,7 @@ class BlockRegistryTest extends TestCase
         $this->assertArrayNotHasKey('label.flex_column[ui]', $forColumnSlot);
     }
 
-    // isAllowedInContext() backs BlockMoveController's own validation - same rules as groupedByCategory()'s
-    // filtering, exercised directly instead of through the translated/grouped picker list
+    // isAllowedInContext() backs BlockMoveController, exercised directly rather than through the picker
     public function testIsAllowedInContextAllowsAnOrdinaryKindInAnySlotContext(): void
     {
         $registry = new BlockRegistry($this->createTranslator());
@@ -512,6 +506,22 @@ class BlockRegistryTest extends TestCase
         $this->assertArrayHasKey('label.menu_link[ui]', $forMenu);
     }
 
+    // An exclusive context (MENU_NAVBAR_CONTEXT) reverses the default rule: a kind declaring no "contexts" at all, available everywhere else, is kept out of it - a navbar only ever offers the kinds that opted in ("menu_link")
+    public function testExclusiveContextOnlyOffersKindsThatOptedIn(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register('article', 'label.article', ArticleFormStub::class, 'article.html.twig');
+        $registry->register('menu_link', 'label.menu_link', ArticleFormStub::class, 'menu_link.html.twig', contexts: [BlockRegistry::MENU_CONTEXT, BlockRegistry::MENU_NAVBAR_CONTEXT]);
+
+        $forNavbar = array_merge(...array_values($registry->groupedByCategory(BlockRegistry::MENU_NAVBAR_CONTEXT)));
+        $forMenu = array_merge(...array_values($registry->groupedByCategory(BlockRegistry::MENU_CONTEXT)));
+
+        $this->assertSame(['label.menu_link[ui]' => 'menu_link'], $forNavbar);
+        $this->assertArrayHasKey('label.article[ui]', $forMenu);
+        $this->assertTrue($registry->isAllowedInContext('menu_link', BlockRegistry::MENU_NAVBAR_CONTEXT));
+        $this->assertFalse($registry->isAllowedInContext('article', BlockRegistry::MENU_NAVBAR_CONTEXT));
+    }
+
     // Calling groupedByCategory() with no context at all (the pre-existing call signature) skips the contexts filter entirely, so callers that haven't started passing a context yet see everything
     public function testGroupedByCategoryWithoutContextIgnoresContextsRestriction(): void
     {
@@ -535,8 +545,7 @@ class BlockRegistryTest extends TestCase
         $this->assertArrayNotHasKey('label.menu_link[ui]', $forPage);
     }
 
-    // Optgroups follow CATEGORY_ORDER, not alphabetical - "media" registered first still ends up after
-    // "sections" since CATEGORY_ORDER ranks the latter first
+    // Optgroups follow CATEGORY_ORDER, not alphabetical order
     public function testGroupedByCategoryOrdersCategoriesByCategoryOrderInsteadOfAlphabetically(): void
     {
         $registry = new BlockRegistry($this->createTranslator());

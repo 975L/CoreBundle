@@ -22,10 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// AJAX endpoint backing the "drag a Block into a different collection" gesture (see ea-sortable.js) -
-// moves an already-persisted Block into a different HasBlocksInterface owner's top-level "blocks", or
-// into a container Block's own "slots", within that same owner. See BlockRelocator for why this can't be
-// done through the normal page/menu edit form submission (media loss risk) and Readme for the full design.
+// Moves a persisted Block into another collection; the normal form submission would lose its media
 class BlockMoveController extends AbstractController
 {
     // EasyAdmin prefixes this with the Dashboard's own route name
@@ -88,18 +85,13 @@ class BlockMoveController extends AbstractController
         $this->blockRelocator->relocate($block, $owner, $targetContainer);
         $this->entityManager->flush();
 
-        // The client reloads the page on success rather than leaving the moved DOM node where dropped:
-        // the already-open edit form's other, still-unsubmitted collections were built against the
-        // pre-move entity graph (fixed array indices at PRE_SET_DATA time) - saving that stale form
-        // afterward could misalign an index against the now-shorter/reshuffled collection it left behind.
-        // The flash survives the reload the same way it would a redirect.
+        // The flash survives the client's reload the same way it would a redirect
         $this->addFlash('success', $this->translator->trans('flash.block_moved', [], 'ui'));
 
         return new JsonResponse(['ok' => true]);
     }
 
-    // Ownership check by walking up to the root ancestor rather than walking every block down from
-    // $owner: cheap (bounded by nesting depth, at most 2 today) regardless of how many blocks $owner has
+    // Walks up to the root ancestor, bounded by nesting depth rather than by how many blocks $owner has
     private function belongsTo(Block $block, HasBlocksInterface $owner): bool
     {
         $root = $block;
@@ -110,11 +102,7 @@ class BlockMoveController extends AbstractController
         return $owner->getBlocks()->contains($root);
     }
 
-    // Returns an error code, or null if the move is valid. No separate cycle check is needed: a container
-    // kind is only ever a valid $target here if isAllowedInContext() lets $block's own kind sit in its
-    // slot context, and none of this bundle's container kinds opt into being nested inside another
-    // container's slots deeply enough to ever loop back onto themselves (see BlockRegistry::SLOT_CONTEXT/
-    // NESTED_SLOT_CONTEXT) - a container can only be moved somewhere it structurally can't contain itself.
+    // An error code, or null when valid; no cycle check needed, isAllowedInContext() making a loop structurally impossible
     private function validateTarget(Block $block, Block $target, HasBlocksInterface $owner): ?string
     {
         if ($target === $block) {

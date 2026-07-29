@@ -48,10 +48,7 @@ class MenuProvider implements MenuProviderInterface
                 'description' => 'label.block_showcase_help',
             ],
             'ai_assistant' => [
-                // Built here, not left as a translation key: the "Donovan" half is hardcoded (see
-                // AiRephraseExtension::assistantName()), the "(AI Agent)" half is translated up front so
-                // the composed label carries both correctly - MenuBuilder's trans() call on the composed
-                // string below returns it unchanged since it never matches a catalog entry
+                // Composed here: "Donovan" is hardcoded, only the parenthesized half is translated
                 'label' => \sprintf(
                     'Donovan (%s)',
                     $this->translator->trans('label.ai_assistant_menu_suffix', [], 'ui'),
@@ -59,9 +56,7 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-robot',
                 'name' => 'management_ui_ai_assistant_index',
-                // Matches AiAssistantController::index()'s own minimum bar - a plain editor could no
-                // longer act on either section anyway (dashboard needs ROLE_SUPER_ADMIN, rephrase needs
-                // this same "site-role-admin")
+                // Matches the page's own minimum bar; a plain editor could act on neither section
                 'role' => $this->configService->get('site-role-admin'),
                 // Same key as _ai_assistant_base.html.twig's own subtitle, right under its <h1>
                 'description' => 'label.ai_assistant_subtitle',

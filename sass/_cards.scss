@@ -8,17 +8,16 @@
     gap: 20px;
 }
 
-// A run of "card" blocks renders as a bare ".cards" with no ".section-wrap" around it, so it needs the
-// page's own measure - scoped to ".blocks >", ".cards" being reused inside a ".section-wrap" elsewhere
+// A bare run of "card" blocks has no ".section-wrap" around it, so it restates the page measure here
 .blocks > .cards {
     box-sizing: border-box;
-    max-width: 1312px;
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
     margin: 0 auto;
-    padding-left: clamp(20px, 5vw, 64px);
-    padding-right: clamp(20px, 5vw, 64px);
+    padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
 }
 
-// 380px, not 400px: three cards + two 20px gaps must fit ".section-wrap"'s 1184px measure
+// 380px, not 400px: three cards plus two gaps must fit ".section-wrap"'s 1312px content measure
 .card {
     margin: 1em auto;
     width: clamp(300px, 380px, 90vw);

@@ -11,12 +11,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// Stimulus derives a controller's value attribute names from the identifier as registered, so registering
-// the captcha controller as "captcha" but writing "data-recaptcha-site-key-value" (or renaming a value
-// without touching the widget) leaves siteKeyValue empty at runtime with nothing complaining - the token
-// would simply never be fetched and every submission would be turned down server-side. This locks
-// controllers.js, captcha.js and the widget together. Same idea as AiControllerDataAttributesTest, for a
-// controller using Stimulus values rather than a raw dataset.
+// Stimulus derives value names from the registered identifier, so a mismatch leaves siteKeyValue empty with nothing complaining
 class CaptchaControllerDataAttributesTest extends TestCase
 {
     private const CONTROLLER_JS = 'assets/js/captcha.js';
@@ -43,8 +38,7 @@ class CaptchaControllerDataAttributesTest extends TestCase
         }
     }
 
-    // The identifier the barrel binds captcha.js to, whether it registers it eagerly ("app.register('captcha', CaptchaController)")
-    // or lazily ("captcha: () => import('./js/captcha.js')", see LAZY_CONTROLLERS) - both spellings keep the same contract with the widget
+    // The identifier the barrel binds captcha.js to, eagerly or lazily - both spellings keep the same contract
     private function registeredIdentifier(): string
     {
         $barrel = $this->read(self::CONTROLLERS_BARREL);

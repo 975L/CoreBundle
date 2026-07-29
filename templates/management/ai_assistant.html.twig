@@ -1,4 +1,2 @@
-{# Kept as its own file (not folded into _ai_assistant_base.html.twig) so a consuming app can override
-   this path (templates/bundles/c975LUiBundle/management/ai_assistant.html.twig) and redefine
-   "extra_backends" without hitting an extends-yourself loop - see that block's comment in the base file #}
+{# Its own file so an app can override this path and redefine "extra_backends" with no extends-yourself loop #}
 {% extends '@c975LUi/management/_ai_assistant_base.html.twig' %}

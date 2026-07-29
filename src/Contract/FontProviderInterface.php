@@ -8,10 +8,7 @@
  */
 namespace c975L\UiBundle\Contract;
 
-// Lets an app/bundle (e.g. SiteBundle) expose the font-family names it declares via @font-face in its own
-// CSS, so ConfigBundle's ConfigCrudController can render a real <select> for "font" kind configs (e.g.
-// theme-font-family-title) instead of free text - see FontRegistry/FontProviderPass/FontChoiceType. With
-// none registered, callers fall back to their own default behavior (e.g. a plain text field)
+// Exposes the app's own @font-face names so a "font" kind config renders as a <select>, not free text
 interface FontProviderInterface
 {
     public function getFonts(): array;

@@ -59,9 +59,7 @@ class BlockExtensionTest extends TestCase
         $this->assertSame('<p>rendered</p>', $extension->renderBlock($block));
     }
 
-    // A slot added via a container's "+" button but saved before a kind was ever picked has no kind at
-    // all (Block::$kind is nullable) - must render as nothing instead of crashing on registry lookups
-    // that all assume a real, registered kind string
+    // A slot saved before a kind was picked has none, and must render as nothing instead of crashing
     public function testRenderBlockReturnsEmptyStringWhenBlockHasNoKind(): void
     {
         $block = new Block();

@@ -9,13 +9,31 @@
 namespace c975L\UiBundle\Form\Block;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// The "data" sub-form of the "flex_column" kind - deliberately empty: a column has no content of its
-// own, it's purely a grouping of its own "slots" (a real Block relation, added by
-// BlockType::addSlotsSubForm(), not part of this form) - see "flex_columns" (the row) for the eyebrow/title
+// A column holds no content, only its width and its "slots"; a bare block used as a slot has nowhere to store that width
 class FlexColumnType extends AbstractType
 {
+    // Twelfths, which divide by 2, 3, 4 and 6, so an editor can add a row up in their head
+    public const WIDTHS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        // Empty is the placeholder, not a choice: an unset value must keep meaning "no width of my own"
+        $builder->add('columnWidth', ChoiceType::class, [
+            'label' => 'label.column_width',
+            'help' => 'label.column_width_help',
+            'choices' => array_combine(
+                array_map(static fn (string $width): string => 'label.column_width_' . $width, self::WIDTHS),
+                self::WIDTHS
+            ),
+            'placeholder' => 'label.column_width_auto',
+            'required' => false,
+        ]);
+    }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

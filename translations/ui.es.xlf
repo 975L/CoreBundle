@@ -426,6 +426,10 @@
                 <source>label.block_kind</source>
                 <target>Tipo de bloque</target>
             </trans-unit>
+            <trans-unit id="CZn_467">
+                <source>label.block_kind_legacy_slot_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Este bloque está colocado directamente como columna, lo que ya no se ofrece: añade una Columna a la fila, arrastra este bloque dentro y entonces podrás ajustar su anchura.&lt;/span&gt;</target>
+            </trans-unit>
             <trans-unit id="QVfWY7f">
                 <source>label.block_media_required</source>
                 <target>Se requiere una imagen para este tipo de bloque.</target>
@@ -493,6 +497,14 @@
             <trans-unit id="tg4Ac7t">
                 <source>label.block_slider_description</source>
                 <target>Carrusel de imágenes y vídeos con leyendas y créditos por diapositiva</target>
+            </trans-unit>
+            <trans-unit id="bQUaJnq">
+                <source>label.block_text_hook</source>
+                <target>Frase gancho</target>
+            </trans-unit>
+            <trans-unit id="HtLTMcA">
+                <source>label.block_text_hook_description</source>
+                <target>Párrafo de entrada al inicio de un artículo o página, distinto del texto que introduce</target>
             </trans-unit>
             <trans-unit id="7Ix0upV">
                 <source>label.block_text_readmore</source>
@@ -597,6 +609,66 @@
             <trans-unit id="Z2OPJRi">
                 <source>label.collection_limit_help</source>
                 <target>Dejar vacío para mostrar todo</target>
+            </trans-unit>
+            <trans-unit id="6A6G2AK">
+                <source>label.column_width</source>
+                <target>Anchura de la columna</target>
+            </trans-unit>
+            <trans-unit id="9jH0xoL">
+                <source>label.column_width_1</source>
+                <target>1 / 12</target>
+            </trans-unit>
+            <trans-unit id="QBl9hmg">
+                <source>label.column_width_10</source>
+                <target>10 / 12 (cinco sextos)</target>
+            </trans-unit>
+            <trans-unit id="YDSSeO_">
+                <source>label.column_width_11</source>
+                <target>11 / 12</target>
+            </trans-unit>
+            <trans-unit id="1sXrmIU">
+                <source>label.column_width_12</source>
+                <target>12 / 12 (anchura completa)</target>
+            </trans-unit>
+            <trans-unit id="4ov3LBJ">
+                <source>label.column_width_2</source>
+                <target>2 / 12 (un sexto)</target>
+            </trans-unit>
+            <trans-unit id="XRvthLN">
+                <source>label.column_width_3</source>
+                <target>3 / 12 (un cuarto)</target>
+            </trans-unit>
+            <trans-unit id="tXi8tEC">
+                <source>label.column_width_4</source>
+                <target>4 / 12 (un tercio)</target>
+            </trans-unit>
+            <trans-unit id="4lAS3Ps">
+                <source>label.column_width_5</source>
+                <target>5 / 12</target>
+            </trans-unit>
+            <trans-unit id="odyqJHL">
+                <source>label.column_width_6</source>
+                <target>6 / 12 (mitad)</target>
+            </trans-unit>
+            <trans-unit id="YYx9WGu">
+                <source>label.column_width_7</source>
+                <target>7 / 12</target>
+            </trans-unit>
+            <trans-unit id="_GNeBb8">
+                <source>label.column_width_8</source>
+                <target>8 / 12 (dos tercios)</target>
+            </trans-unit>
+            <trans-unit id="0DLNTY1">
+                <source>label.column_width_9</source>
+                <target>9 / 12 (tres cuartos)</target>
+            </trans-unit>
+            <trans-unit id="Dm_9gMR">
+                <source>label.column_width_auto</source>
+                <target>Automática (columnas iguales)</target>
+            </trans-unit>
+            <trans-unit id="vk_1BWG">
+                <source>label.column_width_help</source>
+                <target>Cuántos doceavos de la fila ocupa esta columna - las columnas de una fila deben sumar 12. Se aplica a partir de pantallas anchas: por debajo, cada columna ocupa todo el ancho.</target>
             </trans-unit>
             <trans-unit id="jfLIJSU">
                 <source>label.compare_position</source>
@@ -966,10 +1038,6 @@
                 <source>label.hero_background_image_help</source>
                 <target>Usa la primera imagen añadida como fondo a todo lo ancho detrás del texto, en lugar de mostrarla al lado.</target>
             </trans-unit>
-            <trans-unit id="UOjLBIH">
-                <source>label.hero_media_max</source>
-                <target>Una sección hero puede tener como máximo {{ limit }} imágenes.</target>
-            </trans-unit>
             <trans-unit id="7uubg0.">
                 <source>label.hero_title_level</source>
                 <target>Nivel de título</target>
@@ -1297,6 +1365,10 @@
             <trans-unit id="dVwFNwZ">
                 <source>label.slots_cards</source>
                 <target>Tarjetas</target>
+            </trans-unit>
+            <trans-unit id="EcQhzh6">
+                <source>label.slots_legacy_kinds_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Estos bloques están colocados directamente como columnas, lo que ya no se ofrece: %blocks%. Para cada uno, añade una Columna a la fila, arrastra el bloque dentro y entonces podrás ajustar su anchura.&lt;/span&gt;</target>
             </trans-unit>
             <trans-unit id="0kGqgMZ">
                 <source>label.slug</source>

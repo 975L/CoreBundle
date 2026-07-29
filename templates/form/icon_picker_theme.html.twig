@@ -3,8 +3,7 @@
 {%- for name, path in icons -%}
     {%- set icons_data = icons_data|merge([{name: name, path: path, url: asset(path)}]) -%}
 {%- endfor -%}
-{# In "name" mode, "value" is already the bare key (not a path) - both the search box's initial
-   text and the preview thumbnail (looked up from "icons" instead of asset()'d directly) follow #}
+{# In "name" mode "value" is already the bare key, so the preview is looked up from "icons" #}
 {%- set current_name = value_field == 'name' ? value : (value is not empty ? value|split('/')|last|replace({'.svg': ''}) : '') -%}
 {%- set preview_path = value_field == 'name' ? icons[value]|default(null) : value -%}
 <div class="ui-icon-picker" data-icons="{{ icons_data|json_encode|e('html_attr') }}" data-value-field="{{ value_field }}">

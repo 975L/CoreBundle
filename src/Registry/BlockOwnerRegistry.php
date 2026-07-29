@@ -28,9 +28,7 @@ class BlockOwnerRegistry
             fn (BlockOwnerResolverInterface $provider): bool => $provider->supports($ownerType)
         ));
 
-        // supports() is a runtime check (no static declared owner-type list), so a collision can only
-        // be caught here, on first actual use of the ambiguous ownerType - failing loudly beats one
-        // resolver silently winning and the other becoming permanently unreachable
+        // Fails loudly rather than letting one resolver silently win and the other become unreachable
         if (\count($matching) > 1) {
             throw new \LogicException(sprintf(
                 'Several BlockOwnerResolverInterface providers support ownerType "%s": %s.',

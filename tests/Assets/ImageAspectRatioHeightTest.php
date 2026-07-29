@@ -11,11 +11,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// An <img>'s width/height HTML attributes map to CSS *presentational hints* on the width/height properties.
-// A stylesheet that shapes an image with "aspect-ratio" but never declares "height" therefore leaves the
-// hint in charge: height="800" wins, the box stretches to 800px and the aspect-ratio is silently ignored.
-// That is exactly what blew up every hero the day the components started writing their intrinsic pixel
-// size, so this locks the pairing: an img rule setting aspect-ratio must also settle its own height.
+// A width/height attribute is a presentational hint beating an aspect-ratio declared with no height
 class ImageAspectRatioHeightTest extends TestCase
 {
     public function testEveryImgRuleSettingAspectRatioAlsoSettlesItsHeight(): void
@@ -41,8 +37,7 @@ class ImageAspectRatioHeightTest extends TestCase
         $this->assertGreaterThan(0, $checked, 'No img rule with an aspect-ratio found at all, the test itself is broken.');
     }
 
-    // Returns the declaration blocks whose selector targets the img *element* - a "-img" suffixed class
-    // name (.portfolio-grid__project-img, a wrapper <div>) is not one, hence the word boundary below
+    // Rules targeting the img element; a "-img" suffixed class is a wrapper, hence the word boundary
     private function imgRules(string $scss): array
     {
         $scss = (string) preg_replace(['#//[^\n]*#', '#/\*.*?\*/#s'], '', $scss);

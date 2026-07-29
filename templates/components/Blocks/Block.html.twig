@@ -1,14 +1,7 @@
-{# Re-checked here (not just trusted from the caller) since this is a reusable component: is_granted()
-   is a cheap in-memory check, no extra query - defends against a future caller passing editUrl without
-   the role gate already applied in Blocks.html.twig. #}
+{# Re-checked, not trusted from the caller: is_granted() is an in-memory check, no extra query #}
 {% set canEditBlock = editUrl is defined and editUrl is not empty and is_granted(config('site-role-editor')) %}
 {% if block.animation or canEditBlock %}
-    {# "hidden" is added by animate-scroll.js on connect(), not rendered here - see the controller
-       for why: it must never apply if the script fails to load.
-       block-animation/block-editable (not the bare "animation" class) is display:contents - see
-       sass/_animations-media.scss and sass/_block-edit-overlay.scss for why this wrapper must stay
-       transparent to the parent's layout (e.g. .cards needs .card as its direct child, not this
-       wrapper). Also hosts the data-block-edit-url the blockEditOverlay controller looks for. #}
+    {# "hidden" is added by animate-scroll.js on connect(), so it never applies if the script fails to load #}
     <div class="{{ block.animation ? 'block-animation scroll' : 'block-editable' }}"
         {% if block.animation %} data-animation="{{ block.animation }}"{% endif %}
         {% if canEditBlock %} data-block-id="{{ block.id }}" data-block-edit-url="{{ editUrl }}"{% endif %}

@@ -25,10 +25,24 @@ class c975LUiBundleTest extends TestCase
 
         (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
-        $this->assertSame(
-            [['form_themes' => ['@c975LUi/form/captcha_theme.html.twig']]],
-            $container->getExtensionConfig('twig')
-        );
+        $config = $container->getExtensionConfig('twig');
+
+        $this->assertSame(['@c975LUi/form/captcha_theme.html.twig'], $config[0]['form_themes']);
+    }
+
+    // An email carries no <link>, so its stylesheet has to travel inside the message: the namespace is what
+    // lets a bundle's own email layout source() the compiled emails.min.css before inlining it
+    public function testPrependExtensionRegistersTheCompiledCssNamespace(): void
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension($this->extension('twig'));
+
+        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $paths = $container->getExtensionConfig('twig')[0]['paths'];
+
+        $this->assertSame(['c975LUiCss'], array_values($paths));
+        $this->assertFileExists(array_key_first($paths) . '/emails.min.css', 'The namespace points at a directory holding no compiled emails.min.css.');
     }
 
     // An app without TwigBundle (an API-only one, say) must still boot: prepending config for an unregistered extension throws

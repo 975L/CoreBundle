@@ -1,6 +1,4 @@
-{# "content" was already escaped/paragraph-wrapped by EmailTemplateRenderer::contentToHtml() - trusted HTML at this point, output with |raw.
-   "text-left" is required: the site's generic "td{text-align:center}" table rule would otherwise center body text once wrapped
-   through EmailLayoutProviderInterface - color/font-family are left to the theme/the _wrapper.html.twig fallback, same as heading.html.twig #}
+{# "content" was already escaped by EmailTemplateRenderer::contentToHtml(); "text-left" beats the theme's "td{text-align:center}" #}
 <tr>
     <td class="text-left" style="padding:0 24px 16px;font-size:15px;line-height:22px;">
         {{ content|raw }}

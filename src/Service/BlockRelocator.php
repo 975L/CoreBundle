@@ -11,12 +11,7 @@ namespace c975L\UiBundle\Service;
 use c975L\UiBundle\Contract\HasBlocksInterface;
 use c975L\UiBundle\Entity\Block;
 
-// Moves an already-persisted Block to a different collection (the top-level "blocks" of a
-// HasBlocksInterface owner, or a container Block's own "slots"), keeping its id (and cascaded Medias)
-// stable - see BlockMoveController for the validation (ownership, cycles, nesting context) surrounding
-// this. Never calls HasBlocksInterface::removeBlock(): that queues the block for deletion regardless of
-// it being re-attached elsewhere in the same flush (see BlockRemovalListener) - detachBlock() is the
-// move-safe equivalent. Doesn't flush - the caller controls the transaction.
+// Moves a persisted Block, keeping its id and Medias; uses detachBlock(), removeBlock() queueing a deletion. Never flushes
 class BlockRelocator
 {
     public function relocate(Block $block, HasBlocksInterface $owner, ?Block $targetContainer): void

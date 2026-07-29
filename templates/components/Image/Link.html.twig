@@ -8,11 +8,7 @@
 {% set imgResponsive = heightOnly ? "" : "img-responsive" %}
 {# No "url": nothing to link to, so this must not render as an <a> at all - a href="" would be a dead link that still looks clickable #}
 {% set tag = url ? 'a' : 'span' %}
-{# The link's accessible name: an explicit "ariaLabel", else the visible "label" (stripped of the html
-   it may carry), else the image's own "alt". The former hardcoded fallback had every image link on the
-   site announce itself as "image", overriding the label rendered right next to it. Nothing to name it
-   with: no attribute at all rather than a meaningless one, letting the img's alt name the link. Only
-   ever set on the <a>, aria-label is ignored on a plain <span> #}
+{# Accessible name: explicit "ariaLabel", else the visible label, else the alt - never a hardcoded fallback #}
 {% set ariaLabel = ariaLabel|default('') is not empty ? ariaLabel : (label != '' ? label|striptags : alt|default('')) %}
 <p class="text-center">
     <{{ tag }}{% if url %} href="{{ url }}"{% if target is defined and target != "" %} target="{{ target }}"{% endif %}{% if ariaLabel != '' %} aria-label="{{ ariaLabel }}"{% endif %}{% endif %}>
@@ -20,9 +16,7 @@
             <span class="img-above {{ classLabel|default("") }}">{{ label|raw }}</span>
             <br>
         {% endif %}
-        {# Same rule as Image.html.twig: an empty "alt" is doubled with aria-hidden, so accessibility checks
-           read it as a deliberate decorative marker instead of a missing alternative. The link keeps its own
-           name through the "ariaLabel" computed above, which never comes from the image when alt is empty #}
+        {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative #}
         <img src="{{ absolute_url(asset(src)) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}"{% if alt|default("") == "" %} aria-hidden="true"{% endif %} {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         {% if not above and label != '' %}
             <br>

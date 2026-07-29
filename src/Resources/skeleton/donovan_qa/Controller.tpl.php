@@ -15,12 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-// Self-hosted backend for UiBundle's dashboard assistant (see UiBundle's Readme "AI Assistant" > "Self-
-// hosting your own backend"). Point "ui-ai-assistant-dashboard-endpoint" at "/api/donovan-qa/ask" and
-// "ui-ai-assistant-dashboard-token" at one of the values in "donovan-qa-authorized-tokens".
-// No Symfony Security here on purpose: auth is the plain Bearer token checked by hand below, same pattern
-// as 975l.com's own AiHelpController - keeps this endpoint stateless, no session/firewall config needed.
-// TODO: add rate limiting (see symfony/rate-limiter) once more than one trusted site calls this
+// Self-hosted backend for the dashboard assistant; auth is the Bearer token checked below, keeping it stateless
+// TODO: add rate limiting once more than one trusted site calls this
 #[Route('/api/donovan-qa')]
 class <?= $class_name ?>
 {
@@ -63,8 +59,7 @@ class <?= $class_name ?>
         return str_starts_with($header, 'Bearer ') ? substr($header, 7) : null;
     }
 
-    // Returns the calling site's own key (handy if you later add per-site usage tracking) or null when
-    // the token isn't recognized
+    // The calling site's own key, or null when the token isn't recognized
     private function resolveSite(string $token): ?string
     {
         $authorizedTokens = (array) $this->configService->get('donovan-qa-authorized-tokens');

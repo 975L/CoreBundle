@@ -85,8 +85,7 @@ class AiAssistantClientTest extends TestCase
         );
     }
 
-    // A backend with no citation support of its own simply omits "sources" - defaults to an empty array
-    // rather than making every consuming template null-check it
+    // A backend with no citations omits "sources", defaulting to [] rather than a null-check everywhere
     public function testDefaultsSourcesToEmptyArrayWhenBackendOmitsThem(): void
     {
         $httpClient = new MockHttpClient(

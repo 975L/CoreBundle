@@ -13,9 +13,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// Calls the LLM answering Donovan's Q&A questions ("donovan-qa-llm-*" config). Anthropic native API, or
-// any OpenAI-compatible one (e.g. Euria/Infomaniak) via "donovan-qa-llm-base-uri" - mirrors UiBundle's
-// own AiRephraseClient (see its Readme "Self-hosting your own backend"), same two providers, same dispatch
+// Calls the LLM answering the Q&A questions: Anthropic's native API, or any OpenAI-compatible one
 class <?= $class_name ?>
 {
     private const ANTHROPIC_DEFAULT_URI = 'https://api.anthropic.com/v1/messages';
@@ -31,8 +29,7 @@ class <?= $class_name ?>
 
     public function isEnabled(): bool
     {
-        // Explicit master switch - a filled-in key alone doesn't turn this on, so the feature can be
-        // toggled off without clearing credentials (same convention as UiBundle's own AiAssistantClient)
+        // Explicit master switch, so the feature toggles off without clearing credentials
         if (true !== $this->configService->get('donovan-qa-llm-enabled')) {
             return false;
         }
@@ -41,9 +38,7 @@ class <?= $class_name ?>
             return false;
         }
 
-        // Euria has no safe default model/base-uri to fall back to (its catalog isn't static enough to
-        // hardcode one, and its base URI is account-specific) - both must be set explicitly or this stays
-        // disabled
+        // Euria has no safe default model or base URI, so both must be set explicitly
         $provider = (string) ($this->configService->get('donovan-qa-llm-provider') ?: 'anthropic');
         if ('euria' === $provider && (
             !$this->configService->get('donovan-qa-llm-model')
@@ -147,8 +142,7 @@ class <?= $class_name ?>
             . $context;
     }
 
-    // Splits the model's trailing "SOURCES: kind1, kind2" (or "SOURCES: none") line from the visible
-    // answer - a missing/malformed line degrades to zero sources rather than a hard failure
+    // Splits the trailing "SOURCES:" line off; a malformed one degrades to zero sources, never a failure
     private function parseSourcedAnswer(string $rawAnswer): array
     {
         if (!preg_match('/^(.*?)\n*SOURCES:\s*(.*)$/is', trim($rawAnswer), $matches)) {

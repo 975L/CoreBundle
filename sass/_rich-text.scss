@@ -1,7 +1,6 @@
 /* RICH TEXT */
 
-// Inline formatting must not repaint the text: the theme's "* { color: var(--text) }" colors these
-// directly, so bolding a word in a white hero title turned it black. <a> is left out on purpose
+// The theme's "* { color: var(--text) }" colors these directly; <a> is left out on purpose
 b,
 strong,
 i,

@@ -6,12 +6,7 @@
             <div>
                 {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
                 <h2 class="expertise-banner__title">{{ title }}</h2>
-                {# A <div>, not a <p>: "text" is raw rich-text HTML that's typically already block-level
-                   itself (e.g. "<p>...</p>" from the fixture/Trix output) - wrapping that in another <p>
-                   is invalid nesting, and the browser silently closes the outer <p> as soon as it hits the
-                   inner one, splitting the real content into an unrelated sibling with no class at all.
-                   That's exactly why .expertise-banner__text/-text * (below) never actually applied to the
-                   visible text - it was targeting an emptied-out <p>, not the real content next to it. #}
+                {# A <div>, not a <p>: raw rich-text is already block-level and the browser would split the <p> #}
                 {% if text %}<div class="expertise-banner__text">{{ text|raw }}</div>{% endif %}
             </div>
             {% if tags|length > 0 %}

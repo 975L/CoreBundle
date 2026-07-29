@@ -82,8 +82,7 @@ class HasBlocksTraitTest extends TestCase
         $this->assertSame([], $owner->popPendingBlockRemovals());
     }
 
-    // Unlike removeBlock(), detachBlock() must not queue the block for deletion - it's used when
-    // the block is being relocated elsewhere (see BlockRelocator), not removed for good
+    // detachBlock() must not queue the block for deletion, being used to relocate it
     public function testDetachBlockRemovesItWithoutQueuingForRemoval(): void
     {
         $owner = new HasBlocksTraitStub();

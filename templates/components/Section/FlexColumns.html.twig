@@ -1,18 +1,14 @@
-{# Dynamic usage only (Block system): see templates/blocks/FlexColumns.html.twig - "slots" is a
-   collection of real Block entities (Entity/Block.php's "slots" relation), each rendered through the
-   normal render_block() pipeline (own kind, own cache, own media) - a "flex_column" slot renders its
-   own nested slots with no wrapper of its own (see blocks/FlexColumn.html.twig), so it stacks
-   naturally inside this same ".flex-columns__col" div - unlike this bundle's other Section/*
-   components there is no meaningful static/plain-array usage for this one. #}
-{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
-   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig) #}
+{# Dynamic usage only: "slots" holds real Block entities, each rendered through render_block() #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
 {% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
 <{{ tag }} class="flex-columns-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         {{ include('@c975LUi/components/Section/_head.html.twig') }}
         <div class="flex-columns">
+            {# Matched against the known twelfths, not interpolated: the width comes from stored block data #}
             {% for slot in slots %}
-                <div class="flex-columns__col">{{ render_block(slot) }}</div>
+                {% set width = slot.data.columnWidth|default('') in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] ? ' flex-columns__col--' ~ slot.data.columnWidth : '' %}
+                <div class="flex-columns__col{{ width }}">{{ render_block(slot) }}</div>
             {% endfor %}
         </div>
     </div>

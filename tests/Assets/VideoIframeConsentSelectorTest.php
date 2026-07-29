@@ -11,13 +11,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// video-iframe.js decides whether the page has a consent banner by querying a Stimulus identifier it does
-// not own - c975l/site-bundle registers its banner as "cookie-consent", and the controller used to look
-// for "cookieConsent". Nothing fails loudly on a mismatch: the query simply returns null, connect() takes
-// the "no banner on this page" branch and renders the iframe immediately, loading YouTube's ~1 MB player
-// before any consent has been given. This locks the selector to both spellings so the casing can't drift
-// apart again. Same idea as CaptchaControllerDataAttributesTest, for a cross-bundle contract rather than
-// a controller's own value attributes.
+// A casing mismatch on the banner's identifier returns null and loads YouTube before any consent
 class VideoIframeConsentSelectorTest extends TestCase
 {
     private const CONTROLLER_JS = 'assets/js/video-iframe.js';

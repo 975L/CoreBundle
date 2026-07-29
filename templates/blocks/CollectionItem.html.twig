@@ -1,21 +1,12 @@
-{# Adapter for the dynamic Block system — maps Block data to the Card component, for "collection"
-   block items only (see CollectionExtension::renderItems()). Never picklable, never persisted
-   (see the "collection_item" kind's "pickable: false" tag) - its data contract is exactly the 6
-   fields CollectionItem can carry, plus "detailUrl" (computed from the item's own slug) and
-   "variant" (copied straight from the parent Collection block, see CollectionType) - both added by
-   CollectionExtension::renderItems(), never entered on this never-persisted block itself. #}
+{# Adapter for "collection" items only, never picklable nor persisted; "detailUrl"/"variant" are added by CollectionExtension::renderItems() #}
 {% if variant is defined and variant == 'portfolio' %}
-    {# Reuses portfolio-grid's own classes (sass/_page-sections.scss) so a Collection can look
-       exactly like a PortfolioGrid block without any app-level template override - see
-       PortfolioGrid.html.twig/Portfolio/Grid.html.twig for the block this mirrors #}
+    {# Reuses portfolio-grid's classes so a Collection can look like a PortfolioGrid with no override #}
     {% set href = detailUrl|default(null) ?: url|default(null) %}
-    {# No detailPage configured and no "url" field on the item: nothing to link to, so this must not
-       render as an <a> at all - a href="#" would be a dead link that still looks clickable. #}
+    {# Nothing to link to: a href="#" would be a dead link that still looks clickable #}
     {% set tag = href ? 'a' : 'div' %}
     <{{ tag }} class="portfolio-grid__project"{% if href %} href="{{ href }}"{% if not detailUrl and url %} target="_blank" rel="noopener"{% endif %}{% endif %}>
         {% if imageUrl %}
-            {# Mirrors Portfolio/Grid.html.twig: lazy, plus the item's own auto-detected pixel size when it
-               has a media attached - "imageUrl" alone is just a string, it carries no dimensions #}
+            {# "imageUrl" alone is a bare string, so the dimensions come from the attached media instead #}
             {% set itemMedia = block.media|length > 0 ? block.media|first : null %}
             <div class="portfolio-grid__project-img">
                 <img src="{{ imageUrl }}" alt="{{ title }}"{% if itemMedia and itemMedia.intrinsicWidth %} width="{{ itemMedia.intrinsicWidth }}"{% endif %}{% if itemMedia and itemMedia.intrinsicHeight %} height="{{ itemMedia.intrinsicHeight }}"{% endif %} loading="lazy">
@@ -31,14 +22,12 @@
     {% if resolvedImageUrl or url %}
         <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ class|default([])|join(' ') }}">
             {% if resolvedImageUrl %}
-                {# Same rule as Card.html.twig: pass the media's auto-detected pixel size so the card reserves
-                   its image's box, and nothing at all when the image is a bare "imageUrl" string #}
+                {# Pixel size so the card reserves its image's box; nothing when the image is a bare string #}
                 {% set cardMedia = block.media|length > 0 ? block.media|first : null %}
                 <twig:c975LUi:Image:Link src="{{ resolvedImageUrl }}" class="{{ cardMedia ? cardMedia.cssClasses|join(' ') : '' }}" url="{{ url }}" target="{{ target|default('') }}" alt="{{ title }}" width="{{ cardMedia ? cardMedia.intrinsicWidth : '' }}" height="{{ cardMedia ? cardMedia.intrinsicHeight : '' }}"/>
             {% endif %}
             <div class="card-data">
-                {# A <div>, not a <p>: "content" is raw Trix HTML, already wrapped in its own block-level
-                   <div> - nesting that inside a <p> is invalid (see Expertise/Banner.html.twig) #}
+                {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
                 {% if content %}<div class="text-center">{{ content|raw|nl2br }}</div>{% endif %}
                 {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
             </div>

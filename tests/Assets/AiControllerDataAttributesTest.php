@@ -12,11 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-// The aiAssistant/aiRephrase controllers read their own data-* attributes (plain dataset/querySelector,
-// no Stimulus targets/values sugar - see the note atop each JS file), so nothing at runtime complains
-// when a template writes a name the controller never looks for: values read back empty and targets are
-// null, which for Donovan's question box means ask() returns before fetch() and the box just looks dead.
-// This locks the two sides together, the JS file being the reference.
+// Locks the templates' data-* names to what each controller reads: a mismatch reads back empty, silently
 class AiControllerDataAttributesTest extends TestCase
 {
     // [JS controller, template rendering it]

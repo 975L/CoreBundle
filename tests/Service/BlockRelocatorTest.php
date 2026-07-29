@@ -100,9 +100,7 @@ class BlockRelocatorTest extends TestCase
         $this->assertSame(2, $block->getPosition());
     }
 
-    // Moving a slot out must renumber the remaining siblings contiguously, otherwise a later relocation
-    // into the same container computes its position from a stale count() and collides with a sibling
-    // still sitting at that index (see ChangeLog/BlockRelocator)
+    // Remaining siblings must be renumbered contiguously, else a later move collides with a stale index
     public function testRemovingASlotRenumbersRemainingSiblingsContiguously(): void
     {
         $owner = new HasBlocksTraitStub();

@@ -69,6 +69,12 @@ class c975LUiBundle extends AbstractBundle
         if ($container->hasExtension('twig')) {
             $container->prependExtensionConfig('twig', [
                 'form_themes' => ['@c975LUi/form/captcha_theme.html.twig'],
+                // Registers public/css as a Twig namespace so a compiled stylesheet can be embedded raw via
+                // source(). An email carries no <link>, its CSS having to travel inside the message itself:
+                // this is how a bundle's own email layout pulls emails.min.css in before inlining it
+                'paths' => [
+                    __DIR__ . '/../public/css' => 'c975LUiCss',
+                ],
             ]);
         }
 

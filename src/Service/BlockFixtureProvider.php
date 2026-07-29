@@ -141,6 +141,11 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'class' => [],
                 ],
             ],
+            'text_hook' => [
+                '' => [
+                    'text' => '<div>Une phrase d\'accroche, plus grande et plus aérée que le texte qu\'elle introduit, sur une mesure plus courte.</div>',
+                ],
+            ],
             'text_readmore' => [
                 '' => [
                     'id' => 'readmore-exemple',
@@ -213,10 +218,7 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     ],
                 ],
             ],
-            // No 'flex_columns'/'section_cards' entry here on purpose: unlike every other kind, their
-            // "slots" are a real Block relation, not part of this plain data array - showcasing them needs
-            // the consuming app's own fixture-to-Block builder (e.g. 975l.com's
-            // BlockShowcaseCollectionSourceProvider) to also call Block::addSlot(), which it doesn't yet.
+            // No container kind here: their "slots" are a Block relation, not part of this plain data array
             'expertise_banner' => [
                 '' => [
                     'eyebrow' => 'Notre expertise',

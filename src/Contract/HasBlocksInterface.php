@@ -18,7 +18,6 @@ interface HasBlocksInterface
     public function addBlock(Block $block): static;
     public function removeBlock(Block $block): static;
 
-    // Same as removeBlock(), but never queues the block for deletion (see BlockRemovalListener) -
-    // for relocating an existing block elsewhere (see BlockRelocator), not deleting it
+    // Same as removeBlock() but never queues the block for deletion, for relocating it elsewhere
     public function detachBlock(Block $block): static;
 }

@@ -20,8 +20,7 @@ class EmailLayoutRegistry
         $this->providers[] = $provider;
     }
 
-    // Only one app-wide branded layout is expected - the first registered provider wins; null means
-    // no provider is installed (e.g. an app with no SiteBundle), letting the caller fall back on its own
+    // The first registered provider wins; null means none is installed, so the caller falls back
     public function wrap(string $bodyHtml): ?string
     {
         return [] === $this->providers ? null : $this->providers[0]->wrap($bodyHtml);

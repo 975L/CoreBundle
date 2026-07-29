@@ -5,12 +5,17 @@
     max-width: 700px;
     border: 1px solid transparent;
     border-radius: 5px;
-    color: #000;
+}
+
+// Descendants included: the theme's "*" rule colors each nested tag directly, beating inheritance
+.alert,
+.alert * {
+    color: var(--alert-color);
 }
 
 .alert a,
 .alert a:visited {
-    color: #000;
+    color: var(--alert-color);
     text-decoration: underline;
     font-weight: bold;
 }
@@ -23,8 +28,12 @@
     background-color: var(--alert-info-background);
 }
 
-.alert-danger {
+.alert-danger,
+.alert-danger * {
     color: var(--alert-danger-color);
+}
+
+.alert-danger {
     background-color: var(--alert-danger-background);
 }
 

@@ -3,14 +3,9 @@
 
 {% set above = above|default(false)|to_bool %}
 {% set label = label|default('') %}
-{# "priority": set it on the one above-the-fold image likely to be the LCP element. Lazy-loading that
-   image delays its request until layout, which pushes the LCP back by a full round-trip #}
+{# "priority": set it on the one above-the-fold image likely to be the LCP element #}
 {% set priority = priority|default(false)|to_bool %}
-{# "img-responsive" (max-width: 100%; height: auto) and explicit width/height attributes are meant to be combined,
-   not chosen between: the attributes give the browser the ratio to reserve before the file is downloaded (no layout
-   shift), the class keeps the image fluid once it's there. Every Media now carries its own pixel size (see
-   VichImageResizeListener), so both are the normal case. The one combination that conflicts is a height with no
-   width - "height: auto" would override it and render the image at its intrinsic size - so the class is dropped there #}
+{# "img-responsive" and width/height go together, except with a height and no width: "height: auto" would win #}
 {% set heightOnly = height is defined and height != '' and (width is not defined or width == '') %}
 {% set imgResponsive = heightOnly ? '' : 'img-responsive' %}
 {% set imgSrc = imgSrc|default(src is defined and src ? absolute_url(asset(src)) : '') %}
@@ -21,9 +16,7 @@
             <span class="img-above {{ classLabel|default('') }}">{{ label|raw }}</span>
             <br>
         {% endif %}
-        {# An empty "alt" is the author declaring the image decorative, so it is doubled with aria-hidden:
-           an alt="" alone is reported as a missing alternative by accessibility checks (see SiteBundle's
-           ContentQualityClient) rather than read as a deliberate decorative marker #}
+        {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative #}
         <img src="{{ imgSrc }}"
             class="img {{ imgResponsive }} {{ class|default('') }}"
             alt="{{ alt|default('') }}"{% if alt|default('') == '' %} aria-hidden="true"{% endif %}

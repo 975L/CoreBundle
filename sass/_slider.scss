@@ -16,8 +16,7 @@
     position: relative;
     max-width: 800px;
     margin: 1em auto 3em;
-    // Fallback so the slider never collapses to 0 height, its content being absolutely positioned -
-    // overridden by a "slider-ratio-*" class and by the JS-set inline height
+    // Fallback so the slider never collapses to 0 height, its content being absolutely positioned
     aspect-ratio: 16 / 9;
 }
 
@@ -49,8 +48,7 @@
     cursor: pointer;
 }
 
-// JS-driven active state, a real class: an inline style can't be covered by a nonce-based CSP, and a
-// :first-child selector would outrank it once JS activates another slide. Set server-side on slide one
+// A real class, not an inline style: a nonce-based CSP can't cover one. Set server-side on slide one
 .slider-item-active {
     display: block;
 }
@@ -102,8 +100,7 @@
 .slider-ratio-16-9 { aspect-ratio: 16 / 9; }
 .slider-ratio-21-9 { aspect-ratio: 21 / 9; }
 
-// "slider-sized" is set by resizeSlider() once the slider has a definite height, without which a
-// descendant's height: 100% collapses to 0
+// "slider-sized" is set by resizeSlider(); without a definite height a descendant's height: 100% collapses
 .slider-ratio-2-3 .slider-list,
 .slider-ratio-3-4 .slider-list,
 .slider-ratio-9-16 .slider-list,
@@ -191,7 +188,7 @@
     left: 50%;
     margin: 0;
     transform: translateX(-50%);
-    background: var(--primary-light);
+    background: var(--button-background-primary-light);
     color: #fff;
     padding: 4px;
     font-size: 12px;
@@ -259,7 +256,7 @@
 }
 
 .slider-play-pause:hover {
-    background: var(--primary-dark, #0056b3);
+    background: var(--button-background-primary-dark);
 }
 
 .slider-play-pause span {
@@ -282,8 +279,7 @@
     display: none;
 }
 
-// On touch devices, swipe and press-and-hold replace the arrows/pause - hidden, not removed, so a
-// keyboard (e.g. on a tablet) still reaches them on focus
+// Swipe replaces the arrows on touch - hidden, not removed, so a keyboard still reaches them on focus
 @media (hover: none) and (pointer: coarse) {
     .slider-button,
     .slider-play-pause {
@@ -318,8 +314,7 @@
     height: 60px;
 }
 
-// Freeflow layout: every slide side by side, out to the viewport edges. --slider-freeflow-vw rather
-// than raw vw, a desktop scrollbar's own width would itself create a horizontal scrollbar
+// Every slide side by side out to the viewport edges; raw vw would let the scrollbar create its own
 .slider-freeflow {
     max-width: none;
     width: var(--slider-freeflow-vw, 100vw);

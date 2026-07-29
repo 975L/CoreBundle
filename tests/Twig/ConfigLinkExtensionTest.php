@@ -43,8 +43,7 @@ class ConfigLinkExtensionTest extends TestCase
         $this->assertSame('/management/config/42/edit', $extension->configEditUrl('site-form-gdpr'));
     }
 
-    // A slug never loaded into DB (e.g. a site that never ran config:load-all) falls back to the plain
-    // Config list rather than a broken/nonexistent entity id - same fallback AiAssistantController::configLinks() uses
+    // A slug never loaded into DB falls back to the plain Config list, not a broken entity id
     public function testFallsBackToTheConfigListWhenTheSlugIsNotLoadedYet(): void
     {
         $configRepository = $this->createStub(ConfigRepository::class);

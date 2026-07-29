@@ -268,8 +268,7 @@ class EmailServiceTest extends TestCase
         $this->assertSame('EmailSendRequest needs either "template" or "html"', $service->getLastError());
     }
 
-    // The debug-preview path can't re-render via Twig when there's no template (see EmailService::send()) - it must
-    // use the html body directly instead
+    // With no template there is nothing to re-render, so the debug preview uses the html body directly
     public function testSendStashesRawHtmlAsDebugPreviewWhenHtmlGivenInDebugMode(): void
     {
         $mailer = $this->createRecordingMailer();

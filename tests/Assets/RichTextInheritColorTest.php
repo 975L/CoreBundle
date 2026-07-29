@@ -11,10 +11,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// A theme coloring every element directly ("* { color: var(--text) }") repaints the <strong>/<em>/... a
-// rich text editor produces, instead of letting them follow the color of the section they sit in - which
-// turned a white hero title black as soon as a word was set bold. sass/_rich-text.scss puts the browser
-// default (inherit) back, and this locks it in the *compiled* stylesheets, the ones actually served.
+// Locks "color: inherit" back onto the inline tags a theme's "*" rule would otherwise repaint
 class RichTextInheritColorTest extends TestCase
 {
     private const INLINE_TAGS = ['b', 'strong', 'i', 'em', 'u', 's', 'del', 'ins', 'sub', 'sup', 'small', 'span'];
@@ -47,8 +44,7 @@ class RichTextInheritColorTest extends TestCase
         }
     }
 
-    // Returns the element names of every bare-element rule (no class, no id, no descendant) declaring
-    // "color: inherit" - anything more specific is a component rule, not the base layer checked here
+    // Bare-element rules declaring "color: inherit"; anything more specific is a component rule
     private function tagsInheritingColor(string $css): array
     {
         $tags = [];

@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints\Count;
 
 class FeatureBarTypeTest extends TestCase
 {
@@ -39,6 +40,27 @@ class FeatureBarTypeTest extends TestCase
         $this->assertTrue($added['items']['options']['allow_add']);
         $this->assertTrue($added['items']['options']['allow_delete']);
         $this->assertArrayHasKey('anchor', $added);
+    }
+
+    // The cap is a layout limit, locked here rather than left to whoever edits the grid rules
+    public function testBuildFormCapsTheItemsCollectionWithACountConstraint(): void
+    {
+        $added = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$added, $builder) {
+            $added[$name] = ['type' => $type, 'options' => $options];
+
+            return $builder;
+        });
+
+        (new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+
+        $this->assertSame(5, FeatureBarType::MAX_ITEMS);
+        $this->assertCount(1, $added['items']['options']['constraints']);
+        $constraint = $added['items']['options']['constraints'][0];
+        $this->assertInstanceOf(Count::class, $constraint);
+        $this->assertSame(FeatureBarType::MAX_ITEMS, $constraint->max);
+        $this->assertSame('text.feature_bar_items_max', $constraint->maxMessage);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

@@ -6,8 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Visible drop zone: an empty EasyAdmin collection has no size of its own, nothing to aim a drag at.
-// Not a direct child, EasyAdmin wrapping the widget in its own ".form-widget" div
+// Visible drop zone: an empty EasyAdmin collection has no size of its own to aim a drag at
 [data-block-collection] .ea-form-collection-items {
     min-height: 56px;
     border: 1px dashed transparent;
@@ -19,4 +18,16 @@
 .ui-drop-target {
     border-color: var(--bs-primary, #0d6efd) !important;
     background-color: rgba(13, 110, 253, 0.06);
+}
+
+// EasyAdmin lays out every field of a collection entry as flex items (the column wrapper of its own form_row, then a 20% label + a "flex: 1" .form-widget), and a flex item defaults to "min-width: auto" - it can never shrink below its content. The block kind picker is a <select> whose intrinsic width is that of its longest option label ("Colonnes flexibles (Titre de section...)"), so each nesting level of blocks-in-blocks renders wider than the box holding it and the deepest one spills out of the panel. Letting those items shrink to 0 is what keeps a nested block inside its parent.
+.form-group.field-collection .accordion-body > .row > div,
+.form-group.field-collection .accordion-item .form-widget {
+    min-inline-size: 0;
+}
+
+// Once the column above can shrink, the controls have to follow it rather than keep their own intrinsic width
+.form-group.field-collection .accordion-item .form-widget .form-select,
+.form-group.field-collection .accordion-item .form-widget .form-control {
+    max-inline-size: 100%;
 }

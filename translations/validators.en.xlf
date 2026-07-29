@@ -14,6 +14,14 @@
                 <source>text.email_domain_unreachable</source>
                 <target>This email address's domain does not seem to accept mail</target>
             </trans-unit>
+            <trans-unit id="peoWeuy">
+                <source>text.feature_bar_items_max</source>
+                <target>A feature bar can carry at most {{ limit }} items.</target>
+            </trans-unit>
+            <trans-unit id="bQpc9FG">
+                <source>text.hero_media_max</source>
+                <target>A hero section can carry at most {{ limit }} images.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

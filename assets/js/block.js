@@ -46,8 +46,7 @@ export function loadBlockData(selectElement, kindUrl, kind, body) {
             }
 
             document.dispatchEvent(new CustomEvent('c975l:block-data-loaded'));
-            // Wires up EasyAdmin's "add" button for the freshly-injected medias/slots collection — its field-collection.js only scans for unprocessed collections on this event / DOMContentLoaded.
-            // "detail.newElement" must be a real element: EasyAdmin's own field-slug.js reacts to this same event and dereferences it unconditionally (event.detail.newElement.querySelectorAll(...)) - a bare CustomEvent with no detail crashes it (Cannot read properties of null).
+            // Wires EasyAdmin's "add" button on the injected collection; "newElement" must be a real element, field-slug.js dereferencing it unconditionally
             document.dispatchEvent(new CustomEvent('ea.collection.item-added', { detail: { newElement: container } }));
         });
 }

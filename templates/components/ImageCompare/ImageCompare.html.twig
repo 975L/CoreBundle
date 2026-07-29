@@ -6,11 +6,7 @@
 {% set beforeMedia = mediaList[0]|default(null) %}
 {% set afterMedia = mediaList[1]|default(null) %}
 {% if beforeMedia and afterMedia %}
-    {# No inline "style" starting position here on purpose: a CSP nonce never covers an inline style
-       *attribute* (only <style>/<link> *elements*), so under a nonce-based style-src this would be
-       silently blocked regardless. image-compare.js applies the real starting value itself on connect()
-       via a real (nonce-carrying) <style> element instead - the CSS fallback below (var(..., 50%), see
-       sass/_image-compare.scss) covers the brief window before JS runs, or if it never does. #}
+    {# No inline style attribute, never covered by a CSP nonce: image-compare.js sets the start position on connect() #}
     <div id="{{ id }}" class="image-compare {{ class }}" data-controller="imageCompare">
         <div class="image-compare-frame" data-imageCompare-target="frame">
             <img src="{{ vich_uploader_asset(afterMedia) }}" alt="{{ afterMedia.alt }}" class="image-compare-img image-compare-after" width="{{ afterMedia.width }}" height="{{ afterMedia.height }}" draggable="false">

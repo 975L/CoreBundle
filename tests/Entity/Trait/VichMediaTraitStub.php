@@ -10,8 +10,7 @@ namespace c975L\UiBundle\Tests\Entity\Trait;
 
 use c975L\UiBundle\Entity\Trait\VichMediaTrait;
 
-// Minimal entity using VichMediaTrait, standing in for a satellite bundle's own Media class - its own file
-// (not inlined in the test class), same reasoning as HasBlocksTraitStub
+// Minimal entity using VichMediaTrait, in its own file as HasBlocksTraitStub is
 class VichMediaTraitStub
 {
     use VichMediaTrait;

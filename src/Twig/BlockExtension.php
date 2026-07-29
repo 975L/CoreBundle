@@ -49,10 +49,7 @@ class BlockExtension extends AbstractExtension
     {
         $kind = $block->getKind();
 
-        // A kind-less block has nothing to render - e.g. a "flex_columns"/"flex_column" slot added via
-        // its "+" button but never given a kind before saving (CollectionType lets a new entry through
-        // without one; only Block::$kind itself is nullable, every other Block ever backed by a real
-        // "ui.block" service tag has a non-null kind by construction)
+        // A slot added with "+" but saved without a kind, CollectionType letting the entry through
         if (null === $kind) {
             return '';
         }

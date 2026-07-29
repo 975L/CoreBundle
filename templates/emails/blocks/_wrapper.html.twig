@@ -1,10 +1,4 @@
-{# Outer shell for an EmailTemplateRenderer::render() output when no EmailLayoutProviderInterface is registered
-   (e.g. an app with no SiteBundle) - table layout, no external CSS file, so it survives every major email client
-   (Outlook/Gmail/Apple Mail) unmodified. The block templates themselves (heading/text/button/fields_table) no
-   longer hardcode color/font-family - they rely on a real theme's CSS once wrapped through a provider - so this
-   <style> block supplies the same class names (text-left, btn, btn-primary) as a reasonable, self-contained
-   default look for this no-provider fallback; being a real <style> tag rather than inlined, it's not itself
-   bulletproof, but this path only renders for apps with no branding CSS available to inline in the first place #}
+{# Fallback shell when no EmailLayoutProviderInterface is registered: table layout and a self-contained <style> supplying the classes a real theme would #}
 <!DOCTYPE html>
 <html lang="en">
     <head>

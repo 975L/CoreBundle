@@ -63,8 +63,7 @@ class FontChoiceTypeTest extends TestCase
         $this->assertSame([], $options['choices']);
     }
 
-    // A caller (e.g. ConfigCrudController) must still be able to override 'choices', e.g. to merge in a
-    // stale value no longer declared by the registry
+    // A caller must still be able to override 'choices', e.g. to merge in a stale value
     public function testChoicesOptionCanBeOverridden(): void
     {
         $type = new FontChoiceType($this->createRegistry(['Roboto']));

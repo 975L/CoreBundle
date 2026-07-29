@@ -12,11 +12,7 @@ namespace c975L\UiBundle\Entity;
 use c975L\UiBundle\Repository\EmailBlockRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-// One row of an EmailTemplate's body. Unlike c975L\UiBundle\Entity\Block, kinds are a small closed vocabulary
-// (see TYPES) resolved by a plain match() in EmailTemplateRenderer, not a DI-tagged registry - and unlike that
-// same Block, every kind shares one flat set of columns (same principle as FormField, see FormFieldType's own
-// docblock) instead of a per-kind dynamic sub-form: simpler to author/review for a surface this small, and each
-// column only means something for the kind(s) noted below - EmailBlockType shows/hides them client-side accordingly
+// One row of an EmailTemplate's body: a closed vocabulary sharing one flat set of columns, each meaningful only for the kinds noted below
 #[ORM\Entity(repositoryClass: EmailBlockRepository::class)]
 #[ORM\Table(name: 'site_email_block')]
 class EmailBlock
@@ -65,9 +61,7 @@ class EmailBlock
     #[ORM\Column(length: 2, nullable: true)]
     private ?string $level = null;
 
-    // TYPE_TEXT - plain text, split into <p> paragraphs on blank lines by EmailTemplateRenderer (deliberately not
-    // rich/Trix text for v1: keeps the email-safe HTML fully controlled server-side, no risk of an editor-authored
-    // tag surviving into a client that mangles it, same class of bug as the Process/Steps "<p><p>" issue)
+    // TYPE_TEXT: plain text, not rich, so the email-safe HTML stays fully controlled server-side
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $content = null;
 
@@ -75,8 +69,7 @@ class EmailBlock
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $label = null;
 
-    // TYPE_BUTTON's target / TYPE_IMAGE's src - TextType, not UrlType: may hold a "{{ variable }}" placeholder
-    // resolved at render time (see EmailTemplateRenderer), same reasoning as Block's own url fields (see ChangeLog)
+    // TextType, not UrlType: may hold a "{{ variable }}" placeholder resolved at render time
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $url = null;
 

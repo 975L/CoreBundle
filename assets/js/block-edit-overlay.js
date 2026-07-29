@@ -7,14 +7,10 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
-// One floating "Edit" button shared by every editable block on the page (position:fixed, repositioned
-// on hover via getBoundingClientRect). A wrapping <div> around each block can't host the button itself:
-// ".block-editable"/".block-animation" are display:contents so they stay transparent to the parent's
-// own grid/flex layout - see sass/_animations-media.scss and sass/_block-edit-overlay.scss.
+// One floating button shared by every editable block: the wrappers are display:contents and can't host it
 export default class extends Controller {
     connect() {
-        // Blocks.html.twig can render several ".blocks" collections on one page (page content, footer
-        // menu...), each mounting this controller - only the first one actually builds the shared button.
+        // Several ".blocks" collections can mount this controller, so only the first builds the button
         if (window.blockEditOverlayController) {
             return;
         }
@@ -83,8 +79,7 @@ export default class extends Controller {
         if (!target || target !== this.activeTarget) {
             return;
         }
-        // Moving from the block onto the floating button itself must not hide it - the button
-        // isn't a DOM descendant of the block (position:fixed, appended to <body>).
+        // The button is appended to <body>, not a descendant, so moving onto it must not hide it
         const related = event.relatedTarget;
         if (related && (related === this.button || this.button.contains(related) || target.contains(related))) {
             return;
@@ -141,15 +136,10 @@ export default class extends Controller {
     }
 
     position(target) {
-        // target (".block-editable"/".block-animation") is display:contents by design (see
-        // sass/_block-edit-overlay.scss) - it generates no box, so its own getBoundingClientRect()
-        // is always a zero rect. Measure the block's actual rendered root element instead, which
-        // is what visually stands in for the wrapper in the page's layout.
+        // The wrapper is display:contents and measures as a zero rect, so its rendered child is measured instead
         const rect = (target.firstElementChild || target).getBoundingClientRect();
         this.button.style.top = `${Math.max(rect.top, 0) + 8}px`;
-        // left is the block's own right edge; the button's width varies with its translated label
-        // ("Editer" vs "Edit" vs "Editar"), so it right-aligns itself via CSS transform:translateX(-100%)
-        // instead of subtracting a fixed width here.
+        // The block's right edge; CSS translateX(-100%) right-aligns the varying label width
         this.button.style.left = `${rect.right - 8}px`;
     }
 }

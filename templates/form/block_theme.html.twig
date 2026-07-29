@@ -1,8 +1,4 @@
-{# form_widget(form) must never be called recursively from within the block it resolved to: Symfony's
-   FormRenderer treats that as "render the parent TYPE's block", not "re-render this same block from the
-   default theme" - for trix_editor/textarea (whose parent type is textarea/text respectively) that silently
-   downgrades the field to a <input type="text"> (text_widget) instead of a real <textarea>. Render the
-   actual tag directly instead, mirroring Symfony's own textarea_widget (form_div_layout.html.twig) #}
+{# The tag is rendered directly: a recursive form_widget(form) resolves to the parent TYPE's block and silently downgrades this to an <input type="text"> #}
 {% block trix_editor_widget %}
     {% set attr = attr|merge({
         class: (attr.class|default('') ~ ' form-control ea-text-editor-content d-none')|trim,
@@ -16,15 +12,9 @@
     {% endif %}
 {% endblock %}
 
-{# Unlike trix_editor_widget, opt-in only (attr['data-ai-rephrase'] must be set): a plain textarea is
-   used dashboard-wide for everything from prose content to raw JSON/technical config values (e.g.
-   ConfigBundle's Config CRUD renders json-kind values through this exact same block) - showing the
-   button unconditionally on every textarea would be actively wrong there. A field opts in with e.g.
-   TextareaField::new('summary')->setFormTypeOption('attr', {'data-ai-rephrase': 'true'}) #}
+{# Opt-in via attr['data-ai-rephrase']: a plain textarea also carries raw JSON/config values dashboard-wide #}
 {% block textarea_widget %}
-    {# EasyAdmin's own CSS only styles "textarea.form-control" (see easyadmin-theme/forms.css) - Symfony's
-       built-in textarea_widget never adds that class itself (only form_widget_simple's input-based blocks
-       do), so without it the browser falls back to a native <textarea>'s tiny default width #}
+    {# EasyAdmin only styles "textarea.form-control"; without it the native default width applies #}
     {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
     <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
 

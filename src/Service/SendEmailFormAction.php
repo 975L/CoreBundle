@@ -69,9 +69,7 @@ class SendEmailFormAction implements FormActionInterface, DebugPreviewCapableInt
         return $this->emailService->consumeDebugPreview();
     }
 
-    // label => submitted value, in the Form's field order - only "name" is guaranteed unique per Form, so a
-    // repeated label (e.g. two fields both titled "Phone") is disambiguated here instead of silently
-    // collapsing onto the same array key and losing one of the two submitted values
+    // A repeated label is disambiguated here, only "name" being unique, else one value would be lost
     private function labelledFields(Form $form, array $submittedData): array
     {
         $labelled = [];

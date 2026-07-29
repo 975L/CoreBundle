@@ -426,6 +426,10 @@
                 <source>label.block_kind</source>
                 <target>Block Kind</target>
             </trans-unit>
+            <trans-unit id="CZn_467">
+                <source>label.block_kind_legacy_slot_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ This block sits directly as a column, which is no longer offered: add a Column to the row, drag this block into it, and you will then be able to set its width.&lt;/span&gt;</target>
+            </trans-unit>
             <trans-unit id="QVfWY7f">
                 <source>label.block_media_required</source>
                 <target>An image is required for this block type.</target>
@@ -493,6 +497,14 @@
             <trans-unit id="tg4Ac7t">
                 <source>label.block_slider_description</source>
                 <target>Image and video slideshow with per-slide captions and credits</target>
+            </trans-unit>
+            <trans-unit id="bQUaJnq">
+                <source>label.block_text_hook</source>
+                <target>Hook phrase</target>
+            </trans-unit>
+            <trans-unit id="HtLTMcA">
+                <source>label.block_text_hook_description</source>
+                <target>Lead-in paragraph opening an article or a page, set apart from the text it introduces</target>
             </trans-unit>
             <trans-unit id="7Ix0upV">
                 <source>label.block_text_readmore</source>
@@ -597,6 +609,66 @@
             <trans-unit id="Z2OPJRi">
                 <source>label.collection_limit_help</source>
                 <target>Leave empty to show everything</target>
+            </trans-unit>
+            <trans-unit id="6A6G2AK">
+                <source>label.column_width</source>
+                <target>Column width</target>
+            </trans-unit>
+            <trans-unit id="9jH0xoL">
+                <source>label.column_width_1</source>
+                <target>1 / 12</target>
+            </trans-unit>
+            <trans-unit id="QBl9hmg">
+                <source>label.column_width_10</source>
+                <target>10 / 12 (five sixths)</target>
+            </trans-unit>
+            <trans-unit id="YDSSeO_">
+                <source>label.column_width_11</source>
+                <target>11 / 12</target>
+            </trans-unit>
+            <trans-unit id="1sXrmIU">
+                <source>label.column_width_12</source>
+                <target>12 / 12 (full width)</target>
+            </trans-unit>
+            <trans-unit id="4ov3LBJ">
+                <source>label.column_width_2</source>
+                <target>2 / 12 (one sixth)</target>
+            </trans-unit>
+            <trans-unit id="XRvthLN">
+                <source>label.column_width_3</source>
+                <target>3 / 12 (one quarter)</target>
+            </trans-unit>
+            <trans-unit id="tXi8tEC">
+                <source>label.column_width_4</source>
+                <target>4 / 12 (one third)</target>
+            </trans-unit>
+            <trans-unit id="4lAS3Ps">
+                <source>label.column_width_5</source>
+                <target>5 / 12</target>
+            </trans-unit>
+            <trans-unit id="odyqJHL">
+                <source>label.column_width_6</source>
+                <target>6 / 12 (half)</target>
+            </trans-unit>
+            <trans-unit id="YYx9WGu">
+                <source>label.column_width_7</source>
+                <target>7 / 12</target>
+            </trans-unit>
+            <trans-unit id="_GNeBb8">
+                <source>label.column_width_8</source>
+                <target>8 / 12 (two thirds)</target>
+            </trans-unit>
+            <trans-unit id="0DLNTY1">
+                <source>label.column_width_9</source>
+                <target>9 / 12 (three quarters)</target>
+            </trans-unit>
+            <trans-unit id="Dm_9gMR">
+                <source>label.column_width_auto</source>
+                <target>Automatic (even columns)</target>
+            </trans-unit>
+            <trans-unit id="vk_1BWG">
+                <source>label.column_width_help</source>
+                <target>How many twelfths of the row this column takes - the columns of a row must add up to 12. Applies from wide screens up: below that, every column takes the full width.</target>
             </trans-unit>
             <trans-unit id="jfLIJSU">
                 <source>label.compare_position</source>
@@ -966,10 +1038,6 @@
                 <source>label.hero_background_image_help</source>
                 <target>Uses the first uploaded image as a full-width background behind the text instead of showing it beside it.</target>
             </trans-unit>
-            <trans-unit id="UOjLBIH">
-                <source>label.hero_media_max</source>
-                <target>A hero section can carry at most {{ limit }} images.</target>
-            </trans-unit>
             <trans-unit id="7uubg0.">
                 <source>label.hero_title_level</source>
                 <target>Heading level of the title</target>
@@ -1297,6 +1365,10 @@
             <trans-unit id="dVwFNwZ">
                 <source>label.slots_cards</source>
                 <target>Cards</target>
+            </trans-unit>
+            <trans-unit id="EcQhzh6">
+                <source>label.slots_legacy_kinds_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ These blocks sit directly as columns, which is no longer offered: %blocks%. For each of them, add a Column to the row, drag the block into it, and you will then be able to set its width.&lt;/span&gt;</target>
             </trans-unit>
             <trans-unit id="0kGqgMZ">
                 <source>label.slug</source>

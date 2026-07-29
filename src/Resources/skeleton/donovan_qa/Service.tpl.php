@@ -16,10 +16,7 @@ use <?= $embedding_client_full_name ?>;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-// Cache-or-call orchestration for the Donovan Q&A backend (see the generated Controller) - an exact-hash
-// hit never touches the LLM, a miss first tries the semantic cache (a rephrasing of an already-answered
-// question, see <?= $embedding_client_short_name ?>/<?= $repository_short_name ?>::findBestSemanticMatch())
-// before calling the LLM, which is only ever reached as the last resort
+// Cache-or-call orchestration: exact hash, then semantic cache, the LLM only as a last resort
 class <?= $class_name ?>
 {
     public function __construct(
@@ -39,11 +36,7 @@ class <?= $class_name ?>
     {
         $normalized = $this->normalize($question);
         $hash = hash('sha256', $normalized);
-        // TODO: <?= $context_builder_short_name ?> has no notion of a context version yet (unlike
-        // UiBundle's own BlockRegistry-backed context) - a fixed value here means a cached answer is
-        // never invalidated on its own merit, only ever overwritten by a fresh exact-hash miss. Add a
-        // version() method there (e.g. hashing the block-context text itself, see 975l.com's
-        // AiHelpContextBuilder::version() for a model) once that matters for you
+        // TODO: fixed for now, so a cached answer is never invalidated on its own merit; add a version() to the context builder
         $version = 'v1';
 
         $existing = $this->repository->findOneByQuestionHash($hash);
@@ -57,9 +50,7 @@ class <?= $class_name ?>
 
         $questionEmbedding = $this->embeddingClient->embed($normalized);
 
-        // Reusing a semantic match costs zero LLM tokens - persisted under this question's own hash so a
-        // literal repeat of this same rephrasing hits the fast exact-hash path next time instead of
-        // needing another embedding call
+        // Persisted under this question's own hash, so a literal repeat takes the exact-hash path
         if (null !== $questionEmbedding) {
             $semanticMatch = $this->repository->findBestSemanticMatch($questionEmbedding, $version, $this->semanticThreshold());
 

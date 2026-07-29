@@ -1,0 +1,77 @@
+/* TOKEN DEFAULTS */
+
+// Default value of every token this bundle reads but SiteBundle declares, so the stylesheet holds up alone
+// Declared once rather than as ~180 inline fallbacks, which would drift the day SiteBundle retunes one
+// The @layer is what makes that safe, a layered rule always losing to an unlayered one whatever the order
+// Light values only, dark mode being SiteBundle's; nothing else in this bundle is layered
+@layer ui-defaults {
+    :root {
+        --alert-color: #000;
+        --alert-danger-background: #f2dede;
+        --alert-danger-color: #9c3a44;
+        --alert-info-background: #d9edf7;
+        --alert-success-background: #d0e9c6;
+        --alert-warning-background: #f9dba7;
+        --background: var(--c975l-color-background, #fff);
+        --black: #000;
+        --body-max-width: 1440px;
+        --border-accent: color-mix(in srgb, var(--primary) 35%, var(--background));
+        --border-color: color-mix(in srgb, var(--text) 12%, var(--background));
+        --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
+        --button-background-danger: rgb(220, 53, 69);
+        --button-background-danger-dark: rgb(220, 53, 69, 0.9);
+        --button-background-primary: rgb(11, 55, 178);
+        --button-background-primary-dark: color-mix(in srgb, var(--primary) 85%, black);
+        --button-background-primary-light: color-mix(in srgb, var(--primary) 50%, white);
+        --button-background-secondary: rgb(218, 126, 57);
+        --button-background-secondary-dark: color-mix(in srgb, var(--secondary) 85%, black);
+        --button-background-success: rgb(40, 167, 69);
+        --button-background-success-dark: rgb(40, 167, 69, 0.9);
+        --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
+        --button-color: #fff;
+        --button-link-color: #fff;
+        --button-secondary-color: #000;
+        --card-background: #fff;
+        --disabled: #808080;
+        --font-body-weight: normal;
+        --font-family-accent: var(--c975l-font-family-accent, monospace);
+        --font-family-body: var(--c975l-font-family-body, sans-serif);
+        --font-family-title: var(--c975l-font-family-title, sans-serif);
+        --font-title-weight: normal;
+        --form-input-color: #555;
+        --form-width: min(70vw, 1000px);
+        --frame-background: var(--background);
+        --input-background: transparent;
+        --input-border-bottom-color: #bfbfbf;
+        --input-border-color: #4d4d4d;
+        --input-focus-border-color: rgb(24, 115, 200);
+        --input-focus-shadow-color: rgb(66, 130, 189);
+        --input-glyph-offset: 9.5px;
+        --input-icon-filter: none;
+        --input-invalid-border-color: var(--button-background-danger);
+        --input-invalid-shadow-color: var(--button-background-danger);
+        --input-invalid-text-color: var(--button-background-danger);
+        --input-margin-block: 0.4em 1em;
+        --input-shadow-color: #4d4d4d;
+        --input-valid-border-color: var(--button-background-success);
+        --input-valid-shadow-color: var(--button-background-success);
+        --label-color: #808080;
+        --link-color: var(--primary);
+        --primary: var(--c975l-color-primary, var(--button-background-primary));
+        --radius-btn: 5px;
+        --radius-card: 10px;
+        --radius-panel: 16px;
+        --readmore-lines: 5;
+        --required-color: #000;
+        --secondary: var(--c975l-color-secondary, var(--button-background-secondary));
+        --section-bg-dark: var(--text);
+        --section-bg-muted: color-mix(in srgb, var(--background) 94%, var(--primary));
+        --section-bg-primary: var(--primary);
+        --surface-accent: color-mix(in srgb, var(--primary) 12%, var(--background));
+        --surface-alt: color-mix(in srgb, var(--background) 94%, var(--text));
+        --surface-inverse: #232323;
+        --text: var(--c975l-color-text, #000);
+        --text-on-inverse: #d8d8d8;
+        --white: #fff;
+    }
+}

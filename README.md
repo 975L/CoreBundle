@@ -16,6 +16,16 @@ See it in action at [975l.com/pages/ui-bundle](https://975l.com/pages/ui-bundle)
 
 ---
 
+> **TL;DR** — The Block system: any entity implementing `HasBlocksInterface` carries an ordered collection of typed blocks, each with its own form, template and render cache, edited by drag-and-drop in EasyAdmin. A satellite bundle registers its own block kinds, stylesheets and form actions by tagging a service, never by touching UiBundle. Also here: the media library, the font picker, forms with shared anti-spam, email templates, and the back-office AI assistant.
+
+## Contents
+
+- **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
+- **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails)
+- **Styling** — [automatic CSS injection](#automatic-css-injection) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components)
+- **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
+- **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections)
+
 ## Features
 
 - Dynamic block system with per-kind forms and templates
@@ -64,11 +74,36 @@ php bin/console doctrine:migrations:migrate
 
 `controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
 
-Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `imageCompare`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
+Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `imageCompare`, `password`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
 
 The `confetti` controller loads its `canvas-confetti` library from the copy vendored in this bundle (`public/js/confetti.browser.min.js`) rather than from a CDN. Point it elsewhere with `data-confetti-script-value="/your/own/path.js"` on the same element.
 
 The `videoIframe` controller never injects its iframe before consent has been given, and then only once the element nears the viewport. It looks for a consent banner registered as either `cookie-consent` (what SiteBundle's `<twig:c975LSite:General:CookieConsent/>` writes) or `cookieConsent`; with no banner in the page at all it treats the content as unrestricted and loads it on approach.
+
+#### The `password` controller
+
+Put `password` in the `data-controller` of any element wrapping your forms — the `<body>` is the usual place — and every `<input type="password">` under it gets a show/hide eye (the `.has-toggle` wrapper and its icon are built client-side, styled by `sass/_forms.scss`, icons served from `public/icons/`). Revealing a password sets its `autocomplete` to `off`, so no password manager writes into a field shown in clear; hiding it back restores whatever the form declared — the `new-password` a sign-up form sets to keep managers from offering the existing credentials is not clobbered.
+
+Two optional checks run on `blur`, driven by data attributes rather than by field names, so any form can opt in:
+
+| Attribute | On | Effect |
+| --- | --- | --- |
+| `data-password-pattern` | the password field | Validates against that regex. Empty value falls back to the built-in "8 chars, one upper, one lower, one digit, one special" |
+| `data-password-confirm` | the confirmation field | Value is the **id** of the field it must match |
+| `data-password-message` | either | Overrides the message shown. Defaults come from `assets/js/translations.js` (en/fr/es), read through `assets/js/handlers.js`' `translate()`, which picks the language off the document's `lang` attribute |
+
+An invalid field gets `.error` plus an `.error-message` paragraph after it; a valid one gets `.success`. The form's submit button is disabled as long as **any** field the controller watches is in error, not just the last one blurred — a confirmation matching a password that doesn't pass its own pattern leaves the button closed. Set the attributes through your form type:
+
+```php
+->add('plainPassword', PasswordType::class, [
+    'attr' => ['data-password-pattern' => ''],
+])
+->add('confirmPassword', PasswordType::class, [
+    'attr' => ['data-password-confirm' => 'registration_form_plainPassword'],
+])
+```
+
+> Until UiBundle 2.0, a form whose fields are named `registration_form_plainPassword` / `registration_form_confirmPassword` still gets both checks with no attribute at all — that pair of ids was hardcoded in SiteBundle's `basic` controller before this moved here. Opting into the attributes above disables the fallback for that field.
 
 Their `importmap.php` entries are added automatically the first time you `composer update` after installing UiBundle — see [Contributing importmap entries from other bundles](https://github.com/975L/ConfigBundle#contributing-importmap-entries-from-other-bundles) in ConfigBundle's README, nothing to add by hand.
 
@@ -204,6 +239,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `section_cards` | Page sections | `SectionCardsType` | `blocks/SectionCards.html.twig` |
 | `section_features` | Page sections | `SectionFeaturesType` | `blocks/SectionFeatures.html.twig` |
 | `slider` | Media | `SliderType` | `blocks/Slider.html.twig` |
+| `text_hook` | Text | `TextHookType` | `blocks/TextHook.html.twig` |
 | `text_readmore` | Text | `ReadmoreType` | `blocks/TextReadmore.html.twig` |
 | `text_section` | Text | `TextSectionType` | `blocks/TextSection.html.twig` |
 | `video` | Media | `VideoType` | `blocks/Video.html.twig` |
@@ -211,19 +247,34 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 
 > **Maintenance note:** update this table whenever a kind is added, renamed, or removed in `config/services.yaml`.
 
+### The lead-in paragraph (`text_hook`)
+
+`text_hook` holds one rich-text field and exists for a reason the editor itself creates: Trix writes no class, so a paragraph meant to read as an introduction - larger, looser, over a shorter measure - cannot be produced from inside a `text_section`'s content. The kind *is* that class. Being a block of its own, it drops anywhere a paragraph would go: under a `hero`, at the top of a `flex_column`, between two sections.
+
+An `article`'s own **Hook phrase** field (`ArticleType::$hook`) shares that look, so it doesn't matter which of the two an editor used - but only the base of it. `sass/_text-hook.scss` holds two rules:
+
+- `.text-hook`, worn by both: size, line height, measure and color (`--text-hook-size`, `--text-hook-line-height`, `--text-hook-max-width`, `--text-hook-color`, `--text-hook-margin-bottom`);
+- `.text-hook--standalone`, worn by the block alone: the primary-colored bar down its left side (`--text-hook-bar-width`, `--text-hook-bar-gap`, `--text-hook-standalone-margin`). The block drops between two sections with nothing around it to be read against, where an article's hook already sits under a title and above a body of text - marking that one too would only over-decorate it.
+
+Every one of those tokens is read with the bundle's own value as its fallback and declared nowhere, so a site setting none of them renders exactly as before. The bar follows `--section-accent` before `--primary`, so it inverts along with a colored flat. `TextHookStyleTest` locks both rules in the compiled stylesheets, `TextHookMarkupTest` locks the modifier to the component.
+
+Note that this only touches how an article renders. `c975L/SiteBundle`'s `articles_slider` reads that very same stored hook as a plain `striptags`'d excerpt, and keeps the slider's own text style.
+
 ---
 
 ## Container kinds (blocks made of other blocks)
 
 `flex_columns` is a **container** kind: instead of holding plain data, its "slots" are real, independently-editable `Block` rows (`Block::$slots`, a self-referencing relation - `Block::$parentBlock` on the child side), each picked through the exact same kind-picker + form + media upload as any top-level block. Use it whenever a design lays several existing blocks (a paragraph, a `document_download` card, a `progress_bar`...) side by side, instead of inventing a one-off kind per layout.
 
-- Each of `flex_columns`' own slots becomes one visual column. A slot can be **any pickable kind directly** (a single-block column - e.g. just a `text_section` paragraph) **or `flex_column`**, itself a container whose own slots (added the same way, via its own "+ Add a slot" button) stack vertically inside that one column - e.g. two `document_download` cards one above the other, next to a `text_section` paragraph in the other column.
-- Nesting is bounded to exactly this: a `flex_columns` slot can't be another `flex_columns`, and a `flex_column` slot can't be another `flex_column` (or a `flex_columns`) - see `BlockRegistry::SLOT_CONTEXT`/`NESTED_SLOT_CONTEXT` and `getSlotContext()` below.
+- Each of `flex_columns`' own slots is a `flex_column`, and nothing else: that context is **exclusive** (`BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT`, see "Registering a block kind" below), the column being what carries the width option - a bare block used as a slot has nowhere to store it. A column's own slots (added the same way, via its own "+ Add a slot" button) are then any pickable kind, stacked vertically inside that one column - e.g. two `document_download` cards one above the other, next to a `text_section` paragraph in the other column.
+- Each column picks how wide it sits in the row (`columnWidth`), in **twelfths** - the same scale Bootstrap's grid made everyone fluent in, 12 dividing by 2, 3, 4 and 6. Leaving it empty keeps the column sharing the row evenly, exactly as before the field existed. Each unit hands back the share of the row's gutter (`--flex-columns-gap`) it doesn't need, so any set of units adding up to 12 fills the row exactly. Widths only apply from 861px up - below that every column spans the full width whatever was picked. A row whose units don't total 12 still renders, it just doesn't close: under 12 leaves the remainder empty on the right, over 12 sends the column that no longer fits onto its own line (`flex-wrap`), never overflowing the page. Nothing forbids it - the editor sees it immediately, and a row deliberately left short (a single 8-unit column) is a legitimate layout.
+- A slot saved before that restriction existed holds a kind the picker no longer lists. It is put back in that one slot's own choices, carrying a help text telling the editor to move it into a `flex_column` - without it `ChoiceType` would render the select unselected and reject the value on submit, locking them out of a page they can still see.
+- Nesting is bounded to exactly this: a `flex_columns` slot can't be another `flex_columns`, and a `flex_column` slot can't be another `flex_column` (or a `flex_columns`) - see `BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT`/`SLOT_CONTEXT`/`NESTED_SLOT_CONTEXT` and `getSlotContext()` below.
 - Not cacheable itself (`cacheable: false`, same for `flex_column`): each leaf slot still caches independently through its own `render_block()` call (see "Block render cache" below) - only the wrapper(s) are re-rendered every time, which is cheap.
 - To make your own kind a container, tag it `container: true` in its `ui.block` service tag, and mirror `FlexColumnsType`/`FlexColumns.html.twig` (or `FlexColumnType`/`FlexColumn.html.twig` for a chrome-less nested one) - the "slots" field itself is added automatically by `BlockType`, not by your kind's own form. By default its slots are offered every OTHER container kind's own choices too, minus containers (`BlockRegistry::SLOT_CONTEXT`); to let your container nest one level inside another specific container instead (like `flex_column` does inside `flex_columns`), declare `contexts: 'that_containers_slot_context'` and give your own slots a distinct `slot_context: 'something_else'` so nothing can nest inside *it* in turn.
-- A container kind stays technically pickable at the top level too (`contexts` can't hide a kind from a context-less picker) - harmless for `flex_column`, it just renders its slots with no wrapper when picked directly.
+- A `contexts`-restricted kind is only hidden from pickers that actually pass a context, which every real one does (`PageCrudController` passes `'page'`, `MenuCrudController` `'menu'`, `BlockFormController` the container's own slot context) - so `flex_column` never leaks into a page's or a menu's own picker. A context-less caller would still list it: harmless, it just renders its slots with no wrapper when picked directly.
 
-`section_cards` is a second, simpler container built the exact same way: eyebrow/title/anchor + slots, no `contexts`/`slot_context` override (its slots stay open to every pickable kind, same default as `flex_columns`). Its slots are meant to be `card` blocks - each keeping its own full schema (image, link, button...) - but the difference from just using `flex_columns` for that isn't enforcement, it's rendering: `section_cards` wraps its slots in `.cards` (`sass/_cards.scss`), the same fixed-width flex row bare consecutive `card` blocks already get in the page flow (see `Blocks.html.twig`), instead of `flex_columns`' own generic flexible-width `.flex-columns__col` layout. Use it whenever a design calls for that exact "row of cards" look but with a section eyebrow/title/anchor around it, which bare consecutive `card` blocks can't have on their own.
+`section_cards` is a second, simpler container built the exact same way: eyebrow/title/anchor + slots, no `contexts`/`slot_context` override, so unlike a `flex_columns` row its slots stay open to every pickable kind (the shared `BlockRegistry::SLOT_CONTEXT`). Its slots are meant to be `card` blocks - each keeping its own full schema (image, link, button...) - but the difference from just using `flex_columns` for that isn't enforcement, it's rendering: `section_cards` wraps its slots in `.cards` (`sass/_cards.scss`), the same fixed-width flex row bare consecutive `card` blocks already get in the page flow (see `Blocks.html.twig`), instead of `flex_columns`' own generic flexible-width `.flex-columns__col` layout. Use it whenever a design calls for that exact "row of cards" look but with a section eyebrow/title/anchor around it, which bare consecutive `card` blocks can't have on their own.
 
 Upgrading to a UiBundle version that introduces `flex_columns`/`flex_column`/`section_cards` (or your own container kind) adds a new `parent_block_id` column to `site_block` - re-run "Run migrations" above after `composer update`.
 
@@ -248,6 +299,7 @@ Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `fl
 - Typing an anchor (e.g. `Services`) slugifies it (`services`). Leaving it empty falls back to slugifying the block's own title.
 - The final HTML `id` rendered on the section is always `{slug}-{block.id}` (e.g. `services-42`) - the trailing block id is added at render time, not stored, so two blocks of the same kind on the same page (or the same title reused elsewhere) never collide.
 - In `SiteBundle`'s Menu admin, a `menu_link` block's target select lists every page's anchored sections alongside its pages/routes (`Home → Services`), decoded by `MenuExtension::getMenuLinkUrl()` into `/home#services-42`.
+- That list is built by `c975L\UiBundle\Service\BlockAnchorCollector` (`fragment => label`), which walks a container's nested slots too (a `text_section` inside a `flex_columns` is listed just like a top-level one) and knows the two id conventions in use: an `anchor` renders as `{slug}-{block.id}`, an auto-derived `slug` (`text_section`, `article`) renders as the slug itself. `MenuExtension` labels a saved anchored target through the very same collector, so picker and menu never disagree.
 - Every `url`-style field on `button`, `card`, `cta_band`, `hero` and `portfolio_grid` (e.g. `primaryUrl`, `ctaUrl`, `linkUrl`) is a plain `TextType`, not Symfony's `UrlType` — so an editor can point one straight at an in-page anchor (`#services-42`) or a relative path, not just an absolute URL.
 
 Implemented by `c975L\UiBundle\Service\BlockAnchorSlugger` (the slug logic) and `c975L\UiBundle\Form\Block\HasAnchorFieldTrait` (the reusable field + `FormEvents::SUBMIT` listener). To add the same anchor field to a new "section" kind, in any bundle (own or third-party) that requires `c975l/ui-bundle`:
@@ -298,6 +350,8 @@ Each variant redefines a handful of custom properties, and every section rule re
 | `--section-overlay` | badges and translucent chips | `--surface-accent` |
 
 A flat bleeds full-viewport-width past `--body-max-width`, else it paints a centered stripe between a full-width navbar and footer. That breakout is itself three tokens, each read with its own value as the fallback: `--section-flat-offset` (`50%`), `--section-flat-width` (`100vw`) and `--section-flat-margin-x` (`-50vw`) - `.hero--has-bg` reads the same three. A design framing its whole page inside `--body-max-width` (navbar and footer included, see SiteBundle's `--navbar-width`/`--footer-width`) sets them to `auto`/`auto`/`0` in its `theme.css`, and the flats paint their own box like any other section.
+
+The measure every section is laid out on is two tokens read the same way: `--section-wrap-max-width` and `--section-wrap-gutter` (`clamp(20px, 5vw, 64px)`). The first falls back to the page's own frame — `--body-max-width`, declared at `1440px` by SiteBundle and restated as the same `1440px` here for UiBundle used on its own: one measure for the whole page, a section capped narrower than the body it sits in being inset inside its own page. The same chain is read by `.section-wrap`, by the bare `.blocks > .cards` row and by a flat `.feature-bar`'s grid, neither of the last two having a wrap of its own, so the three follow the same measure whatever it is set to. The gutter is read by the first two only: an uncolored `.feature-bar` has no wrap either and spans that measure edge to edge, the flat rule just putting a colored one back on the very same geometry after its full-bleed.
 
 So a section with no background set renders exactly as it did before the option existed - that's what `SectionBackgroundTest` locks. Only the three backgrounds themselves are tokens (`--section-bg-muted`, `--section-bg-primary`, `--section-bg-dark`, declared in SiteBundle's `sass/_variables.scss` and restated in a site's own `theme.css`); every tone a variant derives is mixed back into whichever color is set there, so retuning one line retunes the whole variant.
 
@@ -377,6 +431,8 @@ CollectionField::new('blocks')
 ```
 
 A `CollectionField` that doesn't set `context` (the default, `null`) sees every pickable kind regardless of its declared `contexts` — existing integrations keep working unchanged until they opt in.
+
+A few contexts are **exclusive** (`BlockRegistry::EXCLUSIVE_CONTEXTS`, currently `MENU_NAVBAR_CONTEXT` and `FLEX_COLUMNS_SLOT_CONTEXT`): there, the default rule is reversed and only a kind that explicitly declared that context is offered — a kind with no `contexts` at all, available everywhere else, is kept out. That's what keeps a navbar a plain list of links (`menu_link` alone, which opts in with `contexts: 'menu,menu_navbar'`) while every other menu location (`MENU_CONTEXT`) keeps the full picker for a footer's text, social links, logo… and what keeps a `flex_columns` row's slots to `flex_column` alone (see "Container kinds" above).
 
 `media_required: true` rejects saving a block of that kind when it has no attached media at all (enforced by `RequiredMediaValidator` on the `Block` entity itself, not by the form) — use it for a kind whose media isn't optional decoration but the whole point of the block (e.g. `banner_title`'s background image). Defaults to `false`; only meaningful alongside `media_types`.
 
@@ -514,6 +570,14 @@ A separate, email-safe (table layout, inline CSS, no JS) block-based system for 
 - **`image`'s url** can be just a path (e.g. `/medias/logo.webp`) instead of a full absolute URL - `EmailTemplateRenderer` resolves it against the single `site-url` ConfigBundle parameter (same one `fullLayout.html.twig` itself already builds the logo's `src` from), so the domain lives in one place instead of being hand-typed into every image block and going stale the day it changes. An already-absolute url (`http(s)://`, an external/CDN image) is left as-is.
 - **Placeholders**: any `heading`/`content`/`label`/`url`/`alt` field may contain a `{{ variable_name }}` token, resolved by `EmailTemplateRenderer` via a literal `strtr()` against the `$variables` array passed to `render()`/`renderBody()` - **not** real Twig evaluation (an `EmailBlock`'s text is admin-authored data, not code; handing it to `Twig::createTemplate()` would open a server-side template injection hole).
 - **`EmailTemplateRenderer::render()`** returns one standalone `<html>` document. When an `EmailLayoutProviderInterface` is registered (e.g. SiteBundle, bringing its own branded header/footer), the compiled body is wrapped through it - so the admin **preview** action and a real `EmailTemplate`-based send (e.g. `SendEmailFormAction`) both render the same way a recipient would actually see it. With no provider registered (e.g. an app with no SiteBundle), it falls back to its own bare, un-branded shell (`templates/emails/blocks/_wrapper.html.twig`). Implement `Contract\EmailLayoutProviderInterface::wrap(string $bodyHtml): string` (auto-discovered the same way as `BlockFixtureProviderInterface`, no tag needed - see `Registry\EmailLayoutRegistry`/`DependencyInjection\Compiler\EmailLayoutProviderPass`) to provide your own; only the first registered provider is used. **`renderBody()`** returns just the compiled `<table>` fragment, with no document/layout of its own - meant to be embedded inside a real `.html.twig` template via the **`email_template_body(name, variables)`** Twig function (`Twig\EmailTemplateExtension`, `is_safe: html`), the same way for every email that's actually sent. This is how every real send-path email shares one layout: `c975l/site-bundle`'s scaffold `registration/confirmation_email.html.twig`/`reset_password/email.html.twig` and its bundle-owned `templates/emails/contact_notification.html.twig` all plainly `{% extends "@c975LSite/emails/layout.html.twig" %}` and call `email_template_body('account_validation'|'password_reset'|'contact_notification', {...})` in their `content` block - an explicit, ordinary Twig `extends`, not a bundle-template-override. `email_template_body()` silently renders nothing if `name` isn't found, so a missing/renamed `EmailTemplate` never breaks the email it's embedded into.
+- **The shared email stylesheet** (`sass/emails.scss` and its `sass/emails/` partials, compiled to `public/css/emails.min.css`) is the base every c975L bundle sending mail renders against - six of them do (Ui, Site, Shop, Payment, Social, Crowdfunding) and only one can count on SiteBundle being installed, which is why it lives here. It is deliberately not `styles.scss` with overrides: an email is laid out in tables and read by clients that ignore most of a page stylesheet, so the page's layout layer (sections, flats, grids, flex) has no counterpart in it. Reach it from your own email layout through the **`@c975LUiCss`** Twig namespace, before adding your branding:
+
+```twig
+<style>{{ source('@c975LUiCss/emails.min.css')|resolve_css_variables }}</style>
+```
+
+- **`resolve_css_variables`** (`Twig\CssVariableExtension`, backed by `Service\CssVariableResolver`) replaces every `var()` and `color-mix()` by the value it resolves to, from the `:root` declarations of the stylesheet it is given. No mail client resolves a custom property, and a CSS inliner copies declarations verbatim into `style=""` attributes - so without it an email reaches Gmail, Outlook and most mobile clients with all its colored declarations dropped. Apply it to the whole `<style>` **before** inlining. `EmailStylesheetTest` fails if an email rule reads a token the stylesheet doesn't declare.
+
 - **`SendEmailFormAction`** resolves the email body from `Form::$actionConfig`'s `template` (a Twig path, e.g. one that itself calls `email_template_body()` - see above, the default `send_email` config), falling back to the legacy `@c975LUi/emails/form_submission.html.twig` when unset. An `emailTemplate` key, naming an `EmailTemplate` directly, is also available and takes over instead when set and found (rendered standalone via `render()`, no layout) - handy for a Form built purely through the admin in an app with no dedicated Twig template of its own to point `template` at.
 
 ---
@@ -661,7 +725,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Expertise:Banner>` | Dark panel with text and a list of tags |
 | `<twig:c975LUi:Feature:Bar>` | Row of short arguments (title + caption) |
 | `<twig:c975LUi:General:RichSnippet>` | JSON-LD structured data snippet |
-| `<twig:c975LUi:Hero:Hero>` | Header banner with title, subtitle, CTA buttons and image |
+| `<twig:c975LUi:Hero:Hero>` | Header banner with title, subtitle, optional CTA buttons and image |
 | `<twig:c975LUi:Image:Icon>` | Small icon image |
 | `<twig:c975LUi:Image:Image>` | Responsive image |
 | `<twig:c975LUi:Image:Link>` | Image wrapped in a link |
@@ -672,6 +736,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Section:Cards>` | Section title followed by a stack of full Card blocks (`.cards` row) |
 | `<twig:c975LUi:Section:Features>` | Section title followed by a grid of features (icon/title/text) |
 | `<twig:c975LUi:Slider:Slider>` | Image/media slider |
+| `<twig:c975LUi:Text:Hook>` | Lead-in paragraph, set apart from the text it introduces |
 | `<twig:c975LUi:Text:Readmore>` | Collapsible "read more" text block |
 | `<twig:c975LUi:Text:Section>` | Text section with optional image |
 | `<twig:c975LUi:Video:Iframe>` | Embedded video iframe (YouTube etc.) |
@@ -910,6 +975,8 @@ A `hero` block's "Show image as a full-width background" toggle (`HeroType::$has
 
 A hero's typographic scale is retunable without touching its rules, through five custom properties each read with the bundle's own value as its fallback: `--hero-title-size` (`clamp(40px, 6vw, 66px)`), `--hero-title-letter-spacing` (`-0.01em`), `--hero-title-line-height` (`1.03`), `--hero-sub-size` (`19px`) and `--hero-sub-max-width` (`480px`). They are declared nowhere, so a site setting none of them renders exactly as before - a design wanting a bigger, tighter hero sets them in its own `theme.css` instead of restating `.hero__title`/`.hero__sub`.
 
+A hero's two call-to-action buttons are both optional, the primary one as much as the secondary: a button is only rendered when it holds **both** its label and its url (a label alone would print a box linking to the current page, a url alone an empty clickable box), and the row itself disappears when neither is set, rather than leaving its margins behind under the title.
+
 A `hero` block's "Heading level of the title" field (`HeroType::$titleLevel`) picks between `h1` and `h2`. Leave it on `h1` when the hero opens the page and carries its real title; switch it to `h2` when the page template already prints its own `<h1>` above the blocks, two `<h1>` on one page being announced by screen readers as two top-level headings.
 
 ### Headings and the `<section>` element
@@ -985,6 +1052,22 @@ UiBundle provides a mechanism for bundles to declare their stylesheets automatic
 3. The `bundle_stylesheets()` Twig function returns the resolved list of URLs, ready for use in a layout template.
 
 In `kernel.debug`, `bundle_stylesheets()` returns each bundle's stylesheet separately, for instant reload on every CSS edit. Outside debug (prod), it instead returns a single URL pointing to `public/bundles/build/site.css`, a concatenation of every registered local stylesheet built by `StylesheetCacheWarmer` (auto-registered, runs on `bin/console cache:warmup` / on first request after a cache clear - like any optional Symfony cache warmer). CDN stylesheets (absolute URLs) are excluded from that file and keep being linked on their own in both cases.
+
+### Where the form layer lives
+
+`sass/_forms.scss` styles the bare form controls (`input`, `select`, `textarea`, `label`, the submit button, radio/checkbox rows) and belongs here rather than in SiteBundle: eight c975L bundles require `c975l/ui-bundle` and none requires `c975l/site-bundle`, so UiBundle is the only floor a form rendered by ShopBundle, BookBundle or PaymentBundle can count on — and UiBundle renders forms of its own (the `Form`/`FormField` builder, `components/Form/Form.html.twig`, the block and captcha form themes).
+
+Its `--input-*`, `--form-*`, `--label-*` and `--required-color` tokens are still declared by SiteBundle's `sass/_variables.scss`, the admin-editable theme contract — see [Token defaults](#token-defaults) for how they resolve without it. Override the width every form is laid out on with `--form-width` (defaults to `min(70vw, 1000px)`).
+
+A field turns green or red as soon as it has been judged, replacing the blue focus ring. Two sources, one look: the browser's own constraint validation (`required`, `pattern`, `type="email"`, `minlength`…) through `:user-valid` / `:user-invalid`, and the `.success` / `.error` classes the `password` controller writes for the checks HTML cannot express. `:user-*` rather than `:valid` / `:invalid` on purpose — the latter match from page load and would paint an untouched form red before the visitor typed anything. Green is restricted to fields actually declaring a constraint: `:user-valid` matches any touched field, and turning a free-text input green says nothing. Retune both through `--input-valid-border-color` / `--input-invalid-border-color` (and their `-shadow-` pair), which default to the site's success/danger button colors.
+
+### Token defaults
+
+`sass/_tokens.scss` declares a default for every custom property this bundle reads but does not own — SiteBundle's whole theme contract. It exists because an unresolved `var()` with no fallback makes its entire declaration invalid, so a missing token is a card with *no* border rather than a slightly off one, and eight c975L bundles require `c975l/ui-bundle` while none requires `c975l/site-bundle`.
+
+They sit in `@layer ui-defaults`, and that layer is the point: a layered rule always loses to an unlayered one whatever the source order, so SiteBundle's `:root`, the admin's compiled `bundles/build/site-theme.css` and a site's own `theme.css` all win without anything having to be sequenced — the two bundles' stylesheet providers share `priority: 100`, so their relative order is not something either can rely on. Nothing else in this bundle is layered, and `TokenDefaultsTest` fails if a token is read without a default, if a default is declared for a token nothing reads, or if a second layer appears.
+
+Values are light-mode only. Dark mode is SiteBundle's (`sass/_theme-dark.scss`); with that bundle absent there is no dark theme to follow.
 
 ### Adding CSS from your bundle
 

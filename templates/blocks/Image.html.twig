@@ -1,7 +1,4 @@
 {# Adapter for the dynamic Block system — resolves the media file into the Image component; display metadata lives on the Media entity itself #}
 {% set media = block.media|first %}
-{# Passed as "src" (not the already-resolved "imgSrc") so the component runs it through absolute_url(asset())
-   itself - vich_uploader_asset() only returns a root-relative path, which breaks when this template is used
-   for email header/footer blocks (render_block(), see SiteBundle's emails/header.html.twig and footer.html.twig):
-   the recipient's mail client has no "current domain" to resolve a relative src against #}
+{# "src", not "imgSrc", so the component makes it absolute: a mail client can't resolve a relative one #}
 <twig:c975LUi:Image:Image src="{{ media ? vich_uploader_asset(media) : '' }}" label="{{ media ? media.label : '' }}" class="{{ media ? media.cssClasses|join(' ') : '' }}" alt="{{ media ? media.alt : '' }}" width="{{ media ? media.width : '' }}" height="{{ media ? media.height : '' }}" above="{{ media ? media.above : false }}"/>

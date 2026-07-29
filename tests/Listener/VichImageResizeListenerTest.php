@@ -44,10 +44,7 @@ class VichImageResizeListenerTest extends TestCase
         return $mapping;
     }
 
-    // Regression test: a content_import "sync all" roundtrip re-feeds a role=favicon Media's already-converted
-    // .ico file back in as if it were a fresh upload (see SiteBundle's SiteGraphicExportProvider/SiteGraphicImportProvider).
-    // GD can't decode .ico as a source, which used to crash the whole import with
-    // Imagine\Exception\RuntimeException("Unable to open image ...") instead of just skipping the reprocessing
+    // Regression: a sync roundtrip re-feeds an .ico back in, which GD can't decode and used to crash the import
     public function testOnPostUploadDoesNotCrashWhenFixedIconFileIsAlreadyInTargetFormat(): void
     {
         $icoPath = $this->projectDir . '/public/favicon.ico';

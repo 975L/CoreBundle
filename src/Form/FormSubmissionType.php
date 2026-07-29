@@ -74,8 +74,8 @@ class FormSubmissionType extends AbstractType
                 'translation_domain' => false,
                 'required' => $required,
                 'constraints' => $constraints,
-                // "readonly" (not "disabled"): a prefilled field still gets submitted along with the rest, it just can't be edited - see FormPrefillHelper
-                // "autocomplete" "new-password" on a password field: without it, a browser's password manager treats an email+password pair as a login form and offers/autofills the visitor's already-saved password for this site
+                // "readonly", not "disabled", so a prefilled field is still submitted
+                // "new-password" stops a password manager autofilling this as a login form
                 'attr' => array_filter([
                     'placeholder' => $field->getPlaceholder(),
                     'readonly' => $prefilled ?: null,

@@ -1,0 +1,85 @@
+/* EMAIL TYPOGRAPHY */
+
+// The theme colors every element directly rather than letting it inherit, same as on the page: a mail
+// client applying its own default text color would otherwise win inside the body fragment
+* {
+    font-family: var(--font-family-body);
+    color: var(--text);
+}
+
+// 0.25em rather than the page's 0.5em: an email section holds a few short lines, and the page-level
+// spacing left it airy to the point of pushing the content below the fold. This is the rule SiteBundle
+// used to restate in its own _email-overrides.scss, folded in here so nothing has to override anything
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-family-title);
+    color: var(--primary);
+    font-weight: var(--font-title-weight);
+    text-align: center;
+    margin: 0.25em auto;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+h2 {
+    font-size: 2em;
+}
+
+h3 {
+    font-size: 1.3em;
+}
+
+h4 {
+    font-size: 1.2em;
+}
+
+h5 {
+    font-size: 1.1em;
+}
+
+h6 {
+    font-size: 1.05em;
+}
+
+// Same reasoning as the headings above
+section {
+    margin: 0.5em auto;
+}
+
+.text {
+    max-width: 90vw;
+    margin: 1em auto;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.small,
+.smaller {
+    font-size: 90%;
+}
+
+.text-muted {
+    color: var(--label-color);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+a {
+    color: var(--link-color);
+}

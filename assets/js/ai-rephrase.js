@@ -7,17 +7,8 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
-// Attached next to a Trix editor or an opted-in plain textarea (see block_theme.html.twig's
-// trix_editor_widget/textarea_widget). Works on plain text: rich formatting (bold, links, lists...) is
-// not preserved across a rephrase - a deliberate v1 limitation, not an oversight. No client-side key
-// validation (see Readme "AI Assistant") - a failure just surfaces the error message below, the button
-// itself stays enabled for another try.
-//
-// Deliberately not using Stimulus's `static targets`/`static values` sugar: with a camelCase identifier
-// ("aiRephrase") Stimulus looks for the non-dasherized "data-airephrase-*" attributes, which is easy to
-// get wrong on the template side. Plain dataset/querySelector scoped to this.element sidesteps that,
-// but it means the names below are the contract: _ai_rephrase.html.twig MUST write the dasherized
-// "data-ai-rephrase-*" form, or every value reads back empty and every target is null.
+// Works on plain text, rich formatting not being preserved across a rephrase
+// Plain dataset/querySelector rather than Stimulus targets/values, whose camelCase identifier would want the non-dasherized "data-airephrase-*"
 export default class extends Controller {
     get textareaId() {
         return this.element.dataset.aiRephraseTextareaIdValue || '';
@@ -56,8 +47,7 @@ export default class extends Controller {
 
         const field = this.field();
         if (!field) {
-            // Genuinely unexpected (the target textarea/trix-editor is gone from the DOM) - surfaced
-            // rather than failing silently, unlike the empty-text case below (nothing to do isn't an error)
+            // Unexpected: the target field is gone from the DOM, so it is surfaced rather than silent
             this.showError();
             return;
         }
@@ -85,9 +75,7 @@ export default class extends Controller {
             .then(r => r.json())
             .then(data => {
                 if (data.text) {
-                    // Appended after the original (separated by "---" and a translated label), never
-                    // replacing it - lets the editor mix/pick between both directly in the field instead
-                    // of losing the original the moment a rephrase comes back
+                    // Appended, never replacing: the editor keeps the original to pick from
                     field.write(`${text}\n--- ${this.suggestionLabel}\n${data.text}`);
                 } else {
                     this.showError();
@@ -99,11 +87,7 @@ export default class extends Controller {
             });
     }
 
-    // A Trix field has a <trix-editor input="textareaId"> mirroring the (hidden) textarea - reading/
-    // writing must go through its editor API, direct DOM changes wouldn't sync back to it. A plain
-    // opted-in textarea (see block_theme.html.twig's textarea_widget) has no such element - read/write
-    // its value directly. Returns null when neither is found (field removed from the DOM, a collection
-    // row deleted after this controller connected...).
+    // A Trix field must go through its editor API, direct DOM changes not syncing back to it; null when neither element is found
     field() {
         const trixEditor = document.querySelector(`trix-editor[input="${this.textareaId}"]`);
         if (trixEditor && trixEditor.editor) {

@@ -14,9 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Shared "data" sub-form (eyebrow/title/anchor) for container kinds that only differ in how their
-// slots are wrapped at render time - see FlexColumnsType/SectionCardsType. The slots themselves are
-// a real Block relation added by BlockType::addSlotsSubForm(), not part of this form
+// Shared eyebrow/title/anchor sub-form; the slots themselves are a Block relation, not part of this form
 abstract class AbstractSectionHeadContainerType extends AbstractType
 {
     use HasAnchorFieldTrait;

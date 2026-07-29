@@ -321,8 +321,7 @@ class AiRephraseClientTest extends TestCase
         $this->assertStringContainsString('exactly three paragraphs', $sentBody);
     }
 
-    // The one length that isn't just a paragraph count: it targets the "Social network summary" field
-    // (meta description/share card), so its instruction must carry the character cap
+    // The one length that isn't a paragraph count: it targets the meta description, hence the character cap
     public function testRephraseWithSocialSummaryLengthAsksForACappedOneLineSummary(): void
     {
         $sentBody = null;

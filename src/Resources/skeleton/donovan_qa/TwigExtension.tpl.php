@@ -17,9 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-// Feeds the "extra_backends" block of UiBundle's ai_assistant.html.twig (overridden alongside this file
-// at templates/bundles/c975LUiBundle/management/ai_assistant.html.twig) with this backend's status -
-// entirely app-specific, UiBundle has no idea this backend exists
+// Feeds this backend's status into the overridden ai_assistant.html.twig's "extra_backends" block
 class <?= $class_name ?> extends AbstractExtension
 {
     // Every config slug the setup guide links to individually
@@ -50,9 +48,7 @@ class <?= $class_name ?> extends AbstractExtension
         ];
     }
 
-    // Slugs still needing attention - "-model"/"-base-uri" only block for euria, mirroring
-    // <?= $llm_client_short_name ?>::isEnabled() exactly so this guide never disagrees with what actually
-    // gates the feature
+    // Mirrors isEnabled() exactly, so this guide never disagrees with what actually gates the feature
     public function missingSlugs(): array
     {
         $blockingSlugs = self::LINKED_SLUGS;
@@ -66,8 +62,7 @@ class <?= $class_name ?> extends AbstractExtension
         ));
     }
 
-    // {slug: edit url}, one entry per LINKED_SLUGS - a slug not yet loaded falls back to the plain Config
-    // list rather than a broken/nonexistent entity id
+    // {slug: edit url}; a slug not yet loaded falls back to the plain Config list
     public function configLinks(): array
     {
         $links = [];
@@ -82,8 +77,7 @@ class <?= $class_name ?> extends AbstractExtension
         return $links;
     }
 
-    // {site-key: token} - ConfigService already returns "donovan-qa-authorized-tokens" json-decoded (and
-    // decrypted, since it's sensitive), so no parsing needed here
+    // {site-key: token}; ConfigService already returns it decoded and decrypted
     public function authorizedTokens(): array
     {
         $tokens = $this->configService->get('donovan-qa-authorized-tokens');

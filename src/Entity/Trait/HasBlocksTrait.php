@@ -39,10 +39,7 @@ trait HasBlocksTrait
         return $this;
     }
 
-    // Unlike removeBlock(), never queues the block for deletion in $pendingBlockRemovals - used by
-    // BlockRelocator to take a block out of this collection when it's being moved elsewhere in the
-    // same flush, not deleted (BlockRemovalListener would otherwise delete it regardless of it being
-    // re-attached to another owner/container afterwards)
+    // Never queues the block for deletion, for a move within the same flush rather than a removal
     public function detachBlock(Block $block): static
     {
         $this->blocks->removeElement($block);

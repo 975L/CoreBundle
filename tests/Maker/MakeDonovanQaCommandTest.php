@@ -12,10 +12,7 @@ namespace c975L\UiBundle\Tests\Maker;
 use c975L\UiBundle\Maker\MakeDonovanQaCommand;
 use PHPUnit\Framework\TestCase;
 
-// Only covers the deterministic, IO-free parts of the Maker - generate() delegates to MakerBundle's own
-// Generator (file writing) which needs a real booted app to exercise meaningfully, so it's verified
-// manually via "bin/console c975l:ui:donovan-qa:create" (see 975l.com, where it was run once against a
-// scratch output and diffed against the hand-written reference implementation)
+// Covers the deterministic, IO-free parts only; generate() needs a real booted app to exercise
 class MakeDonovanQaCommandTest extends TestCase
 {
     public function testCommandNameMatchesCustomC975lConvention(): void

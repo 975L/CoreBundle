@@ -13,11 +13,15 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Count;
 
 class FeatureBarType extends AbstractType
 {
     use HasAnchorFieldTrait;
     use HasBackgroundFieldTrait;
+
+    // The row is sized for this many columns; a sixth entry lands alone on a second row, flush left
+    public const MAX_ITEMS = 5;
 
     public function __construct(private readonly BlockAnchorSlugger $anchorSlugger)
     {
@@ -36,6 +40,8 @@ class FeatureBarType extends AbstractType
             'allow_delete' => true,
             'by_reference' => false,
             'prototype' => true,
+            // Held on submit rather than by hiding EasyAdmin's "add" button, the cap being a layout limit
+            'constraints' => [new Count(max: self::MAX_ITEMS, maxMessage: 'text.feature_bar_items_max')],
         ]);
     }
 

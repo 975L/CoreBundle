@@ -42,10 +42,7 @@
         {% for slideMedia in mediaList %}
             {% set slide = slides[loop.index0]|default(null) %}
             {% set isVideo = slideMedia.mimeType starts with 'video' %}
-            {# Freeflow shows every slide at once (some peeking in from the very first paint), unlike
-               the default layout where only the active slide is ever visible - deferring the rest to
-               "lazy" left those peeking/off-screen-via-transform slides blank until the browser's lazy-
-               load heuristic caught up with the next translateX(), so freeflow always loads eager #}
+            {# Freeflow shows every slide at once, so lazy would leave the peeking ones blank #}
             {% set isEager = loop.first or layout == "freeflow" %}
             <li class="slider-item{% if loop.first and layout != "freeflow" %} slider-item-active{% endif %}"{% if not loop.first and layout != "freeflow" %} aria-hidden="true"{% endif %}>
                 {% set img %}

@@ -1,11 +1,5 @@
-{# Dynamic usage only (Block system): see templates/blocks/SectionCards.html.twig - "slots" is a
-   collection of real Block entities (Entity/Block.php's "slots" relation), each rendered through the
-   normal render_block() pipeline (own kind, own cache, own media). Wrapped in ".cards" (see
-   sass/_cards.scss) instead of a dedicated grid, the same fixed-width flex row bare consecutive "card"
-   blocks already get in the page flow (see Blocks.html.twig) - so a slot renders identically whether
-   it sits here or bare in the page, this section only adds the eyebrow/title/anchor around it. #}
-{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
-   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig) #}
+{# Dynamic usage only: "slots" holds real Block entities, wrapped in ".cards" so a slot renders the same here as bare in the page #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
 {% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
 <{{ tag }} class="section-cards-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">

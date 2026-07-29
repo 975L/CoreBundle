@@ -12,10 +12,8 @@ use <?= $repository_full_name ?>;
 use c975L\UiBundle\Doctrine\VectorType;
 use Doctrine\ORM\Mapping as ORM;
 
-// Cache of Donovan Q&A answers - an exact-hash hit never touches the LLM; a miss first tries a semantic
-// match (see <?= $repository_short_name ?>::findBestSemanticMatch()) before calling it. contextVersion
-// pins an answer to the context it was generated against - a stale version is treated as a cache miss
-// and the row is regenerated in place via recordFreshAnswer(), questionHash staying unique throughout
+// Answer cache: an exact-hash hit skips the LLM, a miss tries a semantic match first
+// contextVersion pins an answer to its context, a stale one counting as a miss
 #[ORM\Entity(repositoryClass: <?= $repository_short_name ?>::class)]
 class <?= $class_name ?>
 {
@@ -49,8 +47,7 @@ class <?= $class_name ?>
     #[ORM\Column(type: 'json')]
     private array $sources = [];
 
-    // Vectorized normalized question text (see the generated EmbeddingClient) - null until the embedding
-    // model is configured/enabled, or if that call ever fails
+    // Null until the embedding model is configured, or if that call fails
     /** @var float[]|null */
     #[ORM\Column(type: VectorType::NAME, nullable: true)]
     private ?array $questionEmbedding = null;
@@ -120,10 +117,7 @@ class <?= $class_name ?>
         return $this->updatedAt;
     }
 
-    // Cache-miss path (new question, or a stale contextVersion): overwrites the previous answer in place
-    // and resets hitCount. inputTokens/outputTokens are legitimately 0 for a semantic-match reuse: no LLM
-    // was called, the answer/sources were copied from the matched row, only questionHash/questionText/
-    // embedding are genuinely new
+    // Cache-miss path, overwriting in place and resetting hitCount; 0 tokens on a semantic-match reuse
     /**
      * @param array{label: string, url: string}[] $sources
      * @param float[]|null $questionEmbedding

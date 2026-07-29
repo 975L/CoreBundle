@@ -43,8 +43,7 @@ class VichPdfThumbnailListenerTest extends TestCase
         return $mapping;
     }
 
-    // Regression test: on managed hosts (e.g. Infomaniak) exec() is disabled, which used to crash the whole
-    // content-import request with "Call to undefined function ...\exec()" instead of just skipping the thumbnail
+    // Regression: exec() is disabled on managed hosts, which used to crash the whole import
     public function testOnPostUploadDoesNotCrashWhenExecIsDisabled(): void
     {
         require_once __DIR__ . '/Fixtures/vich_pdf_thumbnail_exec_disabled.php';
@@ -65,9 +64,7 @@ class VichPdfThumbnailListenerTest extends TestCase
         $this->assertFileDoesNotExist($this->projectDir . '/public/doc.webp');
     }
 
-    // A Sync import (see SiteBundle's BlockDataImporter) sets this before the file is even uploaded, so the
-    // thumbnail carried in the export archive is reused as-is - no Ghostscript involved, works even when it's
-    // unavailable on the target host
+    // A sync import sets this before upload, so the archive's thumbnail is reused with no Ghostscript
     public function testOnPostUploadCopiesTheImportedThumbnailInsteadOfGeneratingOne(): void
     {
         $pdfPath = $this->projectDir . '/public/doc.pdf';

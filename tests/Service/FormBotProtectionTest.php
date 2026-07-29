@@ -28,8 +28,7 @@ class FormBotProtectionTest extends TestCase
         return $request;
     }
 
-    // Simulates the honeypot's raw submitted value under $formName, the way isSuspicious() now reads it directly
-    // off the request instead of an already-submitted FormInterface
+    // Simulates the raw submitted honeypot value, isSuspicious() reading it off the request directly
     private function setHoneypotValue(Request $request, string $formName, string $fieldName, string $value): void
     {
         $request->request->set($formName, [$fieldName => $value]);
@@ -94,8 +93,7 @@ class FormBotProtectionTest extends TestCase
         $botProtection->addHoneypotField($builder, $request);
     }
 
-    // Regression guard: a caller building this form outside a live HTTP request (RequestStack::getCurrentRequest()
-    // returns null there) must not crash with a TypeError - the honeypot is simply skipped
+    // Regression guard: outside a live HTTP request the honeypot is skipped, not a TypeError
     public function testAddHoneypotFieldDoesNothingWhenRequestIsNull(): void
     {
         $botProtection = new FormBotProtection($this->createStub(ConfigServiceInterface::class));

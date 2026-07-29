@@ -1,6 +1,5 @@
 {# Renders the "fields" variable (label => submitted value pairs) passed to EmailTemplateRenderer::render() - e.g. a Form submission's answers, see SendEmailFormAction. Renders nothing if the caller didn't supply any #}
-{# "border-spacing:0;margin:0" blocks the site's generic "table{...}" rule - see button.html.twig.
-   "text-left" is required on both cells - see text.html.twig #}
+{# "border-spacing:0;margin:0" blocks the theme's generic "table" rule, "text-left" its "td" one #}
 {% if fields is not empty %}
     <tr>
         <td style="padding:0 24px 24px;">

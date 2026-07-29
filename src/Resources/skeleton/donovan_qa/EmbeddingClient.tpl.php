@@ -13,13 +13,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// Vectorizes a question for the semantic cache (see the generated AnswerRepository::findBestSemanticMatch()) -
-// reuses "donovan-qa-llm-base-uri"/"donovan-qa-llm-api-key" (same product/token as the LLM client) but its
-// own distinct model ("donovan-qa-embedding-model" - a chat model is never usable as an embedding model,
-// e.g. Mistral-Small vs Qwen3-Embedding-8B). Only ever called through an OpenAI-compatible "/embeddings"
-// endpoint (e.g. Euria/Infomaniak) - if "donovan-qa-llm-provider" is "anthropic" and no explicit base URI
-// is set, isEnabled() stays false rather than guessing an endpoint (Anthropic has no embeddings API of its
-// own; bring an OpenAI-compatible one via "donovan-qa-llm-base-uri" regardless of the chat provider)
+// Vectorizes a question for the semantic cache; shares the LLM key but needs its own model, a chat model never being usable as one
+// OpenAI-compatible "/embeddings" only, so anthropic with no explicit base URI stays disabled
 class <?= $class_name ?>
 {
     public function __construct(

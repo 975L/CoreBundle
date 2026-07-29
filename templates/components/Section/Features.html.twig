@@ -1,7 +1,6 @@
 {# Static usage: <twig:c975LUi:Section:Features cards="{{ [{icon: '', title: '...', text: '...'}] }}" [eyebrow=""] [title=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/SectionFeatures.html.twig #}
-{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
-   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig) #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
 {% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
 <{{ tag }} class="section-features-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">

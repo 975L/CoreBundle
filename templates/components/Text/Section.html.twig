@@ -1,18 +1,12 @@
 {# <twig:c975LUi:Text:Section title="{{ title }}" slug="{{ slug }}" content="{{ content }}" [eyebrow=""] [src="{{ vich_uploader_asset(media) }}"] [alt="{{ media.alt }}"] [background=""]/> #}
 {% set eyebrow = eyebrow|default('') %}
-{# <section> only when there is a heading to go with it, a plain <div> otherwise - HTML's own advice for a
-   grouping with no heading (and what the W3C validator asks for), this block commonly opening a page with
-   just a logo and a paragraph right under the page's own <h1>, where a second heading would be redundant.
-   id only when the anchor slug is set: an empty id="" is invalid HTML, and a duplicate of every other one #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
 {% set tag = (title or eyebrow) ? 'section' : 'div' %}
-{# Optional colored flat (see .section--bg-* in sass/_page-sections.scss). Matched against the three known
-   variants rather than interpolated as-is: the value comes from a block's stored data, which must never be
-   able to write an arbitrary class name into the markup #}
+{# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
 {% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
 <{{ tag }} class="text-section{{ background }}"{% if slug|default('') %} id="{{ slug }}"{% endif %}>
     <div class="section-wrap">
-        {# Same heading rule as the Section:* components (see components/Section/_head.html.twig): with no
-           title, the eyebrow is the section's own heading and becomes the <h2>, keeping its eyebrow look #}
+        {# With no title the eyebrow becomes the <h2>, keeping its eyebrow look #}
         {% if title %}
             {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
             <h2>{{ title }}</h2>
@@ -22,9 +16,7 @@
         {% if src is defined and src %}
             <twig:c975LUi:Image:Image imgSrc="{{ src }}" alt="{{ alt|default('') }}" class="img-rounded img-responsive"/>
         {% endif %}
-        {# content is authored via Trix (TrixEditorType), which already encodes its own line breaks as
-           <div>/<br> - nl2br would additionally convert the insignificant newlines between Trix's <div>
-           tags into extra visible <br>, doubling up line breaks and producing blank lines #}
+        {# No nl2br: Trix already encodes its line breaks, so it would double them into blank lines #}
         {{ content|raw }}
     </div>
 </{{ tag }}>

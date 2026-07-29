@@ -17,9 +17,7 @@ trait HasBackgroundFieldTrait
 {
     private function addBackgroundField(FormBuilderInterface $builder): void
     {
-        // Empty (the page background, the way every section rendered before this field existed) is the
-        // placeholder rather than a choice of its own: an unset value must keep meaning "no flat", so an
-        // existing block that has never been saved since is left exactly as it was
+        // Empty is the placeholder, not a choice: an unset value must keep meaning "no flat"
         $builder->add('background', ChoiceType::class, [
             'label' => 'label.section_background',
             'help' => 'label.section_background_help',

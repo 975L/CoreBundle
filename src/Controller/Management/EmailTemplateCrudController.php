@@ -36,9 +36,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function Symfony\Component\Translation\t;
 
-// Generic "manage any EmailTemplate" admin screen, same spirit as FormCrudController: lists/creates/edits every
-// c975L\UiBundle\Entity\EmailTemplate. A seeded, restricted EmailTemplate (see EmailTemplate::$restricted) keeps
-// its "name" locked and can't be deleted from here - same spirit as Form::$restricted
+// Admin screen for every EmailTemplate; a restricted one keeps its "name" locked and can't be deleted here
 class EmailTemplateCrudController extends AbstractCrudController
 {
     public function __construct(
@@ -54,9 +52,7 @@ class EmailTemplateCrudController extends AbstractCrudController
         return EmailTemplate::class;
     }
 
-    // Removing the very last block also leaves nothing submitted at all for "blocks" (an HTML form can't represent
-    // an empty array, only an absent key), which has to be normalized to [] below or Symfony skips add/remove
-    // handling entirely for the whole field - same reconciliation as FormCrudController/PageCrudController
+    // An absent "blocks" key is normalized to [], an HTML form having no way to submit an empty array
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
         $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
@@ -162,8 +158,7 @@ class EmailTemplateCrudController extends AbstractCrudController
         ;
     }
 
-    // Admin-only rendering of the compiled email body, with placeholder variables left untouched - lets an editor
-    // check the email-safe markup (table layout, inline CSS) without needing to trigger a real send in debug mode
+    // Renders the compiled body with its placeholders left untouched, so no real send is needed to check it
     #[AdminRoute('/{entityId}/preview')]
     public function preview(AdminContext $context): Response
     {

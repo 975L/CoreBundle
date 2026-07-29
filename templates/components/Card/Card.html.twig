@@ -1,8 +1,4 @@
-{#
-<twig:c975LUi:Card:Card id="id" title="Title" [titleUrl="/pages/projects/item-a"] [level="h2"] [icon="{{ ['your-path/file.ext', 'your-css-classes', width, height] }}"] [lang="{{ language }}"]>
-    Your content
-</twig:c975LUi:Card:Card>
-#}
+{# Static usage: <twig:c975LUi:Card:Card id="id" title="Title" [titleUrl=""] [level="h2"] [icon="{{ ['file.ext', 'css-classes', width, height] }}"] [lang=""]>Your content</twig:c975LUi:Card:Card> #}
 {% set icon = icon | default("") %}
 {% set lang = lang | default("") %}
 {% set titleUrl = titleUrl | default("") %}

@@ -71,8 +71,7 @@ class BlockFormController extends AbstractController
             }
         }
 
-        // Mirrors BlockType::addSlotsSubForm() - so picking a container kind (e.g. flex_columns) on a
-        // brand new block shows the "add a slot" collection right away, same as the medias case above
+        // Mirrors BlockType::addSlotsSubForm(), so a brand new container shows its "add a slot" collection at once
         if ($this->registry->isContainer($kind)) {
             $builder->add('slots', CollectionType::class, [
                 'label' => 'label.slots',

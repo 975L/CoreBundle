@@ -1,8 +1,4 @@
-{# Color/font-family are deliberately NOT set inline here - once wrapped through EmailLayoutProviderInterface
-   (e.g. SiteBundle), the site's own "h1,h2..." typography rule (theme color/font) applies via inline_css;
-   the standalone _wrapper.html.twig fallback supplies its own defaults for these same tags - see its <style>.
-   "text-left" is required directly on the h1/h2 itself, not the wrapping <td> - the site's generic "h1,h2..."
-   rule centers headings by targeting the tag directly, which wins over a class inherited from an ancestor #}
+{# No inline color/font, so the theme's own typography applies; "text-left" must sit on the tag itself, which the theme targets directly #}
 <tr>
     <td style="padding:0 24px 16px;">
         {% if 'h1' == level %}

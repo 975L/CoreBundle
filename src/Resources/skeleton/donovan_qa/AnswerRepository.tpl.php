@@ -29,13 +29,8 @@ class <?= $class_name ?> extends ServiceEntityRepository
         return $this->findOneBy(['questionHash' => $questionHash]);
     }
 
-    // Doctrine's DQL has no knowledge of MariaDB's VEC_DISTANCE_COSINE(), so this bypasses the ORM for the
-    // comparison itself - raw SQL, scoped to the current contextVersion (a stale-context answer, even a
-    // semantically close one, still shouldn't be reused - same rule the exact-hash lookup already follows
-    // above). VEC_DISTANCE_COSINE returns 1 - cosine_similarity (0 = identical direction, confirmed
-    // empirically), hence the "<= 1 - $minSimilarity" filter done in SQL directly.
-    // Table/column names are resolved from Doctrine's own metadata rather than hardcoded, since this
-    // bundle can't assume every consuming app uses the underscore naming strategy
+    // Raw SQL, DQL not knowing VEC_DISTANCE_COSINE(), which returns 1 - cosine_similarity
+    // Names come from Doctrine's metadata, the app's naming strategy not being assumable
     /** @param float[] $embedding */
     public function findBestSemanticMatch(array $embedding, string $contextVersion, float $minSimilarity): ?<?= $entity_short_name ?>
     {

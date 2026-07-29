@@ -1,13 +1,4 @@
-{#
-{% set text %}
-    Magna voluptate esse nostrud pariatur nisi commodo sint quis laboris laborum duis. Fugiat eu Lorem cillum ullamco ad mollit exercitation amet minim. Nulla proident magna aliqua elit aute labore. Ad laborum nostrud laboris deserunt anim aute duis laboris enim duis Lorem.
-    <br>
-    Magna voluptate esse nostrud pariatur nisi commodo sint quis laboris laborum duis. Fugiat eu Lorem cillum ullamco ad mollit exercitation amet minim. Nulla proident magna aliqua elit aute labore. Ad laborum nostrud laboris deserunt anim aute duis laboris enim duis Lorem.
-{% endset %}
-<section class="xxx">
-    <twig:c975LUi:Text:Readmore text="{{ text }}" "id="{{ id }}"/>
-</section>
-#}
+{# Static usage: <twig:c975LUi:Text:Readmore text="{{ text }}" id="{{ id }}"/> #}
 <input type="checkbox" id="readmore-toggle-{{ id }}" class="readmore-toggle" hidden>
 <div class="readmore-content">{{ text|raw|nl2br }}</div>
 <label for="readmore-toggle-{{ id }}" class="readmore-toggle-label">

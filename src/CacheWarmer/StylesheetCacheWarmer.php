@@ -67,10 +67,20 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
             // Some contributed stylesheets are generated at runtime (e.g. SiteBundle's ThemeVariablesCssListener) and may not exist yet on a fresh install
             $path = $this->projectDir . '/public/' . $stylesheet;
             if (is_file($path)) {
-                $content[] = file_get_contents($path);
+                $content[] = self::stripByteOrderMark((string) file_get_contents($path));
             }
         }
 
         return implode("\n", $content);
+    }
+
+    // A browser silently drops a UTF-8 BOM at the very start of a stylesheet, so one costs nothing while
+    // each file is served on its own <link>. Concatenated, every BOM but the first lands mid-file, where
+    // it is just a stray character: the rule following it becomes a parse error and is thrown away whole.
+    // Sass writes one into any --style=compressed output holding a non-ASCII byte, so this is not
+    // hypothetical - it is how bundles/build/site.css lost UiBundle's entire @layer of token defaults.
+    private static function stripByteOrderMark(string $css): string
+    {
+        return str_starts_with($css, "\u{FEFF}") ? substr($css, 3) : $css;
     }
 }

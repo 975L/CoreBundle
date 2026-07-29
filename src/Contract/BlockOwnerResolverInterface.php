@@ -8,13 +8,10 @@
  */
 namespace c975L\UiBundle\Contract;
 
-// Lets any bundle owning a HasBlocksInterface entity (Page/Menu in SiteBundle, Book/Strip/Serie in
-// BookBundle...) make it reachable by BlockMoveController without UiBundle depending on any of their
-// concrete classes. Implement this and the service is auto-discovered by BlockOwnerResolverPass - see Readme
+// Makes a bundle's own HasBlocksInterface entity reachable by BlockMoveController without a dependency on it
 interface BlockOwnerResolverInterface
 {
-    // $ownerType: a short, stable string identifying the owning entity (e.g. "page", "menu") - chosen by
-    // the implementing bundle, round-tripped verbatim by the client that requested the move
+    // $ownerType: a short stable string chosen by the implementing bundle, round-tripped verbatim
     public function supports(string $ownerType): bool;
 
     public function find(string $ownerType, int $ownerId): ?HasBlocksInterface;

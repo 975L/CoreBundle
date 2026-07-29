@@ -10,10 +10,7 @@ namespace c975L\UiBundle\Service;
 
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 
-// Consumes an optional rate limiter, extracted from ContactFormBundle's ContactFormService - $limiterFactory stays
-// nullable (a form with no configured limiter, i.e. the app never defined the named "limiter.xxx" service, is simply
-// never rate-limited) but is typed against the real Symfony interface, since symfony/rate-limiter is a soft
-// dependency the caller opts into, not one UiBundle forces on every consumer
+// Consumes an optional rate limiter: a null factory means no limiter configured, symfony/rate-limiter being a soft dependency
 class RateLimiterGuard
 {
     public function isAccepted(?RateLimiterFactoryInterface $limiterFactory, string $key): bool

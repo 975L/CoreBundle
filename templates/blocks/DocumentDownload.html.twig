@@ -1,38 +1,18 @@
-{# Adapter for the dynamic Block system - every attached PDF (see media_types on this block's tag)
-   rendered as its own download card, stacked one above the other (see sass/_document-download.scss's
-   own margin, no extra wrapper needed). The .webp thumbnail next to each PDF (see README "PDF
-   thumbnails", generated automatically by VichPdfThumbnailListener on upload) is used as a preview
-   when present, falling back to a plain text/extension card otherwise - document_thumbnail_path()
-   (DocumentExtension) checks the thumbnail actually exists on disk (Ghostscript missing, a
-   fixture/placeholder media with no sidecar file, generation not finished...), it isn't guessed from
-   the media's own path/origin. With a single PDF attached (the common case), the card keeps using this
-   block's own "label" as its title, exactly as before - only once several are attached does each
-   media's own "name" (see MediaUploadType's isPdf branch, "Nom du fichier") become that card's own
-   title instead, so several cards don't all show the same caption. #}
+{# One download card per attached PDF; document_thumbnail_path() checks the .webp exists on disk rather than guessing it #}
 {% set medias = block.media %}
 {% set isMulti = medias|length > 1 %}
 {% for media in medias %}
     {% set thumbnailPath = document_thumbnail_path(media) %}
-    {# No "download": most browsers preview a PDF natively rather than saving it straight to disk - forcing
-       a download denies that preview, worse UX for this format. Opens in a new tab instead so the current
-       page (and any other cards on it) stays put - the browser's own PDF viewer still offers its own
-       download button for whoever actually wants the file. #}
+    {# No "download" attribute: it would deny the browser's own native PDF preview #}
     <a class="document-download" href="{{ vich_uploader_asset(media) }}" target="_blank" rel="noopener">
         {% if thumbnailPath %}
-            {# Decorative: the link's own visible label already names the document, an alt here would have a
-               screen reader announce that same name twice. aria-hidden alongside the empty alt, an alt=""
-               on its own being reported as a missing alternative by accessibility checks (see SiteBundle's
-               ContentQualityClient) rather than read as a deliberate decorative marker #}
-            {# Lazy: a download card is a secondary call to action, never the page's opening content, and a
-               full-page PDF render is one of the heaviest thumbnails the bundle produces (a portrait A4 at
-               VichPdfThumbnailListener's own width easily outweighs every photo around it) #}
+            {# Decorative, the link's label already naming the document; aria-hidden doubles the empty alt so checkers don't read it as missing #}
             <img class="document-download__thumb" src="{{ asset(thumbnailPath) }}" alt="" aria-hidden="true" loading="lazy">
         {% else %}
             <span class="document-download__thumb document-download__thumb--empty"></span>
         {% endif %}
         <span class="document-download__label">{{ isMulti ? (media.name|default(label)) : label }}</span>
-        {# Not translated: a plain extension/file-type badge (".PDF"), not a sentence - same convention as
-           e.g. a "512 KB" file-size chip would be #}
+        {# Not translated: a file-type badge, not a sentence #}
         <span class="document-download__ext">{{ buttonLabel|default('.PDF') }}</span>
     </a>
 {% endfor %}

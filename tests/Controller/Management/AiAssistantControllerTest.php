@@ -141,8 +141,7 @@ class AiAssistantControllerTest extends TestCase
         $this->assertSame(['text' => 'Hello there, kindly.'], json_decode((string) $response->getContent(), true));
     }
 
-    // A slug outside the closed LINKED_SLUGS blocking check should never crash missingSlugs() - exercised
-    // indirectly through the real config values below
+    // A slug outside the closed blocking list must never crash missingSlugs()
     private function invokeMissingSlugs(AiAssistantController $controller): array
     {
         return (new \ReflectionMethod($controller, 'missingSlugs'))->invoke($controller);
@@ -161,8 +160,7 @@ class AiAssistantControllerTest extends TestCase
         return $config;
     }
 
-    // Regression guard: configLinks() used to call findOneBy() once per slug (7 queries); it must now
-    // resolve every slug's Config row in a single batched lookup
+    // Regression guard: configLinks() must resolve every slug in one batched lookup, not one query each
     public function testConfigLinksResolvesEverySlugInOneQuery(): void
     {
         $configRepository = $this->createMock(ConfigRepository::class);

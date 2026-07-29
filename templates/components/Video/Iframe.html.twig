@@ -1,12 +1,8 @@
 {# <twig:c975LUi:Video:Iframe src="your-url" [title="optional title"] [description="optional description"] [class="your-css-classes"] [width="auto"] [height="auto"]/> #}
-{# The real <iframe> is only created client-side (see video-iframe.js), gated behind cookie consent -
-   this markup stays identical regardless of consent state, so the block remains cacheable #}
+{# The real <iframe> is created client-side behind cookie consent, so this markup stays cacheable #}
 <figure class="video-iframe-figure">
     {% if title is defined and title %}<h3 class="video-iframe-title">{{ title }}</h3>{% endif %}
-    {# Stimulus derives value/target attribute names from the controller identifier as registered
-       ("videoIframe" in assets/controllers.js), not a dasherized form of it - only each value's
-       own name gets dasherized. So these must read "videoiframe-*", not "video-iframe-*", or
-       every value silently falls back to its type default ("") #}
+    {# "videoiframe-*", not "video-iframe-*": Stimulus doesn't dasherize the identifier, only the value name #}
     <div class="img img-responsive {{ class|default([])|join(' ') }} video-iframe-consent"
          data-controller="videoIframe"
          data-videoiframe-src-value="{{ src }}"

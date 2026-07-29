@@ -28,8 +28,7 @@
             </p>
         {% endif %}
 
-        {# Same three-part structure for every provider (where, what to click, note) - "uniformisé" on
-           purpose, so whichever provider gets picked, the instructions read the same way #}
+        {# Same three-part structure for every provider, so the instructions read the same whichever is picked #}
         <p class="text-muted small mb-1">{{ 'label.ai_rephrase_get_key_intro'|trans({}, 'ui') }}</p>
         <ul class="small text-muted">
             <li>
@@ -46,10 +45,7 @@
             </li>
         </ul>
     {% else %}
-        {# Free-standing rephrase, not tied to any CMS field - same partial/JS as block_theme.html.twig's
-           textarea_widget, just pointed at a plain textarea with no form behind it. Also fills the gap
-           left by "elseif rephraseUsage" alone: a freshly-configured site with zero usage yet used to
-           show this section's title with nothing under it. #}
+        {# Free-standing rephrase, not tied to any CMS field: the same partial on a plain textarea #}
         <p class="text-muted">{{ 'label.ai_rephrase_freeform_intro'|trans({}, 'ui') }}</p>
         <textarea id="ai-rephrase-freeform" class="form-control mb-2" rows="6"></textarea>
         {{ include('@c975LUi/form/_ai_rephrase.html.twig', {field_id: 'ai-rephrase-freeform'}) }}
@@ -64,9 +60,7 @@
         {% endif %}
     {% endif %}
 
-    {# Dashboard calls the mutualized, Laurent-paid backend (see AiAssistantController::ask()) - kept to
-       ROLE_SUPER_ADMIN, so the section itself stays hidden rather than showing controls that would just
-       403 on submit for anyone else viewing this page (any "site-role-admin" account, see index()) #}
+    {# ROLE_SUPER_ADMIN, so the section hides rather than showing controls that would 403 on submit #}
     {% if is_granted('ROLE_SUPER_ADMIN') %}
         <h2 class="mt-4">{{ 'label.ai_assistant_dashboard_section_title'|trans({}, 'ui') }}</h2>
         {% if not enabled %}
@@ -88,13 +82,6 @@
         {% endif %}
     {% endif %}
 
-    {# Extension point for an app that also operates a centralized/shared backend for other sites (e.g.
-       975l.com's own AiHelpController) - entirely app-specific, this bundle has no idea such a backend
-       exists. To use it: override "management/ai_assistant.html.twig" (not this base file) at
-       templates/bundles/c975LUiBundle/management/ai_assistant.html.twig, and inside that override file
-       "{% extends '@c975LUi/management/_ai_assistant_base.html.twig' %}" - THIS base file, never
-       "@c975LUi/management/ai_assistant.html.twig" itself, since once the override exists that logical
-       path resolves back to the override file's own physical location (Symfony's bundle template
-       override is a flat replace, not a chain) - extending it from itself infinite-loops Twig rendering #}
+    {# App extension point: override ai_assistant.html.twig and extend THIS base file, never itself - a bundle override is a flat replace and would infinite-loop #}
     {% block extra_backends %}{% endblock %}
 {% endblock main %}

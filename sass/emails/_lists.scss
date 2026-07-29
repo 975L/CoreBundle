@@ -1,0 +1,32 @@
+/* EMAIL LISTS */
+
+// No image marker, unlike the page's own ul: a list-style url is dropped by most mail clients and, where
+// it is not, points at an asset the recipient's client will not load
+li {
+    display: list-item;
+}
+
+ul.inline {
+    padding: 0;
+}
+
+ul.inline li {
+    display: inline-block;
+    padding: 0 0.75em;
+}
+
+.list-unstyled {
+    list-style: none;
+    padding-left: 0;
+}
+
+// A marker only works against a left edge; centered, it stays pinned left and shifts the text off-centre
+.text-center ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.text-center ol {
+    list-style-position: inside;
+    padding-left: 0;
+}

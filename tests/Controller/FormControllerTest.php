@@ -347,8 +347,7 @@ class FormControllerTest extends TestCase
         $this->assertTrue($request->getSession()->getFlashBag()->has('warning'));
     }
 
-    // Regression guard: an unresolved client IP (e.g. a trusted-proxy misconfiguration) must not be rate-limited
-    // under one shared "unknown" bucket with every other such visitor - fail open instead
+    // An unresolved client IP must fail open, not share one bucket with every other such visitor
     public function testSubmitSkipsRateLimitingWhenClientIpIsUnresolved(): void
     {
         $rateLimiterGuard = $this->createMock(RateLimiterGuard::class);

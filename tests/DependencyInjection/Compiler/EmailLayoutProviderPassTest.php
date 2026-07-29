@@ -27,8 +27,7 @@ class EmailLayoutProviderPassTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    // Any service whose class implements EmailLayoutProviderInterface is auto-discovered, no tag needed
-    // (e.g. SiteBundle's own EmailLayoutProvider)
+    // Any service implementing the interface is auto-discovered, no tag needed
     public function testProcessRegistersEveryEmailLayoutProviderImplementation(): void
     {
         $container = new ContainerBuilder();

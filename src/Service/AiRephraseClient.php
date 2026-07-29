@@ -21,13 +21,9 @@ class AiRephraseClient
     private const ANTHROPIC_DEFAULT_MODEL = 'claude-haiku-4-5';
     private const OPENAI_URI = 'https://api.openai.com/v1/chat/completions';
     private const OPENAI_DEFAULT_MODEL = 'gpt-4o-mini';
-    // No default here on purpose: Infomaniak's catalog isn't static enough to hardcode a fallback (a
-    // guessed id like "mixtral" gets rejected with a "validation_failed" 400 the moment it falls out of
-    // the account's actual catalog) - euria always requires "ui-ai-assistant-rephrase-model" explicitly,
-    // enforced by isEnabled() below
+    // No euria default: its catalog isn't static enough, so the model config is required by isEnabled()
 
-    // Closed list on purpose - $style always indexes this map, the value sent to the LLM is never the
-    // caller's raw string, so an unexpected "style" request parameter can't inject arbitrary instructions
+    // Closed list: $style indexes this map, so a request parameter can never inject its own instructions
     private const STYLES = [
         'neutral' => '',
         'professional' => ' Use a formal, professional tone.',
@@ -39,12 +35,7 @@ class AiRephraseClient
         'expanded' => ' Expand the text with more detail and context, while keeping the same meaning.',
     ];
 
-    // Same closed-list principle as STYLES - $length always indexes this map. Independent from the
-    // "expanded" style above: style controls tone, this controls length, and either can be combined.
-    // An explicit paragraph count rather than a relative "shorter"/"longer": an editor writing page
-    // content knows how much room the block has, where "a bit longer" gives an unpredictable result.
-    // "social_summary" is the odd one out - it targets the "Social network summary" field (see
-    // SiteBundle's PageCrudController), i.e. what ends up in the meta description and in a share card
+    // Same closed list as STYLES; an explicit paragraph count, a relative "longer" being unpredictable
     private const LENGTHS = [
         'same' => ' Keep approximately the same length.',
         'paragraph_1' => ' Rewrite it as exactly one paragraph.',
@@ -70,10 +61,7 @@ class AiRephraseClient
             return false;
         }
 
-        // Only euria needs its own base URI (openai/anthropic each call a fixed, hardcoded one) - without
-        // it, callOpenAiCompatible() would build a bare "/chat/completions" relative path and fail. Same
-        // reasoning for the model: euria has no safe default to fall back to (see EURIA note above), so
-        // it must be set explicitly or isEnabled() stays false
+        // Only euria needs its own base URI and model, the others calling a fixed URI with a safe default
         if ('euria' === $provider && (
             !$this->configService->get('ui-ai-assistant-rephrase-base-uri')
             || !$this->configService->get('ui-ai-assistant-rephrase-model')
@@ -114,9 +102,7 @@ class AiRephraseClient
                 default => null,
             };
         } catch (ExceptionInterface $e) {
-            // HttpExceptionInterface (4xx/5xx) exposes the response body, unlike the base exception's own
-            // message - the provider's own error detail (e.g. "unknown model") is far more actionable
-            // than a bare "HTTP/2 400 returned for ..." when diagnosing a misconfigured provider/model
+            // The response body carries the provider's own detail, far more actionable than "HTTP 400"
             $message = $e->getMessage();
             if ($e instanceof HttpExceptionInterface) {
                 $message .= ' ' . $e->getResponse()->getContent(false);
@@ -140,8 +126,7 @@ class AiRephraseClient
             ],
             'json' => [
                 'model' => $model,
-                // Anthropic requires it (the OpenAI-compatible call below leaves it to the provider's own
-                // default) - roomy enough for the longest LENGTHS entry ("paragraph_4") not to be cut off
+                // Required by Anthropic; roomy enough that the longest LENGTHS entry isn't cut off
                 'max_tokens' => 2048,
                 'messages' => [
                     ['role' => 'user', 'content' => $this->prompt($text, $styleInstruction, $lengthInstruction)],
@@ -166,8 +151,7 @@ class AiRephraseClient
         $uri = $isOpenAi
             ? self::OPENAI_URI
             : rtrim((string) $this->configService->get('ui-ai-assistant-rephrase-base-uri'), '/') . '/chat/completions';
-        // Euria always has a model set at this point (enforced by isEnabled()), openai falls back to its
-        // own stable default
+        // Euria always has a model set by now, enforced by isEnabled(); openai has a stable default
         $model = $isOpenAi
             ? ($this->configService->get('ui-ai-assistant-rephrase-model') ?: self::OPENAI_DEFAULT_MODEL)
             : (string) $this->configService->get('ui-ai-assistant-rephrase-model');

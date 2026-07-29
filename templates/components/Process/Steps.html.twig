@@ -9,9 +9,7 @@
                 <div class="section-step {{ loop.first ? 'section-step--first' }}">
                     <div class="section-step__num">{{ 'label.step_number'|trans({'%number%': '%02d'|format(loop.index)}, 'ui') }}</div>
                     <h3 class="section-step__title">{{ s.title }}</h3>
-                    {# A <div>, not a <p>: "text" is raw Trix HTML, already wrapped in its own block-level
-                       <div> - nesting that inside a <p> is invalid and the browser silently closes the
-                       outer <p> as soon as it hits the inner one (see Expertise/Banner.html.twig). #}
+                    {# A <div>, not a <p>: raw Trix HTML is already block-level and the browser would split the <p> #}
                     <div class="section-step__text">{{ s.text|raw }}</div>
                 </div>
             {% endfor %}

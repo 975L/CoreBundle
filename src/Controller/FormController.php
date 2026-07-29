@@ -119,9 +119,7 @@ class FormController extends AbstractController
 
         $symfonyForm = $this->buildSymfonyForm($uiForm, $this->prefillHelper->consume($request, $uiForm->getName()));
 
-        // Checked on the raw request, before handleRequest() below runs full validation (DnsEmail's DNS/MX lookup
-        // included) - a bot never pays that cost, and handleRequest() is skipped entirely rather than just ignoring
-        // its result, so the same redirect as a real submission follows with no hint given to the bot
+        // Checked before handleRequest(), which is then skipped entirely so the bot gets the same redirect and no hint
         $suspicious = $request->isMethod('POST')
             && $this->botProtection->isSuspicious($request, $symfonyForm->getName(), $this->sessionKeyFor($uiForm));
 
@@ -130,8 +128,7 @@ class FormController extends AbstractController
         }
 
         if (!$suspicious && $symfonyForm->isSubmitted() && $symfonyForm->isValid()) {
-            // No client IP to key the limiter on (e.g. a trusted-proxy misconfiguration) - fail open rather
-            // than lumping every such visitor onto one shared bucket, where one could exhaust the rest's limit
+            // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket
             $clientIp = $request->getClientIp();
             if (null !== $clientIp && !$this->rateLimiterGuard->isAccepted($this->formLimiterFactory, $clientIp)) {
                 $request->getSession()->getFlashBag()->add('warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));

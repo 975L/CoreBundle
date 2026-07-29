@@ -13,12 +13,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 
-// Common fields/methods for a bundle's own abstract Vich-uploaded media entity (id/position/name/size/file/
-// updatedAt/user + equals()) - each bundle keeps its OWN abstract class, own SINGLE_TABLE inheritance, own table
-// and own DiscriminatorMap scoped to its own subclasses (see ShopBundle\Entity\Media, CrowdfundingBundle\Entity\
-// Media): this trait shares the field mapping/behavior without creating any Doctrine relation - and therefore no
-// composer dependency - between those bundles. Doctrine attributes inside a trait apply independently to each
-// entity that uses it, so this is safe to reuse across otherwise-unrelated entity hierarchies
+// Shares the media field mapping without creating any Doctrine relation, hence no dependency, between bundles
 trait VichMediaTrait
 {
     #[ORM\Id]

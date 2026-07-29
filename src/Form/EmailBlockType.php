@@ -22,10 +22,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Entry type for the "blocks" CollectionField of an EmailTemplate. Same flat-shape principle as FormFieldType:
-// every kind shares one set of columns instead of a per-kind dynamic sub-form (see EmailBlock's own docblock for
-// why), so each field below is only meaningful for the kind(s) named in its help text - a v1 simplification, a
-// small Stimulus controller could show/hide them by the selected "type" later without changing the data shape
+// Flat shape: every kind shares one set of columns, each meaningful only for the kinds named in its help text
 class EmailBlockType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

@@ -1,10 +1,5 @@
-{# Attached next to a Trix editor, an opted-in plain form textarea (see block_theme.html.twig), or the
-   free-standing textarea on the AI Assistant page itself - expects "field_id", the DOM id of whichever
-   textarea it targets #}
-{# The controller reads these itself (plain dataset/querySelector, no Stimulus targets/values sugar -
-   see assets/js/ai-rephrase.js), so the names below are ordinary data-* attributes and only have to
-   match what that file looks for: the dasherized "ai-rephrase-*" form. Only "data-controller"/
-   "data-action" use the registered identifier "aiRephrase" #}
+{# Expects "field_id", the DOM id of the textarea it targets #}
+{# Plain data-* attributes, not Stimulus targets/values: ai-rephrase.js reads them via querySelector #}
 <div class="ai-rephrase"
      data-controller="aiRephrase"
      data-ai-rephrase-url-value="{{ path('management_ui_ai_assistant_rephrase') }}"

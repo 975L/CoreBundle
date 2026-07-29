@@ -1,10 +1,7 @@
 {# Static usage: <twig:c975LUi:Portfolio:Grid media="{{ block.media }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/PortfolioGrid.html.twig #}
-{# Per-project title/text/link come straight from each media's own label/description/url (see
-   MediaUploadType's "portfolio_grid" context) - no separate collection to keep in sync with the medias #}
-{# <section> only when the head carries a heading, a plain <div> otherwise - HTML's own advice for a
-   grouping with no heading, and what the W3C validator asks for (see Text/Section.html.twig). With no
-   title, the eyebrow becomes that heading, same rule as Section/_head.html.twig #}
+{# Per-project title/text/link come from each media's own label/description/url, no separate collection #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
 {% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
 <{{ tag }} class="portfolio-grid"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
@@ -25,9 +22,7 @@
                 {% set tag = m.url ? 'a' : 'div' %}
                 <{{ tag }} class="portfolio-grid__project"{% if m.url %} href="{{ m.url }}" target="_blank" rel="noopener"{% endif %}>
                     <div class="portfolio-grid__project-img">
-                        {# A projects grid is never the first thing on a page, so every thumbnail is lazy - and
-                           carries its auto-detected pixel size (see MediaDimensionsFiller), which reserves the
-                           box before the file arrives and stops the grid reflowing as each image lands #}
+                        {# Pixel size reserves the box so the grid doesn't reflow as each image lands #}
                         <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %} loading="lazy">
                     </div>
                     <div class="portfolio-grid__project-body">

@@ -130,8 +130,7 @@ class BlockMoveControllerTest extends TestCase
         $this->assertSame('unknown_owner', json_decode($response->getContent(), true)['error']);
     }
 
-    // The block must be reachable from the given owner (directly, or as a slot of one of its blocks) -
-    // otherwise anyone could relocate a Block belonging to a page they can't even see, just by guessing ids
+    // The block must be reachable from the given owner, else ids could be guessed to move another page's
     public function testReturns403WhenBlockDoesNotBelongToTheOwner(): void
     {
         $block = new Block();
@@ -199,8 +198,7 @@ class BlockMoveControllerTest extends TestCase
         $this->assertSame('target_not_a_container', json_decode($response->getContent(), true)['error']);
     }
 
-    // Even a genuine container target must belong to the very same owner - a target id from a different
-    // page must not be usable just because both happen to be containers
+    // A genuine container target must still belong to the very same owner
     public function testReturns400WhenTargetDoesNotBelongToTheOwner(): void
     {
         $block = new Block();

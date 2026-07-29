@@ -27,8 +27,7 @@ class FontProviderPassTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
-    // Any service whose class implements FontProviderInterface is auto-discovered, no tag needed
-    // (e.g. SiteBundle's own FontProvider)
+    // Any service implementing the interface is auto-discovered, no tag needed
     public function testProcessRegistersEveryFontProviderImplementation(): void
     {
         $container = new ContainerBuilder();

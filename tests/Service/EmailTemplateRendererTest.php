@@ -188,8 +188,7 @@ class EmailTemplateRendererTest extends TestCase
         $this->createRenderer()->render($emailTemplate);
     }
 
-    // renderBody() is the fragment meant to be embedded inside an app's own <html>/<body> layout (see
-    // EmailTemplateExtension) - no <!DOCTYPE>/<html>/<body>, just one <table> wrapping the compiled blocks
+    // renderBody() is the embeddable fragment: one <table>, no <!DOCTYPE>/<html>/<body>
     public function testRenderBodyOmitsDocumentWrapperButKeepsOneTable(): void
     {
         $emailTemplate = new EmailTemplate();
@@ -214,9 +213,7 @@ class EmailTemplateRendererTest extends TestCase
         $this->assertStringContainsString('href="https://example.test/reset/abc"', $html);
     }
 
-    // When a bundle (e.g. SiteBundle) registers an EmailLayoutProviderInterface, render() must delegate to it
-    // instead of its own standalone _wrapper.html.twig - so a preview and a real send both show the real branded
-    // header/footer layout
+    // With a layout provider registered, render() must delegate to it instead of its own wrapper
     public function testRenderDelegatesToRegisteredEmailLayoutProvider(): void
     {
         $loader = new FilesystemLoader();

@@ -14,10 +14,7 @@ use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Registry\EmailLayoutRegistry;
 
-// Compiles an EmailTemplate's blocks into one email-safe HTML document (table layout, inline CSS, no JS - see
-// templates/emails/blocks/*.html.twig) - kept separate from c975L\UiBundle\Twig\BlockExtension's render_block():
-// that one resolves a kind through BlockRegistry (DI-tagged, open-ended), this one resolves EmailBlock::TYPE_*
-// through a plain match() since the email-safe vocabulary is deliberately closed, see EmailBlock's own docblock
+// Compiles an EmailTemplate's blocks into one email-safe HTML document; separate from render_block(), the email-safe vocabulary being deliberately closed
 class EmailTemplateRenderer
 {
     public function __construct(
@@ -28,11 +25,7 @@ class EmailTemplateRenderer
     }
 
     /**
-     * Full standalone document - used by EmailTemplateCrudController's preview and by real EmailTemplate-based
-     * sends (e.g. SendEmailFormAction). When an EmailLayoutProviderInterface is registered (e.g. SiteBundle,
-     * bringing its own branded header/footer), the body is wrapped through it, so a preview and the actual
-     * recipient's inbox render the same way; with none registered, falls back to a bare standalone document
-     * (_wrapper.html.twig) - see EmailLayoutRegistry
+     * Full standalone document, wrapped through EmailLayoutProviderInterface when one is registered
      *
      * @param array<string, scalar> $variables see renderBody()
      */
@@ -111,11 +104,7 @@ class EmailTemplateRenderer
         ];
     }
 
-    // A TYPE_IMAGE url may be stored as just a path (e.g. "/medias/logo.webp") instead of a full absolute URL, so
-    // the domain lives in one place - the "site-url" ConfigBundle parameter, the same one fullLayout.html.twig
-    // itself already builds the logo's src from - rather than being hand-typed into every image block and going
-    // stale the day the domain changes. An already-absolute url (http(s):// or protocol-relative // - an
-    // external/CDN image) is left as-is
+    // A stored path is prefixed with "site-url", so the domain lives in one place; an absolute url is left as-is
     private function resolveImageUrl(?string $url): ?string
     {
         if (null === $url || '' === $url || 1 === preg_match('#^(https?:)?//#i', $url)) {
@@ -125,9 +114,7 @@ class EmailTemplateRenderer
         return rtrim((string) $this->configService->get('site-url'), '/') . '/' . ltrim($url, '/');
     }
 
-    // Literal "{{ key }}" replacement, NOT real Twig evaluation - an EmailBlock's text is admin-authored data, not
-    // code, so it must never be handed to Twig::createTemplate()/render-from-string (that would open a server-side
-    // template injection hole the moment an editor role is over-trusted or compromised)
+    // Literal replacement, never Twig evaluation: admin-authored text handed to Twig is a template injection hole
     private function substitute(?string $raw, array $variables): ?string
     {
         if (null === $raw || [] === $variables) {
@@ -144,9 +131,7 @@ class EmailTemplateRenderer
         return strtr($raw, $map);
     }
 
-    // Turns plain admin-authored text into safe <p>/<br> markup - escaped here (not left to Twig's own autoescape)
-    // so real paragraph tags can be inserted around each blank-line-separated block; the result is trusted HTML
-    // from this point on and output with |raw in text.html.twig
+    // Escaped here, not by Twig's autoescape, so real <p>/<br> can be inserted; trusted HTML from here on
     private function contentToHtml(?string $raw): string
     {
         if (null === $raw || '' === trim($raw)) {

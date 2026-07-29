@@ -17,8 +17,7 @@ class VectorTypeTest extends TestCase
 {
     private function createType(): VectorType
     {
-        // Type::__construct() is private/final in Doctrine DBAL, instances are normally obtained through
-        // the TypeRegistry - reflection is the documented way to unit test a Type in isolation
+        // Type::__construct() is private in DBAL, so reflection is the documented way to test one
         $reflection = new \ReflectionClass(VectorType::class);
 
         return $reflection->newInstanceWithoutConstructor();

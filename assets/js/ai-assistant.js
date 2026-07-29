@@ -7,15 +7,7 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
-// Minimal chat log for the dashboard assistant page - posts to AiAssistantController::ask(), nothing
-// is stored client-side beyond the current page's DOM (a reload clears the log)
-//
-// Deliberately not using Stimulus's `static targets`/`static values` sugar: with a camelCase identifier
-// ("aiAssistant") Stimulus looks for the non-dasherized "data-aiassistant-*" attributes, which is easy
-// to get wrong on the template side. Plain dataset/querySelector scoped to this.element sidesteps that,
-// but it means the names below are the contract: _ai_assistant_widget.html.twig MUST write the
-// dasherized "data-ai-assistant-*" form, or askUrl reads back empty and inputEl is null (a null input
-// makes ask() return before fetch(), so the box looks dead with no request at all).
+// Plain dataset/querySelector rather than Stimulus targets/values, whose camelCase identifier would want the non-dasherized "data-aiassistant-*"
 export default class extends Controller {
     get askUrl() {
         return this.element.dataset.aiAssistantAskUrlValue || '';
@@ -72,8 +64,7 @@ export default class extends Controller {
             });
     }
 
-    // "sources" is a backend-agnostic {label, url} list (see AiAssistantClientInterface) - rendered as
-    // plain links, built via DOM APIs (not innerHTML) since both text and sources come from the network
+    // Built via DOM APIs, not innerHTML: both text and sources come from the network
     appendEntry(kind, text, sources) {
         const log = this.logEl;
         if (!log) return;

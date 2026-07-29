@@ -130,6 +130,5 @@ function initTrixEditors() {
 window.addEventListener('DOMContentLoaded', initTrixEditors);
 document.addEventListener('turbo:load', initTrixEditors);
 document.addEventListener('c975l:block-data-loaded', initTrixEditors);
-// EasyAdmin's own collection JS (e.g. adding a card to section_cards' "cards" field) clones the
-// prototype and fires this instead - trix textareas it inserts would otherwise stay hidden (d-none)
+// EasyAdmin clones the prototype and fires this instead, else the inserted trix textareas stay hidden
 document.addEventListener('ea.collection.item-added', initTrixEditors);

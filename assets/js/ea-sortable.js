@@ -20,9 +20,7 @@ const UI_MOVE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 
 export default class extends Controller {
     connect() {
-        // Shared across every field's own listeners (not a per-field closure var) so a drag started in
-        // one field can be recognized by another field's own dragover/dragend - needed for the
-        // cross-collection Block move below (see moveAcrossFields())
+        // Shared, not a per-field closure, so another field's dragover recognizes a drag started elsewhere
         this.dragging = null;
         this.dragOriginField = null;
         this.dragOriginContainer = null;
@@ -97,22 +95,13 @@ export default class extends Controller {
         container.addEventListener('dragover', e => {
             if (!this.dragging) return;
 
-            // Reordering within the same field always works (unchanged from before); moving into a
-            // *different* field is only ever offered between two fields both marked as a Block
-            // collection (the page/menu's own top-level "blocks", or a container's own "slots") - every
-            // other sortable collection in this bundle (medias, form fields, email blocks...) keeps its
-            // original single-field-only behaviour untouched.
+            // Cross-field moves are only offered between two Block-collection fields; every other sortable stays single-field
             const sameField = field === this.dragOriginField;
             if (!sameField && !(this.isBlockCollectionField(field) && this.isBlockCollectionField(this.dragOriginField))) {
                 return;
             }
 
-            // A container's own "slots" field is nested inside the page/menu's top-level "blocks" field
-            // in the DOM (the container is itself one of its items) - without this, a dragover fired while
-            // hovering the inner (slots) field would also bubble up and re-trigger the outer (blocks)
-            // field's own listener right after, which would reparent the dragged row straight back out to
-            // top-level on every single mouse move. Stopping it here lets only the innermost matching
-            // field (the one the event actually targets) act.
+            // Only the innermost field may act: a "slots" field is nested inside "blocks", so bubbling would reparent the row straight back out
             e.stopPropagation();
             e.preventDefault();
             const after = this.dragAfter(field, e.clientY);
@@ -130,11 +119,7 @@ export default class extends Controller {
         return !!(field && field.dataset.blockCollection === '1');
     }
 
-    // A container's own "slots" often start out empty (nothing rendered yet but EasyAdmin's own
-    // "no items"/add-button placeholder, see empty_collection in EasyAdmin's form theme) - with no row
-    // of its own, that empty items area has no visible size to aim for. Highlighting every OTHER eligible
-    // Block-collection field's own items area the moment a compatible drag starts (sass/management/
-    // _block-collection.scss gives it a dashed-border "drop zone" look) makes it obvious, empty or not.
+    // An empty "slots" field has no visible size to aim a drag at, so every eligible target is outlined
     highlightDropTargets(originField) {
         this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => {
             if (field === originField || !this.isBlockCollectionField(field)) return;
@@ -211,22 +196,13 @@ export default class extends Controller {
             });
     }
 
-    // Fires only when a row was dropped into a *different* Block-collection field than it started in
-    // (see the dragover guard above) - persists the move immediately server-side (see
-    // BlockMoveController/Readme for why this can't just be a renamed form field like an ordinary
-    // same-field reorder: a Block dragged across collections keeps its own database id, a plain form
-    // resubmit would instead delete the original and create an empty new one, losing any attached media).
-    // "ownerType"/"ownerId"/the CSRF token are carried by the outermost Block-collection field on the
-    // page (the page/menu's own top-level "blocks") - read via the nearest [data-block-owner-type]
-    // ancestor-or-self, since a container's own "slots" field (nested inside it) doesn't repeat them.
+    // Persisted server-side rather than renamed in the form: a resubmit would delete the Block and recreate it empty, losing its media
     moveAcrossFields(item, finalField, originContainer, originNextSibling) {
         const root = finalField.closest('[data-block-owner-type]');
         const blockIdInput = item.querySelector('[name$="[id]"]');
         const blockId = blockIdInput ? blockIdInput.value : '';
 
-        // A block that isn't saved yet (still being drafted in this same open form) has no id to
-        // relocate against - stays out of this mechanism, same as a container with no id (see
-        // BlockType::addSlotsSubForm(), which then never marks that field as a Block collection at all)
+        // An unsaved block has no id to relocate against, so it stays out of this mechanism
         if (!blockId || !root) {
             this.revertToOrigin(item, originContainer, originNextSibling);
             return;
@@ -245,10 +221,7 @@ export default class extends Controller {
             body,
         }).then(response => {
             if (response.ok) {
-                // Reloads rather than leaving the moved row where it was dropped: the rest of this same
-                // edit form was built against the pre-move entity graph (fixed indices) - saving it as-is
-                // afterward could misalign against the now-changed collection it left behind. The
-                // success flash set by BlockMoveController survives the reload like it would a redirect.
+                // Reloaded: the rest of the form was built against the pre-move indices and would misalign
                 window.location.reload();
             } else {
                 this.revertToOrigin(item, originContainer, originNextSibling);

@@ -1,6 +1,2 @@
-{# Adapter for the dynamic Block system - a "flex_column" has no chrome of its own: it's a bare
-   vertical stack of its own "slots", each rendered through the normal render_block() pipeline. Meant
-   to be picked as a "flex_columns" row's own slot (see Section/FlexColumns.html.twig, whose
-   ".flex-columns__col" wrapper already provides the stacking/gap styling for what's rendered here) -
-   picking it directly as a top-level page block also works but renders with no wrapping at all. #}
+{# No chrome of its own: a bare vertical stack of "slots", the ".flex-columns__col" wrapper doing the styling #}
 {% for slot in block.slots %}{{ render_block(slot) }}{% endfor %}

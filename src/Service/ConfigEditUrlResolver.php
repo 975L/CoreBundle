@@ -14,18 +14,14 @@ use c975L\ConfigBundle\Entity\Config;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 
-// Builds a Config's own EasyAdmin edit URL (ConfigBundle's ConfigCrudController), falling back to the plain
-// Config list when $config is null (e.g. a slug not yet loaded into DB, a site that never ran
-// config:load-all) - shared by Twig\ConfigLinkExtension (one ad hoc slug) and
-// Controller\Management\AiAssistantController::configLinks() (a known batch of slugs)
+// Builds a Config's EasyAdmin edit URL, falling back to the plain list for a slug not yet in the DB
 class ConfigEditUrlResolver
 {
     public function __construct(private readonly AdminUrlGeneratorInterface $adminUrlGenerator)
     {
     }
 
-    // unsetAll() first: AdminUrlGenerator::generateUrl() never resets its own internal route parameters, so
-    // reusing one builder instance across calls would leak the previous config's entityId into the next url
+    // unsetAll() first: the generator keeps its route parameters, leaking the previous entityId otherwise
     public function resolve(?Config $config): string
     {
         $urlGenerator = $this->adminUrlGenerator->unsetAll()->setController(ConfigCrudController::class);

@@ -20,10 +20,7 @@ class TrixExtension extends AbstractExtension
         ];
     }
 
-    // Trix always wraps every line in its own block-level <div> (never <p>, even for a single-line
-    // field) - invalid wherever only phrasing content is allowed (e.g. inside <h1>, see Hero/Hero.html.twig).
-    // Adjacent blocks are joined with <br> so multi-line input still breaks visually, then the wrapping
-    // tags themselves are dropped.
+    // Drops Trix's block-level <div> wrappers, invalid where only phrasing content is allowed, joining lines with <br>
     public function trixInline(?string $html): string
     {
         if (!$html) {

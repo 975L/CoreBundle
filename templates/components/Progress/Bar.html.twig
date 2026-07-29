@@ -1,14 +1,7 @@
 {# <twig:c975LUi:Progress:Bar progressPercent="{{ progressPercent }}" [label="Skill"] [text="true"] [id=""]/> #}
-{# "id" is optional and purely for the caller's own anchoring/scripting - the bar's width does not need it #}
-{# "??" not the "default" filter: "default" also substitutes on an explicit false (an editor
-   unchecking "show percent"), which would silently turn it back on - "??" only ever falls back
-   when "text" is genuinely undefined (legacy blocks saved before this field existed) #}
+{# "??" not "default", which also substitutes on an explicit false and would turn "show percent" back on #}
 {% set text = text ?? true %}
-{# The width goes through a precomputed class (.progress-bar--w0 to --w100, see sass/_progress.scss)
-   rather than a style attribute or a <style> element: an inline style attribute is never covered by a
-   CSP nonce (only <style>/<link> *elements* are), and a <style> element is only valid inside <head> -
-   emitted here, inside the page's flow content, it is invalid HTML. Rounded to the nearest percent and
-   clamped, a fractional width being invisible at any real bar size anyway #}
+{# Width through a precomputed class: a style attribute is never covered by a CSP nonce #}
 {% set widthStep = max(0, min(100, progressPercent|round)) %}
 {% if label %}
     <div class="progress-header">

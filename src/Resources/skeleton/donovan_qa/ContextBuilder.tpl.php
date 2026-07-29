@@ -10,9 +10,7 @@ namespace <?= $namespace ?>;
 
 use c975L\UiBundle\Registry\BlockRegistry;
 
-// Builds the LLM prompt context ("### kind\nLabel: ...\nDescription: ...", one section per registered
-// block kind) so the model only ever cites real kinds instead of hallucinating one, and resolves the
-// kinds an answer cited back into {label, url} source pairs for the API response
+// One prompt section per registered block kind, so the model cites real kinds instead of hallucinating one
 class <?= $class_name ?>
 {
     public function __construct(
@@ -44,8 +42,7 @@ class <?= $class_name ?>
 
             $sources[] = [
                 'label' => $this->blockRegistry->getLabel($kind),
-                // TODO: point this wherever your own block gallery/showcase lives, if you have one -
-                // left empty on purpose rather than guessing at a URL scheme this bundle can't know
+                // TODO: point this at your own block gallery, if you have one
                 'url' => '',
             ];
         }

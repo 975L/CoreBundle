@@ -13,10 +13,7 @@
     text-decoration: none;
 }
 
-/* Sized to actually show the page's content (title, layout...) instead of a cropped sliver - the
-   source thumbnail is generated at 400px wide (see VichPdfThumbnailListener), plenty of room to scale
-   up from. Ratio close to A4 (portrait); object-position keeps the page's top (title area) in frame
-   rather than a centered crop. */
+// A4-ish ratio, top-anchored so the page's title stays in frame instead of a centered crop
 .document-download__thumb {
     width: 64px;
     height: 90px;

@@ -42,8 +42,7 @@ class FlexColumnsTypeTest extends TestCase
         }
     }
 
-    // "slots" is deliberately not part of this form: it's the real Block relation added by
-    // BlockType::addSlotsSubForm() (see BlockTypeTest), not plain data on this kind's own form
+    // "slots" is the Block relation added by addSlotsSubForm(), not plain data on this form
     public function testBuildFormDoesNotAddASlotsField(): void
     {
         $added = $this->buildAddedFields();

@@ -17,9 +17,7 @@ use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 // Extracted from ContactFormBundle's ContactFormService (consumeRateLimiter()/isRateLimitAccepted())
 class RateLimiterGuardTest extends TestCase
 {
-    // A real Symfony\Component\RateLimiter\RateLimiterFactory (final, can't be stubbed), backed by
-    // in-memory storage so no cache/lock service is needed - $limit caps how many isAccepted() calls
-    // return true for the same $key before the guard starts rejecting
+    // A real factory, final and unstubbable, backed by in-memory storage so no cache service is needed
     private function limiterFactory(int $limit): RateLimiterFactory
     {
         return new RateLimiterFactory(

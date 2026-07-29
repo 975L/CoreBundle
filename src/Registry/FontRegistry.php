@@ -20,8 +20,7 @@ class FontRegistry
         $this->providers[] = $provider;
     }
 
-    // Only one app-wide font source is expected - the first registered provider wins; an empty array means
-    // no provider is installed (e.g. an app with no SiteBundle), letting the caller fall back on its own
+    // The first registered provider wins; an empty array means none is installed, so the caller falls back
     public function getFonts(): array
     {
         return [] === $this->providers ? [] : $this->providers[0]->getFonts();

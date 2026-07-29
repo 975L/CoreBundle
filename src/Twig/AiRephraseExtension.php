@@ -12,9 +12,7 @@ use c975L\UiBundle\Service\AiRephraseClient;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-// Lets any Trix-editor form theme (see block_theme.html.twig's trix_editor_widget) conditionally render
-// the rephrase button without every such template needing AiRephraseClient injected directly - form
-// theme blocks only get "form"/"attr", not arbitrary services
+// Form theme blocks only get "form"/"attr", never a service, hence this extension
 class AiRephraseExtension extends AbstractExtension
 {
     public function __construct(

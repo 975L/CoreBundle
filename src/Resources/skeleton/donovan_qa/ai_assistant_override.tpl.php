@@ -1,12 +1,8 @@
-{# Overrides UiBundle's ai_assistant.html.twig to add this self-hosted Donovan (Q&A) backend's status/setup
-   (see DonovanQaExtension) - app-specific, this file only exists here because this app operates its own
-   backend. MUST extend "_ai_assistant_base.html.twig" here, never "management/ai_assistant.html.twig"
-   itself - see that base file's own "extra_backends" block comment for why (self-reference loop) #}
+{# Adds this app's self-hosted Donovan backend; MUST extend the base file, never ai_assistant.html.twig itself #}
 {% extends '@c975LUi/management/_ai_assistant_base.html.twig' %}
 
 {% block extra_backends %}
-    {# Same bar as the dashboard assistant section above: this backend is a shared/mutualized resource if
-       more than one site calls into it, so who can see/configure it stays narrow #}
+    {# Same bar as the section above: a backend several sites may call into stays narrowly visible #}
     {% if is_granted('ROLE_SUPER_ADMIN') %}
         <h2 class="mt-4">Donovan (Q&amp;A) — backend</h2>
         <p class="text-muted">Answers "which block should I use" for every site pointed at it - see <code>DonovanQaController</code>.</p>

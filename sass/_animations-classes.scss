@@ -64,10 +64,7 @@
     animation: zoomIn 1s ease-in-out both;
 }
 
-/* Block-level entrance wrapper (see Blocks/Block.html.twig): .block-animation itself is
-   display:contents (defined in _animations-media.scss) so it never becomes the flex/grid item
-   in place of the block's own element (e.g. .cards relies on .card being a direct child) -
-   the animation is applied to that real child via "> *" instead of to the wrapper. */
+// Applied to "> *": .block-animation is display:contents and has no box of its own
 .block-animation.slide-in-left > * {
     animation: slideInFromLeft 0.5s ease-out both;
 }

@@ -189,4 +189,14 @@
   background-color: rgba(13, 110, 253, 0.06);
 }
 
+.form-group.field-collection .accordion-body > .row > div,
+.form-group.field-collection .accordion-item .form-widget {
+  min-inline-size: 0;
+}
+
+.form-group.field-collection .accordion-item .form-widget .form-select,
+.form-group.field-collection .accordion-item .form-widget .form-control {
+  max-inline-size: 100%;
+}
+
 /*# sourceMappingURL=management.css.map */

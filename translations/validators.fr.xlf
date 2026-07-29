@@ -14,6 +14,14 @@
                 <source>text.email_domain_unreachable</source>
                 <target>Le domaine de cette adresse email ne semble pas accepter de courrier</target>
             </trans-unit>
+            <trans-unit id="peoWeuy">
+                <source>text.feature_bar_items_max</source>
+                <target>Une bande de réassurance peut contenir au maximum {{ limit }} arguments.</target>
+            </trans-unit>
+            <trans-unit id="bQpc9FG">
+                <source>text.hero_media_max</source>
+                <target>Une section hero peut contenir au maximum {{ limit }} images.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

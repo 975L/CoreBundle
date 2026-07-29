@@ -1,14 +1,9 @@
-{# Consecutive "card" blocks are wrapped in a ".cards" flex row (see sass/_cards.scss) - blocks
-   otherwise render one after another, not side by side. #}
+{# Consecutive "card" blocks are wrapped in a ".cards" flex row, else they stack instead of lining up #}
 {% set kinds = blocks|map(b => b.kind) %}
-{# Editor-only: resolving edit URLs runs a query (see BlockEditUrlRegistry) - skip it entirely for
-   the vast majority of anonymous/non-editor visitors instead of computing URLs nobody will see. #}
+{# Editor-only: resolving edit URLs runs a query nobody else would see the result of #}
 {% set canEditBlocks = is_granted(config('site-role-editor')) %}
 {% set editUrls = canEditBlocks ? block_edit_urls(blocks) : [] %}
-{# Wrapper needed so the animateScroll Stimulus controller connects once per page - it then
-   watches every ".scroll" element document-wide (see assets/js/animate-scroll.js). ".blocks" is
-   display:contents (see sass/_animations-media.scss) so it stays transparent to the parent's own
-   layout (e.g. a flex/grid parent needs each block as its own direct child, not this wrapper). #}
+{# Connects the animateScroll controller once per page; display:contents keeps it out of the layout #}
 <div class="blocks" data-controller="animateScroll{{ canEditBlocks ? ' blockEditOverlay' : '' }}"{% if canEditBlocks %} data-edit-label="{{ 'label.edit'|trans({}, 'ui') }}"{% endif %}>
     {% for block in blocks %}
         {% set isCard = block.kind == 'card' %}

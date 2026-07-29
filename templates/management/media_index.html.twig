@@ -1,8 +1,6 @@
 {% extends '@EasyAdmin/crud/index.html.twig' %}
 
-{# Flat flex gallery instead of the default table - a media library reads better as thumbnails than
-   as rows. Each thumbnail links to entity.defaultActionUrl (Edit when allowed, Detail otherwise - e.g.
-   for read-only site-wide role graphics, see MediaCrudController's displayIf on Action::EDIT). #}
+{# Flex gallery instead of the default table: a media library reads better as thumbnails than as rows #}
 {% block main %}
     <p>{{ ('label.info_media'|trans({}, 'ui')) }}</p>
 

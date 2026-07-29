@@ -12,11 +12,7 @@ use c975L\ConfigBundle\Management\DashboardWidgetProviderInterface;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-// Donovan's card on Config's dashboard home - deliberately no "not enabled yet" placeholder: exactly
-// the same condition as AiAssistantController::index()'s own question-box branch
-// (AiAssistantClientInterface::isEnabled() + ROLE_SUPER_ADMIN, see _ai_assistant_base.html.twig), so
-// as long as either isn't true the widget stays entirely absent - AiAlertProvider is the only nudge
-// pointing at the dedicated setup page in that case.
+// No "not enabled yet" placeholder: the widget stays absent, AiAlertProvider being the nudge in that case
 class DonovanWidgetProvider implements DashboardWidgetProviderInterface
 {
     public function __construct(

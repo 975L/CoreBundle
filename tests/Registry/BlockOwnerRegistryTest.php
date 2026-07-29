@@ -58,9 +58,7 @@ class BlockOwnerRegistryTest extends TestCase
         $this->assertNull($registry->find('page', 1));
     }
 
-    // Rather than silently letting the first-registered provider win, two providers claiming the
-    // same ownerType must fail loudly - the alternative is a resolver becoming permanently and
-    // silently unreachable (see ChangeLog/BlockOwnerRegistry)
+    // Two providers claiming the same ownerType must fail loudly, not leave one silently unreachable
     public function testFindThrowsWhenSeveralProvidersSupportTheSameOwnerType(): void
     {
         $first = $this->createStub(BlockOwnerResolverInterface::class);

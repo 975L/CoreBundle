@@ -1,0 +1,23 @@
+/* EMAIL BASE */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    max-width: var(--body-max-width);
+    margin: 0 auto;
+    background-color: var(--background);
+    font-weight: var(--font-body-weight);
+}
+
+// No "scroll-behavior"/"overflow-x" counterpart to the page's html rule: neither means anything in a
+// mail client, which renders the document inside its own reading pane
+html {
+    background-color: var(--frame-background);
+}
+
+.hidden {
+    visibility: hidden;
+}

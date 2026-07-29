@@ -15,15 +15,7 @@ use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiUsageTracker;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// Three dashboard-wide alerts, all linking to the AI Assistant page itself (not the Config screen
-// directly) - that page explains what each feature needs and links onward to Config for the actual
-// values, rather than dropping an editor into the raw config list with no context:
-// - the dashboard assistant and the rephrase feature each get a low-key info nudge while their own
-//   isEnabled() reports false - the exact same call AiAssistantController::index() makes for its own
-//   "question box vs setup guide" branch, so the alert and the page can never disagree with each other
-// - a warning while the rephrase feature's last attempt failed (see AiUsage::recordFailure(), cleared
-//   automatically on its next success), so a broken/revoked API key doesn't fail silently click after
-//   click until an editor happens to report it
+// Two setup nudges keyed on the same isEnabled() the page itself reads, plus a warning while the last rephrase failed
 class AiAlertProvider implements AlertProviderInterface
 {
     public function __construct(

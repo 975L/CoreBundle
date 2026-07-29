@@ -22,8 +22,7 @@ use PHPUnit\Framework\TestCase;
 
 class SendEmailFormActionTest extends TestCase
 {
-    // Both new dependencies default to "no EmailTemplate found" stubs, so a test not concerned with the
-    // "emailTemplate" actionConfig key still exercises the legacy "template" path unchanged
+    // Both dependencies default to "no EmailTemplate found", so the legacy path stays exercised
     private function createAction(
         EmailService $emailService,
         ?EmailTemplateRepository $emailTemplateRepository = null,
@@ -96,8 +95,7 @@ class SendEmailFormActionTest extends TestCase
         $this->assertNull($captured->copyToEmail);
     }
 
-    // Regression guard: only "name" is guaranteed unique per Form - two fields sharing the same label must
-    // not collapse onto the same context key and silently drop one of the two submitted values
+    // Only "name" is unique, so two fields sharing a label must not collapse onto one context key
     public function testHandleDisambiguatesDuplicateFieldLabels(): void
     {
         $captured = null;
@@ -199,8 +197,7 @@ class SendEmailFormActionTest extends TestCase
         $this->assertFalse($action->handle($form, []));
     }
 
-    // When actionConfig's "emailTemplate" names an EmailTemplate that actually exists, the compiled EmailBuilder
-    // HTML is used instead of the legacy Twig "template" path (see EmailTemplateRenderer)
+    // A named EmailTemplate that exists wins over the legacy Twig "template" path
     public function testHandleUsesEmailTemplateWhenConfiguredAndFound(): void
     {
         $captured = null;
@@ -239,8 +236,7 @@ class SendEmailFormActionTest extends TestCase
         $this->assertSame([$emailTemplate, ['form_name' => 'contact', 'fields' => ['Email' => 'visitor@example.com']]], $capturedRenderArgs);
     }
 
-    // A stale/typo'd "emailTemplate" name (no matching row) must not break the send - it silently falls back to
-    // the legacy "template" path exactly as if "emailTemplate" had never been set
+    // A stale "emailTemplate" name must fall back to the legacy path, never break the send
     public function testHandleFallsBackToLegacyTemplateWhenEmailTemplateNameNotFound(): void
     {
         $captured = null;

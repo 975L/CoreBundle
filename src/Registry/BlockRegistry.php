@@ -13,24 +13,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Check readme for use
 class BlockRegistry
 {
-    // Passed as the "context" of a top-level container kind's own nested "slots" collection (e.g.
-    // "flex_columns", see BlockType::addSlotsSubForm()/getSlotContext() below) - a slot picking a container
-    // kind back would let an editor nest containers indefinitely, which BlockType's recursive sub-form
-    // wiring has no depth guard against, so groupBy() excludes every container kind from this context by
-    // default. A container may opt back in to being offered here (and only here) via its own "contexts"
-    // - see "flex_column", opted into this one, so a "flex_columns" row's slots can be plain blocks or a
-    // "flex_column" wrapping several - but never another "flex_columns", and see NESTED_SLOT_CONTEXT for
-    // "flex_column"'s own slots, where nothing is opted in, so no third level is possible.
+    // Default context of a container's own "slots"; containers are excluded from it, there being no depth guard
     public const SLOT_CONTEXT = 'flex_slot';
 
-    // A second, distinct context string for a *nested* container's own slots (e.g. "flex_column", itself
-    // only reachable via SLOT_CONTEXT) - kept separate from SLOT_CONTEXT so a kind can opt into being
-    // offered at one nesting depth without automatically being offered at the other (see "flex_column"'s
-    // "contexts", which lists SLOT_CONTEXT but not this one).
+    // The slots of a nested container, kept separate so a kind can opt into one nesting depth and not the other
     public const NESTED_SLOT_CONTEXT = 'flex_slot_nested';
 
-    // Display order of the "kind" picker's optgroups (untranslated category keys, so it holds across locales) -
-    // a category not listed here (e.g. a future bundle's own) falls back after all of these, alphabetically
+    // Its own context because it is exclusive: only a column carries the width option a bare slot can't store
+    public const FLEX_COLUMNS_SLOT_CONTEXT = 'flex_columns_slot';
+
+    // A navbar must stay a plain list of links, hence its exclusive context; a footer/email menu takes any kind
+    public const MENU_CONTEXT = 'menu';
+    public const MENU_NAVBAR_CONTEXT = 'menu_navbar';
+
+    // Contexts offering only kinds that declared them, the opposite of the default "no contexts = everywhere"
+    private const EXCLUSIVE_CONTEXTS = [self::MENU_NAVBAR_CONTEXT, self::FLEX_COLUMNS_SLOT_CONTEXT];
+
+    // Optgroup order, untranslated so it holds across locales; an unlisted category falls after, alphabetically
     private const CATEGORY_ORDER = [
         'label.category_sections',
         'label.category_elements',
@@ -201,26 +200,19 @@ class BlockRegistry
         return $this->get($kind)['cacheable'];
     }
 
-    // True for kinds that embed their own nested Block rows as "slots" (e.g. "flex_columns", "flex_column")
-    // - BlockType uses this to decide whether to wire up the "slots" sub-form, and groupBy() uses it to keep
-    // such kinds out of a slot's own kind choices by default (see SLOT_CONTEXT/NESTED_SLOT_CONTEXT)
+    // True for kinds embedding their own nested Block rows as "slots"
     public function isContainer(string $kind): bool
     {
         return $this->get($kind)['container'];
     }
 
-    // The context a container kind's own "slots" collection is built with (see BlockType::addSlotsSubForm())
-    // - defaults to SLOT_CONTEXT, only meaningful for a kind where isContainer() is true
+    // The context a container's "slots" collection is built with, only meaningful when isContainer() is true
     public function getSlotContext(string $kind): string
     {
         return $this->get($kind)['slotContext'];
     }
 
-    // Same eligibility rules groupBy() applies to every kind it lists under a given $context (a
-    // non-pickable kind is never offered anywhere; a container is excluded from any slot context unless it
-    // explicitly opted into that one - see SLOT_CONTEXT/NESTED_SLOT_CONTEXT) - exposed standalone so
-    // BlockMoveController can check "may this already-existing block legally sit in that container's
-    // slots" without going through the translated, category-grouped picker list
+    // groupBy()'s own eligibility rules, exposed standalone so BlockMoveController can check an existing block
     public function isAllowedInContext(string $kind, ?string $context): bool
     {
         $config = $this->get($kind);
@@ -229,6 +221,9 @@ class BlockRegistry
             return false;
         }
         if (null !== $context && !empty($config['contexts']) && !in_array($context, $config['contexts'], true)) {
+            return false;
+        }
+        if (in_array($context, self::EXCLUSIVE_CONTEXTS, true) && !in_array($context, $config['contexts'], true)) {
             return false;
         }
 
@@ -254,8 +249,7 @@ class BlockRegistry
         return $this->groupBy(fn (string $kind, array $config) => $config['bundle'], $context, $this->groupedByBundleCache);
     }
 
-    // Shared by groupedByCategory()/groupedByBundle(): groups pickable, context-eligible kinds by whatever key $keyFn returns, then orders each group by priority (highest first, alphabetical tie-break) - only the grouping key and the target cache array differ between the two callers.
-    // $orderKeyFn, when given (groupedByCategory() only), returns the raw untranslated key used to rank optgroups against CATEGORY_ORDER instead of the default alphabetical ksort() - kept separate from $keyFn since the latter returns the already-translated label used as the group's display key
+    // Groups eligible kinds by $keyFn, each group ordered by priority; $orderKeyFn ranks the optgroups themselves
     private function groupBy(callable $keyFn, ?string $context, array &$cache, ?callable $orderKeyFn = null): array
     {
         $cacheKey = $context ?? '';
@@ -266,13 +260,6 @@ class BlockRegistry
         $grouped = [];
         $orderKeys = [];
         foreach ($this->blocks as $kind => $config) {
-            // See isAllowedInContext() for the exact rules (pickable, contexts, container-in-slot-context)
-            // - a container with no "contexts" declared (e.g. "flex_columns") must still be pickable at the
-            // top level ('page'/null context); the check used to fire for every context, which silently
-            // dropped such a container from its own kind-choice list even though the block already had
-            // that very kind persisted (see BlockType's "kind" ChoiceType: a current value absent from
-            // "choices" just renders unselected), so any save of a page carrying one wiped its "kind" back
-            // to null the moment the form was submitted.
             if (!$this->isAllowedInContext($kind, $context)) {
                 continue;
             }

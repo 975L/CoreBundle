@@ -16,13 +16,7 @@ use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
-// Generates a self-hosted backend for UiBundle's dashboard assistant ("Donovan (Q&A)", see Readme "AI
-// Assistant" > "Self-hosting your own backend"): a controller, an LLM client, a block-context builder, and
-// a setup-guide Twig extension + template override (matching 975l.com's own reference implementation,
-// AiHelpController/AiHelpLlmClient/DonovanQaExtension). Doesn't touch config/configs.json: creating/
-// loading app-level config entries is app-specific (see 975l.com's own 15-line AppConfigLoadCommand for a
-// model), so the needed entries are printed as a snippet to paste instead - same reasoning as
-// MakeBlockCommand's services.yaml snippet, never guess-merge into a file this maker doesn't own
+// Generates a self-hosted backend for the dashboard assistant; configs.json entries are printed as a snippet, never guess-merged
 class MakeDonovanQaCommand extends AbstractMaker
 {
     private const SKELETON_DIR = __DIR__ . '/../Resources/skeleton/donovan_qa';
@@ -42,15 +36,12 @@ class MakeDonovanQaCommand extends AbstractMaker
 
     public function configureCommand(Command $command, InputConfiguration $inputConfig): void
     {
-        // No argument needed: every generated class/slug is fixed ("Donovan" is hardcoded bundle-wide,
-        // see AiRephraseExtension::assistantName()) - nothing here is meant to vary per app
+        // No argument needed: every generated class and slug is fixed, nothing varies per app
     }
 
     public function interact(InputInterface $input, ConsoleStyle $io, Command $command): void
     {
-        // Defaults to no: an exact-hash-only backend answering every rephrasing fresh from the LLM is a
-        // perfectly valid first self-hosted backend (see Readme) - this is an opt-in on top of it, not a
-        // replacement, since it pulls in a new entity/migration/embedding-model dependency
+        // Opt-in, not a default: it pulls in a new entity, migration and embedding-model dependency
         $this->withSemanticCache = $io->confirm(
             'Add a semantic cache (question embeddings, recognizing a rephrasing of an already-answered '
                 . 'question) on top of the exact-hash cache? Needs MariaDB 11.7+/MySQL 9+ and an '
@@ -139,9 +130,7 @@ class MakeDonovanQaCommand extends AbstractMaker
             'llm_client_short_name' => $llmClientClass->getShortName(),
         ]);
 
-        // Fixed physical path: this is how Symfony resolves "@c975LUi/management/ai_assistant.html.twig"
-        // once it exists (see that path's own comment for why it must extend _ai_assistant_base.html.twig,
-        // never itself)
+        // Fixed physical path, how Symfony resolves the bundle override once it exists
         $generator->generateTemplate(
             'bundles/c975LUiBundle/management/ai_assistant.html.twig',
             self::SKELETON_DIR . '/ai_assistant_override.tpl.php',
