@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -9,7 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Listener;
 
-use App\Entity\User;
+use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\BlockUserListener;
@@ -22,9 +23,7 @@ use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 
-require_once __DIR__ . '/../Fixtures/AppUserStub.php';
-
-// App\Entity\User (the type BlockUserListener actually assigns) belongs to the consuming application, not to this standalone bundle checkout - Fixtures/AppUserStub.php defines a minimal stand-in so the "somebody is logged in" branches (previously untestable here) can be covered too.
+// The listener assigns whatever implements c975L\ConfigBundle\Contract\UserInterface, not the application's App\Entity\User directly, so a plain stub of that interface covers the "somebody is logged in" branches without the app being there
 class BlockUserListenerTest extends TestCase
 {
     private function createPersistArgs(object $entity): PrePersistEventArgs
@@ -37,6 +36,16 @@ class BlockUserListenerTest extends TestCase
         $changeSet = [];
 
         return new PreUpdateEventArgs($entity, $entityManager, $changeSet);
+    }
+
+    // Skipped rather than stubbed while the interface ships in a ConfigBundle newer than the released one this checkout pulls - duplicating it here would hide the day the real one changes
+    private function createUserStub(): UserInterface
+    {
+        if (!interface_exists(UserInterface::class)) {
+            self::markTestSkipped('c975L\ConfigBundle\Contract\UserInterface not available in the installed c975l/config-bundle');
+        }
+
+        return $this->createStub(UserInterface::class);
     }
 
     public function testPrePersistIgnoresEntitiesThatAreNotBlockOrMedia(): void
@@ -75,7 +84,7 @@ class BlockUserListenerTest extends TestCase
 
     public function testPrePersistAssignsTheLoggedInUser(): void
     {
-        $user = new User('alice');
+        $user = $this->createUserStub();
         $security = $this->createStub(Security::class);
         $security->method('getUser')->willReturn($user);
 
@@ -89,11 +98,11 @@ class BlockUserListenerTest extends TestCase
     // Regression guard: prePersist used to skip assignment entirely when the entity already had a user (e.g. explicitly set by an import/fixture loader before persist()) - it no longer does, by design (see the class comment: $user always reflects the last editor, not just the creator)
     public function testPrePersistOverwritesAnAlreadyAssignedUser(): void
     {
-        $newUser = new User('bob');
+        $newUser = $this->createUserStub();
         $security = $this->createStub(Security::class);
         $security->method('getUser')->willReturn($newUser);
 
-        $block = (new Block())->setUser(new User('alice'));
+        $block = (new Block())->setUser($this->createUserStub());
 
         (new BlockUserListener($security))->prePersist($this->createPersistArgs($block));
 
@@ -147,7 +156,7 @@ class BlockUserListenerTest extends TestCase
     // Somebody logged in: the entity's user is overwritten (even if it already had one - same "last editor, not just creator" intent as prePersist) and the changeset is recomputed so Doctrine actually includes "user" in the SQL UPDATE, even when it's the only field that changed
     public function testPreUpdateAssignsTheLoggedInUserAndRecomputesTheChangeSet(): void
     {
-        $newUser = new User('bob');
+        $newUser = $this->createUserStub();
         $security = $this->createStub(Security::class);
         $security->method('getUser')->willReturn($newUser);
 
@@ -162,7 +171,7 @@ class BlockUserListenerTest extends TestCase
         $entityManager->expects($this->once())->method('getClassMetadata')->with(Block::class)->willReturn($classMetadata);
         $entityManager->method('getUnitOfWork')->willReturn($unitOfWork);
 
-        $block = (new Block())->setUser(new User('alice'));
+        $block = (new Block())->setUser($this->createUserStub());
 
         (new BlockUserListener($security))->preUpdate($this->createUpdateArgs($block, $entityManager));
 

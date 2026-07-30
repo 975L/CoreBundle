@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -36,8 +37,8 @@ final class MultiUploadMerger
                 'file' => ['file' => $file],
                 'position' => (string) $position,
             ];
-            $nextKey++;
-            $position++;
+            ++$nextKey;
+            ++$position;
         }
 
         return $medias;

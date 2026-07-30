@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -65,13 +66,76 @@ class TrixExtensionTest extends TestCase
         );
     }
 
+    public function testPlainTextReturnsEmptyStringForNull(): void
+    {
+        $extension = new TrixExtension();
+
+        $this->assertSame('', $extension->plainText(null));
+    }
+
+    public function testPlainTextReturnsEmptyStringForEmptyString(): void
+    {
+        $extension = new TrixExtension();
+
+        $this->assertSame('', $extension->plainText(''));
+    }
+
+    public function testPlainTextDropsEveryTag(): void
+    {
+        $extension = new TrixExtension();
+
+        $this->assertSame(
+            'Bold text',
+            $extension->plainText('<div class="text-center"><strong>Bold</strong> text</div>')
+        );
+    }
+
+    public function testPlainTextDecodesEntitiesSoTwigDoesNotEscapeThemTwice(): void
+    {
+        $extension = new TrixExtension();
+
+        $this->assertSame(
+            'Superéthanol E85 & FlexFuel « l\'essai »',
+            $extension->plainText('<div>Superéthanol E85 &amp; FlexFuel &laquo; l&#39;essai &raquo;</div>')
+        );
+    }
+
+    public function testPlainTextCollapsesTheSpacesLeftByTheBlockTags(): void
+    {
+        $extension = new TrixExtension();
+
+        $this->assertSame(
+            'Line 1 Line 2 Line 3',
+            $extension->plainText('<div>Line 1</div><div>Line 2<br>Line 3</div>')
+        );
+    }
+
+    public function testPlainTextLeavesNoSpaceWhereAnInlineTagClosedMidSentence(): void
+    {
+        $extension = new TrixExtension();
+
+        $this->assertSame(
+            'Votre Garage Branché by REVOLTE. Pour 100 ans !',
+            $extension->plainText('<div><strong>Votre Garage Branché by </strong><a href="#"><strong>REVOLTE</strong></a><strong>. Pour 100 ans !</strong></div>')
+        );
+    }
+
     public function testGetFiltersRegistersTrixInlineFilterAsHtmlSafe(): void
     {
         $extension = new TrixExtension();
         $filters = $extension->getFilters();
 
-        $this->assertCount(1, $filters);
+        $this->assertCount(2, $filters);
         $this->assertSame('trix_inline', $filters[0]->getName());
         $this->assertSame(['html'], $filters[0]->getSafe(new \Twig\Node\TextNode('', 0)));
+    }
+
+    public function testGetFiltersRegistersPlainTextFilterAsEscapable(): void
+    {
+        $extension = new TrixExtension();
+        $filters = $extension->getFilters();
+
+        $this->assertSame('plain_text', $filters[1]->getName());
+        $this->assertSame([], $filters[1]->getSafe(new \Twig\Node\TextNode('', 0)));
     }
 }

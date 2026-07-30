@@ -1,10 +1,12 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Entity\Block;
@@ -15,10 +17,9 @@ use c975L\UiBundle\Service\BlockCacheInvalidator;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Twig\Extension\AbstractExtension;
 use Twig\Environment;
+use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
-
 
 class BlockExtension extends AbstractExtension
 {
@@ -28,8 +29,9 @@ class BlockExtension extends AbstractExtension
         private TagAwareCacheInterface $cache,
         private RequestStack $requestStack,
         private BlockCacheTagRegistry $cacheTagRegistry,
-        private BlockEditUrlRegistry $blockEditUrlRegistry
-    ) {}
+        private BlockEditUrlRegistry $blockEditUrlRegistry,
+    ) {
+    }
 
     public function getFunctions(): array
     {
@@ -59,8 +61,15 @@ class BlockExtension extends AbstractExtension
             return $this->doRender($block);
         }
 
+        $request = $this->requestStack->getCurrentRequest();
+
+        // Rendered outside any http request (a console command, a messenger worker): the RequestContext then falls back to its "http://localhost" defaults, which "framework.router.default_uri" does not fill in, so anything request-dependent in a template would be frozen into the entry and served to every visitor afterwards - rendered, never cached
+        if (null === $request) {
+            return $this->doRender($block);
+        }
+
         // Locale is part of the key: some templates (e.g. legal_model) render different content per app.request.locale, not just per Block::$data
-        $locale = $this->requestStack->getCurrentRequest()?->getLocale() ?? 'fr';
+        $locale = $request->getLocale();
 
         return $this->cache->get(
             sprintf('block_render_%d_%s', $block->getId(), $locale),

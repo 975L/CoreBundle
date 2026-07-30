@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Controller;
 
 use c975L\UiBundle\Form\BlockType;
@@ -24,8 +26,9 @@ class BlockFormController extends AbstractController
 {
     public function __construct(
         private BlockRegistry $registry,
-        private FormFactoryInterface $formFactory
-    ) {}
+        private FormFactoryInterface $formFactory,
+    ) {
+    }
 
     #[Route('/ui/block/data-form', name: 'ui_block_data_form', methods: ['GET', 'POST'])]
     public function dataForm(Request $request): Response
@@ -49,24 +52,24 @@ class BlockFormController extends AbstractController
             $accept = implode(',', $this->registry->getMediaTypes($kind));
 
             $builder->add('medias', CollectionType::class, [
-                'label'         => 'label.media',
-                'help'          => $this->registry->getMediaHelp($kind),
-                'entry_type'    => MediaUploadType::class,
+                'label' => 'label.media',
+                'help' => $this->registry->getMediaHelp($kind),
+                'entry_type' => MediaUploadType::class,
                 'entry_options' => ['accept' => $accept, 'context' => $kind],
-                'allow_add'     => true,
-                'allow_delete'  => true,
-                'by_reference'  => false,
-                'prototype'     => true,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'prototype' => true,
             ]);
 
             // Mirrors BlockType::addMediaSubForm() - only relevant here so the AJAX-loaded preview (picking a kind on a brand new block) shows the same multi-upload input right away
             if ($this->registry->allowsMultiUpload($kind)) {
                 $builder->add('mediaUpload', FileType::class, [
-                    'label'    => 'label.media_multi_upload',
-                    'help'     => 'label.media_multi_upload_help',
+                    'label' => 'label.media_multi_upload',
+                    'help' => 'label.media_multi_upload_help',
                     'required' => false,
                     'multiple' => true,
-                    'attr'     => array_filter(['accept' => $accept]),
+                    'attr' => array_filter(['accept' => $accept]),
                 ]);
             }
         }

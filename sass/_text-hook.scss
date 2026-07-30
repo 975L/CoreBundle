@@ -18,6 +18,14 @@
     margin-block: var(--text-hook-standalone-margin, 32px);
 }
 
+// An article's hook is already placed by the title above it, so it is marked out by the accent color in place of a bar
+// Its own measure is dropped too: a hook the editor centered would otherwise read off-center against the article it introduces
+.text-hook--article {
+    max-width: var(--text-hook-article-max-width, none);
+    color: var(--text-hook-article-color, var(--section-accent, var(--primary)));
+    margin-block: var(--text-hook-article-margin, 24px);
+}
+
 // Trix's own block tags would otherwise add their margins to the hook's
 .text-hook > :first-child {
     margin-top: 0;

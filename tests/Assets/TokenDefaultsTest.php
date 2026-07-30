@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -33,7 +34,8 @@ class TokenDefaultsTest extends TestCase
             preg_match_all('/var\(\s*(--[a-z0-9-]+)\s*\)/', $css, $matches);
 
             foreach (array_unique($matches[1]) as $token) {
-                if (\in_array($token, $declared, true)
+                if (
+                    \in_array($token, $declared, true)
                     || \in_array($token, $selfDeclared, true)
                     || \in_array($token, self::PROVIDED_BY_EASYADMIN, true)
                     || \in_array($token, self::RUNTIME_ONLY, true)

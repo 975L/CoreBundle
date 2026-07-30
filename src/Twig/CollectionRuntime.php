@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Entity\Block;
@@ -21,7 +23,7 @@ class CollectionRuntime implements RuntimeExtensionInterface
         private CollectionSourceRegistry $sourceRegistry,
         private BlockExtension $blockExtension,
         private RequestStack $requestStack,
-        private UrlGeneratorInterface $urlGenerator
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -31,14 +33,14 @@ class CollectionRuntime implements RuntimeExtensionInterface
         $rendered = [];
         foreach ($this->sourceRegistry->items($source, $limit) as $item) {
             $block = (new Block())->setKind('collection_item')->setData([
-                'title'       => $item->title,
-                'content'     => $item->description,
-                'url'         => $item->url,
-                'imageUrl'    => $item->imageUrl,
+                'title' => $item->title,
+                'content' => $item->description,
+                'url' => $item->url,
+                'imageUrl' => $item->imageUrl,
                 'buttonLabel' => $item->buttonLabel,
-                'buttonIcon'  => $item->buttonIcon,
-                'detailUrl'   => $this->buildDetailUrl($detailPage, $item->slug),
-                'variant'     => $variant,
+                'buttonIcon' => $item->buttonIcon,
+                'detailUrl' => $this->buildDetailUrl($detailPage, $item->slug),
+                'variant' => $variant,
             ]);
             $rendered[] = $this->blockExtension->renderBlock($block);
         }

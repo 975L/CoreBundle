@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
 use Symfony\Component\Form\AbstractType;
@@ -21,27 +23,27 @@ class ProgressBarType extends AbstractType
     {
         $builder
             ->add('label', TextType::class, [
-                'label'    => 'label.title',
+                'label' => 'label.title',
                 'required' => false,
             ])
             ->add('progressPercent', IntegerType::class, [
                 'label' => 'label.progress_percent',
-                'attr'  => [
+                'attr' => [
                     'min' => 0,
-                    'max' => 100
+                    'max' => 100,
                 ],
             ])
             ->add('text', CheckboxType::class, [
-                'label'    => 'label.show_percent',
+                'label' => 'label.show_percent',
                 'required' => false,
-                'data'     => true,
+                'data' => true,
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -25,7 +26,7 @@ class EmailTemplateRenderer
     }
 
     /**
-     * Full standalone document, wrapped through EmailLayoutProviderInterface when one is registered
+     * Full standalone document, wrapped through EmailLayoutProviderInterface when one is registered.
      *
      * @param array<string, scalar> $variables see renderBody()
      */
@@ -41,13 +42,13 @@ class EmailTemplateRenderer
      * Just the compiled <tr> rows, wrapped in one <table> but with no surrounding <html>/<body> - meant to be
      * embedded inside an app/bundle's own email layout (e.g. SiteBundle's fullLayout.html.twig, which brings its
      * own Menu-driven header/footer - see c975L\UiBundle\Twig\EmailTemplateExtension::emailTemplateBody() and
-     * EmailLayoutProviderInterface, its render()-time equivalent)
+     * EmailLayoutProviderInterface, its render()-time equivalent).
      *
      * @param array<string, scalar> $variables resolves "{{ key }}" placeholders found in heading/content/label/url/alt
-     *                                          (see substitute() - literal replacement, not real Twig evaluation),
-     *                                          plus an optional "fields" array<string, mixed> consumed by any
-     *                                          EmailBlock::TYPE_FIELDS_TABLE block (e.g. a Form submission's
-     *                                          label => submitted value pairs, see SendEmailFormAction)
+     *                                         (see substitute() - literal replacement, not real Twig evaluation),
+     *                                         plus an optional "fields" array<string, mixed> consumed by any
+     *                                         EmailBlock::TYPE_FIELDS_TABLE block (e.g. a Form submission's
+     *                                         label => submitted value pairs, see SendEmailFormAction)
      */
     public function renderBody(EmailTemplate $emailTemplate, array $variables = []): string
     {

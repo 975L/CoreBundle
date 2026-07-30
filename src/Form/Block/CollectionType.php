@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Registry\CollectionSourceRegistry;
@@ -36,14 +38,14 @@ class CollectionType extends AbstractType
 
         $builder
             ->add('source', ChoiceType::class, [
-                'label'   => 'label.source',
+                'label' => 'label.source',
                 'choices' => $choices,
                 // No bundle implementing CollectionSourceProviderInterface yet (fresh install) means an empty select with nothing to pick - a disabled placeholder explains why instead of leaving the editor facing a blank dropdown with no clue what's wrong
                 'placeholder' => [] === $choices ? 'label.no_collection_source_available' : null,
             ])
             ->add('limit', IntegerType::class, [
-                'label'    => 'label.limit',
-                'help'     => 'label.collection_limit_help',
+                'label' => 'label.limit',
+                'help' => 'label.collection_limit_help',
                 'required' => false,
             ])
             ->add('eyebrow', TextType::class, [
@@ -65,17 +67,17 @@ class CollectionType extends AbstractType
             ])
             // Slug of a real Page (site_page) that renders this source's per-item detail views - its own blocks are rendered as-is (a "collectionItem" Twig global carries the current item's data, picked up by whichever block on it needs it, e.g. a "twig_content" block's own templatePath) - see PageController::resolveCollectionDetail() and SiteBundle's README ("Item detail pages", under "Collection entries"). Never rendered by this block itself - only used to decide whether each item's own title links to its detail URL (see CollectionExtension::renderItems()), for items whose source also hands back a slug.
             ->add('detailPage', TextType::class, [
-                'label'    => 'label.detail_page',
-                'help'     => 'label.detail_page_help',
+                'label' => 'label.detail_page',
+                'help' => 'label.detail_page_help',
                 'required' => false,
             ])
             // Picked up by CollectionItem.html.twig to switch its markup - keeps every collection sharing the same "collection_item" kind/template (see class-level comment) while still allowing a visually different presentation per Collection block instance, no app-level template override needed
             ->add('variant', ChoiceType::class, [
-                'label'    => 'label.variant',
-                'help'     => 'label.variant_help',
+                'label' => 'label.variant',
+                'help' => 'label.variant_help',
                 'required' => false,
-                'choices'  => [
-                    'label.variant_card'      => '',
+                'choices' => [
+                    'label.variant_card' => '',
                     'label.variant_portfolio' => 'portfolio',
                 ],
             ]);
@@ -84,7 +86,7 @@ class CollectionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

@@ -1,5 +1,72 @@
 # ChangeLog
 
+## v1.13
+
+Lock a component's own inline layout against the rules strong enough to write it away
+
+- `php` is now required in `>=8.4` instead of `>=8.0` (30/07/2026) [BC-Break]
+- The `symfony/*` requirements are now constrained to `^8.0` instead of `*` (30/07/2026) [BC-Break]
+- `symfony/maker-bundle` is now constrained to `^1.67` instead of `*` (30/07/2026)
+- The third-party requirements left in `*` are now bounded on their installed version (30/07/2026)
+- The `c975l/*` requirements are now bounded on their major (30/07/2026)
+- `Block::$user`, `Media::$user` and `VichMediaTrait::$user` are now typed `c975L\ConfigBundle\Contract\UserInterface` instead of `App\Entity\User` (30/07/2026) [BC-Break]
+- `BlockUserListener` now assigns the logged-in user only when it implements `c975L\ConfigBundle\Contract\UserInterface` (30/07/2026)
+- Removed the `Tests\Fixtures\AppUserStub` fixture, a stub of the interface replacing it (30/07/2026)
+- Added `.codacy.yaml`, `phpcs.xml.dist` and `eslint.config.mjs` (30/07/2026)
+- Applied PSR-12 to the codebase (30/07/2026)
+- Added `.php-cs-fixer.dist.php`, applying the Symfony coding standards (30/07/2026)
+- Added `phpstan.dist.neon`, running the static analysis at level 5 (30/07/2026)
+- Added `phpstan-baseline.neon`, freezing the errors that predate the analysis (30/07/2026)
+- Added the `CI` GitHub Actions workflow, running PSR-12, the static analysis, the tests and the coverage upload (30/07/2026)
+- The local Codacy CLI now runs `eslint@9.39.5` (30/07/2026)
+- Fixed a `slider` block hugging the left edge, the section margin reset added in v1.12.0 dropping the `auto` its own centered measure is laid out on (30/07/2026)
+- Fixed a `freeflow` slider losing its full-bleed breakout the same way, its `margin-left` being zeroed too (30/07/2026)
+- The section margin reset now names its kinds one by one and resets the block axis alone, in place of a `section` shorthand (30/07/2026)
+- Fixed a `hero` with a background, and every colored flat, losing their full-bleed breakout to that same shorthand (30/07/2026)
+- Added `SectionMarginResetTest` coverage checking the reset never writes the inline axis, and names every kind rendered as a `<section>` (30/07/2026)
+- Added `ComponentCenteringTest`, reading the compiled stylesheet as the cascade does and failing on any rule strong enough to write the margin shorthand over a component's own centering (30/07/2026)
+- It reads a negative `vw`/`%` margin as a layout to protect too, a breakout being lost to the same shorthand as a centering (30/07/2026)
+- A component whose class or tag is built by a Twig expression is now resolved, the whole page-section family being invisible to a reading that only takes what is written out (30/07/2026)
+- It skips what only looks like a collision: a component with no measure of its own, one laid out by a flex/grid container, and every rule nested in an `@media`/`@supports`/`@layer` (30/07/2026)
+- Added `Testing\StylesheetCascade` and `Testing\ComponentCenteringAnalyzer`, that analysis extracted so a bundle depending on this one runs the same engine over its own sheet and this one's (30/07/2026)
+- They ship in `src/`, a bundle's `tests/` being autoload-dev and never reaching its dependents, and are excluded from the service container (30/07/2026)
+- A rule whose subject names no class only reaches a component through its tag, and is now read as a coincidence rather than a collision when scoped under a concrete styled ancestor - under nothing, or under `display: contents` wrappers, it still counts (30/07/2026)
+- Added `Service\LayoutAuditor` and the `c975l:ui:layout-audit` command, measuring a rendered page's geometry for what no stylesheet test can see (30/07/2026)
+- It reports a block breaking out of the viewport, a component that lost its centering, and an image blown up past the window (30/07/2026)
+- The frame a block is measured against now includes the scrollbar, a full-bleed `100vw` section otherwise reading as an overflow on every run (30/07/2026)
+- Centering is read from the stylesheet through the CSSOM, not from the element, a centering already lost computing to `0px` with nothing left to show it was ever meant to be centred (30/07/2026)
+- The page is settled first - animations zeroed and scrolled through - the block animations otherwise parking half the blocks off-screen and reading as overflows (30/07/2026)
+- Reports without failing unless `--strict` is passed: a headless browser is never deterministic enough to gate a push on (30/07/2026)
+- A page that could not be measured never reads as a clean one (30/07/2026)
+- Deliberately not a `HealthCheckProviderInterface`: those run from cron on the managed server, which has no browser and no way to install one (30/07/2026)
+- Added `chrome-php/chrome` as a `require-dev` and a `suggest`, to be installed in the consuming site rather than here, the command running from that site's console (30/07/2026)
+- Added `LayoutAuditCommandTest` and `LayoutAuditorTest`, both browser-free (30/07/2026)
+- Added the `plain_text` filter, reducing editor HTML to the text a caption, an `aria-label` or a `<meta>` can hold (30/07/2026)
+- It decodes the entities `striptags` leaves behind, a `&amp;` otherwise reaching the page as `&amp;amp;` once Twig had escaped it a second time (30/07/2026)
+- The `Image:Link` component's fallback accessible name now reads that filter, in place of `striptags` (30/07/2026)
+- Added `.text-hook--article`, the variant an `article` block's hook now wears, marked out by the accent color where the standalone block is marked out by its bar (30/07/2026)
+- Added `--text-hook-article-color`/`-max-width`/`-margin`, a theme whose `--primary` is its text color needing the first one set (30/07/2026)
+- An article's hook is now laid out on the article's own measure, its 62ch box having left a centered hook reading off-center (30/07/2026)
+- Added `TextHookStyleTest`/`TextHookMarkupTest` coverage for the article variant (30/07/2026)
+- `.slider`, `.slider-single` and `.image-compare` now read `--reading-max-width`, the measure SiteBundle lays body copy out on, in place of their own hardcoded 800px (30/07/2026) [BC-Break]
+- Fixed all three sitting edge to edge on a viewport of 800px, a bare length outrunning the room it had (30/07/2026)
+- Added `--slider-margin-block`/`--image-compare-margin-block`, the room kept above and below each (30/07/2026)
+- A slider now keeps symmetric room, the former `1em auto 3em` leaving it all but flush against the block introducing it (30/07/2026)
+- Added the `.readmore` wrapper to the `Text:Readmore` component, and the `text_readmore` block now sits on that same measure (30/07/2026)
+- Fixed a `text_readmore` block running the whole page frame, ~160 characters to the line, the only body-copy block bounded by nothing at all (30/07/2026)
+- The "read more" toggle now reads `--link-color`, its hover mixed out of that same color, in place of a hardcoded `#007bff`/`#0056b3` (30/07/2026) [BC-Break]
+- Fixed it rendering Bootstrap blue on every theme, a `<label>` being out of reach of the `a` rules that color every other link (30/07/2026)
+- Added `ReadmoreStyleTest` (30/07/2026)
+- Added `--section-head-max-width`/`--hero-text-max-width`/`--hero-media-max-width`/`--cta-band-text-max-width`/`--alert-max-width`, five measures that were bare lengths (30/07/2026)
+- Added `ReadingMeasureTest`, locking every column-wide rule to that one measure and every section measure to a token (30/07/2026)
+- `Block::$user` and `Media::$user` are now typed on `c975L\ConfigBundle\Contract\UserInterface`, in place of the application's own `App\Entity\User` (30/07/2026) [BC-Break]
+- Removed `tests/Fixtures/AppUserStub.php`, the stand-in that hard dependency needed (30/07/2026)
+- Fixed the Trix toolbar aligning a block of another editor on the same page (30/07/2026)
+- A block rendered outside an http request is no longer cached (30/07/2026)
+- Fixed a template's request-dependent output being frozen into that entry and served to every visitor afterwards (30/07/2026)
+- Fixed `StylesheetCascade::specificity()` over-counting an `:is()`/`:not()` holding a comma-separated list (30/07/2026)
+- Added `StylesheetCascadeTest`, `ComponentCenteringAnalyzerTest` and `TrixEditorSelectionScopeTest` (30/07/2026)
+
 ## v1.12.2
 
 Fix the guided save steps highlighting a button EasyAdmin never names

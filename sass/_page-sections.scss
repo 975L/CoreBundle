@@ -36,12 +36,28 @@ $page-section-bp-lg: 1025px;
 }
 
 .section-head {
-    max-width: 640px;
+    max-width: var(--section-head-max-width, 640px);
 }
 
 // Cancels SiteBundle's page-wide "section { margin: 1em auto }", which parts two flats meant to touch
-main :is(.blocks, .block-animation, .block-editable) > section {
-    margin: 0;
+// By class, not by the bare "section" element: a slider is a <section> too, and matching it stripped
+// the vertical room it sets for itself, leaving it flush against the block above and below
+// Vertical only: the shorthand's "0" would also drop the horizontal "auto" a centered section reads,
+// and beat the negative margins the colored flats and .hero--has-bg break out of the measure with
+main :is(.blocks, .block-animation, .block-editable) > :is(
+    .hero,
+    .feature-bar,
+    .text-section,
+    .section-features-section,
+    .section-cards-section,
+    .expertise-banner,
+    .process-steps,
+    .portfolio-grid,
+    .collection-grid,
+    .cta-band,
+    .flex-columns-section
+) {
+    margin-block: 0;
 }
 
 // Shared vertical rhythm; .hero/.cta-band/.feature-bar/.flex-columns-section handle their own
@@ -291,7 +307,7 @@ main :is(.blocks, .block-animation, .block-editable) > section {
 .hero__media {
     position: relative;
     width: 100%;
-    max-width: 520px;
+    max-width: var(--hero-media-max-width, 520px);
 }
 
 .hero__media img {
@@ -424,7 +440,7 @@ main :is(.blocks, .block-animation, .block-editable) > section {
 }
 
 .hero.hero--has-bg .hero__text {
-    max-width: 720px;
+    max-width: var(--hero-text-max-width, 720px);
 }
 
 .hero.hero--has-bg .hero__sub {
@@ -731,7 +747,7 @@ main :is(.blocks, .block-animation, .block-editable) > section {
 .cta-band__text {
     font-size: 18px;
     color: color-mix(in srgb, var(--button-color) 80%, transparent);
-    max-width: 560px;
+    max-width: var(--cta-band-text-max-width, 560px);
     margin: 0 auto 32px;
 }
 

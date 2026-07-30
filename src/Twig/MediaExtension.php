@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -28,7 +29,8 @@ class MediaExtension extends AbstractExtension
     public function __construct(
         private readonly MediaRepository $mediaRepository,
         private readonly TagAwareCacheInterface $cache,
-    ) {}
+    ) {
+    }
 
     public function getFunctions(): array
     {

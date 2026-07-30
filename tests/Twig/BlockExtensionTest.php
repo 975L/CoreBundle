@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -211,13 +212,16 @@ class BlockExtensionTest extends TestCase
                 return $callback($item);
             });
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), $cacheTagRegistry, new BlockEditUrlRegistry());
+        $requestStack = new RequestStack();
+        $requestStack->push(Request::create('/'));
+
+        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, $cacheTagRegistry, new BlockEditUrlRegistry());
 
         $extension->renderBlock($block);
     }
 
-    // Without a current request (e.g. CLI/message consumer context), the cache key falls back to "fr"
-    public function testRenderBlockFallsBackToFrenchLocaleWhenNoCurrentRequest(): void
+    // Without a current request (e.g. CLI/message consumer context), the render is never cached: the RequestContext then answers "http://localhost" to anything host-dependent, and that entry would afterwards be served to every visitor
+    public function testRenderBlockIsNotCachedWithoutACurrentRequest(): void
     {
         $block = $this->createBlock('article', 7);
 
@@ -229,14 +233,11 @@ class BlockExtensionTest extends TestCase
         $twig->method('render')->willReturn('content');
 
         $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->once())
-            ->method('get')
-            ->with('block_render_7_fr', $this->anything())
-            ->willReturn('content');
+        $cache->expects($this->never())->method('get');
 
         $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
 
-        $extension->renderBlock($block);
+        $this->assertSame('content', $extension->renderBlock($block));
     }
 
     public function testGetFunctionsRegistersRenderBlockAsHtmlSafe(): void

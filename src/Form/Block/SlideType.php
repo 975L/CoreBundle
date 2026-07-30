@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -9,9 +10,9 @@
 
 namespace c975L\UiBundle\Form\Block;
 
+use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,24 +24,24 @@ class SlideType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label'    => 'label.title',
+                'label' => 'label.title',
                 'required' => false,
             ])
             ->add('text', TrixEditorType::class, [
-                'label'    => 'label.content',
+                'label' => 'label.content',
                 'required' => false,
             ])
             ->add('url', UrlType::class, [
-                'label'         => 'label.url',
-                'required'      => false,
+                'label' => 'label.url',
+                'required' => false,
                 'default_protocol' => null,
             ])
             ->add('credits', TextType::class, [
-                'label'    => 'label.credits',
+                'label' => 'label.credits',
                 'required' => false,
             ])
             ->add('rightsReserved', CheckboxType::class, [
-                'label'    => 'label.rights_reserved',
+                'label' => 'label.rights_reserved',
                 'required' => false,
             ]);
     }
@@ -48,7 +49,7 @@ class SlideType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -65,7 +66,7 @@ class CaptchaVerifier
                 ]),
             ]);
             $result = $response->toArray(false);
-        } catch (ExceptionInterface|\JsonException) {
+        } catch (ExceptionInterface | \JsonException) {
             return false;
         }
 

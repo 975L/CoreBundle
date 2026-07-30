@@ -1,5 +1,40 @@
 [
     {
+        "date": "2026-07-30",
+        "description": [
+            {
+                "en": "Fixed a slider hugging the left edge of the page instead of sitting centred like the text around it",
+                "fr": "Correction d'un diaporama collé au bord gauche de la page au lieu d'être centré comme le texte autour de lui",
+                "es": "Corregido un carrusel pegado al borde izquierdo de la página en lugar de estar centrado como el texto a su alrededor"
+            },
+            {
+                "en": "Fixed a banner or a coloured section losing the full width of the page it is meant to span",
+                "fr": "Correction d'une bannière ou d'une section colorée qui perdait la pleine largeur de page qu'elle doit occuper",
+                "es": "Corregida una portada o una sección de color que perdía el ancho completo de página que debe ocupar"
+            },
+            {
+                "en": "Sliders, image comparisons and \"read more\" blocks are now laid out on the same column width as the text they sit with, instead of running wider than it",
+                "fr": "Les diaporamas, comparaisons d'images et blocs « lire la suite » s'affichent désormais sur la même largeur de colonne que le texte qui les entoure, au lieu de déborder au-delà",
+                "es": "Los carruseles, las comparaciones de imágenes y los bloques «leer más» se muestran ahora con el mismo ancho de columna que el texto que los rodea, en lugar de sobresalir"
+            },
+            {
+                "en": "The \"read more\" link now takes the colour of the site's other links, in place of a blue it kept whatever the theme",
+                "fr": "Le lien « lire la suite » prend désormais la couleur des autres liens du site, à la place d'un bleu qu'il gardait quel que soit le thème",
+                "es": "El enlace «leer más» toma ahora el color de los demás enlaces del sitio, en lugar de un azul que mantenía fuera cual fuera el tema"
+            },
+            {
+                "en": "Fixed the alignment buttons of a text editor moving text in another editor of the same page",
+                "fr": "Correction des boutons d'alignement d'un éditeur de texte qui déplaçaient le texte d'un autre éditeur de la même page",
+                "es": "Corregidos los botones de alineación de un editor de texto que movían el texto de otro editor de la misma página"
+            },
+            {
+                "en": "An article's hook phrase is now marked out by the site's accent colour and aligned with the article it introduces",
+                "fr": "La phrase d'accroche d'un article est désormais mise en valeur par la couleur d'accent du site et alignée sur l'article qu'elle introduit",
+                "es": "La frase de entrada de un artículo se destaca ahora con el color de acento del sitio y se alinea con el artículo que introduce"
+            }
+        ]
+    },
+    {
         "date": "2026-07-29",
         "description": [
             {

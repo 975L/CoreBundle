@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -46,6 +47,17 @@ class TextHookStyleTest extends TestCase
             '/\.text-hook--standalone\{[^}]*border-inline-start:/',
             $this->normalize($file),
             sprintf('"%s" holds no ".text-hook--standalone" rule, so the block renders like an article hook.', $file)
+        );
+    }
+
+    // The article variant is marked out by its color, the bar being the standalone block's own
+    #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
+    public function testTheArticleModifierCarriesItsOwnColor(string $file): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/\.text-hook--article\{[^}]*color:/',
+            $this->normalize($file),
+            sprintf('"%s" holds no ".text-hook--article" rule, so an article hook reads like the text around it.', $file)
         );
     }
 

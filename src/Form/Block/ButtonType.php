@@ -1,14 +1,16 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
-use Symfony\Component\Form\AbstractType;
 use c975L\UiBundle\Form\IconPickerType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -29,34 +31,34 @@ class ButtonType extends AbstractType
                 'required' => true,
             ])
             ->add('type', ChoiceType::class, [
-                'label'   => 'label.style',
+                'label' => 'label.style',
                 'required' => true,
                 'choices' => [
-                    'label.primary'   => 'primary',
+                    'label.primary' => 'primary',
                     'label.secondary' => 'secondary',
-                    'label.success'   => 'success',
-                    'label.danger'    => 'danger',
-                    'label.link'      => 'link',
+                    'label.success' => 'success',
+                    'label.danger' => 'danger',
+                    'label.link' => 'link',
                 ],
             ])
             ->add('target', ChoiceType::class, [
-                'label'    => 'label.target',
+                'label' => 'label.target',
                 'required' => false,
-                'choices'  => [
+                'choices' => [
                     'label.same_window' => '',
-                    'label.new_tab'     => '_blank',
+                    'label.new_tab' => '_blank',
                 ],
             ])
             ->add('icon', IconPickerType::class, [
-                'label'    => 'label.icon',
+                'label' => 'label.icon',
                 'required' => false,
             ])
             ->add('download', CheckboxType::class, [
-                'label'    => 'label.force_download',
+                'label' => 'label.force_download',
                 'required' => false,
             ])
             ->add('inline', CheckboxType::class, [
-                'label'    => 'label.inline',
+                'label' => 'label.inline',
                 'required' => false,
             ]);
     }
@@ -69,7 +71,7 @@ class ButtonType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

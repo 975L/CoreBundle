@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -12,13 +13,15 @@ namespace c975L\UiBundle\Listener;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Registry\BlockRegistry;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\PostLoadEventArgs;
+use Doctrine\ORM\Events;
 
 #[AsDoctrineListener(event: Events::postLoad)]
 class BlockLabelListener
 {
-    public function __construct(private BlockRegistry $registry) {}
+    public function __construct(private BlockRegistry $registry)
+    {
+    }
 
     public function postLoad(PostLoadEventArgs $args): void
     {

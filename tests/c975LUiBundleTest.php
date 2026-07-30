@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -86,7 +87,7 @@ class c975LUiBundleTest extends TestCase
     // A bare extension, just enough for hasExtension() to answer true
     private function extension(string $alias): ExtensionInterface
     {
-        return new class($alias) implements ExtensionInterface {
+        return new class ($alias) implements ExtensionInterface {
             public function __construct(private readonly string $alias)
             {
             }
@@ -100,7 +101,7 @@ class c975LUiBundleTest extends TestCase
                 return '';
             }
 
-            public function getXsdValidationBasePath(): string|false
+            public function getXsdValidationBasePath(): string | false
             {
                 return false;
             }

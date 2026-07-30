@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -10,8 +11,6 @@
 namespace c975L\UiBundle\Tests\Templates;
 
 use PHPUnit\Framework\TestCase;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 
 // alt="" alone is reported as a missing alternative, so it is always doubled with aria-hidden
 class DecorativeImageAriaHiddenTest extends TestCase
@@ -46,7 +45,7 @@ class DecorativeImageAriaHiddenTest extends TestCase
     private function templates(): iterable
     {
         $dir = \dirname(__DIR__, 2) . '/templates';
-        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS));
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS));
 
         foreach ($files as $file) {
             if ($file->isFile() && str_ends_with($file->getFilename(), '.html.twig')) {

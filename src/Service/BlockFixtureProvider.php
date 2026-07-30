@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Contract\BlockFixtureProviderInterface;
@@ -223,14 +225,14 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                 '' => [
                     'eyebrow' => 'Notre expertise',
                     'title' => 'Une technique que nous maîtrisons de bout en bout.',
-                    'text' => "<p>Pas de sous-traitance, pas de boîte noire. Nous développons, hébergeons et faisons évoluer votre site.</p>",
+                    'text' => '<p>Pas de sous-traitance, pas de boîte noire. Nous développons, hébergeons et faisons évoluer votre site.</p>',
                     'tags' => ['Symfony', 'PHP', 'CMS 975L', 'Multilingue', 'Infomaniak · CH', 'Open-source'],
                 ],
             ],
             'process_steps' => [
                 '' => [
                     'eyebrow' => 'Comment ça se passe',
-                    'title' => "Une méthode claire, du premier échange à la mise en ligne.",
+                    'title' => 'Une méthode claire, du premier échange à la mise en ligne.',
                     'steps' => [
                         ['title' => "On s'écoute", 'text' => '<p>On étudie votre problématique ensemble.</p>'],
                         ['title' => 'On conçoit', 'text' => '<p>Structure, design et contenu, validés avec vous.</p>'],

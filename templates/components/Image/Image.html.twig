@@ -8,7 +8,7 @@
 {# "img-responsive" and width/height go together, except with a height and no width: "height: auto" would win #}
 {% set heightOnly = height is defined and height != '' and (width is not defined or width == '') %}
 {% set imgResponsive = heightOnly ? '' : 'img-responsive' %}
-{% set imgSrc = imgSrc|default(src is defined and src ? absolute_url(asset(src)) : '') %}
+{% set imgSrc = imgSrc|default(src is defined and src ? asset(src) : '') %}
 
 {% if imgSrc %}
     <p class="text-center">

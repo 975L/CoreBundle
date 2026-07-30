@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -9,9 +10,9 @@
 
 namespace c975L\UiBundle\Controller\Management;
 
+use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\ImageClassChoiceType;
-use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\UiBundle\Form\MediaUsagesType;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use c975L\UiBundle\Registry\MediaUsageRegistry;

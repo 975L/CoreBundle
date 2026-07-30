@@ -9,7 +9,7 @@
 {# No "url": nothing to link to, so this must not render as an <a> at all - a href="" would be a dead link that still looks clickable #}
 {% set tag = url ? 'a' : 'span' %}
 {# Accessible name: explicit "ariaLabel", else the visible label, else the alt - never a hardcoded fallback #}
-{% set ariaLabel = ariaLabel|default('') is not empty ? ariaLabel : (label != '' ? label|striptags : alt|default('')) %}
+{% set ariaLabel = ariaLabel|default('') is not empty ? ariaLabel : (label != '' ? label|plain_text : alt|default('')) %}
 <p class="text-center">
     <{{ tag }}{% if url %} href="{{ url }}"{% if target is defined and target != "" %} target="{{ target }}"{% endif %}{% if ariaLabel != '' %} aria-label="{{ ariaLabel }}"{% endif %}{% endif %}>
         {% if above and label != '' %}
@@ -17,7 +17,7 @@
             <br>
         {% endif %}
         {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative #}
-        <img src="{{ absolute_url(asset(src)) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}"{% if alt|default("") == "" %} aria-hidden="true"{% endif %} {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+        <img src="{{ asset(src) }}" class="img {{ imgResponsive }} {{ class|default("") }}" alt="{{ alt|default("") }}"{% if alt|default("") == "" %} aria-hidden="true"{% endif %} {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
         {% if not above and label != '' %}
             <br>
             <span class="img-below {{ classLabel|default("") }}">{{ label|raw }}</span>

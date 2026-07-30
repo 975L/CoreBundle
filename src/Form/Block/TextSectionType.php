@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,11 +7,12 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
-use Symfony\Component\Form\AbstractType;
 use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,7 +25,7 @@ class TextSectionType extends AbstractType
     use HasBackgroundFieldTrait;
 
     public function __construct(
-        private readonly BlockAnchorSlugger $anchorSlugger
+        private readonly BlockAnchorSlugger $anchorSlugger,
     ) {
     }
 
@@ -31,11 +33,11 @@ class TextSectionType extends AbstractType
     {
         $builder
             ->add('eyebrow', TextType::class, [
-                'label'    => 'label.eyebrow',
+                'label' => 'label.eyebrow',
                 'required' => false,
             ])
             ->add('title', TextType::class, [
-                'label'    => 'label.title',
+                'label' => 'label.title',
                 'required' => false,
             ])
             // Not user-editable: derived from the title above, or from the eyebrow when there is none, used as the in-page anchor
@@ -62,7 +64,7 @@ class TextSectionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

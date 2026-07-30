@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,9 +7,10 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Entity;
 
-use App\Entity\User;
+use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\UiBundle\Repository\BlockRepository;
 use c975L\UiBundle\Validator\RequiredMedia;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -40,7 +42,7 @@ class Block
     private ?string $animation = null;
 
     #[ORM\ManyToOne]
-    private ?User $user = null;
+    private ?UserInterface $user = null;
 
     #[ORM\OneToMany(mappedBy: 'block', targetEntity: Media::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
@@ -141,12 +143,12 @@ class Block
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?UserInterface $user): self
     {
         $this->user = $user;
 
@@ -232,5 +234,4 @@ class Block
             $slot->setPosition($position++);
         }
     }
-
 }

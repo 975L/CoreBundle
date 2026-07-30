@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Registry;
 
 use c975L\UiBundle\Contract\BlockOwnerResolverInterface;
@@ -30,11 +32,7 @@ class BlockOwnerRegistry
 
         // Fails loudly rather than letting one resolver silently win and the other become unreachable
         if (\count($matching) > 1) {
-            throw new \LogicException(sprintf(
-                'Several BlockOwnerResolverInterface providers support ownerType "%s": %s.',
-                $ownerType,
-                implode(', ', array_map(static fn (object $provider): string => $provider::class, $matching))
-            ));
+            throw new \LogicException(sprintf('Several BlockOwnerResolverInterface providers support ownerType "%s": %s.', $ownerType, implode(', ', array_map(static fn (object $provider): string => $provider::class, $matching))));
         }
 
         if ([] === $matching) {

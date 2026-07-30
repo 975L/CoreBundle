@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Registry\StylesheetRegistry;
@@ -25,7 +27,8 @@ class StylesheetExtension extends AbstractExtension
         private bool $debug,
         #[Autowire('%kernel.project_dir%')]
         private string $projectDir,
-    ) {}
+    ) {
+    }
 
     public function getFunctions(): array
     {
@@ -53,7 +56,7 @@ class StylesheetExtension extends AbstractExtension
         }
 
         return array_map(
-            fn(string $path) => StylesheetRegistry::isExternal($path)
+            fn (string $path) => StylesheetRegistry::isExternal($path)
                 ? $path
                 : $baseUrl . $this->packages->getUrl($path),
             $this->registry->all()

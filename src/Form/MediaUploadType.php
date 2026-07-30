@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -180,7 +181,7 @@ class MediaUploadType extends AbstractType
     }
 
     // Every other kind leaves its uploads unlabelled (a row is self-explanatory: one image among images, one PDF among PDFs), but a "video" block's two rows are two different things - the video file and the image used as the player's cover - and nothing else in the row says which is which, so each one is named after its own mimetype. A brand new row has no file yet, hence no mimetype: it's labelled with both, which is also what tells the admin a cover can be added at all
-    private function fileLabel(bool $isVideoBlock, ?string $mimeType): string|bool
+    private function fileLabel(bool $isVideoBlock, ?string $mimeType): string | bool
     {
         if (!$isVideoBlock) {
             return false;

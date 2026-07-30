@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,13 +7,14 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
+use c975L\UiBundle\Form\BlockClassChoiceType;
+use c975L\UiBundle\Form\Util\BlockIdGenerator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use c975L\UiBundle\Form\BlockClassChoiceType;
-use c975L\UiBundle\Form\Util\BlockIdGenerator;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,19 +26,19 @@ class SliderType extends AbstractType
     // Values double as the CSS modifier suffix (slider-ratio-{value}), except "free" which applies none
     public const RATIO_CHOICES = [
         'label.ratio_free' => 'free',
-        'label.ratio_2_3'  => '2-3',
-        'label.ratio_3_4'  => '3-4',
-        'label.ratio_9_16'  => '9-16',
-        'label.ratio_1_1'  => '1-1',
-        'label.ratio_3_2'  => '3-2',
-        'label.ratio_4_3'  => '4-3',
+        'label.ratio_2_3' => '2-3',
+        'label.ratio_3_4' => '3-4',
+        'label.ratio_9_16' => '9-16',
+        'label.ratio_1_1' => '1-1',
+        'label.ratio_3_2' => '3-2',
+        'label.ratio_4_3' => '4-3',
         'label.ratio_16_9' => '16-9',
         'label.ratio_21_9' => '21-9',
     ];
 
     // Values match the Slider component's layout="" param (see templates/components/Slider/Slider.html.twig)
     public const LAYOUT_CHOICES = [
-        'label.layout_default'  => 'default',
+        'label.layout_default' => 'default',
         'label.layout_freeflow' => 'freeflow',
     ];
 
@@ -49,13 +51,13 @@ class SliderType extends AbstractType
                 'label' => 'label.slide_duration',
             ])
             ->add('ratio', ChoiceType::class, [
-                'label'   => 'label.ratio',
-                'help'    => 'label.ratio_help',
+                'label' => 'label.ratio',
+                'help' => 'label.ratio_help',
                 'choices' => self::RATIO_CHOICES,
             ])
             ->add('layout', ChoiceType::class, [
-                'label'   => 'label.layout',
-                'help'    => 'label.layout_help',
+                'label' => 'label.layout',
+                'help' => 'label.layout_help',
                 'choices' => self::LAYOUT_CHOICES,
             ])
             ->add('class', BlockClassChoiceType::class);
@@ -89,7 +91,7 @@ class SliderType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

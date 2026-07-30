@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Service;
 
 // Replaces every var() in a stylesheet by the value it resolves to, then drops the :root blocks that fed
@@ -102,7 +104,7 @@ class CssVariableResolver
 
     /**
      * Every custom property declared in a :root block, later declarations winning - which is the order the
-     * layout concatenates them in: the bundle defaults first, then the site's, then the admin's own
+     * layout concatenates them in: the bundle defaults first, then the site's, then the admin's own.
      *
      * @return array<string, string>
      */

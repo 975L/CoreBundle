@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,11 +7,12 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
-use Symfony\Component\Form\AbstractType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\TrixEditorType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,32 +26,32 @@ class VideoType extends AbstractType
         $builder
             // A single multi-select (same removable-tags widget as BlockClassChoiceType) rather than three separate checkboxes
             ->add('options', ChoiceType::class, [
-                'label'    => 'label.video_options',
-                'help'     => 'label.video_options_help',
-                'choices'  => [
+                'label' => 'label.video_options',
+                'help' => 'label.video_options_help',
+                'choices' => [
                     'label.autoplay' => 'autoplay',
-                    'label.muted'    => 'muted',
-                    'label.loop'     => 'loop',
+                    'label.muted' => 'muted',
+                    'label.loop' => 'loop',
                 ],
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
-                'attr'     => ['data-ea-widget' => 'ea-autocomplete'],
+                'attr' => ['data-ea-widget' => 'ea-autocomplete'],
             ])
             ->add('title', TextType::class, [
-                'label'    => 'label.title',
+                'label' => 'label.title',
                 'required' => false,
             ])
             ->add('description', TrixEditorType::class, [
-                'label'    => 'label.description',
+                'label' => 'label.description',
                 'required' => false,
             ])
             ->add('width', TextType::class, [
-                'label'    => 'label.width',
+                'label' => 'label.width',
                 'required' => false,
             ])
             ->add('height', TextType::class, [
-                'label'    => 'label.height',
+                'label' => 'label.height',
                 'required' => false,
             ])
             ->add('class', BlockClassChoiceType::class);
@@ -58,7 +60,7 @@ class VideoType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

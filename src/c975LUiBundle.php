@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2018: 975L <contact@975l.com>
  * (c) 2018: Laurent Marquet <laurent.marquet@laposte.net>
@@ -60,7 +61,7 @@ class c975LUiBundle extends AbstractBundle
         $container->prependExtensionConfig('framework', [
             'asset_mapper' => [
                 'paths' => [
-                    __DIR__ . '/../assets' => '@c975l/ui-bundle'
+                    __DIR__ . '/../assets' => '@c975l/ui-bundle',
                 ],
             ],
         ]);
@@ -87,7 +88,7 @@ class c975LUiBundle extends AbstractBundle
                         'uri_prefix' => '',
                         'upload_destination' => '%kernel.project_dir%/public',
                         'namer' => UiMediaNamer::class,
-                        'inject_on_load'   => false,
+                        'inject_on_load' => false,
                         'delete_on_update' => true,
                         'delete_on_remove' => true,
                     ],

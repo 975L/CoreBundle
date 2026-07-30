@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -9,13 +10,13 @@
 
 namespace c975L\UiBundle\Listener;
 
-use App\Entity\User;
+use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
 use Symfony\Bundle\SecurityBundle\Security;
 
 // Tracks who last touched a Block/Media, not who originally created it - $user is overwritten on every save (see preUpdate below), so it always reflects the last editor
@@ -23,7 +24,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 #[AsDoctrineListener(event: Events::preUpdate)]
 class BlockUserListener
 {
-    public function __construct(private Security $security) {}
+    public function __construct(private Security $security)
+    {
+    }
 
     public function prePersist(PrePersistEventArgs $args): void
     {
@@ -51,7 +54,7 @@ class BlockUserListener
     }
 
     // The currently logged-in user, if $entity is a Block/Media and someone is actually logged in
-    private function currentUser(object $entity): ?User
+    private function currentUser(object $entity): ?UserInterface
     {
         if (!($entity instanceof Block || $entity instanceof Media)) {
             return null;
@@ -59,6 +62,6 @@ class BlockUserListener
 
         $user = $this->security->getUser();
 
-        return $user instanceof User ? $user : null;
+        return $user instanceof UserInterface ? $user : null;
     }
 }

@@ -12,19 +12,21 @@
     border: 0;
 }
 
+// Laid out on the same measure as the body copy (--reading-max-width, declared by SiteBundle), so a slider never outruns the text it sits with
+// Symmetric room above and below: the former "1em auto 3em" left a slider all but flush against the block introducing it
 .slider {
     position: relative;
-    max-width: 800px;
-    margin: 1em auto 3em;
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: var(--slider-margin-block, 3em) auto;
     // Fallback so the slider never collapses to 0 height, its content being absolutely positioned
     aspect-ratio: 16 / 9;
 }
 
-// Single rich slide rendered outside the slider markup - same measure as a multi-slide one
+// Single rich slide rendered outside the slider markup - same measure and same room as a multi-slide one
 .slider-single {
     position: relative;
-    max-width: 800px;
-    margin: 1em auto 3em;
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: var(--slider-margin-block, 3em) auto;
 }
 
 .slider-list {

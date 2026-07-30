@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -9,14 +10,13 @@
 
 namespace c975L\UiBundle\Namer;
 
-use RuntimeException;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Entity\Media;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Vich\UploaderBundle\Naming\NamerInterface;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Vich\UploaderBundle\Mapping\PropertyMapping;
+use Vich\UploaderBundle\Naming\NamerInterface;
 
 class UiMediaNamer implements NamerInterface
 {
@@ -31,12 +31,12 @@ class UiMediaNamer implements NamerInterface
     public function name($entity, PropertyMapping $mapping): string
     {
         if (!$entity instanceof VichMediaNamableInterface) {
-            throw new RuntimeException(sprintf('Entity "%s" must implement VichMediaNamableInterface.', get_class($entity)));
+            throw new \RuntimeException(sprintf('Entity "%s" must implement VichMediaNamableInterface.', get_class($entity)));
         }
 
         $filePath = $entity->getFile()->getPathname();
         if (!$this->filesystem->exists($filePath)) {
-            throw new RuntimeException('File not found: ' . htmlspecialchars($filePath, ENT_QUOTES, 'UTF-8'));
+            throw new \RuntimeException('File not found: ' . htmlspecialchars($filePath, ENT_QUOTES, 'UTF-8'));
         }
 
         $file = $mapping->getFile($entity);

@@ -1,6 +1,6 @@
 {# <twig:c975LUi:Banner:Title title="Title" [level="h2"] [src="your-path/file.ext"] [alt=""] [maxHeight=""]/> #}
 {% set level = level|default('h2') %}
-{% set imgSrc = src is defined and src ? absolute_url(asset(src)) : '' %}
+{% set imgSrc = src is defined and src ? asset(src) : '' %}
 
 {% set styles = [] %}
 {% if imgSrc %}{% set styles = styles|merge(["background-image:url('" ~ imgSrc ~ "')"]) %}{% endif %}

@@ -11,7 +11,9 @@ services:
         # (see c975LUiBundle::loadExtension()), so a plain resource-glob scan never autoloads it in prod
         # Model/ excluded: plain value objects (e.g. CollectionItem) built by application code, not services -
         # autowiring one fails on its first scalar constructor argument
-        exclude: '../src/{DependencyInjection,Entity,Maker,Model}'
+        # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same
+        # stylesheet analysis over their own sheets, never instantiated by the application itself
+        exclude: '../src/{DependencyInjection,Entity,Maker,Model,Testing}'
 
     c975L\UiBundle\Service\StylesheetProvider:
         tags:

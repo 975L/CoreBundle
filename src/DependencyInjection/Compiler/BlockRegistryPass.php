@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -72,11 +73,7 @@ class BlockRegistryPass implements CompilerPassInterface
     {
         foreach (['kind', 'label', 'form', 'template'] as $required) {
             if (empty($tag[$required])) {
-                throw new \InvalidArgumentException(sprintf(
-                    'The tag "ui.block" of the service "%s" is incomplete. Missing attribute: "%s".',
-                    $serviceId,
-                    $required
-                ));
+                throw new \InvalidArgumentException(sprintf('The tag "ui.block" of the service "%s" is incomplete. Missing attribute: "%s".', $serviceId, $required));
             }
         }
     }

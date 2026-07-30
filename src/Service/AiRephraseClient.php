@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -62,10 +64,12 @@ class AiRephraseClient
         }
 
         // Only euria needs its own base URI and model, the others calling a fixed URI with a safe default
-        if ('euria' === $provider && (
-            !$this->configService->get('ui-ai-assistant-rephrase-base-uri')
-            || !$this->configService->get('ui-ai-assistant-rephrase-model')
-        )) {
+        if (
+            'euria' === $provider && (
+                !$this->configService->get('ui-ai-assistant-rephrase-base-uri')
+                || !$this->configService->get('ui-ai-assistant-rephrase-model')
+            )
+        ) {
             return false;
         }
 
@@ -178,7 +182,7 @@ class AiRephraseClient
 
     private function prompt(string $text, string $styleInstruction, string $lengthInstruction): string
     {
-        return "Rephrase the following text, keeping its original language and meaning."
+        return 'Rephrase the following text, keeping its original language and meaning.'
             . $lengthInstruction
             . $styleInstruction
             . " Return only the rephrased text, nothing else:\n\n" . $text;

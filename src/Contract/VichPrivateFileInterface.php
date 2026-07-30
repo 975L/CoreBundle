@@ -11,7 +11,7 @@
 namespace c975L\UiBundle\Contract;
 
 /**
- * Marks an entity whose uploaded file lives outside public/, served only through a controller (see PrivateFileResponseFactoryInterface) rather than by the web server
+ * Marks an entity whose uploaded file lives outside public/, served only through a controller (see PrivateFileResponseFactoryInterface) rather than by the web server.
  */
 interface VichPrivateFileInterface
 {

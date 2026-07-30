@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,11 +7,12 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
-use Symfony\Component\Form\AbstractType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\TrixEditorType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -27,23 +29,23 @@ class VideoIframeType extends AbstractType
             ])
             // Only rewrites the URL for a recognized YouTube host - see BlockVideoNoCookieListener, which performs the actual rewrite once on save, so the stored src (and the render template) never need to know about this checkbox
             ->add('noCookie', CheckboxType::class, [
-                'label'    => 'label.video_no_cookie',
+                'label' => 'label.video_no_cookie',
                 'required' => false,
             ])
             ->add('title', TextType::class, [
-                'label'    => 'label.title',
+                'label' => 'label.title',
                 'required' => false,
             ])
             ->add('description', TrixEditorType::class, [
-                'label'    => 'label.description',
+                'label' => 'label.description',
                 'required' => false,
             ])
             ->add('width', TextType::class, [
-                'label'    => 'label.width',
+                'label' => 'label.width',
                 'required' => false,
             ])
             ->add('height', TextType::class, [
-                'label'    => 'label.height',
+                'label' => 'label.height',
                 'required' => false,
             ])
             ->add('class', BlockClassChoiceType::class);
@@ -52,7 +54,7 @@ class VideoIframeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

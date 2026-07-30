@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -44,10 +45,10 @@ class TextHookMarkupTest extends TestCase
         $this->assertStringContainsString('Un <strong>mot</strong> en gras', $html);
     }
 
-    // An article's own hook shares the base class - same size, same measure - but never the standalone
-    // modifier: the block on its own needs a mark to be read against nothing, an article's hook is
-    // already framed by the title above it and the body under it, and would only be over-decorated
-    public function testAnArticleHookWearsTheBaseClassWithoutTheStandaloneModifier(): void
+    // An article's own hook shares the base class - same size, same rhythm - but wears its own modifier
+    // in place of the standalone one: the block on its own needs a bar to be read against nothing, an
+    // article's hook is already framed by the title above it and is marked out by its color instead
+    public function testAnArticleHookWearsTheArticleModifierAndNotTheStandaloneOne(): void
     {
         $html = $this->render('components/Article/Article.html.twig', [
             'title' => 'Un titre',
@@ -55,7 +56,7 @@ class TextHookMarkupTest extends TestCase
             'content' => 'Le corps du texte',
         ]);
 
-        $this->assertStringContainsString('<div class="text-hook">Une accroche</div>', $html);
+        $this->assertStringContainsString('<div class="text-hook text-hook--article">Une accroche</div>', $html);
         $this->assertStringNotContainsString('text-hook--standalone', $html);
     }
 

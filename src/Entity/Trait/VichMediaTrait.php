@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,10 +7,10 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Entity\Trait;
 
-use App\Entity\User;
-use DateTimeImmutable;
+use c975L\ConfigBundle\Contract\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -33,10 +34,10 @@ trait VichMediaTrait
     protected ?File $file = null;
 
     #[ORM\Column]
-    private ?DateTimeImmutable $updatedAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne()]
-    private ?User $user = null;
+    private ?UserInterface $user = null;
 
     public function __toString(): string
     {
@@ -50,7 +51,7 @@ trait VichMediaTrait
             return false;
         }
 
-        if ($this->getId() !== null && $other->getId() !== null) {
+        if (null !== $this->getId() && null !== $other->getId()) {
             return $this->getId() === $other->getId();
         }
 
@@ -112,30 +113,30 @@ trait VichMediaTrait
         $this->file = $file;
 
         if ($file) {
-            $this->updatedAt = new DateTimeImmutable();
+            $this->updatedAt = new \DateTimeImmutable();
         }
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): static
+    public function setUser(?UserInterface $user): static
     {
         $this->user = $user;
 

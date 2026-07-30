@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -14,7 +15,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 interface PrivateFileResponseFactoryInterface
 {
     /**
-     * Builds a downloadable BinaryFileResponse (attachment disposition) for a private/protected file already resolved to an absolute path, null if the file is missing
+     * Builds a downloadable BinaryFileResponse (attachment disposition) for a private/protected file already resolved to an absolute path, null if the file is missing.
      *
      * @param string $absoluteFilePath absolute path on disk, outside the public directory
      * @param string $downloadFilename the name the browser saves the file under

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -14,8 +15,8 @@ use c975L\UiBundle\Controller\Management\BlockMoveController;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Registry\BlockOwnerRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
-use c975L\UiBundle\Service\BlockRelocator;
 use c975L\UiBundle\Repository\BlockRepository;
+use c975L\UiBundle\Service\BlockRelocator;
 use c975L\UiBundle\Tests\Entity\Trait\HasBlocksTraitStub;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;

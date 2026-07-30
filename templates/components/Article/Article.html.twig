@@ -16,7 +16,7 @@
     {% if mediaList|length > 0 %}
         <twig:c975LUi:Slider:Slider media="{{ mediaList }}" id="{{ (id is defined and id) ? id ~ (uid ? '-' ~ uid : '') ~ '-slider' : 'article-' ~ slug }}" duration="3500"/>
     {% endif %}
-    {# Same look as a standalone text_hook; the slider reads the same hook but keeps its own text style #}
-    {% if hook %}<div class="text-hook">{{ hook|raw|nl2br }}</div>{% endif %}
+    {# The article variant of the text_hook block; the slider reads the same hook but keeps its own text style #}
+    {% if hook %}<div class="text-hook text-hook--article">{{ hook|raw|nl2br }}</div>{% endif %}
     {{ content|raw|nl2br }}
 </article>

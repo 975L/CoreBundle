@@ -57,7 +57,11 @@ function currentBlockElement(editorElement) {
     if (!selection.rangeCount) return null;
     const node = selection.getRangeAt(0).startContainer;
     const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-    return element ? element.closest('div') : null;
+
+    // The selection is global to the document: without this check, a toolbar would align a block of another editor on the page
+    if (!element || !editorElement.contains(element)) return null;
+
+    return element.closest('div');
 }
 
 function activeAlignClass(editorElement) {

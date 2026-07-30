@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,12 +7,13 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\TrixEditorType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -30,11 +32,11 @@ class CardType extends AbstractType
                 'required' => false,
             ])
             ->add('level', ChoiceType::class, [
-                'label'   => 'label.title_level',
+                'label' => 'label.title_level',
                 'choices' => [
                     'h2' => 'h2',
                     'h3' => 'h3',
-                    'h4' => 'h4'
+                    'h4' => 'h4',
                 ],
             ])
             ->add('content', TrixEditorType::class, [
@@ -46,16 +48,16 @@ class CardType extends AbstractType
                 'required' => false,
             ])
             ->add('target', ChoiceType::class, [
-                'label'    => 'label.target',
+                'label' => 'label.target',
                 'required' => false,
-                'choices'  => [
+                'choices' => [
                     'label.same_window' => '',
-                    'label.new_tab'     => '_blank',
+                    'label.new_tab' => '_blank',
                 ],
             ])
             ->add('buttonLabel', TextType::class, [
-                'label'    => 'label.button_label',
-                'help'     => 'label.button_label_help',
+                'label' => 'label.button_label',
+                'help' => 'label.button_label_help',
                 'required' => false,
             ])
             ->add('class', BlockClassChoiceType::class);
@@ -64,7 +66,7 @@ class CardType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

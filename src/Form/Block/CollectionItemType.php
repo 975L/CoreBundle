@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Form\TrixEditorType;
@@ -21,31 +23,31 @@ class CollectionItemType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label'    => 'label.title',
+                'label' => 'label.title',
                 'required' => false,
             ])
             ->add('content', TrixEditorType::class, [
-                'label'    => 'label.content',
+                'label' => 'label.content',
                 'required' => false,
             ])
             ->add('url', TextType::class, [
-                'label'    => 'label.url',
+                'label' => 'label.url',
                 'required' => false,
             ])
             ->add('imageUrl', TextType::class, [
-                'label'    => 'label.url',
+                'label' => 'label.url',
                 'required' => false,
             ])
             ->add('buttonLabel', TextType::class, [
-                'label'    => 'label.button_label',
+                'label' => 'label.button_label',
                 'required' => false,
             ])
             ->add('buttonIcon', TextType::class, [
-                'label'    => 'label.identifier',
+                'label' => 'label.identifier',
                 'required' => false,
             ])
             ->add('detailUrl', TextType::class, [
-                'label'    => 'label.url',
+                'label' => 'label.url',
                 'required' => false,
             ]);
     }
@@ -53,7 +55,7 @@ class CollectionItemType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'         => null,
+            'data_class' => null,
             'translation_domain' => 'ui',
         ]);
     }

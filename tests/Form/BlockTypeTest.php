@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -12,8 +13,8 @@ namespace c975L\UiBundle\Tests\Form;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Form\BlockType;
 use c975L\UiBundle\Registry\BlockRegistry;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

@@ -10,15 +10,15 @@
 
 namespace c975L\UiBundle\Listener;
 
-use Imagine\Gd\Imagine;
-use Imagine\Image\Box;
-use Vich\UploaderBundle\Event\Event;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Entity\Media;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\Filesystem\Filesystem;
+use Vich\UploaderBundle\Event\Event;
 
 #[AsEventListener(event: 'vich_uploader.post_upload', method: 'onPostUpload')]
 class VichPdfThumbnailListener

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -48,7 +49,7 @@ class CollectionTypeTest extends TestCase
         $added = $this->buildAddedFields(new CollectionSourceRegistry());
 
         $this->assertSame([
-            'label.variant_card'      => '',
+            'label.variant_card' => '',
             'label.variant_portfolio' => 'portfolio',
         ], $added['variant']['choices']);
     }

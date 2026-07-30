@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,12 +7,11 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
-use c975L\UiBundle\Form\AnimationChoiceType;
-use c975L\UiBundle\Form\MediaUploadType;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Form\Util\MultiUploadMerger;
 use c975L\UiBundle\Registry\BlockRegistry;
@@ -37,8 +37,9 @@ class BlockType extends AbstractType
 
     public function __construct(
         private BlockRegistry $registry,
-        private UrlGeneratorInterface $router
-    ) {}
+        private UrlGeneratorInterface $router,
+    ) {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -137,7 +138,7 @@ class BlockType extends AbstractType
     }
 
     // The kind picker, added from buildForm() and rebuilt from PRE_SET_DATA when the block already holds a kind
-    private function addKindField(FormBuilderInterface|FormInterface $form, ?string $context, ?string $legacyKind = null): void
+    private function addKindField(FormBuilderInterface | FormInterface $form, ?string $context, ?string $legacyKind = null): void
     {
         $choices = $this->registry->groupedByCategory($context);
 
@@ -156,10 +157,10 @@ class BlockType extends AbstractType
             'choice_translation_domain' => false,
             'placeholder' => 'label.choose_block_kind',
             'attr' => [
-                'data-controller'            => 'block',
-                'data-block-kind-url-value'  => $this->router->generate('ui_block_data_form'),
-                'data-action'                => 'change->block#loadData',
-                'data-ea-widget'             => 'ea-autocomplete',
+                'data-controller' => 'block',
+                'data-block-kind-url-value' => $this->router->generate('ui_block_data_form'),
+                'data-action' => 'change->block#loadData',
+                'data-ea-widget' => 'ea-autocomplete',
             ],
             'row_attr' => ['data-kind-row' => ''],
         ]);
@@ -193,7 +194,7 @@ class BlockType extends AbstractType
             'help' => $this->registry->getMediaHelp($kind),
             'entry_type' => MediaUploadType::class,
             'entry_options' => ['accept' => $accept, 'context' => $kind],
-            'allow_add'  => true,
+            'allow_add' => true,
             'allow_delete' => true,
             'by_reference' => false,
             'prototype' => true,

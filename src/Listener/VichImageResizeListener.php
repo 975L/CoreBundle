@@ -10,20 +10,19 @@
 
 namespace c975L\UiBundle\Listener;
 
-use SplFileInfo;
-use Imagine\Image\Box;
-use Imagine\Image\Point;
-use Imagine\Gd\Imagine;
-use Imagine\Image\ImageInterface;
-use Vich\UploaderBundle\Event\Event;
-use c975L\UiBundle\Entity\Media;
-use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMultiSizeImageInterface;
+use c975L\UiBundle\Contract\VichPrivateFileInterface;
+use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Service\ImageDimensionsReader;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
+use Imagine\Image\Point;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\Filesystem\Filesystem;
+use Vich\UploaderBundle\Event\Event;
 
 #[AsEventListener(event: 'vich_uploader.post_upload', method: 'onPostUpload')]
 class VichImageResizeListener
@@ -96,7 +95,7 @@ class VichImageResizeListener
             ]);
 
         if (method_exists($entity, 'setSize')) {
-            $entity->setSize((new SplFileInfo($absolutePath))->getSize());
+            $entity->setSize((new \SplFileInfo($absolutePath))->getSize());
         }
     }
 
@@ -150,7 +149,7 @@ class VichImageResizeListener
         }
 
         if (method_exists($entity, 'setSize')) {
-            $entity->setSize((new SplFileInfo($absolutePath))->getSize());
+            $entity->setSize((new \SplFileInfo($absolutePath))->getSize());
         }
     }
 

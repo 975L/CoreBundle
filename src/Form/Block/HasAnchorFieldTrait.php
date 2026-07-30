@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -21,8 +22,8 @@ trait HasAnchorFieldTrait
     private function addAnchorField(FormBuilderInterface $builder, BlockAnchorSlugger $anchorSlugger, string $titleField = 'title'): void
     {
         $builder->add('anchor', TextType::class, [
-            'label'    => 'label.anchor',
-            'help'     => 'label.anchor_help',
+            'label' => 'label.anchor',
+            'help' => 'label.anchor_help',
             'required' => false,
         ]);
 

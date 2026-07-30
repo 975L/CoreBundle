@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Registry;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -71,26 +73,26 @@ class BlockRegistry
         string $bundle = '',
         bool $container = false,
         string $slotContext = self::SLOT_CONTEXT,
-        string $mediaHelp = ''
+        string $mediaHelp = '',
     ): void {
         $this->blocks[$kind] = [
-            'label'         => $label,
-            'domain'        => $translationDomain,
-            'form'          => $formClass,
-            'template'      => $template,
-            'category'      => $category,
-            'mediaTypes'    => $mediaTypes,
-            'description'   => $description,
-            'pickable'      => $pickable,
-            'priority'      => $priority,
-            'cacheable'     => $cacheable,
-            'contexts'      => $contexts,
+            'label' => $label,
+            'domain' => $translationDomain,
+            'form' => $formClass,
+            'template' => $template,
+            'category' => $category,
+            'mediaTypes' => $mediaTypes,
+            'description' => $description,
+            'pickable' => $pickable,
+            'priority' => $priority,
+            'cacheable' => $cacheable,
+            'contexts' => $contexts,
             'mediaRequired' => $mediaRequired,
-            'multiUpload'   => $multiUpload,
-            'bundle'        => $bundle,
-            'container'     => $container,
-            'slotContext'   => $slotContext,
-            'mediaHelp'     => $mediaHelp,
+            'multiUpload' => $multiUpload,
+            'bundle' => $bundle,
+            'container' => $container,
+            'slotContext' => $slotContext,
+            'mediaHelp' => $mediaHelp,
         ];
     }
 
@@ -265,8 +267,8 @@ class BlockRegistry
             }
             $groupKey = $keyFn($kind, $config);
             $grouped[$groupKey][] = [
-                'kind'     => $kind,
-                'label'    => $this->getChoiceLabel($kind),
+                'kind' => $kind,
+                'label' => $this->getChoiceLabel($kind),
                 'priority' => $config['priority'],
             ];
             if (null !== $orderKeyFn && !isset($orderKeys[$groupKey])) {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -9,7 +10,7 @@
 
 namespace c975L\UiBundle\Entity;
 
-use App\Entity\User;
+use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Repository\MediaRepository;
@@ -134,7 +135,7 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     private ?string $description = null;
 
     #[ORM\ManyToOne]
-    private ?User $user = null;
+    private ?UserInterface $user = null;
 
     // Transient, never persisted - set by SiteBundle's BlockDataImporter when a Sync import's archive already carries a pre-generated PDF thumbnail, so VichPdfThumbnailListener can copy it as-is instead of re-running Ghostscript, unavailable on some hosts (e.g. Infomaniak)
     private ?string $importedThumbnailPath = null;
@@ -241,12 +242,12 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?UserInterface $user): self
     {
         $this->user = $user;
 

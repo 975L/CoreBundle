@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -121,7 +122,7 @@ class FlexColumnWidthTest extends TestCase
 
         $depth = 0;
         $length = strlen($css);
-        for ($end = $start + strlen(self::BREAKPOINT); $end < $length; $end++) {
+        for ($end = $start + strlen(self::BREAKPOINT); $end < $length; ++$end) {
             $depth += '{' === $css[$end] ? 1 : ('}' === $css[$end] ? -1 : 0);
             if (0 === $depth) {
                 break;

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -65,14 +66,14 @@ class CollectionRuntimeTest extends TestCase
         $this->assertSame(['<div class="card">Project A</div>'], $result);
         $this->assertSame('collection_item', $renderedBlock->getKind());
         $this->assertSame([
-            'title'       => 'Project A',
-            'content'     => 'A short text',
-            'url'         => '/projets/a',
-            'imageUrl'    => '/uploads/project-a.webp',
+            'title' => 'Project A',
+            'content' => 'A short text',
+            'url' => '/projets/a',
+            'imageUrl' => '/uploads/project-a.webp',
             'buttonLabel' => null,
-            'buttonIcon'  => null,
-            'detailUrl'   => null,
-            'variant'     => null,
+            'buttonIcon' => null,
+            'detailUrl' => null,
+            'variant' => null,
         ], $renderedBlock->getData());
     }
 

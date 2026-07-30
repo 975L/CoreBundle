@@ -25,6 +25,7 @@ See it in action at [975l.com/pages/ui-bundle](https://975l.com/pages/ui-bundle)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections)
+- **Quality** — [checking a page's layout](#checking-a-pages-layout)
 
 ## Features
 
@@ -42,6 +43,7 @@ See it in action at [975l.com/pages/ui-bundle](https://975l.com/pages/ui-bundle)
 - Reusable drag-and-drop sortable script for any EasyAdmin `CollectionField`
 - Font-family provider contract (`FontProviderInterface`/`FontRegistry`) plus a generic `FontChoiceType` select, reused by ConfigBundle's font-kind config fields
 - Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private downloads (`PrivateFileResponseFactory`)
+- Layout invariants checked without a browser (`Testing\StylesheetCascade`, shipped for the bundles depending on this one), plus `c975l:ui:layout-audit` for what only a rendered page shows
 
 ---
 
@@ -51,7 +53,9 @@ See it in action at [975l.com/pages/ui-bundle](https://975l.com/pages/ui-bundle)
 - Doctrine ORM
 - EasyAdmin
 - VichUploader Bundle
+- The application's `App\Entity\User` must implement `c975L\ConfigBundle\Contract\UserInterface` — `Block::$user` and `Media::$user` are typed on that contract rather than on the app's own class, which lives in app-space and a bundle cannot reference. ConfigBundle's `prependExtension()` maps the two together through Doctrine's `resolve_target_entities`, so there is nothing else to declare; but a `User` not implementing it makes both stop recording who last edited a row, silently.
 - [Ghostscript](https://www.ghostscript.com/) (`gs` binary) installed on the server — required for automatic PDF thumbnail generation (see [PDF thumbnails](#pdf-thumbnails)). Optional otherwise: without it, PDF uploads still work, but no `.webp` thumbnail is generated.
+- `chrome-php/chrome` and a local Chrome — only for `c975l:ui:layout-audit` (see [Checking a page's layout](#checking-a-pages-layout)), a development tool. Nothing else needs them, and the command exits cleanly saying so when they're missing.
 
 ---
 
@@ -251,10 +255,11 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 
 `text_hook` holds one rich-text field and exists for a reason the editor itself creates: Trix writes no class, so a paragraph meant to read as an introduction - larger, looser, over a shorter measure - cannot be produced from inside a `text_section`'s content. The kind *is* that class. Being a block of its own, it drops anywhere a paragraph would go: under a `hero`, at the top of a `flex_column`, between two sections.
 
-An `article`'s own **Hook phrase** field (`ArticleType::$hook`) shares that look, so it doesn't matter which of the two an editor used - but only the base of it. `sass/_text-hook.scss` holds two rules:
+An `article`'s own **Hook phrase** field (`ArticleType::$hook`) shares that look, so it doesn't matter which of the two an editor used - but only the base of it. `sass/_text-hook.scss` holds three rules:
 
 - `.text-hook`, worn by both: size, line height, measure and color (`--text-hook-size`, `--text-hook-line-height`, `--text-hook-max-width`, `--text-hook-color`, `--text-hook-margin-bottom`);
-- `.text-hook--standalone`, worn by the block alone: the primary-colored bar down its left side (`--text-hook-bar-width`, `--text-hook-bar-gap`, `--text-hook-standalone-margin`). The block drops between two sections with nothing around it to be read against, where an article's hook already sits under a title and above a body of text - marking that one too would only over-decorate it.
+- `.text-hook--standalone`, worn by the block alone: the primary-colored bar down its left side (`--text-hook-bar-width`, `--text-hook-bar-gap`, `--text-hook-standalone-margin`). The block drops between two sections with nothing around it to be read against, where an article's hook already sits under a title and above a body of text - marking that one too would only over-decorate it;
+- `.text-hook--article`, worn by the article's hook alone: the accent color in place of that bar (`--text-hook-article-color`, `--text-hook-article-margin`), already placed by the title above it. It also drops the base rule's own measure (`--text-hook-article-max-width`, `none` by default) so the hook is laid out on the article's, a 62ch box having otherwise left a centered hook reading off-center against the text it introduces. Set `--text-hook-article-color` on a theme whose `--primary` *is* its text color, where the accent would mark out nothing.
 
 Every one of those tokens is read with the bundle's own value as its fallback and declared nowhere, so a site setting none of them renders exactly as before. The bar follows `--section-accent` before `--primary`, so it inverts along with a colored flat. `TextHookStyleTest` locks both rules in the compiled stylesheets, `TextHookMarkupTest` locks the modifier to the component.
 
@@ -746,6 +751,8 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 
 Props match the Twig variables used inside each template — see `templates/components/<Group>/<Name>.html.twig` for the exact list.
 
+Two filters go with them, both from `Twig\TrixExtension`: **`trix_inline`** drops Trix's block-level `<div>` wrappers where only phrasing content is allowed, joining the lines with `<br>`; **`plain_text`** reduces editor HTML to the text a caption, an `aria-label` or a `<meta>` can hold. `plain_text` decodes the entities `striptags` leaves behind — without that a `&amp;` reaches the page as `&amp;amp;`, Twig having escaped it a second time. `Image:Link` uses it for its fallback accessible name.
+
 > **Maintenance note:** update this table whenever a component is added, renamed, or removed in `templates/components/`.
 
 ### Cards: a grid of teaser cards
@@ -1071,6 +1078,12 @@ They sit in `@layer ui-defaults`, and that layer is the point: a layered rule al
 
 Values are light-mode only. Dark mode is SiteBundle's (`sass/_theme-dark.scss`); with that bundle absent there is no dark theme to follow.
 
+### The reading measure
+
+`--reading-max-width` is the column body copy is laid out on — SiteBundle declares it, this bundle reads it with `min(75ch, 90vw)` as its fallback. Every block that *is* body copy shares it rather than carrying a length of its own: `.slider`, `.slider-single`, `.image-compare` and `.readmore`. They each used to hardcode 800px, which sat edge to edge on a viewport of exactly that width and drifted apart from the text they sit with. A site retuning its measure now moves all of them at once.
+
+Sections are wider than body copy and keep their own measures, but through tokens too rather than bare lengths: `--section-wrap-max-width`, `--section-head-max-width`, `--hero-text-max-width`, `--hero-media-max-width`, `--cta-band-text-max-width` and `--alert-max-width`. `ReadingMeasureTest` fails if a column-wide rule goes back to a bare length, or if a section measure is written without a token.
+
 ### Adding CSS from your bundle
 
 **Create a provider class** in your bundle:
@@ -1178,6 +1191,49 @@ public function configureAssets(): Assets
 ```
 
 Unlike the JS admin mechanism (`BundleScriptAdminProviderInterface`), no AssetMapper/importmap entry is needed — `addCssFile()` resolves plain public paths via Symfony's asset package, same as `getStylesheets()` above.
+
+---
+
+## Checking a page's layout
+
+A component centered by `margin: … auto`, or laid out past its measure by a negative one, loses that layout the moment a stronger rule writes the `margin` shorthand over it — with nothing in its own sass changed to show for it. That's how the slider ended up hugging the left edge in v1.12.0, and the colored flats lost their full-bleed breakout in v1.13.0. Two mechanisms cover it, one reading the stylesheet, one reading a rendered page.
+
+### Off the stylesheet, in the test suite
+
+`Testing\StylesheetCascade` reads compiled stylesheets the way the cascade does — in load order, with each rule's specificity — so a test can answer "does this rule beat that one on the same element" without a browser. `Testing\ComponentCenteringAnalyzer` uses it to find the components a sheet centers, the ones it breaks out of their measure, and the rules strong enough to write either away. `ComponentCenteringTest` runs the pair over this bundle's own sheet.
+
+They live in `src/` rather than `tests/` on purpose: a bundle's `tests/` is autoload-dev and never reaches the bundles depending on it, and a stylesheet is only meaningful next to the ones loaded with it. So your own bundle can run the same engine over its sheet **plus** this one's, which is where the cross-bundle collisions are:
+
+```php
+use c975L\UiBundle\Testing\ComponentCenteringAnalyzer;
+use c975L\UiBundle\Testing\StylesheetCascade;
+
+$analyzer = new ComponentCenteringAnalyzer(StylesheetCascade::fromFiles(
+    $uiBundleDir . '/public/css/styles.css',   // load order matters: source order decides between two rules of equal specificity
+    $myBundleDir . '/public/css/styles.css',
+));
+
+foreach ($analyzer->analyse(ComponentCenteringAnalyzer::tagsByClass($myBundleDir . '/templates/components'))['violations'] as $violation) {
+    self::fail(ComponentCenteringAnalyzer::describe($violation));
+}
+```
+
+They're excluded from the service container (see the `Testing/` entry in `config/services.yaml`) — test utilities that ship, in the same spirit as Symfony's own `Test` namespaces.
+
+### Off a rendered page, by hand
+
+Some defects only exist once the page is laid out: a block wider than the viewport, a centering that computes to `0px`, an image blown up past the window. `c975l:ui:layout-audit` measures them in a headless Chrome:
+
+```bash
+php bin/console c975l:ui:layout-audit https://example.com/ https://example.com/contact
+php bin/console c975l:ui:layout-audit http://127.0.0.1:8000/ --width=390 --width=1280 --strict
+```
+
+Run it from the **consuming site's** console, and install its dependency there rather than here — hence `chrome-php/chrome` being a `suggest` of this bundle: `composer require --dev chrome-php/chrome`. Without it the command exits cleanly with a warning, so a site that never installed it is never broken by the command existing.
+
+It reports without failing unless `--strict` is passed — a headless browser is never deterministic enough to gate a push on, and a check that fails at random is a check that ends up disabled. A page it could not measure at all is reported too, rather than counted as a clean one.
+
+Deliberately not a `HealthCheckProviderInterface`: those run from cron on the managed server, which has no browser and no way to install one.
 
 ---
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -12,16 +13,18 @@ namespace c975L\UiBundle\Listener;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Twig\VideoExtension;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
 
 // The youtube-nocookie.com rewrite happens here, once, before the URL reaches the DB
 #[AsDoctrineListener(event: Events::prePersist)]
 #[AsDoctrineListener(event: Events::preUpdate)]
 class BlockVideoNoCookieListener
 {
-    public function __construct(private VideoExtension $videoExtension) {}
+    public function __construct(private VideoExtension $videoExtension)
+    {
+    }
 
     public function prePersist(PrePersistEventArgs $args): void
     {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -180,7 +181,7 @@ class FormControllerTest extends TestCase
     // RegisterFormAction/ResetPasswordRequestFormAction (scaffold) implement RequiresAnonymousInterface - an already-authenticated visitor gets a notice instead of the form, on both routes
     private function createRequiresAnonymousActionRegistry(string $key): FormActionRegistry
     {
-        $action = new class($key) implements FormActionInterface, RequiresAnonymousInterface {
+        $action = new class ($key) implements FormActionInterface, RequiresAnonymousInterface {
             public function __construct(private readonly string $key)
             {
             }
@@ -250,7 +251,7 @@ class FormControllerTest extends TestCase
     // An action not implementing RequiresAnonymousInterface (e.g. "contact") stays open to a logged-in visitor
     public function testFragmentRendersTheFormFragmentEvenWhenAuthenticatedIfActionDoesNotRequireAnonymous(): void
     {
-        $action = new class() implements FormActionInterface {
+        $action = new class implements FormActionInterface {
             public function getKey(): string
             {
                 return 'send_email';
@@ -352,7 +353,7 @@ class FormControllerTest extends TestCase
     {
         $rateLimiterGuard = $this->createMock(RateLimiterGuard::class);
         $rateLimiterGuard->expects($this->never())->method('isAccepted');
-        $action = new class() implements FormActionInterface {
+        $action = new class implements FormActionInterface {
             public function getKey(): string
             {
                 return 'send_email';
@@ -381,7 +382,7 @@ class FormControllerTest extends TestCase
 
     public function testSubmitClearsPrefillAndFlashesSuccessWhenActionSucceeds(): void
     {
-        $action = new class() implements FormActionInterface {
+        $action = new class implements FormActionInterface {
             public function getKey(): string
             {
                 return 'send_email';
@@ -412,7 +413,7 @@ class FormControllerTest extends TestCase
     // Regression guard: Referer is client-supplied - redirecting there unchecked is an open redirect
     public function testSubmitDoesNotRedirectToACrossOriginReferer(): void
     {
-        $action = new class() implements FormActionInterface {
+        $action = new class implements FormActionInterface {
             public function getKey(): string
             {
                 return 'send_email';
@@ -436,7 +437,7 @@ class FormControllerTest extends TestCase
 
     public function testSubmitDoesNotClearPrefillAndFlashesDangerWhenActionFails(): void
     {
-        $action = new class() implements FormActionInterface {
+        $action = new class implements FormActionInterface {
             public function getKey(): string
             {
                 return 'send_email';
@@ -466,7 +467,7 @@ class FormControllerTest extends TestCase
     // Debug mode (see SendEmailFormAction): the preview response bypasses the usual flash+redirect entirely
     public function testSubmitReturnsRawDebugPreviewWithoutFlashingOrRedirecting(): void
     {
-        $action = new class() implements FormActionInterface, DebugPreviewCapableInterface {
+        $action = new class implements FormActionInterface, DebugPreviewCapableInterface {
             public function getKey(): string
             {
                 return 'send_email';

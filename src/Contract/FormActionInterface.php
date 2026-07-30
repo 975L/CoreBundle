@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2026: 975L <contact@975l.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
@@ -6,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace c975L\UiBundle\Contract;
 
 use c975L\UiBundle\Entity\Form;
@@ -16,7 +18,7 @@ use c975L\UiBundle\Entity\Form;
 interface FormActionInterface
 {
     /**
-     * The action key this provider handles, matched against Form::$action
+     * The action key this provider handles, matched against Form::$action.
      */
     public function getKey(): string;
 

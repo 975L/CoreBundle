@@ -9,6 +9,7 @@
  */
 
 // Namespace-scoped override of function_exists(), simulating a host with exec() disabled
+
 namespace c975L\UiBundle\Listener;
 
 function function_exists(string $function): bool
