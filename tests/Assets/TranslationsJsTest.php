@@ -22,15 +22,15 @@ class TranslationsJsTest extends TestCase
      */
     private function loadTranslations(): array
     {
-        $js = (string) file_get_contents(\dirname(__DIR__, 2) . '/assets/js/translations.js');
+        $script = (string) file_get_contents(\dirname(__DIR__, 2) . '/assets/js/translations.js');
 
         // The module is "export default { ... };" around plain JSON, so the object literal decodes as-is
-        $start = strpos($js, '{');
-        $end = strrpos($js, '}');
+        $start = strpos($script, '{');
+        $end = strrpos($script, '}');
         $this->assertIsInt($start);
         $this->assertIsInt($end);
 
-        return json_decode(substr($js, $start, $end - $start + 1), true, 512, \JSON_THROW_ON_ERROR);
+        return json_decode(substr($script, $start, $end - $start + 1), true, 512, \JSON_THROW_ON_ERROR);
     }
 
     public function testEveryShippedLocaleIsPresent(): void
@@ -56,8 +56,8 @@ class TranslationsJsTest extends TestCase
     // Every key the controller asks for must exist, or Handlers.translate() hands the raw key to the visitor
     public function testTheControllerAsksForNoUnknownKey(): void
     {
-        $js = (string) file_get_contents(\dirname(__DIR__, 2) . '/assets/js/password.js');
-        preg_match_all('/Handlers\.translate\(\s*"([^"]+)"/', $js, $matches);
+        $script = (string) file_get_contents(\dirname(__DIR__, 2) . '/assets/js/password.js');
+        preg_match_all('/Handlers\.translate\(\s*"([^"]+)"/', $script, $matches);
 
         $this->assertNotEmpty($matches[1], 'password.js asks for no translation, the test itself is broken.');
 

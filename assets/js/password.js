@@ -9,7 +9,7 @@ import { Controller } from "@hotwired/stimulus";
 import Handlers from "./handlers.js";
 
 // Show/hide toggle, format check and confirmation match, driven by data attributes any form can opt into
-const LEGACY_PASSWORD_ID = "registration_form_plainPassword";
+const LEGACY_PLAIN_ID = "registration_form_plainPassword";
 const LEGACY_CONFIRM_ID = "registration_form_confirmPassword";
 const DEFAULT_PATTERN = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$";
 const ICON_PATH = "/bundles/c975lui/icons/";
@@ -90,7 +90,7 @@ export default class extends Controller {
         });
 
         // Legacy field ids, kept until the next major; opt into data-password-pattern instead
-        const legacy = this.legacyField(LEGACY_PASSWORD_ID, "passwordPattern");
+        const legacy = this.legacyField(LEGACY_PLAIN_ID, "passwordPattern");
         if (legacy) {
             const pattern = new RegExp(DEFAULT_PATTERN);
             this.fields.push(legacy);
@@ -118,7 +118,7 @@ export default class extends Controller {
 
         // Same legacy fallback as above, on the confirmation field this time
         const legacy = this.legacyField(LEGACY_CONFIRM_ID, "passwordConfirm");
-        const source = document.getElementById(LEGACY_PASSWORD_ID);
+        const source = document.getElementById(LEGACY_PLAIN_ID);
         if (legacy && source) {
             this.fields.push(legacy);
             legacy.addEventListener("blur", () => {

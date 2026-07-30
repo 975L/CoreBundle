@@ -36,20 +36,20 @@ class VideoIframeConsentSelectorTest extends TestCase
     // A hardcoded querySelector() argument bypasses the constant the test above checks, putting the mismatch straight back
     public function testConnectQueriesTheSharedSelectorConstant(): void
     {
-        $js = $this->read(self::CONTROLLER_JS);
+        $script = $this->read(self::CONTROLLER_JS);
 
-        $this->assertStringContainsString('document.querySelector(CONSENT_BANNER_SELECTOR)', $js);
-        $this->assertSame(1, substr_count($js, 'document.querySelector('), sprintf('"%s" queries the document more than once, the consent check must stay the only one.', self::CONTROLLER_JS));
+        $this->assertStringContainsString('document.querySelector(CONSENT_BANNER_SELECTOR)', $script);
+        $this->assertSame(1, substr_count($script, 'document.querySelector('), sprintf('"%s" queries the document more than once, the consent check must stay the only one.', self::CONTROLLER_JS));
     }
 
     // The player is only worth loading once it is about to be seen - dropping the observer would put ~1 MB of third-party JavaScript back on every page load carrying a video
     public function testIframeInjectionIsDeferredUntilTheElementNearsTheViewport(): void
     {
-        $js = $this->read(self::CONTROLLER_JS);
+        $script = $this->read(self::CONTROLLER_JS);
 
-        $this->assertStringContainsString('new IntersectionObserver(', $js);
-        $this->assertStringContainsString('rootMargin: ROOT_MARGIN', $js);
-        $this->assertMatchesRegularExpression('/const ROOT_MARGIN = "\d+px";/', $js);
+        $this->assertStringContainsString('new IntersectionObserver(', $script);
+        $this->assertStringContainsString('rootMargin: ROOT_MARGIN', $script);
+        $this->assertMatchesRegularExpression('/const ROOT_MARGIN = "\d+px";/', $script);
     }
 
     // "const CONSENT_BANNER_SELECTOR = '...';" -> "..."

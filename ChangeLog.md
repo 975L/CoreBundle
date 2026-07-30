@@ -1,6 +1,18 @@
 # ChangeLog
 
-## v1.13
+## v1.13.1
+
+Give the CI a root version, ^1 otherwise resolving an older release
+
+- The `CI` workflow now sets `COMPOSER_ROOT_VERSION` to `1.x-dev` (30/07/2026)
+- `actions/checkout` is now pinned to `v5` (30/07/2026)
+- `shivammathur/setup-php` and `codacy-coverage-reporter-action` are now pinned to a commit SHA (30/07/2026)
+- Removed the duplicate `.ui-icon-preview` rule, its `32px` measure folded into the first (30/07/2026)
+- The asset tests now name the file they read `$script` instead of `$js` (30/07/2026)
+- Every `sass/` file now ends with a newline (30/07/2026)
+- The `v1.13` heading is now `v1.13.0`, matching the tag (30/07/2026)
+
+## v1.13.0
 
 Lock a component's own inline layout against the rules strong enough to write it away
 

@@ -54,9 +54,9 @@ class CaptchaControllerDataAttributesTest extends TestCase
     }
 
     // "static values = { siteKey: String, action: String }" -> ["siteKey", "action"]
-    private function declaredValues(string $js): array
+    private function declaredValues(string $script): array
     {
-        if (!preg_match('/static values\s*=\s*\{([^}]*)\}/', $js, $block)) {
+        if (!preg_match('/static values\s*=\s*\{([^}]*)\}/', $script, $block)) {
             return [];
         }
 

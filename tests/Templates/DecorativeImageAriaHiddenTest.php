@@ -36,9 +36,9 @@ class DecorativeImageAriaHiddenTest extends TestCase
     // The JS-built icon grid has no template, so it is checked on the controller itself
     public function testIconPickerGridHidesItsIcons(): void
     {
-        $js = (string) file_get_contents(\dirname(__DIR__, 2) . '/assets/js/icon-picker.js');
+        $script = (string) file_get_contents(\dirname(__DIR__, 2) . '/assets/js/icon-picker.js');
 
-        $this->assertStringContainsString("img.setAttribute('aria-hidden', 'true')", $js);
+        $this->assertStringContainsString("img.setAttribute('aria-hidden', 'true')", $script);
     }
 
     // @return iterable<string>

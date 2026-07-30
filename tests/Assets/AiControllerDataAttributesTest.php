@@ -28,10 +28,10 @@ class AiControllerDataAttributesTest extends TestCase
     #[DataProvider('controllerProvider')]
     public function testTemplateWritesEveryAttributeTheControllerReads(string $jsPath, string $twigPath): void
     {
-        $js = $this->read($jsPath);
+        $script = $this->read($jsPath);
         $twig = $this->read($twigPath);
 
-        $expected = array_merge($this->datasetAttributes($js), $this->targetAttributes($js));
+        $expected = array_merge($this->datasetAttributes($script), $this->targetAttributes($script));
         $this->assertNotEmpty($expected, sprintf('No data-* attribute found in "%s", the test itself is broken.', $jsPath));
 
         foreach ($expected as $attribute) {
@@ -40,9 +40,9 @@ class AiControllerDataAttributesTest extends TestCase
     }
 
     // "this.element.dataset.aiAssistantAskUrlValue" -> "data-ai-assistant-ask-url-value"
-    private function datasetAttributes(string $js): array
+    private function datasetAttributes(string $script): array
     {
-        preg_match_all('/dataset\.([A-Za-z0-9]+)/', $js, $matches);
+        preg_match_all('/dataset\.([A-Za-z0-9]+)/', $script, $matches);
 
         return array_map(
             static fn (string $property): string => 'data-' . strtolower((string) preg_replace('/([a-z0-9])([A-Z])/', '$1-$2', $property)),
@@ -51,9 +51,9 @@ class AiControllerDataAttributesTest extends TestCase
     }
 
     // "querySelector('[data-ai-assistant-target=\"log\"]')" -> "data-ai-assistant-target=\"log\""
-    private function targetAttributes(string $js): array
+    private function targetAttributes(string $script): array
     {
-        preg_match_all('/\[(data-[a-z0-9-]+-target="[a-z0-9-]+")\]/', $js, $matches);
+        preg_match_all('/\[(data-[a-z0-9-]+-target="[a-z0-9-]+")\]/', $script, $matches);
 
         return array_unique($matches[1]);
     }

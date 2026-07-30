@@ -17,11 +17,11 @@ class TrixEditorSelectionScopeTest extends TestCase
 {
     public function testTheBlockLookupIsScopedToItsOwnEditor(): void
     {
-        $js = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/trix-editor.js');
+        $script = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/trix-editor.js');
 
         $this->assertMatchesRegularExpression(
             '/function currentBlockElement\(editorElement\)\s*\{.*?editorElement\.contains\(element\).*?\}/s',
-            $js,
+            $script,
             'currentBlockElement() no longer checks the selected node belongs to the editor it was called for, so a toolbar can align a block of another editor on the page.'
         );
     }
