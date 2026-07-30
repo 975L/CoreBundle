@@ -5,4 +5,5 @@ exclude_paths:
   - "**/*.min.js"
   - "**/*.min.css"
   - "**/*.map"
+  - "**/*.tpl.php"
   - ".phpunit.cache/**"

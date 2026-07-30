@@ -5,6 +5,7 @@ Symfony bundle providing the c975L ecosystem's shared front-end foundation — d
 [![GitHub](https://img.shields.io/github/license/975L/UiBundle)](https://github.com/975L/UiBundle/blob/master/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/ui-bundle)](https://packagist.org/packages/c975l/ui-bundle)
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/ui-bundle)](https://packagist.org/packages/c975l/ui-bundle)
+[![Codacy Grade](https://app.codacy.com/project/badge/Grade/d09243de129a42dfb8bdb5db014bdbc7)](https://app.codacy.com/gh/975L/UiBundle/dashboard)
 
 ## Why UiBundle
 

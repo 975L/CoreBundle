@@ -1,5 +1,12 @@
 # ChangeLog
 
+## v1.13.2
+
+Exclude the generation skeletons from Codacy, which ignores the Finder
+
+- Codacy now excludes `**/*.tpl.php`, its runs ignoring php-cs-fixer's Finder (30/07/2026)
+- Added the Codacy grade badge to the README (30/07/2026)
+
 ## v1.13.1
 
 Give the CI a root version, ^1 otherwise resolving an older release
