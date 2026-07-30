@@ -8,6 +8,7 @@ Give the CI a root version, ^1 otherwise resolving an older release
 - `actions/checkout` is now pinned to `v5` (30/07/2026)
 - `shivammathur/setup-php` and `codacy-coverage-reporter-action` are now pinned to a commit SHA (30/07/2026)
 - Removed the duplicate `.ui-icon-preview` rule, its `32px` measure folded into the first (30/07/2026)
+- Added a `.stylelintrc.json`, read by Codacy in place of its default ruleset (30/07/2026)
 - The asset tests now name the file they read `$script` instead of `$js` (30/07/2026)
 - Every `sass/` file now ends with a newline (30/07/2026)
 - The `v1.13` heading is now `v1.13.0`, matching the tag (30/07/2026)
