@@ -48,15 +48,13 @@
     width: 100%;
     display: none;
     cursor: pointer;
+    animation: 0.5s ease-in-out both;
 }
 
 // A real class, not an inline style: a nonce-based CSP can't cover one. Set server-side on slide one
+// Declared after the rule above so its display wins on equal specificity
 .slider-item-active {
     display: block;
-}
-
-.slider-item {
-    animation: 0.5s ease-in-out both;
 }
 
 .slider-item.slide-in-right {
@@ -350,6 +348,9 @@
     display: block;
     cursor: pointer;
     animation: none;
+
+    // Mobile-first: 3/4, widening to 16/9 from 768px up - an explicit ratio="..." below always wins
+    aspect-ratio: 3 / 4;
 }
 
 .slider-freeflow .slider-img,
@@ -358,9 +359,6 @@
     object-fit: cover;
     object-position: center;
 }
-
-// Mobile-first: 3/4, widening to 16/9 from 768px up - an explicit ratio="..." below always wins
-.slider-freeflow .slider-item { aspect-ratio: 3 / 4; }
 
 @media (min-width: 768px) {
     .slider-freeflow .slider-item { aspect-ratio: 16 / 9; }

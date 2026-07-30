@@ -1848,9 +1848,6 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
     padding: 40px;
   }
   .portfolio-grid__project-body {
-    padding: 32px;
-  }
-  .portfolio-grid__project-body {
     padding: 20px 22px;
   }
   .cta-band__inner {
@@ -2610,14 +2607,11 @@ span {
   width: 100%;
   display: none;
   cursor: pointer;
+  animation: 0.5s ease-in-out both;
 }
 
 .slider-item-active {
   display: block;
-}
-
-.slider-item {
-  animation: 0.5s ease-in-out both;
 }
 
 .slider-item.slide-in-right {
@@ -2922,6 +2916,7 @@ span {
   display: block;
   cursor: pointer;
   animation: none;
+  aspect-ratio: 3/4;
 }
 
 .slider-freeflow .slider-img,
@@ -2929,10 +2924,6 @@ span {
   height: 100%;
   object-fit: cover;
   object-position: center;
-}
-
-.slider-freeflow .slider-item {
-  aspect-ratio: 3/4;
 }
 
 @media (min-width: 768px) {
