@@ -72,6 +72,7 @@
         "issues": "https://github.com/975L/UiBundle/issues"
     },
     "suggest": {
-        "chrome-php/chrome": "To run \"c975l:ui:layout-audit\", which measures a rendered page against the layout invariants the sass tests cannot check. Install it in the consuming site, not here: the command runs from that site's console."
+        "chrome-php/chrome": "To run \"c975l:ui:layout-audit\", which measures a rendered page against the layout invariants the sass tests cannot check. Install it in the consuming site, not here: the command runs from that site's console.",
+        "ext-imagick": "To upload an SVG as favicon or apple-touch-icon: GD has no SVG decoder, so without it those two roles only accept raster images (see SvgRasterizer)."
     }
 }

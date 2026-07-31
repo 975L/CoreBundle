@@ -1040,7 +1040,7 @@
             </trans-unit>
             <trans-unit id="ubt8hID">
                 <source>label.fixed_icon_invalid_format</source>
-                <target>SVG no es compatible con este rol - suba una imagen PNG, JPG, GIF o WEBP</target>
+                <target>Formato no compatible con este rol - suba una imagen %formats%</target>
             </trans-unit>
             <trans-unit id="atiwZVV">
                 <source>label.force_download</source>

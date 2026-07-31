@@ -88,6 +88,17 @@
         "description": "description.email_debug"
     },
     {
+        "label": "label.block_showcase_url",
+        "slug": "ui-block-showcase-url",
+        "sensitive": false,
+        "restricted": true,
+        "value": "https://bundles.975l.com/pages/blocks",
+        "kind": "text",
+        "group": "general",
+        "severity": null,
+        "description": "description.block_showcase_url"
+    },
+    {
         "label": "label.recaptcha3_site_key",
         "slug": "recaptcha3-site-key",
         "sensitive": true,

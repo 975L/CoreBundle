@@ -42,6 +42,10 @@
                 <source>description.ai_rephrase_not_enabled</source>
                 <target>Configure proveedor y clave API para activar la reformulación</target>
             </trans-unit>
+            <trans-unit id="sQ9y3iP">
+                <source>description.block_showcase_url</source>
+                <target>URL de la vitrina de bloques que abre el enlace de la barra lateral - vacío para recurrir a la vitrina del ecosistema c975L</target>
+            </trans-unit>
             <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
                 <target>Si activado, ROLE_SUPER_ADMIN ve una vista previa en vez de un envío real</target>
@@ -113,6 +117,10 @@
             <trans-unit id="nUpavak">
                 <source>label.ui_ai_assistant_rephrase_provider</source>
                 <target>Donovan (Sitio) - Proveedor LLM</target>
+            </trans-unit>
+            <trans-unit id="Je6f2_l">
+                <source>label.ui_block_showcase_url</source>
+                <target>Vitrina de bloques - URL</target>
             </trans-unit>
         </body>
     </file>

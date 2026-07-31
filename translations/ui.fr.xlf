@@ -1040,7 +1040,7 @@
             </trans-unit>
             <trans-unit id="ubt8hID">
                 <source>label.fixed_icon_invalid_format</source>
-                <target>SVG non supporté pour ce rôle - utilisez une image PNG, JPG, GIF ou WEBP</target>
+                <target>Format non supporté pour ce rôle - utilisez une image %formats%</target>
             </trans-unit>
             <trans-unit id="atiwZVV">
                 <source>label.force_download</source>

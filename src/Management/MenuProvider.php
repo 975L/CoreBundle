@@ -16,6 +16,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuProvider implements MenuProviderInterface
 {
+    // Default value of the 'ui-block-showcase-url' config entry, repeated here as the fallback for an app whose configs.json hasn't been reloaded yet
+    public const BLOCK_SHOWCASE_URL = 'https://bundles.975l.com/pages/blocks';
+
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly TranslatorInterface $translator,
@@ -36,7 +39,7 @@ class MenuProvider implements MenuProviderInterface
         return [];
     }
 
-    // Fixed external url (not a route name) since every app links to the same external block showcase site
+    // An external url (not a route name), the showcase living on its own site - configurable so an app can point at its own, falling back on the ecosystem's when the key is empty or missing (an app installed before the key existed, its configs.json not reloaded yet)
     public function getLinks(): array
     {
         return [
@@ -44,7 +47,7 @@ class MenuProvider implements MenuProviderInterface
                 'label' => 'label.block_showcase',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-shapes',
-                'url' => 'https://975l.com/pages/blocks',
+                'url' => $this->configService->get('ui-block-showcase-url') ?: self::BLOCK_SHOWCASE_URL,
                 'target' => '_blank',
                 // No local page to reuse text from (external showcase site) - unlike every other description, this one has no crud/index override backing it, so it's its own dedicated key
                 'description' => 'label.block_showcase_help',

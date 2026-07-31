@@ -10,7 +10,8 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
-use c975L\UiBundle\Service\BlockFixtureMediaAttacher;
+use c975L\UiBundle\Contract\PlaceholderMediaProviderInterface;
+use c975L\UiBundle\Registry\PlaceholderMediaRegistry;
 use c975L\UiBundle\Service\BlockFixtureProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -43,14 +44,32 @@ class BlockFixtureProviderTest extends TestCase
         $this->assertContains('muted', $fixtures['video']['']['options']);
     }
 
-    // video_iframe just renders any URL in an <iframe> (see Video/Iframe.html.twig) - a raw video file navigated to directly would autoplay with sound via the browser's own player, so this uses the muted HTML wrapper instead of PLACEHOLDER_VIDEO directly. Leading "/" for the same reason as above.
-    public function testVideoIframeFixtureUsesTheMutedVideoEmbedWrapper(): void
+    // video_iframe just renders any URL in an <iframe> (see Video/Iframe.html.twig) - a raw video file navigated to directly would autoplay with sound via the browser's own player, so this uses the muted HTML wrapper the app declares (see PlaceholderMediaProviderInterface). Leading "/" for the same reason as above.
+    public function testVideoIframeFixtureUsesTheDeclaredMutedVideoEmbedWrapper(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = (new BlockFixtureProvider($this->createPlaceholderMedia(['video_embed' => 'showcase/clip-embed.html'])))->getFixtures();
 
-        $this->assertSame('/' . BlockFixtureMediaAttacher::PLACEHOLDER_VIDEO_EMBED, $fixtures['video_iframe']['']['src']);
+        $this->assertSame('/showcase/clip-embed.html', $fixtures['video_iframe']['']['src']);
         $this->assertNotEmpty($fixtures['video_iframe']['']['title']);
         $this->assertNotEmpty($fixtures['video_iframe']['']['description']);
+    }
+
+    // The bundle ships no wrapper of its own: with none declared the preview shows the block's consent placeholder with nothing behind it, rather than a src pointing at a file that isn't there
+    public function testVideoIframeFixtureCarriesNoSrcWhenNoneIsDeclared(): void
+    {
+        $this->assertSame('', (new BlockFixtureProvider())->getFixtures()['video_iframe']['']['src']);
+        $this->assertSame('', (new BlockFixtureProvider($this->createPlaceholderMedia([])))->getFixtures()['video_iframe']['']['src']);
+    }
+
+    private function createPlaceholderMedia(array $media): PlaceholderMediaRegistry
+    {
+        $provider = $this->createStub(PlaceholderMediaProviderInterface::class);
+        $provider->method('getPlaceholderMedia')->willReturn($media);
+
+        $registry = new PlaceholderMediaRegistry();
+        $registry->addProvider($provider);
+
+        return $registry;
     }
 
     // alert has 4 style choices (info/success/warning/danger) - all shown side by side in the gallery

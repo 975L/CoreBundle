@@ -1040,7 +1040,7 @@
             </trans-unit>
             <trans-unit id="ubt8hID">
                 <source>label.fixed_icon_invalid_format</source>
-                <target>SVG isn't supported for this role - upload a PNG, JPG, GIF or WEBP image</target>
+                <target>Unsupported format for this role - upload a %formats% image</target>
             </trans-unit>
             <trans-unit id="atiwZVV">
                 <source>label.force_download</source>

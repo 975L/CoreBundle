@@ -14,16 +14,16 @@ use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Repository\MediaRepository;
+use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[ORM\Table(name: 'site_media')]
 #[Vich\Uploadable]
+#[FixedIconFormat]
 class Media implements VichImageResizableInterface, VichMediaNamableInterface
 {
     private const IMAGE_WIDTH = 800;
@@ -49,9 +49,6 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
         self::ROLE_FAVICON => ['width' => 48, 'height' => 48, 'format' => 'ico'],
         self::ROLE_APPLE_TOUCH_ICON => ['width' => 114, 'height' => 114, 'format' => 'png'],
     ];
-
-    // FIXED_ICON_SPECS roles go through GD (see VichImageResizeListener::processFixedIcon), which cannot rasterize SVG - an SVG upload there silently produces a broken icon (readable by lenient tools like GIMP/browsers, but rejected by gdk-pixbuf, breaking OS-level thumbnails e.g. in Nemo/Nautilus)
-    private const FIXED_ICON_ALLOWED_MIME_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
 
     // Roles resized to a max width (aspect ratio kept, unlike FIXED_ICON_SPECS) instead of the default IMAGE_WIDTH
     private const MAX_WIDTHS = [
@@ -427,22 +424,6 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     public function getFixedIconSpec(): ?array
     {
         return null !== $this->role ? (self::FIXED_ICON_SPECS[$this->role] ?? null) : null;
-    }
-
-    // Rejects SVG (and any other non-raster format) for FIXED_ICON_SPECS roles - see FIXED_ICON_ALLOWED_MIME_TYPES
-    #[Assert\Callback]
-    public function validateFixedIconMimeType(ExecutionContextInterface $context): void
-    {
-        if (null === $this->getFixedIconSpec() || null === $this->file) {
-            return;
-        }
-
-        if (!in_array($this->file->getMimeType(), self::FIXED_ICON_ALLOWED_MIME_TYPES, true)) {
-            $context->buildViolation('label.fixed_icon_invalid_format')
-                ->atPath('file')
-                ->setTranslationDomain('ui')
-                ->addViolation();
-        }
     }
 
     // True only for the site-wide default og-image (role=og-image). A Page's own og-image override and a library Media added via MediaCrudController's New action (see MediaCrudController) share the exact same role=null/block=null state and are indistinguishable here - UiBundle has no visibility into a Page's own fields (see MediaUsageProviderInterface) - so neither gets the og-image-specific width override, only the true site-wide singleton does

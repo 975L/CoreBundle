@@ -15,6 +15,7 @@ use c975L\UiBundle\Contract\VichMultiSizeImageInterface;
 use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Service\ImageDimensionsReader;
+use c975L\UiBundle\Service\SvgRasterizer;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
@@ -27,14 +28,15 @@ use Vich\UploaderBundle\Event\Event;
 #[AsEventListener(event: 'vich_uploader.post_upload', method: 'onPostUpload')]
 class VichImageResizeListener
 {
-    // Formats Imagine\Gd can actually read as a source - notably excludes 'ico', which FIXED_ICON_SPECS can only ever produce (see wrapAsIco()), never consume. A site_graphic export/import roundtrip (see SiteBundle's SiteGraphicExportProvider) re-feeds a role=favicon Media's already-converted .ico file back in as if it were a fresh upload, which would otherwise crash the whole import
-    private const READABLE_EXTENSIONS = ['jpg', 'png', 'gif', 'webp'];
+    // Image types Imagine\Gd can actually read as a source, decided on the file's own content rather than on its name: a fixed icon role's stored file always carries the role's target extension whatever was uploaded (see UiMediaNamer), so an .ico name says nothing about what is inside it. A real .ico is the one thing that never gets in - it is what FIXED_ICON_SPECS produces (see wrapAsIco()), never what it consumes, and a site_graphic export/import roundtrip (see SiteBundle's SiteGraphicExportProvider) re-feeds a role=favicon Media's already-converted file back in as if it were a fresh upload, which would otherwise crash the whole import
+    private const READABLE_IMAGE_TYPES = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_WEBP];
 
     private Filesystem $filesystem;
 
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
         private readonly ImageDimensionsReader $imageDimensionsReader,
+        private readonly SvgRasterizer $svgRasterizer,
     ) {
         $this->filesystem = new Filesystem();
     }
@@ -51,11 +53,15 @@ class VichImageResizeListener
         }
 
         if ($entity instanceof VichImageResizableInterface) {
-            $extension = $entity->getFile()->getExtension();
             $spec = $entity instanceof Media ? $entity->getFixedIconSpec() : null;
 
-            // A file GD can't decode (an svg, or the already-converted .ico a content_import roundtrip re-feeds as a fresh upload) is left exactly as uploaded - only its dimensions are recorded below
-            if (in_array($extension, self::READABLE_EXTENSIONS, true)) {
+            // An icon role uploaded as SVG is rasterized in place first, and goes on through the very same pipeline as any raster upload. The stored file carries the role's own extension by then (see UiMediaNamer), whatever was uploaded, so only its content can tell - which is exactly what rasterizeInPlace() looks at, leaving the file untouched for everything that is not an SVG it can handle
+            if (null !== $spec) {
+                $this->svgRasterizer->rasterizeInPlace($absolutePath);
+            }
+
+            // A file GD can't decode (an svg no rasterizer could handle, or the already-converted .ico a content_import roundtrip re-feeds as a fresh upload) is left exactly as uploaded - only its dimensions are recorded below
+            if ($this->isReadable($absolutePath)) {
                 if (null !== $spec) {
                     $this->processFixedIcon($entity, $absolutePath, $spec);
                 } else {
@@ -71,6 +77,14 @@ class VichImageResizeListener
         if ($entity instanceof VichPrivateFileInterface) {
             $this->moveFileToPrivate($entity, $filename, $absolutePath);
         }
+    }
+
+    // Reads the type off the file's magic bytes (see READABLE_IMAGE_TYPES) - the error suppression covers everything getimagesize() can't measure at all, from a real .ico to the pdf/video/audio a Media can just as well hold
+    private function isReadable(string $absolutePath): bool
+    {
+        $size = @getimagesize($absolutePath);
+
+        return false !== $size && in_array($size[2], self::READABLE_IMAGE_TYPES, true);
     }
 
     private function processImage(VichImageResizableInterface $entity, string $absolutePath): void

@@ -17,11 +17,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuProviderTest extends TestCase
 {
-    private function createConfigService(): ConfigServiceInterface
+    private function createConfigService(?string $showcaseUrl = null): ConfigServiceInterface
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([
             ['site-role-admin', 'ROLE_ADMIN'],
+            ['ui-block-showcase-url', $showcaseUrl],
         ]);
 
         return $configService;
@@ -53,19 +54,39 @@ class MenuProviderTest extends TestCase
         $this->assertSame([], $provider->getMenus());
     }
 
-    // Fixed external url, not a route name, since every app's dashboard links to the same external block showcase site
-    public function testGetLinksReturnsTheBlockShowcaseLink(): void
+    // An external url, not a route name, the showcase living on its own site
+    public function testGetLinksReturnsTheBlockShowcaseLinkFromTheConfig(): void
     {
-        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator());
+        $provider = new MenuProvider($this->createConfigService('https://example.org/pages/blocks'), $this->createTranslator());
 
         $links = $provider->getLinks();
 
         $this->assertCount(2, $links);
         $this->assertSame('label.block_showcase', $links['block_showcase']['label']);
         $this->assertSame('ui', $links['block_showcase']['translation_domain']);
-        $this->assertSame('https://975l.com/pages/blocks', $links['block_showcase']['url']);
+        $this->assertSame('https://example.org/pages/blocks', $links['block_showcase']['url']);
         $this->assertSame('_blank', $links['block_showcase']['target']);
         $this->assertSame('label.block_showcase_help', $links['block_showcase']['description']);
+    }
+
+    // An app installed before the key existed (its configs.json not reloaded yet) still gets a working link
+    public function testGetLinksFallsBackOnTheEcosystemShowcaseWhenTheConfigIsEmpty(): void
+    {
+        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator());
+
+        $this->assertSame(MenuProvider::BLOCK_SHOWCASE_URL, $provider->getLinks()['block_showcase']['url']);
+        $this->assertSame('https://bundles.975l.com/pages/blocks', MenuProvider::BLOCK_SHOWCASE_URL);
+    }
+
+    // The constant is the config entry's default repeated in PHP - the two drifting apart would have a fresh install and a not-yet-reloaded one point at different addresses
+    public function testTheFallbackMatchesTheConfigsJsonDefault(): void
+    {
+        $configs = json_decode(file_get_contents(__DIR__ . '/../../config/configs.json'), true, 512, \JSON_THROW_ON_ERROR);
+
+        $entry = array_values(array_filter($configs, static fn (array $config): bool => 'ui-block-showcase-url' === $config['slug']));
+
+        $this->assertCount(1, $entry, 'No "ui-block-showcase-url" entry in configs.json.');
+        $this->assertSame(MenuProvider::BLOCK_SHOWCASE_URL, $entry[0]['value']);
     }
 
     // 'role' matches the page's own minimum bar, a plain editor being unable to act on either section

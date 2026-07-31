@@ -22,6 +22,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\FormActionProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormThemeRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\GalleryShowcaseProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\MediaUsageProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ScriptAdminRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ScriptRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetManagementRegistryPass;
@@ -39,6 +40,7 @@ class c975LUiBundle extends AbstractBundle
     {
         $container->addCompilerPass(new BlockRegistryPass());
         $container->addCompilerPass(new BlockFixtureProviderPass());
+        $container->addCompilerPass(new PlaceholderMediaProviderPass());
         $container->addCompilerPass(new BlockOwnerResolverPass());
         $container->addCompilerPass(new BlockCacheTagProviderPass());
         $container->addCompilerPass(new CollectionSourceProviderPass());

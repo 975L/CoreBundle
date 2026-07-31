@@ -13,30 +13,19 @@ namespace c975L\UiBundle\Service;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Registry\BlockRegistry;
+use c975L\UiBundle\Registry\PlaceholderMediaRegistry;
 
-// Attaches placeholder media (static bundle assets under public/images, public/videos, public/audio) to an in-memory, never-persisted Block, standing in for whatever real media a kind's own fixture doesn't carry
+// Attaches placeholder media to an in-memory, never-persisted Block, standing in for whatever real media a kind's own fixture doesn't carry. The bundle ships none of those files itself - only the site actually hosting a showcase needs them, and it declares its own through PlaceholderMediaProviderInterface. Nothing declared means nothing attached: every method below hands back null and the showcase simply renders that kind without media
 class BlockFixtureMediaAttacher
 {
-    // A small pool rather than one photo per kind: nextPlaceholderImage() rotates through them (see $photoCursor) so consecutive kinds on the same page don't repeat the same photo
-    public const PLACEHOLDER_IMAGES = [
-        'bundles/c975lui/images/gallery-photo-1.webp',
-        'bundles/c975lui/images/gallery-photo-2.webp',
-        'bundles/c975lui/images/gallery-photo-3.webp',
-        'bundles/c975lui/images/gallery-photo-4.webp',
-        'bundles/c975lui/images/gallery-photo-5.webp',
-    ];
-    public const PLACEHOLDER_VIDEO = 'bundles/c975lui/videos/gallery-video.mp4';
-    public const PLACEHOLDER_AUDIO = 'bundles/c975lui/audio/gallery-audio.mp3';
-    public const PLACEHOLDER_DOCUMENT = 'bundles/c975lui/documents/gallery-document.pdf';
-
-    // A <video autoplay muted loop> wrapper, used instead of PLACEHOLDER_VIDEO directly so "video_iframe" previews don't autoplay with sound
-    public const PLACEHOLDER_VIDEO_EMBED = 'bundles/c975lui/videos/gallery-video-embed.html';
-
     // reset() it at the start of every request/loop building several blocks, so the rotation restarts at the same photo each time
     private int $photoCursor = 0;
 
-    public function __construct(private readonly BlockRegistry $registry)
-    {
+    // The registry is optional so an app - or a test - building this by hand keeps working
+    public function __construct(
+        private readonly BlockRegistry $registry,
+        private readonly ?PlaceholderMediaRegistry $placeholderMedia = null,
+    ) {
     }
 
     public function reset(): void
@@ -58,27 +47,43 @@ class BlockFixtureMediaAttacher
         // A kind can list several video mimetypes ("video/mp4,video/webm...", see the "video" kind) - that's one accepted upload, not one placeholder each
         $videoAttached = false;
 
+        // Every placeholder below is null as long as the app declares none, the block then simply rendering without that media rather than with a broken one
         foreach ($this->registry->getMediaTypes($kind) as $mediaType) {
             if (str_starts_with($mediaType, 'image/')) {
                 $count = $this->imageCount($kind, $variant);
                 for ($i = 0; $i < $count; ++$i) {
-                    $block->addMedia($this->nextPlaceholderImage());
+                    $image = $this->nextPlaceholderImage();
+                    if (null === $image) {
+                        break;
+                    }
+                    $block->addMedia($image);
                 }
             }
 
             // Skipped for "freeflow", already busy demonstrating its own layout with more images, see imageCount()
             if ('freeflow' !== $variant && !$videoAttached && str_starts_with($mediaType, 'video/')) {
-                $block->addMedia($this->placeholderVideo());
+                $video = $this->placeholderVideo();
+                if (null !== $video) {
+                    $block->addMedia($video);
+                }
                 $videoAttached = true;
             }
 
             if (str_starts_with($mediaType, 'audio/')) {
-                $block->addMedia($this->placeholderAudio());
+                $audio = $this->placeholderAudio();
+                if (null !== $audio) {
+                    $block->addMedia($audio);
+                }
+
                 break;
             }
 
             if ('application/pdf' === $mediaType) {
-                $block->addMedia($this->placeholderDocument());
+                $document = $this->placeholderDocument();
+                if (null !== $document) {
+                    $block->addMedia($document);
+                }
+
                 break;
             }
         }
@@ -102,7 +107,10 @@ class BlockFixtureMediaAttacher
         return $this->registry->allowsMultiUpload($kind) ? 2 : 1;
     }
 
-    // @return Media[]
+    // Empty when the app declares no placeholder image, rather than three cards each showing a broken one
+    /**
+     * @return Media[]
+     */
     private function placeholderPortfolioProjects(): array
     {
         // Generic client-project copy, not tied to any real portfolio
@@ -112,50 +120,73 @@ class BlockFixtureMediaAttacher
             ['Site vitrine', 'Un site rapide, accessible et facile à maintenir, sans usine à gaz.'],
         ];
 
-        return array_map(
-            fn (array $project): Media => $this->nextPlaceholderImage()
+        $medias = [];
+        foreach ($projects as $project) {
+            $image = $this->nextPlaceholderImage();
+            if (null === $image) {
+                break;
+            }
+
+            $medias[] = $image
                 ->setAlt($project[0])
                 ->setLabel($project[0])
                 ->setDescription($project[1])
-                ->setUrl('#'),
-            $projects
-        );
+                ->setUrl('#');
+        }
+
+        return $medias;
     }
 
-    // Public: also used directly by a GalleryShowcaseProviderInterface implementation feeding placeholder images into its own showcase preview
-    public function nextPlaceholderImage(): Media
+    // Public: also used directly by a GalleryShowcaseProviderInterface implementation feeding placeholder images into its own showcase preview - null when the app declares no image, that caller then having nothing to preview either
+    public function nextPlaceholderImage(): ?Media
     {
-        $filename = self::PLACEHOLDER_IMAGES[$this->photoCursor % count(self::PLACEHOLDER_IMAGES)];
+        $images = $this->placeholderMedia?->getImages() ?? [];
+        if ([] === $images) {
+            return null;
+        }
+
+        $filename = $images[$this->photoCursor % count($images)];
         ++$this->photoCursor;
 
         // mimeType set like every other placeholder below: templates telling media apart by it (e.g. blocks/Video.html.twig picking the cover image out of the block's medias) would otherwise never match a fixture image
+        return $this->placeholder($filename, 'image/webp', 'Photo d\'exemple');
+    }
+
+    private function placeholderVideo(): ?Media
+    {
+        return $this->placeholder($this->placeholderMedia?->getVideo(), 'video/mp4', 'Vidéo d\'exemple');
+    }
+
+    private function placeholderAudio(): ?Media
+    {
+        return $this->placeholder($this->placeholderMedia?->getAudio(), 'audio/mpeg', 'Audio d\'exemple');
+    }
+
+    private function placeholderDocument(): ?Media
+    {
+        return $this->placeholder($this->placeholderMedia?->getDocument(), 'application/pdf', 'Document d\'exemple');
+    }
+
+    // $default is the mimetype expected for that slot, kept whenever the declared file's extension isn't a known one - an app is free to serve a .webm or an .ogg (see PlaceholderMediaProviderInterface), and a wrong mimetype would have templates sorting a block's medias into the wrong slot
+    private function placeholder(?string $filename, string $default, string $alt): ?Media
+    {
+        if (null === $filename || '' === $filename) {
+            return null;
+        }
+
+        // Read within the slot's own family rather than from one flat list: .ogg and .webm are container formats naming an audio file as readily as a video one, and only the slot being filled can settle it. A video declared as .ogg tagged "audio/ogg" is picked up by no template at all (blocks/Video.html.twig sorts a block's medias by mimetype), and tagging it "video/mp4" instead would have the browser skip a <source> whose type lies about the file
+        $extensions = [
+            'image/' => ['webp' => 'image/webp', 'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'gif' => 'image/gif', 'avif' => 'image/avif', 'svg' => 'image/svg+xml'],
+            'video/' => ['mp4' => 'video/mp4', 'webm' => 'video/webm', 'ogv' => 'video/ogg', 'ogg' => 'video/ogg', 'mov' => 'video/quicktime'],
+            'audio/' => ['mp3' => 'audio/mpeg', 'ogg' => 'audio/ogg', 'oga' => 'audio/ogg', 'webm' => 'audio/webm', 'wav' => 'audio/wav', 'm4a' => 'audio/mp4'],
+            'application/' => ['pdf' => 'application/pdf'],
+        ];
+        $family = strstr($default, '/', true) . '/';
+        $extension = strtolower(pathinfo($filename, \PATHINFO_EXTENSION));
+
         return (new Media())
             ->setFilename($filename)
-            ->setMimeType('image/webp')
-            ->setAlt('Photo d\'exemple');
-    }
-
-    private function placeholderVideo(): Media
-    {
-        return (new Media())
-            ->setFilename(self::PLACEHOLDER_VIDEO)
-            ->setMimeType('video/mp4')
-            ->setAlt('Vidéo d\'exemple');
-    }
-
-    private function placeholderAudio(): Media
-    {
-        return (new Media())
-            ->setFilename(self::PLACEHOLDER_AUDIO)
-            ->setMimeType('audio/mpeg')
-            ->setAlt('Audio d\'exemple');
-    }
-
-    private function placeholderDocument(): Media
-    {
-        return (new Media())
-            ->setFilename(self::PLACEHOLDER_DOCUMENT)
-            ->setMimeType('application/pdf')
-            ->setAlt('Document d\'exemple');
+            ->setMimeType($extensions[$family][$extension] ?? $default)
+            ->setAlt($alt);
     }
 }

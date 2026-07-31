@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Listener;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\VichImageResizeListener;
 use c975L\UiBundle\Service\ImageDimensionsReader;
+use c975L\UiBundle\Service\SvgRasterizer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -58,7 +59,7 @@ class VichImageResizeListenerTest extends TestCase
         $parameterBag = $this->createStub(ParameterBagInterface::class);
         $parameterBag->method('get')->willReturn($this->projectDir);
 
-        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader());
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader(), new SvgRasterizer());
         $listener->onPostUpload(new Event($media, $this->createMapping()));
 
         $this->assertSame('not-a-gd-decodable-ico', file_get_contents($icoPath));
@@ -77,12 +78,65 @@ class VichImageResizeListenerTest extends TestCase
         $parameterBag = $this->createStub(ParameterBagInterface::class);
         $parameterBag->method('get')->willReturn($this->projectDir);
 
-        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader());
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader(), new SvgRasterizer());
         $listener->onPostUpload(new Event($media, $this->createMapping()));
 
         // Not the uploaded 1200x800: processImage() downscales to the entity's own getImageWidth() first, and the recorded size has to describe the file actually served
         $this->assertSame((string) $media->getImageWidth(), $media->getWidth());
         $this->assertSame((string) (int) ($media->getImageWidth() * 800 / 1200), $media->getHeight());
+    }
+
+    // Regression: the stored file carries the role's own .ico extension whatever was uploaded (see UiMediaNamer), so deciding on the extension left every raster favicon unconverted - stored as the uploaded png under an .ico name, neither cropped to 48x48 nor wrapped as a real icon
+    public function testOnPostUploadConvertsARasterUploadedForTheFaviconRole(): void
+    {
+        $iconPath = $this->projectDir . '/public/favicon.ico';
+        imagepng(imagecreatetruecolor(256, 256), $iconPath);
+
+        $media = new Media();
+        $media->setRole(Media::ROLE_FAVICON);
+        $media->setFilename('favicon.ico');
+        $media->setFile(new File($iconPath));
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader(), new SvgRasterizer());
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        // The ICO signature: reserved 0, type 1 (icon), 1 image
+        $this->assertSame("\0\0\1\0\1\0", substr((string) file_get_contents($iconPath), 0, 6));
+
+        $dimensions = getimagesize($iconPath);
+        $this->assertSame(48, $dimensions[0]);
+        $this->assertSame(48, $dimensions[1]);
+    }
+
+    // An SVG uploaded as favicon/apple-touch-icon is rasterized upstream, then converted like any other upload - the stored file must be the role's own format, never the SVG the admin picked (see SvgRasterizer)
+    public function testOnPostUploadRasterizesAnSvgUploadedForAFixedIconRole(): void
+    {
+        if (!SvgRasterizer::isSupported()) {
+            $this->markTestSkipped('ext-imagick with SVG support is needed to rasterize an SVG.');
+        }
+
+        // Named after the role's target format already, the namer having rewritten the extension before the upload landed (see UiMediaNamer)
+        $iconPath = $this->projectDir . '/public/apple-touch-icon.png';
+        file_put_contents($iconPath, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e63946"/></svg>');
+
+        $media = new Media();
+        $media->setRole(Media::ROLE_APPLE_TOUCH_ICON);
+        $media->setFilename('apple-touch-icon.png');
+        $media->setFile(new File($iconPath));
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader(), new SvgRasterizer());
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $dimensions = getimagesize($iconPath);
+        $this->assertSame(IMAGETYPE_PNG, $dimensions[2]);
+        $this->assertSame(114, $dimensions[0]);
+        $this->assertSame(114, $dimensions[1]);
     }
 
     // An svg is never resized (GD can't decode it), but it still has to carry its dimensions
@@ -98,7 +152,7 @@ class VichImageResizeListenerTest extends TestCase
         $parameterBag = $this->createStub(ParameterBagInterface::class);
         $parameterBag->method('get')->willReturn($this->projectDir);
 
-        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader());
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader(), new SvgRasterizer());
         $listener->onPostUpload(new Event($media, $this->createMapping()));
 
         $this->assertSame('300', $media->getWidth());

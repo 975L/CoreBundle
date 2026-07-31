@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests;
 
 use c975L\UiBundle\c975LUiBundle;
+use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -82,6 +83,21 @@ class c975LUiBundleTest extends TestCase
 
         $this->assertNotContains('c975L\UiBundle\DependencyInjection\Compiler\RecaptchaPass', $passes);
         $this->assertNotContains('c975L\UiBundle\DependencyInjection\Compiler\CspListenerPass', $passes);
+    }
+
+    // A pass tested on its own but never registered here would leave PlaceholderMediaProviderInterface silently undiscovered
+    public function testBuildRegistersThePlaceholderMediaProviderPass(): void
+    {
+        $container = new ContainerBuilder();
+
+        (new c975LUiBundle())->build($container);
+
+        $passes = array_map(
+            static fn (object $pass): string => $pass::class,
+            $container->getCompiler()->getPassConfig()->getBeforeOptimizationPasses()
+        );
+
+        $this->assertContains(PlaceholderMediaProviderPass::class, $passes);
     }
 
     // A bare extension, just enough for hasExtension() to answer true

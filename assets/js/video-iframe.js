@@ -22,6 +22,11 @@ export default class extends Controller {
     connect() {
         this.onConsent = this.onConsent.bind(this);
 
+        // Nothing to play: an empty src is not "no iframe", the browser resolves it on the document's own URL and the page loads inside itself. Leaving right away also spares a src-less player its consent listeners and its observer, the placeholder staying on screen
+        if (!this.srcValue) {
+            return;
+        }
+
         // No consent banner on this page - never block content on a site that doesn't use one
         if (!document.querySelector(CONSENT_BANNER_SELECTOR)) {
             this.scheduleIframe();

@@ -15,7 +15,7 @@ use c975L\UiBundle\Registry\BlockRegistry;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-// Registry-aware, so it can't live as a plain #[Assert\Callback] on Block itself (entities have no DI) - same "ui" translation domain trick as Media::validateFixedIconMimeType
+// Registry-aware, so it can't live as a plain #[Assert\Callback] on Block itself (entities have no DI) - same "ui" translation domain trick as FixedIconFormatValidator
 class RequiredMediaValidator extends ConstraintValidator
 {
     public function __construct(private BlockRegistry $registry)

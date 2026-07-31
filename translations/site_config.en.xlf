@@ -42,6 +42,10 @@
                 <source>description.ai_rephrase_not_enabled</source>
                 <target>Set a provider and API key to enable rephrasing</target>
             </trans-unit>
+            <trans-unit id="sQ9y3iP">
+                <source>description.block_showcase_url</source>
+                <target>Url of the block showcase the sidebar link opens - leave empty to fall back on the c975L ecosystem's own showcase</target>
+            </trans-unit>
             <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
                 <target>When enabled, a ROLE_SUPER_ADMIN sees a preview instead of a real send</target>
@@ -113,6 +117,10 @@
             <trans-unit id="nUpavak">
                 <source>label.ui_ai_assistant_rephrase_provider</source>
                 <target>Donovan (Site) - LLM provider</target>
+            </trans-unit>
+            <trans-unit id="Je6f2_l">
+                <source>label.ui_block_showcase_url</source>
+                <target>Block showcase - Url</target>
             </trans-unit>
         </body>
     </file>

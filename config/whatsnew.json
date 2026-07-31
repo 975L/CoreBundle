@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-07-31",
+        "description": [
+            {
+                "en": "The sidebar's \"Block showcase\" link now opens the ecosystem's dedicated site, and its address can be changed in Config to point at your own showcase",
+                "fr": "Le lien « Vitrine des blocks » de la barre latérale ouvre désormais le site dédié de l'écosystème, et son adresse peut être changée dans la Configuration pour pointer sur votre propre vitrine",
+                "es": "El enlace «Vitrina de bloques» de la barra lateral abre ahora el sitio dedicado del ecosistema, y su dirección puede cambiarse en la Configuración para apuntar a su propia vitrina"
+            },
+            {
+                "en": "You can now upload an SVG as favicon or Apple touch icon, for a sharper icon than a small image blown up",
+                "fr": "Vous pouvez désormais téléverser un SVG comme favicon ou icône Apple touch, pour une icône plus nette qu'une petite image agrandie",
+                "es": "Ahora puede subir un SVG como favicono o icono Apple touch, para un icono más nítido que una imagen pequeña ampliada"
+            },
+            {
+                "en": "An uploaded favicon is now really converted to the right size and format - re-upload yours to replace the one stored as it was",
+                "fr": "Un favicon téléversé est désormais réellement converti à la bonne taille et au bon format - téléversez à nouveau le vôtre pour remplacer celui enregistré tel quel",
+                "es": "Un favicono subido se convierte ahora realmente al tamaño y formato correctos - vuelva a subir el suyo para reemplazar el guardado tal cual"
+            }
+        ]
+    },
+    {
         "date": "2026-07-30",
         "description": [
             {

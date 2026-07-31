@@ -11,10 +11,16 @@
 namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Contract\BlockFixtureProviderInterface;
+use c975L\UiBundle\Registry\PlaceholderMediaRegistry;
 
 // Sample data for UiBundle's own built-in block kinds, shown in a block showcase (see BlockFixtureRegistry).
 class BlockFixtureProvider implements BlockFixtureProviderInterface
 {
+    // Optional for the same reason as BlockFixtureMediaAttacher's own - only "video_iframe" needs it, every other fixture here carrying no media path at all
+    public function __construct(private readonly ?PlaceholderMediaRegistry $placeholderMedia = null)
+    {
+    }
+
     public function getFixtures(): array
     {
         return [
@@ -176,8 +182,8 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
             // Its "src" is any URL rendered directly in an <iframe> (see Video/Iframe.html.twig) - not limited to a YouTube/Vimeo-style embed, so the same self-hosted placeholder as "video" works fine here too (browsers show their native player for a media file in an iframe)
             'video_iframe' => [
                 '' => [
-                    // Not PLACEHOLDER_VIDEO directly - a raw video file navigated to in an <iframe> plays with sound via the browser's own native player; this wraps it in a muted <video>. Leading "/" for the same reason as 'video' above - see its comment.
-                    'src' => '/' . BlockFixtureMediaAttacher::PLACEHOLDER_VIDEO_EMBED,
+                    // Not the declared video file directly - a raw video navigated to in an <iframe> plays with sound via the browser's own native player; "video_embed" wraps it in a muted <video>. Leading "/" for the same reason as 'video' above - see its comment. Empty when the app declares none, the preview then showing the block's own consent placeholder with nothing behind it.
+                    'src' => $this->videoEmbedSrc(),
                     'title' => 'Product demo',
                     'description' => 'A short walkthrough of the main features.',
                     'width' => '560',
@@ -258,5 +264,13 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                 ],
             ],
         ];
+    }
+
+    // Leading "/" so the src is a site-root path whatever page the showcase is rendered on, the registry holding web paths without one
+    private function videoEmbedSrc(): string
+    {
+        $embed = $this->placeholderMedia?->getVideoEmbed();
+
+        return null !== $embed && '' !== $embed ? '/' . $embed : '';
     }
 }

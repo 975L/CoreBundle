@@ -1,5 +1,35 @@
 # ChangeLog
 
+## v1.14.0
+
+Drop the showcase placeholder files, accept SVG for the icon roles
+
+- Removed the five `public/images/gallery-photo-*.webp`, `public/videos/gallery-video.mp4`, `public/videos/gallery-video-embed.html`, `public/audio/gallery-audio.mp3` and `public/documents/gallery-document.pdf`, see UPGRADE.md (31/07/2026) [BC-Break]
+- Removed `Service\BlockFixtureMediaAttacher::PLACEHOLDER_IMAGES`, `PLACEHOLDER_VIDEO`, `PLACEHOLDER_VIDEO_EMBED`, `PLACEHOLDER_AUDIO` and `PLACEHOLDER_DOCUMENT` (31/07/2026) [BC-Break]
+- `Service\BlockFixtureMediaAttacher::nextPlaceholderImage()` now returns `?Media` (31/07/2026) [BC-Break]
+- Added `Contract\PlaceholderMediaProviderInterface`, `Registry\PlaceholderMediaRegistry` and `DependencyInjection\Compiler\PlaceholderMediaProviderPass` (31/07/2026)
+- `Service\BlockFixtureMediaAttacher` now reads that registry as its only source of placeholder media (31/07/2026)
+- `attach()` attaches nothing for a media an app declares none of (31/07/2026)
+- A placeholder's mimetype now follows its own file extension (31/07/2026)
+- `Service\BlockFixtureProvider` reads the registry too, for `video_iframe`'s muted embed wrapper (31/07/2026)
+- `Service\BlockFixtureProvider`'s `video_iframe` fixture carries an empty `src` when no embed wrapper is declared (31/07/2026)
+- Added the `ui-block-showcase-url` config entry (*general* group), pre-filled with `https://bundles.975l.com/pages/blocks` (31/07/2026)
+- `Management\MenuProvider::getLinks()` reads that entry instead of a hardcoded url (31/07/2026)
+- `MenuProvider::BLOCK_SHOWCASE_URL` is the fallback when that entry is empty or missing (31/07/2026)
+- Added the `label.ui_block_showcase_url` and `description.block_showcase_url` translations (en/fr/es) (31/07/2026)
+- Updated the README's own references to that showcase (31/07/2026)
+- Favicon and apple-touch-icon now accept an SVG upload (31/07/2026)
+- Added `Service\SvgRasterizer`, rendering an uploaded SVG to PNG for the icon pipeline (31/07/2026)
+- Added the `ext-imagick` suggest, needed to rasterize an SVG icon (31/07/2026)
+- Added `Validator\FixedIconFormat`/`FixedIconFormatValidator` (31/07/2026)
+- Removed `Entity\Media::validateFixedIconMimeType()`, replaced by that constraint (31/07/2026) [BC-Break]
+- `Listener\VichImageResizeListener` now takes `Service\SvgRasterizer` as a third constructor argument (31/07/2026) [BC-Break]
+- The `label.fixed_icon_invalid_format` translation now carries a `%formats%` parameter (en/fr/es) (31/07/2026) [BC-Break]
+- `assets/js/video-iframe.js` no longer injects an iframe without a src (31/07/2026)
+- `Listener\VichImageResizeListener` now decides on a file's content instead of its extension (31/07/2026)
+- A raster favicon is now actually converted to a 48x48 `.ico`, its stored `.ico` name having excluded it until now (31/07/2026)
+- UPGRADE.md's notes are now split per release, instead of one running `Unreleased` section (31/07/2026)
+
 ## v1.13.2
 
 Exclude the generation skeletons from Codacy, which ignores the Finder

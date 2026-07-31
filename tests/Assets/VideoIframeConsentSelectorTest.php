@@ -52,6 +52,14 @@ class VideoIframeConsentSelectorTest extends TestCase
         $this->assertMatchesRegularExpression('/const ROOT_MARGIN = "\d+px";/', $script);
     }
 
+    // An empty src is not "no iframe": the browser resolves it on the document's own URL, so the page ends up loading inside itself. Reachable from a block saved without a video and from the showcase fixture when the app declares no placeholder media
+    public function testNoIframeIsRenderedWithoutASrc(): void
+    {
+        $script = $this->read(self::CONTROLLER_JS);
+
+        $this->assertMatchesRegularExpression('/if \(!this\.srcValue\) \{\s*return;/', $script, sprintf('"%s" renders its iframe whatever the src value, and an empty one loads the page inside itself.', self::CONTROLLER_JS));
+    }
+
     // "const CONSENT_BANNER_SELECTOR = '...';" -> "..."
     private function consentSelector(): string
     {
