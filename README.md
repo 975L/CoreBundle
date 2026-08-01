@@ -270,6 +270,8 @@ The **e-mail is displayed as plain text, never as a `mailto:` link** - a linked 
 
 The panel lays its fields out on an `auto-fit` grid rather than in one label/value column, so it fills whatever width it is given: a row of fields across a full-width slot, a single column inside a `flex_column`, with no breakpoint of its own (`--contact-details-col-min`, `210px`, being the narrowest a field column gets before the grid drops one). Its colors read the `--section-*` tokens first, each with the bundle's own neutral as the fallback, so dropping it inside a colored flat inverts it along with everything else sitting there - see "Colored backgrounds" above.
 
+Dropped straight on a page, the block has no `.section-wrap` around it to hold it on the page measure, so `sass/_contact-details.scss` gives it one of its own: it takes the room it is given and stops at `--section-wrap-max-width` / `--body-max-width` (`1440px`), gutters included, which lines its fields up with any section above or below it. Those gutters are **margins**, not the padding `.section-wrap` uses - the panel paints a border and a background, which have to stay inside them - and the measure is read through a `calc()` taking them off it. Inside a `flex_column` or a `section_cards` slot none of it applies: the panel is not a child of `.blocks` there, and goes on filling its cell. `SectionWrapMeasureTest` locks the rule.
+
 ### The lead-in paragraph (`text_hook`)
 
 `text_hook` holds one rich-text field and exists for a reason the editor itself creates: Trix writes no class, so a paragraph meant to read as an introduction - larger, looser, over a shorter measure - cannot be produced from inside a `text_section`'s content. The kind *is* that class. Being a block of its own, it drops anywhere a paragraph would go: under a `hero`, at the top of a `flex_column`, between two sections.
@@ -1129,7 +1131,7 @@ UiBundle provides a mechanism for bundles to declare their stylesheets automatic
 
 ### How CSS injection works
 
-1. Each bundle that provides CSS implements `BundleStylesheetProviderInterface` and registers itself with the `ui.stylesheet` service tag.
+1. Each bundle that provides CSS implements `BundleStylesheetProviderInterface` and registers itself with the `ui.stylesheet` service tag, saying through its `priority` where its sheet belongs in the cascade. An app implements the same interface and tags nothing — see [From the app itself](#from-the-app-itself).
 2. UiBundle collects all tagged providers at compile time (ordered by `priority`, highest first).
 3. The `bundle_stylesheets()` Twig function returns the resolved list of URLs, ready for use in a layout template.
 
@@ -1150,6 +1152,8 @@ A field turns green or red as soon as it has been judged, replacing the blue foc
 They sit in `@layer ui-defaults`, and that layer is the point: a layered rule always loses to an unlayered one whatever the source order, so SiteBundle's `:root`, the admin's compiled `bundles/build/site-theme.css` and a site's own `theme.css` all win without anything having to be sequenced — the two bundles' stylesheet providers share `priority: 100`, so their relative order is not something either can rely on. Nothing else in this bundle is layered, and `TokenDefaultsTest` fails if a token is read without a default, if a default is declared for a token nothing reads, or if a second layer appears.
 
 Values are light-mode only. Dark mode is SiteBundle's (`sass/_theme-dark.scss`); with that bundle absent there is no dark theme to follow.
+
+`scaffold/assets/styles/themes/ui.css` is the catalogue of those tokens, installed by `c975l:scaffold:install`: every one of them commented out at its default, so the lines a site leaves active read as exactly what its design decides. One such file per bundle, each holding what that bundle reads — this one travels with UiBundle, so a site running ShopBundle or BookBundle without SiteBundle still gets its whole retunable surface. Colors and fonts are deliberately absent, being admin-editable, and so are the per-variant `--section-*` tokens. `ScaffoldThemeTest` fails if a declared token is missing from it, if a value shown there is no longer the one in force, or if a line ships uncommented.
 
 ### The reading measure
 
@@ -1189,6 +1193,29 @@ services:
 A path starting with `assets/` is one of the *app's* own sheets — its theme files — rather than a bundle's compiled one under `public/`. It is read from the project root instead, being an AssetMapper source never copied there, and `bundle_stylesheets()` drops that prefix before asking AssetMapper for its URL, the `assets/` directory being its root. Registering them is what folds a site's theme into the single `site.css` the bundles already share: AssetMapper never merges CSS, so a site splitting its theme one file per bundle would otherwise pay one request each.
 
 The `priority` attribute is optional (default `0`). Higher priority providers are injected first — use a high value (e.g. `100`) for reset/base styles that must load before others.
+
+### From the app itself
+
+A site registers its own theme files the same way, minus the tag: `config/services.yaml` belongs to the app, and the `c975l:scaffold:install` command that writes the theme files may not edit it. So a service merely *implementing* `BundleStylesheetProviderInterface` is tagged at compile time, below every bundle's priority range — which is exactly where a site's theme has to load, after every sheet it means to retune.
+
+```php
+namespace App\Service;
+
+use c975L\UiBundle\Contract\BundleStylesheetProviderInterface;
+
+class ThemeStylesheetProvider implements BundleStylesheetProviderInterface
+{
+    public function getStylesheets(): array
+    {
+        return [
+            'assets/styles/themes/ui.css',
+            'assets/styles/themes/site.css',
+        ];
+    }
+}
+```
+
+Nothing to add to `config/services.yaml` — autowiring registers the class, and the compiler pass does the rest. Do **not** copy the tagged snippet above into an app: any priority a bundle also uses puts the site's theme ahead of that bundle's sheet, which then overrides the theme rather than the other way round.
 
 ### Using it in a layout template
 

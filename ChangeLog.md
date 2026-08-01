@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.17.0
+
+Ship the token catalogue as a scaffolded theme file
+
+- Added `scaffold/assets/styles/themes/ui.css`, the catalogue of every token this bundle reads (01/08/2026)
+- `StylesheetRegistryPass` now tags any service implementing `BundleStylesheetProviderInterface` (01/08/2026)
+- An auto-tagged provider now carries an explicit priority, below every bundle's range (01/08/2026)
+- Added `--font-body-weight`, `--frame-background` and `--contact-details-col-min` to the scaffolded theme (01/08/2026)
+- Added `ScaffoldThemeTest`, locking the scaffolded theme against the compiled token defaults (01/08/2026)
+- The `contact_details` panel now stops at the page measure instead of running the full page width (01/08/2026)
+- The opening-hours rows now wrap, and a long e-mail or url breaks instead of overflowing the panel (01/08/2026)
+
 ## v1.16.0
 
 Lay a hero's medias as a grid, and rebuild the contact_details panel

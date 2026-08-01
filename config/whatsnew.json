@@ -96,6 +96,16 @@
                 "en": "A link written in the description of the \"Contact details\" block is now visible as a link again",
                 "fr": "Un lien écrit dans la description du block « Coordonnées » se voit de nouveau comme un lien",
                 "es": "Un enlace escrito en la descripción del bloque «Datos de contacto» vuelve a verse como un enlace"
+            },
+            {
+                "en": "The \"Contact details\" block now lines up with the sections around it instead of running edge to edge across the page",
+                "fr": "Le block « Coordonnées » s'aligne désormais sur les sections qui l'entourent au lieu de s'étaler d'un bord à l'autre de la page",
+                "es": "El bloque «Datos de contacto» se alinea ahora con las secciones que lo rodean en lugar de extenderse de un borde a otro de la página"
+            },
+            {
+                "en": "On a phone, the opening hours now drop the times under the days, and a long e-mail or web address wraps instead of spilling out of the panel",
+                "fr": "Sur téléphone, les horaires placent désormais les heures sous les jours, et un e-mail ou une adresse web longue passe à la ligne au lieu de déborder du panneau",
+                "es": "En el teléfono, los horarios colocan ahora las horas bajo los días, y un correo o dirección web larga pasa a la línea siguiente en lugar de desbordar el panel"
             }
         ]
     },

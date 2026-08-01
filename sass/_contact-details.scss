@@ -14,6 +14,20 @@
     background-color: var(--section-overlay, var(--card-background));
 }
 
+// A bare "contact_details" block hangs straight under ".blocks", with no ".section-wrap" to measure it,
+// so it ran the full page width while every section around it stopped at the shared measure
+// Mobile first: the panel takes the room it is given and only stops growing once it reaches that measure
+// Gutters as margins, not padding: the panel paints a border and a background, which stay inside them,
+// and the calc() takes them off the measure so the fields line up with a neighbouring ".section-wrap"
+.blocks > .contact-details,
+.block-animation > .contact-details,
+.block-editable > .contact-details {
+    --contact-details-gutter: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    width: calc(100% - 2 * var(--contact-details-gutter));
+    max-width: calc(var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--contact-details-gutter));
+    margin-inline: auto;
+}
+
 // Logo and name on one line, the name wrapping under it only once there is no room left
 .contact-details__head {
     display: flex;
@@ -88,10 +102,12 @@
     color: var(--section-text-soft, var(--label-color));
 }
 
+// overflow-wrap for the narrowest column the grid folds to: an email or a url is one unbreakable word
 .contact-details__item dd {
     margin: 0;
     color: var(--section-text, var(--text));
     line-height: 1.5;
+    overflow-wrap: break-word;
 }
 
 .contact-details__hours {
@@ -116,8 +132,11 @@
     gap: 0 clamp(24px, 4vw, 48px);
 }
 
+// wrap so the times drop under the days on a phone rather than push the row past the panel: the times
+// are held on one line by "white-space: nowrap" below, which leaves the row nothing else to give
 .contact-details__item--hours {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
     gap: 1em;

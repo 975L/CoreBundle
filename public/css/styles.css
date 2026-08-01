@@ -3314,6 +3314,15 @@ span {
   background-color: var(--section-overlay, var(--card-background));
 }
 
+.blocks > .contact-details,
+.block-animation > .contact-details,
+.block-editable > .contact-details {
+  --contact-details-gutter: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+  width: calc(100% - 2 * var(--contact-details-gutter));
+  max-width: calc(var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--contact-details-gutter));
+  margin-inline: auto;
+}
+
 .contact-details__head {
   display: flex;
   flex-wrap: wrap;
@@ -3380,6 +3389,7 @@ span {
   margin: 0;
   color: var(--section-text, var(--text));
   line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
 .contact-details__hours {
@@ -3404,6 +3414,7 @@ span {
 
 .contact-details__item--hours {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
   gap: 1em;

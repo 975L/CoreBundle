@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\DependencyInjection\Compiler;
 
+use c975L\UiBundle\Contract\BundleStylesheetProviderInterface;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetRegistryPass;
 use c975L\UiBundle\Registry\StylesheetRegistry;
 use PHPUnit\Framework\TestCase;
@@ -53,5 +54,55 @@ class StylesheetRegistryPassTest extends TestCase
         $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('provider.high'), $calls[0][1][0]);
         $this->assertEquals(new Reference('provider.low'), $calls[1][1][0]);
+    }
+
+    public function testProcessTagsAnUntaggedServiceImplementingTheInterface(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register(StylesheetRegistry::class);
+        $container->register('app.theme', AppThemeProvider::class);
+
+        (new StylesheetRegistryPass())->process($container);
+
+        $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
+        $this->assertCount(1, $calls);
+        $this->assertEquals(new Reference('app.theme'), $calls[0][1][0]);
+    }
+
+    public function testProcessLoadsAnAutoTaggedProviderAfterEveryBundleOne(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register(StylesheetRegistry::class);
+        // Registered first, so a tie on priority would leave it ahead of the bundle's sheet
+        $container->register('app.theme', AppThemeProvider::class);
+        $container->register('bundle.provider')->addTag('ui.stylesheet', ['priority' => 0]);
+
+        (new StylesheetRegistryPass())->process($container);
+
+        $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
+        $this->assertEquals(new Reference('bundle.provider'), $calls[0][1][0]);
+        $this->assertEquals(new Reference('app.theme'), $calls[1][1][0]);
+    }
+
+    public function testProcessDoesNotTagAnAlreadyTaggedProviderTwice(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register(StylesheetRegistry::class);
+        $container->register('bundle.provider', AppThemeProvider::class)
+            ->addTag('ui.stylesheet', ['priority' => 100]);
+
+        (new StylesheetRegistryPass())->process($container);
+
+        $definition = $container->getDefinition('bundle.provider');
+        $this->assertCount(1, $definition->getTag('ui.stylesheet'));
+        $this->assertCount(1, $container->getDefinition(StylesheetRegistry::class)->getMethodCalls());
+    }
+}
+
+class AppThemeProvider implements BundleStylesheetProviderInterface
+{
+    public function getStylesheets(): array
+    {
+        return ['styles/themes/ui.css'];
     }
 }

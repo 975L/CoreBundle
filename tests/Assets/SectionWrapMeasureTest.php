@@ -26,6 +26,12 @@ class SectionWrapMeasureTest extends TestCase
 
     private const GUTTERED_RULES = ['.section-wrap', '.blocks>.cards'];
 
+    // The measure alone, as it reads inside a calc(): a rule taking its own gutters off it can't state it straight
+    private const MEASURE_CHAIN = 'var(--section-wrap-max-width, var(--body-max-width, 1440px))';
+
+    // Panels padding themselves, so their gutters are margins: capped on the same measure, less those gutters
+    private const MARGIN_GUTTERED_RULES = ['.blocks>.contact-details'];
+
     // Every rule padding its own box, measured or not: the panel is padded but laid out on its slot
     private const SELF_PADDED_RULES = ['.section-wrap', '.blocks>.cards', '.contact-details'];
 
@@ -72,6 +78,26 @@ class SectionWrapMeasureTest extends TestCase
                     $gutter,
                     $declarations,
                     sprintf('"%s" does not read "%s" in "%s".', $rule, $gutter, $file)
+                );
+            }
+        }
+    }
+
+    // A panel drawing a border and a background can't take padding gutters, so it is centered on the
+    // measure less those gutters instead - drop this and the panel runs the full page width again
+    #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
+    public function testTheMarginGutteredRulesStayOnTheMeasure(string $file): void
+    {
+        $css = $this->normalize($file);
+
+        foreach (self::MARGIN_GUTTERED_RULES as $rule) {
+            $declarations = $this->declarationsOf($css, $rule, $file);
+
+            foreach ([self::MEASURE_CHAIN, 'var(--section-wrap-gutter, clamp(20px, 5vw, 64px))', 'margin-inline: auto'] as $needle) {
+                $this->assertStringContainsString(
+                    $needle,
+                    $declarations,
+                    sprintf('"%s" does not read "%s" in "%s".', $rule, $needle, $file)
                 );
             }
         }
