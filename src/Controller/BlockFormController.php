@@ -41,7 +41,10 @@ class BlockFormController extends AbstractController
         // Duplicating a block (see block-duplicate.js) posts its current "data" field values here, so the sub-form comes back pre-filled instead of empty. Deliberately NOT extended to "medias": MediaUploadType has `data_class: Media`, and Symfony's form component requires a form's view data to be an actual instance of that class (or null) when one is set - passing it a plain array throws ("the form's view data is expected to be an instance of Media, but is an array"). That only works for "data" because kind-specific form types (SliderType etc.) have `data_class: null`. Media duplication is instead handled entirely client-side.
         $initialData = null;
         if ($request->isMethod('POST') && $request->request->has('data')) {
-            $initialData = ['data' => $request->request->all('data')];
+            $data = $request->request->all('data');
+            // An "id" identifies THIS block and this one only - whether auto-generated (SliderType/ImageCompareType) or an anchor typed by the editor (CardType/ReadmoreType) - so it is never carried over to the copy, which would put two elements with the same id in the page (an html validation error, and a Stimulus controller targeting the wrong section). Dropped here rather than in block-duplicate.js so it holds for every caller, and so the kind-specific type's own PRE_SET_DATA regenerates one
+            unset($data['id']);
+            $initialData = ['data' => $data];
         }
 
         $builder = $this->formFactory

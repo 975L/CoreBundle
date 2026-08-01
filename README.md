@@ -118,6 +118,8 @@ Blocks are managed through EasyAdmin at `/management`, provided by `c975l/config
 
 That's it — `eaSortable`, `block`, and Trix are then available on every `/management` page.
 
+Any `/management` form can also be opened straight on one of its fields by adding a `focusField=<property>` query param to its URL — the `fieldFocus` controller opens that field's own tab, scrolls to it and focuses it, instead of dropping the user at the top of a form holding dozens of fields. SiteBundle's page health check advice links this way.
+
 ---
 
 ## Attaching blocks to an entity

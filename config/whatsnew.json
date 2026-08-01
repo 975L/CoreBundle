@@ -51,6 +51,16 @@
                 "en": "In a full-width slider, the image being swiped to now settles centred on the screen",
                 "fr": "Dans un diaporama pleine largeur, l'image vers laquelle on balaye se place désormais au centre de l'écran",
                 "es": "En un carrusel a ancho completo, la imagen a la que se desliza se coloca ahora centrada en la pantalla"
+            },
+            {
+                "en": "A piece of advice about your page now takes you straight to the field to fill in, instead of to the top of a long form",
+                "fr": "Un conseil sur votre page vous emmène désormais directement sur le champ à remplir, au lieu du haut d'un long formulaire",
+                "es": "Un consejo sobre su página le lleva ahora directamente al campo que hay que rellenar, en lugar de a la parte superior de un formulario largo"
+            },
+            {
+                "en": "Duplicating a block no longer gives the copy the same identifier as the original, which could send a link to the wrong one",
+                "fr": "Dupliquer un block ne donne plus à la copie le même identifiant qu'à l'original, ce qui pouvait envoyer un lien sur le mauvais",
+                "es": "Duplicar un bloque ya no da a la copia el mismo identificador que al original, lo que podía enviar un enlace al equivocado"
             }
         ]
     },

@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.15.2
+
+Focus a named field from a link, and stop a duplicate reusing its source's id
+
+- Added `assets/js/field-focus.js`, the `fieldFocus` Stimulus controller (01/08/2026)
+- A `/management` form url carrying `focusField=<property>` now opens that field's tab, scrolls to it and focuses it (01/08/2026)
+- `Controller\BlockFormController::dataForm()` now drops the posted `id` so a duplicated block gets its own (01/08/2026)
+- Added `tests/Assets/FieldFocusControllerRegistrationTest` (01/08/2026)
+
 ## v1.15.1
 
 Widen the banner_title bottom margin

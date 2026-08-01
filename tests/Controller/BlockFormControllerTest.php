@@ -66,6 +66,28 @@ class BlockFormControllerTest extends TestCase
         return $formFactory;
     }
 
+    // Same as createFormFactory(), but records the data createNamedBuilder() is handed, so what a duplication's posted values pre-fill the sub-form with can be asserted
+    private function createFormFactoryCapturingInitialData(mixed &$initialData): FormFactoryInterface
+    {
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturn($builder);
+
+        $form = $this->createStub(FormInterface::class);
+        $form->method('createView')->willReturn(new FormView());
+        $builder->method('getForm')->willReturn($form);
+
+        $formFactory = $this->createStub(FormFactoryInterface::class);
+        $formFactory->method('createNamedBuilder')->willReturnCallback(
+            function (string $name, string $type, mixed $data = null) use (&$initialData, $builder) {
+                $initialData = $data;
+
+                return $builder;
+            }
+        );
+
+        return $formFactory;
+    }
+
     private function createContainerWithTwig(): \Symfony\Component\DependencyInjection\Container
     {
         $twig = $this->createStub(Environment::class);
@@ -200,5 +222,41 @@ class BlockFormControllerTest extends TestCase
         $controller->dataForm(new Request(['k' => 'document_download']));
 
         $this->assertSame('label.document_download_media_help', $added['medias']['help']);
+    }
+
+    // Duplicating a block (see block-duplicate.js) posts the source's own "data" values here so the sub-form comes back pre-filled rather than empty
+    public function testDataFormPrefillsTheSubFormWithThePostedValues(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
+        $registry->method('hasMediaTypes')->willReturn(false);
+        $initialData = null;
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingInitialData($initialData));
+        $controller->setContainer($this->createContainerWithTwig());
+
+        $controller->dataForm(Request::create('/ui/block/data-form?k=slider', 'POST', [
+            'data' => ['duration' => '5', 'ratio' => '16-9'],
+        ]));
+
+        $this->assertSame(['data' => ['duration' => '5', 'ratio' => '16-9']], $initialData);
+    }
+
+    // An id identifies the source block and it alone, whether auto-generated (SliderType/ImageCompareType) or an anchor typed by the editor (CardType/ReadmoreType) - carrying it over would leave two elements sharing an id in the page
+    public function testDataFormDropsThePostedIdSoTheCopyGetsItsOwn(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
+        $registry->method('hasMediaTypes')->willReturn(false);
+        $initialData = null;
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingInitialData($initialData));
+        $controller->setContainer($this->createContainerWithTwig());
+
+        $controller->dataForm(Request::create('/ui/block/data-form?k=slider', 'POST', [
+            'data' => ['id' => 'slider-f49f0e20', 'duration' => '5'],
+        ]));
+
+        $this->assertSame(['data' => ['duration' => '5']], $initialData);
     }
 }
