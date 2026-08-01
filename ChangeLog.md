@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.14.2
+
+Fix a slider swipe moving several images and leaving the dots behind
+
+- `assets/js/slider.js` now drives the freeflow layout's horizontal drag itself (01/08/2026)
+- A swipe now moves exactly one slide, from the one it started on (01/08/2026)
+- The dots now follow any scroll of a freeflow list, swipe, wheel or trackpad (01/08/2026)
+- Freeflow slides now snap centered instead of left-aligned (01/08/2026)
+- The current slide is now read from the tracked index, not from the first one still classed active (01/08/2026)
+- Fixed a second swipe landing mid-animation leaving two slides displayed at once (01/08/2026)
+- The compatibility click following a swipe no longer advances a further slide (01/08/2026)
+- Added `tests/Assets/SliderSwipeTest` (01/08/2026)
+
 ## v1.14.1
 
 Alias dev-main as 1.x-dev so the ConfigBundle constraint resolves

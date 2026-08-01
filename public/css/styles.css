@@ -2888,6 +2888,7 @@ span {
 }
 
 .slider-freeflow {
+  --slider-freeflow-item: clamp(240px, 55vw, 480px);
   max-width: none;
   width: var(--slider-freeflow-vw, 100vw);
   margin-left: calc(50% - var(--slider-freeflow-vw, 100vw) / 2);
@@ -2897,13 +2898,19 @@ span {
 .slider-freeflow .slider-list {
   display: flex;
   gap: 16px;
-  padding-inline: 5vw;
+  padding-inline: calc(50% - var(--slider-freeflow-item) / 2);
   box-sizing: border-box;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+  touch-action: pan-y;
   scrollbar-width: none;
+}
+
+.slider-freeflow .slider-list.slider-dragging {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
 }
 
 .slider-freeflow .slider-item {
@@ -2911,8 +2918,8 @@ span {
   top: auto;
   left: auto;
   width: auto;
-  flex: 0 0 clamp(240px, 55vw, 480px);
-  scroll-snap-align: start;
+  flex: 0 0 var(--slider-freeflow-item);
+  scroll-snap-align: center;
   display: block;
   cursor: pointer;
   animation: none;

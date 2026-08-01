@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-01",
+        "description": [
+            {
+                "en": "Swiping a slider now moves one image at a time, and the dots below follow along",
+                "fr": "Balayer un diaporama fait désormais défiler une seule image à la fois, et les puces en dessous suivent",
+                "es": "Deslizar un carrusel ahora pasa una sola imagen a la vez, y los puntos de abajo lo siguen"
+            },
+            {
+                "en": "In a full-width slider, the image being swiped to now settles centred on the screen",
+                "fr": "Dans un diaporama pleine largeur, l'image vers laquelle on balaye se place désormais au centre de l'écran",
+                "es": "En un carrusel a ancho completo, la imagen a la que se desliza se coloca ahora centrada en la pantalla"
+            }
+        ]
+    },
+    {
         "date": "2026-07-31",
         "description": [
             {

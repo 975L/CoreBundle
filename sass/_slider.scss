@@ -316,6 +316,8 @@
 
 // Every slide side by side out to the viewport edges; raw vw would let the scrollbar create its own
 .slider-freeflow {
+    // One slide's width, shared: the list's side padding is derived from it so a slide can sit dead center, first and last included
+    --slider-freeflow-item: clamp(240px, 55vw, 480px);
     max-width: none;
     width: var(--slider-freeflow-vw, 100vw);
     margin-left: calc(50% - (var(--slider-freeflow-vw, 100vw) / 2));
@@ -327,15 +329,24 @@
 .slider-freeflow .slider-list {
     display: flex;
     gap: 16px;
-    padding-inline: 5vw;
+    // Half a viewport minus half a slide: the current slide is centered while its neighbours show through the padding, which overflow clips at the padding box rather than here
+    padding-inline: calc(50% - var(--slider-freeflow-item) / 2);
     // Else padding-inline adds to the width above instead of being carved out of it
     box-sizing: border-box;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
+    // Vertical panning stays the browser's; the horizontal drag is slider.js', whose own snap-to-one-slide replaces a fling carrying several
+    touch-action: pan-y;
     // Redundant next to the buttons/dots - scrollbar-width alone, the vendor properties being flagged
     scrollbar-width: none;
+}
+
+// While a finger drags the list, scrollLeft is written frame by frame - snapping and smooth scrolling would each fight that
+.slider-freeflow .slider-list.slider-dragging {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
 }
 
 .slider-freeflow .slider-item {
@@ -343,8 +354,8 @@
     top: auto;
     left: auto;
     width: auto;
-    flex: 0 0 clamp(240px, 55vw, 480px);
-    scroll-snap-align: start;
+    flex: 0 0 var(--slider-freeflow-item);
+    scroll-snap-align: center;
     display: block;
     cursor: pointer;
     animation: none;

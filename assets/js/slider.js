@@ -34,6 +34,7 @@ export default class extends Controller {
         if (this.autoPlayInterval) {
             clearInterval(this.autoPlayInterval);
         }
+        clearTimeout(this.deactivateTimeout);
         this.heightStyleEl?.remove();
     }
 
@@ -106,8 +107,9 @@ export default class extends Controller {
 
     // Touch gestures: swipe left/right to navigate, press-and-hold to pause. A plain tap (released quickly, without moving) falls through to the existing "click on slide" listener set up in initializeSlider(), which advances to the next slide.
     setupTouchGestures(sliderId) {
-        // Freeflow scrolls natively (overflow-x: auto + scroll-snap) - swipe is already handled by the browser itself, and this handler's preventDefault() on touchmove would fight it.
+        // Freeflow scrolls its own list rather than swapping slides, so it drives that scroll itself
         if (this.isFreeflow) {
+            this.setupFreeflowGestures(sliderId);
             return;
         }
 
@@ -155,6 +157,8 @@ export default class extends Controller {
 
                 if (isSwipe) {
                     e.preventDefault();
+                    // A touchend is no longer cancelable once the browser has begun its own gesture, so preventDefault() alone doesn't always suppress the compatibility click that follows - it would advance a second slide on top of the swipe's own
+                    this.swipedAt = Date.now();
                     const deltaX = e.changedTouches[0].clientX - startX;
                     if (deltaX < 0) {
                         this.displaySlide(sliderId, ++this.slideIndex, "next");
@@ -174,6 +178,97 @@ export default class extends Controller {
                 }
             });
         });
+    }
+
+    // Freeflow gestures: the browser's own fling would carry several slides past the one asked for and its dots would never follow, so the horizontal drag is taken over here - the list is scrolled by hand while the finger moves, then snapped to exactly one slide either way. Vertical panning is left to the browser (touch-action: pan-y).
+    setupFreeflowGestures(sliderId) {
+        const list = document.querySelector(`#${sliderId} .slider-list`);
+        if (!list) {
+            return;
+        }
+
+        const swipeThreshold = 40;
+        let startX = 0;
+        let startY = 0;
+        let startScroll = 0;
+        let startIndex = 1;
+        let decided = false;
+        let isSwipe = false;
+
+        list.addEventListener("touchstart", (e) => {
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            startScroll = list.scrollLeft;
+            // The slide the gesture started on: the dots follow the finger as it drags, moving slideIndex along with them, so a "one slide further" read off it on release would count that drag twice
+            startIndex = this.slideIndex;
+            decided = false;
+            isSwipe = false;
+            this.suspendAnimation();
+        }, { passive: true });
+
+        list.addEventListener("touchmove", (e) => {
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
+
+            if (!decided && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+                decided = true;
+                isSwipe = Math.abs(deltaX) > Math.abs(deltaY);
+                // Snapping and smooth scrolling both fight a per-frame scrollLeft, so they are off for the duration of the drag only
+                if (isSwipe) {
+                    list.classList.add("slider-dragging");
+                }
+            }
+
+            if (isSwipe) {
+                e.preventDefault();
+                list.scrollLeft = startScroll - deltaX;
+            }
+        }, { passive: false });
+
+        const endGesture = (e) => {
+            if (isSwipe) {
+                const slides = document.querySelectorAll(`#${sliderId} .slider-item`);
+                const deltaX = (e.changedTouches?.[0]?.clientX ?? startX) - startX;
+                const step = Math.abs(deltaX) > swipeThreshold ? (deltaX < 0 ? 1 : -1) : 0;
+                list.classList.remove("slider-dragging");
+                // Clamped rather than wrapped: a drag is already stopped by the list's own ends, jumping to the far side would contradict what the finger just did
+                const target = Math.min(Math.max(startIndex + step, 1), slides.length);
+                this.displaySlideFreeflow(sliderId, target);
+            }
+            this.resumeAnimation(sliderId);
+        };
+
+        list.addEventListener("touchend", endGesture, { passive: true });
+        list.addEventListener("touchcancel", endGesture, { passive: true });
+
+        // Any other way of scrolling the list - trackpad, mouse wheel, a dragged scrollbar, the finger above - still has to move the dots along. Throttled to one frame, and only acted on when the centered slide actually changed.
+        let scrollFrame = null;
+        list.addEventListener("scroll", () => {
+            if (scrollFrame) {
+                return;
+            }
+            scrollFrame = requestAnimationFrame(() => {
+                scrollFrame = null;
+                const slides = document.querySelectorAll(`#${sliderId} .slider-item`);
+                const index = this.centeredSlideIndex(list, slides);
+                if (index !== this.slideIndex) {
+                    this.syncFreeflowState(sliderId, index, slides, true);
+                }
+            });
+        }, { passive: true });
+    }
+
+    // Index (1-based) of the slide whose center is nearest the list's own center - what "the current slide" means once the list is scrolled by hand
+    centeredSlideIndex(list, slides) {
+        const listCenter = list.getBoundingClientRect().left + list.clientWidth / 2;
+
+        return slides.length === 0 ? 1 : Array.from(slides).reduce((best, slide, idx) => {
+            const rect = slide.getBoundingClientRect();
+            const distance = Math.abs(rect.left + rect.width / 2 - listCenter);
+            return distance < best.distance ? { index: idx + 1, distance } : best;
+        }, { index: 1, distance: Infinity }).index;
     }
 
     // Plays the <video> inside a slide, if any. Suppressed under prefers-reduced-motion unless explicit is true (user pressed the play/pause control themselves, which overrides it).
@@ -254,7 +349,7 @@ export default class extends Controller {
         const slides = document.querySelectorAll(`#${sliderId} .slider-item`);
         slides.forEach((slide) => {
             slide.addEventListener("click", (e) => {
-                if (e.target.closest("a") || e.target.tagName === "VIDEO") {
+                if (e.target.closest("a") || e.target.tagName === "VIDEO" || Date.now() - (this.swipedAt || 0) < 500) {
                     return;
                 }
                 this.displaySlide(sliderId, ++this.slideIndex, "next");
@@ -365,9 +460,17 @@ export default class extends Controller {
         // Calculate correct index
         const index = this.calculateIndex(number, slides.length);
 
-        // Find current active slide
-        const currentSlide = Array.from(slides).find((slide) => slide.classList.contains("slider-item-active"));
+        // Current slide read from the tracked index, not from the first one still classed active: the outgoing slide only loses that class 500ms later, so a second swipe landing mid-animation used to pick the slide before last and leave the one in between displayed for good, dots pointing elsewhere
+        const currentSlide = slides[this.slideIndex - 1];
         const newSlide = slides[index - 1];
+
+        // Whatever a previous, still unfinished transition left behind - only the outgoing and incoming slides take part in this one
+        clearTimeout(this.deactivateTimeout);
+        slides.forEach((slide) => {
+            if (slide !== currentSlide && slide !== newSlide) {
+                slide.classList.remove("slider-item-active");
+            }
+        });
 
         // Remove animation classes
         slides.forEach((slide) => {
@@ -393,7 +496,7 @@ export default class extends Controller {
                 newSlide.classList.add("slide-in-left");
             }
 
-            setTimeout(() => {
+            this.deactivateTimeout = setTimeout(() => {
                 currentSlide.classList.remove("slider-item-active");
             }, 500);
         } else if (currentSlide && currentSlide !== newSlide) {
@@ -433,22 +536,30 @@ export default class extends Controller {
     displaySlideFreeflow(sliderId, number, announceChange = true) {
         const list = document.querySelector(`#${sliderId} .slider-list`);
         const slides = document.querySelectorAll(`#${sliderId} .slider-item`);
-        const dots = document.querySelectorAll(`#${sliderId} .slider-dot`);
 
         if (slides.length === 0) {
             return;
         }
 
         const index = this.calculateIndex(number, slides.length);
-        const currentSlide = slides[this.slideIndex - 1];
         const newSlide = slides[index - 1];
 
-        // Scrolls only the slider's own horizontal list (scroll-snap-align: start on .slider-item takes care of exact alignment). Deliberately not newSlide.scrollIntoView(): its "block" axis climbs ancestor scrollers, including the page itself, and yanks the page back to the slider whenever autoplay changes the slide while the user has scrolled away from it.
+        // Centers the slide in the list, matching scroll-snap-align: center on .slider-item, and scrolls that list alone. Deliberately not newSlide.scrollIntoView(): its "block" axis climbs ancestor scrollers, including the page itself, and yanks the page back to the slider whenever autoplay changes the slide while the user has scrolled away from it.
         if (list) {
             const listRect = list.getBoundingClientRect();
             const slideRect = newSlide.getBoundingClientRect();
-            list.scrollTo({ left: list.scrollLeft + (slideRect.left - listRect.left), behavior: "smooth" });
+            const delta = (slideRect.left + slideRect.width / 2) - (listRect.left + list.clientWidth / 2);
+            list.scrollTo({ left: list.scrollLeft + delta, behavior: "smooth" });
         }
+
+        this.syncFreeflowState(sliderId, index, slides, announceChange);
+    }
+
+    // Everything a freeflow slide change carries apart from the scroll itself - split out so a scroll driven by the user (swipe, wheel, trackpad) updates the same state without being scrolled back on top of it
+    syncFreeflowState(sliderId, index, slides, announceChange = true) {
+        const dots = document.querySelectorAll(`#${sliderId} .slider-dot`);
+        const currentSlide = slides[this.slideIndex - 1];
+        const newSlide = slides[index - 1];
 
         dots.forEach((dot, idx) => {
             if (idx === index - 1) {
