@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.15.1
+
+Widen the banner_title bottom margin
+
+- The `banner_title` block's bottom margin is now `3em` instead of `1em` (01/08/2026)
+
 ## v1.15.0
 
 Replace rich_snippet by a contact_details block publishing JSON-LD
