@@ -1,5 +1,11 @@
 # ChangeLog
 
+## v1.14.1
+
+Alias dev-main as 1.x-dev so the ConfigBundle constraint resolves
+
+- Added the `branch-alias` extra, aliasing `dev-main` as `1.x-dev` (01/08/2026)
+
 ## v1.14.0
 
 Drop the showcase placeholder files, accept SVG for the icon roles

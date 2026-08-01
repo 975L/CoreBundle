@@ -63,6 +63,11 @@
     "config": {
         "sort-packages": true
     },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
     "scripts": {
         "test": "phpunit"
     },
