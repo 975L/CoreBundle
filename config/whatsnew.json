@@ -3,6 +3,46 @@
         "date": "2026-08-01",
         "description": [
             {
+                "en": "A new \"Contact details\" block gathers your address, phone, e-mail and opening hours, and tells search engines about them at the same time",
+                "fr": "Un nouveau block « Coordonnées » réunit votre adresse, téléphone, e-mail et horaires, et les signale en même temps aux moteurs de recherche",
+                "es": "Un nuevo bloque «Datos de contacto» reúne su dirección, teléfono, correo y horarios, y los comunica al mismo tiempo a los motores de búsqueda"
+            },
+            {
+                "en": "Opening hours are now filled in day by day rather than as one line of code, and consecutive days are shown as a range",
+                "fr": "Les horaires se saisissent désormais jour par jour plutôt qu'en une ligne de code, et les jours qui se suivent s'affichent en plage",
+                "es": "Los horarios se introducen ahora día a día en lugar de en una línea de código, y los días seguidos se muestran como un intervalo"
+            },
+            {
+                "en": "Every field of that block is optional - fill in only what your business actually has",
+                "fr": "Tous les champs de ce block sont facultatifs - ne remplissez que ce que votre établissement a réellement",
+                "es": "Todos los campos de ese bloque son opcionales: rellene solo lo que su establecimiento realmente tiene"
+            },
+            {
+                "en": "Opening and closing times are picked in a clock field, so there is no format left to get wrong",
+                "fr": "Les heures d'ouverture et de fermeture se choisissent dans un champ horaire, il n'y a donc plus de format à ne pas rater",
+                "es": "Las horas de apertura y cierre se eligen en un campo horario, así que ya no hay ningún formato que equivocar"
+            },
+            {
+                "en": "A website or map address typed without \"https://\" is now completed for you, and a malformed e-mail is refused before saving",
+                "fr": "Une adresse de site ou de carte tapée sans « https:// » est désormais complétée pour vous, et un e-mail mal formé est refusé avant l'enregistrement",
+                "es": "Una dirección de sitio o de mapa escrita sin «https://» se completa ahora automáticamente, y un correo mal formado se rechaza antes de guardar"
+            },
+            {
+                "en": "A page holding a block whose type no longer exists now leaves it out instead of failing to open",
+                "fr": "Une page contenant un block dont le type n'existe plus l'ignore désormais au lieu de ne plus s'ouvrir",
+                "es": "Una página que contiene un bloque cuyo tipo ya no existe ahora lo omite en lugar de no abrirse"
+            },
+            {
+                "en": "The old \"SEO Rich Snippet\" block is gone, replaced by that one",
+                "fr": "L'ancien block « Rich Snippet SEO » a disparu, remplacé par celui-ci",
+                "es": "El antiguo bloque «Rich Snippet SEO» ha desaparecido, sustituido por este"
+            },
+            {
+                "en": "A title banner no longer sits flush against the block right below it",
+                "fr": "Un bandeau de titre n'est plus collé au block juste en dessous",
+                "es": "Un banner de título ya no queda pegado al bloque justo debajo"
+            },
+            {
                 "en": "Swiping a slider now moves one image at a time, and the dots below follow along",
                 "fr": "Balayer un diaporama fait désormais défiler une seule image à la fois, et les puces en dessous suivent",
                 "es": "Deslizar un carrusel ahora pasa una sola imagen a la vez, y los puntos de abajo lo siguen"

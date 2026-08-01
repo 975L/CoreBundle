@@ -51,8 +51,10 @@ class BlockExtension extends AbstractExtension
     {
         $kind = $block->getKind();
 
-        // A slot added with "+" but saved without a kind, CollectionType letting the entry through
-        if (null === $kind) {
+        // A slot added with "+" but saved without a kind, CollectionType letting the entry through - or a kind
+        // no longer registered (a satellite bundle removed, a kind dropped): the row outlives its own kind, so it
+        // is skipped rather than left to throw "Unknown block" out of the registry and 500 the page holding it
+        if (null === $kind || !$this->registry->has($kind)) {
             return '';
         }
 

@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.15.0
+
+Replace rich_snippet by a contact_details block publishing JSON-LD
+
+- Removed the `rich_snippet` block kind, `Form\Block\RichSnippetType`, `templates/blocks/RichSnippet.html.twig`, `templates/components/General/RichSnippet.html.twig` and `sass/_snippet.scss`, see UPGRADE.md (01/08/2026) [BC-Break]
+- Added the `contact_details` block kind, `Form\Block\ContactDetailsType` and `Form\Block\ContactHoursType` (01/08/2026)
+- Added `Service\ContactSnippetBuilder`, building the block's schema.org graph (01/08/2026)
+- Added `Twig\ContactExtension`, exposing `contact_json_ld()` and `contact_day_runs()` (01/08/2026)
+- Added `templates/components/Contact/Details.html.twig`, `templates/blocks/ContactDetails.html.twig` and `sass/_contact-details.scss` (01/08/2026)
+- Opening hours are now entered as day/range rows instead of one free-text line (01/08/2026)
+- Opening and closing times are now native time pickers storing `HH:MM` (01/08/2026)
+- The website and map links are now stored absolute (01/08/2026)
+- A malformed website, map link or e-mail is now refused on save (01/08/2026)
+- Added the `addressComplement`, `addressRegion`, `mobile`, `email`, `url`, `mapUrl`, `latitude` and `longitude` fields (01/08/2026)
+- Every field of the kind is now optional (01/08/2026)
+- An attached image is now used as the logo and published as the graph's `image` (01/08/2026)
+- `Twig\BlockExtension::renderBlock()` now skips a block whose kind is no longer registered instead of throwing (01/08/2026)
+- Added a bottom margin to the `banner_title` block (01/08/2026)
+- Added `tests/Service/ContactSnippetBuilderTest`, `tests/Twig/ContactExtensionTest`, `tests/Form/Block/ContactDetailsTypeTest`, `tests/Form/Block/ContactHoursTypeTest` and `tests/Templates/ContactDetailsMarkupTest` (01/08/2026)
+
 ## v1.14.2
 
 Fix a slider swipe moving several images and leaving the dots behind

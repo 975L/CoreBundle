@@ -90,6 +90,14 @@
                 <source>label.action_help</source>
                 <target>What happens when this form is submitted</target>
             </trans-unit>
+            <trans-unit id="CEVgeJ7">
+                <source>label.address</source>
+                <target>Address</target>
+            </trans-unit>
+            <trans-unit id="Jg4DS40">
+                <source>label.address_complement</source>
+                <target>Address complement</target>
+            </trans-unit>
             <trans-unit id="iro8szH">
                 <source>label.after_label</source>
                 <target>After label</target>
@@ -402,6 +410,14 @@
                 <source>label.block_collection_description</source>
                 <target>Items from an external collection (books, products, projects...)</target>
             </trans-unit>
+            <trans-unit id="5bLnE9a">
+                <source>label.block_contact_details</source>
+                <target>Contact details</target>
+            </trans-unit>
+            <trans-unit id="Mpx_7uy">
+                <source>label.block_contact_details_description</source>
+                <target>Full contact details, published as SEO structured data too</target>
+            </trans-unit>
             <trans-unit id="bsmLvZG">
                 <source>label.block_cta_band</source>
                 <target>Call-to-action band</target>
@@ -517,14 +533,6 @@
             <trans-unit id="9dhuRA6">
                 <source>label.block_progress_bar_description</source>
                 <target>Progress bar showing a percentage</target>
-            </trans-unit>
-            <trans-unit id="t1Udkxa">
-                <source>label.block_rich_snippet</source>
-                <target>SEO Rich Snippet</target>
-            </trans-unit>
-            <trans-unit id="61xxUnk">
-                <source>label.block_rich_snippet_description</source>
-                <target>SEO structured data (address, hours, price...)</target>
             </trans-unit>
             <trans-unit id="lfFkpqd">
                 <source>label.block_section_cards</source>
@@ -666,6 +674,10 @@
                 <source>label.city</source>
                 <target>City</target>
             </trans-unit>
+            <trans-unit id="m0L.u3G">
+                <source>label.closes</source>
+                <target>Closing</target>
+            </trans-unit>
             <trans-unit id="Z2OPJRi">
                 <source>label.collection_limit_help</source>
                 <target>Leave empty to show everything</target>
@@ -733,6 +745,10 @@
             <trans-unit id="jfLIJSU">
                 <source>label.compare_position</source>
                 <target>Comparison slider position</target>
+            </trans-unit>
+            <trans-unit id="f2Yr2j4">
+                <source>label.contact_details_name_help</source>
+                <target>Business name; without it no structured data is published</target>
             </trans-unit>
             <trans-unit id="f7w7ZE0">
                 <source>label.content</source>
@@ -830,6 +846,10 @@
                 <source>label.danger</source>
                 <target>Danger</target>
             </trans-unit>
+            <trans-unit id="VAiO2A1">
+                <source>label.days</source>
+                <target>Days</target>
+            </trans-unit>
             <trans-unit id="Zb4xuOb">
                 <source>label.description</source>
                 <target>Description</target>
@@ -846,6 +866,10 @@
                 <source>label.detail_page_help</source>
                 <target>Slug of the Page showing item details (e.g. "blocks-detail"). Empty if none.</target>
             </trans-unit>
+            <trans-unit id="Foc_O2K">
+                <source>label.directions</source>
+                <target>Directions</target>
+            </trans-unit>
             <trans-unit id="dqONr5r">
                 <source>label.document_download_media_help</source>
                 <target>One file = one download card. Attach several files to offer several documents - give each a distinct "File name" then, it becomes that card's own title.</target>
@@ -853,6 +877,10 @@
             <trans-unit id="1vyz2Yp">
                 <source>label.edit</source>
                 <target>Edit</target>
+            </trans-unit>
+            <trans-unit id="ykW6lkh">
+                <source>label.email</source>
+                <target>Email</target>
             </trans-unit>
             <trans-unit id="2yOsQwt">
                 <source>label.email_block_alt</source>
@@ -1082,6 +1110,10 @@
                 <source>label.forms</source>
                 <target>Forms</target>
             </trans-unit>
+            <trans-unit id="2MWiSL1">
+                <source>label.friday</source>
+                <target>Friday</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Tailor an e-mail</target>
@@ -1258,6 +1290,10 @@
                 <source>label.kind</source>
                 <target>Kind</target>
             </trans-unit>
+            <trans-unit id="FBSuKKD">
+                <source>label.latitude</source>
+                <target>Latitude</target>
+            </trans-unit>
             <trans-unit id="cazagrU">
                 <source>label.layout</source>
                 <target>Layout</target>
@@ -1286,9 +1322,21 @@
                 <source>label.link_label</source>
                 <target>Link label</target>
             </trans-unit>
+            <trans-unit id="A3tB9aX">
+                <source>label.longitude</source>
+                <target>Longitude</target>
+            </trans-unit>
             <trans-unit id="vWpOH7s">
                 <source>label.loop</source>
                 <target>Loop</target>
+            </trans-unit>
+            <trans-unit id="TGYsC6q">
+                <source>label.map_url</source>
+                <target>Map link</target>
+            </trans-unit>
+            <trans-unit id="qKF181v">
+                <source>label.map_url_help</source>
+                <target>URL of the Google Maps or OpenStreetMap listing</target>
             </trans-unit>
             <trans-unit id="z9uF1b7">
                 <source>label.max_height</source>
@@ -1318,6 +1366,14 @@
                 <source>label.media_multi_upload_help</source>
                 <target>Select several files at once to add them all in one go</target>
             </trans-unit>
+            <trans-unit id="rfS8Ak_">
+                <source>label.mobile</source>
+                <target>Mobile</target>
+            </trans-unit>
+            <trans-unit id="yfK.uss">
+                <source>label.monday</source>
+                <target>Monday</target>
+            </trans-unit>
             <trans-unit id="bBt_4n5">
                 <source>label.muted</source>
                 <target>Muted</target>
@@ -1341,6 +1397,10 @@
             <trans-unit id="IBymOD8">
                 <source>label.opening_hours</source>
                 <target>Opening Hours</target>
+            </trans-unit>
+            <trans-unit id="vue6pQ5">
+                <source>label.opens</source>
+                <target>Opening</target>
             </trans-unit>
             <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
@@ -1426,6 +1486,10 @@
                 <source>label.receive_copy</source>
                 <target>Receive a copy</target>
             </trans-unit>
+            <trans-unit id="0Eekznl">
+                <source>label.region</source>
+                <target>Region / county</target>
+            </trans-unit>
             <trans-unit id="_iSWIYI">
                 <source>label.restricted</source>
                 <target>Restricted</target>
@@ -1438,9 +1502,17 @@
                 <source>label.same_window</source>
                 <target>Same Window</target>
             </trans-unit>
+            <trans-unit id="jLb96os">
+                <source>label.saturday</source>
+                <target>Saturday</target>
+            </trans-unit>
             <trans-unit id="lIBbVVe">
                 <source>label.schema_type</source>
                 <target>Schema.org Type</target>
+            </trans-unit>
+            <trans-unit id="TQmxSNJ">
+                <source>label.schema_type_help</source>
+                <target>Business type declared to search engines</target>
             </trans-unit>
             <trans-unit id="fPfYMVc">
                 <source>label.search_block_kind</source>
@@ -1562,6 +1634,10 @@
                 <source>label.success</source>
                 <target>Success</target>
             </trans-unit>
+            <trans-unit id="qshQBQs">
+                <source>label.sunday</source>
+                <target>Sunday</target>
+            </trans-unit>
             <trans-unit id="p8ZavMW">
                 <source>label.tags</source>
                 <target>Tags</target>
@@ -1574,6 +1650,10 @@
                 <source>label.text</source>
                 <target>Text</target>
             </trans-unit>
+            <trans-unit id="ZkFsxeA">
+                <source>label.thursday</source>
+                <target>Thursday</target>
+            </trans-unit>
             <trans-unit id="ZIbme0L">
                 <source>label.title</source>
                 <target>Title</target>
@@ -1581,6 +1661,10 @@
             <trans-unit id="EE5wbzn">
                 <source>label.title_level</source>
                 <target>Title Level</target>
+            </trans-unit>
+            <trans-unit id="CooV25J">
+                <source>label.tuesday</source>
+                <target>Tuesday</target>
             </trans-unit>
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>
@@ -1649,6 +1733,14 @@
             <trans-unit id="WcOat7C">
                 <source>label.warning</source>
                 <target>Warning</target>
+            </trans-unit>
+            <trans-unit id="rJFIqnF">
+                <source>label.website</source>
+                <target>Website</target>
+            </trans-unit>
+            <trans-unit id="NJAWGqA">
+                <source>label.wednesday</source>
+                <target>Wednesday</target>
             </trans-unit>
             <trans-unit id="K0YHYQb">
                 <source>label.width</source>

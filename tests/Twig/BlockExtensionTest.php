@@ -43,6 +43,7 @@ class BlockExtensionTest extends TestCase
         $block = $this->createBlock('contact_form');
 
         $registry = $this->createMock(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
         $registry->expects($this->once())->method('isCacheable')->with('contact_form')->willReturn(false);
         $registry->expects($this->once())->method('getTemplate')->with('contact_form')->willReturn('contact.html.twig');
 
@@ -67,6 +68,29 @@ class BlockExtensionTest extends TestCase
         (new \ReflectionProperty(Block::class, 'id'))->setValue($block, 1);
 
         $registry = $this->createMock(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->expects($this->never())->method('isCacheable');
+        $registry->expects($this->never())->method('getTemplate');
+
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->never())->method('render');
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('get');
+
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+
+        $this->assertSame('', $extension->renderBlock($block));
+    }
+
+    // A row outlives its own kind (a satellite bundle removed, a kind dropped): every registry lookup would throw
+    // "Unknown block" and 500 the whole page, so the block is skipped exactly like a kindless one
+    public function testRenderBlockReturnsEmptyStringWhenKindIsNoLongerRegistered(): void
+    {
+        $block = $this->createBlock('rich_snippet');
+
+        $registry = $this->createMock(BlockRegistry::class);
+        $registry->expects($this->once())->method('has')->with('rich_snippet')->willReturn(false);
         $registry->expects($this->never())->method('isCacheable');
         $registry->expects($this->never())->method('getTemplate');
 
@@ -87,6 +111,7 @@ class BlockExtensionTest extends TestCase
         $block = $this->createBlock('article', null);
 
         $registry = $this->createMock(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
         $registry->method('isCacheable')->willReturn(true);
         $registry->expects($this->once())->method('getTemplate')->with('article')->willReturn('article.html.twig');
 
@@ -113,6 +138,7 @@ class BlockExtensionTest extends TestCase
         (new \ReflectionProperty(Block::class, 'id'))->setValue($block, 42);
 
         $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
         $registry->method('isCacheable')->willReturn(false);
         $registry->method('getTemplate')->willReturn('hero.html.twig');
 
@@ -136,6 +162,7 @@ class BlockExtensionTest extends TestCase
         $block->setData(['title' => 'Hello', 'anchor' => 'services']);
 
         $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
         $registry->method('isCacheable')->willReturn(false);
         $registry->method('getTemplate')->willReturn('hero.html.twig');
 
@@ -158,6 +185,7 @@ class BlockExtensionTest extends TestCase
         $block = $this->createBlock('article', 42);
 
         $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
         $registry->method('isCacheable')->willReturn(true);
         $registry->method('getTemplate')->willReturn('article.html.twig');
 
@@ -191,6 +219,7 @@ class BlockExtensionTest extends TestCase
         $block = $this->createBlock('articles_slider', 42);
 
         $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
         $registry->method('isCacheable')->willReturn(true);
         $registry->method('getTemplate')->willReturn('articles_slider.html.twig');
 
@@ -226,6 +255,7 @@ class BlockExtensionTest extends TestCase
         $block = $this->createBlock('article', 7);
 
         $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
         $registry->method('isCacheable')->willReturn(true);
         $registry->method('getTemplate')->willReturn('article.html.twig');
 

@@ -1,0 +1,26 @@
+{# Adapter for the dynamic Block system — maps Block data to the Contact:Details component; the optional logo comes from the attached Media #}
+{% set media = block.media|first %}
+{# Absolute: the URL is published in the JSON-LD graph too, where a relative one resolves against nothing #}
+<twig:c975LUi:Contact:Details
+    schemaType="{{ schemaType|default('') }}"
+    name="{{ name|default('') }}"
+    description="{{ description|default('') }}"
+    imageUrl="{{ media ? absolute_url(vich_uploader_asset(media)) : '' }}"
+    addressStreetAddress="{{ addressStreetAddress|default('') }}"
+    addressComplement="{{ addressComplement|default('') }}"
+    addressPostalCode="{{ addressPostalCode|default('') }}"
+    addressLocality="{{ addressLocality|default('') }}"
+    addressRegion="{{ addressRegion|default('') }}"
+    addressCountryName="{{ addressCountryName|default('') }}"
+    addressCountryCode="{{ addressCountryCode|default('') }}"
+    telephone="{{ telephone|default('') }}"
+    mobile="{{ mobile|default('') }}"
+    email="{{ email|default('') }}"
+    url="{{ url|default('') }}"
+    hours="{{ hours|default([]) }}"
+    priceRange="{{ priceRange|default('') }}"
+    mapUrl="{{ mapUrl|default('') }}"
+    latitude="{{ latitude|default('') }}"
+    longitude="{{ longitude|default('') }}"
+    id="{{ anchor_id }}"
+/>

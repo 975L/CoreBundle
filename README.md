@@ -227,6 +227,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `button` | Elements | `ButtonType` | `blocks/Button.html.twig` |
 | `card` | Elements | `CardType` | `blocks/Card.html.twig` |
 | `collection` | Page sections | `CollectionType` | `blocks/Collection.html.twig` |
+| `contact_details` | Elements | `ContactDetailsType` | `blocks/ContactDetails.html.twig` |
 | `cta_band` | Page sections | `CtaBandType` | `blocks/CtaBand.html.twig` |
 | `document_download` | Elements | `DocumentDownloadType` | `blocks/DocumentDownload.html.twig` |
 | `expertise_banner` | Page sections | `ExpertiseBannerType` | `blocks/ExpertiseBanner.html.twig` |
@@ -238,7 +239,6 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `portfolio_grid` | Page sections | `PortfolioGridType` | `blocks/PortfolioGrid.html.twig` |
 | `process_steps` | Page sections | `ProcessStepsType` | `blocks/ProcessSteps.html.twig` |
 | `progress_bar` | Elements | `ProgressBarType` | `blocks/ProgressBar.html.twig` |
-| `rich_snippet` | SEO | `RichSnippetType` | `blocks/RichSnippet.html.twig` |
 | `flex_column` | Page sections | `FlexColumnType` | `blocks/FlexColumn.html.twig` |
 | `flex_columns` | Page sections | `FlexColumnsType` | `blocks/FlexColumns.html.twig` |
 | `section_cards` | Page sections | `SectionCardsType` | `blocks/SectionCards.html.twig` |
@@ -251,6 +251,18 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `video_iframe` | Media | `VideoIframeType` | `blocks/VideoIframe.html.twig` |
 
 > **Maintenance note:** update this table whenever a kind is added, renamed, or removed in `config/services.yaml`.
+
+### Contact details (`contact_details`)
+
+One kind, two outputs: the panel a visitor reads, and the schema.org graph a search engine reads - both built from the same fields, so a phone number is typed once. **Every field is optional**, which is why the graph is published as a `<script type="application/ld+json">` rather than as microdata: a field left empty is simply dropped from it, where an `itemprop` pinned to a displayed element would have left an empty node behind, and the layout is free to change without touching the structured data. It also lets the block publish what it doesn't display - the absolute logo URL, and the GPS coordinates.
+
+`ContactSnippetBuilder` assembles that graph (and `ContactSnippetBuilder::TYPES` holds the schema.org types the form offers, all `LocalBusiness`/`Organization` subtypes). The one field that isn't fully optional in effect is the **name**: without it no graph is published at all, a business node without a name indexing nothing, and the block renders as a plain display block.
+
+**Opening hours** are a collection of ranges, not one line per day: a business closing for lunch fills in two rows over the same days (`Monday…Friday 9:00-12:00`, then `Monday…Friday 14:00-18:00`), each becoming its own `OpeningHoursSpecification`. A day no row names is closed. Both times are native time pickers (`TimeType`, `input_format: 'H:i'`), so the value stored in the block's data is already the `HH:MM` schema.org publishes - `ContactSnippetBuilder` drops anything else rather than guessing at it, a misread `6pm` being enough to publish a closing hour before the opening one. On the display side, consecutive days collapse into a range through the `contact_day_runs()` Twig function, so those two rows read as `Monday - Friday` twice rather than as ten lines.
+
+The **website** and **map** fields are `UrlType`s with `default_protocol: 'https'`, and carry a `Url` constraint (the e-mail an `Email` one): a bare `example.com` would otherwise render as a relative `href` - resolved against SiteBundle's sitewide `<base href>`, so pointing back at the site - and reach the graph non-absolute, which schema.org takes no notice of.
+
+An attached image is used as the logo, shown above the name and published as the graph's `image` - the block declares no `media_required`, so it stays optional like everything else.
 
 ### The lead-in paragraph (`text_hook`)
 
@@ -443,6 +455,8 @@ A few contexts are **exclusive** (`BlockRegistry::EXCLUSIVE_CONTEXTS`, currently
 `media_required: true` rejects saving a block of that kind when it has no attached media at all (enforced by `RequiredMediaValidator` on the `Block` entity itself, not by the form) — use it for a kind whose media isn't optional decoration but the whole point of the block (e.g. `banner_title`'s background image). Defaults to `false`; only meaningful alongside `media_types`.
 
 `media_multi_upload: true` adds a "select several files at once" input next to the usual one-file-per-row media collection, for a kind where editors routinely add many files at a time (e.g. `slider`, `article`) instead of clicking "Add" repeatedly. Each selected file becomes its own media entry, appended after the existing ones. Defaults to `false`; only meaningful alongside `media_types`.
+
+**Un-registering a kind** is safe: a `Block` row outlives the tag that declared it, and `render_block()` skips a kind that is no longer registered rather than letting the registry throw. Dropping the tag - or uninstalling the bundle that declared it - blanks those blocks out of the pages holding them instead of taking the pages down with them. The rows themselves are left alone, so re-adding the tag brings them back.
 
 ---
 
@@ -751,10 +765,10 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Card:Card>` | Bootstrap card |
 | `<twig:c975LUi:Card:Cards>` | Loops `Card` over an externally-supplied collection (no `Block` involved) |
 | `<twig:c975LUi:Collection:Grid>` | Section title, followed by a grid of already-rendered items (see the `collection` block below) |
+| `<twig:c975LUi:Contact:Details>` | Contact details panel, publishing the same fields as a schema.org JSON-LD graph |
 | `<twig:c975LUi:Cta:Band>` | Centered call-to-action panel (title/text/button) |
 | `<twig:c975LUi:Expertise:Banner>` | Dark panel with text and a list of tags |
 | `<twig:c975LUi:Feature:Bar>` | Row of short arguments (title + caption) |
-| `<twig:c975LUi:General:RichSnippet>` | JSON-LD structured data snippet |
 | `<twig:c975LUi:Hero:Hero>` | Header banner with title, subtitle, optional CTA buttons and image |
 | `<twig:c975LUi:Image:Icon>` | Small icon image |
 | `<twig:c975LUi:Image:Image>` | Responsive image |

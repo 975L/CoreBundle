@@ -14,6 +14,8 @@
     width: 100vw;
     margin-left: -50vw;
     margin-right: -50vw;
+    // Keeps the next block off the banner, which the full-bleed breakout would otherwise sit flush against
+    margin-bottom: 1em;
     min-height: 200px;
     overflow: hidden;
     display: flex;

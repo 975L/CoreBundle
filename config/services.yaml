@@ -136,6 +136,22 @@ services:
               pickable: false
               cacheable: false
 
+    ui.block.contact_details:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: contact_details
+              label: "label.block_contact_details"
+              description: "label.block_contact_details_description"
+              form: c975L\UiBundle\Form\Block\ContactDetailsType
+              template: '@c975LUi/blocks/ContactDetails.html.twig'
+              category: 'label.category_elements'
+              # Optional logo, shown next to the name and published as the snippet's "image"
+              media_types: 'image/*'
+              priority: 55
+              pickable: true
+              cacheable: true
+
     ui.block.document_download:
         class: stdClass
         tags:
@@ -195,19 +211,6 @@ services:
               template: '@c975LUi/blocks/ProgressBar.html.twig'
               category: 'label.category_elements'
               priority: 60
-              pickable: true
-              cacheable: true
-
-    ui.block.rich_snippet:
-        class: stdClass
-        tags:
-            - name: ui.block
-              kind: rich_snippet
-              label: "label.block_rich_snippet"
-              description: "label.block_rich_snippet_description"
-              form: c975L\UiBundle\Form\Block\RichSnippetType
-              template: '@c975LUi/blocks/RichSnippet.html.twig'
-              category: 'label.category_seo'
               pickable: true
               cacheable: true
 
