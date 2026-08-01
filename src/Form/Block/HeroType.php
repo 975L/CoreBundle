@@ -64,6 +64,17 @@ class HeroType extends AbstractType
         $this->addBackgroundField($builder);
 
         $builder
+            // How the attached medias are laid out beside the text. "slideshow" crossfades through them one at a time, "grid" shows them all at once - a logo wall, a set of icons. Ignored when hasBackgroundImage paints the first media behind the whole section instead
+            ->add('mediaLayout', ChoiceType::class, [
+                'label' => 'label.hero_media_layout',
+                'help' => 'label.hero_media_layout_help',
+                'choices' => [
+                    'label.hero_media_layout_slideshow' => 'slideshow',
+                    'label.hero_media_layout_grid' => 'grid',
+                ],
+                // No placeholder, same as titleLevel: an unset value is read as "slideshow" by the template, which is what every hero stored before this field existed does
+                'placeholder' => false,
+            ])
             // Optional: a hero with no call to action is legitimate, the template dropping the whole row
             ->add('primaryLabel', TextType::class, [
                 'label' => 'label.primary_label',

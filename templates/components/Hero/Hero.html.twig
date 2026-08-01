@@ -1,4 +1,4 @@
-{# Static usage: <twig:c975LUi:Hero:Hero title="..." [primaryLabel=""] [primaryUrl=""] [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [hasBackgroundImage=false] [background=""] [level="h1"]/> #}
+{# Static usage: <twig:c975LUi:Hero:Hero title="..." [primaryLabel=""] [primaryUrl=""] [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [mediaLayout="slideshow"] [hasBackgroundImage=false] [background=""] [level="h1"]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Hero.html.twig #}
 {% set medias = medias|default([]) %}
 {% set hasBackgroundImage = hasBackgroundImage|default(false)|to_bool %}
@@ -31,8 +31,10 @@
         </div>
         {% if not bgSrc %}
             {% if medias|length > 1 %}
-                {# Pure-CSS crossfade, no control of its own; disabled under prefers-reduced-motion #}
-                <div class="hero__media hero__media--slideshow" data-count="{{ medias|length }}">
+                {# Matched, not interpolated, same as "background" above; anything else means the crossfade, which is what every hero stored before this field existed asks for #}
+                {% set isGrid = mediaLayout|default('') == 'grid' %}
+                {# Crossfade: pure CSS, no control of its own, disabled under prefers-reduced-motion. Grid: all medias at once, so no timing and no data-count to read #}
+                <div class="hero__media hero__media--{{ isGrid ? 'grid' : 'slideshow' }}"{% if not isGrid %} data-count="{{ medias|length }}"{% endif %}>
                     {# Intrinsic pixel size, not the free-text width/height which may hold an unusable "50%" #}
                     {% for m in medias %}
                         <img src="{{ vich_uploader_asset(m) }}" alt="" aria-hidden="true"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %}{% if loop.first %} fetchpriority="high"{% endif %}>

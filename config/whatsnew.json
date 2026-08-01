@@ -61,6 +61,41 @@
                 "en": "Duplicating a block no longer gives the copy the same identifier as the original, which could send a link to the wrong one",
                 "fr": "Dupliquer un block ne donne plus à la copie le même identifiant qu'à l'original, ce qui pouvait envoyer un lien sur le mauvais",
                 "es": "Duplicar un bloque ya no da a la copia el mismo identificador que al original, lo que podía enviar un enlace al equivocado"
+            },
+            {
+                "en": "A hero's images can now be shown all together as a grid instead of fading one after the other - handy for a row of logos or icons",
+                "fr": "Les images d'un hero peuvent désormais s'afficher toutes ensemble en grille au lieu de défiler l'une après l'autre - pratique pour une rangée de logos ou d'icônes",
+                "es": "Las imágenes de un hero pueden mostrarse ahora todas juntas en cuadrícula en lugar de pasar una tras otra: práctico para una fila de logotipos o iconos"
+            },
+            {
+                "en": "A hero now takes up to 9 images instead of 6",
+                "fr": "Un hero accepte désormais jusqu'à 9 images au lieu de 6",
+                "es": "Un hero admite ahora hasta 9 imágenes en lugar de 6"
+            },
+            {
+                "en": "The \"Contact details\" block now spreads its fields over the whole width available instead of a narrow column, and follows the colors of the section it sits in",
+                "fr": "Le block « Coordonnées » répartit désormais ses champs sur toute la largeur disponible au lieu d'une colonne étroite, et suit les couleurs de la section qui l'accueille",
+                "es": "El bloque «Datos de contacto» reparte ahora sus campos por todo el ancho disponible en lugar de una columna estrecha, y sigue los colores de la sección que lo acoge"
+            },
+            {
+                "en": "The e-mail of that block is now shown as plain text rather than as a clickable link, which spam robots collect first",
+                "fr": "L'e-mail de ce block s'affiche désormais en texte simple plutôt qu'en lien cliquable, que les robots à spam collectent en premier",
+                "es": "El correo de ese bloque se muestra ahora como texto simple en lugar de como enlace, que los robots de spam recogen primero"
+            },
+            {
+                "en": "A card can now be given an accent color, drawn as a colored rule across its top edge",
+                "fr": "Une card peut désormais recevoir une couleur d'accent, tracée en filet coloré sur son bord supérieur",
+                "es": "Una tarjeta puede recibir ahora un color de acento, trazado como un filete de color en su borde superior"
+            },
+            {
+                "en": "A hero's images no longer stop on the last one after a first pass: they keep taking turns, each shown as long as the others",
+                "fr": "Les images d'un hero ne s'arrêtent plus sur la dernière après un premier passage : elles continuent de défiler, chacune affichée aussi longtemps que les autres",
+                "es": "Las imágenes de un hero ya no se detienen en la última tras una primera vuelta: siguen pasando, cada una mostrada tanto tiempo como las demás"
+            },
+            {
+                "en": "A link written in the description of the \"Contact details\" block is now visible as a link again",
+                "fr": "Un lien écrit dans la description du block « Coordonnées » se voit de nouveau comme un lien",
+                "es": "Un enlace escrito en la descripción del bloque «Datos de contacto» vuelve a verse como un enlace"
             }
         ]
     },

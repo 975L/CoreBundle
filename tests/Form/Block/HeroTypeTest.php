@@ -45,7 +45,7 @@ class HeroTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['badge', 'title', 'titleLevel', 'subtitle', 'hasBackgroundImage', 'background', 'primaryLabel', 'primaryUrl', 'secondaryLabel', 'secondaryUrl', 'statValue', 'statLabel', 'anchor'] as $field) {
+        foreach (['badge', 'title', 'titleLevel', 'subtitle', 'hasBackgroundImage', 'background', 'mediaLayout', 'primaryLabel', 'primaryUrl', 'secondaryLabel', 'secondaryUrl', 'statValue', 'statLabel', 'anchor'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the Hero form");
         }
     }
@@ -65,6 +65,17 @@ class HeroTypeTest extends TestCase
         $this->assertFalse($added['secondaryUrl']['required']);
         $this->assertFalse($added['statValue']['required']);
         $this->assertFalse($added['statLabel']['required']);
+    }
+
+    // The layout picker offers exactly the two the component matches on, and carries no placeholder: an
+    // unset value has to keep meaning "slideshow", which is what every hero stored before it existed is
+    public function testMediaLayoutOffersSlideshowAndGridWithoutAPlaceholder(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame(ChoiceType::class, $this->addedTypes['mediaLayout']);
+        $this->assertSame(['slideshow', 'grid'], array_values($added['mediaLayout']['choices']));
+        $this->assertFalse($added['mediaLayout']['placeholder']);
     }
 
     // Title and subtitle go through Trix so a word can be emphasized; the background toggle is a checkbox

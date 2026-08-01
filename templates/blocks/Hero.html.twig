@@ -18,6 +18,7 @@
     width="{{ media ? media.intrinsicWidth : '' }}"
     height="{{ media ? media.intrinsicHeight : '' }}"
     medias="{{ medias|length > 1 ? medias : [] }}"
+    mediaLayout="{{ mediaLayout|default('') }}"
     hasBackgroundImage="{{ hasBackgroundImage|default(false) }}"
     background="{{ background|default('') }}"
     id="{{ anchor_id }}"

@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Form\Block;
 
+use c975L\UiBundle\Form\BlockAccentChoiceType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\AbstractType;
@@ -60,7 +61,8 @@ class CardType extends AbstractType
                 'help' => 'label.button_label_help',
                 'required' => false,
             ])
-            ->add('class', BlockClassChoiceType::class);
+            ->add('class', BlockClassChoiceType::class)
+            ->add('accent', BlockAccentChoiceType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

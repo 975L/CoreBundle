@@ -68,7 +68,10 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
             }
 
             // Some contributed stylesheets are generated at runtime (e.g. SiteBundle's ThemeVariablesCssListener) and may not exist yet on a fresh install
-            $path = $this->projectDir . '/public/' . $stylesheet;
+            // An app's own sheet under assets/ is read from the project root: it is an AssetMapper source, never copied to public/ - concatenating it here is what keeps a site's theme files down to the single request the bundles already share
+            $path = StylesheetRegistry::isAppAsset($stylesheet)
+                ? $this->projectDir . '/' . $stylesheet
+                : $this->projectDir . '/public/' . $stylesheet;
             if (is_file($path)) {
                 $content[] = self::stripByteOrderMark((string) file_get_contents($path));
             }

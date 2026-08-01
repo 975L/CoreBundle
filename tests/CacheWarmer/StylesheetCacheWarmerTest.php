@@ -43,6 +43,17 @@ class StylesheetCacheWarmerTest extends TestCase
         file_put_contents($path, $content);
     }
 
+    // Same, for one of the app's own sheets: those live under assets/, an AssetMapper source never copied to public/
+    private function createAppAssetCssFile(string $relativePathFromProject, string $content): void
+    {
+        $path = $this->projectDir . '/' . $relativePathFromProject;
+        $directory = \dirname($path);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0777, true);
+        }
+        file_put_contents($path, $content);
+    }
+
     private function createWarmer(array $stylesheets, array $managementStylesheets): StylesheetCacheWarmer
     {
         $registry = $this->createStub(StylesheetRegistry::class);
@@ -88,6 +99,37 @@ class StylesheetCacheWarmerTest extends TestCase
             ".ui{color:red}\n.site{color:blue}",
             file_get_contents($this->projectDir . '/public/bundles/build/site.css')
         );
+    }
+
+    // A site splitting its theme into one file per bundle would otherwise pay one <link> each, AssetMapper
+    // never merging CSS - registering them is what folds them into the single sheet the bundles share
+    public function testWarmUpConcatenatesTheAppsOwnAssetsAlongsideTheBundlesOwn(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', '.ui{color:red}');
+        $this->createAppAssetCssFile('assets/styles/themes/ui.css', ':root{--radius-card:16px}');
+        $this->createAppAssetCssFile('assets/styles/themes/site.css', ':root{--scroll-offset:72px}');
+
+        $warmer = $this->createWarmer(
+            ['bundles/c975lui/css/styles.min.css', 'assets/styles/themes/ui.css', 'assets/styles/themes/site.css'],
+            []
+        );
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            ".ui{color:red}\n:root{--radius-card:16px}\n:root{--scroll-offset:72px}",
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // Same path under public/ must not be picked up instead: the two roots are distinct namespaces
+    public function testAnAppAssetIsNeverLookedUpUnderPublic(): void
+    {
+        $this->createCssFile('assets/styles/themes/ui.css', '.wrong{}');
+
+        $warmer = $this->createWarmer(['assets/styles/themes/ui.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame('', file_get_contents($this->projectDir . '/public/bundles/build/site.css'));
     }
 
     public function testWarmUpConcatenatesManagementStylesheetsSeparatelyFromSite(): void

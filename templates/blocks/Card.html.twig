@@ -1,8 +1,11 @@
 {# Adapter mapping Block data to the Card component; "imageUrl" is a no-op fallback for CollectionItem #}
 {% set cardMedia = block.media|length > 0 ? block.media|first : null %}
 {% set resolvedImageUrl = cardMedia ? vich_uploader_asset(cardMedia) : imageUrl|default(null) %}
+{# Matched against the twelve hues, not interpolated: the value comes from stored block data and must not write any class name (same rule as "background" in the section components). See BlockAccentChoiceType #}
+{% set accentClass = accent|default('') in ['red', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'indigo', 'violet', 'pink', 'grey'] ? 'card--accent-' ~ accent : '' %}
+{% set classes = (class|default([])|join(' ') ~ ' ' ~ accentClass)|trim %}
 {% if resolvedImageUrl or url %}
-    <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" level="{{ level|default('') }}" class="{{ class|default([])|join(' ') }}">
+    <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" level="{{ level|default('') }}" class="{{ classes }}">
         {% if resolvedImageUrl %}
             {# Pixel size reserves the image's box; nothing to pass when the image is a bare "imageUrl" string #}
             <twig:c975LUi:Image:Link src="{{ resolvedImageUrl }}" class="{{ cardMedia ? cardMedia.cssClasses|join(' ') : '' }}" url="{{ url }}" target="{{ target|default('') }}" alt="{{ title }}" width="{{ cardMedia ? cardMedia.intrinsicWidth : '' }}" height="{{ cardMedia ? cardMedia.intrinsicHeight : '' }}"/>
@@ -14,5 +17,5 @@
         </div>
     </twig:c975LUi:Card:Card>
 {% else %}
-    <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" level="{{ level|default('') }}" content="{{ content }}" class="{{ class|default([])|join(' ') }}"/>
+    <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" level="{{ level|default('') }}" content="{{ content }}" class="{{ classes }}"/>
 {% endif %}

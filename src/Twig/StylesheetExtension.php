@@ -56,9 +56,10 @@ class StylesheetExtension extends AbstractExtension
         }
 
         return array_map(
+            // An app's own sheet under assets/ is served by AssetMapper, whose root is that directory: the prefix the registered path carries is not part of its logical path
             fn (string $path) => StylesheetRegistry::isExternal($path)
                 ? $path
-                : $baseUrl . $this->packages->getUrl($path),
+                : $baseUrl . $this->packages->getUrl(StylesheetRegistry::logicalPath($path)),
             $this->registry->all()
         );
     }

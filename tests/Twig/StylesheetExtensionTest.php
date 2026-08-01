@@ -82,6 +82,27 @@ class StylesheetExtensionTest extends TestCase
         );
     }
 
+    // An app's own sheet is registered with its project-root path, but AssetMapper's root is the assets/
+    // directory itself: asking it for the prefixed path resolves nothing at all
+    public function testGetBundleStylesheetsDropsTheAssetsPrefixOfAnAppAssetInDebug(): void
+    {
+        $registry = $this->createStub(StylesheetRegistry::class);
+        $registry->method('all')->willReturn(['assets/styles/themes/ui.css']);
+
+        $packages = $this->createMock(Packages::class);
+        $packages->expects($this->once())->method('getUrl')->with('styles/themes/ui.css')->willReturn('/assets/styles/themes/ui-abc123.css');
+
+        $extension = new StylesheetExtension(
+            $registry,
+            $packages,
+            $this->createRequestStack(Request::create('https://example.com/')),
+            true,
+            $this->projectDir
+        );
+
+        $this->assertSame(['https://example.com/assets/styles/themes/ui-abc123.css'], $extension->getBundleStylesheets());
+    }
+
     // Absolute URLs (CDN resources) are passed through untouched, never run through Packages::getUrl()
     public function testGetBundleStylesheetsKeepsAbsoluteHttpUrlUnchangedInDebug(): void
     {

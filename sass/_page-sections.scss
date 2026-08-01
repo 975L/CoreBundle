@@ -1,5 +1,11 @@
 /* PAGE SECTIONS */
 
+@use 'sass:math';
+
+// Hero slideshow: kept in step with BlockType::HERO_MEDIA_MAX by HeroSlideshowTimingTest
+$hero-slide-max: 9;
+$hero-slide-seconds: 6;
+
 $page-section-bp-sm: 621px;
 $page-section-bp-md: 861px;
 $page-section-bp-lg: 1025px;
@@ -334,29 +340,68 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     position: absolute;
     inset: 0;
     opacity: 0;
-    animation-name: hero-slide-fade;
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
-    animation-duration: 36s;
+    // Fallback for a count past $hero-slide-max, which only a static twig usage can reach: the narrowest
+    // window declared, so the extra slides overlap an earlier turn rather than sitting opaque for good
+    animation-name: hero-slide-fade-#{$hero-slide-max};
+    animation-duration: #{$hero-slide-max * $hero-slide-seconds}s;
 }
 
-.hero__media--slideshow img:nth-child(1) { animation-delay: 0s; }
-.hero__media--slideshow img:nth-child(2) { animation-delay: 6s; }
-.hero__media--slideshow img:nth-child(3) { animation-delay: 12s; }
-.hero__media--slideshow img:nth-child(4) { animation-delay: 18s; }
-.hero__media--slideshow img:nth-child(5) { animation-delay: 24s; }
-.hero__media--slideshow img:nth-child(6) { animation-delay: 30s; }
+@for $slide from 1 through $hero-slide-max {
+    .hero__media--slideshow img:nth-child(#{$slide}) {
+        animation-delay: #{($slide - 1) * $hero-slide-seconds}s;
+    }
+}
 
-.hero__media--slideshow[data-count="2"] img { animation-duration: 12s; }
-.hero__media--slideshow[data-count="3"] img { animation-duration: 18s; }
-.hero__media--slideshow[data-count="4"] img { animation-duration: 24s; }
-.hero__media--slideshow[data-count="5"] img { animation-duration: 30s; }
-.hero__media--slideshow[data-count="6"] img { animation-duration: 36s; }
+// One duration and one keyframe per count: the visible window is a slide's own share of the cycle, so
+// with a single shared keyframe every slide but the last would still be opaque when its turn is over.
+// From 2, the component only building a slideshow once a second media is attached
+@for $count from 2 through $hero-slide-max {
+    // The cycle a single slide owns, its neighbours fading over the 12% on either side of it
+    $share: math.div(100%, $count);
 
-@keyframes hero-slide-fade {
-    0%, 4% { opacity: 0; transform: translateX(16px); }
-    9%, 88% { opacity: 1; transform: translateX(0); }
-    93%, 100% { opacity: 0; transform: translateX(-16px); }
+    .hero__media--slideshow[data-count="#{$count}"] img {
+        animation-name: hero-slide-fade-#{$count};
+        animation-duration: #{$count * $hero-slide-seconds}s;
+    }
+
+    @keyframes hero-slide-fade-#{$count} {
+        0% { opacity: 0; transform: translateX(16px); }
+        #{$share * 0.12} { opacity: 1; transform: translateX(0); }
+        #{$share} { opacity: 1; transform: translateX(0); }
+        #{$share * 1.12} { opacity: 0; transform: translateX(-16px); }
+        100% { opacity: 0; transform: translateX(-16px); }
+    }
+}
+
+// The other mediaLayout: every media at once rather than in turn, for a logo wall or a set of icons.
+// Nothing animates, so this one has no cap of its own beyond the form's shared HERO_MEDIA_MAX
+.hero__media--grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+// Square tiles, not the framed 4/3.2 screenshots the slideshow shows: these are marks, sitting on the
+// flat rather than on a card, so they take the section's own chip tones instead of --card-background
+.hero__media--grid img {
+    aspect-ratio: 1;
+    // Mandatory next to the aspect-ratio above, same as .hero__media img: the img's height attribute is
+    // a presentational hint that would otherwise beat it (ImageAspectRatioHeightTest)
+    height: auto;
+    padding: 27%;
+    box-sizing: border-box;
+    object-fit: contain;
+    border: 1px solid var(--section-border, var(--border-color));
+    border-radius: 14px;
+    background: var(--section-overlay, transparent);
+    box-shadow: none;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.hero__media--grid img:hover {
+    border-color: var(--section-accent, var(--border-accent));
 }
 
 // The crossfade has no visible pause control, so this is the only way to opt out of it (WCAG 2.2.2)

@@ -19,62 +19,80 @@
                 {# Decorative: the name right next to it already labels the business #}
                 <img class="contact-details__logo" src="{{ imageUrl }}" alt="" aria-hidden="true" loading="lazy">
             {% endif %}
-            {% if name %}<p class="contact-details__name">{{ name }}</p>{% endif %}
-            {% if description|default('') %}<div class="contact-details__description">{{ description|raw }}</div>{% endif %}
+            <div class="contact-details__intro">
+                {% if name %}<p class="contact-details__name">{{ name }}</p>{% endif %}
+                {% if description|default('') %}<div class="contact-details__description">{{ description|raw }}</div>{% endif %}
+            </div>
         </div>
     {% endif %}
 
+    {# Each pair wrapped in a <div>, the shape a <dl> takes to be laid out as a grid: auto-placement would otherwise drop a dt and its own dd in two unrelated cells #}
     <dl class="contact-details__list">
         {% if addressLines is not empty or cityLine or regionLine %}
-            <dt>{{ 'label.address'|trans }}</dt>
-            <dd class="contact-details__address">
-                {% for line in addressLines %}{{ line }}<br>{% endfor %}
-                {% if cityLine %}{{ cityLine }}<br>{% endif %}
-                {% if regionLine %}{{ regionLine }}{% endif %}
-            </dd>
+            <div class="contact-details__item">
+                <dt>{{ 'label.address'|trans }}</dt>
+                <dd class="contact-details__address">
+                    {% for line in addressLines %}{{ line }}<br>{% endfor %}
+                    {% if cityLine %}{{ cityLine }}<br>{% endif %}
+                    {% if regionLine %}{{ regionLine }}{% endif %}
+                </dd>
+            </div>
         {% endif %}
 
         {% if telephone|default('') %}
-            <dt>{{ 'label.phone'|trans }}</dt>
-            {# Spaces stripped from the href only: a dialer needs the bare number, the visitor reads the spaced one #}
-            <dd><a href="tel:{{ telephone|replace({' ': '', '.': ''}) }}">{{ telephone }}</a></dd>
+            <div class="contact-details__item">
+                <dt>{{ 'label.phone'|trans }}</dt>
+                {# Spaces stripped from the href only: a dialer needs the bare number, the visitor reads the spaced one #}
+                <dd><a href="tel:{{ telephone|replace({' ': '', '.': ''}) }}">{{ telephone }}</a></dd>
+            </div>
         {% endif %}
 
         {% if mobile|default('') %}
-            <dt>{{ 'label.mobile'|trans }}</dt>
-            <dd><a href="tel:{{ mobile|replace({' ': '', '.': ''}) }}">{{ mobile }}</a></dd>
+            <div class="contact-details__item">
+                <dt>{{ 'label.mobile'|trans }}</dt>
+                <dd><a href="tel:{{ mobile|replace({' ': '', '.': ''}) }}">{{ mobile }}</a></dd>
+            </div>
         {% endif %}
 
         {% if email|default('') %}
-            <dt>{{ 'label.email'|trans }}</dt>
-            <dd><a href="mailto:{{ email }}">{{ email }}</a></dd>
+            <div class="contact-details__item">
+                <dt>{{ 'label.email'|trans }}</dt>
+                {# Plain text, no mailto: the address is there for a human to read, and a linked one is the first thing a harvester follows #}
+                <dd>{{ email }}</dd>
+            </div>
         {% endif %}
 
         {% if url|default('') %}
-            <dt>{{ 'label.website'|trans }}</dt>
-            <dd><a href="{{ url }}">{{ url }}</a></dd>
+            <div class="contact-details__item">
+                <dt>{{ 'label.website'|trans }}</dt>
+                <dd><a href="{{ url }}">{{ url }}</a></dd>
+            </div>
         {% endif %}
 
         {% if priceRange|default('') %}
-            <dt>{{ 'label.price_range'|trans }}</dt>
-            <dd>{{ priceRange }}</dd>
+            <div class="contact-details__item">
+                <dt>{{ 'label.price_range'|trans }}</dt>
+                <dd>{{ priceRange }}</dd>
+            </div>
         {% endif %}
     </dl>
 
     {% if openRanges is not empty %}
         <div class="contact-details__hours">
             <p class="contact-details__hours-title">{{ 'label.opening_hours'|trans }}</p>
-            <dl class="contact-details__list">
+            <dl class="contact-details__list contact-details__list--hours">
                 {% for row in openRanges %}
-                    {# Consecutive days collapse into a range, so "Mo-Fr" reads as one line instead of five #}
-                    <dt>
-                        {%- for run in contact_day_runs(row.days) -%}
-                            {{- ('label.' ~ run|first|lower)|trans -}}
-                            {%- if run|length > 1 %} - {{ ('label.' ~ run|last|lower)|trans }}{% endif -%}
-                            {%- if not loop.last %}, {% endif -%}
-                        {%- endfor -%}
-                    </dt>
-                    <dd>{{ row.opens }} - {{ row.closes }}</dd>
+                    <div class="contact-details__item contact-details__item--hours">
+                        {# Consecutive days collapse into a range, so "Mo-Fr" reads as one line instead of five #}
+                        <dt>
+                            {%- for run in contact_day_runs(row.days) -%}
+                                {{- ('label.' ~ run|first|lower)|trans -}}
+                                {%- if run|length > 1 %} - {{ ('label.' ~ run|last|lower)|trans }}{% endif -%}
+                                {%- if not loop.last %}, {% endif -%}
+                            {%- endfor -%}
+                        </dt>
+                        <dd>{{ row.opens }} - {{ row.closes }}</dd>
+                    </div>
                 {% endfor %}
             </dl>
         </div>

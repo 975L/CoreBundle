@@ -33,12 +33,33 @@ class ContactDetailsMarkupTest extends TestCase
     }
 
     // A dialer needs the bare number, the visitor reads the spaced one
-    public function testPhoneAndEmailAreClickable(): void
+    public function testPhoneIsClickable(): void
     {
-        $html = $this->render(['telephone' => '04 50 00 00 00', 'email' => 'contact@example.com']);
+        $html = $this->render(['telephone' => '04 50 00 00 00']);
 
         $this->assertStringContainsString('<a href="tel:0450000000">04 50 00 00 00</a>', $html);
-        $this->assertStringContainsString('<a href="mailto:contact@example.com">contact@example.com</a>', $html);
+    }
+
+    // Displayed, never linked: a mailto is the first thing an address harvester follows
+    public function testEmailIsRenderedAsPlainText(): void
+    {
+        $html = $this->render(['email' => 'contact@example.com']);
+
+        $this->assertStringContainsString('contact@example.com', $html);
+        $this->assertStringNotContainsString('mailto:', $html);
+    }
+
+    // The grid in sass/_contact-details.scss lays out one cell per pair: bare dt/dd would be placed as unrelated cells
+    public function testEachPairIsWrappedForTheGrid(): void
+    {
+        $html = $this->render([
+            'telephone' => '04 50 00 00 00',
+            'addressLocality' => 'Annecy',
+            'hours' => [['days' => ['Monday'], 'opens' => '9:00', 'closes' => '12:00']],
+        ]);
+
+        $this->assertSame(3, substr_count($html, '<dt>'));
+        $this->assertSame(3, substr_count($html, 'class="contact-details__item'));
     }
 
     public function testFilledInFieldsArePublishedAsAJsonLdGraph(): void

@@ -59,4 +59,41 @@ class StylesheetRegistryTest extends TestCase
     {
         $this->assertFalse(StylesheetRegistry::isExternal('bundles/c975lui/css/styles.min.css'));
     }
+
+    // An app asset is read from the project root, a bundle's compiled sheet from public/, so both callers
+    // (the cache warmer and the Twig extension) have to agree on which of the two a path names
+    public function testIsAppAssetIsTrueForAPathUnderAssets(): void
+    {
+        $this->assertTrue(StylesheetRegistry::isAppAsset('assets/styles/themes/ui.css'));
+    }
+
+    public function testIsAppAssetIsFalseForABundlesCompiledStylesheet(): void
+    {
+        $this->assertFalse(StylesheetRegistry::isAppAsset('bundles/c975lui/css/styles.min.css'));
+    }
+
+    public function testIsAppAssetIsFalseForAnExternalUrl(): void
+    {
+        $this->assertFalse(StylesheetRegistry::isAppAsset('https://cdn.example.com/lib.css'));
+    }
+
+    // AssetMapper's root being the assets/ directory itself, the prefix is not part of the logical path
+    public function testLogicalPathDropsTheAssetsPrefix(): void
+    {
+        $this->assertSame('styles/themes/ui.css', StylesheetRegistry::logicalPath('assets/styles/themes/ui.css'));
+    }
+
+    public function testLogicalPathLeavesAnyOtherPathUntouched(): void
+    {
+        $this->assertSame(
+            'bundles/c975lui/css/styles.min.css',
+            StylesheetRegistry::logicalPath('bundles/c975lui/css/styles.min.css')
+        );
+    }
+
+    // "assets" only counts as the prefix when it is a directory of its own, not the head of a longer name
+    public function testLogicalPathLeavesAPathMerelyStartingWithTheWordAssetsUntouched(): void
+    {
+        $this->assertSame('assetsmap/theme.css', StylesheetRegistry::logicalPath('assetsmap/theme.css'));
+    }
 }

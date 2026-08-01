@@ -26,6 +26,9 @@ class SectionWrapMeasureTest extends TestCase
 
     private const GUTTERED_RULES = ['.section-wrap', '.blocks>.cards'];
 
+    // Every rule padding its own box, measured or not: the panel is padded but laid out on its slot
+    private const SELF_PADDED_RULES = ['.section-wrap', '.blocks>.cards', '.contact-details'];
+
     private const GUTTERS = [
         'padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px))',
         'padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px))',
@@ -74,13 +77,13 @@ class SectionWrapMeasureTest extends TestCase
         }
     }
 
-    // Both wrapping rules pad themselves, and SiteBundle's box-sizing reset is absent on its own
+    // These rules pad themselves, and SiteBundle's box-sizing reset is absent on its own
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
-    public function testTheWrappingRulesDeclareBorderBox(string $file): void
+    public function testTheSelfPaddedRulesDeclareBorderBox(string $file): void
     {
         $css = $this->normalize($file);
 
-        foreach (self::GUTTERED_RULES as $rule) {
+        foreach (self::SELF_PADDED_RULES as $rule) {
             $this->assertStringContainsString(
                 'box-sizing: border-box',
                 $this->declarationsOf($css, $rule, $file),

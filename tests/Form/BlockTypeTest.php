@@ -174,7 +174,7 @@ class BlockTypeTest extends TestCase
 
         $this->assertCount(1, $added['medias']['constraints']);
         $this->assertInstanceOf(Count::class, $added['medias']['constraints'][0]);
-        $this->assertSame(6, $added['medias']['constraints'][0]->max);
+        $this->assertSame(9, $added['medias']['constraints'][0]->max);
     }
 
     public function testAddMediaSubFormAddsNoConstraintsForKindsOtherThanHero(): void

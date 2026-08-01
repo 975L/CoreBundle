@@ -68,11 +68,11 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
             ],
             // Every choice of ButtonType::$choices, so an editor can compare all five styles at a glance
             'button' => [
-                'Primaire' => ['label' => 'Primaire', 'url' => 'https://975l.com', 'type' => 'primary', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
-                'Secondaire' => ['label' => 'Secondaire', 'url' => 'https://975l.com', 'type' => 'secondary', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
-                'Succès' => ['label' => 'Succès', 'url' => 'https://975l.com', 'type' => 'success', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
-                'Danger' => ['label' => 'Danger', 'url' => 'https://975l.com', 'type' => 'danger', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
-                'Lien' => ['label' => 'Lien', 'url' => 'https://975l.com', 'type' => 'link', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
+                'Primaire' => ['label' => 'Primaire', 'url' => 'https://example.com', 'type' => 'primary', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
+                'Secondaire' => ['label' => 'Secondaire', 'url' => 'https://example.com', 'type' => 'secondary', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
+                'Succès' => ['label' => 'Succès', 'url' => 'https://example.com', 'type' => 'success', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
+                'Danger' => ['label' => 'Danger', 'url' => 'https://example.com', 'type' => 'danger', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
+                'Lien' => ['label' => 'Lien', 'url' => 'https://example.com', 'type' => 'link', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
             ],
             'card' => [
                 '' => [
@@ -80,7 +80,7 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'title' => 'Titre de la carte',
                     'level' => 'h3',
                     'content' => '<p>Description courte de la carte.</p>',
-                    'url' => 'https://975l.com',
+                    'url' => 'https://example.com',
                     'target' => '',
                     'buttonLabel' => 'Découvrir',
                     'class' => [],
@@ -92,7 +92,7 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'buttonLabel' => '',
                 ],
             ],
-            // Unlike most fixtures, this renders a real sub-request looking up a Form named "contact" in DB (see FormController::fragment()) - throws if it doesn't exist, acceptable here since the block showcase only ever runs on 975l.com, which seeds it via "c975l:site:pages:import-defaults"
+            // Unlike most fixtures, this renders a real sub-request looking up a Form named "contact" in DB (see FormController::fragment()) - throws if it doesn't exist, acceptable here since the block showcase only ever runs on a site that has seeded its default pages with "c975l:site:pages:import-defaults", which creates that form
             'form' => [
                 '' => [
                     'name' => 'contact',
@@ -205,74 +205,74 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
             ],
             'hero' => [
                 '' => [
-                    'badge' => 'Agence web indépendante · depuis 2018',
-                    'title' => 'Votre site web, fait main et <em>sur mesure.</em>',
-                    'subtitle' => 'On ne pose pas de template. On code proprement, avec notre propre CMS et Symfony, un site pensé pour vous.',
-                    'primaryLabel' => 'Parlons de votre projet',
-                    'primaryUrl' => 'https://975l.com/contact',
-                    'secondaryLabel' => 'Voir nos réalisations',
-                    'secondaryUrl' => 'https://975l.com/sites',
-                    'statValue' => '12+',
-                    'statLabel' => 'sites en ligne, et le vôtre bientôt',
+                    'badge' => 'Exemple de badge · texte court',
+                    'title' => 'Un titre de hero, avec <em>un mot mis en avant.</em>',
+                    'subtitle' => 'Le sous-titre du hero, deux lignes pour poser le sujet de la page et donner envie de lire la suite.',
+                    'primaryLabel' => 'Bouton principal',
+                    'primaryUrl' => 'https://example.com/contact',
+                    'secondaryLabel' => 'Bouton secondaire',
+                    'secondaryUrl' => 'https://example.com/realisations',
+                    'statValue' => '00',
+                    'statLabel' => 'le chiffre que ce hero met en avant',
                 ],
             ],
             'feature_bar' => [
                 '' => [
                     'items' => [
-                        ['title' => 'Code propre', 'text' => 'maintenable dans le temps'],
-                        ['title' => 'Symfony', 'text' => 'socle robuste & éprouvé'],
-                        ['title' => 'Notre CMS', 'text' => 'édition simple, à vous'],
-                        ['title' => 'Suisse', 'text' => 'hébergé chez Infomaniak'],
-                        ['title' => 'Multilingue', 'text' => "prêt pour l'international"],
+                        ['title' => 'Premier point', 'text' => 'une précision en une ligne'],
+                        ['title' => 'Deuxième point', 'text' => 'une précision en une ligne'],
+                        ['title' => 'Troisième point', 'text' => 'une précision en une ligne'],
+                        ['title' => 'Quatrième point', 'text' => 'une précision en une ligne'],
+                        ['title' => 'Cinquième point', 'text' => 'une précision en une ligne'],
                     ],
                 ],
             ],
             'section_features' => [
                 '' => [
-                    'eyebrow' => 'Ce que nous faisons',
-                    'title' => "Des services taillés autour de votre projet, pas l'inverse.",
+                    'eyebrow' => 'Surtitre de la section',
+                    'title' => 'Le titre de la section, sur une ou deux lignes.',
                     'cards' => [
-                        ['icon' => 'bundles/c975lui/icons/pen-ruler.svg', 'title' => 'Sites sur mesure', 'text' => '<p>Chaque site est conçu et développé pour vos besoins réels.</p>'],
-                        ['icon' => 'bundles/c975lui/icons/layer-group.svg', 'title' => 'Notre CMS maison', 'text' => '<p>Vous gérez votre contenu vous-même, simplement.</p>'],
-                        ['icon' => 'bundles/c975lui/icons/code.svg', 'title' => 'Développement Symfony', 'text' => '<p>Un socle technique solide et durable.</p>'],
+                        ['icon' => 'bundles/c975lui/icons/pen-ruler.svg', 'title' => 'Première carte', 'text' => '<p>Deux lignes décrivant ce que cette carte présente.</p>'],
+                        ['icon' => 'bundles/c975lui/icons/layer-group.svg', 'title' => 'Deuxième carte', 'text' => '<p>Deux lignes décrivant ce que cette carte présente.</p>'],
+                        ['icon' => 'bundles/c975lui/icons/code.svg', 'title' => 'Troisième carte', 'text' => '<p>Deux lignes décrivant ce que cette carte présente.</p>'],
                     ],
                 ],
             ],
             // No container kind here: their "slots" are a Block relation, not part of this plain data array
             'expertise_banner' => [
                 '' => [
-                    'eyebrow' => 'Notre expertise',
-                    'title' => 'Une technique que nous maîtrisons de bout en bout.',
-                    'text' => '<p>Pas de sous-traitance, pas de boîte noire. Nous développons, hébergeons et faisons évoluer votre site.</p>',
-                    'tags' => ['Symfony', 'PHP', 'CMS 975L', 'Multilingue', 'Infomaniak · CH', 'Open-source'],
+                    'eyebrow' => 'Surtitre du bandeau',
+                    'title' => 'Le titre du bandeau, sur une ligne ou deux.',
+                    'text' => '<p>Le paragraphe du bandeau : deux ou trois phrases qui développent le titre au-dessus.</p>',
+                    'tags' => ['Première étiquette', 'Deuxième', 'Troisième', 'Quatrième', 'Cinquième', 'Sixième'],
                 ],
             ],
             'process_steps' => [
                 '' => [
-                    'eyebrow' => 'Comment ça se passe',
-                    'title' => 'Une méthode claire, du premier échange à la mise en ligne.',
+                    'eyebrow' => 'Surtitre des étapes',
+                    'title' => 'Le titre présentant la suite d\'étapes ci-dessous.',
                     'steps' => [
-                        ['title' => "On s'écoute", 'text' => '<p>On étudie votre problématique ensemble.</p>'],
-                        ['title' => 'On conçoit', 'text' => '<p>Structure, design et contenu, validés avec vous.</p>'],
-                        ['title' => 'On développe', 'text' => "<p>Code propre, testé, et votre CMS prêt à l'emploi.</p>"],
-                        ['title' => 'On accompagne', 'text' => '<p>Mise en ligne, hébergement et suivi dans la durée.</p>'],
+                        ['title' => 'Première étape', 'text' => '<p>Ce qui se passe à cette étape, en une phrase.</p>'],
+                        ['title' => 'Deuxième étape', 'text' => '<p>Ce qui se passe à cette étape, en une phrase.</p>'],
+                        ['title' => 'Troisième étape', 'text' => '<p>Ce qui se passe à cette étape, en une phrase.</p>'],
+                        ['title' => 'Quatrième étape', 'text' => '<p>Ce qui se passe à cette étape, en une phrase.</p>'],
                     ],
                 ],
             ],
             'portfolio_grid' => [
                 '' => [
-                    'eyebrow' => 'Réalisations',
-                    'title' => 'Des projets en ligne, bien réels.',
+                    'eyebrow' => 'Surtitre de la grille',
+                    'title' => 'Le titre de la grille de projets.',
                     'linkLabel' => 'Tout voir',
-                    'linkUrl' => 'https://975l.com/sites',
+                    'linkUrl' => 'https://example.com/realisations',
                 ],
             ],
             'cta_band' => [
                 '' => [
-                    'title' => 'Racontez-nous votre projet.',
-                    'text' => '<p>On étudie votre problématique et on voit ensemble comment y répondre au mieux.</p>',
-                    'ctaLabel' => 'Contactez-nous',
-                    'ctaUrl' => 'https://975l.com/contact',
+                    'title' => 'Le titre du bandeau d\'appel à action.',
+                    'text' => '<p>Une ou deux phrases qui donnent envie de cliquer sur le bouton à côté.</p>',
+                    'ctaLabel' => 'Libellé du bouton',
+                    'ctaUrl' => 'https://example.com/contact',
                 ],
             ],
         ];

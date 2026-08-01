@@ -264,7 +264,11 @@ One kind, two outputs: the panel a visitor reads, and the schema.org graph a sea
 
 The **website** and **map** fields are `UrlType`s with `default_protocol: 'https'`, and carry a `Url` constraint (the e-mail an `Email` one): a bare `example.com` would otherwise render as a relative `href` - resolved against SiteBundle's sitewide `<base href>`, so pointing back at the site - and reach the graph non-absolute, which schema.org takes no notice of.
 
-An attached image is used as the logo, shown above the name and published as the graph's `image` - the block declares no `media_required`, so it stays optional like everything else.
+An attached image is used as the logo, shown beside the name and published as the graph's `image` - the block declares no `media_required`, so it stays optional like everything else.
+
+The **e-mail is displayed as plain text, never as a `mailto:` link** - a linked address is the first thing a harvester follows. It is still published in the graph, which is read by consumers rather than crawled for addresses. The phone numbers keep their `tel:` links.
+
+The panel lays its fields out on an `auto-fit` grid rather than in one label/value column, so it fills whatever width it is given: a row of fields across a full-width slot, a single column inside a `flex_column`, with no breakpoint of its own (`--contact-details-col-min`, `210px`, being the narrowest a field column gets before the grid drops one). Its colors read the `--section-*` tokens first, each with the bundle's own neutral as the fallback, so dropping it inside a colored flat inverts it along with everything else sitting there - see "Colored backgrounds" above.
 
 ### The lead-in paragraph (`text_hook`)
 
@@ -402,6 +406,27 @@ Then have the component match the stored value against the known variants before
 {% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
 <section class="my-section{{ background }}">...</section>
 ```
+
+---
+
+## Card accents
+
+A `card` can be marked with a colored rule across its top edge, picked from twelve fixed hues — red, orange, yellow, lime, green, teal, cyan, blue, indigo, violet, pink, grey (`BlockAccentChoiceType`). The field is optional and an unset value draws nothing, which is what every card stored before it existed holds.
+
+They are named after colors on purpose. A free color input would put arbitrary CSS in the database, and a per-site vocabulary (`family-socle`, `promo`, `sale`…) would tie a look to a subject: the day those cards are about something else, the stored value lies. A hue names itself and stays true whatever the cards end up being about — what it *means* on a given page is that page's business, not the block's.
+
+Each hue is a `--block-accent-*` token defaulted in `sass/_tokens.scss`, so a site retunes any of them from its own `theme.css` without a single stored value changing:
+
+```css
+:root {
+    --block-accent-blue: var(--primary);
+    --block-accent-indigo: color-mix(in srgb, var(--primary) 70%, var(--secondary));
+}
+```
+
+The stored value is matched against those twelve in `blocks/Card.html.twig` rather than interpolated, the same rule the `background` field follows — a hand-edited database row can never write a class name of its own. `.card` carries `position: relative` so the rule has something to position against; it rounds its own top corners rather than relying on an `overflow: hidden`, so a card deliberately letting something spill out still can.
+
+Another kind offers the same picker with one line, `->add('accent', BlockAccentChoiceType::class)`, plus its own `--accent-<hue>` rules and the matching list in its template.
 
 ---
 
@@ -1021,7 +1046,12 @@ UiBundle does **not** register a menu entry for it: `c975l/config-bundle` (which
 
 `Media::$url`/`Media::$description` back the per-project link and text of the `portfolio_grid` kind (see `MediaUploadType`'s `portfolio_grid` context) - a project card's title reuses the existing `$label` field.
 
-Attaching more than one `Media` to a `hero` block switches it from a single static image to a pure-CSS crossfade slideshow cycling through all of them (no JS, disabled under `prefers-reduced-motion`) - see `.hero__media--slideshow` in `sass/_page-sections.scss`. A single attached media keeps the plain static image.
+Attaching more than one `Media` to a `hero` block lays them out beside the text in one of two ways, picked with its "Media layout" field (`HeroType::$mediaLayout`). A single attached media keeps the plain static image whichever is set, and an unset value reads as `slideshow`, so every hero stored before the field existed renders exactly as before.
+
+- `slideshow` (the default) cycles through them in a pure-CSS crossfade, 6s per slide, no JS, disabled under `prefers-reduced-motion` - see `.hero__media--slideshow`.
+- `grid` shows all of them at once in three columns, as square tiles taking the section's own chip tones (`--section-border`/`--section-overlay`) rather than a card surface - a logo wall, a set of icons. Nothing animates, so nothing can collide - see `.hero__media--grid`.
+
+Both live in `sass/_page-sections.scss`. `BlockType::HERO_MEDIA_MAX` caps a hero at 9 medias, for the slideshow's sake: its keyframes can't read the slide count, so each slide's turn is a `:nth-child` delay and each count both a `[data-count]` duration and its own `@keyframes`, holding a slide opaque for exactly its share of the cycle - all three generated from `$hero-slide-max`, and an image past that cap would silently collide with an earlier slide's timing. One cap covers both layouts rather than a validation branch reading `mediaLayout` from inside `BlockType`'s `PRE_SUBMIT` listener. The tiles carry no color filter of their own: a site whose icons are monochrome and sitting on a dark flat inverts them from its own `app.css`, which is where rules overriding a bundle's classes belong.
 
 A `hero` block's "Show image as a full-width background" toggle (`HeroType::$hasBackgroundImage`) instead shows the first attached image full-bleed behind the centered text, dropping the side-by-side layout and slideshow - see `.hero--has-bg` in `sass/_page-sections.scss`. That backdrop is a real `<img class="hero__bg">` rather than a CSS `background-image`: a background needs a `style` attribute, which a CSP nonce never covers (nonces only ever apply to `<style>`/`<link>` *elements*).
 
@@ -1140,6 +1170,7 @@ class StylesheetProvider implements BundleStylesheetProviderInterface
     {
         return [
             'bundles/mybundle/css/styles.min.css', // local public asset
+            'assets/styles/themes/mybundle.css', // the app's own sheet, served by AssetMapper
             'https://cdn.example.com/lib/styles.min.css', // CDN URL, passed through as-is
         ];
     }
@@ -1154,6 +1185,8 @@ services:
         tags:
             - { name: 'ui.stylesheet', priority: 10 }
 ```
+
+A path starting with `assets/` is one of the *app's* own sheets — its theme files — rather than a bundle's compiled one under `public/`. It is read from the project root instead, being an AssetMapper source never copied there, and `bundle_stylesheets()` drops that prefix before asking AssetMapper for its URL, the `assets/` directory being its root. Registering them is what folds a site's theme into the single `site.css` the bundles already share: AssetMapper never merges CSS, so a site splitting its theme one file per bundle would otherwise pay one request each.
 
 The `priority` attribute is optional (default `0`). Higher priority providers are injected first — use a high value (e.g. `100`) for reset/base styles that must load before others.
 

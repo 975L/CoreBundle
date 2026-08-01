@@ -74,6 +74,66 @@
                 <source>flash.block_moved</source>
                 <target>Bloc déplacé</target>
             </trans-unit>
+            <trans-unit id="QQjuExD">
+                <source>label.accent</source>
+                <target>Couleur d'accent</target>
+            </trans-unit>
+            <trans-unit id="3WdU8Yt">
+                <source>label.accent_blue</source>
+                <target>Bleu</target>
+            </trans-unit>
+            <trans-unit id="Hjbe3j6">
+                <source>label.accent_cyan</source>
+                <target>Cyan</target>
+            </trans-unit>
+            <trans-unit id="1Vht7QA">
+                <source>label.accent_green</source>
+                <target>Vert</target>
+            </trans-unit>
+            <trans-unit id="Ydp7.Bv">
+                <source>label.accent_grey</source>
+                <target>Gris</target>
+            </trans-unit>
+            <trans-unit id="gPqGH8J">
+                <source>label.accent_help</source>
+                <target>Un filet de couleur en haut du block. Chaque teinte est un token que ce site peut retoucher dans son theme.css.</target>
+            </trans-unit>
+            <trans-unit id="a0o36dG">
+                <source>label.accent_indigo</source>
+                <target>Indigo</target>
+            </trans-unit>
+            <trans-unit id="zw5XiGm">
+                <source>label.accent_lime</source>
+                <target>Vert clair</target>
+            </trans-unit>
+            <trans-unit id="UI62VsU">
+                <source>label.accent_none</source>
+                <target>Aucune (pas de filet)</target>
+            </trans-unit>
+            <trans-unit id="n69tBBq">
+                <source>label.accent_orange</source>
+                <target>Orange</target>
+            </trans-unit>
+            <trans-unit id="E1wsvqN">
+                <source>label.accent_pink</source>
+                <target>Rose</target>
+            </trans-unit>
+            <trans-unit id="aar1.Jx">
+                <source>label.accent_red</source>
+                <target>Rouge</target>
+            </trans-unit>
+            <trans-unit id="qognJD7">
+                <source>label.accent_teal</source>
+                <target>Bleu-vert</target>
+            </trans-unit>
+            <trans-unit id="SO4GymR">
+                <source>label.accent_violet</source>
+                <target>Violet</target>
+            </trans-unit>
+            <trans-unit id="sSvmdWT">
+                <source>label.accent_yellow</source>
+                <target>Jaune</target>
+            </trans-unit>
             <trans-unit id="5ZMPsA1">
                 <source>label.action</source>
                 <target>Action</target>
@@ -1213,6 +1273,22 @@
             <trans-unit id="KPqN5C4">
                 <source>label.hero_background_image_help</source>
                 <target>Utilise la première image ajoutée en fond pleine largeur derrière le texte, au lieu de l'afficher à côté.</target>
+            </trans-unit>
+            <trans-unit id="CYanl3o">
+                <source>label.hero_media_layout</source>
+                <target>Disposition des médias</target>
+            </trans-unit>
+            <trans-unit id="pR14F4R">
+                <source>label.hero_media_layout_grid</source>
+                <target>Grille</target>
+            </trans-unit>
+            <trans-unit id="20aFlK4">
+                <source>label.hero_media_layout_help</source>
+                <target>Comment les images ajoutées ci-dessous s'affichent à côté du texte, à partir de la deuxième. Sans effet si elles servent d'image de fond.</target>
+            </trans-unit>
+            <trans-unit id="qQIbICK">
+                <source>label.hero_media_layout_slideshow</source>
+                <target>Diaporama</target>
             </trans-unit>
             <trans-unit id="7uubg0.">
                 <source>label.hero_title_level</source>

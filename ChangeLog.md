@@ -1,5 +1,30 @@
 # ChangeLog
 
+## v1.16.0
+
+Lay a hero's medias as a grid, and rebuild the contact_details panel
+
+- Added the `mediaLayout` field on `HeroType`, `slideshow` (default) or `grid` (01/08/2026)
+- Added `.hero__media--grid`, three columns of square tiles (01/08/2026)
+- `BlockType::HERO_MEDIA_MAX` went from 6 to 9, with the matching slideshow timings (01/08/2026)
+- Fixed the hero slideshow freezing on its last image (01/08/2026)
+- Each slide count now carries its own `@keyframes`, generated from `$hero-slide-max` (01/08/2026)
+- The `contact_details` panel now lays its fields out on an `auto-fit` grid (01/08/2026)
+- The `contact_details` panel now reads the `--section-*` tokens (01/08/2026)
+- The `contact_details` e-mail is no longer a `mailto:` link (01/08/2026)
+- `--contact-details-col-min` is now read instead of declared (01/08/2026)
+- Fixed the links of a `contact_details` description being repainted as plain text (01/08/2026)
+- Added `BlockAccentChoiceType`, twelve fixed hues for a block's accent (01/08/2026)
+- Added the `accent` field on `CardType`, a colored rule across the card's top edge (01/08/2026)
+- Added the twelve `--block-accent-*` tokens (01/08/2026)
+- `.card` now carries `position: relative` (01/08/2026)
+- A registered stylesheet path under `assets/` is now read as one of the app's own sheets (01/08/2026)
+- Added `StylesheetRegistry::isAppAsset()` and `StylesheetRegistry::logicalPath()` (01/08/2026)
+- `BlockFixtureProvider`'s urls are now `example.com` instead of `975l.com` (01/08/2026)
+- `BlockFixtureProvider`'s section fixtures now hold neutral sample text (01/08/2026)
+- Added `tests/Templates/HeroMediaLayoutTest` and `tests/Assets/HeroSlideshowTimingTest` (01/08/2026)
+- Added `tests/Form/BlockAccentChoiceTypeTest` (01/08/2026)
+
 ## v1.15.2
 
 Focus a named field from a link, and stop a duplicate reusing its source's id

@@ -26,7 +26,40 @@
     background-color: var(--card-background);
     display: flex;
     flex-direction: column;
+    // Containing block for the accent rule below, which would otherwise position itself against whatever
+    // happens to be positioned further up the page. No "overflow: hidden" to go with it: the rule rounds
+    // its own top corners instead, so a card deliberately letting something spill out still can
+    position: relative;
 }
+
+// The twelve hues BlockAccentChoiceType offers, drawn as a rule across the card's top edge. Each reads its
+// own token (see sass/_tokens.scss), so a site retunes a hue from its own theme.css without the stored
+// value - a color name, not a meaning - ever changing with it
+%card-accent-rule {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    // Follows the card's own top corners rather than being clipped by an "overflow" on the card itself
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+// Written out rather than looped over the twelve names: an interpolated var(--block-accent-#{$hue}) reads
+// as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
+.card--accent-red::before { @extend %card-accent-rule; background: var(--block-accent-red); }
+.card--accent-orange::before { @extend %card-accent-rule; background: var(--block-accent-orange); }
+.card--accent-yellow::before { @extend %card-accent-rule; background: var(--block-accent-yellow); }
+.card--accent-lime::before { @extend %card-accent-rule; background: var(--block-accent-lime); }
+.card--accent-green::before { @extend %card-accent-rule; background: var(--block-accent-green); }
+.card--accent-teal::before { @extend %card-accent-rule; background: var(--block-accent-teal); }
+.card--accent-cyan::before { @extend %card-accent-rule; background: var(--block-accent-cyan); }
+.card--accent-blue::before { @extend %card-accent-rule; background: var(--block-accent-blue); }
+.card--accent-indigo::before { @extend %card-accent-rule; background: var(--block-accent-indigo); }
+.card--accent-violet::before { @extend %card-accent-rule; background: var(--block-accent-violet); }
+.card--accent-pink::before { @extend %card-accent-rule; background: var(--block-accent-pink); }
+.card--accent-grey::before { @extend %card-accent-rule; background: var(--block-accent-grey); }
 
 // ".cards" already spaces its children with "gap" - a card's own margin would stack on top of it
 .cards > .card {

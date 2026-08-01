@@ -74,6 +74,66 @@
                 <source>flash.block_moved</source>
                 <target>Bloque movido</target>
             </trans-unit>
+            <trans-unit id="QQjuExD">
+                <source>label.accent</source>
+                <target>Color de acento</target>
+            </trans-unit>
+            <trans-unit id="3WdU8Yt">
+                <source>label.accent_blue</source>
+                <target>Azul</target>
+            </trans-unit>
+            <trans-unit id="Hjbe3j6">
+                <source>label.accent_cyan</source>
+                <target>Cian</target>
+            </trans-unit>
+            <trans-unit id="1Vht7QA">
+                <source>label.accent_green</source>
+                <target>Verde</target>
+            </trans-unit>
+            <trans-unit id="Ydp7.Bv">
+                <source>label.accent_grey</source>
+                <target>Gris</target>
+            </trans-unit>
+            <trans-unit id="gPqGH8J">
+                <source>label.accent_help</source>
+                <target>Una línea de color en la parte superior del bloque. Cada tono es un token que este sitio puede ajustar en su theme.css.</target>
+            </trans-unit>
+            <trans-unit id="a0o36dG">
+                <source>label.accent_indigo</source>
+                <target>Índigo</target>
+            </trans-unit>
+            <trans-unit id="zw5XiGm">
+                <source>label.accent_lime</source>
+                <target>Lima</target>
+            </trans-unit>
+            <trans-unit id="UI62VsU">
+                <source>label.accent_none</source>
+                <target>Ninguno (sin línea)</target>
+            </trans-unit>
+            <trans-unit id="n69tBBq">
+                <source>label.accent_orange</source>
+                <target>Naranja</target>
+            </trans-unit>
+            <trans-unit id="E1wsvqN">
+                <source>label.accent_pink</source>
+                <target>Rosa</target>
+            </trans-unit>
+            <trans-unit id="aar1.Jx">
+                <source>label.accent_red</source>
+                <target>Rojo</target>
+            </trans-unit>
+            <trans-unit id="qognJD7">
+                <source>label.accent_teal</source>
+                <target>Verde azulado</target>
+            </trans-unit>
+            <trans-unit id="SO4GymR">
+                <source>label.accent_violet</source>
+                <target>Violeta</target>
+            </trans-unit>
+            <trans-unit id="sSvmdWT">
+                <source>label.accent_yellow</source>
+                <target>Amarillo</target>
+            </trans-unit>
             <trans-unit id="5ZMPsA1">
                 <source>label.action</source>
                 <target>Acción</target>
@@ -1213,6 +1273,22 @@
             <trans-unit id="KPqN5C4">
                 <source>label.hero_background_image_help</source>
                 <target>Usa la primera imagen añadida como fondo a todo lo ancho detrás del texto, en lugar de mostrarla al lado.</target>
+            </trans-unit>
+            <trans-unit id="CYanl3o">
+                <source>label.hero_media_layout</source>
+                <target>Disposición de los medios</target>
+            </trans-unit>
+            <trans-unit id="pR14F4R">
+                <source>label.hero_media_layout_grid</source>
+                <target>Cuadrícula</target>
+            </trans-unit>
+            <trans-unit id="20aFlK4">
+                <source>label.hero_media_layout_help</source>
+                <target>Cómo se muestran junto al texto las imágenes añadidas debajo, a partir de la segunda. Sin efecto si se usan como imagen de fondo.</target>
+            </trans-unit>
+            <trans-unit id="qQIbICK">
+                <source>label.hero_media_layout_slideshow</source>
+                <target>Pase de diapositivas</target>
             </trans-unit>
             <trans-unit id="7uubg0.">
                 <source>label.hero_title_level</source>
