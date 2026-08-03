@@ -8,6 +8,10 @@
 Accounts, scaffolding and shared plumbing move to the ecosystem root
 
 - `ContentQualityClient` restores libxml's internal-error setting after parsing a page, instead of leaving it on for the whole process (03/08/2026)
+- `ContentQualityClient` reads its attributes off elements only, an XPath node list carrying nodes that have none (03/08/2026)
+- `PasswordResetter` and `UserRegistrar` say which entity is missing `setPassword()` instead of fataling on the call (03/08/2026)
+- `UserCrudController` passes through a field yielded as a bare property name rather than configuring it (03/08/2026)
+- `DeclaredUrlsHealthCheckProvider` reads a declared url defensively, the implementations being other bundles' code (03/08/2026)
 - Failed Messenger dates are read as UTC, the digest no longer staying silent after an alert (03/08/2026)
 - `ContentQualityAnalyzer` releases each batch's responses instead of holding them for the whole run (03/08/2026)
 - `seo-files`, `deployment` and `redirect-chains` read the site root through `SiteUrlResolver` (03/08/2026)

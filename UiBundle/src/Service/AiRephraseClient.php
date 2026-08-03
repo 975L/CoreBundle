@@ -119,7 +119,7 @@ class AiRephraseClient
         }
     }
 
-    private function callAnthropic(string $text, string $apiKey, string $styleInstruction, string $lengthInstruction): ?string
+    private function callAnthropic(string $text, string $apiKey, string $styleInstruction, string $lengthInstruction): string
     {
         $model = $this->configService->get('ui-ai-assistant-rephrase-model') ?: self::ANTHROPIC_DEFAULT_MODEL;
 
@@ -149,7 +149,7 @@ class AiRephraseClient
     }
 
     // Covers both OpenAI and Euria (Infomaniak AI Tools): Euria exposes an OpenAI-compatible API, only the base URI differs, read from "ui-ai-assistant-rephrase-base-uri"
-    private function callOpenAiCompatible(string $text, string $apiKey, string $provider, string $styleInstruction, string $lengthInstruction): ?string
+    private function callOpenAiCompatible(string $text, string $apiKey, string $provider, string $styleInstruction, string $lengthInstruction): string
     {
         $isOpenAi = 'openai' === $provider;
         $uri = $isOpenAi

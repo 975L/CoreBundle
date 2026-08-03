@@ -31,4 +31,9 @@ interface HasBlocksInterface
      * Same as removeBlock() but never queues the block for deletion, for relocating it elsewhere.
      */
     public function detachBlock(Block $block): static;
+
+    /**
+     * Renumbers the remaining blocks from 0, called by BlockRelocator after a detach - HasBlocksTrait implements it, an entity writing its own has to as well.
+     */
+    public function reorderBlocks(): void;
 }

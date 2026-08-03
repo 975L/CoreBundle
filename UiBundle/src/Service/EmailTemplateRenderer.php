@@ -33,7 +33,7 @@ class EmailTemplateRenderer
      * per-app Twig file it would have to know the path of. Null when no template carries that name, so the caller
      * decides what a missing template means rather than sending a blank email.
      *
-     * @param array<string, scalar> $variables see renderBody()
+     * @param array<string, scalar|array<string, mixed>> $variables see renderBody()
      */
     public function renderNamed(string $name, array $variables = []): ?string
     {
@@ -45,7 +45,7 @@ class EmailTemplateRenderer
     /**
      * Full standalone document, wrapped through EmailLayoutProviderInterface when one is registered.
      *
-     * @param array<string, scalar> $variables see renderBody()
+     * @param array<string, scalar|array<string, mixed>> $variables see renderBody()
      */
     public function render(EmailTemplate $emailTemplate, array $variables = []): string
     {
@@ -61,11 +61,13 @@ class EmailTemplateRenderer
      * own Menu-driven header/footer - see c975L\UiBundle\Twig\EmailTemplateExtension::emailTemplateBody() and
      * EmailLayoutProviderInterface, its render()-time equivalent).
      *
-     * @param array<string, scalar> $variables resolves "{{ key }}" placeholders found in heading/content/label/url/alt
-     *                                         (see substitute() - literal replacement, not real Twig evaluation),
-     *                                         plus an optional "fields" array<string, mixed> consumed by any
-     *                                         EmailBlock::TYPE_FIELDS_TABLE block (e.g. a Form submission's
-     *                                         label => submitted value pairs, see SendEmailFormAction)
+     * @param array<string, scalar|array<string, mixed>> $variables resolves "{{ key }}" placeholders found in
+     *                                                              heading/content/label/url/alt (see substitute() -
+     *                                                              literal replacement, not real Twig evaluation),
+     *                                                              plus an optional "fields" array consumed by any
+     *                                                              EmailBlock::TYPE_FIELDS_TABLE block (e.g. a Form
+     *                                                              submission's label => submitted value pairs, see
+     *                                                              SendEmailFormAction)
      */
     public function renderBody(EmailTemplate $emailTemplate, array $variables = []): string
     {

@@ -87,6 +87,18 @@ Two things are new around it:
 
 **Added `FormPageUrlProviderInterface` + `FormPageUrlRegistry` + the `form_url()` Twig function**, answering "where is this named Form really reachable on the front end": the richer page a bundle contributes (SiteBundle's `Page` carrying the matching `form` Block, an admin-editable per-locale slug), else this bundle's own `ui_form_submit` route. It always returns something, so a template no longer has to know which bundles are installed.
 
+**`Contract\HasBlocksInterface` now declares `reorderBlocks(): void`.** `BlockRelocator` has always called it after detaching a block, so an entity that did not have it already fataled there; the interface now says so out loud. An entity using `Entity\Trait\HasBlocksTrait` has nothing to do — the trait implements it. One writing its own accessors has to add:
+
+```php
+public function reorderBlocks(): void
+{
+    $position = 0;
+    foreach ($this->blocks as $block) {
+        $block->setPosition($position++);
+    }
+}
+```
+
 **Added `Service\BuildFileWriter`**, replacing SiteBundle's `Listener\Trait\BuildFileWriterTrait` — a trait shared across bundles is only ever analysed against the users living in the same package, so its callers' own `$projectDir` looked write-only to PHPStan. Static and stateless, same behaviour. Its `ArchiveFileTrait` counterpart became `c975L\ConfigBundle\Management\ArchiveFileRegistrar` for the same reason.
 
 ## > v1.15.0

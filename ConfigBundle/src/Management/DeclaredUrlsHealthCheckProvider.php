@@ -39,8 +39,8 @@ class DeclaredUrlsHealthCheckProvider implements HealthCheckProviderInterface, H
     {
         $entries = [];
         foreach ($this->sitemapProvider->getUrls() as $url) {
-            $location = $url['loc'] ?? null;
-            if (!\is_string($location) || '' === $location) {
+            $location = $this->locationOf($url);
+            if (null === $location) {
                 continue;
             }
 
@@ -49,6 +49,14 @@ class DeclaredUrlsHealthCheckProvider implements HealthCheckProviderInterface, H
         }
 
         return $this->contentQualityAnalyzer->analyze($entries);
+    }
+
+    // Taken as mixed on purpose: SitemapProviderInterface declares 'loc' as always there and always a string, but the implementations are other bundles' code, and one incomplete row has to be skipped rather than take the whole check down (see the test)
+    private function locationOf(mixed $url): ?string
+    {
+        $location = \is_array($url) ? ($url['loc'] ?? null) : null;
+
+        return \is_string($location) && '' !== $location ? $location : null;
     }
 
     private function labelFromUrl(string $url): string

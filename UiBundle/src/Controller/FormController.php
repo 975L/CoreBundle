@@ -24,6 +24,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -52,6 +53,15 @@ class FormController extends AbstractController
         }
 
         return $form;
+    }
+
+    // Read off the request rather than through addFlash(), which reaches for the container's request_stack: the flash bag is carried by the concrete session, not declared on the interface the request hands back
+    private function addFlashTo(Request $request, string $type, string $message): void
+    {
+        $session = $request->getSession();
+        if ($session instanceof FlashBagAwareSessionInterface) {
+            $session->getFlashBag()->add($type, $message);
+        }
     }
 
     private function sessionKeyFor(Form $uiForm): string
@@ -132,7 +142,7 @@ class FormController extends AbstractController
             // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket
             $clientIp = $request->getClientIp();
             if (null !== $clientIp && !$this->rateLimiterGuard->isAccepted($this->formLimiterFactory, $clientIp)) {
-                $request->getSession()->getFlashBag()->add('warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
+                $this->addFlashTo($request, 'warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
             } else {
                 $action = $this->actionRegistry->get($uiForm->getAction());
                 $success = $action->handle($uiForm, $symfonyForm->getData());
@@ -150,7 +160,8 @@ class FormController extends AbstractController
                     }
                 }
 
-                $request->getSession()->getFlashBag()->add(
+                $this->addFlashTo(
+                    $request,
                     $success ? 'success' : 'danger',
                     $success ? 'label.form_submitted' : 'label.form_submission_failed'
                 );

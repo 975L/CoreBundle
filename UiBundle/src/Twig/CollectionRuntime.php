@@ -61,7 +61,7 @@ class CollectionRuntime implements RuntimeExtensionInterface
             return null;
         }
 
-        $route = 'page_preview' === $request?->attributes->get('_route') ? 'page_preview' : 'page_display';
+        $route = 'page_preview' === $request->attributes->get('_route') ? 'page_preview' : 'page_display';
 
         return $this->urlGenerator->generate($route, ['page' => rtrim($currentPage, '/') . '/' . $itemSlug]);
     }

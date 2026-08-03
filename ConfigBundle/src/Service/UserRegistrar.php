@@ -27,6 +27,11 @@ class UserRegistrar
 
     public function register(PasswordAuthenticatedUserInterface & UserInterface $user, string $plainPassword, string $verifyEmailRouteName, string $subject, string $to): bool
     {
+        // Symfony's interface only declares getPassword(), the setter living on the app's own entity (see the scaffold's User): checked rather than assumed, so a divergent entity says so instead of fataling
+        if (!method_exists($user, 'setPassword')) {
+            throw new \LogicException(sprintf('"%s" must declare setPassword() to be registered.', $user::class));
+        }
+
         $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
 
         $now = new \DateTime();

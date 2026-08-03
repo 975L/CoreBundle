@@ -14,6 +14,7 @@ use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Entity\Media;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Vich\UploaderBundle\Mapping\PropertyMapping;
 use Vich\UploaderBundle\Naming\NamerInterface;
@@ -34,12 +35,16 @@ class UiMediaNamer implements NamerInterface
             throw new \RuntimeException(sprintf('Entity "%s" must implement VichMediaNamableInterface.', get_class($entity)));
         }
 
-        $filePath = $entity->getFile()->getPathname();
+        // Read off the mapping rather than off the entity: which property holds the file is the mapping's own business, and no interface here declares a getter for it
+        $file = $mapping->getFile($entity);
+        if (!$file instanceof File) {
+            throw new \RuntimeException(sprintf('Entity "%s" carries no uploaded file to name.', $entity::class));
+        }
+
+        $filePath = $file->getPathname();
         if (!$this->filesystem->exists($filePath)) {
             throw new \RuntimeException('File not found: ' . htmlspecialchars($filePath, ENT_QUOTES, 'UTF-8'));
         }
-
-        $file = $mapping->getFile($entity);
 
         // Singleton site-wide graphics (favicon, apple-touch-icon, og-image, logo) need a fixed, predictable filename at the root of public/ - no uniqid (would break the well-known URL)
         if ($entity instanceof Media && $entity->isSingletonRole()) {
@@ -91,6 +96,11 @@ class UiMediaNamer implements NamerInterface
             return 'webp';
         }
 
-        return $extension ?: $file->getClientOriginalExtension();
+        if ('' !== $extension) {
+            return $extension;
+        }
+
+        // A temporary upload has no extension of its own, so the name the visitor's browser sent is where it is read from - and the mime type is all that is left for anything else
+        return $file instanceof UploadedFile ? $file->getClientOriginalExtension() : (string) $file->guessExtension();
     }
 }

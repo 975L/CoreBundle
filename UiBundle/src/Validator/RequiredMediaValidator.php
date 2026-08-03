@@ -14,6 +14,7 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Registry\BlockRegistry;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 // Registry-aware, so it can't live as a plain #[Assert\Callback] on Block itself (entities have no DI) - same "ui" translation domain trick as FixedIconFormatValidator
 class RequiredMediaValidator extends ConstraintValidator
@@ -24,6 +25,10 @@ class RequiredMediaValidator extends ConstraintValidator
 
     public function validate(mixed $value, Constraint $constraint): void
     {
+        if (!$constraint instanceof RequiredMedia) {
+            throw new UnexpectedTypeException($constraint, RequiredMedia::class);
+        }
+
         if (!$value instanceof Block) {
             return;
         }

@@ -23,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\ActionGroup;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
@@ -53,6 +54,13 @@ class UserCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         foreach (parent::configureFields($pageName) as $field) {
+            // A field may also be yielded as a bare property name, which carries none of the configuration read below
+            if (!$field instanceof FieldInterface) {
+                yield $field;
+
+                continue;
+            }
+
             $property = $field->getAsDto()->getProperty();
 
             if ('password' === $property) {

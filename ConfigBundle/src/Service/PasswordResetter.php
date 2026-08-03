@@ -25,6 +25,11 @@ class PasswordResetter
 
     public function resetPassword(PasswordAuthenticatedUserInterface $user, string $plainPassword): void
     {
+        // Symfony's interface only declares getPassword(), the setter living on the app's own entity (see the scaffold's User): checked rather than assumed, so a divergent entity says so instead of fataling
+        if (!method_exists($user, 'setPassword')) {
+            throw new \LogicException(sprintf('"%s" must declare setPassword() for its password to be reset.', $user::class));
+        }
+
         $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
 
         if (method_exists($user, 'setModification')) {

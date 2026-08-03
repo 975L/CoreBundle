@@ -19,6 +19,7 @@ use c975L\UiBundle\Service\SvgRasterizer;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
+use Imagine\Image\Palette\Color\ColorInterface;
 use Imagine\Image\Point;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -148,7 +149,7 @@ class VichImageResizeListener
     }
 
     // Crops/resizes to the exact target size (fixed icon roles never keep the uploaded aspect ratio) and converts to the target format - .ico has no native GD/Imagine writer, so it's hand-wrapped around a raw bitmap
-    private function processFixedIcon(Media $entity, string $absolutePath, array $spec): void
+    private function processFixedIcon(VichImageResizableInterface $entity, string $absolutePath, array $spec): void
     {
         $imagine = new Imagine();
         $thumbnail = $imagine->open($absolutePath)->thumbnail(
@@ -184,9 +185,16 @@ class VichImageResizeListener
 
         for ($y = $height - 1; $y >= 0; --$y) {
             for ($x = 0; $x < $width; ++$x) {
+                // Read by component rather than through the RGB class' own getters: those are not on the interface getColorAt() answers, and the ICO payload only ever needs these three values
                 $color = $image->getColorAt(new Point($x, $y));
                 $alpha = (int) round($color->getAlpha() * 255 / 100);
-                $pixels .= pack('C4', $color->getBlue(), $color->getGreen(), $color->getRed(), $alpha);
+                $pixels .= pack(
+                    'C4',
+                    $color->getValue(ColorInterface::COLOR_BLUE),
+                    $color->getValue(ColorInterface::COLOR_GREEN),
+                    $color->getValue(ColorInterface::COLOR_RED),
+                    $alpha
+                );
             }
         }
 

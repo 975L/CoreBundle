@@ -138,12 +138,22 @@ class ContentQualityClient
         return new \DOMXPath($dom);
     }
 
+    // DOMXPath::query answers a list of plain nodes, while every expression read here selects elements - and only an element carries the attributes the callers below read off it
+    private function elements(\DOMXPath $xpath, string $expression): \Generator
+    {
+        foreach ($xpath->query($expression) as $node) {
+            if ($node instanceof \DOMElement) {
+                yield $node;
+            }
+        }
+    }
+
     // Each offending image's own src rather than just how many there are, so the Health check panel can list them one by one (and SiteBundle's PageBlockLocator trace each one back to the block holding it). Deduped: the same image used twice on a page is a single alt text to write, not two
     private function extractImagesWithoutAlt(\DOMXPath $xpath): array
     {
         $sources = [];
 
-        foreach ($xpath->query('//img[not(@alt) or (@alt="" and not(' . self::DECORATIVE_IMAGE . '))]') as $image) {
+        foreach ($this->elements($xpath, '//img[not(@alt) or (@alt="" and not(' . self::DECORATIVE_IMAGE . '))]') as $image) {
             $src = trim($image->getAttribute('src'));
             if ('' !== $src) {
                 $sources[$src] = true;
@@ -158,7 +168,7 @@ class ContentQualityClient
     {
         $tags = [];
 
-        foreach ($xpath->query('//meta[@content][@property or @name]') as $meta) {
+        foreach ($this->elements($xpath, '//meta[@content][@property or @name]') as $meta) {
             $name = strtolower(trim($meta->getAttribute('property') ?: $meta->getAttribute('name')));
             $content = trim($meta->getAttribute('content'));
             if ('' !== $content && str_starts_with($name, 'og:')) {
@@ -176,7 +186,7 @@ class ContentQualityClient
         $external = [];
         $texts = [];
 
-        foreach ($xpath->query('//a[@href]') as $anchor) {
+        foreach ($this->elements($xpath, '//a[@href]') as $anchor) {
             $link = $this->absoluteLink(trim($anchor->getAttribute('href')), $pageUrl, $host);
             if (null === $link) {
                 continue;
