@@ -618,11 +618,11 @@
                 <source>label.block_kind_legacy_slot_help</source>
                 <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Ce block est placé directement comme colonne, ce qui n'est plus proposé : ajoute une Colonne à la rangée, fais-y glisser ce block, et tu pourras alors régler sa largeur.&lt;/span&gt;</target>
             </trans-unit>
-            <trans-unit id="C4gS09K">
+            <trans-unit id="QhS4ZF8">
                 <source>label.block_legal_model</source>
                 <target>Modèle légal</target>
             </trans-unit>
-            <trans-unit id="48e0zxX">
+            <trans-unit id="CYGfR88">
                 <source>label.block_legal_model_description</source>
                 <target>Insère un modèle de texte légal préexistant (CGU, mentions légales...)</target>
             </trans-unit>
@@ -1330,19 +1330,19 @@
                 <source>label.form_field_templates</source>
                 <target>Modèles de champs</target>
             </trans-unit>
-            <trans-unit id="Kq3Vb7T">
+            <trans-unit id="oyXFiAN">
                 <source>label.form_link_label</source>
                 <target>Texte du lien</target>
             </trans-unit>
-            <trans-unit id="hZ2mWpA">
+            <trans-unit id="pDgQXkF">
                 <source>label.form_link_url</source>
                 <target>Adresse du lien</target>
             </trans-unit>
-            <trans-unit id="xL9tRc4">
+            <trans-unit id="c30fmfN">
                 <source>label.form_links</source>
                 <target>Liens</target>
             </trans-unit>
-            <trans-unit id="nB6yUe1">
+            <trans-unit id="BvYymoe">
                 <source>label.form_links_help</source>
                 <target>Affichés juste sous le bouton de validation, par exemple un lien vers la page de connexion sous un formulaire d'inscription. Utilisez un chemin de ce site (/pages/ma-page) ou une adresse complète.</target>
             </trans-unit>
@@ -1458,11 +1458,11 @@
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% section(s) que vous avez réécrite(s) ont évolué dans le modèle « %model% » : %sections%</target>
             </trans-unit>
-            <trans-unit id="sv1fnt2">
+            <trans-unit id="KV_qnlv">
                 <source>label.health_check_svg_fonts_not_vectorized</source>
                 <target>%file% contient du texte non vectorisé%fonts% : convertissez-le en tracés, sinon il s'affichera avec une autre police chez qui n'a pas celle-ci</target>
             </trans-unit>
-            <trans-unit id="sv1fnt3">
+            <trans-unit id="ojbesgX">
                 <source>label.health_check_svg_fonts_ok</source>
                 <target>%file% ne dépend d'aucune police, son texte est vectorisé</target>
             </trans-unit>
@@ -1646,7 +1646,7 @@
                 <source>label.legal_extra_sections</source>
                 <target>Sections ajoutées</target>
             </trans-unit>
-            <trans-unit id="Kq7mZ3a">
+            <trans-unit id="4OJnJZw">
                 <source>label.legal_model_unknown</source>
                 <target>Modèle inconnu</target>
             </trans-unit>
@@ -2190,7 +2190,7 @@
                 <source>text.password_mismatch</source>
                 <target>Les mots de passe ne correspondent pas</target>
             </trans-unit>
-            <trans-unit id="sv9tx2p">
+            <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>
                 <target>%filename% contient du texte non vectorisé%fonts% : il s'affichera avec une autre police chez un visiteur qui ne l'a pas installée. Convertissez le texte en tracés avant de le mettre en ligne (Inkscape : Chemin &gt; Objet en chemin).</target>
             </trans-unit>

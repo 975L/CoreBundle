@@ -398,13 +398,13 @@
                 <source>label.config_prune_none</source>
                 <target>Ninguna entrada de configuración obsoleta.</target>
             </trans-unit>
-            <trans-unit id="cfgPruneUnreg">
-                <source>label.config_prune_unregistered</source>
-                <target>Las siguientes entradas están declaradas por un bundle c975L instalado pero ausente de config/bundles.php. No se ofrecen para su eliminación: registre el bundle en lugar de borrarlas.</target>
-            </trans-unit>
             <trans-unit id="6XuQx8_">
                 <source>label.config_prune_unreadable</source>
                 <target>Los siguientes configs*.json no se pueden leer, por lo que todo lo que declaran aparecería erróneamente como obsoleto. Corríjalos y vuelva a cargar esta página.</target>
+            </trans-unit>
+            <trans-unit id="6luOlSQ">
+                <source>label.config_prune_unregistered</source>
+                <target>Las siguientes entradas están declaradas por un bundle c975L instalado pero ausente de config/bundles.php. No se ofrecen para su eliminación: registre el bundle en lugar de borrarlas.</target>
             </trans-unit>
             <trans-unit id="W.zT_E8">
                 <source>label.config_sitemaps_create</source>
@@ -1294,7 +1294,7 @@
                 <source>label.modification</source>
                 <target>Modificación</target>
             </trans-unit>
-            <trans-unit id="nP2wKd8">
+            <trans-unit id="oyd10Po">
                 <source>label.new_password</source>
                 <target>Nueva contraseña</target>
             </trans-unit>
@@ -1334,7 +1334,7 @@
                 <source>label.password</source>
                 <target>Contraseña</target>
             </trans-unit>
-            <trans-unit id="cR7hXm4">
+            <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
                 <target>Confirmar la contraseña</target>
             </trans-unit>

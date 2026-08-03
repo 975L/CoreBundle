@@ -89,6 +89,25 @@ class ContentQualityClientTest extends TestCase
         $this->assertSame('', $client->analyze('https://example.com/pages/home/')['title']);
     }
 
+    // The setting is process-wide: left on, it silences the parse errors every other libxml reader of the process relies on - UiBundle's own SVG rasterizer included, which then accepts a malformed file instead of refusing it
+    public function testAnalyzeRestoresLibxmlInternalErrors(): void
+    {
+        $client = new ContentQualityClient($this->htmlResponse('<html><head></head><body><h1 <broken></body></html>'));
+
+        $previous = libxml_use_internal_errors(false);
+
+        try {
+            $client->analyze('https://example.com/pages/home/');
+            $this->assertFalse(libxml_use_internal_errors(true));
+
+            // Restored to whatever it was, rather than forced back off: a caller that had it on keeps it on
+            $client->analyze('https://example.com/pages/home/');
+            $this->assertTrue(libxml_use_internal_errors(false));
+        } finally {
+            libxml_use_internal_errors($previous);
+        }
+    }
+
     // The Open Graph protocol specifies "property", but "name" is common in the wild and works just as well
     public function testAnalyzeReadsSocialTagsFromEitherPropertyOrName(): void
     {

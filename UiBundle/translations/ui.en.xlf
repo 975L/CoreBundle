@@ -618,11 +618,11 @@
                 <source>label.block_kind_legacy_slot_help</source>
                 <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ This block sits directly as a column, which is no longer offered: add a Column to the row, drag this block into it, and you will then be able to set its width.&lt;/span&gt;</target>
             </trans-unit>
-            <trans-unit id="C4gS09K">
+            <trans-unit id="QhS4ZF8">
                 <source>label.block_legal_model</source>
                 <target>Legal Model</target>
             </trans-unit>
-            <trans-unit id="48e0zxX">
+            <trans-unit id="CYGfR88">
                 <source>label.block_legal_model_description</source>
                 <target>Inserts an existing legal text template (T&amp;Cs, legal notice...)</target>
             </trans-unit>
@@ -1330,19 +1330,19 @@
                 <source>label.form_field_templates</source>
                 <target>Field templates</target>
             </trans-unit>
-            <trans-unit id="Kq3Vb7T">
+            <trans-unit id="oyXFiAN">
                 <source>label.form_link_label</source>
                 <target>Link text</target>
             </trans-unit>
-            <trans-unit id="hZ2mWpA">
+            <trans-unit id="pDgQXkF">
                 <source>label.form_link_url</source>
                 <target>Link address</target>
             </trans-unit>
-            <trans-unit id="xL9tRc4">
+            <trans-unit id="c30fmfN">
                 <source>label.form_links</source>
                 <target>Links</target>
             </trans-unit>
-            <trans-unit id="nB6yUe1">
+            <trans-unit id="BvYymoe">
                 <source>label.form_links_help</source>
                 <target>Shown right under the submit button, e.g. a link to the sign-in page under a registration form. Use a path of this site (/pages/my-page) or a full address.</target>
             </trans-unit>
@@ -1458,11 +1458,11 @@
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% section(s) you rewrote have changed in the "%model%" model: %sections%</target>
             </trans-unit>
-            <trans-unit id="sv1fnt2">
+            <trans-unit id="KV_qnlv">
                 <source>label.health_check_svg_fonts_not_vectorized</source>
                 <target>%file% carries text that is not vectorized%fonts%: convert it to paths, or it will render with another font for anyone missing that one</target>
             </trans-unit>
-            <trans-unit id="sv1fnt3">
+            <trans-unit id="ojbesgX">
                 <source>label.health_check_svg_fonts_ok</source>
                 <target>%file% depends on no font, its text is vectorized</target>
             </trans-unit>
@@ -1646,7 +1646,7 @@
                 <source>label.legal_extra_sections</source>
                 <target>Added sections</target>
             </trans-unit>
-            <trans-unit id="Kq7mZ3a">
+            <trans-unit id="4OJnJZw">
                 <source>label.legal_model_unknown</source>
                 <target>Unknown model</target>
             </trans-unit>
@@ -2190,7 +2190,7 @@
                 <source>text.password_mismatch</source>
                 <target>Passwords do not match</target>
             </trans-unit>
-            <trans-unit id="sv9tx2p">
+            <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>
                 <target>%filename% carries text that is not vectorized%fonts%: it will render with another font for a visitor who does not have it installed. Convert the text to paths before publishing it (Inkscape: Path &gt; Object to Path).</target>
             </trans-unit>

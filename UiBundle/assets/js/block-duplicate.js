@@ -138,13 +138,27 @@ export default class extends Controller {
         newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         this.copyItemValues(sourceItem, newItem);
+        // The "add" click above fires ea.collection.item-added synchronously, and trix-editor.js already built an editor for the brand new row right there - on a still empty textarea. Trix reads its content from that textarea once and only once, when the editor is built (see its connectedCallback: `defaultValue = inputElement.value`), so the value copied just above would stay invisible and be overwritten by the empty editor on the first edit. Hence: drop that editor, then re-run the setup so it is rebuilt from the copied value.
+        this.resetTrixEditors(newItem);
         // Re-runs Trix setup for any not-yet-initialized textarea in the new row (e.g. a card's or step's rich-text field) now that its value has already been copied, so that copied value becomes the editor's initial content instead of an empty one.
         document.dispatchEvent(new CustomEvent('c975l:block-data-loaded'));
     }
 
+    // Undoes trix-editor.js's setup for a row: it inserts a ".ea-text-editor-wrapper" right after the textarea and Trix puts its own toolbar in there too, so removing that wrapper takes the whole editor away, and clearing the marker makes the textarea eligible for setup again.
+    resetTrixEditors(item) {
+        item.querySelectorAll('textarea[data-trix][data-trix-init]').forEach(textarea => {
+            const editor = item.querySelector(`trix-editor[input="${CSS.escape(textarea.id)}"]`);
+            if (editor) {
+                (editor.closest('.ea-text-editor-wrapper') || editor).remove();
+            }
+            delete textarea.dataset.trixInit;
+        });
+    }
+
     // Matched by position rather than by field name: both rows come from the exact same entry form type, so they always carry the same fields in the same order - no name-parsing needed here (unlike copyMediaValues, which has to line up two rows that can legitimately differ, e.g. an existing media's Vich "delete" checkbox that a fresh row doesn't have yet).
     copyItemValues(sourceItem, targetItem) {
-        const copyable = el => el.name && !el.disabled && el.type !== 'file';
+        // Trix's own toolbar carries a named input of its own (the link dialog's "href"), which belongs to the editor, not to the form: counting it would shift every field after it as soon as one row has an editor and the other doesn't yet.
+        const copyable = el => el.name && !el.disabled && el.type !== 'file' && !el.closest('trix-toolbar');
 
         const sourceFields = [...sourceItem.querySelectorAll('input, select, textarea')].filter(copyable);
         const targetFields = [...targetItem.querySelectorAll('input, select, textarea')].filter(copyable);

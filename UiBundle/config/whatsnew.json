@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-08-03",
+        "description": [
+            {
+                "en": "Duplicating a card, a step or a slide now keeps its rich text, which was copied over empty",
+                "fr": "La duplication d'une carte, d'une étape ou d'une diapositive conserve désormais son texte enrichi, qui était recopié vide",
+                "es": "La duplicación de una tarjeta, un paso o una diapositiva conserva ahora su texto enriquecido, que se copiaba vacío"
+            }
+        ]
+    },
+    {
         "date": "2026-08-02",
         "description": [
             {

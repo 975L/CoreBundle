@@ -38,13 +38,9 @@ class BlockUserListenerTest extends TestCase
         return new PreUpdateEventArgs($entity, $entityManager, $changeSet);
     }
 
-    // Skipped rather than stubbed while the interface ships in a ConfigBundle newer than the released one this checkout pulls - duplicating it here would hide the day the real one changes
+    // Stubbed off the real interface rather than a local copy, which would hide the day that one changes - it ships in the same package as this bundle, so it is always there
     private function createUserStub(): UserInterface
     {
-        if (!interface_exists(UserInterface::class)) {
-            self::markTestSkipped('c975L\ConfigBundle\Contract\UserInterface not available in the installed c975l/config-bundle');
-        }
-
         return $this->createStub(UserInterface::class);
     }
 

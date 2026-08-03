@@ -398,13 +398,13 @@
                 <source>label.config_prune_none</source>
                 <target>Aucune entrée de configuration obsolète.</target>
             </trans-unit>
-            <trans-unit id="cfgPruneUnreg">
-                <source>label.config_prune_unregistered</source>
-                <target>Les entrées suivantes sont déclarées par un bundle c975L installé mais absent de config/bundles.php. Elles ne sont pas proposées à la suppression : enregistrez le bundle plutôt que de les effacer.</target>
-            </trans-unit>
             <trans-unit id="6XuQx8_">
                 <source>label.config_prune_unreadable</source>
                 <target>Les configs*.json suivants sont illisibles, tout ce qu'ils déclarent apparaîtrait donc à tort comme obsolète. Corrigez-les, puis rechargez cette page.</target>
+            </trans-unit>
+            <trans-unit id="6luOlSQ">
+                <source>label.config_prune_unregistered</source>
+                <target>Les entrées suivantes sont déclarées par un bundle c975L installé mais absent de config/bundles.php. Elles ne sont pas proposées à la suppression : enregistrez le bundle plutôt que de les effacer.</target>
             </trans-unit>
             <trans-unit id="W.zT_E8">
                 <source>label.config_sitemaps_create</source>
@@ -1294,7 +1294,7 @@
                 <source>label.modification</source>
                 <target>Modification</target>
             </trans-unit>
-            <trans-unit id="nP2wKd8">
+            <trans-unit id="oyd10Po">
                 <source>label.new_password</source>
                 <target>Nouveau mot de passe</target>
             </trans-unit>
@@ -1334,7 +1334,7 @@
                 <source>label.password</source>
                 <target>Mot de passe</target>
             </trans-unit>
-            <trans-unit id="cR7hXm4">
+            <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
                 <target>Confirmer le mot de passe</target>
             </trans-unit>

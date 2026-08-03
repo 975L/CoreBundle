@@ -1,6 +1,6 @@
 # ChangeLog
 
-## Unreleased
+## v1.0.0
 
 ConfigBundle and UiBundle ship as a single package
 
@@ -18,6 +18,9 @@ ConfigBundle and UiBundle ship as a single package
 - `nelmio/security-bundle` moved from `require-dev` to `require`: UiBundle's minimal layout calls `csp_nonce()` on every page (03/08/2026)
 - `COMPOSER_ROOT_VERSION` dropped from the CI, the cross-requirement it worked around being gone (03/08/2026)
 - `.stylelintrc.json` excludes `**/public/**` rather than `public/**`, as `.codacy.yaml` and `eslint.config.mjs` already did (03/08/2026)
+- Both bundles' readme and header image say `composer require c975l/core-bundle`, the package the two are installed through (03/08/2026)
+- Three UiBundle tests no longer skip themselves on a ConfigBundle class they could not see: it is now in the same package, and a skip there would be a test silently not running (03/08/2026)
+- The nine translation files carrying hand-written `trans-unit` ids are normalised, their ids recomputed the way Symfony's own dumper writes them (03/08/2026)
 
 ### ConfigBundle
 
@@ -32,6 +35,7 @@ Accounts, scaffolding and shared plumbing move to the ecosystem root
 - Added the `label.config_prune_unregistered` translation in the three locales (03/08/2026)
 - Added `BundleLocatorTest`, the registry's own prefixing cases and the prune command's kept-entry case (03/08/2026)
 - `ContentQualityClient` restores libxml's internal-error setting after parsing a page, instead of leaving it on for the whole process (03/08/2026)
+- Added `ContentQualityClientTest::testAnalyzeRestoresLibxmlInternalErrors`, locking that restore in both directions (03/08/2026)
 - `ContentQualityClient` reads its attributes off elements only, an XPath node list carrying nodes that have none (03/08/2026)
 - `PasswordResetter` and `UserRegistrar` say which entity is missing `setPassword()` instead of fataling on the call (03/08/2026)
 - `UserCrudController` passes through a field yielded as a bare property name rather than configuring it (03/08/2026)
@@ -103,6 +107,9 @@ Accounts, scaffolding and shared plumbing move to the ecosystem root
 
 Fonts, generic Twig helpers and this bundle's own menu entries
 
+- Duplicating a card, a step or a slide now carries its rich text over: `block-duplicate.js` rebuilds the new row's Trix editor after copying the values, Trix reading its textarea only once, when the editor is built (03/08/2026)
+- `block-duplicate.js` skips Trix's own toolbar when lining up the two rows' fields, its link dialog carrying a named input that shifted every field after it (03/08/2026)
+- Added `DuplicatedItemTrixContentTest`, locking both statically, the repository having no browser to run the controller in (03/08/2026)
 - `ImportmapProvider` declares its two entrypoints relative to this bundle, the `vendor/c975l/ui-bundle/` path it wrote no longer existing (03/08/2026)
 - `SvgTextDetector::textNodes()` guards on `is_array()`, `xpath()` answering `false` on an expression it cannot parse (03/08/2026)
 - `HasBlocksInterface` declares `reorderBlocks()`, which `BlockRelocator` has always called on it (03/08/2026) [BC-Break]

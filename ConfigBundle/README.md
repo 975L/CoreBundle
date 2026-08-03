@@ -66,7 +66,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 Requires PHP 8.4 and Symfony 8.
 
 ```bash
-composer require c975l/config-bundle
+composer require c975l/core-bundle
 ```
 
 Make your user entity implement `Contract\UserInterface` — that's the interface the c975L bundles relate to instead of `App\Entity\User`, which they cannot reference. It extends Symfony's own `UserInterface` and only adds `getId(): int|string|null`, the getter your entity already has:

@@ -618,11 +618,11 @@
                 <source>label.block_kind_legacy_slot_help</source>
                 <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Este bloque está colocado directamente como columna, lo que ya no se ofrece: añade una Columna a la fila, arrastra este bloque dentro y entonces podrás ajustar su anchura.&lt;/span&gt;</target>
             </trans-unit>
-            <trans-unit id="C4gS09K">
+            <trans-unit id="QhS4ZF8">
                 <source>label.block_legal_model</source>
                 <target>Modelo legal</target>
             </trans-unit>
-            <trans-unit id="48e0zxX">
+            <trans-unit id="CYGfR88">
                 <source>label.block_legal_model_description</source>
                 <target>Inserta una plantilla de texto legal existente (CGU, aviso legal...)</target>
             </trans-unit>
@@ -1330,19 +1330,19 @@
                 <source>label.form_field_templates</source>
                 <target>Modelos de campos</target>
             </trans-unit>
-            <trans-unit id="Kq3Vb7T">
+            <trans-unit id="oyXFiAN">
                 <source>label.form_link_label</source>
                 <target>Texto del enlace</target>
             </trans-unit>
-            <trans-unit id="hZ2mWpA">
+            <trans-unit id="pDgQXkF">
                 <source>label.form_link_url</source>
                 <target>Dirección del enlace</target>
             </trans-unit>
-            <trans-unit id="xL9tRc4">
+            <trans-unit id="c30fmfN">
                 <source>label.form_links</source>
                 <target>Enlaces</target>
             </trans-unit>
-            <trans-unit id="nB6yUe1">
+            <trans-unit id="BvYymoe">
                 <source>label.form_links_help</source>
                 <target>Se muestran justo debajo del botón de envío, por ejemplo un enlace a la página de inicio de sesión debajo de un formulario de registro. Utilice una ruta de este sitio (/pages/mi-pagina) o una dirección completa.</target>
             </trans-unit>
@@ -1458,11 +1458,11 @@
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% sección(es) que usted reescribió han cambiado en el modelo «%model%» : %sections%</target>
             </trans-unit>
-            <trans-unit id="sv1fnt2">
+            <trans-unit id="KV_qnlv">
                 <source>label.health_check_svg_fonts_not_vectorized</source>
                 <target>%file% contiene texto sin vectorizar%fonts%: conviértalo en trazados, o se mostrará con otra tipografía para quien no tenga esa</target>
             </trans-unit>
-            <trans-unit id="sv1fnt3">
+            <trans-unit id="ojbesgX">
                 <source>label.health_check_svg_fonts_ok</source>
                 <target>%file% no depende de ninguna tipografía, su texto está vectorizado</target>
             </trans-unit>
@@ -1646,7 +1646,7 @@
                 <source>label.legal_extra_sections</source>
                 <target>Secciones añadidas</target>
             </trans-unit>
-            <trans-unit id="Kq7mZ3a">
+            <trans-unit id="4OJnJZw">
                 <source>label.legal_model_unknown</source>
                 <target>Modelo desconocido</target>
             </trans-unit>
@@ -2190,7 +2190,7 @@
                 <source>text.password_mismatch</source>
                 <target>Las contraseñas no coinciden</target>
             </trans-unit>
-            <trans-unit id="sv9tx2p">
+            <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>
                 <target>%filename% contiene texto sin vectorizar%fonts%: se mostrará con otra tipografía para un visitante que no la tenga instalada. Convierta el texto en trazados antes de publicarlo (Inkscape: Trayecto &gt; Objeto a trayecto).</target>
             </trans-unit>

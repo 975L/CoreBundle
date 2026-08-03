@@ -75,7 +75,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 ### Download
 
 ```bash
-composer require c975l/ui-bundle
+composer require c975l/core-bundle
 ```
 
 ### Run migrations

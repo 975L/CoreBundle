@@ -126,11 +126,11 @@
                 <source>description.url_cookies_policy</source>
                 <target>URL de la politique de cookies, ex. https://example.com/pages/cookies</target>
             </trans-unit>
-            <trans-unit id="x3a79aa">
+            <trans-unit id="gypr9AJ">
                 <source>label.ai_assistant_dashboard_enabled</source>
                 <target>Assistant IA du tableau de bord</target>
             </trans-unit>
-            <trans-unit id="x7eb147">
+            <trans-unit id="iSIwZ0b">
                 <source>label.ai_assistant_dashboard_endpoint</source>
                 <target>URL du backend de l'assistant IA</target>
             </trans-unit>
@@ -138,23 +138,23 @@
                 <source>label.ai_assistant_dashboard_not_enabled</source>
                 <target>Assistant IA du tableau de bord non activé</target>
             </trans-unit>
-            <trans-unit id="xa3232c">
+            <trans-unit id="5eFo4.J">
                 <source>label.ai_assistant_dashboard_token</source>
                 <target>Jeton du backend de l'assistant IA</target>
             </trans-unit>
-            <trans-unit id="xc806c7">
+            <trans-unit id="Zi7s935">
                 <source>label.ai_assistant_rephrase_api_key</source>
                 <target>Clé API de la reformulation</target>
             </trans-unit>
-            <trans-unit id="x128330">
+            <trans-unit id="B5azLvn">
                 <source>label.ai_assistant_rephrase_base_uri</source>
                 <target>URL de base de l'API de reformulation</target>
             </trans-unit>
-            <trans-unit id="x0e07e1">
+            <trans-unit id="6necB26">
                 <source>label.ai_assistant_rephrase_model</source>
                 <target>Modèle de reformulation</target>
             </trans-unit>
-            <trans-unit id="xb159be">
+            <trans-unit id="jdGKvAe">
                 <source>label.ai_assistant_rephrase_provider</source>
                 <target>Fournisseur IA de la reformulation</target>
             </trans-unit>
@@ -166,7 +166,7 @@
                 <source>label.ai_rephrase_not_enabled</source>
                 <target>Fonction de reformulation IA non activée</target>
             </trans-unit>
-            <trans-unit id="x4750b9">
+            <trans-unit id="I_GCRck">
                 <source>label.block_showcase_url</source>
                 <target>URL de la vitrine des blocks</target>
             </trans-unit>

@@ -98,11 +98,6 @@ class VichMediaTraitTest extends TestCase
 
     public function testGetSetUser(): void
     {
-        // Skipped rather than stubbed while the interface ships in a ConfigBundle newer than the released one this checkout pulls
-        if (!interface_exists(UserInterface::class)) {
-            self::markTestSkipped('c975L\ConfigBundle\Contract\UserInterface not available in the installed c975l/config-bundle');
-        }
-
         $media = new VichMediaTraitStub();
         $user = $this->createStub(UserInterface::class);
 
