@@ -133,10 +133,14 @@ export default class extends Controller {
         }
 
         this.saveActive();
+        // Same-origin only: a step's url comes from the project definition, which the back-office edits, so assigning it blind would turn a "javascript:" or off-site value into a one-click redirect. An url that doesn't pass simply leaves the step rendered in place rather than navigating nowhere
         if (step.url) {
-            window.location.href = step.url;
+            const target = new URL(step.url, window.location.origin);
+            if (target.origin === window.location.origin) {
+                window.location.href = target.href;
 
-            return;
+                return;
+            }
         }
 
         this.render();

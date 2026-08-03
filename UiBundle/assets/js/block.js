@@ -34,6 +34,7 @@ export function loadBlockData(selectElement, kindUrl, kind, body) {
     return fetch(kindUrl + '?k=' + encodeURIComponent(kind), init)
         .then(r => r.text())
         .then(html => {
+            // Assigned raw on purpose: this is a Symfony-rendered form fragment coming from the bundle's own kind route, never a user-supplied string, and sanitizing it would strip the very inputs it exists to inject
             container.innerHTML = html
                 .replaceAll('_block_[', prefix + '[')
                 // Scoped to attribute-value/anchor starts (id="block_…", for="block_…", href="#block_…") rather than a blind replace, so it can't corrupt an unrelated class or text containing "block_".

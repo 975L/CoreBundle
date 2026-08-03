@@ -5,6 +5,10 @@ on:
         branches: [main, dev]
     pull_request:
 
+# Sans ce bloc, le GITHUB_TOKEN du workflow hérite des permissions par défaut du dépôt, en écriture. Seul le checkout en a besoin, et en lecture : l'envoi de la couverture passe par le secret Codacy, pas par le jeton GitHub
+permissions:
+    contents: read
+
 jobs:
     quality:
         runs-on: ubuntu-latest

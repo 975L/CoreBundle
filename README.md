@@ -12,7 +12,7 @@ The base of the c975L ecosystem in a single package: **ConfigBundle** (database-
 
 This is **not** a merged bundle. A Composer package is not a Symfony bundle: this package ships the two bundles unchanged, each with its own namespace, its own `services.yaml`, its own `configs.json`, its own translation domain and its own dashboard section.
 
-```
+```text
 CoreBundle/
 ├── composer.json      ← the only one
 ├── ConfigBundle/      → c975L\ConfigBundle\

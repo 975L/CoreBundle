@@ -1118,14 +1118,6 @@
                 <source>label.int</source>
                 <target>Integer (1, 2, 3, ...)</target>
             </trans-unit>
-            <trans-unit id="gDPKXt0">
-                <source>label.invalid_json</source>
-                <target>This value must be a valid JSON array</target>
-            </trans-unit>
-            <trans-unit id="GD0aiBK">
-                <source>label.invalid_theme_color</source>
-                <target>This value doesn't look like a valid CSS color</target>
-            </trans-unit>
             <trans-unit id="Tau.iPf">
                 <source>label.is_restricted</source>
                 <target>Restricted</target>
@@ -1433,10 +1425,6 @@
             <trans-unit id="0kGqgMZ">
                 <source>label.slug</source>
                 <target>Slug</target>
-            </trans-unit>
-            <trans-unit id="o8eL7Qn">
-                <source>label.slug_exists</source>
-                <target>The slug already exists</target>
             </trans-unit>
             <trans-unit id="sIJNQm6">
                 <source>label.summary_social_network</source>

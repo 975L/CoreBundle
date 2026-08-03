@@ -4,9 +4,9 @@
 
 {# A <div>: this block never carries a heading, and a headingless <section> is invalid HTML #}
 <div>
-    {% for label, messages in app.flashes(['success', 'danger']) %}
+    {% for label, messages in app.flashes(['success', 'danger', 'warning']) %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }}">{{ message|trans }}</div>
+            <div class="alert alert-{{ label }}">{{ message }}</div>
         {% endfor %}
     {% endfor %}
     {# "hidden" excluded: the visitor never sees an asterisk for an invisible required field #}

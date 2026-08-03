@@ -2,7 +2,7 @@
 {# Rich usage (clickable title/text per slide) : <twig:c975LUi:Slider:Slider slides="{{ [{image: media, title: '', text: '', url: ''}, ...] }}" id="id" duration="5000" /> #}
 {# Add imageLinksToUrl="true" to also make the image itself link to slide.url instead of advancing to the next slide #}
 {# Add layout="freeflow" for a full-bleed carousel: every slide stays visible side by side and overflows past the viewport's left/right edges, no horizontal scrollbar #}
-{% set label = label|default("label.pages_gallery"|trans({}, "site")) %}
+{% set label = label|default("label.pages_gallery"|trans({}, "ui")) %}
 {% set class = class|default([])|join(' ') %}
 {% set ratio = ratio|default("free") %}
 {% set layout = layout|default("default") %}
@@ -69,23 +69,23 @@
         {% endfor %}
         </ul>
         <div class="slider-controls">
-            <button type="button" class="slider-button slider-prev" aria-label="{{ "label.previous_slide"|trans({}, "site") }}">
+            <button type="button" class="slider-button slider-prev" aria-label="{{ "label.previous_slide"|trans({}, "ui") }}">
                 <img src="{{ asset("bundles/c975lsite/icons/angle-left.svg") }}" alt="" aria-hidden="true" class="angle" width="32">
             </button>
-            <button type="button" class="slider-button slider-next" aria-label="{{ "label.next_slide"|trans({}, "site") }}">
+            <button type="button" class="slider-button slider-next" aria-label="{{ "label.next_slide"|trans({}, "ui") }}">
                 <img src="{{ asset("bundles/c975lsite/icons/angle-right.svg") }}" alt="" aria-hidden="true" class="angle" width="32">
             </button>
             {% if duration|default(0) > 0 %}
-                <button type="button" class="slider-play-pause" data-action="stop" aria-label="{{ "label.stop_animation"|trans({}, "site") }}">
+                <button type="button" class="slider-play-pause" data-action="stop" aria-label="{{ "label.stop_animation"|trans({}, "ui") }}">
                     <span aria-hidden="true">⏸</span>
                 </button>
             {% endif %}
         </div>
 
-        <ul class="slider-dots" aria-label="{{ "label.slide_navigation"|trans({}, "site") }}">
+        <ul class="slider-dots" aria-label="{{ "label.slide_navigation"|trans({}, "ui") }}">
             {% for slideMedia in mediaList %}
                 <li>
-                    <button type="button" class="slider-dot{% if loop.first %} current active{% endif %}" data-slide="{{ loop.index0 }}" aria-label="{{ "label.slide"|trans({}, "site") }} {{ loop.index }}{% if loop.first %} ({{ "label.current"|trans({}, "site") }}){% endif %}">
+                    <button type="button" class="slider-dot{% if loop.first %} current active{% endif %}" data-slide="{{ loop.index0 }}" aria-label="{{ "label.slide"|trans({}, "ui") }} {{ loop.index }}{% if loop.first %} ({{ "label.current"|trans({}, "ui") }}){% endif %}">
                         <span aria-hidden="true">{{ loop.index }}</span>
                     </button>
                 </li>

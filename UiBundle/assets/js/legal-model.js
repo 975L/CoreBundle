@@ -53,6 +53,7 @@ export default class extends Controller {
 
         const card = document.createElement("div");
         card.className = "card mb-3";
+        // Assigned raw on purpose: Symfony's own data-prototype, server-rendered into the template, so sanitizing it would strip the form widgets it is made of
         card.innerHTML = '<div class="card-body">' + holder.dataset.prototype.replace(/__name__/g, String(index)) + "</div>";
         card.querySelector(".card-body").appendChild(this.removeButton());
 

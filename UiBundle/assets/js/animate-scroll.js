@@ -12,7 +12,7 @@ export default class extends Controller {
         this.animateOnScroll = this.animateOnScroll.bind(this);
 
         // Applied here rather than server-rendered: if this script never loads (blocked, network error...), ".scroll" elements must never get hidden in the first place - they stay visible by default, just without the entrance effect, instead of being stuck invisible.
-        document.querySelectorAll(".scroll").forEach((element) => element.classList.add("hidden"));
+        document.querySelectorAll(".scroll").forEach((element) => { element.classList.add("hidden"); });
 
         window.addEventListener("scroll", this.animateOnScroll);
         this.animateOnScroll();

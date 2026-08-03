@@ -446,6 +446,10 @@
                 <source>label.audio_media_help</source>
                 <target>Déposez le fichier audio (MP3, OGG ou WAV)</target>
             </trans-unit>
+            <trans-unit id="aXXRVuG">
+                <source>label.audio_not_supported</source>
+                <target>Votre navigateur ne supporte la balise audio.</target>
+            </trans-unit>
             <trans-unit id="SXeZ5Tg">
                 <source>label.autoplay</source>
                 <target>Lecture automatique</target>
@@ -625,10 +629,6 @@
             <trans-unit id="CYGfR88">
                 <source>label.block_legal_model_description</source>
                 <target>Insère un modèle de texte légal préexistant (CGU, mentions légales...)</target>
-            </trans-unit>
-            <trans-unit id="QVfWY7f">
-                <source>label.block_media_required</source>
-                <target>Une image est nécessaire pour ce type de bloc.</target>
             </trans-unit>
             <trans-unit id="zClb.Hs">
                 <source>label.block_portfolio_grid</source>
@@ -990,6 +990,10 @@
                 <source>label.cta_label</source>
                 <target>Libellé du bouton</target>
             </trans-unit>
+            <trans-unit id="z7EoShC">
+                <source>label.current</source>
+                <target>actuelle</target>
+            </trans-unit>
             <trans-unit id="N05sbUe">
                 <source>label.danger</source>
                 <target>Danger</target>
@@ -1021,6 +1025,10 @@
             <trans-unit id="dqONr5r">
                 <source>label.document_download_media_help</source>
                 <target>Un fichier = une carte de téléchargement. Attachez plusieurs fichiers pour proposer plusieurs documents ; donnez alors à chacun un "Nom du fichier" distinct, il servira de titre à sa carte.</target>
+            </trans-unit>
+            <trans-unit id="tLGn0en">
+                <source>label.download</source>
+                <target>Télécharger</target>
             </trans-unit>
             <trans-unit id="1vyz2Yp">
                 <source>label.edit</source>
@@ -1221,10 +1229,6 @@
             <trans-unit id="PrnCmc_">
                 <source>label.file_name_help</source>
                 <target>Utilisé pour nommer le fichier stocké. Sert aussi de titre à la carte de téléchargement si plusieurs fichiers sont attachés.</target>
-            </trans-unit>
-            <trans-unit id="ubt8hID">
-                <source>label.fixed_icon_invalid_format</source>
-                <target>Format non supporté pour ce rôle - utilisez une image %formats%</target>
             </trans-unit>
             <trans-unit id="ZbTNTSZ">
                 <source>label.font</source>
@@ -1790,6 +1794,10 @@
                 <source>label.new_tab</source>
                 <target>Nouvel Onglet</target>
             </trans-unit>
+            <trans-unit id="qQ0RGVI">
+                <source>label.next_slide</source>
+                <target>Diapositive suivante</target>
+            </trans-unit>
             <trans-unit id="xOMkNTu">
                 <source>label.no_collection_source_available</source>
                 <target>Aucune source de collection disponible pour le moment</target>
@@ -1818,6 +1826,10 @@
                 <source>label.page</source>
                 <target>Page</target>
             </trans-unit>
+            <trans-unit id="eJLxUVx">
+                <source>label.pages_gallery</source>
+                <target>Galerie de pages</target>
+            </trans-unit>
             <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
                 <target>Confirmation du mot de passe</target>
@@ -1833,6 +1845,10 @@
             <trans-unit id="Pmyk5As">
                 <source>label.postal_code</source>
                 <target>Code postal</target>
+            </trans-unit>
+            <trans-unit id="02hgMl1">
+                <source>label.previous_slide</source>
+                <target>Diapositive précédente</target>
             </trans-unit>
             <trans-unit id="wqV.yBO">
                 <source>label.price_range</source>
@@ -1901,6 +1917,14 @@
             <trans-unit id="0RFcVRF">
                 <source>label.ratio_help</source>
                 <target>Libre garde le ratio naturel de l'image ; un ratio fixe la recadre</target>
+            </trans-unit>
+            <trans-unit id="UmK6KNk">
+                <source>label.readless</source>
+                <target>Lire moins</target>
+            </trans-unit>
+            <trans-unit id="DAM4HGA">
+                <source>label.readmore</source>
+                <target>Lire la suite...</target>
             </trans-unit>
             <trans-unit id="oNE5b8K">
                 <source>label.receive_copy</source>
@@ -1994,6 +2018,10 @@
                 <source>label.show_percent</source>
                 <target>Afficher le pourcentage</target>
             </trans-unit>
+            <trans-unit id="lnfUWu.">
+                <source>label.signout</source>
+                <target>Se déconnecter</target>
+            </trans-unit>
             <trans-unit id="rttit_o">
                 <source>label.site_graphic</source>
                 <target>Graphique du site</target>
@@ -2010,9 +2038,17 @@
                 <source>label.site_graphics</source>
                 <target>Graphiques du site</target>
             </trans-unit>
+            <trans-unit id="7V5.lpF">
+                <source>label.slide</source>
+                <target>Diapositive</target>
+            </trans-unit>
             <trans-unit id="_ukBYp5">
                 <source>label.slide_duration</source>
                 <target>Durée entre slides en ms (0 = manuel)</target>
+            </trans-unit>
+            <trans-unit id="PzRJxVB">
+                <source>label.slide_navigation</source>
+                <target>Navigation des diapositives</target>
             </trans-unit>
             <trans-unit id="WTG_sdU">
                 <source>label.slides</source>
@@ -2061,6 +2097,10 @@
             <trans-unit id="zE4iFSo">
                 <source>label.steps</source>
                 <target>Étapes</target>
+            </trans-unit>
+            <trans-unit id="ru2vORh">
+                <source>label.stop_animation</source>
+                <target>Arrêter l'animation</target>
             </trans-unit>
             <trans-unit id="LBLIQe_">
                 <source>label.street_address</source>
@@ -2166,6 +2206,10 @@
                 <source>label.video_no_cookie</source>
                 <target>Utiliser la version sans cookie (YouTube uniquement)</target>
             </trans-unit>
+            <trans-unit id="LOa9pVD">
+                <source>label.video_not_supported</source>
+                <target>Votre navigateur ne supporte la balise vidéo</target>
+            </trans-unit>
             <trans-unit id="M9btWjW">
                 <source>label.video_options</source>
                 <target>Options de lecture</target>
@@ -2210,9 +2254,13 @@
                 <source>text.form_required_note</source>
                 <target>* Champ requis</target>
             </trans-unit>
-            <trans-unit id="G1fcoic">
-                <source>text.password_mismatch</source>
-                <target>Les mots de passe ne correspondent pas</target>
+            <trans-unit id="fqCFO6G">
+                <source>text.gdpr</source>
+                <target>Je consens que ce site Web stocke les données soumises afin qu'il puisse répondre à ma demande</target>
+            </trans-unit>
+            <trans-unit id="vcT08Ej">
+                <source>text.logged_in_as</source>
+                <target>Vous êtes connecté en tant que %user%,</target>
             </trans-unit>
             <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="es" datatype="plaintext" original="validators.en.xlf">
+        <body>
+            <trans-unit id="gDPKXt0">
+                <source>label.invalid_json</source>
+                <target>Este valor debe ser un array JSON válido</target>
+            </trans-unit>
+            <trans-unit id="GD0aiBK">
+                <source>label.invalid_theme_color</source>
+                <target>Este valor no parece ser un color CSS válido</target>
+            </trans-unit>
+            <trans-unit id="o8eL7Qn">
+                <source>label.slug_exists</source>
+                <target>El slug ya existe</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

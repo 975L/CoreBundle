@@ -29,6 +29,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Forms;
+use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -274,6 +276,26 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertFalse($added['receiveCopy']['options']['required']);
     }
 
+    /*
+     * The checkbox is the one protection field whose answer an action reads back (SendEmailFormAction turns it
+     * into the copy it sends), and FormController hands the action nothing but the form's own data - which an
+     * unmapped child never appears in. Left unmapped, every visitor asking for a copy silently got none.
+     *
+     * Driven over a real form rather than the builder stub above: "mapped" is honoured inside Symfony, so only
+     * an actual submission proves the answer arrives where the action looks for it.
+     */
+    public function testReceiveCopyAnswerReachesTheSubmittedData(): void
+    {
+        $form = Forms::createFormFactoryBuilder()
+            ->addExtension(new PreloadedExtension([$this->createType()], []))
+            ->getFormFactory()
+            ->create(FormSubmissionType::class, null, ['fields' => [], 'offerReceiveCopy' => true]);
+
+        $form->submit(['receiveCopy' => '1']);
+
+        $this->assertTrue($form->getData()['receiveCopy'] ?? null, 'The visitor checked "receive a copy" and the action was handed no such key, so no copy was ever sent.');
+    }
+
     public function testGdprFieldAddedOnlyWhenConfigured(): void
     {
         $this->assertArrayNotHasKey('gdpr', $this->buildAddedFields([], gdpr: false));
@@ -281,6 +303,14 @@ class FormSubmissionTypeTest extends TestCase
         $added = $this->buildAddedFields([], gdpr: true);
         $this->assertSame(CheckboxType::class, $added['gdpr']['type']);
         $this->assertTrue($added['gdpr']['options']['required']);
+    }
+
+    // The label was read from the consuming app's "site" domain, which owes this bundle nothing: a site that never declared the key got the raw "text.gdpr" next to the checkbox
+    public function testGdprLabelIsReadFromTheBundlesOwnDomain(): void
+    {
+        $added = $this->buildAddedFields([], gdpr: true);
+
+        $this->assertArrayNotHasKey('translation_domain', $added['gdpr']['options']);
     }
 
     public function testCaptchaFieldAddedOnlyWhenBothKeysConfigured(): void

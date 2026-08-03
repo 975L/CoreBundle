@@ -1118,14 +1118,6 @@
                 <source>label.int</source>
                 <target>Entier (1, 2, 3, ...)</target>
             </trans-unit>
-            <trans-unit id="gDPKXt0">
-                <source>label.invalid_json</source>
-                <target>Cette valeur doit être un tableau JSON valide</target>
-            </trans-unit>
-            <trans-unit id="GD0aiBK">
-                <source>label.invalid_theme_color</source>
-                <target>Cette valeur ne ressemble pas à une couleur CSS valide</target>
-            </trans-unit>
             <trans-unit id="Tau.iPf">
                 <source>label.is_restricted</source>
                 <target>Restreint</target>
@@ -1433,10 +1425,6 @@
             <trans-unit id="0kGqgMZ">
                 <source>label.slug</source>
                 <target>Slug</target>
-            </trans-unit>
-            <trans-unit id="o8eL7Qn">
-                <source>label.slug_exists</source>
-                <target>Le slug existe déjà</target>
             </trans-unit>
             <trans-unit id="sIJNQm6">
                 <source>label.summary_social_network</source>

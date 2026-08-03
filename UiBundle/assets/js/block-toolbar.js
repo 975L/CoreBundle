@@ -50,6 +50,7 @@ export function addToolbarButton(item, { title, icon, order, onClick }) {
     btn.className = 'btn btn-link ui-toolbar-btn';
     btn.title = title || '';
     // EasyAdmin wraps its own icons (delete, collapse chevron) in <span class="icon">, which its global CSS uses to size/align them consistently - without it, a bare <svg> renders at browser default size/baseline and looks visually out of place next to those.
+    // Assigned raw on purpose: "icon" is a literal SVG constant declared by the calling controller (see ea-sortable.js, block-duplicate.js), never a runtime value
     btn.innerHTML = `<span class="icon">${icon || ''}</span>`;
     btn.style.cssText = `flex-shrink:0;order:${order};padding:${BUTTON_PADDING};`;
     btn.addEventListener('click', onClick);

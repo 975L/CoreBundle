@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="validators.en.xlf">
         <body>
+            <trans-unit id="QVfWY7f">
+                <source>label.block_media_required</source>
+                <target>Se requiere una imagen para este tipo de bloque.</target>
+            </trans-unit>
+            <trans-unit id="ubt8hID">
+                <source>label.fixed_icon_invalid_format</source>
+                <target>Formato no compatible con este rol - suba una imagen %formats%</target>
+            </trans-unit>
             <trans-unit id="57FGRQf">
                 <source>text.captcha_failed</source>
                 <target>No se ha podido verificar que su envío proviene de una persona, inténtelo de nuevo</target>
@@ -21,6 +29,10 @@
             <trans-unit id="bQpc9FG">
                 <source>text.hero_media_max</source>
                 <target>Una sección hero puede tener como máximo {{ limit }} imágenes.</target>
+            </trans-unit>
+            <trans-unit id="G1fcoic">
+                <source>text.password_mismatch</source>
+                <target>Las contraseñas no coinciden</target>
             </trans-unit>
         </body>
     </file>

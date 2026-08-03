@@ -93,9 +93,12 @@ class FormControllerTest extends TestCase
         ?FormPrefillHelper $prefillHelper = null,
         ?Security $security = null,
         ?Environment $twig = null,
+        ?TranslatorInterface $translator = null,
     ): FormController {
-        $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
+        if (null === $translator) {
+            $translator = $this->createStub(TranslatorInterface::class);
+            $translator->method('trans')->willReturnArgument(0);
+        }
 
         $rateLimiter = $rateLimiterGuard ?? $this->createStub(RateLimiterGuard::class);
         if (null === $rateLimiterGuard) {
@@ -408,6 +411,43 @@ class FormControllerTest extends TestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertTrue($request->getSession()->getFlashBag()->has('success'));
+    }
+
+    // Regression guard: the redirect-to-referer path lands on the site layout, which renders flashes as-is - an untranslated key would be shown verbatim to the visitor
+    public function testSubmitFlashesTheTranslatedMessageNotTheRawKey(): void
+    {
+        $action = new class implements FormActionInterface {
+            public function getKey(): string
+            {
+                return 'send_email';
+            }
+
+            public function handle(Form $form, array $submittedData): bool
+            {
+                return true;
+            }
+        };
+        $actionRegistry = $this->createStub(FormActionRegistry::class);
+        $actionRegistry->method('get')->willReturn($action);
+
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(
+            static fn (string $id, array $parameters = [], ?string $domain = null): string => 'ui' === $domain && 'label.form_submitted' === $id
+                ? 'Merci, votre envoi a bien été reçu.'
+                : $id
+        );
+
+        $request = $this->createRequest('POST', 'http://localhost/page');
+        $this->createController(
+            $this->createSubmittedForm(true, true),
+            actionRegistry: $actionRegistry,
+            translator: $translator,
+        )->submit('contact', $request);
+
+        $this->assertSame(
+            ['Merci, votre envoi a bien été reçu.'],
+            $request->getSession()->getFlashBag()->get('success')
+        );
     }
 
     // Regression guard: Referer is client-supplied - redirecting there unchecked is an open redirect

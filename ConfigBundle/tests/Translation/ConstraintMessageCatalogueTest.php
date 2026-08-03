@@ -8,34 +8,18 @@
  * with this source code in the file LICENSE.
  */
 
-namespace c975L\UiBundle\Tests\Translation;
+namespace c975L\ConfigBundle\Tests\Translation;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-// Constraint messages are translated in the "validators" domain, not "ui": a key left in the wrong catalogue shows the editor its raw name
+// Constraint messages are translated in the "validators" domain, not "config": a key left in the wrong catalogue shows the editor its raw name
 class ConstraintMessageCatalogueTest extends TestCase
 {
     private const LOCALES = ['fr', 'en', 'es'];
 
-    public static function localeProvider(): array
-    {
-        return array_map(static fn (string $locale): array => [$locale], self::LOCALES);
-    }
-
-    #[DataProvider('localeProvider')]
-    public function testEveryConstraintMessageIsDeclaredInTheValidatorsCatalogue(string $locale): void
-    {
-        $sources = $this->catalogueSources(sprintf('validators.%s.xlf', $locale));
-        $messages = $this->constraintMessages();
-        $this->assertNotEmpty($messages, 'No constraint message found in "src/", the test itself is broken.');
-
-        foreach ($messages as $file => $keys) {
-            foreach ($keys as $key) {
-                $this->assertContains($key, $sources, sprintf('"%s" uses the constraint message "%s", missing from "validators.%s.xlf".', $file, $key, $locale));
-            }
-        }
-    }
+    // The scaffold is copied into the consuming app and carries its own catalogue, so it is checked against its own "translations/" - not the bundle's
+    private const TREES = ['' => '', 'scaffold' => 'scaffold/'];
 
     // Every way a message key reaches the validator - a named argument alone misses the three others
     private const PATTERNS = [
@@ -49,12 +33,39 @@ class ConstraintMessageCatalogueTest extends TestCase
         '/buildViolation\(\'([a-z][a-zA-Z0-9_]*\.[a-zA-Z0-9_.]+)\'\)/',
     ];
 
+    public static function treeProvider(): array
+    {
+        $cases = [];
+
+        foreach (self::TREES as $tree => $prefix) {
+            foreach (self::LOCALES as $locale) {
+                $cases[trim($tree . ' ' . $locale)] = [$prefix, $locale];
+            }
+        }
+
+        return $cases;
+    }
+
+    #[DataProvider('treeProvider')]
+    public function testEveryConstraintMessageIsDeclaredInTheValidatorsCatalogue(string $prefix, string $locale): void
+    {
+        $sources = $this->catalogueSources($prefix, sprintf('validators.%s.xlf', $locale));
+        $messages = $this->constraintMessages($prefix);
+        $this->assertNotEmpty($messages, sprintf('No constraint message found in "%ssrc/", the test itself is broken.', $prefix));
+
+        foreach ($messages as $file => $keys) {
+            foreach ($keys as $key) {
+                $this->assertContains($key, $sources, sprintf('"%s" uses the constraint message "%s", missing from "%stranslations/validators.%s.xlf".', $file, $key, $prefix, $locale));
+            }
+        }
+    }
+
     // Collects the message keys a constraint hands the validator, per file
-    private function constraintMessages(): array
+    private function constraintMessages(string $prefix): array
     {
         $messages = [];
 
-        foreach ($this->phpFiles() as $file) {
+        foreach ($this->phpFiles($prefix) as $file) {
             $keys = [];
             foreach (self::PATTERNS as $pattern) {
                 preg_match_all($pattern, (string) file_get_contents($file), $matches);
@@ -69,10 +80,10 @@ class ConstraintMessageCatalogueTest extends TestCase
         return $messages;
     }
 
-    private function phpFiles(): array
+    private function phpFiles(string $prefix): array
     {
         $files = [];
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->root() . '/src'));
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->root() . '/' . $prefix . 'src'));
 
         foreach ($iterator as $file) {
             if ('php' === $file->getExtension()) {
@@ -83,9 +94,9 @@ class ConstraintMessageCatalogueTest extends TestCase
         return $files;
     }
 
-    private function catalogueSources(string $name): array
+    private function catalogueSources(string $prefix, string $name): array
     {
-        $path = $this->root() . '/translations/' . $name;
+        $path = $this->root() . '/' . $prefix . 'translations/' . $name;
         $this->assertFileExists($path);
 
         $xliff = simplexml_load_file($path);

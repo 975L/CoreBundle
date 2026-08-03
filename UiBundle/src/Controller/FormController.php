@@ -160,10 +160,11 @@ class FormController extends AbstractController
                     }
                 }
 
+                // Translated here, not in the template: the redirect-to-referer path lands on the site layout, which renders flashes as-is
                 $this->addFlashTo(
                     $request,
                     $success ? 'success' : 'danger',
-                    $success ? 'label.form_submitted' : 'label.form_submission_failed'
+                    $this->translator->trans($success ? 'label.form_submitted' : 'label.form_submission_failed', [], 'ui')
                 );
             }
         }

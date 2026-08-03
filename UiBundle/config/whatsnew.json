@@ -21,6 +21,36 @@
                 "en": "Duplicating a card, a step or a slide now keeps its rich text, which was copied over empty",
                 "fr": "La duplication d'une carte, d'une étape ou d'une diapositive conserve désormais son texte enrichi, qui était recopié vide",
                 "es": "La duplicación de una tarjeta, un paso o una diapositiva conserva ahora su texto enriquecido, que se copiaba vacío"
+            },
+            {
+                "en": "A visitor asking for a copy of their message now receives it, where none was ever sent",
+                "fr": "Un visiteur demandant une copie de son message la reçoit désormais, alors qu'aucune n'était jamais envoyée",
+                "es": "Un visitante que pide una copia de su mensaje ahora la recibe, cuando nunca se enviaba ninguna"
+            },
+            {
+                "en": "After a form is sent, the visitor reads a real confirmation or error sentence instead of an internal name",
+                "fr": "Après l'envoi d'un formulaire, le visiteur lit une véritable phrase de confirmation ou d'erreur au lieu d'un nom interne",
+                "es": "Tras enviar un formulario, el visitante lee una frase real de confirmación o de error en lugar de un nombre interno"
+            },
+            {
+                "en": "A visitor sending too many messages in a row is now told so, the warning having disappeared before reaching the page",
+                "fr": "Un visiteur envoyant trop de messages à la suite en est désormais informé, l'avertissement disparaissant avant d'atteindre la page",
+                "es": "A un visitante que envía demasiados mensajes seguidos ahora se le avisa, ya que el aviso desaparecía antes de llegar a la página"
+            },
+            {
+                "en": "The wording of the audio and video players, the slider, the \"read more\" link and the consent checkbox is now supplied by the site itself, instead of showing internal names on a site that had not written them",
+                "fr": "Les textes des lecteurs audio et vidéo, du carrousel, du lien « lire la suite » et de la case de consentement sont désormais fournis par le site lui-même, au lieu d'afficher des noms internes sur un site qui ne les avait pas rédigés",
+                "es": "Los textos de los reproductores de audio y vídeo, del carrusel, del enlace «leer más» y de la casilla de consentimiento ahora los proporciona el propio sitio, en lugar de mostrar nombres internos en un sitio que no los había redactado"
+            },
+            {
+                "en": "Emails now arrive on a plain white background with black text, instead of being painted in the site's own colors - a dark palette used to send an unreadable message",
+                "fr": "Les emails arrivent désormais sur un fond blanc uni avec un texte noir, au lieu d'être peints aux couleurs du site - une palette sombre envoyait un message illisible",
+                "es": "Los correos llegan ahora con un fondo blanco liso y texto negro, en lugar de ir pintados con los colores del sitio - una paleta oscura enviaba un mensaje ilegible"
+            },
+            {
+                "en": "The messages shown on an invalid image, an unsupported icon format or two passwords that differ read as sentences again",
+                "fr": "Les messages affichés sur une image invalide, un format d'icône non supporté ou deux mots de passe différents se lisent de nouveau comme des phrases",
+                "es": "Los mensajes mostrados ante una imagen no válida, un formato de icono no admitido o dos contraseñas distintas vuelven a leerse como frases"
             }
         ]
     },

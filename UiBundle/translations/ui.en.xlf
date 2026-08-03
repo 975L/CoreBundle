@@ -446,6 +446,10 @@
                 <source>label.audio_media_help</source>
                 <target>Upload the audio file (MP3, OGG or WAV)</target>
             </trans-unit>
+            <trans-unit id="aXXRVuG">
+                <source>label.audio_not_supported</source>
+                <target>Your browser does not support the audio tag.</target>
+            </trans-unit>
             <trans-unit id="SXeZ5Tg">
                 <source>label.autoplay</source>
                 <target>Autoplay</target>
@@ -625,10 +629,6 @@
             <trans-unit id="CYGfR88">
                 <source>label.block_legal_model_description</source>
                 <target>Inserts an existing legal text template (T&amp;Cs, legal notice...)</target>
-            </trans-unit>
-            <trans-unit id="QVfWY7f">
-                <source>label.block_media_required</source>
-                <target>An image is required for this block type.</target>
             </trans-unit>
             <trans-unit id="zClb.Hs">
                 <source>label.block_portfolio_grid</source>
@@ -990,6 +990,10 @@
                 <source>label.cta_label</source>
                 <target>Button label</target>
             </trans-unit>
+            <trans-unit id="z7EoShC">
+                <source>label.current</source>
+                <target>current</target>
+            </trans-unit>
             <trans-unit id="N05sbUe">
                 <source>label.danger</source>
                 <target>Danger</target>
@@ -1021,6 +1025,10 @@
             <trans-unit id="dqONr5r">
                 <source>label.document_download_media_help</source>
                 <target>One file = one download card. Attach several files to offer several documents - give each a distinct "File name" then, it becomes that card's own title.</target>
+            </trans-unit>
+            <trans-unit id="tLGn0en">
+                <source>label.download</source>
+                <target>Download</target>
             </trans-unit>
             <trans-unit id="1vyz2Yp">
                 <source>label.edit</source>
@@ -1221,10 +1229,6 @@
             <trans-unit id="PrnCmc_">
                 <source>label.file_name_help</source>
                 <target>Used to name the stored file. Also used as the download card's title when several files are attached.</target>
-            </trans-unit>
-            <trans-unit id="ubt8hID">
-                <source>label.fixed_icon_invalid_format</source>
-                <target>Unsupported format for this role - upload a %formats% image</target>
             </trans-unit>
             <trans-unit id="ZbTNTSZ">
                 <source>label.font</source>
@@ -1790,6 +1794,10 @@
                 <source>label.new_tab</source>
                 <target>New Tab</target>
             </trans-unit>
+            <trans-unit id="qQ0RGVI">
+                <source>label.next_slide</source>
+                <target>Next slide</target>
+            </trans-unit>
             <trans-unit id="xOMkNTu">
                 <source>label.no_collection_source_available</source>
                 <target>No collection source available yet</target>
@@ -1818,6 +1826,10 @@
                 <source>label.page</source>
                 <target>Page</target>
             </trans-unit>
+            <trans-unit id="eJLxUVx">
+                <source>label.pages_gallery</source>
+                <target>Pages gallery</target>
+            </trans-unit>
             <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
                 <target>Confirm password</target>
@@ -1833,6 +1845,10 @@
             <trans-unit id="Pmyk5As">
                 <source>label.postal_code</source>
                 <target>Postal Code</target>
+            </trans-unit>
+            <trans-unit id="02hgMl1">
+                <source>label.previous_slide</source>
+                <target>Previous slide</target>
             </trans-unit>
             <trans-unit id="wqV.yBO">
                 <source>label.price_range</source>
@@ -1901,6 +1917,14 @@
             <trans-unit id="0RFcVRF">
                 <source>label.ratio_help</source>
                 <target>Free keeps the image's natural ratio; a fixed ratio crops it to fit</target>
+            </trans-unit>
+            <trans-unit id="UmK6KNk">
+                <source>label.readless</source>
+                <target>Read less</target>
+            </trans-unit>
+            <trans-unit id="DAM4HGA">
+                <source>label.readmore</source>
+                <target>Read more...</target>
             </trans-unit>
             <trans-unit id="oNE5b8K">
                 <source>label.receive_copy</source>
@@ -1994,6 +2018,10 @@
                 <source>label.show_percent</source>
                 <target>Show Percentage</target>
             </trans-unit>
+            <trans-unit id="lnfUWu.">
+                <source>label.signout</source>
+                <target>Sign Out</target>
+            </trans-unit>
             <trans-unit id="rttit_o">
                 <source>label.site_graphic</source>
                 <target>Site graphic</target>
@@ -2010,9 +2038,17 @@
                 <source>label.site_graphics</source>
                 <target>Site graphics</target>
             </trans-unit>
+            <trans-unit id="7V5.lpF">
+                <source>label.slide</source>
+                <target>Slide</target>
+            </trans-unit>
             <trans-unit id="_ukBYp5">
                 <source>label.slide_duration</source>
                 <target>Duration between slides in ms (0 = manual)</target>
+            </trans-unit>
+            <trans-unit id="PzRJxVB">
+                <source>label.slide_navigation</source>
+                <target>Slide navigation</target>
             </trans-unit>
             <trans-unit id="WTG_sdU">
                 <source>label.slides</source>
@@ -2061,6 +2097,10 @@
             <trans-unit id="zE4iFSo">
                 <source>label.steps</source>
                 <target>Steps</target>
+            </trans-unit>
+            <trans-unit id="ru2vORh">
+                <source>label.stop_animation</source>
+                <target>Stop animation</target>
             </trans-unit>
             <trans-unit id="LBLIQe_">
                 <source>label.street_address</source>
@@ -2166,6 +2206,10 @@
                 <source>label.video_no_cookie</source>
                 <target>Use no-cookie version (YouTube only)</target>
             </trans-unit>
+            <trans-unit id="LOa9pVD">
+                <source>label.video_not_supported</source>
+                <target>Your browser does not support the video tag.</target>
+            </trans-unit>
             <trans-unit id="M9btWjW">
                 <source>label.video_options</source>
                 <target>Playback options</target>
@@ -2210,9 +2254,13 @@
                 <source>text.form_required_note</source>
                 <target>* Required field</target>
             </trans-unit>
-            <trans-unit id="G1fcoic">
-                <source>text.password_mismatch</source>
-                <target>Passwords do not match</target>
+            <trans-unit id="fqCFO6G">
+                <source>text.gdpr</source>
+                <target>I agree that this website stores the submitted data so that it can answer my request</target>
+            </trans-unit>
+            <trans-unit id="vcT08Ej">
+                <source>text.logged_in_as</source>
+                <target>You are logged in as %user%,</target>
             </trans-unit>
             <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>

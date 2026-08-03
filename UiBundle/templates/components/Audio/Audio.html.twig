@@ -4,7 +4,7 @@
     {% if title is defined and title %}<h3 class="audio-title">{{ title }}</h3>{% endif %}
     <audio controls class="{{ class|default([])|join(' ') }}">
         <source src="{{ src }}" type="{{ type|default('audio/mpeg') }}">
-        <p>{{ 'label.audio_not_supported'|trans({}, "site") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "site") }}</a></p>
+        <p>{{ 'label.audio_not_supported'|trans({}, "ui") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "ui") }}</a></p>
     </audio>
     {% if description is defined and description %}<figcaption class="audio-description text">{{ description|raw }}</figcaption>{% endif %}
 </figure>

@@ -10,7 +10,7 @@ import { Controller } from "@hotwired/stimulus";
 // Mounted automatically on <body> by controllers-admin.js — adds a "pick a ready-made field" select next to a Form's own "fields" collection "+ Add" button (see FormCrudController, the only CollectionField carrying a "data-form-field-template-catalog-url" via its "row_attr" form option). Picking a template appends a fresh FormField row through the collection's own native "add" button (so ea-sortable.js's own item-added handling still runs, e.g. position numbering) then fills it client-side - no DB write, no page reload, works on a form that hasn't been saved yet.
 export default class extends Controller {
     connect() {
-        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => this.initField(field));
+        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => { this.initField(field); });
     }
 
     initField(field) {

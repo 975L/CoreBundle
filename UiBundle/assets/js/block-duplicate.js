@@ -17,7 +17,7 @@ const ICON_COPY = '<svg fill="none" stroke="currentColor" stroke-width="2" viewB
 // Mounted automatically on <body> by controllers-admin.js — no layout override needed. Adds a "Duplicate" button to each block row AND to each individual media row inside a block. Both insert a full copy right below the source (same fields, same media/files) - everything client-side, no DB write on click, so this also works on a page that hasn't been saved yet.
 export default class extends Controller {
     connect() {
-        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => this.initField(field));
+        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => { this.initField(field); });
 
         this.boundOnItemAdded = this.onItemAdded.bind(this);
         document.addEventListener('ea.collection.item-added', this.boundOnItemAdded);
@@ -33,7 +33,7 @@ export default class extends Controller {
     }
 
     initField(field) {
-        this.collectionItems(field).forEach(item => this.addButtonFor(item));
+        this.collectionItems(field).forEach(item => { this.addButtonFor(item); });
     }
 
     // A row is either a block (has its own kind selector), a media entry (has a raw file input), or - anywhere inside a block's own kind-specific data form - a plain nested collection item (a skill bar, a process step, a card...). Anything else is some unrelated EasyAdmin collection elsewhere in the admin (this controller is mounted on <body>, so it sees every collection in the whole admin) and is left alone. Not keying off Vich's wrapper class: EasyAdmin renders its own Vich widget theme with classes like "ea-vich-image"/"ea-vich-file", not VichUploaderBundle's own default "vich-image"/"vich-file".
@@ -208,7 +208,7 @@ export default class extends Controller {
             return;
         }
         if (el.multiple) {
-            [...el.selectedOptions].forEach(opt => params.append(name, opt.value));
+            [...el.selectedOptions].forEach(opt => { params.append(name, opt.value); });
             return;
         }
         params.append(name, el.value);
@@ -269,7 +269,7 @@ export default class extends Controller {
 
         const addButton = this.ownAddButton(targetMediasField);
         if (!addButton) return;
-        sourceItems.forEach(() => addButton.click());
+        sourceItems.forEach(() => { addButton.click(); });
 
         this.collectionItems(targetMediasField).forEach((targetMediaItem, i) => {
             if (!sourceItems[i]) return;
@@ -318,7 +318,7 @@ export default class extends Controller {
 
     setFiles(input, files) {
         const dataTransfer = new DataTransfer();
-        files.forEach(file => dataTransfer.items.add(file));
+        files.forEach(file => { dataTransfer.items.add(file); });
         input.files = dataTransfer.files;
         input.dispatchEvent(new Event('change', { bubbles: true }));
     }

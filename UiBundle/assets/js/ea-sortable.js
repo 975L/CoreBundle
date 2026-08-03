@@ -26,7 +26,7 @@ export default class extends Controller {
         this.dragOriginContainer = null;
         this.dragOriginNextSibling = null;
 
-        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => this.initField(field));
+        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => { this.initField(field); });
 
         this.boundOnItemAdded = this.onItemAdded.bind(this);
         document.addEventListener('ea.collection.item-added', this.boundOnItemAdded);
@@ -129,7 +129,7 @@ export default class extends Controller {
     }
 
     clearDropTargetHighlights() {
-        this.element.querySelectorAll('.ui-drop-target').forEach(el => el.classList.remove('ui-drop-target'));
+        this.element.querySelectorAll('.ui-drop-target').forEach(el => { el.classList.remove('ui-drop-target'); });
     }
 
     itemsContainer(field) {
@@ -255,6 +255,6 @@ export default class extends Controller {
                 }
             }
         }
-        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => this.initField(field));
+        this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => { this.initField(field); });
     }
 }

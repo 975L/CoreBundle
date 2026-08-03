@@ -1,10 +1,12 @@
 /* EMAIL TYPOGRAPHY */
 
-// The theme colors every element directly rather than letting it inherit, same as on the page: a mail
-// client applying its own default text color would otherwise win inside the body fragment
+// Every element is colored directly rather than letting it inherit, same as on the page: a mail
+// client applying its own default text color would otherwise win inside the body fragment. The color
+// is fixed rather than themed, to stay coherent with the white background set in _base.scss: a site
+// with a dark palette would otherwise resolve --text to a light color and send white on white
 * {
     font-family: var(--font-family-body);
-    color: var(--text);
+    color: #000;
 }
 
 // 0.25em rather than the page's 0.5em: an email section holds a few short lines, and the page-level

@@ -51,6 +51,16 @@
                 "en": "The copyright at the bottom of your pages no longer shows 1970 when the date your site went online was typed in an unrecognized format",
                 "fr": "Le copyright en bas de vos pages n'affiche plus 1970 lorsque la date de mise en ligne de votre site a été saisie dans un format non reconnu",
                 "es": "El copyright al pie de sus páginas ya no muestra 1970 cuando la fecha de puesta en línea de su sitio se escribió en un formato no reconocido"
+            },
+            {
+                "en": "The messages shown on a badly written JSON value, an unrecognized color or an address already taken read as sentences again, instead of an internal name",
+                "fr": "Les messages affichés sur une valeur JSON mal écrite, une couleur non reconnue ou une adresse déjà prise se lisent de nouveau comme des phrases, au lieu d'un nom interne",
+                "es": "Los mensajes mostrados ante un valor JSON mal escrito, un color no reconocido o una dirección ya ocupada vuelven a leerse como frases, en lugar de un nombre interno"
+            },
+            {
+                "en": "A step of a guided project only takes you to a page of your own site: a step pointing elsewhere now stays put instead of sending you off the site in one click",
+                "fr": "Une étape d'un projet guidé ne vous emmène que vers une page de votre propre site : une étape pointant ailleurs reste désormais en place au lieu de vous envoyer hors du site en un clic",
+                "es": "Un paso de un proyecto guiado solo le lleva a una página de su propio sitio: un paso que apunte a otro lugar ahora se queda donde está en lugar de sacarle del sitio con un clic"
             }
         ]
     },

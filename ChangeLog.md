@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.1.2
+
+The bundle's own words come from its own catalogues
+
+### The package
+
+- The workflow's `GITHUB_TOKEN` is read-only, only the checkout needing it and the coverage going up on the Codacy secret (03/08/2026)
+- Codacy leaves `tests/` out of its analysis (03/08/2026)
+- The README's tree block is fenced as `text` (03/08/2026)
+
+### ConfigBundle
+
+- A guided project step navigates to a same-origin url only, a value the back-office edits reaching `location.href` unchecked otherwise (03/08/2026)
+- `label.invalid_json`, `label.invalid_theme_color` and `label.slug_exists` move from `config` to the new `validators.{en,es,fr}.xlf`, the catalogue the validator reads (03/08/2026)
+- Added `ConstraintMessageCatalogueTest`, covering the bundle's own `src/` and the scaffold's (03/08/2026)
+
+### UiBundle
+
+- The form's flash carries the translated sentence, the site layout rendering it as-is and showing the raw key otherwise (03/08/2026)
+- The form component reads the `warning` flash too, the rate limiter's message vanishing otherwise (03/08/2026)
+- It renders a flash escaped, the bag being shared with every other bundle and app (03/08/2026)
+- `receiveCopy` is mapped, an unmapped child never reaching the data the action is handed - the copy a visitor asked for was never sent (03/08/2026)
+- The Audio, Video, Slider, Readmore and authenticated-form components translate in `ui` rather than in the app's `site` domain (03/08/2026)
+- The GDPR checkbox drops its own `site` override too (03/08/2026)
+- The fifteen keys they ask for are declared in `ui.{en,es,fr}.xlf` (03/08/2026)
+- `label.block_media_required`, `label.fixed_icon_invalid_format` and `text.password_mismatch` move to the `validators` catalogue (03/08/2026)
+- An email's background is plain white rather than the site's own, a message being read in a client's own reading pane (03/08/2026)
+- Its text is fixed black rather than themed, a dark palette resolving `--text` to a light color and sending white on white (03/08/2026)
+- The Stimulus controllers brace the arrow bodies whose returned value is discarded (03/08/2026)
+- Each raw `innerHTML` assignment names the server-rendered source it carries (03/08/2026)
+- `ConstraintMessageCatalogueTest` reads the three other ways a message key reaches the validator, a named argument alone missing them (03/08/2026)
+- `EmailStylesheetTest` skips a `var()` carrying a fallback, a deliberate override hook being no undeclared token (03/08/2026)
+- It locks the blanket text color as fixed, the white background making a themed one unreadable (03/08/2026)
+- Added `FormFlashMarkupTest` and `TemplateDomainCatalogueTest` (03/08/2026)
+- `FormSubmissionTypeTest` covers the mapped `receiveCopy` over a real submission and the GDPR label's domain (03/08/2026)
+
 ## v1.1.1
 
 The CI's checks are one list, replayable on fresh dependencies

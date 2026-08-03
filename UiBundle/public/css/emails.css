@@ -16,6 +16,18 @@
     --alert-warning-background: #f9dba7;
     --background: var(--c975l-color-background, #fff);
     --black: #000;
+    --block-accent-blue: #2b5d8a;
+    --block-accent-cyan: #2e7c9a;
+    --block-accent-green: #3a7d44;
+    --block-accent-grey: #26333f;
+    --block-accent-indigo: #44528f;
+    --block-accent-lime: #7f8f3c;
+    --block-accent-orange: #c96a50;
+    --block-accent-pink: #a6486a;
+    --block-accent-red: #b23a2f;
+    --block-accent-teal: #2f8f83;
+    --block-accent-violet: #7a4e8f;
+    --block-accent-yellow: #dda43a;
     --body-max-width: 1440px;
     --border-accent: color-mix(in srgb, var(--primary) 35%, var(--background));
     --border-color: color-mix(in srgb, var(--text) 12%, var(--background));
@@ -87,12 +99,12 @@
 body {
   max-width: var(--body-max-width);
   margin: 0 auto;
-  background-color: var(--background);
+  background-color: #fff;
   font-weight: var(--font-body-weight);
 }
 
 html {
-  background-color: var(--frame-background);
+  background-color: #fff;
 }
 
 .hidden {
@@ -102,7 +114,7 @@ html {
 /* EMAIL TYPOGRAPHY */
 * {
   font-family: var(--font-family-body);
-  color: var(--text);
+  color: #000;
 }
 
 h1,
@@ -301,7 +313,7 @@ a.btn-secondary:visited {
 .alert {
   padding: 1em;
   margin: 1em auto;
-  max-width: 700px;
+  max-width: var(--alert-max-width, 700px);
   border: 1px solid transparent;
   border-radius: 5px;
 }

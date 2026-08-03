@@ -113,10 +113,10 @@ class FormSubmissionType extends AbstractType
         }
 
         if ($options['offerReceiveCopy']) {
+            // Mapped, unlike the gdpr/captcha boxes below: this one is the only protection field whose answer an action has to read back, and FormController hands the action nothing but the form's own data - an unmapped child never appears there, so the copy was silently never sent
             $builder->add('receiveCopy', CheckboxType::class, [
                 'label' => 'label.receive_copy',
                 'required' => false,
-                'mapped' => false,
                 'data' => false,
             ]);
         }
@@ -131,7 +131,6 @@ class FormSubmissionType extends AbstractType
         if ($this->configService->get('site-form-gdpr') ?? true) {
             $builder->add('gdpr', CheckboxType::class, [
                 'label' => 'text.gdpr',
-                'translation_domain' => 'site',
                 'required' => true,
                 'mapped' => false,
                 // 'required' alone is HTML5-only - this is what actually rejects an unchecked box server-side. Same generic message as any other required checkbox field above, no GDPR-specific wording needed

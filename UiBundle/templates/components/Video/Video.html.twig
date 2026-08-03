@@ -8,7 +8,7 @@
     {% if title is defined and title %}<h3 class="video-title">{{ title }}</h3>{% endif %}
     <video controls class="img img-responsive {{ class|default([])|join(' ') }}" {% if poster != '' %} poster="{{ poster }}" {% endif %} {% if autoplay %} autoplay {% endif %} {% if muted %} muted {% endif %} {% if loop %} loop {% endif %}  {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %}>
         <source src="{{ src }}" type="{{ type }}">
-        <p>{{ 'label.video_not_supported'|trans({}, "site") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "site") }}</a></p>
+        <p>{{ 'label.video_not_supported'|trans({}, "ui") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "ui") }}</a></p>
     </video>
     {% if description is defined and description %}<figcaption class="video-description text">{{ description|raw }}</figcaption>{% endif %}
 </figure>

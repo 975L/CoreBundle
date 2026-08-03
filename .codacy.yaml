@@ -1,6 +1,7 @@
 ---
 exclude_paths:
   - "**/public/**"
+  - "**/tests/**"
   - "vendor/**"
   - "**/*.min.js"
   - "**/*.min.css"
