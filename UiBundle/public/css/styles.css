@@ -16,18 +16,18 @@
     --alert-warning-background: #f9dba7;
     --background: var(--c975l-color-background, #fff);
     --black: #000;
-    --block-accent-blue: #0090ff;
-    --block-accent-cyan: #00a2c7;
-    --block-accent-green: #30a46c;
-    --block-accent-grey: #8b8d98;
-    --block-accent-indigo: #3e63dd;
-    --block-accent-lime: #99d52a;
-    --block-accent-orange: #f76b15;
-    --block-accent-pink: #d6409f;
-    --block-accent-red: #e5484d;
-    --block-accent-teal: #12a594;
-    --block-accent-violet: #6e56cf;
-    --block-accent-yellow: #ffb224;
+    --block-accent-blue: #2b5d8a;
+    --block-accent-cyan: #2e7c9a;
+    --block-accent-green: #3a7d44;
+    --block-accent-grey: #26333f;
+    --block-accent-indigo: #44528f;
+    --block-accent-lime: #7f8f3c;
+    --block-accent-orange: #c96a50;
+    --block-accent-pink: #a6486a;
+    --block-accent-red: #b23a2f;
+    --block-accent-teal: #2f8f83;
+    --block-accent-violet: #7a4e8f;
+    --block-accent-yellow: #dda43a;
     --body-max-width: 1440px;
     --border-accent: color-mix(in srgb, var(--primary) 35%, var(--background));
     --border-color: color-mix(in srgb, var(--text) 12%, var(--background));
@@ -533,62 +533,60 @@ button.btn {
   position: relative;
 }
 
-.card--accent-grey::before, .card--accent-pink::before, .card--accent-violet::before, .card--accent-indigo::before, .card--accent-blue::before, .card--accent-cyan::before, .card--accent-teal::before, .card--accent-green::before, .card--accent-lime::before, .card--accent-yellow::before, .card--accent-orange::before, .card--accent-red::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  border-radius: var(--radius-card) var(--radius-card) 0 0;
+.card--accent-red {
+  --card-accent: var(--block-accent-red);
 }
 
-.card--accent-red::before {
-  background: var(--block-accent-red);
+.card--accent-green {
+  --card-accent: var(--block-accent-green);
 }
 
-.card--accent-orange::before {
-  background: var(--block-accent-orange);
+.card--accent-cyan {
+  --card-accent: var(--block-accent-cyan);
 }
 
-.card--accent-yellow::before {
-  background: var(--block-accent-yellow);
+.card--accent-blue {
+  --card-accent: var(--block-accent-blue);
 }
 
-.card--accent-lime::before {
-  background: var(--block-accent-lime);
+.card--accent-indigo {
+  --card-accent: var(--block-accent-indigo);
 }
 
-.card--accent-green::before {
-  background: var(--block-accent-green);
+.card--accent-violet {
+  --card-accent: var(--block-accent-violet);
 }
 
-.card--accent-teal::before {
-  background: var(--block-accent-teal);
+.card--accent-pink {
+  --card-accent: var(--block-accent-pink);
 }
 
-.card--accent-cyan::before {
-  background: var(--block-accent-cyan);
+.card--accent-grey {
+  --card-accent: var(--block-accent-grey);
 }
 
-.card--accent-blue::before {
-  background: var(--block-accent-blue);
+.card--accent-orange {
+  --card-accent: var(--block-accent-orange);
+  --card-accent-color: #000;
+  --card-accent-invert: 0;
 }
 
-.card--accent-indigo::before {
-  background: var(--block-accent-indigo);
+.card--accent-yellow {
+  --card-accent: var(--block-accent-yellow);
+  --card-accent-color: #000;
+  --card-accent-invert: 0;
 }
 
-.card--accent-violet::before {
-  background: var(--block-accent-violet);
+.card--accent-lime {
+  --card-accent: var(--block-accent-lime);
+  --card-accent-color: #000;
+  --card-accent-invert: 0;
 }
 
-.card--accent-pink::before {
-  background: var(--block-accent-pink);
-}
-
-.card--accent-grey::before {
-  background: var(--block-accent-grey);
+.card--accent-teal {
+  --card-accent: var(--block-accent-teal);
+  --card-accent-color: #000;
+  --card-accent-invert: 0;
 }
 
 .cards > .card {
@@ -597,17 +595,17 @@ button.btn {
 
 .card-header,
 h2.card-header {
-  background-color: var(--primary);
-  color: var(--white);
+  background-color: var(--card-accent, var(--primary));
+  color: var(--card-accent-color, var(--white));
   border-bottom: 1px solid var(--input-border-color);
   padding: 0.5em 1em;
   margin: 0;
   width: 100%;
-  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0;
 }
 
 .card-header .icon {
-  filter: brightness(0) invert(1);
+  filter: brightness(0) invert(var(--card-accent-invert, 1));
 }
 
 .card-header a,
@@ -1743,18 +1741,13 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .hero__media--grid img {
   aspect-ratio: 1;
   height: auto;
-  padding: 27%;
+  padding: var(--hero-media-grid-padding, 27%);
   box-sizing: border-box;
   object-fit: contain;
   border: 1px solid var(--section-border, var(--border-color));
   border-radius: 14px;
-  background: var(--section-overlay, transparent);
+  background: var(--hero-media-grid-background, #fff);
   box-shadow: none;
-  transition: border-color 0.18s ease, background-color 0.18s ease;
-}
-
-.hero__media--grid img:hover {
-  border-color: var(--section-accent, var(--border-accent));
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -14,18 +14,24 @@
         --alert-warning-background: #f9dba7;
         --background: var(--c975l-color-background, #fff);
         --black: #000;
-        --block-accent-blue: #0090ff;
-        --block-accent-cyan: #00a2c7;
-        --block-accent-green: #30a46c;
-        --block-accent-grey: #8b8d98;
-        --block-accent-indigo: #3e63dd;
-        --block-accent-lime: #99d52a;
-        --block-accent-orange: #f76b15;
-        --block-accent-pink: #d6409f;
-        --block-accent-red: #e5484d;
-        --block-accent-teal: #12a594;
-        --block-accent-violet: #6e56cf;
-        --block-accent-yellow: #ffb224;
+        // The twelve card hues, in the c975L logo palette rather than a generic bright ramp: muted, of an
+        // even weight, so a row of accented cards reads as one set. Eight are a bundle logo's own color,
+        // the four left over are mixed to sit between their neighbors on the wheel. A hue names itself
+        // and nothing more - a site retunes any of them from its own themes/ui.css, and the value stored
+        // against a card never changes with it.
+        // All but --block-accent-yellow clear 3:1 against the white a .card-header writes on them
+        --block-accent-blue: #2b5d8a;
+        --block-accent-cyan: #2e7c9a;
+        --block-accent-green: #3a7d44;
+        --block-accent-grey: #26333f;
+        --block-accent-indigo: #44528f;
+        --block-accent-lime: #7f8f3c;
+        --block-accent-orange: #c96a50;
+        --block-accent-pink: #a6486a;
+        --block-accent-red: #b23a2f;
+        --block-accent-teal: #2f8f83;
+        --block-accent-violet: #7a4e8f;
+        --block-accent-yellow: #dda43a;
         --body-max-width: 1440px;
         --border-accent: color-mix(in srgb, var(--primary) 35%, var(--background));
         --border-color: color-mix(in srgb, var(--text) 12%, var(--background));

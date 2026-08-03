@@ -261,14 +261,75 @@ class EmailServiceTest extends TestCase
         $this->assertSame('<p>Already rendered</p>', $mailer->sent[0]->getHtmlBody());
     }
 
-    public function testSendReturnsFalseWhenNeitherTemplateNorHtmlGiven(): void
+    public function testSendReturnsFalseWhenNoBodyAtAllIsGiven(): void
     {
         $service = $this->createService($this->createRecordingMailer());
 
         $result = $service->send(new EmailSendRequest(subject: 'Hello', context: [], from: 'from@example.com', to: 'to@example.com'));
 
         $this->assertFalse($result);
-        $this->assertSame('EmailSendRequest needs either "template" or "html"', $service->getLastError());
+        $this->assertSame('EmailSendRequest needs exactly one of "template", "html" or "text"', $service->getLastError());
+    }
+
+    // Two bodies used to go out as whichever buildEmails() tested first, the text one here, dropping the template without a word
+    public function testSendReturnsFalseWhenMoreThanOneBodyIsGiven(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer);
+
+        $request = new EmailSendRequest(
+            subject: 'Hello',
+            context: [],
+            template: 'emails/test.html.twig',
+            from: 'from@example.com',
+            to: 'to@example.com',
+            text: 'Plain body',
+        );
+
+        $result = $service->send($request);
+
+        $this->assertFalse($result);
+        $this->assertSame('EmailSendRequest needs exactly one of "template", "html" or "text"', $service->getLastError());
+        $this->assertCount(0, $mailer->sent);
+    }
+
+    // An operational digest written by a command has no markup and wants none - it goes out as plain text, and the layout registry never sees it
+    public function testSendDeliversAPlainTextBodyAsIs(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer);
+
+        $result = $service->send(new EmailSendRequest(
+            subject: 'Backup Report',
+            context: [],
+            from: 'from@example.com',
+            to: 'to@example.com',
+            text: "28 run(s): 28 ok\nLast run on 29/07/2026",
+        ));
+
+        $this->assertTrue($result);
+        $this->assertSame("28 run(s): 28 ok\nLast run on 29/07/2026", $mailer->sent[0]->getTextBody());
+        $this->assertNull($mailer->sent[0]->getHtmlBody());
+    }
+
+    // Nothing to re-render and no markup either, so the preview shows the text as it will be received rather than an empty page
+    public function testSendStashesAPlainTextBodyAsDebugPreview(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer, ['email-debug' => 'true'], isSuperAdmin: true);
+
+        $service->send(new EmailSendRequest(
+            subject: 'Backup Report',
+            context: [],
+            from: 'from@example.com',
+            to: 'to@example.com',
+            text: 'Everything <ok>',
+        ));
+
+        $preview = $service->consumeDebugPreview();
+
+        $this->assertSame([], $mailer->sent);
+        $this->assertStringContainsString('<pre style="white-space:pre-wrap;">Everything &lt;ok&gt;</pre>', $preview);
     }
 
     // With no template there is nothing to re-render, so the debug preview uses the html body directly

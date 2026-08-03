@@ -56,6 +56,22 @@ Each bundle keeps its own README, unchanged:
 
 Its history, on the other hand, is the package's: [ChangeLog.md](ChangeLog.md) and [UPGRADE.md](UPGRADE.md) carry both bundles from here on. Each bundle's own files stop at its last published release — `v5.17.1` for ConfigBundle, `v1.17.0` for UiBundle — and are kept as archives.
 
+## Quality checks
+
+The five checks the CI runs live in `composer.json` alone, as one list:
+
+```bash
+composer qa
+```
+
+`composer run -l` names what each one covers, and each is callable on its own (`composer cs`, `fixer`, `stan`, `stan-scaffold`, `test`). The workflow calls those same scripts, so a check is never declared twice.
+
+A development machine's `vendor/` symlinks the sibling repositories, which expose code no tag has published yet — code the CI never sees. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included:
+
+```bash
+bin/ci.sh
+```
+
 ## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
 
 See [UPGRADE.md](UPGRADE.md). In short: replace the two requirements with `c975l/core-bundle`. **No PHP `use`, no `@c975LUi/…` template reference, no translation key and no `bundles.php` entry changes** — the namespaces are the same ones.

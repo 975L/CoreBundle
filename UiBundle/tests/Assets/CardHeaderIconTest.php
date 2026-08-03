@@ -13,9 +13,10 @@ namespace c975L\UiBundle\Tests\Assets;
 use PHPUnit\Framework\TestCase;
 
 /*
- * A card header paints white text on --primary, and its icon is an <img>: it paints the SVG file's own fill
- * instead of inheriting that color, so a black icon on a colored band. Whitened by the stylesheet rather
- * than by a "white" class on the markup, so every card gets it whichever template built the icon.
+ * A card header paints its text on the band's own color, and its icon is an <img>: it paints the SVG file's
+ * own fill instead of inheriting that color, so a black icon on a colored band. Whitened by the stylesheet
+ * rather than by a "white" class on the markup, so every card gets it whichever template built the icon.
+ * The inversion is an amount, not a switch: the four light hues writing dark text set it to 0 (CardAccentTest).
  */
 class CardHeaderIconTest extends TestCase
 {
@@ -34,9 +35,9 @@ class CardHeaderIconTest extends TestCase
     public function testTheIconIsWhitenedByTheStylesheet(string $file): void
     {
         $this->assertMatchesRegularExpression(
-            '/\.card-header\.icon\{[^}]*filter:/',
+            '/\.card-header\.icon\{[^}]*filter:brightness\(0\)invert\(var\(--card-accent-invert,1\)\)/',
             $this->normalize($file),
-            sprintf('"%s" leaves ".card-header .icon" unfiltered, so the icon paints its own fill on the header\'s color.', $file)
+            sprintf('"%s" no longer flattens then inverts ".card-header .icon", so the icon paints its own fill on the header\'s color.', $file)
         );
     }
 

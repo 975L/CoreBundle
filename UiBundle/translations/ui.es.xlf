@@ -1370,6 +1370,30 @@
                 <source>label.friday</source>
                 <target>Viernes</target>
             </trans-unit>
+            <trans-unit id="3NDFv4Q">
+                <source>label.gallery_showcase_collection</source>
+                <target>Colección</target>
+            </trans-unit>
+            <trans-unit id="2P1RP7K">
+                <source>label.gallery_showcase_collection_description</source>
+                <target>Las entradas de una fuente externa, en cuadrícula de tarjetas o en portafolio.</target>
+            </trans-unit>
+            <trans-unit id="nWcg5Ou">
+                <source>label.gallery_showcase_flex_columns</source>
+                <target>Columnas flexibles</target>
+            </trans-unit>
+            <trans-unit id="Hs5IZTi">
+                <source>label.gallery_showcase_flex_columns_description</source>
+                <target>Un título de sección seguido de columnas de anchos libres, cada una agrupando los blocks que elija.</target>
+            </trans-unit>
+            <trans-unit id="UVcO6O_">
+                <source>label.gallery_showcase_section_cards</source>
+                <target>Sección de tarjetas</target>
+            </trans-unit>
+            <trans-unit id="ZgxEnHs">
+                <source>label.gallery_showcase_section_cards_description</source>
+                <target>Una fila de tarjetas completas bajo un título de sección, con su propia ancla.</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personalizar un correo</target>

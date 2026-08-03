@@ -14,15 +14,15 @@ use c975L\ConfigBundle\Command\BackupDigestCommand;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\BackupDigestBuilder;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Service\EmailService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 
 class BackupDigestCommandTest extends TestCase
 {
-    private ?Email $sentEmail = null;
+    private ?EmailSendRequest $sentEmail = null;
     private ?int $requestedDays = null;
 
     private function createBuilder(string $status = HealthCheckResult::STATUS_OK): BackupDigestBuilder
@@ -42,7 +42,7 @@ class BackupDigestCommandTest extends TestCase
         return $builder;
     }
 
-    private function createCommand(string $status = HealthCheckResult::STATUS_OK, array $configs = []): BackupDigestCommand
+    private function createCommand(string $status = HealthCheckResult::STATUS_OK, array $configs = [], ?EmailService $emailService = null): BackupDigestCommand
     {
         $values = array_merge([
             'site-backup-database' => 'example_db',
@@ -52,12 +52,16 @@ class BackupDigestCommandTest extends TestCase
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug) => $values[$slug] ?? '');
 
-        $mailer = $this->createStub(MailerInterface::class);
-        $mailer->method('send')->willReturnCallback(function (Email $email): void {
-            $this->sentEmail = $email;
-        });
+        if (null === $emailService) {
+            $emailService = $this->createStub(EmailService::class);
+            $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request): bool {
+                $this->sentEmail = $request;
 
-        return new BackupDigestCommand($this->createBuilder($status), $configService, $mailer);
+                return true;
+            });
+        }
+
+        return new BackupDigestCommand($this->createBuilder($status), $configService, $emailService);
     }
 
     public function testTheDigestIsMailedToTheBackupRecipient(): void
@@ -66,9 +70,11 @@ class BackupDigestCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
-        $this->assertSame('[OK] Backups - example.com', $this->sentEmail->getSubject());
-        $this->assertStringContainsString('28 run(s): 28 ok', $this->sentEmail->getTextBody());
-        $this->assertSame('admin@example.com', $this->sentEmail->getTo()[0]->getAddress());
+        $this->assertSame('[OK] Backups - example.com', $this->sentEmail->subject);
+        $this->assertStringContainsString('28 run(s): 28 ok', $this->sentEmail->text);
+        $this->assertSame('admin@example.com', $this->sentEmail->to);
+        // Replying to the digest must reach its sender, not the site's public contact form, which is where a null replyTo would fall back to
+        $this->assertSame('noreply@example.com', $this->sentEmail->replyTo);
     }
 
     public function testTheWindowDefaultsToAWeek(): void
@@ -124,5 +130,19 @@ class BackupDigestCommandTest extends TestCase
 
         $this->assertNull($this->sentEmail);
         $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+    }
+
+    // EmailService returns false rather than throwing on a transport failure, so the command is the one left to turn it into a verdict the scheduler can read
+    public function testASendThatFailsIsReportedAsAFailure(): void
+    {
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturn(false);
+        $emailService->method('getLastError')->willReturn('Connection could not be established');
+
+        $tester = new CommandTester($this->createCommand(HealthCheckResult::STATUS_OK, [], $emailService));
+        $tester->execute([]);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertStringContainsString('Connection could not be established', $tester->getDisplay());
     }
 }

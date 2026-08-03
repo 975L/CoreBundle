@@ -14,14 +14,14 @@ use c975L\ConfigBundle\Command\BackupCommand;
 use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\BackupRetentionPurger;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Service\EmailService;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Process\Process;
 
 class BackupCommandTest extends TestCase
@@ -84,12 +84,12 @@ class BackupCommandTest extends TestCase
         return $recorder;
     }
 
-    private function createCommand(?MailerInterface $mailer = null, ?Connection $connection = null, array $configOverrides = []): BackupCommand
+    private function createCommand(?EmailService $emailService = null, ?Connection $connection = null, array $configOverrides = []): BackupCommand
     {
         return new BackupCommand(
             $this->createParameterBag(),
             $this->createConfigService($configOverrides),
-            $mailer ?? $this->createStub(MailerInterface::class),
+            $emailService ?? $this->createStub(EmailService::class),
             $connection ?? $this->createStub(Connection::class),
             new BackupRetentionPurger(new Filesystem()),
             $this->createResultRecorder(),
@@ -106,14 +106,16 @@ class BackupCommandTest extends TestCase
                 $this->callOrder[] = 'close';
             });
 
-        $mailer = $this->createMock(MailerInterface::class);
-        $mailer->expects($this->once())
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->once())
             ->method('send')
-            ->willReturnCallback(function (): void {
+            ->willReturnCallback(function (): bool {
                 $this->callOrder[] = 'send';
+
+                return true;
             });
 
-        $tester = new CommandTester($this->createCommand($mailer, $connection));
+        $tester = new CommandTester($this->createCommand($emailService, $connection));
         $tester->execute([]);
 
         $this->assertSame(['close', 'send'], $this->callOrder);
@@ -296,29 +298,60 @@ class BackupCommandTest extends TestCase
     public function testAFailureIsStillReportedWithoutASiteUrl(): void
     {
         $capturedEmail = null;
-        $mailer = $this->createStub(MailerInterface::class);
-        $mailer->method('send')->willReturnCallback(function (Email $email) use (&$capturedEmail): void {
-            $capturedEmail = $email;
-        });
 
-        (new CommandTester($this->createCommand($mailer, null, ['site-url' => '', 'email-from' => ''])))->execute([]);
+        (new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail), null, ['site-url' => '', 'email-from' => ''])))->execute([]);
 
         $this->assertNotNull($capturedEmail);
-        $this->assertSame('[ERROR] Backup failed - test_db', $capturedEmail->getSubject());
-        $this->assertSame('admin@example.com', $capturedEmail->getFrom()[0]->getAddress());
+        $this->assertSame('[ERROR] Backup failed - test_db', $capturedEmail->subject);
+        $this->assertSame('admin@example.com', $capturedEmail->from);
+    }
+
+    // Replying to a backup alert must reach whoever sent it, not the site's public contact form, which is where a null replyTo would fall back to
+    public function testTheErrorReportIsRepliedToItsOwnSender(): void
+    {
+        $capturedEmail = null;
+
+        (new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail))))->execute([]);
+
+        $this->assertSame('noreply@example.com', $capturedEmail->replyTo);
+    }
+
+    // EmailService returns false where MailerInterface used to throw, so a report that never left has to be said out loud
+    public function testAReportThatCouldNotBeSentIsSurfacedOnTheConsole(): void
+    {
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturn(false);
+        $emailService->method('getLastError')->willReturn('Connection could not be established');
+
+        $tester = new CommandTester($this->createCommand($emailService));
+        $tester->execute([]);
+
+        // The console wraps its warning block, so only the head of the message is matched here
+        $this->assertStringContainsString('The error report could not be sent', $tester->getDisplay());
+    }
+
+    // A stub whose send() succeeds, $captured keeping the request it was given
+    private function createCapturingEmailService(?EmailSendRequest &$captured): EmailService
+    {
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(
+            static function (EmailSendRequest $request) use (&$captured): bool {
+                $captured = $request;
+
+                return true;
+            },
+        );
+
+        return $emailService;
     }
 
     // Runs the command and returns the error-report email's body, which embeds the full run report
     private function runAndCaptureReport(array $configOverrides = []): string
     {
         $capturedEmail = null;
-        $mailer = $this->createStub(MailerInterface::class);
-        $mailer->method('send')->willReturnCallback(function (Email $email) use (&$capturedEmail): void {
-            $capturedEmail = $email;
-        });
 
-        (new CommandTester($this->createCommand($mailer, null, $configOverrides)))->execute([]);
+        (new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail), null, $configOverrides)))->execute([]);
 
-        return $capturedEmail->getTextBody();
+        return $capturedEmail->text;
     }
 }

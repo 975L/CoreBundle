@@ -12,14 +12,14 @@ namespace c975L\ConfigBundle\Command;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\MessengerFailedMessageService;
+use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Service\EmailService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 
 /**
  * Purges old Messenger failed messages (queue_name = 'failed') and, if new "important"
@@ -45,7 +45,7 @@ class MessengerCleanupCommand extends Command
     public function __construct(
         private readonly MessengerFailedMessageService $messengerFailedMessageService,
         private readonly ConfigServiceInterface $configService,
-        private readonly MailerInterface $mailer,
+        private readonly EmailService $emailService,
         private readonly ParameterBagInterface $parameterBag,
     ) {
         parent::__construct();
@@ -56,12 +56,17 @@ class MessengerCleanupCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $stats = $this->cleanup();
 
-        if ($stats['alerted']) {
+        // A digest owed but never sent is the one outcome the purge's own success can't report: the marker stays put so the next run retries it, but a scheduler reading a green run would never know an alert is pending. An unconfigured mailto is no failure, nothing being owed then
+        $failed = $stats['newImportant'] > 0 && $stats['mailto'] && !$stats['alerted'];
+
+        if ($failed) {
+            $io->warning(sprintf('The digest could not be sent: %s', $this->emailService->getLastError() ?? 'unknown error'));
+        } elseif ($stats['alerted']) {
             $io->note(sprintf('Digest email sent for %d new important failure(s).', $stats['newImportant']));
         }
         $io->success(sprintf('Purged %d message(s) older than the retention period.', $stats['purged']));
 
-        return Command::SUCCESS;
+        return $failed ? Command::FAILURE : Command::SUCCESS;
     }
 
     // Purges old failed messages and sends a digest email if new important failures appeared since the last alert; called both by execute() and MessengerFailedController's "purge now" action
@@ -80,9 +85,11 @@ class MessengerCleanupCommand extends Command
         $mailto = (string) $this->configService->get('site-messenger-cleanup-mailto');
         $alerted = false;
         if ([] !== $newImportant && '' !== $mailto) {
-            $this->sendDigest($mailto, $newImportant);
-            touch($markerFile);
-            $alerted = true;
+            // The marker only moves on a digest that actually left: EmailService swallows a transport failure, and touching it anyway would bury the alert for good, the next run finding nothing "new" since it
+            $alerted = $this->sendDigest($mailto, $newImportant);
+            if ($alerted) {
+                touch($markerFile);
+            }
         }
 
         // Read as the backup and health check retentions are: only a missing row falls back to the default, a "0" - typed, or a field emptied at the back-office, the entry being declared "int" - means "keep everything". `?: DEFAULT` used to give the same answer here by accident rather than by decision, and the accident mattered: purgeOlderThan(0) deletes every failed message there is instead of none
@@ -95,10 +102,11 @@ class MessengerCleanupCommand extends Command
             'important' => count($important),
             'newImportant' => count($newImportant),
             'alerted' => $alerted,
+            'mailto' => '' !== $mailto,
         ];
     }
 
-    private function sendDigest(string $mailto, array $newImportant): void
+    private function sendDigest(string $mailto, array $newImportant): bool
     {
         // Dates come back as UTC from the transport, the digest reads better in the site's own timezone (the back-office listing gets that conversion from Twig)
         $report = '';
@@ -112,16 +120,18 @@ class MessengerCleanupCommand extends Command
             );
         }
 
-        $email = (new Email())
-            ->from($this->emailFrom($mailto))
-            ->to($mailto)
-            ->subject(sprintf('[Messenger] %d new important failure(s)', count($newImportant)))
-            ->text("The following messages failed to send and need attention:\n" . $report);
-
-        $this->mailer->send($email);
+        // An alert is replied to its own sender, not to the site's contact form: left null, replyTo would fall back to the public "email-reply-to" config key
+        return $this->emailService->send(new EmailSendRequest(
+            subject: sprintf('[Messenger] %d new important failure(s)', count($newImportant)),
+            context: [],
+            from: $this->emailFrom($mailto),
+            to: $mailto,
+            replyTo: $this->emailFrom($mailto),
+            text: "The following messages failed to send and need attention:\n" . $report,
+        ));
     }
 
-    // An empty sender makes Email::from() throw, which would take the purge down with it as the digest is sent first - the recipient doubles as the sender then, an address that is by definition deliverable here
+    // An empty sender would make EmailService throw on an unresolvable From, which would take the purge down with it as the digest is sent first - the recipient doubles as the sender then, an address that is by definition deliverable here
     private function emailFrom(string $mailto): string
     {
         $from = (string) $this->configService->get('email-from');

@@ -16,12 +16,14 @@ abstract class FunctionalTestCase extends WebTestCase
 
     // The user needs a real id (EntityUserProvider::refreshUser() requires one to reload it from the session on the next request), so it's persisted - dama/doctrine-test-bundle rolls the whole test's transaction back, it never actually reaches the dev database.
     // $extraRoles adds to the admin role rather than replacing it: a screen reserved to ROLE_SUPER_ADMIN isn't even rendered for a plain admin, so a test covering those needs to ask for it (see ManagementSmokeTest).
+    /** @param list<string> $extraRoles */
     protected function createAuthenticatedClient(array $extraRoles = []): KernelBrowser
     {
         $client = static::createClient();
 
         $container = static::getContainer();
-        $adminRole = $container->get(ConfigServiceInterface::class)->get('site-role-admin');
+        // Cast because ConfigServiceInterface::get() returns mixed, which would leave the roles array untyped
+        $adminRole = (string) $container->get(ConfigServiceInterface::class)->get('site-role-admin');
 
         $user = (new User())
             ->setEmail('functional-tests@example.test')

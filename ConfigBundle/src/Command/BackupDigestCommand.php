@@ -12,14 +12,14 @@ namespace c975L\ConfigBundle\Command;
 
 use c975L\ConfigBundle\Management\BackupDigestBuilder;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Service\EmailService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 
 /**
  * Console command sending the recurring backup digest email.
@@ -47,7 +47,7 @@ class BackupDigestCommand extends Command
     public function __construct(
         private readonly BackupDigestBuilder $digestBuilder,
         private readonly ConfigServiceInterface $configService,
-        private readonly MailerInterface $mailer,
+        private readonly EmailService $emailService,
     ) {
         parent::__construct();
     }
@@ -100,17 +100,26 @@ class BackupDigestCommand extends Command
             return false;
         }
 
-        // An empty sender makes Email::from() throw, taking the digest down with it - the recipient doubles as the sender then, an address that is by definition deliverable here
+        // An empty sender leaves EmailService with no From to resolve, taking the digest down with it - the recipient doubles as the sender then, an address that is by definition deliverable here
         $from = (string) $this->configService->get('email-from');
 
-        $email = (new Email())
-            ->from('' !== $from ? $from : $mailto)
-            ->to($mailto)
-            ->subject($digest['subject'])
-            ->text($digest['body']);
+        // An alert is replied to its own sender, not to the site's contact form: left null, replyTo would fall back to the public "email-reply-to" config key
+        $sender = '' !== $from ? $from : $mailto;
 
-        $this->mailer->send($email);
+        $sent = $this->emailService->send(new EmailSendRequest(
+            subject: $digest['subject'],
+            context: [],
+            from: $sender,
+            to: $mailto,
+            replyTo: $sender,
+            text: $digest['body'],
+        ));
 
-        return true;
+        // Reported rather than thrown: the digest itself has already been printed above, and the scheduler gets a failing exit code from execute() either way
+        if (!$sent) {
+            $io->warning(sprintf('The digest could not be sent: %s', $this->emailService->getLastError() ?? 'unknown error'));
+        }
+
+        return $sent;
     }
 }

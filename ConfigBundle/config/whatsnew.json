@@ -3,9 +3,34 @@
         "date": "2026-08-03",
         "description": [
             {
+                "en": "The accent colors of your cards take up the c975L palette and now color the card's header band instead of a thin rule along its top edge - a card with no title shows no accent",
+                "fr": "Les couleurs d'accent de vos cartes reprennent la palette c975L et colorent désormais la bande d'en-tête de la carte plutôt qu'un mince trait sur son bord supérieur - une carte sans titre n'affiche plus d'accent",
+                "es": "Los colores de acento de sus tarjetas retoman la paleta c975L y ahora colorean la banda de encabezado de la tarjeta en lugar de una fina línea en su borde superior - una tarjeta sin título ya no muestra acento"
+            },
+            {
+                "en": "The logos shown side by side at the top of a page are laid on a plain white plate, so their own colors no longer mix into the background behind them",
+                "fr": "Les logos affichés côte à côte en haut d'une page reposent sur une plaque blanche unie, leurs couleurs ne se mélangeant ainsi plus au fond qui les porte",
+                "es": "Los logotipos mostrados uno al lado del otro en la parte superior de una página se apoyan en una placa blanca lisa, de modo que sus colores ya no se mezclan con el fondo que los sostiene"
+            },
+            {
+                "en": "The block catalog now shows an example for flexible columns, cards sections and collections, which had none until now",
+                "fr": "Le catalogue des blocks montre désormais un exemple pour les colonnes flexibles, les sections de cartes et les collections, qui n'en avaient aucun jusqu'ici",
+                "es": "El catálogo de blocks muestra ahora un ejemplo para las columnas flexibles, las secciones de tarjetas y las colecciones, que hasta ahora no tenían ninguno"
+            },
+            {
                 "en": "The dates of failed messages are shown at the right time again, and the alert email is no longer skipped for the failures right after one was sent",
                 "fr": "Les dates des messages échoués s'affichent de nouveau à la bonne heure, et l'email d'alerte n'est plus sauté pour les échecs survenant juste après un envoi",
                 "es": "Las fechas de los mensajes fallidos vuelven a mostrarse a la hora correcta, y el correo de alerta ya no se omite para los fallos ocurridos justo después de un envío"
+            },
+            {
+                "en": "An alert about failed messages that itself couldn't be sent is now raised again on the next run, instead of being lost for good",
+                "fr": "Une alerte sur les messages échoués qui n'a elle-même pas pu partir est de nouveau signalée au passage suivant, au lieu d'être perdue définitivement",
+                "es": "Una alerta sobre los mensajes fallidos que no ha podido enviarse se vuelve a señalar en la siguiente ejecución, en lugar de perderse definitivamente"
+            },
+            {
+                "en": "The backup and maintenance emails now use the sender and recipient addresses set in your configuration, and show up in the email preview like every other email",
+                "fr": "Les emails de sauvegarde et de maintenance utilisent désormais les adresses d'expéditeur et de destinataire définies dans votre configuration, et apparaissent dans l'aperçu des emails comme tous les autres",
+                "es": "Los correos de copia de seguridad y de mantenimiento usan ahora las direcciones de remitente y destinatario definidas en su configuración, y aparecen en la vista previa de correos como todos los demás"
             },
             {
                 "en": "The checks on your robots.txt and sitemap no longer report them as missing when your site address was saved with a slash at the end",

@@ -1,5 +1,48 @@
 # ChangeLog
 
+## v1.1.1
+
+The CI's checks are one list, replayable on fresh dependencies
+
+### The package
+
+- `composer qa` runs the five checks of the CI in its order, the list living in `composer.json` alone (03/08/2026)
+- The workflow calls those scripts rather than the commands, its steps kept apart to name the one that failed (03/08/2026)
+- Added `bin/ci.sh`, replaying `composer qa` on a copy whose dependencies are resolved from Packagist (03/08/2026)
+- The local `vendor/` symlinks the sibling repositories, exposing code no tag published yet, which the CI never sees (03/08/2026)
+- Added `scripts-descriptions`, `composer run -l` naming what each check covers (03/08/2026)
+- `failOnPhpunitNotice` turns a PHPUnit notice into a failure, a green suite carrying none (03/08/2026)
+
+### ConfigBundle
+
+- The scaffold's `FunctionalTestCase` casts the admin role it reads, keeping the roles array typed at level 6 (03/08/2026)
+- `BackupCommand`, `BackupDigestCommand` and `MessengerCleanupCommand` send through `EmailService` rather than `MailerInterface`, the last three emails of the ecosystem that didn't (03/08/2026)
+- They gain the From/To resolution on the `email-*` config keys and the `email-debug` preview, and stop being the only emails a site can't see coming (03/08/2026)
+- The messenger alert's marker only moves on a digest that actually left: `EmailService` swallows a transport failure, and touching it anyway buried the alert for good (03/08/2026)
+- `c975l:config:backup:digest` reports a send that failed instead of letting the exception through, the digest itself having already been printed (03/08/2026)
+- `c975l:config:messenger-cleanup` exits non-zero on a digest that was owed and never left, a green run having said nothing about the alert still pending (03/08/2026)
+- `c975l:config:backup` says so too when its report doesn't leave, `--report` exiting non-zero then, `EmailService` returning false where `MailerInterface` used to throw (03/08/2026)
+- The four operational emails carry their own sender as `Reply-To`, replying to an alert reaching the site's public contact address otherwise (03/08/2026)
+
+### UiBundle
+
+- Added `Service\GalleryShowcaseProvider`, putting `flex_columns`, `section_cards` and `collection` in the block showcase - the three built-in kinds no fixture can express (03/08/2026)
+- Each stands in for its own kind, so the showcase draws one card per kind rather than an empty one next to it (03/08/2026)
+- The two containers go through `BlockExtension::renderBlock()` with never-persisted slots, the collection through the `Collection:Grid` component with never-persisted `collection_item` blocks (03/08/2026)
+- Added `GalleryShowcaseProviderTest` (03/08/2026)
+- `EmailSendRequest` takes a `text` body, sent as plain text with no template and no layout - what an operational digest written by a command needs (03/08/2026)
+- Its debug preview shows that text monospaced, there being no markup to re-render and an empty page to show otherwise (03/08/2026)
+- A hero grid tile paints an opaque plate, `--hero-media-grid-background` (`#fff`), rather than the section's chip tone, so a mark's own colors never mix into the hero background (03/08/2026)
+- It has no `:hover` left, lighting a tile up reading as if these marks were links (03/08/2026)
+- `--hero-media-grid-padding` carries the inset of a mark inside its tile, a logo already margined needing far less of it than a bare glyph (03/08/2026)
+- The twelve `--block-accent-*` take the c975L logo palette, muted and of an even weight, so a row of accented cards reads as one set (03/08/2026)
+- A card's accent colors its header band rather than a rule across its top edge, `.card-header` reading `--card-accent` and a card without a header showing none (03/08/2026)
+- Orange, yellow, lime and teal carry dark text and a non-inverted icon, white falling under 4.5:1 on them (03/08/2026)
+- The header band rounds one pixel under `--radius-card`, the card's own background showing through as a white sliver otherwise (03/08/2026)
+- Added `CardAccentTest` and `HeroMediaGridTileTest`, locking both looks in the compiled stylesheets (03/08/2026)
+- `EmailService` refuses a request carrying more than one body, two of them going out as whichever its chain tested first (03/08/2026)
+- The block fixtures' example company sits in Annecy rather than in Paris (03/08/2026)
+
 ## v1.1
 
 Nothing deleted that no one asked to delete

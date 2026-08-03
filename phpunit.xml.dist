@@ -5,6 +5,7 @@
          colors="true"
          cacheDirectory=".phpunit.cache"
          failOnDeprecation="true"
+         failOnPhpunitNotice="true"
 >
     <testsuites>
         <!-- One suite per bundle: they ship together but stay two distinct bundles, and a failure should name which one -->

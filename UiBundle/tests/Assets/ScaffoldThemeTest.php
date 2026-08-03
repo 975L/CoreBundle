@@ -49,8 +49,14 @@ class ScaffoldThemeTest extends TestCase
         '--c975l-font-family-title',
     ];
 
-    // Mixed out of each flat's own background inside the .section--bg-* rules, so one value in :root would
-    // collapse the three variants into a single look (the scaffold's own header says as much)
+    // Set inside the rules of each variant - .section--bg-* for the flats, .card--accent-* for the twelve
+    // card hues - so one value in :root would collapse every variant into a single look (the scaffold's
+    // own header says as much). A design retunes the tokens those rules point at instead: --section-bg-*
+    // for the flats, --block-accent-* for the hues, both of which the scaffold does offer.
+    // --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange,
+    // yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A
+    // site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule -
+    // see the "Card accents" section of the README
     private const PER_VARIANT = [
         '--section-background',
         '--section-text',
@@ -58,6 +64,9 @@ class ScaffoldThemeTest extends TestCase
         '--section-accent',
         '--section-border',
         '--section-overlay',
+        '--card-accent',
+        '--card-accent-color',
+        '--card-accent-invert',
     ];
 
     // SiteBundle restates these three in its own unlayered :root, which beats this bundle's @layer

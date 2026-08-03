@@ -1370,6 +1370,30 @@
                 <source>label.friday</source>
                 <target>Friday</target>
             </trans-unit>
+            <trans-unit id="3NDFv4Q">
+                <source>label.gallery_showcase_collection</source>
+                <target>Collection</target>
+            </trans-unit>
+            <trans-unit id="2P1RP7K">
+                <source>label.gallery_showcase_collection_description</source>
+                <target>The entries of an external source, as a grid of cards or as a portfolio.</target>
+            </trans-unit>
+            <trans-unit id="nWcg5Ou">
+                <source>label.gallery_showcase_flex_columns</source>
+                <target>Flexible columns</target>
+            </trans-unit>
+            <trans-unit id="Hs5IZTi">
+                <source>label.gallery_showcase_flex_columns_description</source>
+                <target>A section title followed by columns of free widths, each grouping the blocks of its choice.</target>
+            </trans-unit>
+            <trans-unit id="UVcO6O_">
+                <source>label.gallery_showcase_section_cards</source>
+                <target>Cards section</target>
+            </trans-unit>
+            <trans-unit id="ZgxEnHs">
+                <source>label.gallery_showcase_section_cards_description</source>
+                <target>A row of full cards under a section title, with its own anchor.</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Tailor an e-mail</target>

@@ -14,6 +14,8 @@ use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\BackupRetentionPurger;
 use c975L\ConfigBundle\Management\ByteFormatter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Service\EmailService;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -24,8 +26,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Process\Process;
 
 /**
@@ -101,7 +101,7 @@ class BackupCommand extends Command
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
         private readonly ConfigServiceInterface $configService,
-        private readonly MailerInterface $mailer,
+        private readonly EmailService $emailService,
         private readonly Connection $connection,
         private readonly BackupRetentionPurger $retentionPurger,
         private readonly BackupResultRecorder $resultRecorder,
@@ -160,19 +160,23 @@ class BackupCommand extends Command
         $this->recordOutcome();
 
         if (!empty($this->errors)) {
-            $this->sendErrorReport();
+            if (!$this->sendErrorReport()) {
+                $io->warning(sprintf('The error report could not be sent: %s', $this->emailService->getLastError() ?? 'unknown error'));
+            }
             $io->error('Backup completed with errors.');
 
             return Command::FAILURE;
         }
 
-        if ($sendReport) {
-            $this->sendReport();
+        // The backup itself succeeded and says so, but a --report run whose report never left has not done what it was asked to do
+        $reportSent = !$sendReport || $this->sendReport();
+        if (!$reportSent) {
+            $io->warning(sprintf('The report could not be sent: %s', $this->emailService->getLastError() ?? 'unknown error'));
         }
 
         $io->success('Backup completed.');
 
-        return Command::SUCCESS;
+        return $reportSent ? Command::SUCCESS : Command::FAILURE;
     }
 
     private function backupMySql(): void
@@ -584,34 +588,38 @@ class BackupCommand extends Command
         return ByteFormatter::format($bytes);
     }
 
-    private function sendErrorReport(): void
+    // Both reports answer whether they left: EmailService returns false where MailerInterface used to throw, and a report nobody knows never arrived is worth as little as no report at all. An unconfigured mailto is no failure, nothing being owed then
+    private function sendErrorReport(): bool
     {
         if (empty($this->mailto)) {
-            return;
+            return true;
         }
 
-        $email = (new Email())
-            ->from($this->emailFrom())
-            ->to($this->mailto)
-            ->subject('[ERROR] Backup failed - ' . $this->subjectLabel())
-            ->text(implode("\n", $this->errors) . "\n\nFull report:\n" . $this->report);
-
-        $this->mailer->send($email);
+        // An alert is replied to its own sender, not to the site's contact form: left null, replyTo would fall back to the public "email-reply-to" config key
+        return $this->emailService->send(new EmailSendRequest(
+            subject: '[ERROR] Backup failed - ' . $this->subjectLabel(),
+            context: [],
+            from: $this->emailFrom(),
+            to: $this->mailto,
+            replyTo: $this->emailFrom(),
+            text: implode("\n", $this->errors) . "\n\nFull report:\n" . $this->report,
+        ));
     }
 
-    private function sendReport(): void
+    private function sendReport(): bool
     {
         if (empty($this->mailto)) {
-            return;
+            return true;
         }
 
-        $email = (new Email())
-            ->from($this->emailFrom())
-            ->to($this->mailto)
-            ->subject('Backup Report - ' . $this->subjectLabel())
-            ->text($this->report);
-
-        $this->mailer->send($email);
+        return $this->emailService->send(new EmailSendRequest(
+            subject: 'Backup Report - ' . $this->subjectLabel(),
+            context: [],
+            from: $this->emailFrom(),
+            to: $this->mailto,
+            replyTo: $this->emailFrom(),
+            text: $this->report,
+        ));
     }
 
     // The domain only ever labels the subject, so an install without site-url falls back to the database name rather than getting no failure report at all
@@ -620,7 +628,7 @@ class BackupCommand extends Command
         return '' !== $this->siteDomain ? $this->siteDomain : $this->database;
     }
 
-    // An empty sender makes Email::from() throw, which would take the whole report down with it - the recipient doubles as the sender then, an address that is by definition deliverable here
+    // An empty sender leaves EmailService with no From to resolve, which would take the whole report down with it - the recipient doubles as the sender then, an address that is by definition deliverable here
     private function emailFrom(): string
     {
         $from = (string) $this->configService->get('email-from');

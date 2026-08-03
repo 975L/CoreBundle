@@ -418,25 +418,26 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     gap: 12px;
 }
 
-// Square tiles, not the framed 4/3.2 screenshots the slideshow shows: these are marks, sitting on the
-// flat rather than on a card, so they take the section's own chip tones instead of --card-background
+// Square tiles, not the framed 4/3.2 screenshots the slideshow shows: these are marks, and a mark is
+// drawn for one background - laid straight on the flat, its own colors mix into whatever tone the hero
+// carries. So the tile paints its own opaque plate rather than taking the section's chip tones, and it
+// has no :hover of any kind: these are not links, and lighting one up on hover reads as if they were
 .hero__media--grid img {
     aspect-ratio: 1;
     // Mandatory next to the aspect-ratio above, same as .hero__media img: the img's height attribute is
     // a presentational hint that would otherwise beat it (ImageAspectRatioHeightTest)
     height: auto;
-    padding: 27%;
+    // Inset of the mark inside its tile. A logo already carrying its own margin needs far less than a
+    // bare glyph does, hence the token: it is the one measure of this grid a site routinely has to redo
+    padding: var(--hero-media-grid-padding, 27%);
     box-sizing: border-box;
     object-fit: contain;
     border: 1px solid var(--section-border, var(--border-color));
     border-radius: 14px;
-    background: var(--section-overlay, transparent);
+    // The plate the mark is read against. A token, so a site whose marks are drawn for a dark ground
+    // repaints it rather than having to redeclare the whole rule
+    background: var(--hero-media-grid-background, #fff);
     box-shadow: none;
-    transition: border-color 0.18s ease, background-color 0.18s ease;
-}
-
-.hero__media--grid img:hover {
-    border-color: var(--section-accent, var(--border-accent));
 }
 
 // The crossfade has no visible pause control, so this is the only way to opt out of it (WCAG 2.2.2)

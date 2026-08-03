@@ -54,6 +54,12 @@
     /* --hero-title-line-height: 1.03; */
     /* --hero-sub-size: 19px; */
     /* --hero-sub-max-width: 480px; */
+    /* Inset of each mark inside its tile, on a hero laying its medias out as a grid. Logos that already
+       carry their own margin need much less of it than bare glyphs do */
+    /* --hero-media-grid-padding: 27%; */
+    /* The opaque plate each mark is read against, so its own colors never mix into the hero background -
+       repaint it for marks drawn for a dark ground */
+    /* --hero-media-grid-background: #fff; */
 
     /* Text hook - the lead-in phrase of the "text_hook" block and of an article */
     /* --text-hook-size: clamp(17px, 1.7vw, 20px); */
@@ -94,21 +100,23 @@
     /* Lines shown before a "read more" block clamps its text */
     /* --readmore-lines: 5; */
 
-    /* The twelve hues a card's "accent" field offers, painting the rule across its top edge. Point one at
-       this site's own palette to fold that hue into the design - the value stored on a card is the color's
-       name, not a meaning, so it never has to change when the hue does */
-    /* --block-accent-red: #e5484d; */
-    /* --block-accent-orange: #f76b15; */
-    /* --block-accent-yellow: #ffb224; */
-    /* --block-accent-lime: #99d52a; */
-    /* --block-accent-green: #30a46c; */
-    /* --block-accent-teal: #12a594; */
-    /* --block-accent-cyan: #00a2c7; */
-    /* --block-accent-blue: #0090ff; */
-    /* --block-accent-indigo: #3e63dd; */
-    /* --block-accent-violet: #6e56cf; */
-    /* --block-accent-pink: #d6409f; */
-    /* --block-accent-grey: #8b8d98; */
+    /* The twelve hues a card's "accent" field offers, painting the card's header band. Point one at this
+       site's own palette to fold that hue into the design - the value stored on a card is the color's
+       name, not a meaning, so it never has to change when the hue does.
+       The header writes white on them: keep any value here above 3:1 against white, or retune
+       --card-accent's companion text color in this site's own app.css */
+    /* --block-accent-red: #b23a2f; */
+    /* --block-accent-orange: #c96a50; */
+    /* --block-accent-yellow: #dda43a; */
+    /* --block-accent-lime: #7f8f3c; */
+    /* --block-accent-green: #3a7d44; */
+    /* --block-accent-teal: #2f8f83; */
+    /* --block-accent-cyan: #2e7c9a; */
+    /* --block-accent-blue: #2b5d8a; */
+    /* --block-accent-indigo: #44528f; */
+    /* --block-accent-violet: #7a4e8f; */
+    /* --block-accent-pink: #a6486a; */
+    /* --block-accent-grey: #26333f; */
 
     /* Surfaces and rules mixed out of the admin's own palette - they follow it automatically when the
        colors are retuned in the backoffice, which a hardcoded value here would stop. */

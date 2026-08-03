@@ -74,8 +74,16 @@ class EmailService
             $email->replyTo($replyTo);
         }
 
+        // A request carrying two bodies would silently go out as whichever this chain tests first, so it fails as plainly as one carrying none
+        if (count(array_filter([$request->template, $request->html, $request->text], static fn (?string $body): bool => null !== $body)) > 1) {
+            throw new \Exception('EmailSendRequest needs exactly one of "template", "html" or "text"');
+        }
+
         if (null !== $request->html) {
             $email->html($request->html);
+        } elseif (null !== $request->text) {
+            // Sent as plain text, deliberately: an operational digest reads the same in every client and survives one that renders no HTML at all
+            $email->text($request->text);
         } elseif (null !== $request->template && $request->wrapLayout) {
             // Rendered here rather than left to the mailer, so the registry's layout can be wrapped around it - a bundle then ships the body of its email alone, and the branding stays wherever EmailLayoutProviderInterface is implemented (SiteBundle's when installed, none otherwise)
             $body = $this->twig->render($request->template, $request->context);
@@ -83,7 +91,7 @@ class EmailService
         } elseif (null !== $request->template) {
             $email->htmlTemplate($request->template);
         } else {
-            throw new \Exception('EmailSendRequest needs either "template" or "html"');
+            throw new \Exception('EmailSendRequest needs exactly one of "template", "html" or "text"');
         }
         $email->context($request->context);
 
@@ -113,10 +121,12 @@ class EmailService
         try {
             foreach ($this->buildEmails($request) as $email) {
                 if ($this->security->isGranted('ROLE_SUPER_ADMIN') && $this->configService->getBool($this->configService->get('email-debug'))) {
-                    // A request built with "html" (see EmailSendRequest) has no template to re-render - its body is already the rendered result
-                    $renderedEmail = null !== $email->getHtmlTemplate()
-                        ? $this->twig->render($email->getHtmlTemplate(), $email->getContext())
-                        : (string) $email->getHtmlBody();
+                    // A request built with "html" (see EmailSendRequest) has no template to re-render - its body is already the rendered result. A "text" one has no markup at all, so the preview shows it as it will be received, monospaced
+                    $renderedEmail = match (true) {
+                        null !== $email->getHtmlTemplate() => $this->twig->render($email->getHtmlTemplate(), $email->getContext()),
+                        null !== $email->getHtmlBody() => (string) $email->getHtmlBody(),
+                        default => sprintf('<pre style="white-space:pre-wrap;">%s</pre>', htmlspecialchars((string) $email->getTextBody())),
+                    };
                     $this->debugPreviews[] = $this->wrapDebugEmail($email, $renderedEmail);
                     continue;
                 }

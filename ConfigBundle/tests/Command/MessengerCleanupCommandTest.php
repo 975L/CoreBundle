@@ -13,11 +13,12 @@ namespace c975L\ConfigBundle\Tests\Command;
 use c975L\ConfigBundle\Command\MessengerCleanupCommand;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\MessengerFailedMessageService;
+use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Service\EmailService;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
-use Symfony\Component\Mime\RawMessage;
 
 class MessengerCleanupCommandTest extends TestCase
 {
@@ -80,25 +81,40 @@ class MessengerCleanupCommandTest extends TestCase
     private function createCommand(
         MessengerFailedMessageService $service,
         array $configValues,
-        ?MailerInterface $mailer = null,
+        ?EmailService $emailService = null,
     ): MessengerCleanupCommand {
         return new MessengerCleanupCommand(
             $service,
             $this->createConfigService($configValues),
-            $mailer ?? $this->createStub(MailerInterface::class),
+            $emailService ?? $this->createSendingEmailService(),
             $this->createParameterBag(),
         );
     }
 
+    // A stub whose send() succeeds, $sent capturing the request it was given - the default stub would answer false, which the command reads as a digest that never left
+    private function createSendingEmailService(?EmailSendRequest &$sent = null): EmailService
+    {
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(
+            static function (EmailSendRequest $request) use (&$sent): bool {
+                $sent = $request;
+
+                return true;
+            },
+        );
+
+        return $emailService;
+    }
+
     public function testCleanupPurgesAndReportsWithoutAlertingWhenNothingIsImportant(): void
     {
-        $mailer = $this->createMock(MailerInterface::class);
-        $mailer->expects($this->never())->method('send');
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->never())->method('send');
 
         $command = $this->createCommand(
             $this->createService([$this->createMessage(false)]),
             ['site-messenger-cleanup-mailto' => 'admin@example.com'],
-            $mailer,
+            $emailService,
         );
 
         $stats = $command->cleanup();
@@ -137,10 +153,10 @@ class MessengerCleanupCommandTest extends TestCase
     // The mailto being the only switch for the digest, an install that never filled it in still gets its nightly purge
     public function testCleanupStillPurgesWhenNoMailtoIsConfigured(): void
     {
-        $mailer = $this->createMock(MailerInterface::class);
-        $mailer->expects($this->never())->method('send');
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->never())->method('send');
 
-        $stats = $this->createCommand($this->createService([$this->createMessage(true)]), [], $mailer)->cleanup();
+        $stats = $this->createCommand($this->createService([$this->createMessage(true)]), [], $emailService)->cleanup();
 
         $this->assertSame(4, $stats['purged']);
         $this->assertFalse($stats['alerted']);
@@ -149,51 +165,56 @@ class MessengerCleanupCommandTest extends TestCase
     public function testCleanupSendsOneDigestForNewImportantFailures(): void
     {
         $sent = null;
-        $mailer = $this->createMock(MailerInterface::class);
-        $mailer->expects($this->once())->method('send')->willReturnCallback(
-            static function (RawMessage $message) use (&$sent): void {
-                $sent = $message;
-            },
-        );
-
         $command = $this->createCommand(
             $this->createService([$this->createMessage(true), $this->createMessage(true)]),
             ['site-messenger-cleanup-mailto' => 'admin@example.com', 'email-from' => 'noreply@example.com'],
-            $mailer,
+            $this->createSendingEmailService($sent),
         );
 
         $stats = $command->cleanup();
 
         $this->assertTrue($stats['alerted']);
         $this->assertSame(2, $stats['newImportant']);
-        $this->assertInstanceOf(Email::class, $sent);
-        $this->assertSame('noreply@example.com', $sent->getFrom()[0]->getAddress());
-        $this->assertSame('admin@example.com', $sent->getTo()[0]->getAddress());
-        $this->assertStringContainsString('Connection refused', $sent->getTextBody());
+        $this->assertInstanceOf(EmailSendRequest::class, $sent);
+        $this->assertSame('noreply@example.com', $sent->from);
+        $this->assertSame('admin@example.com', $sent->to);
+        // Replying to the digest must reach its sender, not the site's public contact form, which is where a null replyTo would fall back to
+        $this->assertSame('noreply@example.com', $sent->replyTo);
+        $this->assertStringContainsString('Connection refused', $sent->text);
         $this->assertFileExists($this->projectDir . '/var/MessengerAlertDateTimeFile');
     }
 
-    // An empty email-from would make Email::from() throw, and the digest being sent first, that would take the purge down with it
+    // An empty email-from would leave EmailService with no sender to resolve, and the digest being sent first, that would take the purge down with it
     public function testCleanupFallsBackOnTheRecipientAsSenderWhenEmailFromIsEmpty(): void
     {
         $sent = null;
-        $mailer = $this->createStub(MailerInterface::class);
-        $mailer->method('send')->willReturnCallback(
-            static function (RawMessage $message) use (&$sent): void {
-                $sent = $message;
-            },
-        );
-
         $command = $this->createCommand(
             $this->createService([$this->createMessage(true)]),
             ['site-messenger-cleanup-mailto' => 'admin@example.com'],
-            $mailer,
+            $this->createSendingEmailService($sent),
         );
 
         $stats = $command->cleanup();
 
-        $this->assertInstanceOf(Email::class, $sent);
-        $this->assertSame('admin@example.com', $sent->getFrom()[0]->getAddress());
+        $this->assertInstanceOf(EmailSendRequest::class, $sent);
+        $this->assertSame('admin@example.com', $sent->from);
+        $this->assertSame(4, $stats['purged']);
+    }
+
+    // EmailService swallows a transport failure, so the marker has to stay put on one: moved anyway, it would bury the alert for good, the next run finding nothing "new" since it
+    public function testCleanupKeepsTheMarkerWhenTheDigestCouldntBeSent(): void
+    {
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturn(false);
+
+        $stats = $this->createCommand(
+            $this->createService([$this->createMessage(true)]),
+            ['site-messenger-cleanup-mailto' => 'admin@example.com'],
+            $emailService,
+        )->cleanup();
+
+        $this->assertFalse($stats['alerted']);
+        $this->assertFileDoesNotExist($this->projectDir . '/var/MessengerAlertDateTimeFile');
         $this->assertSame(4, $stats['purged']);
     }
 
@@ -202,17 +223,51 @@ class MessengerCleanupCommandTest extends TestCase
     {
         touch($this->projectDir . '/var/MessengerAlertDateTimeFile', time() + 60);
 
-        $mailer = $this->createMock(MailerInterface::class);
-        $mailer->expects($this->never())->method('send');
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->never())->method('send');
 
         $stats = $this->createCommand(
             $this->createService([$this->createMessage(true)]),
             ['site-messenger-cleanup-mailto' => 'admin@example.com'],
-            $mailer,
+            $emailService,
         )->cleanup();
 
         $this->assertSame(1, $stats['important']);
         $this->assertSame(0, $stats['newImportant']);
         $this->assertFalse($stats['alerted']);
+    }
+
+    // The purge succeeding on its own would leave a scheduler reading a green run while an alert nobody has seen is still owed
+    public function testExecuteExitsNonZeroWhenTheDigestCouldntBeSent(): void
+    {
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturn(false);
+        $emailService->method('getLastError')->willReturn('Connection could not be established');
+
+        $tester = new CommandTester($this->createCommand(
+            $this->createService([$this->createMessage(true)]),
+            ['site-messenger-cleanup-mailto' => 'admin@example.com'],
+            $emailService,
+        ));
+        $tester->execute([]);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertStringContainsString('Connection could not be established', $tester->getDisplay());
+    }
+
+    // Nothing is owed where no recipient is configured, so the nightly purge stays a green run
+    public function testExecuteSucceedsWhenNoRecipientIsConfigured(): void
+    {
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->never())->method('send');
+
+        $tester = new CommandTester($this->createCommand(
+            $this->createService([$this->createMessage(true)]),
+            [],
+            $emailService,
+        ));
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
     }
 }

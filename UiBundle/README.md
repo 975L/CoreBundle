@@ -445,7 +445,7 @@ Then have the component match the stored value against the known variants before
 
 ## Card accents
 
-A `card` can be marked with a colored rule across its top edge, picked from twelve fixed hues — red, orange, yellow, lime, green, teal, cyan, blue, indigo, violet, pink, grey (`BlockAccentChoiceType`). The field is optional and an unset value draws nothing, which is what every card stored before it existed holds.
+A `card` can be marked with one of twelve fixed hues, which colors its header band — red, orange, yellow, lime, green, teal, cyan, blue, indigo, violet, pink, grey (`BlockAccentChoiceType`). The field is optional and an unset value leaves the header on `--primary`, which is what every card stored before it existed shows. A card with no header shows no accent at all, the band being the only thing carrying it.
 
 They are named after colors on purpose. A free color input would put arbitrary CSS in the database, and a per-site vocabulary (`family-socle`, `promo`, `sale`…) would tie a look to a subject: the day those cards are about something else, the stored value lies. A hue names itself and stays true whatever the cards end up being about — what it *means* on a given page is that page's business, not the block's.
 
@@ -458,7 +458,20 @@ Each hue is a `--block-accent-*` token defaulted in `sass/_tokens.scss`, so a si
 }
 ```
 
-The stored value is matched against those twelve in `blocks/Card.html.twig` rather than interpolated, the same rule the `background` field follows — a hand-edited database row can never write a class name of its own. `.card` carries `position: relative` so the rule has something to position against; it rounds its own top corners rather than relying on an `overflow: hidden`, so a card deliberately letting something spill out still can.
+The stored value is matched against those twelve in `blocks/Card.html.twig` rather than interpolated, the same rule the `background` field follows — a hand-edited database row can never write a class name of its own. Each `.card--accent-*` class does nothing but point `--card-accent` at its own token; `.card-header` reads it with `var(--card-accent, var(--primary))`, which is what puts the accent on the band and leaves an unaccented card where it always was.
+
+Four of the twelve — orange, yellow, lime and teal — are light enough that white text falls under 4.5:1 on them, so they also set `--card-accent-color: #000` and `--card-accent-invert: 0`, which darkens the header's text and stops its icons being inverted to white. A site retuning one of the other eight towards a light hue has to carry those two along:
+
+```css
+:root {
+    --block-accent-blue: #7dd3fc;
+}
+
+.card--accent-blue {
+    --card-accent-color: #000;
+    --card-accent-invert: 0;
+}
+```
 
 Another kind offers the same picker with one line, `->add('accent', BlockAccentChoiceType::class)`, plus its own `--accent-<hue>` rules and the matching list in its template.
 
@@ -610,6 +623,8 @@ class BookingGalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 
 Each variant is already-rendered HTML (a plain string) rather than a `Block` - the gallery wraps it in the same isolated `<iframe>` a block preview gets. `'wide' => true` originally rendered a showcase's card wider, for a component whose real styles only apply above a CSS breakpoint (e.g. `share_buttons()` hides itself entirely below 768px). The gallery now renders every item full-width by default, so this flag is currently a no-op there - it's kept in the interface so an existing provider that sets it (e.g. SocialBundle's `share_buttons()`) doesn't break. See UiBundle's own `BlockFixtureProvider`'s class comment, and SocialBundle's `GalleryShowcaseProvider` for a real example.
 
+UiBundle ships one of its own, `Service\GalleryShowcaseProvider`, covering the three built-in kinds no fixture can express: `flex_columns` and `section_cards` hold their content in `Block::$slots` (never-persisted children, rendered through `BlockExtension::renderBlock()`), and `collection` pulls its items live from a `CollectionSourceRegistry` a showcase has no reason to have (rendered instead straight through the `Collection:Grid` component, with never-persisted `collection_item` blocks). Each declares its own `kind`, so the showcase draws one card per kind rather than an empty one next to it.
+
 ---
 
 ## Forms
@@ -623,7 +638,7 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 - **`Form::$enabled`** (default `true`) lets an admin pause a form without unpublishing its page or clearing `action` - `FormController` renders `components/Form/FormDisabled.html.twig` instead of the actual form/submission handling while it's off.
 - **The `form` block kind** (`Form\Block\FormPickerType`, template `components/Form/FormBlock.html.twig`) embeds any `Form` by name, anywhere a block can go. Rendering and submission handling is done by **`Controller\FormController`** (routes `ui_form_submit`/`ui_form_fragment`), not the block itself.
 - **`Contract\FormActionInterface`**/**`Registry\FormActionRegistry`** let a bundle process a `Form`'s submission (tagged provider, one `getKey()` per implementation) without UiBundle knowing what that action actually does - `Form::$action` stores which key handles a given form, `Form::$actionConfig` (raw JSON, editable straight from `FormCrudController`) is free-shape config read only by that action.
-- **`Service\SendEmailFormAction`** (key `send_email`) is the built-in provider: it lets a form built purely through the admin still notify someone by email, configured via `actionConfig`'s `to`/`from`/`replyTo`/`subject`/`template`/`senderEmailField`/`offerReceiveCopy` (all optional - unset ones fall back to the site-wide `email-*` config keys/a default template), or `emailTemplate` (an `EmailTemplate` name, see "Email builder" below) to send a compiled `EmailTemplate` instead of `template`. It's backed by a generic **`Service\EmailService`** (`Model\EmailSendRequest` in, bool out, `getLastError()`/`consumeDebugPreview()` for the `ROLE_SUPER_ADMIN` + `email-debug` preview instead of a silent real send). Implement `Contract\DebugPreviewCapableInterface` on your own action to get the same debug-preview behavior.
+- **`Service\SendEmailFormAction`** (key `send_email`) is the built-in provider: it lets a form built purely through the admin still notify someone by email, configured via `actionConfig`'s `to`/`from`/`replyTo`/`subject`/`template`/`senderEmailField`/`offerReceiveCopy` (all optional - unset ones fall back to the site-wide `email-*` config keys/a default template), or `emailTemplate` (an `EmailTemplate` name, see "Email builder" below) to send a compiled `EmailTemplate` instead of `template`. It's backed by a generic **`Service\EmailService`** (`Model\EmailSendRequest` in, bool out, `getLastError()`/`consumeDebugPreview()` for the `ROLE_SUPER_ADMIN` + `email-debug` preview instead of a silent real send). A request carries exactly one body — `template` (a Twig path rendered with `context`, optionally wrapped in the site's layout via `wrapLayout`), `html` (already-rendered markup) or `text` (plain text, no template and no layout, what an operational digest written by a console command needs) — anything else is refused rather than sent as whichever the chain tested first. Implement `Contract\DebugPreviewCapableInterface` on your own action to get the same debug-preview behavior.
 - **Protection**, shared with every other c975L public form (contact/register/reset): a rotating honeypot + submission-timing check (`Service\FormBotProtection`, merges what used to be separate SiteBundle/ContactFormBundle implementations), site-wide GDPR checkbox and reCAPTCHA v3 (`Service\CaptchaVerifier`/`Form\CaptchaType`, a no-op unless the `recaptcha3-site-key`/`recaptcha3-secret-key` ConfigBundle keys are both filled in - see [reCAPTCHA](#recaptcha)), and an optional shared rate limiter (`Service\RateLimiterGuard`, configure `limiter.ui_form` in `config/packages/rate_limiter.yaml` to enable it - unconfigured, nothing is rate-limited). Every `email`-typed field also gets a live MX/A DNS check (`Validator\Constraints\DnsEmail`) on top of format/`Assert\Email` validation, and every required `checkbox`-typed field uses `IsTrue` (an unchecked box isn't `NotBlank`).
 - **`Form::$links`** (`Form\FormLinkType`, its own label/url collection on `FormCrudController`) are the links shown right under a form's submit button - typically the way out of a dead end (register's "already have an account, sign in", a reset-password form's way back). They live on the `Form` itself, inside `actionConfig` rather than in a column of their own, so they follow it everywhere it's rendered: through the `form` block, through the bare route, and through the standalone re-render a failed submission goes through.
 - **`Service\FormPrefillHelper`** lets app code pre-fill (and lock) a `Form`'s field(s) from session right before redirecting a visitor to it (e.g. a listing page's "Contact us about this" link setting the `subject` field) - no query string needed, cleared automatically once the submission succeeds.
@@ -1299,7 +1314,7 @@ UiBundle does **not** register a menu entry for it: `c975l/config-bundle` (which
 Attaching more than one `Media` to a `hero` block lays them out beside the text in one of two ways, picked with its "Media layout" field (`HeroType::$mediaLayout`). A single attached media keeps the plain static image whichever is set, and an unset value reads as `slideshow`, so every hero stored before the field existed renders exactly as before.
 
 - `slideshow` (the default) cycles through them in a pure-CSS crossfade, 6s per slide, no JS, disabled under `prefers-reduced-motion` - see `.hero__media--slideshow`.
-- `grid` shows all of them at once in three columns, as square tiles taking the section's own chip tones (`--section-border`/`--section-overlay`) rather than a card surface - a logo wall, a set of icons. Nothing animates, so nothing can collide - see `.hero__media--grid`.
+- `grid` shows all of them at once in three columns, as square tiles bordered by the section's own tone (`--section-border`) over an opaque plate (`--hero-media-grid-background`, white) rather than a card surface - a logo wall, a set of icons. A mark is drawn for one background, so the plate keeps its colors from mixing into the hero's; for the same reason the tiles carry no `:hover` - they are not links. Nothing animates, so nothing can collide - see `.hero__media--grid`.
 
 Both live in `sass/_page-sections.scss`. `BlockType::HERO_MEDIA_MAX` caps a hero at 9 medias, for the slideshow's sake: its keyframes can't read the slide count, so each slide's turn is a `:nth-child` delay and each count both a `[data-count]` duration and its own `@keyframes`, holding a slide opaque for exactly its share of the cycle - all three generated from `$hero-slide-max`, and an image past that cap would silently collide with an earlier slide's timing. One cap covers both layouts rather than a validation branch reading `mediaLayout` from inside `BlockType`'s `PRE_SUBMIT` listener. The tiles carry no color filter of their own: a site whose icons are monochrome and sitting on a dark flat inverts them from its own `app.css`, which is where rules overriding a bundle's classes belong.
 

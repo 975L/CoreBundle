@@ -1370,6 +1370,30 @@
                 <source>label.friday</source>
                 <target>Vendredi</target>
             </trans-unit>
+            <trans-unit id="3NDFv4Q">
+                <source>label.gallery_showcase_collection</source>
+                <target>Collection</target>
+            </trans-unit>
+            <trans-unit id="2P1RP7K">
+                <source>label.gallery_showcase_collection_description</source>
+                <target>Les entrées d'une source externe, en grille de cartes ou en portfolio.</target>
+            </trans-unit>
+            <trans-unit id="nWcg5Ou">
+                <source>label.gallery_showcase_flex_columns</source>
+                <target>Colonnes flexibles</target>
+            </trans-unit>
+            <trans-unit id="Hs5IZTi">
+                <source>label.gallery_showcase_flex_columns_description</source>
+                <target>Un titre de section suivi de colonnes de largeurs libres, chacune groupant les blocks de son choix.</target>
+            </trans-unit>
+            <trans-unit id="UVcO6O_">
+                <source>label.gallery_showcase_section_cards</source>
+                <target>Section de cartes</target>
+            </trans-unit>
+            <trans-unit id="ZgxEnHs">
+                <source>label.gallery_showcase_section_cards_description</source>
+                <target>Une rangée de cartes complètes sous un titre de section, avec son ancre.</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personnaliser un e-mail</target>
