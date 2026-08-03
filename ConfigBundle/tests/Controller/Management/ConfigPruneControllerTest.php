@@ -91,7 +91,7 @@ class ConfigPruneControllerTest extends TestCase
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
-            'twig' => $this->createTwigExpecting(['orphans' => [$orphan], 'hasDeclarations' => true, 'unreadableFiles' => []]),
+            'twig' => $this->createTwigExpecting(['orphans' => [$orphan], 'hasDeclarations' => true, 'unreadableFiles' => [], 'unregistered' => []]),
         ]));
 
         $this->assertSame(200, $controller->index()->getStatusCode());
@@ -106,7 +106,7 @@ class ConfigPruneControllerTest extends TestCase
         $controller = $this->createController($configRepository, $this->createDeclarationLocator([], []));
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
-            'twig' => $this->createTwigExpecting(['orphans' => [], 'hasDeclarations' => false, 'unreadableFiles' => []]),
+            'twig' => $this->createTwigExpecting(['orphans' => [], 'hasDeclarations' => false, 'unreadableFiles' => [], 'unregistered' => []]),
         ]));
 
         $controller->index();
@@ -124,7 +124,7 @@ class ConfigPruneControllerTest extends TestCase
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
-            'twig' => $this->createTwigExpecting(['orphans' => [], 'hasDeclarations' => true, 'unreadableFiles' => ['configs.json']]),
+            'twig' => $this->createTwigExpecting(['orphans' => [], 'hasDeclarations' => true, 'unreadableFiles' => ['configs.json'], 'unregistered' => []]),
         ]));
 
         $controller->index();

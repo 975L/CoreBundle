@@ -6,6 +6,18 @@
     <h1>{{ 'label.config_prune'|trans({}, 'config') }}</h1>
     <p>{{ 'description.config_prune'|trans({}, 'config') }}</p>
 
+    {# Never offered for deletion: their bundle still declares them, this application just doesn't register it #}
+    {% if unregistered is not empty %}
+        <div class="alert alert-info">
+            {{ 'label.config_prune_unregistered'|trans({}, 'config') }}
+            <ul>
+                {% for config in unregistered %}
+                    <li>{{ config.slug }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     {% if not hasDeclarations %}
         <div class="alert alert-danger">{{ 'label.config_prune_no_declaration'|trans({}, 'config') }}</div>
     {% elseif unreadableFiles is not empty %}

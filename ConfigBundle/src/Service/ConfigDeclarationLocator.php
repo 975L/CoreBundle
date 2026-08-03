@@ -39,9 +39,31 @@ class ConfigDeclarationLocator
     // Returns every slug declared across those files, a malformed file being ignored rather than fatal
     public function findDeclaredSlugs(): array
     {
+        return $this->slugsIn($this->findFiles());
+    }
+
+    // Returns the slugs declared by a c975L bundle Composer installed but bundles.php does not register. Invisible to findFiles() on purpose - a bundle the application does not run has no business creating rows in its database - but a caller deleting undeclared entries has to know about them: those rows are not orphans, their bundle only needs enabling (see ConfigPruneCommand)
+    public function findUnregisteredSlugs(): array
+    {
+        $files = [];
+
+        foreach ($this->bundleLocator->unregisteredDirectories() as $directory) {
+            $files = array_merge($files, glob($directory . '/config/configs*.json') ?: []);
+        }
+
+        return array_values(array_diff($this->slugsIn($files), $this->findDeclaredSlugs()));
+    }
+
+    /**
+     * @param list<string> $files
+     *
+     * @return list<string>
+     */
+    private function slugsIn(array $files): array
+    {
         $slugs = [];
 
-        foreach ($this->findFiles() as $file) {
+        foreach ($files as $file) {
             $configs = json_decode((string) file_get_contents($file), true);
 
             if (!is_array($configs)) {

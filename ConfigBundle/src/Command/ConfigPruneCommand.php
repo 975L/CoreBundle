@@ -77,10 +77,21 @@ class ConfigPruneCommand extends Command
             return Command::FAILURE;
         }
 
-        $orphans = array_values(array_diff(
+        $undeclared = array_diff(
             $this->configRepository->findAllSlugs(),
             $this->declarationLocator->findDeclaredSlugs()
-        ));
+        );
+
+        // An entry whose bundle is installed but absent from bundles.php is not an orphan: it is one line of configuration away from being declared again, and deleting it would take a value the site typed in
+        $unregistered = array_values(array_intersect($undeclared, $this->declarationLocator->findUnregisteredSlugs()));
+        $orphans = array_values(array_diff($undeclared, $unregistered));
+
+        if (!empty($unregistered)) {
+            $io->warning(array_merge(
+                [sprintf('%d entrie(s) are declared by a c975L bundle installed but not registered in config/bundles.php. Left alone: register the bundle rather than delete them.', count($unregistered))],
+                $unregistered,
+            ));
+        }
 
         if (empty($orphans)) {
             $io->success('No orphan config entry.');

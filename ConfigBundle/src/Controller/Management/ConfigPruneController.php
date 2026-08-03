@@ -49,6 +49,8 @@ class ConfigPruneController extends AbstractController
             '@c975LConfig/management/config_prune/index.html.twig',
             [
                 'orphans' => $this->findOrphans(),
+                // Told apart from the orphans and never offered for deletion: their bundle is installed, only not registered
+                'unregistered' => $this->findUnregistered(),
                 // Told apart from "no orphan at all", which looks identical but means the opposite (see findOrphans())
                 'hasDeclarations' => [] !== $this->declarationLocator->findFiles(),
                 'unreadableFiles' => array_map(
@@ -108,7 +110,8 @@ class ConfigPruneController extends AbstractController
 
         $orphanSlugs = array_diff(
             $this->configRepository->findAllSlugs(),
-            $this->declarationLocator->findDeclaredSlugs()
+            $this->declarationLocator->findDeclaredSlugs(),
+            $this->declarationLocator->findUnregisteredSlugs(),
         );
 
         if ([] === $orphanSlugs) {
@@ -116,5 +119,21 @@ class ConfigPruneController extends AbstractController
         }
 
         return $this->configRepository->findBy(['slug' => array_values($orphanSlugs)], ['slug' => 'ASC']);
+    }
+
+    // The entries a c975L bundle still declares, which this application does not register in bundles.php - listed so the page says why they are not offered for deletion, rather than hiding them
+    private function findUnregistered(): array
+    {
+        // Same refusal as findOrphans(): an unfinished install says nothing about what is declared, here neither
+        if ([] === $this->declarationLocator->findFiles() || [] !== $this->declarationLocator->findUnreadableFiles()) {
+            return [];
+        }
+
+        $slugs = array_intersect(
+            $this->configRepository->findAllSlugs(),
+            $this->declarationLocator->findUnregisteredSlugs(),
+        );
+
+        return [] === $slugs ? [] : $this->configRepository->findBy(['slug' => array_values($slugs)], ['slug' => 'ASC']);
     }
 }

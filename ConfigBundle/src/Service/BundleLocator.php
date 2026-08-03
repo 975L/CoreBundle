@@ -10,12 +10,15 @@
 
 namespace c975L\ConfigBundle\Service;
 
+use Composer\InstalledVersions;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // Where the c975L bundles this application runs actually sit on disk - what every "read something from each installed c975L bundle" service (configs.json, scaffold, assets, sources) asks instead of guessing at "vendor/c975l/<package>". A package is free to ship several bundles: c975l/core-bundle ships two, one directory deeper than that guess ever looked
 class BundleLocator
 {
     private const NAMESPACE_PREFIX = 'c975L\\';
+
+    private const VENDOR_PREFIX = 'c975l/';
 
     /**
      * @param array<string, array{path: string, namespace: string}> $bundlesMetadata
@@ -68,6 +71,40 @@ class BundleLocator
         }
 
         return $path;
+    }
+
+    /**
+     * The directories of the c975L packages Composer installed but the application did not register in bundles.php -
+     * what a destructive caller has to know about before taking their contribution for gone (see ConfigPruneCommand).
+     * Read off Composer's own registry rather than off a path pattern, and widened to each package's immediate
+     * subdirectories, a package being free to ship several bundles the way this one does.
+     *
+     * @return list<string>
+     */
+    public function unregisteredDirectories(): array
+    {
+        $registered = array_filter(array_map(realpath(...), array_values($this->directories())));
+        $directories = [];
+
+        foreach (InstalledVersions::getInstalledPackages() as $package) {
+            if (!str_starts_with($package, self::VENDOR_PREFIX)) {
+                continue;
+            }
+
+            $installPath = InstalledVersions::getInstallPath($package);
+            if (null === $installPath) {
+                continue;
+            }
+
+            foreach ([$installPath, ...(glob($installPath . '/*', \GLOB_ONLYDIR) ?: [])] as $directory) {
+                $directory = realpath($directory);
+                if (false !== $directory && !in_array($directory, $registered, true)) {
+                    $directories[] = $directory;
+                }
+            }
+        }
+
+        return array_values(array_unique($directories));
     }
 
     /**

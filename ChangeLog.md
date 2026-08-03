@@ -27,7 +27,10 @@ Accounts, scaffolding and shared plumbing move to the ecosystem root
 - `ConfigDeclarationLocator`, `ScaffoldInstaller`, `ImportmapSpecifierLocator` and `c975l:deprecations:check` read it instead of globbing `vendor/c975l/*`, a guess the merge invalidated (03/08/2026) [BC-Break]
 - `ImportmapRegistry` prefixes each entry with the declaring bundle's own directory, so no bundle spells out its place under `vendor/` (03/08/2026) [BC-Break]
 - `ImportmapProviderInterface` takes a path relative to the declaring bundle, not to the project root (03/08/2026) [BC-Break]
-- Added `BundleLocatorTest`, and the registry's own prefixing cases (03/08/2026)
+- `c975l:config:prune` and the "Obsolete configs" page keep an entry whose bundle is installed but not registered, reporting it apart instead of offering it for deletion (03/08/2026)
+- Added `BundleLocator::unregisteredDirectories()` and `ConfigDeclarationLocator::findUnregisteredSlugs()`, read off Composer's installed-package registry (03/08/2026)
+- Added the `label.config_prune_unregistered` translation in the three locales (03/08/2026)
+- Added `BundleLocatorTest`, the registry's own prefixing cases and the prune command's kept-entry case (03/08/2026)
 - `ContentQualityClient` restores libxml's internal-error setting after parsing a page, instead of leaving it on for the whole process (03/08/2026)
 - `ContentQualityClient` reads its attributes off elements only, an XPath node list carrying nodes that have none (03/08/2026)
 - `PasswordResetter` and `UserRegistrar` say which entity is missing `setPassword()` instead of fataling on the call (03/08/2026)

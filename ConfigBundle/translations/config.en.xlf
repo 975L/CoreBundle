@@ -398,6 +398,10 @@
                 <source>label.config_prune_none</source>
                 <target>No obsolete config entry.</target>
             </trans-unit>
+            <trans-unit id="cfgPruneUnreg">
+                <source>label.config_prune_unregistered</source>
+                <target>The entries below are declared by a c975L bundle that is installed but absent from config/bundles.php. They are not offered for deletion: register the bundle rather than erase them.</target>
+            </trans-unit>
             <trans-unit id="6XuQx8_">
                 <source>label.config_prune_unreadable</source>
                 <target>The following configs*.json can't be read, so everything they declare would wrongly show up as obsolete. Fix them, then reload this page.</target>

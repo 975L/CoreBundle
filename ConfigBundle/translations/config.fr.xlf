@@ -398,6 +398,10 @@
                 <source>label.config_prune_none</source>
                 <target>Aucune entrée de configuration obsolète.</target>
             </trans-unit>
+            <trans-unit id="cfgPruneUnreg">
+                <source>label.config_prune_unregistered</source>
+                <target>Les entrées suivantes sont déclarées par un bundle c975L installé mais absent de config/bundles.php. Elles ne sont pas proposées à la suppression : enregistrez le bundle plutôt que de les effacer.</target>
+            </trans-unit>
             <trans-unit id="6XuQx8_">
                 <source>label.config_prune_unreadable</source>
                 <target>Les configs*.json suivants sont illisibles, tout ce qu'ils déclarent apparaîtrait donc à tort comme obsolète. Corrigez-les, puis rechargez cette page.</target>

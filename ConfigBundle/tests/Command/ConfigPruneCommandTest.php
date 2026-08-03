@@ -61,6 +61,7 @@ class ConfigPruneCommandTest extends TestCase
         array $slugsInDatabase,
         ?EntityManagerInterface $manager = null,
         ?ConfigServiceInterface $configService = null,
+        ?ConfigDeclarationLocator $locator = null,
     ): CommandTester {
         $repository = $this->createStub(ConfigRepository::class);
         $repository->method('findAllSlugs')->willReturn($slugsInDatabase);
@@ -70,7 +71,7 @@ class ConfigPruneCommandTest extends TestCase
 
         return new CommandTester(new ConfigPruneCommand(
             $repository,
-            new ConfigDeclarationLocator($this->bundleLocator(), $this->projectDir),
+            $locator ?? new ConfigDeclarationLocator($this->bundleLocator(), $this->projectDir),
             $configService ?? $this->createStub(ConfigServiceInterface::class),
             $manager ?? $this->createStub(EntityManagerInterface::class),
         ));
@@ -195,5 +196,31 @@ class ConfigPruneCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertStringContainsString('No orphan config entry', $tester->getDisplay());
+    }
+
+    // An entry whose bundle is installed but absent from bundles.php is not an orphan: it is one line of configuration away from being declared again, and its stored value would go with it
+    public function testAnEntryDeclaredByAnUnregisteredBundleIsReportedAndKept(): void
+    {
+        $locator = $this->createStub(ConfigDeclarationLocator::class);
+        $locator->method('findFiles')->willReturn(['configs.json']);
+        $locator->method('findUnreadableFiles')->willReturn([]);
+        $locator->method('findDeclaredSlugs')->willReturn(['site-name']);
+        $locator->method('findUnregisteredSlugs')->willReturn(['gallery-per-page']);
+
+        $removed = [];
+        $manager = $this->createStub(EntityManagerInterface::class);
+        $manager->method('remove')->willReturnCallback(static function (object $config) use (&$removed): void {
+            $removed[] = $config->getSlug();
+        });
+
+        $tester = $this->createTester(['site-name', 'gallery-per-page', 'really-gone'], $manager, null, $locator);
+        $tester->execute(['--force' => true], ['interactive' => false]);
+
+        // Whitespace collapsed first, the console wrapping the warning wherever the terminal width falls
+        $display = (string) preg_replace('/\s+/', ' ', $tester->getDisplay());
+
+        $this->assertSame(['really-gone'], $removed);
+        $this->assertStringContainsString('installed but not registered in config/bundles.php', $display);
+        $this->assertStringContainsString('gallery-per-page', $display);
     }
 }
