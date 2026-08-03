@@ -1,8 +1,15 @@
 # ChangeLog
 
-## v1.18.0
+> This bundle's own versioning stopped at `v1.17.0`. It now ships inside `c975l/core-bundle`, whose
+> version numbers apply from here on — the entries below were never published as a `v1.18.0`.
+
+## Unreleased
 
 Fonts, generic Twig helpers and this bundle's own menu entries
+
+- `Form::setLinks()` no longer nulls out the `actionConfig` it has just filled, its `links` key always being set by then (03/08/2026)
+- `SvgTextWarningListener` reads the flash bag off a `FlashBagAwareSessionInterface`, staying silent on a session that carries none (03/08/2026)
+- `SvgTextDetector::textNodes()` compares `xpath()`'s return against `null`, the value it actually answers when it finds nothing (03/08/2026)
 
 - Added `templates/layout.html.twig`, the minimal page shell an app running without SiteBundle falls back to (02/08/2026)
 - The minimal layout now carries the theme, the site graphics, the share tags, the font preloads and the cookie banner (02/08/2026)

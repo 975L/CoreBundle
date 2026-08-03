@@ -29,6 +29,7 @@
         "easycorp/easyadmin-bundle": "^5.1",
         "egulias/email-validator": "^4.0",
         "imagine/imagine": "^1.5",
+        "nelmio/security-bundle": "^3.9",
         "sensiolabs/minify-bundle": "^1.2",
         "symfony/asset-mapper": "^8.0",
         "symfony/clock": "^8.0",
@@ -54,7 +55,6 @@
     "require-dev": {
         "chrome-php/chrome": "^1.16",
         "doctrine/doctrine-fixtures-bundle": "^4.3",
-        "nelmio/security-bundle": "^3.9",
         "phpunit/phpunit": "^13.2",
         "symfony/browser-kit": "^8.0",
         "symfony/css-selector": "^8.0",
@@ -69,8 +69,7 @@
     },
     "suggest": {
         "chrome-php/chrome": "To run \"c975l:ui:layout-audit\", which measures a rendered page against the layout invariants the sass tests cannot check. Install it in the consuming site, not here: the command runs from that site's console.",
-        "ext-imagick": "To upload an SVG as favicon or apple-touch-icon: GD has no SVG decoder, so without it those two roles only accept raster images (see SvgRasterizer).",
-        "nelmio/security-bundle": "Enables the CSP nonce a layout can print, and a Turbo-safe session-based nonce generator instead of Nelmio's default per-request one"
+        "ext-imagick": "To upload an SVG as favicon or apple-touch-icon: GD has no SVG decoder, so without it those two roles only accept raster images (see SvgRasterizer)."
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

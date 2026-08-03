@@ -12,8 +12,8 @@ namespace c975L\UiBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use c975L\UiBundle\Management\SvgFontsHealthCheckProvider;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Management\SvgFontsHealthCheckProvider;
 use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\SvgTextDetector;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;

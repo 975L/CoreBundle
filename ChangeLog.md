@@ -9,6 +9,10 @@ ConfigBundle and UiBundle ship as a single package
 - `replace` declared for both old package names, at the versions this package supersedes (03/08/2026)
 - No PHP change at all: `getPath()` already anchors on each bundle class' own file, not on the package root (03/08/2026)
 - One CI run, one PHPUnit run and one PHPStan run over the two bundles, catching the cross-breaks the two separate pipelines could not see (03/08/2026)
+- First one caught: ConfigBundle left libxml's internal-error setting on for the whole process, and UiBundle's rasterizer then accepted a malformed SVG (03/08/2026)
+- Each bundle keeps its own `phpstan-baseline.neon` in its own directory, PHPStan resolving an included file's paths relative to that file (03/08/2026)
+- The second PHPStan pass, level 6 on the scaffold alone, is kept and reads `ConfigBundle/scaffold` (03/08/2026)
+- `nelmio/security-bundle` moved from `require-dev` to `require`: UiBundle's minimal layout calls `csp_nonce()` on every page (03/08/2026)
 - `COMPOSER_ROOT_VERSION` dropped from the CI, the cross-requirement it worked around being gone (03/08/2026)
 
 Each bundle's own history is kept in its directory: [ConfigBundle/ChangeLog.md](ConfigBundle/ChangeLog.md) and [UiBundle/ChangeLog.md](UiBundle/ChangeLog.md).

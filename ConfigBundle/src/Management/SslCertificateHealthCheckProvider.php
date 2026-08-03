@@ -11,7 +11,6 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
-use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use c975L\ConfigBundle\Service\SslCertificateClient;
 use Symfony\Contracts\Translation\TranslatorInterface;

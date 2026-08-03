@@ -7,6 +7,7 @@
 
 Accounts, scaffolding and shared plumbing move to the ecosystem root
 
+- `ContentQualityClient` restores libxml's internal-error setting after parsing a page, instead of leaving it on for the whole process (03/08/2026)
 - Failed Messenger dates are read as UTC, the digest no longer staying silent after an alert (03/08/2026)
 - `ContentQualityAnalyzer` releases each batch's responses instead of holding them for the whole run (03/08/2026)
 - `seo-files`, `deployment` and `redirect-chains` read the site root through `SiteUrlResolver` (03/08/2026)

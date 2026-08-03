@@ -11,7 +11,6 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
-use c975L\ConfigBundle\Management\HealthCheckErrorRow;
 use c975L\ConfigBundle\Service\ContentQualityClient;
 use c975L\ConfigBundle\Service\UrlStatusChecker;
 use Symfony\Contracts\HttpClient\ResponseInterface;

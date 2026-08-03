@@ -11,8 +11,8 @@
 namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Management\SeoFilesHealthCheckProvider;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SeoFilesClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use PHPUnit\Framework\TestCase;

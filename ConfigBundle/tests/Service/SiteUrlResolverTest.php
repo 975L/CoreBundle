@@ -37,7 +37,7 @@ class SiteUrlResolverTest extends TestCase
 
     public function testSiteUrlTrimsSurroundingWhitespace(): void
     {
-        $this->assertSame('https://example.com', $this->createResolver("  https://example.com  ")->siteUrl());
+        $this->assertSame('https://example.com', $this->createResolver('  https://example.com  ')->siteUrl());
     }
 
     // Null rather than an empty string, so a caller can tell "not configured yet" from a value it could work with

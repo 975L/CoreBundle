@@ -64,7 +64,7 @@ class StatusReportBuilderTest extends TestCase
     {
         $packages = $this->createBuilder()->build()['packages'];
 
-        $this->assertArrayHasKey('c975l/config-bundle', $packages);
+        $this->assertArrayHasKey('c975l/core-bundle', $packages);
 
         foreach (array_keys($packages) as $name) {
             $this->assertStringStartsNotWith('symfony/', $name);

@@ -98,7 +98,8 @@ class MinimalLayoutTest extends TestCase
     {
         $this->assertStringContainsString('csp_nonce(', $this->layout(), 'this test no longer guards anything');
 
-        $composer = json_decode((string) file_get_contents(\dirname(__DIR__, 2) . '/composer.json'), true);
+        // The package root, three levels up: this bundle ships inside c975l/core-bundle and no longer has a composer.json of its own
+        $composer = json_decode((string) file_get_contents(\dirname(__DIR__, 3) . '/composer.json'), true);
 
         $this->assertArrayHasKey('nelmio/security-bundle', $composer['require']);
     }

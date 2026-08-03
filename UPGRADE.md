@@ -24,6 +24,10 @@ That is the whole migration for a site that only consumes the two bundles. A sit
 - no `config/bundles.php` entry — both bundles are still registered separately
 - no `configs.json` key
 
+### The one dependency that changes
+
+`nelmio/security-bundle` is a real requirement of this package, where `c975l/config-bundle` only suggested it: UiBundle's minimal layout calls `csp_nonce()` on every page it renders. A site that did not have it gets it installed — and registered by its own Flex recipe — with nothing to do. A site that already had it keeps its own configuration.
+
 ### If you forget
 
 `c975l/core-bundle` declares `replace` for both old package names, so a satellite bundle still requiring `c975l/config-bundle` or `c975l/ui-bundle` resolves onto this package instead of installing a second copy of the same namespaces.

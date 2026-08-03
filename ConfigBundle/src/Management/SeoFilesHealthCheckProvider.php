@@ -11,7 +11,6 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
-use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\ConfigBundle\Service\SeoFilesClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;

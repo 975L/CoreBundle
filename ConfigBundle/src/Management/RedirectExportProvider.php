@@ -10,7 +10,6 @@
 
 namespace c975L\ConfigBundle\Management;
 
-use c975L\ConfigBundle\Management\ExportProviderInterface;
 use c975L\ConfigBundle\Repository\RedirectRepository;
 
 // Serializes Redirects (fromPath/toUrl/permanent/gone) into the shape ContentExporter/RedirectImportProvider expect, for the "export sync all" dashboard shortcut (see ConfigBundle's SyncAllExporter). No files: a Redirect carries no upload of its own

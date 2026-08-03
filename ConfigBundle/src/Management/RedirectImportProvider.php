@@ -11,7 +11,6 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\Redirect;
-use c975L\ConfigBundle\Management\ImportProviderInterface;
 use c975L\ConfigBundle\Repository\RedirectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 

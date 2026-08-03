@@ -11,9 +11,6 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
-use c975L\ConfigBundle\Management\HealthCheckFrequencyAwareInterface;
-use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
-use c975L\ConfigBundle\Management\SitemapProviderInterface;
 
 // Runs the same content-quality checks as ContentQualityHealthCheckProvider (see ContentQualityAnalyzer) over the urls another bundle already declares for its sitemap - a book, a product, a photo, a campaign. Nothing to implement bundle-side: DeclaredUrlsHealthCheckPass registers one of these per SitemapProviderInterface found in the container, so declaring a sitemap is all it takes to be health-checked
 class DeclaredUrlsHealthCheckProvider implements HealthCheckProviderInterface, HealthCheckFrequencyAwareInterface

@@ -12,7 +12,6 @@ namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Entity\Redirect;
-use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\ConfigBundle\Repository\RedirectRepository;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;

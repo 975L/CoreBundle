@@ -249,8 +249,10 @@ abstract class ManagementTargetsTestCase extends TestCase
     {
         $source = (string) file_get_contents($file);
 
-        if (!preg_match('/^namespace\s+([^;]+);/m', $source, $namespace)
-            || !preg_match('/^(?:final\s+|abstract\s+)?class\s+(\w+)/m', $source, $class)) {
+        if (
+            !preg_match('/^namespace\s+([^;]+);/m', $source, $namespace)
+            || !preg_match('/^(?:final\s+|abstract\s+)?class\s+(\w+)/m', $source, $class)
+        ) {
             return null;
         }
 

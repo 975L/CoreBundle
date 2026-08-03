@@ -156,7 +156,8 @@ class Form
             ], $links);
         }
 
-        $this->actionConfig = [] === $actionConfig ? null : $actionConfig;
+        // Never null out here: the branch above always sets the "links" key, empty or not, and it is that key's presence FormSeeder reads
+        $this->actionConfig = $actionConfig;
 
         return $this;
     }

@@ -93,7 +93,7 @@ class c975LConfigBundle extends AbstractBundle
     {
         $containerConfigurator->import('../config/services.yaml');
 
-        // SessionNonceGenerator implements a NelmioSecurityBundle interface, so its class isn't loadable without that (optional) bundle - importing its definition unconditionally would break the container compilation of any app that doesn't use it
+        // SessionNonceGenerator implements a NelmioSecurityBundle interface, so its class isn't loadable without that bundle. The package requires it now (UiBundle's layout calls csp_nonce()), the guard staying as the cheap way not to depend on that being true forever
         if (interface_exists(NonceGeneratorInterface::class)) {
             $containerConfigurator->import('../config/services_nelmio.yaml');
         }

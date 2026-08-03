@@ -14,6 +14,7 @@ use c975L\UiBundle\Service\SvgTextDetector;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Vich\UploaderBundle\Event\Event;
 
@@ -38,6 +39,12 @@ class SvgTextWarningListener
             return;
         }
 
+        // The flash bag is carried by the concrete session, not declared on the interface the request hands back
+        $session = $request->getSession();
+        if (!$session instanceof FlashBagAwareSessionInterface) {
+            return;
+        }
+
         // Same resolution as VichImageResizeListener's, which runs right after this one: a lower priority, so an icon role's SVG is still SVG when read here and a PNG by the time it is stored
         $filename = $event->getMapping()->getFileName($event->getObject());
         $absolutePath = $this->projectDir . '/public/' . $filename;
@@ -48,7 +55,7 @@ class SvgTextWarningListener
 
         // Only punctuation is built here, the sentence itself staying in the catalogue
         $families = $this->svgTextDetector->fontFamilies($absolutePath);
-        $request->getSession()->getFlashBag()->add('warning', $this->translator->trans(
+        $session->getFlashBag()->add('warning', $this->translator->trans(
             'text.svg_text_not_vectorized',
             [
                 '%filename%' => $filename,

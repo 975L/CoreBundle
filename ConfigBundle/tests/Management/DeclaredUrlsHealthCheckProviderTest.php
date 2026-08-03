@@ -12,9 +12,9 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Management\ContentOffenceLocatorRegistry;
 use c975L\ConfigBundle\Management\ContentQualityAnalyzer;
 use c975L\ConfigBundle\Management\DeclaredUrlsHealthCheckProvider;
-use c975L\ConfigBundle\Management\ContentOffenceLocatorRegistry;
 use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Service\ContentQualityClient;
 use c975L\ConfigBundle\Service\UrlStatusChecker;

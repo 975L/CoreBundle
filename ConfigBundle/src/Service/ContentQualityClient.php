@@ -127,11 +127,13 @@ class ContentQualityClient
 
     private function buildXPath(string $html): \DOMXPath
     {
-        libxml_use_internal_errors(true);
+        // Restored right after: the setting is process-wide, and left on it silences the parse errors every other libxml reader of the process relies on - ImageMagick's own SVG parser included, which then renders a malformed SVG instead of refusing it
+        $useInternalErrors = libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
         // Forces UTF-8 interpretation regardless of the page's own <meta charset> (or lack thereof) - DOMDocument defaults to ISO-8859-1 otherwise, mangling accented characters
         $dom->loadHTML('<?xml encoding="utf-8">' . $html, \LIBXML_NOERROR | \LIBXML_NOWARNING);
         libxml_clear_errors();
+        libxml_use_internal_errors($useInternalErrors);
 
         return new \DOMXPath($dom);
     }
