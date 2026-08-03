@@ -52,6 +52,8 @@ Each bundle keeps its own README, unchanged:
 - [ConfigBundle](ConfigBundle/README.md)
 - [UiBundle](UiBundle/README.md)
 
+Its history, on the other hand, is the package's: [ChangeLog.md](ChangeLog.md) and [UPGRADE.md](UPGRADE.md) carry both bundles from here on. Each bundle's own files stop at its last published release — `v5.17.1` for ConfigBundle, `v1.17.0` for UiBundle — and are kept as archives.
+
 ## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
 
 See [UPGRADE.md](UPGRADE.md). In short: replace the two requirements with `c975l/core-bundle`. **No PHP `use`, no `@c975LUi/…` template reference, no translation key and no `bundles.php` entry changes** — the namespaces are the same ones.
