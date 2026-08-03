@@ -36,6 +36,7 @@ class ScaffoldInstallCommand extends Command
         $this
             ->addOption('path', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Restrict the run to these relative paths (--path=src/Scheduler, repeatable), instead of the whole scaffold of every installed bundle')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'List what would be copied and backed up, write nothing')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Overwrite the files this site customized too, backing each one up into existingFiles/ first - narrow it with --path rather than adopting a whole scaffold blind')
         ;
     }
 
@@ -44,11 +45,23 @@ class ScaffoldInstallCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $dryRun = (bool) $input->getOption('dry-run');
 
-        $result = $this->scaffoldInstaller->install($input->getOption('path'), $dryRun);
+        $result = $this->scaffoldInstaller->install($input->getOption('path'), $dryRun, (bool) $input->getOption('force'));
 
         // What would be overwritten is the whole point of the dry run, a count alone saying nothing about which files diverged
         if ($dryRun && $result['files']) {
             $io->listing($result['files']);
+        }
+
+        // Named one by one with the source to compare against: these are the files carrying whatever this site does differently, and the upgrade they still need is a decision only their author can make. The pairs are listed outside the warning block, whose padding would wrap a vendor/ path mid-word - these are meant to be pasted into a diff
+        if ($result['diverged']) {
+            $io->warning(sprintf('%d file(s) left untouched, this site having customized them since they were installed.', count($result['diverged'])));
+            $io->listing(array_map(
+                static fn (string $file, string $source): string => $file . "\n  ← " . $source,
+                array_keys($result['diverged']),
+                $result['diverged']
+            ));
+            $io->text('Compare each with its source to carry over what the new scaffold changed, or re-run with --force (narrowed by --path=…) to take the new version and find yours back in existingFiles/.');
+            $io->newLine();
         }
 
         $message = sprintf(

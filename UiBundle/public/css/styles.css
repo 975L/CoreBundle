@@ -606,6 +606,10 @@ h2.card-header {
   border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
 
+.card-header .icon {
+  filter: brightness(0) invert(1);
+}
+
 .card-header a,
 .card-header a:visited {
   color: inherit;
@@ -1189,7 +1193,6 @@ img.white {
 }
 
 main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
-.feature-bar,
 .text-section,
 .section-features-section,
 .section-cards-section,
@@ -1207,18 +1210,20 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .expertise-banner,
 .process-steps,
 .portfolio-grid,
-.collection-grid {
-  padding-top: clamp(48px, 8vw, 84px);
+.collection-grid,
+.flex-columns-section,
+.cta-band {
+  padding-top: var(--section-space, clamp(48px, 8vw, 84px));
 }
 
 .text-section {
-  padding-top: clamp(24px, 4vw, 48px);
+  padding-top: var(--section-space-tight, clamp(24px, 4vw, 48px));
 }
 
 .text-section.section--bg-muted,
 .text-section.section--bg-primary,
 .text-section.section--bg-dark {
-  padding-bottom: clamp(24px, 4vw, 48px);
+  padding-bottom: var(--section-space-tight, clamp(24px, 4vw, 48px));
 }
 
 .flex-columns__col > .section-features-section,
@@ -1227,8 +1232,18 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .flex-columns__col > .process-steps,
 .flex-columns__col > .portfolio-grid,
 .flex-columns__col > .collection-grid,
+.flex-columns__col > .flex-columns-section,
+.flex-columns__col > .cta-band,
 .flex-columns__col > .text-section {
   padding-top: 0;
+}
+
+.flex-columns__col > .feature-bar {
+  margin-block-start: 0;
+}
+
+.section-wrap > .section-head:last-child .section-title {
+  margin-bottom: 0;
 }
 
 .flex-columns__col .section-wrap {
@@ -1370,8 +1385,15 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   text-align: center;
   gap: 56px;
   align-items: center;
-  padding-top: clamp(48px, 8vw, 84px);
-  padding-bottom: clamp(48px, 8vw, 84px);
+  padding-top: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
+.hero:has(.hero__stat) .section-wrap {
+  padding-bottom: 26px;
+}
+
+.hero:is(.hero--has-bg, .section--bg-muted, .section--bg-primary, .section--bg-dark) .section-wrap {
+  padding-bottom: var(--section-space, clamp(48px, 8vw, 84px));
 }
 
 .hero__badge {
@@ -1828,6 +1850,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 /* ---- feature_bar ---- */
 .feature-bar {
+  margin-block-start: var(--section-space, clamp(48px, 8vw, 84px));
   background: var(--section-background, var(--surface-alt));
   border-top: 1px solid var(--section-border, var(--border-color));
   border-bottom: 1px solid var(--section-border, var(--border-color));
@@ -1901,6 +1924,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.flex-columns__col > :last-child {
+  margin-bottom: 0;
 }
 
 /* ---- expertise_banner ---- */
@@ -2076,11 +2103,6 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 /* ---- cta_band ---- */
-.cta-band {
-  padding-top: clamp(48px, 8vw, 84px);
-  padding-bottom: clamp(48px, 8vw, 84px);
-}
-
 .cta-band__inner {
   background: var(--primary);
   border-radius: var(--radius-panel);

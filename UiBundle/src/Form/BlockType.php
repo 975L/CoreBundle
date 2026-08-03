@@ -14,6 +14,7 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Form\Util\MultiUploadMerger;
+use c975L\UiBundle\Form\Util\SubmissionIntegrity;
 use c975L\UiBundle\Registry\BlockRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSetDataEvent;
@@ -25,6 +26,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints\Count;
@@ -35,9 +37,15 @@ class BlockType extends AbstractType
     // "hero"'s pure-CSS crossfade slideshow only has :nth-child/[data-count] rules for up to this many images (see .hero__media--slideshow in sass/_page-sections.scss) - beyond it, extra images would silently collide with an earlier slide's animation timing instead of taking their own turn. The cap is shared with the "grid" mediaLayout, which has no timing to collide with: one number covering both is worth more than a validation branch reading a sibling field from inside this form's PRE_SUBMIT dance
     private const HERO_MEDIA_MAX = 9;
 
+    // Unmapped marker rendered beside a container's "slots" collection, and read back before anything is pruned:
+    // it is what tells "the editor removed the last slot" apart from "this form never carried the collection".
+    // Outside the collection's own rows on purpose, so deleting every one of them leaves it standing
+    public const SLOTS_RENDERED = 'slotsRendered';
+
     public function __construct(
         private BlockRegistry $registry,
         private UrlGeneratorInterface $router,
+        private ?RequestStack $requestStack = null,
     ) {
     }
 
@@ -112,21 +120,10 @@ class BlockType extends AbstractType
                     }
 
                     if ($this->registry->isContainer($kind)) {
-                        $block = $event->getForm()->getData();
-                        if ($block instanceof Block) {
-                            CollectionReconciler::pruneRemoved(
-                                $block->getSlots(),
-                                $submitted['slots'] ?? [],
-                                static fn (Block $slot) => $block->removeSlot($slot)
-                            );
-                        }
-
-                        // Same reasoning as "medias" above: removing the last slot leaves the key entirely absent from the submission
-                        if (!isset($submitted['slots'])) {
-                            $submitted['slots'] = [];
-                            $event->setData($submitted);
-                        }
-                        $this->addSlotsSubForm($event->getForm(), $kind, $block instanceof Block ? $block : null);
+                        $this->applySubmittedSlots($event, $kind);
+                    } elseif (isset($submitted[self::SLOTS_RENDERED])) {
+                        // Added back for a kind switched away from a container, which still carries the marker: a key no field claims fails the whole form as an extra one
+                        $this->addSlotsMarker($event->getForm());
                     }
 
                     // "data" (and "medias"/"slots") were just (re)added above - move "animation" back below them, in case this is a brand new collection entry whose PRE_SET_DATA fired with no kind yet (so "animation" was added there before "data" ever existed)
@@ -135,6 +132,61 @@ class BlockType extends AbstractType
                 }
             }
         );
+    }
+
+    /*
+     * "slots" absent from the submission means one of two very different things: the editor removed the last slot
+     * - an HTML form cannot represent an empty array, only an absent key, same as "medias" - or this form never
+     * carried the collection at all. A kind just switched to a container client-side, a body PHP truncated at
+     * max_input_vars, a DOM something rewrote: all three arrive as that same absent key. Read as the first, the
+     * second deletes every slot, cascaded and orphan-removed, with nothing left to say it ever happened - which is
+     * how a live page lost the cards of a section_cards block.
+     *
+     * The marker is what tells the two apart. The submitted collection itself counts as its own proof: an edit page
+     * opened before the marker existed still carries its slots, and must go on saving rather than fail as an extra
+     * field. "Neither", and a body PHP cut short, both mean nothing submitted says what the editor removed.
+     */
+    private function applySubmittedSlots(FormEvent $event, string $kind): void
+    {
+        $submitted = $event->getData();
+        $form = $event->getForm();
+        $block = $form->getData();
+
+        $rendered = isset($submitted[self::SLOTS_RENDERED]) || isset($submitted['slots']);
+        $complete = $rendered && !$this->isTruncatedSubmission();
+
+        /*
+         * Leaving the collection untouched means taking it off the form: PRE_SET_DATA already added it, and an
+         * absent key does not make Symfony skip a declared child - it submits it with null, which
+         * CollectionType's ResizeFormListener reads as "every row removed", the mapper then empties the collection
+         * and orphanRemoval deletes the rows at flush. Whatever partial rows a truncated body carried are dropped
+         * with it, so the submission fails on its own errors rather than on an extra field, and PageCrudController
+         * is what refuses it outright. The marker is put back on its own, being no proof of anything by itself
+         */
+        if (!$complete) {
+            $form->remove('slots');
+            unset($submitted['slots']);
+            $event->setData($submitted);
+            $this->addSlotsMarker($form);
+
+            return;
+        }
+
+        if ($block instanceof Block) {
+            CollectionReconciler::pruneRemoved(
+                $block->getSlots(),
+                $submitted['slots'] ?? [],
+                static fn (Block $slot) => $block->removeSlot($slot)
+            );
+        }
+
+        // Removing the very last slot leaves nothing submitted at all under "slots", which has to be normalized to [] here or Symfony skips add/remove handling for the field
+        if (!isset($submitted['slots'])) {
+            $submitted['slots'] = [];
+            $event->setData($submitted);
+        }
+
+        $this->addSlotsSubForm($form, $kind, $block instanceof Block ? $block : null);
     }
 
     // The kind picker, added from buildForm() and rebuilt from PRE_SET_DATA when the block already holds a kind
@@ -240,6 +292,26 @@ class BlockType extends AbstractType
                 'data-block-container-id' => $containerId,
             ] : [],
         ]);
+
+        $this->addSlotsMarker($form);
+    }
+
+    // Rendered with the collection and read back on submit - see SLOTS_RENDERED. Unmapped, "data" set on the add() itself the way CollectionReconciler::addIdField() has to, the default mapper otherwise writing the field's empty "data" option back over anything set afterwards
+    private function addSlotsMarker(FormInterface $form): void
+    {
+        $form->add(self::SLOTS_RENDERED, HiddenType::class, [
+            'mapped' => false,
+            'required' => false,
+            'data' => '1',
+        ]);
+    }
+
+    // Whether PHP cut this request body short - see SubmissionIntegrity. No request (a form built outside a request cycle, as the tests do) reads as complete: there is no truncated body to guard against
+    private function isTruncatedSubmission(): bool
+    {
+        $request = $this->requestStack?->getCurrentRequest();
+
+        return null !== $request && SubmissionIntegrity::isTruncated($request->request->all());
     }
 
     // Worded exactly as the accordion headers, so the warning names blocks the editor can actually find

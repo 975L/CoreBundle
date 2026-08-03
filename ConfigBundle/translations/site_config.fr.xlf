@@ -60,7 +60,7 @@
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>
-                <target>Nombre de jours de sauvegardes conservées sur le serveur. La copie hors site doit en garder davantage, sinon elle re-télécharge à chaque passage ce qu'elle vient de purger</target>
+                <target>Nombre de jours de sauvegardes conservées sur le serveur. La copie hors site doit en garder davantage, sinon elle re-télécharge à chaque passage ce qu'elle vient de purger. 0 conserve toutes les archives</target>
             </trans-unit>
             <trans-unit id="maeSbQ2">
                 <source>description.site_contact_email</source>
@@ -85,6 +85,10 @@
             <trans-unit id="CnwQ.g0">
                 <source>description.site_first_online_date</source>
                 <target>Date de mise en ligne du site (AAAA-MM-JJ)</target>
+            </trans-unit>
+            <trans-unit id="i3DuFCW">
+                <source>description.site_health_check_retention_days</source>
+                <target>Nombre de jours d'historique des bilans de santé conservés en base de données. Le dernier résultat de chaque contrôle est toujours conservé, quel que soit son âge. 0 conserve tout l'historique</target>
             </trans-unit>
             <trans-unit id="8hKkN.f">
                 <source>description.site_hosting_provider</source>
@@ -112,7 +116,7 @@
             </trans-unit>
             <trans-unit id="2PLJgPq">
                 <source>description.site_messenger_cleanup_retention_days</source>
-                <target>Jours de conservation des messages Messenger en échec avant purge</target>
+                <target>Jours de conservation des messages Messenger en échec avant purge. 0 les conserve tous</target>
             </trans-unit>
             <trans-unit id="Sg8q_Ks">
                 <source>description.site_name</source>
@@ -237,6 +241,10 @@
             <trans-unit id="svwpoO7">
                 <source>label.site_first_online_date</source>
                 <target>Date de mise en ligne du site</target>
+            </trans-unit>
+            <trans-unit id="utObxle">
+                <source>label.site_health_check_retention_days</source>
+                <target>Rétention du bilan de santé (jours)</target>
             </trans-unit>
             <trans-unit id="aCpqS8A">
                 <source>label.site_hosting_provider</source>

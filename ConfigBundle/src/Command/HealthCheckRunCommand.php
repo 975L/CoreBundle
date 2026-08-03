@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Command;
 
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
+use c975L\ConfigBundle\Management\HealthCheckRetentionPurger;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -30,6 +31,7 @@ class HealthCheckRunCommand extends Command
 
     public function __construct(
         private readonly HealthCheckRunner $healthCheckRunner,
+        private readonly HealthCheckRetentionPurger $healthCheckRetentionPurger,
     ) {
         parent::__construct();
     }
@@ -51,6 +53,12 @@ class HealthCheckRunCommand extends Command
             $io->error(sprintf('Unknown frequency "%s" - expected: %s.', $frequency, implode(', ', AsHealthCheck::FREQUENCIES)));
 
             return Command::INVALID;
+        }
+
+        // Before the run, and before every early return below: an install with no provider at all still gets a backup row every six hours, and that is exactly the install a purge wired after the run would never reach
+        $purged = $this->healthCheckRetentionPurger->purge();
+        if ($purged > 0) {
+            $io->writeln(sprintf('%d result(s) past the retention window purged', $purged));
         }
 
         $kinds = $input->getOption('kind');

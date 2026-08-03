@@ -1,5 +1,54 @@
 # ChangeLog
 
+## v1.1
+
+Nothing deleted that no one asked to delete
+
+### ConfigBundle
+
+- `c975l:scaffold:install` never overwrites a file the site customized: it records what it delivers in `.c975l-scaffold.json` and only refreshes what is still identical to it (03/08/2026)
+- A customized file is named in the output next to its scaffold source instead, the upgrade it needs being a decision only its author can make (03/08/2026)
+- Added `--force` to take the new version anyway, backing the site's own copy up to `existingFiles/` first - `--path` narrows it (03/08/2026)
+- A file still identical to its source is recorded on the way past, so a site predating the manifest is not read as having customized everything (03/08/2026)
+- Refreshing an untouched file no longer writes a backup, `existingFiles/` keeping only what the site actually wrote (03/08/2026)
+- `c975l:config:check-importmap` repoints an entry whose file is gone at the path its provider resolves, which is what the ConfigBundle+UiBundle merge did to every `vendor/` path (03/08/2026)
+- An override is still left alone as long as it resolves; a dead path no provider claims is reported rather than left to answer 500 on the first page loading it (03/08/2026)
+- Whether it resolves is answered by the importmap's own config reader: spelled out by hand, a plain filesystem path lost its leading slash and was looked for under the project root, so an override really there was reported missing and repointed (03/08/2026)
+- The three retention configs now read a `0` the same way, as "keep everything", and an entry no row carries as "use the default" (03/08/2026)
+- A field cleared at the back-office is read as that `0`, not as an unset entry: the three are declared `int`, so an emptied row comes back cast to zero and no fallback can tell it apart from a typed one - said so in the code and in the health check's own description (03/08/2026)
+- `site-backup-retention-days` set to `0` now keeps every archive instead of purging at the 15-day default (03/08/2026)
+- `site-messenger-cleanup-retention-days` set to `0` now keeps every failed message, a value `purgeOlderThan()` must never be handed (03/08/2026)
+- `site-messenger-cleanup-retention-days` is declared `int` rather than `text`, as the two other retentions are - `c975l:config:load-all` aligns the stored rows (03/08/2026)
+- `BackupRetentionPurger`'s "keep everything" guard was unreachable, `?: DEFAULT` reading a zero as an unset entry (03/08/2026)
+- Added the two retention-reading cases to `BackupCommandTest` and said so in the config's own description (03/08/2026)
+- Added `HealthCheckRetentionPurger`, bounding a `site_health_check_result` table that only ever grew (03/08/2026)
+- Added the `site-health-check-retention-days` config, 90 days by default, `0` keeping everything (03/08/2026)
+- Added the `health_check` config group and its three translations (03/08/2026)
+- `c975l:health-check:run` purges before running, so an install with no provider gets its backup rows purged too (03/08/2026)
+- Each check's latest row survives the purge whatever its age, the dashboard reading exactly those (03/08/2026)
+- Added `HealthCheckResultRepository::findLatestIdPerUrlAndKind()` and `deleteOlderThan()` (03/08/2026)
+- Added `HealthCheckRetentionPurgerTest` and the command's two purge cases (03/08/2026)
+
+### UiBundle
+
+- The page's vertical rhythm is one token, `--section-space`, with `--section-space-tight` for `text_section`, both offered by the scaffolded `ui.css` (03/08/2026)
+- A section-level block now declares its step on its top edge only, so any two blocks are parted by exactly one instead of by one or two depending on the pair (03/08/2026)
+- `flex_columns` was in no rhythm rule at all and sat flush against the block above it (03/08/2026)
+- `hero` and `cta_band` no longer pad their bottom edge, which was added to the next block's top one (03/08/2026)
+- A `hero` carrying a flat - an image or a color - keeps that bottom padding, its content sitting on the flat's own edge otherwise (03/08/2026)
+- A `hero` showing a stat card gets back the 26px that card hangs below the grid, which it used to take off the step under it (03/08/2026)
+- `feature_bar` carries its step as a `margin-block-start`, a padding parting the band's own hairlines from its items instead, and is left out of the margin reset for it (03/08/2026)
+- A `flex_columns` column drops the theme's bottom margin off the element it ends on, an `image` slot's bare `<p>` pushing the section below it 16px lower (03/08/2026)
+- `section_cards`, `section_features` and `flex_columns` render no row at all rather than an empty one, the heading's own bottom margin hanging under it otherwise (03/08/2026)
+- Added `SectionRhythmTest`, locking the step on every kind the margin reset names, the bottom edge to flats alone, and the value to the token (03/08/2026)
+- A card header's icon is whitened by the stylesheet, an `<img>` painting the SVG file's own fill on the colored band otherwise (03/08/2026)
+- Added `CardHeaderIconTest` (03/08/2026)
+- `BlockType` no longer reads an absent `slots` key as "the editor removed every slot": a marker rendered beside the collection tells that apart from a form that never carried it (03/08/2026)
+- A submission PHP truncated at `max_input_vars` removes nothing at all, the marker proving nothing on a body cut wherever it landed (03/08/2026)
+- Either way the collection is taken off the form rather than left declared unfed: an absent key reaches a declared child as a null, which `CollectionType` reads as "every row removed" (03/08/2026)
+- Added `Form\Util\SubmissionIntegrity`, answering whether a request body arrived complete (03/08/2026)
+- Added `SubmissionIntegrityTest` and `BlockSlotsGuardTest`, the latter reproducing over a real form the deletion the guard closes (03/08/2026)
+
 ## v1.0.0
 
 ConfigBundle and UiBundle ship as a single package

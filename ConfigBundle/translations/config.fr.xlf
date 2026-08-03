@@ -538,6 +538,10 @@
                 <source>label.group_general</source>
                 <target>Général</target>
             </trans-unit>
+            <trans-unit id="5VoqLAB">
+                <source>label.group_health_check</source>
+                <target>Bilan de santé</target>
+            </trans-unit>
             <trans-unit id="7y32L1t">
                 <source>label.group_items_count</source>
                 <target>Nombre d'éléments</target>

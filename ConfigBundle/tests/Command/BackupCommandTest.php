@@ -67,7 +67,8 @@ class BackupCommandTest extends TestCase
             'email-from' => 'noreply@example.com',
         ], $overrides);
         $service = $this->createStub(ConfigServiceInterface::class);
-        $service->method('get')->willReturnCallback(fn (string $key) => $values[$key] ?? '');
+        // Null for anything not listed, which is what ConfigService answers for an entry no row carries - a "" would say the row is there and empty, a different case for every int entry
+        $service->method('get')->willReturnCallback(fn (string $key) => $values[$key] ?? null);
 
         return $service;
     }
@@ -200,6 +201,45 @@ class BackupCommandTest extends TestCase
         $this->assertStringContainsString('Retention (15 days): 1 run(s) deleted', $report);
     }
 
+    // A "0" typed in the back-office means "keep every archive", and used to be read as an unset entry - ie. purged at 15 days, the very opposite, BackupRetentionPurger's own guard never getting a zero to act on
+    public function testARetentionOfZeroKeepsEveryRun(): void
+    {
+        $old = sprintf('%s/var/backup/2020/2020-01/2020-01-01', $this->projectDir);
+        mkdir($old, 0775, true);
+        file_put_contents($old . '/archive.tar.bz2', 'old');
+
+        $report = $this->runAndCaptureReport(['site-backup-retention-days' => '0']);
+
+        $this->assertDirectoryExists($old);
+        $this->assertStringContainsString('Retention (0 days): 0 run(s) deleted', $report);
+    }
+
+    // A field cleared at the back-office says the same thing as that zero, the entry being declared "int" - what it must not be confused with is the unset entry below
+    public function testAnEmptiedRetentionKeepsEveryRun(): void
+    {
+        $old = sprintf('%s/var/backup/2020/2020-01/2020-01-01', $this->projectDir);
+        mkdir($old, 0775, true);
+        file_put_contents($old . '/archive.tar.bz2', 'old');
+
+        $report = $this->runAndCaptureReport(['site-backup-retention-days' => '']);
+
+        $this->assertDirectoryExists($old);
+        $this->assertStringContainsString('Retention (0 days): 0 run(s) deleted', $report);
+    }
+
+    // The entry an install never loaded still gets the rolling window, the fallback being what the zero above must not be confused with
+    public function testAnUnsetRetentionFallsBackToTheDefaultWindow(): void
+    {
+        $old = sprintf('%s/var/backup/2020/2020-01/2020-01-01', $this->projectDir);
+        mkdir($old, 0775, true);
+        file_put_contents($old . '/archive.tar.bz2', 'old');
+
+        $report = $this->runAndCaptureReport(['site-backup-retention-days' => null]);
+
+        $this->assertDirectoryDoesNotExist($old);
+        $this->assertStringContainsString('Retention (15 days): 1 run(s) deleted', $report);
+    }
+
     // Handed absolute paths, tar stored home/…/public/medias/photo.jpg, so a partial extracted over a restored complete archive landed in public/home/…/ instead of overwriting the stale files it was meant to replace
     public function testThePartialArchiveStoresPathsRelativeToTheBackedUpRoot(): void
     {
@@ -269,7 +309,7 @@ class BackupCommandTest extends TestCase
     }
 
     // Runs the command and returns the error-report email's body, which embeds the full run report
-    private function runAndCaptureReport(): string
+    private function runAndCaptureReport(array $configOverrides = []): string
     {
         $capturedEmail = null;
         $mailer = $this->createStub(MailerInterface::class);
@@ -277,7 +317,7 @@ class BackupCommandTest extends TestCase
             $capturedEmail = $email;
         });
 
-        (new CommandTester($this->createCommand($mailer)))->execute([]);
+        (new CommandTester($this->createCommand($mailer, null, $configOverrides)))->execute([]);
 
         return $capturedEmail->getTextBody();
     }

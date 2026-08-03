@@ -10,6 +10,11 @@ $page-section-bp-sm: 621px;
 $page-section-bp-md: 861px;
 $page-section-bp-lg: 1025px;
 
+// The one vertical step of the whole page, written once here and read through --section-space everywhere, so a
+// site retunes the entire rhythm from its own theme.css instead of chasing the value down every kind's rule
+$section-space: clamp(48px, 8vw, 84px);
+$section-space-tight: clamp(24px, 4vw, 48px);
+
 // One measure for the whole page: --body-max-width, declared by SiteBundle, restated for UiBundle alone
 .section-wrap {
     // Restated for UiBundle alone, else the gutters add to the measure instead of fitting inside it
@@ -50,9 +55,10 @@ $page-section-bp-lg: 1025px;
 // the vertical room it sets for itself, leaving it flush against the block above and below
 // Vertical only: the shorthand's "0" would also drop the horizontal "auto" a centered section reads,
 // and beat the negative margins the colored flats and .hero--has-bg break out of the measure with
+// .feature-bar is left out: it renders as a <div>, which SiteBundle's rule never reached, and it is the one
+// kind whose step has to be a margin (see its own rule further down) - the reset would strip it
 main :is(.blocks, .block-animation, .block-editable) > :is(
     .hero,
-    .feature-bar,
     .text-section,
     .section-features-section,
     .section-cards-section,
@@ -66,26 +72,31 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     margin-block: 0;
 }
 
-// Shared vertical rhythm; .hero/.cta-band/.feature-bar/.flex-columns-section handle their own
+// The shared rhythm, on the top edge only: a block owns the room above it and declares nothing below, so any
+// two blocks are parted by exactly one step whichever pair they are. A bottom padding anywhere here would be
+// added to the next block's top one and part that pair by two, which is what .hero and .cta-band used to do
 .section-features-section,
 .section-cards-section,
 .expertise-banner,
 .process-steps,
 .portfolio-grid,
-.collection-grid {
-    padding-top: clamp(48px, 8vw, 84px);
+.collection-grid,
+.flex-columns-section,
+.cta-band {
+    padding-top: var(--section-space, #{$section-space});
 }
 
 // Lighter than the sections above: text_section commonly opens a page, right under its own <h1>
 .text-section {
-    padding-top: clamp(24px, 4vw, 48px);
+    padding-top: var(--section-space-tight, #{$section-space-tight});
 }
 
-// Only on a flat: without it the text would sit flush against the band's bottom edge
+// Only on a flat: the step above a block belongs to the block itself, but a colored band paints down to its
+// own edge, and without a bottom padding of its own the text would sit flush against that edge
 .text-section.section--bg-muted,
 .text-section.section--bg-primary,
 .text-section.section--bg-dark {
-    padding-bottom: clamp(24px, 4vw, 48px);
+    padding-bottom: var(--section-space-tight, #{$section-space-tight});
 }
 
 // As a column slot the page-level top padding would misalign the column against its siblings
@@ -95,8 +106,21 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 .flex-columns__col > .process-steps,
 .flex-columns__col > .portfolio-grid,
 .flex-columns__col > .collection-grid,
+.flex-columns__col > .flex-columns-section,
+.flex-columns__col > .cta-band,
 .flex-columns__col > .text-section {
     padding-top: 0;
+}
+
+// Same reason, for the one kind carrying its step as a margin instead of a padding
+.flex-columns__col > .feature-bar {
+    margin-block-start: 0;
+}
+
+// A container left with nothing to lay out renders no row at all (see Section/Cards.html.twig and its two
+// siblings), which makes the head the last thing in the wrap - and its title's own bottom margin trailing space
+.section-wrap > .section-head:last-child .section-title {
+    margin-bottom: 0;
 }
 
 // The outer section already applied the gutter once; kept last so it wins on equal specificity
@@ -250,8 +274,19 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     text-align: center;
     gap: 56px;
     align-items: center;
-    padding-top: clamp(48px, 8vw, 84px);
-    padding-bottom: clamp(48px, 8vw, 84px);
+    padding-top: var(--section-space, #{$section-space});
+}
+
+// The stat card hangs 26px below the grid it is positioned against; without that room back it eats a third
+// of the step the next block declares, and the hero ends up closer to it than any other pair on the page
+.hero:has(.hero__stat) .section-wrap {
+    padding-bottom: 26px;
+}
+
+// A hero carrying a flat - an image or a color - paints down to its own edge, so its step goes inside it
+// rather than after it. Last of the three, all on equal specificity, and the only one a flat should read
+.hero:is(.hero--has-bg, .section--bg-muted, .section--bg-primary, .section--bg-dark) .section-wrap {
+    padding-bottom: var(--section-space, #{$section-space});
 }
 
 .hero__badge {
@@ -503,7 +538,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 /* ---- feature_bar ---- */
+// The one kind whose step is a margin: the band paints its own background between its own hairlines, and a
+// padding would part those hairlines from the items instead of parting the band from the block above it.
+// Left out of the margin reset above for exactly that reason
 .feature-bar {
+    margin-block-start: var(--section-space, #{$section-space});
     background: var(--section-background, var(--surface-alt));
     border-top: 1px solid var(--section-border, var(--border-color));
     border-bottom: 1px solid var(--section-border, var(--border-color));
@@ -585,6 +624,12 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+// A column ends where its content ends: a slot rendering a bare <p> - the image kind does - would otherwise
+// hand the theme's own paragraph margin to the row, and the section below it would sit that much lower
+.flex-columns__col > :last-child {
+    margin-bottom: 0;
 }
 
 /* ---- expertise_banner ---- */
@@ -766,11 +811,8 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 /* ---- cta_band ---- */
-.cta-band {
-    padding-top: clamp(48px, 8vw, 84px);
-    padding-bottom: clamp(48px, 8vw, 84px);
-}
-
+// Its vertical room comes from the shared rhythm at the top of this file: the panel below is what carries the
+// color, the section itself is transparent, so it has no edge of its own to pad against
 .cta-band__inner {
     background: var(--primary);
     border-radius: var(--radius-panel);

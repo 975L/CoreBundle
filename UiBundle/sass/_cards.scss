@@ -77,6 +77,13 @@ h2.card-header {
     border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
 
+// An icon is an <img>, so it paints the SVG file's own fill - black - instead of inheriting the header's
+// color like the title next to it does. Whitened here rather than by a "white" class on the markup, so
+// every card gets it, whichever template built the icon (see the ".white" utility in _images.scss)
+.card-header .icon {
+    filter: brightness(0) invert(1);
+}
+
 // Title link: the theme's "*" and "a:hover" match it directly and beat inheritance, hence restated here
 .card-header a,
 .card-header a:visited {

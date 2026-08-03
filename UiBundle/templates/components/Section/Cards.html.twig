@@ -4,10 +4,13 @@
 <{{ tag }} class="section-cards-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         {{ include('@c975LUi/components/Section/_head.html.twig') }}
-        <div class="cards">
-            {% for slot in slots %}
-                {{ render_block(slot) }}
-            {% endfor %}
-        </div>
+        {# No row at all rather than an empty one: the head's own bottom margin would otherwise hang below it #}
+        {% if slots|length %}
+            <div class="cards">
+                {% for slot in slots %}
+                    {{ render_block(slot) }}
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </{{ tag }}>

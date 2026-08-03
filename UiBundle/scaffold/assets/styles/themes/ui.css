@@ -27,6 +27,12 @@
        Read by both bundles (a legal document's sections here, an article and a "text" block in SiteBundle) */
     /* --scroll-offset: 80px; */
 
+    /* The page's vertical rhythm: the one step parting any two section-level blocks, declared on the top edge
+       of each so a pair is never parted by two. The tight one is the "text" block's, which commonly opens a
+       page right under its own <h1>. Retuning these two retunes every gap on every page at once */
+    /* --section-space: clamp(48px, 8vw, 84px); */
+    /* --section-space-tight: clamp(24px, 4vw, 48px); */
+
     /* The room kept above and below a slider and a comparison, the two block kinds laying out their own
        vertical rhythm rather than taking the one the section-level blocks share */
     /* --slider-margin-block: 3em; */

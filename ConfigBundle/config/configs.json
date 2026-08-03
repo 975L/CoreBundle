@@ -154,6 +154,17 @@
         "description": "description.site_backup_max_age_hours"
     },
     {
+        "label": "label.site_health_check_retention_days",
+        "slug": "site-health-check-retention-days",
+        "sensitive": false,
+        "restricted": true,
+        "value": "90",
+        "kind": "int",
+        "group": "health_check",
+        "severity": null,
+        "description": "description.site_health_check_retention_days"
+    },
+    {
         "label": "label.email_from",
         "slug": "email-from",
         "sensitive": false,
@@ -203,7 +214,7 @@
         "sensitive": false,
         "restricted": true,
         "value": "30",
-        "kind": "text",
+        "kind": "int",
         "group": "messenger",
         "severity": null,
         "description": "description.site_messenger_cleanup_retention_days"

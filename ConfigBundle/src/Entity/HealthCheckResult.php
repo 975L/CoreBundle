@@ -15,7 +15,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-// One row per (url, kind) check run, appended by HealthCheckRunner - kept as history rather than upserted in place, so the "Health check" dashboard page (HealthCheckResultRepository::findLatestPerUrlAndKind()) can later grow a trend view without a schema change. No pruning yet: weekly runs across a site's pages stay a modest row count, see ConfigBundle's README for the growth math before adding one
+// One row per (url, kind) check run, appended by HealthCheckRunner - kept as history rather than upserted in place, so the "Health check" dashboard page (HealthCheckResultRepository::findLatestPerUrlAndKind()) can later grow a trend view without a schema change. Bounded by HealthCheckRetentionPurger, which each health check run calls: the weekly and monthly runs this table was sized for do stay a modest row count for years, the row BackupResultRecorder appends every six hours does not, and every SQL dump carries whatever it has grown to
 #[ORM\Entity(repositoryClass: HealthCheckResultRepository::class)]
 #[ORM\Table(name: 'site_health_check_result')]
 #[ORM\Index(columns: ['url', 'kind', 'checked_at'], name: 'idx_health_check_url_kind_date')]

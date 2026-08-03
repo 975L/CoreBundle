@@ -91,6 +91,35 @@ class HealthCheckResultRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // The id of the most recent row of each (url, kind) - what the retention purge has to keep whatever its age, those being the very rows the dashboard reads (see findLatestPerUrlAndKind()). MAX(id) rather than the row carrying MAX(checkedAt): rows are only ever appended, so a group's highest id is its latest run, and this stays one grouped query on the table the purge exists to keep small
+    // @return int[]
+    public function findLatestIdPerUrlAndKind(): array
+    {
+        return array_map('intval', $this->createQueryBuilder('h')
+            ->select('MAX(h.id)')
+            ->groupBy('h.url')
+            ->addGroupBy('h.kind')
+            ->getQuery()
+            ->getSingleColumnResult());
+    }
+
+    // Deletes the rows checked before $limit, except those whose id is listed in $keepIds - a bulk DQL delete rather than a hydrate-then-remove loop, the rows to delete being counted in thousands and none of them of any use to the identity map afterwards
+    public function deleteOlderThan(\DateTimeInterface $limit, array $keepIds = []): int
+    {
+        $qb = $this->createQueryBuilder('h')
+            ->delete()
+            ->andWhere('h.checkedAt < :limit')
+            ->setParameter('limit', $limit);
+
+        if ([] !== $keepIds) {
+            $qb
+                ->andWhere('h.id NOT IN (:keep)')
+                ->setParameter('keep', $keepIds);
+        }
+
+        return (int) $qb->getQuery()->execute();
+    }
+
     // The distinct kinds having recorded at least one row since a given moment - how the Health check page tells how many of a queued run's jobs have landed (see HealthCheckRunProgress), the jobs themselves running in a Messenger worker the web request knows nothing about. A DISTINCT aggregate rather than a hydration: the answer is a handful of strings whatever the number of rows behind them, and this is polled every few seconds
     // @return string[]
     public function findKindsCheckedSince(\DateTimeInterface $since): array

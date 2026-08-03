@@ -111,7 +111,18 @@ php bin/console c975l:scaffold:install
 php bin/console c975l:config:user-create
 ```
 
-The first copies every installed c975L bundle's `scaffold/` into the app — `App\Entity\User` and its repository, `App\Security\UserChecker`, the security/registration/reset-password controllers and their templates, `App\Scheduler\MaintenanceSchedule`, the `validators` catalog — backing up anything it would overwrite to `existingFiles/<same path>.old` rather than erasing it. A target already identical to the source is left untouched, so re-running it is a no-op; `--path=src/Scheduler` restricts a run to one path when propagating a single upgraded file across sites.
+The first copies every installed c975L bundle's `scaffold/` into the app — `App\Entity\User` and its repository, `App\Security\UserChecker`, the security/registration/reset-password controllers and their templates, `App\Scheduler\MaintenanceSchedule`, the `validators` catalog. A target already identical to the source is left untouched, so re-running it is a no-op; `--path=src/Scheduler` restricts a run to one path when propagating a single upgraded file across sites.
+
+**A file you customized is never overwritten.** The command records the hash of everything it delivers in `.c975l-scaffold.json` — commit it, like `symfony.lock` — which is what lets a later run tell the two cases apart, indistinguishable by content alone:
+
+| The target is | What happens |
+|---|---|
+| still bit-for-bit what was delivered | only the scaffold moved on: refreshed silently, no backup needed for a file the bundle can reproduce |
+| anything else | your own work: left exactly as it is, and named in the output next to the scaffold source to compare it against |
+
+So upgrading a bundle brings the boilerplate along and hands you the short list of files whose upgrade only you can do — typically `templates/security/login.html.twig` once a site has given it a design. `--force` takes the new version anyway, backing yours up to `existingFiles/<same path>.old`; narrow it with `--path` rather than adopting a whole scaffold blind.
+
+A site predating the manifest has nothing to do: every file still identical to its source is recorded on the way past, and only what already differs is reported the first time.
 
 The second creates an admin account (`--email`/`--password`, asked interactively when omitted) and seeds the `register`/`reset_password_request` Forms and their emails around it, so the account lands in a working login and password-reset flow. An email that already exists is reported and left alone.
 
@@ -1181,7 +1192,9 @@ If it isn't routed, Messenger handles the message synchronously — the button t
 
 `HealthCheckAlertProvider` raises what needs attention (errors, then warnings, with the date of the last run) on the dashboard and on this page.
 
-**History, not just a snapshot**: every run appends new `HealthCheckResult` rows rather than overwriting — the page itself only shows the latest one per (url, kind), but the full history feeds a trend chart (ok/warning/error counts over time, via `symfony/ux-chartjs` — a regular Composer dependency, Flex wires it up automatically) and an **Export (CSV)** button producing a dated snapshot, useful as an audit-trail artefact (e.g. accessibility declarations). No pruning is done automatically — weekly/monthly runs across a site's pages stay a modest row count for years; add your own cleanup if that assumption stops holding for a particular site.
+**History, not just a snapshot**: every run appends new `HealthCheckResult` rows rather than overwriting — the page itself only shows the latest one per (url, kind), but the full history feeds a trend chart (ok/warning/error counts over time, via `symfony/ux-chartjs` — a regular Composer dependency, Flex wires it up automatically) and an **Export (CSV)** button producing a dated snapshot, useful as an audit-trail artefact (e.g. accessibility declarations).
+
+**Retention**: each health check run starts by purging the rows older than `site-health-check-retention-days` (90 by default, `0` keeping everything), the **latest row of each (url, kind) always surviving** whatever its age — otherwise a check that hasn't run in a while would lose the very line the dashboard shows for it. The table was written as pure history on the assumption that weekly and monthly runs stay a modest row count for years, which stopped holding once `BackupResultRecorder` started appending a row carrying a full `details` payload every six hours: some 1 500 rows a year, and every SQL dump carries them. Purging from the health check run rather than from the backup means it happens on the scheduled weekly `c975l:health-check:run` and on demand, and it runs *before* the providers do, so an install with no provider at all — the one still collecting those backup rows — is purged too.
 
 The table itself can be sorted (click a column) and filtered (free-text search, status, kind) client-side — hand-rolled (`assets/js/health-check-table.js`), no DataTables/jQuery dependency.
 
@@ -1220,7 +1233,7 @@ Everything is configured through the `backup` config group (all `restricted`, se
 
 **Verifying rather than assuming**: every archive is read back and checked (`bzip2 --test`) before being counted, its size recorded, and the number of tables actually dumped compared against `INFORMATION_SCHEMA`. A table is reported only once its dump exists, with its size — a table listed in the report used to prove nothing about it having been saved. Anything discarded as empty is named in the report instead of vanishing silently.
 
-**Retention on the server**: each run purges the dated `var/backup/YYYY/YYYY-MM/YYYY-MM-DD` folders older than `site-backup-retention-days` (15 by default). Whoever copies the archives offsite should keep a *longer* window than this one — otherwise the next copy downloads again what it has just purged locally. The point is that production always holds a rolling set of restorable archives: deleting them as soon as they were copied off left a gap where the only surviving copy was the offsite one.
+**Retention on the server**: each run purges the dated `var/backup/YYYY/YYYY-MM/YYYY-MM-DD` folders older than `site-backup-retention-days` (15 by default, `0` keeping every archive). Whoever copies the archives offsite should keep a *longer* window than this one — otherwise the next copy downloads again what it has just purged locally. The point is that production always holds a rolling set of restorable archives: deleting them as soon as they were copied off left a gap where the only surviving copy was the offsite one.
 
 ### Seeing that it actually ran
 
@@ -1283,7 +1296,7 @@ The `#` are placeholders `ScheduleSpreader` draws from this install's own identi
 
 ## Messenger cleanup
 
-Purges failed `messenger_messages` rows (`queue_name = 'failed'`) older than `site-messenger-cleanup-retention-days` days (default 30). Each failure is classified minor (spam/blacklist-related, matched against the exception message) or important; new important failures since the last alert trigger a single digest email to `site-messenger-cleanup-mailto` (both configs `restricted`, the mailto also `sensitive`, same pattern as the backup mailto — see [ROLE_SUPER_ADMIN and restricted configs](#role_super_admin-and-restricted-configs)), never more than once per new batch.
+Purges failed `messenger_messages` rows (`queue_name = 'failed'`) older than `site-messenger-cleanup-retention-days` days (default 30, `0` keeping them all — the same reading as the two other retention configs, and the only safe one here, a zero handed to the purge meaning "delete every failed message" rather than none). Each failure is classified minor (spam/blacklist-related, matched against the exception message) or important; new important failures since the last alert trigger a single digest email to `site-messenger-cleanup-mailto` (both configs `restricted`, the mailto also `sensitive`, same pattern as the backup mailto — see [ROLE_SUPER_ADMIN and restricted configs](#role_super_admin-and-restricted-configs)), never more than once per new batch.
 
 A dashboard alert (ConfigBundle's `AlertProviderInterface`) also surfaces important failures — full detail (recipient, subject, error) to `ROLE_SUPER_ADMIN`, a plain "already reported" message to `ROLE_ADMIN` — linking to a management page listing them, with a "Purge now" button (`ROLE_SUPER_ADMIN` only) that runs the same cleanup immediately.
 

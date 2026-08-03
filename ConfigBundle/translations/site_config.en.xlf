@@ -60,7 +60,7 @@
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>
-                <target>Number of days of backups kept on the server. Whoever copies them offsite must keep more than this, otherwise the next copy downloads again what it has just purged</target>
+                <target>Number of days of backups kept on the server. Whoever copies them offsite must keep more than this, otherwise the next copy downloads again what it has just purged. 0 keeps every archive</target>
             </trans-unit>
             <trans-unit id="maeSbQ2">
                 <source>description.site_contact_email</source>
@@ -85,6 +85,10 @@
             <trans-unit id="CnwQ.g0">
                 <source>description.site_first_online_date</source>
                 <target>Date when the site went online (YYYY-MM-DD)</target>
+            </trans-unit>
+            <trans-unit id="i3DuFCW">
+                <source>description.site_health_check_retention_days</source>
+                <target>Number of days of health check history kept in database. The latest result of each check is always kept, whatever its age. 0 keeps every result</target>
             </trans-unit>
             <trans-unit id="8hKkN.f">
                 <source>description.site_hosting_provider</source>
@@ -112,7 +116,7 @@
             </trans-unit>
             <trans-unit id="2PLJgPq">
                 <source>description.site_messenger_cleanup_retention_days</source>
-                <target>Days failed Messenger messages are kept before purge</target>
+                <target>Days failed Messenger messages are kept before purge. 0 keeps them all</target>
             </trans-unit>
             <trans-unit id="Sg8q_Ks">
                 <source>description.site_name</source>
@@ -237,6 +241,10 @@
             <trans-unit id="svwpoO7">
                 <source>label.site_first_online_date</source>
                 <target>Site first online date</target>
+            </trans-unit>
+            <trans-unit id="utObxle">
+                <source>label.site_health_check_retention_days</source>
+                <target>Health Check Retention (days)</target>
             </trans-unit>
             <trans-unit id="aCpqS8A">
                 <source>label.site_hosting_provider</source>

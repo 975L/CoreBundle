@@ -24,6 +24,9 @@ class ScaffoldInstaller
 
     private const THEME_PROVIDER = 'src/Service/ThemeStylesheetProvider.php';
 
+    // Hash of every scaffold file as it was last delivered here, which is what tells a file the site customized from a file the scaffold itself moved on from - the two are indistinguishable by content alone. Versioned like symfony.lock: a site without it (or having lost it) is simply treated as having customized everything, which is the safe way round
+    private const MANIFEST_FILE = '.c975l-scaffold.json';
+
     public function __construct(
         private readonly BundleLocator $bundleLocator,
         #[Autowire('%kernel.project_dir%')]
@@ -31,14 +34,16 @@ class ScaffoldInstaller
     ) {
     }
 
-    // Copies scaffold/{src,templates,tests,translations,assets} from every installed c975L bundle into the project, backing up any file it would overwrite into existingFiles/<same relative path>.old instead of silently erasing it - a target already identical to the scaffold source is left untouched (no backup, no copy), so re-running this on an unmodified project is a no-op. 'assets' is the one exception: once a target exists there, it's left alone even if its content now differs from the bundle's - it's the app's own editable file from then on (see themeImportReminder()). $paths restricts the run to the relative paths given ('src/Scheduler', or a single file), $dryRun reports what would happen without writing anything - propagating one upgraded scaffold file across many sites otherwise means passing over every other file they may have diverged on. The returned 'unmatched' lists the given paths no scaffold file answered to, a run restricted to nothing at all being indistinguishable from an up-to-date site otherwise
-    public function install(array $paths = [], bool $dryRun = false): array
+    // Copies scaffold/{src,templates,tests,translations,assets} from every installed c975L bundle into the project - a target already identical to the scaffold source is left untouched (no backup, no copy), so re-running this on an unmodified project is a no-op. A target that differs is decided by MANIFEST_FILE rather than overwritten on sight: still bit-for-bit what was last delivered here means the site never touched it and the scaffold moved on, so it is refreshed silently; anything else is the site's own work, is left exactly as it is, and comes back under 'diverged' for the caller to report. $force takes the old behaviour back for those - overwrite, after backing the file up into existingFiles/<same relative path>.old - which is what a site adopting a new scaffold wholesale wants, ideally narrowed by $paths. 'assets' stays outside all of it: once a target exists there it is the app's own editable file, whatever its content (see themeImportReminder()). $paths restricts the run to the relative paths given ('src/Scheduler', or a single file), $dryRun reports what would happen without writing anything. The returned 'unmatched' lists the given paths no scaffold file answered to, a run restricted to nothing at all being indistinguishable from an up-to-date site otherwise
+    public function install(array $paths = [], bool $dryRun = false, bool $force = false): array
     {
         $copied = 0;
         $backedUp = 0;
         $skipped = 0;
         $files = [];
+        $diverged = [];
         $matchedPaths = [];
+        $manifest = $this->readManifest();
 
         foreach ($this->bundleLocator->directories() as $bundleDir) {
             foreach (self::SCAFFOLD_DIRS as $dir) {
@@ -62,20 +67,37 @@ class ScaffoldInstaller
                         $matchedPaths = array_merge($matchedPaths, $matched);
                     }
 
+                    $sourceHash = hash_file('sha256', $file->getPathname());
+
                     if (is_file($target)) {
                         // 'assets' is the app's own editable copy from the first install onward (see themeImportReminder()) - unlike src/templates/tests/translations, it's never backed up/overwritten again once it exists, whether its content differs or not
                         if ('assets' === $dir) {
                             ++$skipped;
                             continue;
                         }
-                        if (file_get_contents($target) === file_get_contents($file->getPathname())) {
+
+                        $targetHash = hash_file('sha256', $target);
+                        if ($targetHash === $sourceHash) {
+                            // Records the hash on the way past, so a site predating the manifest stops being seen as having customized every file it never touched
+                            $manifest[$relativePath] = $sourceHash;
                             ++$skipped;
                             continue;
                         }
-                        if (!$dryRun) {
-                            $this->backup($relativePath, $target);
+
+                        $customized = $targetHash !== ($manifest[$relativePath] ?? null);
+
+                        if ($customized && !$force) {
+                            $diverged[$relativePath] = $this->relativeToProject($file->getPathname());
+                            continue;
                         }
-                        ++$backedUp;
+
+                        // Only what the site wrote is worth keeping: a file still identical to what was delivered is reproducible from the bundle it came from, so refreshing it needs no backup
+                        if ($customized) {
+                            if (!$dryRun) {
+                                $this->backup($relativePath, $target);
+                            }
+                            ++$backedUp;
+                        }
                     }
 
                     if (!$dryRun) {
@@ -84,6 +106,7 @@ class ScaffoldInstaller
                         }
                         copy($file->getPathname(), $target);
                     }
+                    $manifest[$relativePath] = $sourceHash;
                     ++$copied;
                     $files[] = $relativePath;
                 }
@@ -91,6 +114,7 @@ class ScaffoldInstaller
         }
 
         if (!$dryRun) {
+            $this->writeManifest($manifest);
             $this->ensureGitignored();
         }
 
@@ -99,8 +123,40 @@ class ScaffoldInstaller
             'backedUp' => $backedUp,
             'skipped' => $skipped,
             'files' => $files,
+            'diverged' => $diverged,
             'unmatched' => array_values(array_diff($paths, $matchedPaths)),
         ];
+    }
+
+    private function readManifest(): array
+    {
+        $file = $this->projectDir . '/' . self::MANIFEST_FILE;
+        if (!is_file($file)) {
+            return [];
+        }
+
+        $manifest = json_decode((string) file_get_contents($file), true);
+
+        return is_array($manifest) ? $manifest : [];
+    }
+
+    // Sorted, so the file a site commits only changes when a hash really did
+    private function writeManifest(array $manifest): void
+    {
+        ksort($manifest);
+
+        file_put_contents(
+            $this->projectDir . '/' . self::MANIFEST_FILE,
+            json_encode($manifest, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES) . "\n"
+        );
+    }
+
+    // The scaffold source sits under vendor/, where an absolute path is noise in a message the developer has to read
+    private function relativeToProject(string $path): string
+    {
+        return str_starts_with($path, $this->projectDir . '/')
+            ? substr($path, \strlen($this->projectDir) + 1)
+            : $path;
     }
 
     // A file is in scope when the path is the file itself or a directory it sits under - 'src/Scheduler' must not match 'src/SchedulerOther/...', hence the separator

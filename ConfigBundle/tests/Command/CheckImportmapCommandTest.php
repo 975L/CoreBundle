@@ -28,16 +28,17 @@ class CheckImportmapCommandTest extends TestCase
 
     private string $projectDir;
 
+    // importmap.php sits at the project root, which is what a relative entry path is relative to - the command reads it through the config reader, so the two must not be told apart here either
     protected function setUp(): void
     {
-        $this->importmapFile = sys_get_temp_dir() . '/check-importmap-test-' . uniqid() . '.php';
         $this->projectDir = sys_get_temp_dir() . '/check-importmap-project-' . uniqid();
+        $this->importmapFile = $this->projectDir . '/importmap.php';
         (new Filesystem())->mkdir($this->projectDir);
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove([$this->importmapFile, $this->projectDir]);
+        (new Filesystem())->remove($this->projectDir);
     }
 
     private function createProvider(array $adminEntries): ImportmapProviderInterface
@@ -100,8 +101,10 @@ class CheckImportmapCommandTest extends TestCase
         $this->assertTrue($written['@c975l/config-bundle/controllers-admin.js']['entrypoint']);
     }
 
-    public function testExecuteNeverTouchesAnEntryAlreadyPresent(): void
+    // An override is a deliberate choice as long as what it points at is really there, so the provider's own path never wins over it
+    public function testExecuteNeverTouchesAnOverrideThatStillResolves(): void
     {
+        (new Filesystem())->dumpFile($this->projectDir . '/a-custom-override-path.js', '');
         (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
@@ -122,6 +125,102 @@ class CheckImportmapCommandTest extends TestCase
 
         $written = require $this->importmapFile;
         $this->assertSame('./a-custom-override-path.js', $written['@c975l/config-bundle/controllers-admin.js']['path']);
+    }
+
+    // What merging ConfigBundle and UiBundle into c975l/core-bundle did to every path under vendor/: the entry is there, its file is not, and only the provider knows where the bundle went
+    public function testExecuteRepointsAnEntryWhoseFileIsGone(): void
+    {
+        (new Filesystem())->dumpFile($this->projectDir . '/vendor/c975l/core-bundle/ConfigBundle/assets/controllers-admin.js', '');
+        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+            <?php
+
+            return [
+                '@c975l/config-bundle/controllers-admin.js' => ['path' => './vendor/c975l/config-bundle/assets/controllers-admin.js', 'entrypoint' => true],
+            ];
+
+            PHP);
+
+        $provider = $this->createProvider([
+            '@c975l/config-bundle/controllers-admin.js' => ['path' => './vendor/c975l/core-bundle/ConfigBundle/assets/controllers-admin.js', 'entrypoint' => true],
+        ]);
+        $tester = $this->createTester([$provider]);
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertStringContainsString('1 entry(ies) repointed', $tester->getDisplay());
+
+        $written = require $this->importmapFile;
+        $this->assertSame('./vendor/c975l/core-bundle/ConfigBundle/assets/controllers-admin.js', $written['@c975l/config-bundle/controllers-admin.js']['path']);
+    }
+
+    // An override may be written as a plain filesystem path, which the importmap reads as-is rather than relative to the project root - spelled out by hand, its leading slash was stripped and the file was looked for under that root instead
+    public function testExecuteNeverTouchesAnOverrideWrittenAsAnAbsolutePath(): void
+    {
+        $override = $this->projectDir . '/shared/a-custom-override-path.js';
+        (new Filesystem())->dumpFile($override, '');
+        (new Filesystem())->dumpFile($this->importmapFile, <<<PHP
+            <?php
+
+            return [
+                '@c975l/config-bundle/controllers-admin.js' => ['path' => '{$override}', 'entrypoint' => false],
+            ];
+
+            PHP);
+
+        $provider = $this->createProvider([
+            '@c975l/config-bundle/controllers-admin.js' => ['path' => './vendor/c975l/config-bundle/assets/controllers-admin.js', 'entrypoint' => true],
+        ]);
+        $tester = $this->createTester([$provider]);
+        $tester->execute([]);
+
+        $this->assertStringContainsString('already up to date', $tester->getDisplay());
+        $this->assertStringNotContainsString('missing from disk', $tester->getDisplay());
+
+        $written = require $this->importmapFile;
+        $this->assertSame($override, $written['@c975l/config-bundle/controllers-admin.js']['path']);
+    }
+
+    // Same for a path climbing out of a subdirectory: only the reader's own resolution reads it the way AssetMapper will
+    public function testExecuteNeverTouchesAnOverrideReachingUpADirectory(): void
+    {
+        (new Filesystem())->dumpFile($this->projectDir . '/a-custom-override-path.js', '');
+        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+            <?php
+
+            return [
+                '@c975l/config-bundle/controllers-admin.js' => ['path' => './assets/../a-custom-override-path.js', 'entrypoint' => false],
+            ];
+
+            PHP);
+
+        $provider = $this->createProvider([
+            '@c975l/config-bundle/controllers-admin.js' => ['path' => './vendor/c975l/config-bundle/assets/controllers-admin.js', 'entrypoint' => true],
+        ]);
+        $tester = $this->createTester([$provider]);
+        $tester->execute([]);
+
+        $this->assertStringContainsString('already up to date', $tester->getDisplay());
+        $this->assertStringNotContainsString('missing from disk', $tester->getDisplay());
+    }
+
+    // A dead path no provider claims can't be repaired, only reported - it answers 500 on the first page rendering it, and nothing else says so
+    public function testExecuteWarnsAboutADeadPathNoProviderClaims(): void
+    {
+        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+            <?php
+
+            return [
+                'app' => ['path' => './assets/gone.js', 'entrypoint' => true],
+            ];
+
+            PHP);
+
+        $tester = $this->createTester([]);
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertStringContainsString('missing from disk', $tester->getDisplay());
+        $this->assertStringContainsString('./assets/gone.js', $tester->getDisplay());
     }
 
     public function testExecuteIsIdempotentAcrossTwoRuns(): void

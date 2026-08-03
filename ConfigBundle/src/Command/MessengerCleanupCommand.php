@@ -85,8 +85,10 @@ class MessengerCleanupCommand extends Command
             $alerted = true;
         }
 
-        $retentionDays = (int) ($this->configService->get('site-messenger-cleanup-retention-days') ?: self::DEFAULT_RETENTION_DAYS);
-        $purged = $this->messengerFailedMessageService->purgeOlderThan($retentionDays);
+        // Read as the backup and health check retentions are: only a missing row falls back to the default, a "0" - typed, or a field emptied at the back-office, the entry being declared "int" - means "keep everything". `?: DEFAULT` used to give the same answer here by accident rather than by decision, and the accident mattered: purgeOlderThan(0) deletes every failed message there is instead of none
+        $configured = $this->configService->get('site-messenger-cleanup-retention-days');
+        $retentionDays = null === $configured ? self::DEFAULT_RETENTION_DAYS : (int) $configured;
+        $purged = $retentionDays > 0 ? $this->messengerFailedMessageService->purgeOlderThan($retentionDays) : 0;
 
         return [
             'purged' => $purged,

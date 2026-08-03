@@ -4,12 +4,15 @@
 <{{ tag }} class="flex-columns-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         {{ include('@c975LUi/components/Section/_head.html.twig') }}
-        <div class="flex-columns">
-            {# Matched against the known twelfths, not interpolated: the width comes from stored block data #}
-            {% for slot in slots %}
-                {% set width = slot.data.columnWidth|default('') in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] ? ' flex-columns__col--' ~ slot.data.columnWidth : '' %}
-                <div class="flex-columns__col{{ width }}">{{ render_block(slot) }}</div>
-            {% endfor %}
-        </div>
+        {# No row at all rather than an empty one: the head's own bottom margin would otherwise hang below it #}
+        {% if slots|length %}
+            <div class="flex-columns">
+                {# Matched against the known twelfths, not interpolated: the width comes from stored block data #}
+                {% for slot in slots %}
+                    {% set width = slot.data.columnWidth|default('') in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] ? ' flex-columns__col--' ~ slot.data.columnWidth : '' %}
+                    <div class="flex-columns__col{{ width }}">{{ render_block(slot) }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </{{ tag }}>

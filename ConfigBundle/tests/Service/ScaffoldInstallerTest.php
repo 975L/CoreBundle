@@ -49,12 +49,21 @@ class ScaffoldInstallerTest extends TestCase
         rmdir($dir);
     }
 
-    // The counts alone, the list of files install() also returns being asserted on its own where it matters (Finder gives no guaranteed order)
+    // The counts alone, the lists install() also returns being asserted on their own where they matter (Finder gives no guaranteed order)
     private function counts(array $result): array
     {
-        unset($result['files'], $result['unmatched']);
+        unset($result['files'], $result['unmatched'], $result['diverged']);
 
         return $result;
+    }
+
+    // Marks the target as being exactly what the scaffold last delivered, which is how install() tells an untouched file from a customized one
+    private function recordAsDelivered(string $relativePath, string $content): void
+    {
+        file_put_contents(
+            $this->projectDir . '/.c975l-scaffold.json',
+            json_encode([$relativePath => hash('sha256', $content)])
+        );
     }
 
     // The bundles the fabricated vendor/c975l/* directories stand for, as the kernel would report them
@@ -104,19 +113,81 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertFileExists($this->projectDir . '/templates/foo.html.twig');
     }
 
-    // A file already present at the target path is backed up under existingFiles/ instead of being erased
-    public function testInstallBacksUpExistingFileInsteadOfOverwritingIt(): void
+    // --force is what takes a customized file anyway, and it still never erases: the site's own version goes to existingFiles/ first
+    public function testForceBacksUpTheCustomizedFileInsteadOfErasingIt(): void
     {
         $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'new-content']);
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'original-content');
         $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
-        $result = $installer->install();
+        $result = $installer->install([], false, true);
 
         $this->assertSame(['copied' => 1, 'backedUp' => 1, 'skipped' => 0], $this->counts($result));
+        $this->assertSame([], $result['diverged']);
         $this->assertSame('new-content', file_get_contents($this->projectDir . '/src/Kernel.php'));
         $this->assertSame('original-content', file_get_contents($this->projectDir . '/existingFiles/src/Kernel.php.old'));
+    }
+
+    // The whole point: a file the site wrote itself is never overwritten on the way to a new scaffold version, it's reported so its author can carry the change over
+    public function testInstallLeavesACustomizedFileAloneAndReportsIt(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['templates/security/login.html.twig' => 'new-scaffold']);
+        mkdir($this->projectDir . '/templates/security', 0775, true);
+        file_put_contents($this->projectDir . '/templates/security/login.html.twig', 'my-own-console');
+        $this->recordAsDelivered('templates/security/login.html.twig', 'what-was-delivered');
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $result = $installer->install();
+
+        $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 0], $this->counts($result));
+        $this->assertSame(
+            ['templates/security/login.html.twig' => 'vendor/c975l/site-bundle/scaffold/templates/security/login.html.twig'],
+            $result['diverged']
+        );
+        $this->assertSame('my-own-console', file_get_contents($this->projectDir . '/templates/security/login.html.twig'));
+        $this->assertDirectoryDoesNotExist($this->projectDir . '/existingFiles');
+    }
+
+    // Still bit-for-bit what was delivered means the site never touched it and only the scaffold moved on: refreshed in place, and no backup of a file the bundle can reproduce
+    public function testInstallSilentlyRefreshesAnUntouchedFileTheScaffoldHasMovedOn(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'new-scaffold']);
+        mkdir($this->projectDir . '/src', 0775, true);
+        file_put_contents($this->projectDir . '/src/Kernel.php', 'as-delivered');
+        $this->recordAsDelivered('src/Kernel.php', 'as-delivered');
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $result = $installer->install();
+
+        $this->assertSame(['copied' => 1, 'backedUp' => 0, 'skipped' => 0], $this->counts($result));
+        $this->assertSame([], $result['diverged']);
+        $this->assertSame('new-scaffold', file_get_contents($this->projectDir . '/src/Kernel.php'));
+        $this->assertDirectoryDoesNotExist($this->projectDir . '/existingFiles');
+    }
+
+    // A site predating the manifest would otherwise be read as having customized every file it never touched: what is already identical to the source is recorded on the way past, so the next scaffold version refreshes it silently
+    public function testInstallAdoptsAnUpToDateFileIntoTheManifest(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'same-content']);
+        mkdir($this->projectDir . '/src', 0775, true);
+        file_put_contents($this->projectDir . '/src/Kernel.php', 'same-content');
+
+        (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $manifest = json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true);
+        $this->assertSame(hash('sha256', 'same-content'), $manifest['src/Kernel.php']);
+    }
+
+    // What was copied is recorded, which is what makes the next run able to tell it apart from something the site went on to edit
+    public function testInstallRecordsWhatItDelivered(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'delivered-now']);
+
+        (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $manifest = json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true);
+        $this->assertSame(hash('sha256', 'delivered-now'), $manifest['src/Kernel.php']);
     }
 
     // Scaffold files from several installed bundles are all merged into the project
@@ -341,19 +412,20 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertSame([], $result['unmatched']);
     }
 
-    // A dry run reports what would happen and writes nothing at all - not the copy, not the backup, not the .gitignore
+    // A dry run reports what would happen and writes nothing at all - not the copy, not the backup, not the .gitignore, not the manifest
     public function testDryRunWritesNothing(): void
     {
         $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'new-content']);
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'original-content');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], true);
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], true, true);
 
         $this->assertSame(['copied' => 1, 'backedUp' => 1, 'skipped' => 0], $this->counts($result));
         $this->assertSame(['src/Kernel.php'], $result['files']);
         $this->assertSame('original-content', file_get_contents($this->projectDir . '/src/Kernel.php'));
         $this->assertFileDoesNotExist($this->projectDir . '/existingFiles/src/Kernel.php.old');
         $this->assertFileDoesNotExist($this->projectDir . '/.gitignore');
+        $this->assertFileDoesNotExist($this->projectDir . '/.c975l-scaffold.json');
     }
 }

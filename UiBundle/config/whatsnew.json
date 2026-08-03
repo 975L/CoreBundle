@@ -3,6 +3,21 @@
         "date": "2026-08-03",
         "description": [
             {
+                "en": "Saving a page can no longer silently empty a section's cards: an incomplete submission is now refused and explained instead of being read as \"the editor deleted everything\"",
+                "fr": "L'enregistrement d'une page ne peut plus vider silencieusement les cartes d'une section : une soumission incomplète est désormais refusée et expliquée, au lieu d'être lue comme « l'éditeur a tout supprimé »",
+                "es": "Guardar una página ya no puede vaciar en silencio las tarjetas de una sección: un envío incompleto se rechaza y se explica, en lugar de leerse como «el editor lo ha borrado todo»"
+            },
+            {
+                "en": "The icon of a card's heading now shows in white on its colored band, instead of being barely readable",
+                "fr": "L'icône du titre d'une carte s'affiche désormais en blanc sur son bandeau coloré, au lieu d'être à peine lisible",
+                "es": "El icono del título de una tarjeta se muestra ahora en blanco sobre su banda de color, en lugar de resultar apenas legible"
+            },
+            {
+                "en": "Every block on a page is now spaced the same way from the one above it, instead of some pairs sitting twice as far apart and a column row sitting flush against its neighbour",
+                "fr": "Chaque bloc d'une page est désormais espacé de la même façon de celui qui le précède, au lieu que certaines paires soient deux fois plus éloignées et qu'une rangée de colonnes soit collée à sa voisine",
+                "es": "Cada bloque de una página se separa ahora igual del que le precede, en lugar de que algunos pares queden al doble de distancia y una fila de columnas quede pegada a su vecina"
+            },
+            {
                 "en": "Duplicating a card, a step or a slide now keeps its rich text, which was copied over empty",
                 "fr": "La duplication d'une carte, d'une étape ou d'une diapositive conserve désormais son texte enrichi, qui était recopié vide",
                 "es": "La duplicación de una tarjeta, un paso o una diapositiva conserva ahora su texto enriquecido, que se copiaba vacío"

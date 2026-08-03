@@ -47,23 +47,34 @@ class CheckImportmapCommand extends Command
         $entries = $this->configReader->getEntries();
 
         $added = [];
+        $repaired = [];
         foreach ($this->importmapRegistry->all() as $importName => $data) {
-            if ($entries->has($importName)) {
-                continue;
-            }
-
-            $entries->add(ImportMapEntry::createLocal(
+            $entry = ImportMapEntry::createLocal(
                 $importName,
                 ImportMapType::from($data['type'] ?? 'js'),
                 $data['path'],
                 $data['entrypoint'] ?? false,
-            ));
-            $added[] = $importName;
+            );
+
+            if (!$entries->has($importName)) {
+                $entries->add($entry);
+                $added[] = $importName;
+
+                continue;
+            }
+
+            // An entry already there but pointing at a file that no longer exists, the provider having moved with its bundle - which is what merging ConfigBundle and UiBundle into c975l/core-bundle did to every path under vendor/. The registry resolves the declaring bundle's real directory, so it is the authority here; the guard on file_exists keeps a deliberate override in place as long as it still resolves
+            $current = $entries->get($importName);
+            if ($current->path !== $data['path'] && !$this->exists($current->path)) {
+                $entries->add($entry);
+                $repaired[] = sprintf('%s: %s → %s', $importName, $current->path, $data['path']);
+            }
         }
 
         $added = array_merge($added, $this->addMissingBareSpecifiers($entries, $io));
+        $this->warnOnDeadPaths($entries, $io);
 
-        if (!$added) {
+        if (!$added && !$repaired) {
             $io->success('importmap.php is already up to date.');
 
             return Command::SUCCESS;
@@ -71,10 +82,45 @@ class CheckImportmapCommand extends Command
 
         $this->configReader->writeEntries($entries);
 
-        $io->success(sprintf('%d entry(ies) added to importmap.php:', count($added)));
-        $io->listing($added);
+        if ($added) {
+            $io->success(sprintf('%d entry(ies) added to importmap.php:', count($added)));
+            $io->listing($added);
+        }
+
+        if ($repaired) {
+            $io->success(sprintf('%d entry(ies) repointed at their new path:', count($repaired)));
+            $io->listing($repaired);
+        }
 
         return Command::SUCCESS;
+    }
+
+    // Reports a local entry whose file is gone and that no provider claims, so nothing above could repair it. AssetMapper only raises it when a page actually renders that entrypoint - a 500 on the front end for what is a one-line fix in importmap.php. Remote packages are skipped: their path lives under assets/vendor/ and is restored by "importmap:install", not by this command
+    private function warnOnDeadPaths(ImportMapEntries $entries, SymfonyStyle $io): void
+    {
+        $known = $this->importmapRegistry->all();
+        $dead = [];
+
+        foreach ($entries as $entry) {
+            if ($entry->isRemotePackage() || isset($known[$entry->importName]) || $this->exists($entry->path)) {
+                continue;
+            }
+
+            $dead[] = sprintf('%s (%s)', $entry->importName, $entry->path);
+        }
+
+        if ($dead) {
+            $io->warning(sprintf(
+                "Declared in importmap.php but missing from disk: %s.\nAny page loading one of them answers 500. Fix the path, or drop the entry if what it pointed at is gone.",
+                implode(', ', $dead)
+            ));
+        }
+    }
+
+    // The reader is the authority on what an importmap "path" means: relative to importmap.php's own directory when it starts with a ".", already a filesystem path otherwise. Spelled out here by hand, an absolute path lost its leading slash and was looked for under the project root, so an override pointing at a file really there was reported missing and repointed
+    private function exists(string $path): bool
+    {
+        return is_file($this->configReader->convertPathToFilesystemPath($path));
     }
 
     // A c975L bundle's own JS may import a third-party package by bare specifier (e.g. ConfigBundle's controllers-admin.js importing "@symfony/ux-chartjs" for the health check chart). That entry is normally written by the package's own Flex recipe, which doesn't always run - and when it's missing the browser can't resolve the specifier, so the whole module fails and every Stimulus controller it registers is lost, back-office drag-and-drop included. Never an entrypoint: these are imported by another module, not loaded on their own

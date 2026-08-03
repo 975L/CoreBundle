@@ -50,7 +50,8 @@ class MessengerCleanupCommandTest extends TestCase
     private function createConfigService(array $values): ConfigServiceInterface
     {
         $service = $this->createStub(ConfigServiceInterface::class);
-        $service->method('get')->willReturnCallback(static fn (string $slug): mixed => $values[$slug] ?? '');
+        // Null for anything not listed, which is what ConfigService answers for an entry no row carries - a "" would say the row is there and empty, a different case for every int entry
+        $service->method('get')->willReturnCallback(static fn (string $slug): mixed => $values[$slug] ?? null);
 
         return $service;
     }
@@ -105,6 +106,32 @@ class MessengerCleanupCommandTest extends TestCase
         $this->assertSame(4, $stats['purged']);
         $this->assertSame(0, $stats['important']);
         $this->assertFalse($stats['alerted']);
+    }
+
+    // "0" says keep everything, as it does for the backup and health check retentions - and it is the one value that must never reach purgeOlderThan(), which would then delete every failed message rather than none. A field cleared at the back-office says the same, the entry being declared "int"
+    public function testCleanupPurgesNothingWithARetentionOfZero(): void
+    {
+        foreach (['0', ''] as $days) {
+            $service = $this->createMock(MessengerFailedMessageService::class);
+            $service->method('findAll')->willReturn([$this->createMessage(false)]);
+            $service->expects($this->never())->method('purgeOlderThan');
+
+            $stats = $this->createCommand($service, ['site-messenger-cleanup-retention-days' => $days])->cleanup();
+
+            $this->assertSame(0, $stats['purged']);
+        }
+    }
+
+    // The entry an install never loaded still gets the nightly purge, at the default window
+    public function testCleanupFallsBackToTheDefaultWindowWithoutAConfigEntry(): void
+    {
+        $service = $this->createMock(MessengerFailedMessageService::class);
+        $service->method('findAll')->willReturn([]);
+        $service->expects($this->once())->method('purgeOlderThan')->with(30)->willReturn(2);
+
+        $stats = $this->createCommand($service, [])->cleanup();
+
+        $this->assertSame(2, $stats['purged']);
     }
 
     // The mailto being the only switch for the digest, an install that never filled it in still gets its nightly purge

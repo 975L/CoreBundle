@@ -19,12 +19,26 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class ScaffoldInstallCommandTest extends TestCase
 {
+    private string | false $columns;
+
+    // SymfonyStyle wraps its output to the terminal's width, which would otherwise decide inside a narrow terminal whether a vendor/ path is asserted whole or cut in two
+    protected function setUp(): void
+    {
+        $this->columns = getenv('COLUMNS');
+        putenv('COLUMNS=120');
+    }
+
+    protected function tearDown(): void
+    {
+        false === $this->columns ? putenv('COLUMNS') : putenv('COLUMNS=' . $this->columns);
+    }
+
     // ScaffoldInstaller is only ever called once per execute(), no further expectations needed here
     #[AllowMockObjectsWithoutExpectations]
     public function testExecuteReportsCopiedBackedUpAndSkippedCounts(): void
     {
         $scaffoldInstaller = $this->createStub(ScaffoldInstaller::class);
-        $scaffoldInstaller->method('install')->willReturn(['copied' => 3, 'backedUp' => 1, 'skipped' => 5, 'files' => [], 'unmatched' => []]);
+        $scaffoldInstaller->method('install')->willReturn(['copied' => 3, 'backedUp' => 1, 'skipped' => 5, 'files' => [], 'diverged' => [], 'unmatched' => []]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
 
         $statusCode = $tester->execute([]);
@@ -37,7 +51,7 @@ class ScaffoldInstallCommandTest extends TestCase
     public function testExecuteDisplaysTheThemeImportReminderWhenPresent(): void
     {
         $scaffoldInstaller = $this->createConfiguredStub(ScaffoldInstaller::class, [
-            'install' => ['copied' => 1, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'unmatched' => []],
+            'install' => ['copied' => 1, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'diverged' => [], 'unmatched' => []],
             'themeImportReminder' => 'Add @import url("./themes/site.css"); to assets/styles/app.css.',
         ]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
@@ -47,19 +61,58 @@ class ScaffoldInstallCommandTest extends TestCase
         $this->assertStringContainsString('themes/site.css', $tester->getDisplay());
     }
 
-    // A regression silently dropping either option would overwrite files the site diverged from, so the call itself is what is asserted here, the resulting behaviour being ScaffoldInstallerTest's job
+    // A regression silently dropping any of the three options would overwrite files the site diverged from, so the call itself is what is asserted here, the resulting behaviour being ScaffoldInstallerTest's job
     public function testExecutePassesThePathRestrictionAndTheDryRunFlagToTheInstaller(): void
     {
         $scaffoldInstaller = $this->createMock(ScaffoldInstaller::class);
         $scaffoldInstaller
             ->expects($this->once())
             ->method('install')
-            ->with(['src/Scheduler', 'tests/Scheduler'], true)
-            ->willReturn(['copied' => 0, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'unmatched' => []])
+            ->with(['src/Scheduler', 'tests/Scheduler'], true, false)
+            ->willReturn(['copied' => 0, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'diverged' => [], 'unmatched' => []])
         ;
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
 
         $tester->execute(['--path' => ['src/Scheduler', 'tests/Scheduler'], '--dry-run' => true]);
+    }
+
+    // --force is what overwrites a customized file, so it reaching the installer is worth an assertion of its own
+    public function testExecutePassesTheForceFlagToTheInstaller(): void
+    {
+        $scaffoldInstaller = $this->createMock(ScaffoldInstaller::class);
+        $scaffoldInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with([], false, true)
+            ->willReturn(['copied' => 1, 'backedUp' => 1, 'skipped' => 0, 'files' => [], 'diverged' => [], 'unmatched' => []])
+        ;
+        $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
+
+        $tester->execute(['--force' => true]);
+    }
+
+    // A count would say nothing about which file to go and look at, and these are exactly the ones whose upgrade nobody but their author can do
+    #[AllowMockObjectsWithoutExpectations]
+    public function testExecuteNamesTheCustomizedFilesItLeftAloneWithTheirSource(): void
+    {
+        $scaffoldInstaller = $this->createStub(ScaffoldInstaller::class);
+        $scaffoldInstaller->method('install')->willReturn([
+            'copied' => 0,
+            'backedUp' => 0,
+            'skipped' => 0,
+            'files' => [],
+            'diverged' => ['templates/security/login.html.twig' => 'vendor/c975l/config-bundle/scaffold/templates/security/login.html.twig'],
+            'unmatched' => [],
+        ]);
+        $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
+
+        $statusCode = $tester->execute([]);
+
+        $display = $tester->getDisplay();
+        $this->assertSame(Command::SUCCESS, $statusCode);
+        $this->assertStringContainsString('templates/security/login.html.twig', $display);
+        $this->assertStringContainsString('vendor/c975l/config-bundle/scaffold/templates/security/login.html.twig', $display);
+        $this->assertStringContainsString('--force', $display);
     }
 
     // Which files would be overwritten is the whole point of a dry run, a count alone saying nothing
@@ -72,6 +125,7 @@ class ScaffoldInstallCommandTest extends TestCase
             'backedUp' => 1,
             'skipped' => 0,
             'files' => ['src/Scheduler/MaintenanceSchedule.php', 'tests/Scheduler/MaintenanceScheduleTest.php'],
+            'diverged' => [],
             'unmatched' => [],
         ]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
@@ -94,6 +148,7 @@ class ScaffoldInstallCommandTest extends TestCase
             'backedUp' => 0,
             'skipped' => 0,
             'files' => [],
+            'diverged' => [],
             'unmatched' => ['src/Sheduler'],
         ]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));

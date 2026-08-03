@@ -524,7 +524,9 @@ class BackupCommand extends Command
     // Keeps the server's own rolling window of archives, whoever copies them offsite being expected to keep a longer one
     private function purgeOldBackups(): void
     {
-        $days = (int) ($this->configService->get('site-backup-retention-days') ?: self::DEFAULT_RETENTION_DAYS);
+        // Only a missing row falls back to the default. The entry is declared "int", so the field emptied at the back-office comes back as a 0 like a typed one, and both mean "keep every archive": `?: DEFAULT` read them as unset instead and purged at 15 days, BackupRetentionPurger's own "keep everything" guard never being reached
+        $configured = $this->configService->get('site-backup-retention-days');
+        $days = null === $configured ? self::DEFAULT_RETENTION_DAYS : (int) $configured;
         $this->retention = array_merge(['days' => $days], $this->retentionPurger->purge($this->backupFolder, $days));
 
         $this->report .= sprintf(
