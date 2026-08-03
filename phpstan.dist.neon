@@ -1,0 +1,33 @@
+includes:
+    # Errors already there when PHPStan was introduced, to be emptied out over time.
+    # One baseline per bundle, kept where its bundle lives: PHPStan resolves the paths of an
+    # included file relative to that file, so neither baseline needs rewriting after the merge.
+    - ConfigBundle/phpstan-baseline.neon
+    - UiBundle/phpstan-baseline.neon
+
+parameters:
+    level: 5
+
+    # The ignored patterns below are shared by every c975L bundle, so not all of them apply to each one
+    reportUnmatchedIgnoredErrors: false
+
+    paths:
+        - ConfigBundle/src
+        - ConfigBundle/scaffold/src
+        - ConfigBundle/scaffold/tests
+        - UiBundle/src
+
+    excludePaths:
+        # The skeleton templates get their variables from the maker at generation time
+        - ConfigBundle/src/Resources/skeleton/*
+        - UiBundle/src/Resources/skeleton/*
+
+        # These need an application kernel and a browser-kit the bundle does not install, which is why phpunit.xml.dist skips them too
+        - ConfigBundle/scaffold/tests/Controller/*
+
+    ignoreErrors:
+        # Doctrine assigns the identifier by reflection, which static analysis cannot see
+        - '#Property .*::\$id \(int\|null\) is never assigned int#'
+
+        # EasyAdmin declares its fluent setters on the concrete fields, not on FieldInterface
+        - '#Call to an undefined method EasyCorp\\Bundle\\EasyAdminBundle\\Contracts\\Field\\FieldInterface::#'

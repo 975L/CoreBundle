@@ -1,0 +1,61 @@
+# c975L CoreBundle
+
+The two base bricks of the c975L ecosystem, shipped together: **ConfigBundle** (database-backed configuration, EasyAdmin dashboard, user accounts, health checks, sitemaps) and **UiBundle** (blocks, media library, theme, forms, emails).
+
+[![GitHub](https://img.shields.io/github/license/975L/CoreBundle)](https://github.com/975L/CoreBundle/blob/main/LICENSE)
+[![Packagist Version](https://img.shields.io/packagist/v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
+[![PHP Version](https://img.shields.io/packagist/php-v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
+
+## One package, two bundles
+
+This is **not** a merged bundle. A Composer package is not a Symfony bundle: this package ships the two bundles unchanged, each with its own namespace, its own `services.yaml`, its own `configs.json`, its own translation domain and its own dashboard section.
+
+```
+CoreBundle/
+├── composer.json      ← the only one
+├── ConfigBundle/      → c975L\ConfigBundle\
+└── UiBundle/          → c975L\UiBundle\
+```
+
+There is **no `c975L\CoreBundle\` namespace**. The name `core-bundle` exists on Packagist only.
+
+## Why they ship together
+
+ConfigBundle and UiBundle referenced each other in their `composer.json`, in both directions:
+
+- **Ui → Config** is deep and deliberate: `ConfigServiceInterface` is read everywhere, and every `*ProviderInterface` of the generic registry mechanism is declared in ConfigBundle.
+- **Config → Ui** comes from the dashboard itself (`FontRegistry`, `FormThemeRegistry`, `StylesheetManagementRegistry`, `ScriptAdminRegistry`, `WhatsNewRegistry`) and from user accounts (`Form`/`FormField` + `EmailService`).
+
+Two packages that require each other cannot be released independently, and neither can see the other's work-in-progress — only its last published version. They were never two layers; they were one layer billed as two. This package says so out loud.
+
+## Installation
+
+```bash
+composer require c975l/core-bundle
+```
+
+Then register both bundles — they remain two entries:
+
+```php
+// config/bundles.php
+return [
+    // ...
+    c975L\ConfigBundle\c975LConfigBundle::class => ['all' => true],
+    c975L\UiBundle\c975LUiBundle::class => ['all' => true],
+];
+```
+
+## Documentation
+
+Each bundle keeps its own README, unchanged:
+
+- [ConfigBundle](ConfigBundle/README.md)
+- [UiBundle](UiBundle/README.md)
+
+## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
+
+See [UPGRADE.md](UPGRADE.md). In short: replace the two requirements with `c975l/core-bundle`. **No PHP `use`, no `@c975LUi/…` template reference, no translation key and no `bundles.php` entry changes** — the namespaces are the same ones.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

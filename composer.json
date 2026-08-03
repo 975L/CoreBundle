@@ -1,0 +1,107 @@
+{
+    "name": "c975l/core-bundle",
+    "type": "symfony-bundle",
+    "description": "The two base bricks of the c975L ecosystem, shipped together: ConfigBundle (database-backed configuration, EasyAdmin dashboard, user accounts, health checks, sitemaps) and UiBundle (blocks, media library, theme, forms, emails). Two distinct bundles, one package.",
+    "keywords": [
+        "symfony",
+        "bundle",
+        "config",
+        "ui"
+    ],
+    "homepage": "https://github.com/975L/CoreBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Laurent Marquet",
+            "email": "laurent.marquet@laposte.net",
+            "homepage": "https://github.com/LaurentMarquet",
+            "role": "Developer"
+        },
+        {
+            "name": "975L Community",
+            "homepage": "https://github.com/975L"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "doctrine/orm": "^3.6",
+        "dragonmantank/cron-expression": "^3.6",
+        "easycorp/easyadmin-bundle": "^5.1",
+        "egulias/email-validator": "^4.0",
+        "imagine/imagine": "^1.5",
+        "sensiolabs/minify-bundle": "^1.2",
+        "symfony/asset-mapper": "^8.0",
+        "symfony/clock": "^8.0",
+        "symfony/console": "^8.0",
+        "symfony/filesystem": "^8.0",
+        "symfony/finder": "^8.0",
+        "symfony/form": "^8.0",
+        "symfony/http-client": "^8.0",
+        "symfony/mailer": "^8.0",
+        "symfony/messenger": "^8.0",
+        "symfony/password-hasher": "^8.0",
+        "symfony/process": "^8.0",
+        "symfony/scheduler": "^8.0",
+        "symfony/security-bundle": "^8.0",
+        "symfony/serializer": "^8.0",
+        "symfony/ux-chartjs": "^3.3",
+        "symfony/yaml": "^8.0",
+        "symfonycasts/reset-password-bundle": "^1.25",
+        "symfonycasts/verify-email-bundle": "^1.18",
+        "twig/intl-extra": "^3.26",
+        "vich/uploader-bundle": "^2.9"
+    },
+    "require-dev": {
+        "chrome-php/chrome": "^1.16",
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "nelmio/security-bundle": "^3.9",
+        "phpunit/phpunit": "^13.2",
+        "symfony/browser-kit": "^8.0",
+        "symfony/css-selector": "^8.0",
+        "symfony/maker-bundle": "^1.67",
+        "symfony/phpunit-bridge": "^8.0",
+        "symfony/rate-limiter": "^8.1",
+        "symfony/var-dumper": "^8.0"
+    },
+    "replace": {
+        "c975l/config-bundle": "6.0.0",
+        "c975l/ui-bundle": "1.18.0"
+    },
+    "suggest": {
+        "chrome-php/chrome": "To run \"c975l:ui:layout-audit\", which measures a rendered page against the layout invariants the sass tests cannot check. Install it in the consuming site, not here: the command runs from that site's console.",
+        "ext-imagick": "To upload an SVG as favicon or apple-touch-icon: GD has no SVG decoder, so without it those two roles only accept raster images (see SvgRasterizer).",
+        "nelmio/security-bundle": "Enables the CSP nonce a layout can print, and a Turbo-safe session-based nonce generator instead of Nelmio's default per-request one"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "c975L\\ConfigBundle\\": "ConfigBundle/src/",
+            "c975L\\UiBundle\\": "UiBundle/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "c975L\\ConfigBundle\\Tests\\": "ConfigBundle/tests/",
+            "c975L\\UiBundle\\Tests\\": "UiBundle/tests/",
+            "App\\": "ConfigBundle/scaffold/src/",
+            "App\\Tests\\": "ConfigBundle/scaffold/tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "support": {
+        "email": "contact@975l.com",
+        "source": "https://github.com/975L/CoreBundle",
+        "issues": "https://github.com/975L/CoreBundle/issues"
+    }
+}
