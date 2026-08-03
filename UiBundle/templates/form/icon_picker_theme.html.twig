@@ -1,0 +1,22 @@
+{% block icon_picker_widget %}
+{%- set icons_data = [] -%}
+{%- for name, path in icons -%}
+    {%- set icons_data = icons_data|merge([{name: name, path: path, url: asset(path)}]) -%}
+{%- endfor -%}
+{# In "name" mode "value" is already the bare key, so the preview is looked up from "icons" #}
+{%- set current_name = value_field == 'name' ? value : (value is not empty ? value|split('/')|last|replace({'.svg': ''}) : '') -%}
+{%- set preview_path = value_field == 'name' ? icons[value]|default(null) : value -%}
+<div class="ui-icon-picker" data-icons="{{ icons_data|json_encode|e('html_attr') }}" data-value-field="{{ value_field }}">
+    <input type="hidden" id="{{ id }}" name="{{ full_name }}"{% if value is not empty %} value="{{ value }}"{% endif %}{% for attrname, attrvalue in attr %}{% if attrvalue is same as(true) %} {{ attrname }}="{{ attrname }}"{% elseif attrvalue is not same as(false) %} {{ attrname }}="{{ attrvalue }}"{% endif %}{% endfor %}>
+    <div class="ui-icon-search-wrap">
+        {# Decorative: the search input right next to it already names the picked icon #}
+        <img class="ui-icon-preview" src="{{ preview_path is not empty ? asset(preview_path) : '' }}" alt="" aria-hidden="true"{% if preview_path is empty %} hidden{% endif %}>
+        <input type="text"
+               class="form-control ui-icon-search"
+               placeholder="{{ 'label.search_icon'|trans({}, 'ui') }}"
+               autocomplete="off"
+               {% if current_name is not empty %}value="{{ current_name }}"{% endif %}>
+    </div>
+    <div class="ui-icon-grid" hidden></div>
+</div>
+{% endblock %}

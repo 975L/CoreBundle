@@ -1,0 +1,13 @@
+{# Dynamic usage only: "slots" holds real Block entities, wrapped in ".cards" so a slot renders the same here as bare in the page #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="section-cards-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        {{ include('@c975LUi/components/Section/_head.html.twig') }}
+        <div class="cards">
+            {% for slot in slots %}
+                {{ render_block(slot) }}
+            {% endfor %}
+        </div>
+    </div>
+</{{ tag }}>

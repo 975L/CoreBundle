@@ -1,0 +1,23 @@
+{# The question/answer box; the caller owns the isEnabled()/ROLE_SUPER_ADMIN gating #}
+{# Plain data-* attributes, not Stimulus targets/values: ai-assistant.js reads them via querySelector #}
+<div class="ai-assistant"
+     data-controller="aiAssistant"
+     data-ai-assistant-ask-url-value="{{ path('management_ui_ai_assistant_ask') }}"
+     data-ai-assistant-csrf-token-value="{{ csrf_token('management_ui_ai_assistant_ask') }}"
+>
+    <div class="ai-assistant__log" data-ai-assistant-target="log"></div>
+
+    <form data-action="aiAssistant#ask">
+        <div class="input-group">
+            <input type="text"
+                   class="form-control"
+                   data-ai-assistant-target="input"
+                   placeholder="{{ 'label.ai_assistant_question'|trans({}, 'ui') }}"
+                   required
+            >
+            <button type="submit" class="btn btn-primary" data-ai-assistant-target="submit">
+                {{ 'label.ai_assistant_ask'|trans({}, 'ui') }}
+            </button>
+        </div>
+    </form>
+</div>

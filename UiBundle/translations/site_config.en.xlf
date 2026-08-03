@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="site_config.en.xlf">
+        <body>
+            <trans-unit id="GS_2sku">
+                <source>description.ai_assistant_dashboard_enabled</source>
+                <target>Enable (true) or disable (false) the dashboard AI assistant</target>
+            </trans-unit>
+            <trans-unit id="f2Stp0E">
+                <source>description.ai_assistant_dashboard_endpoint</source>
+                <target>URL of the AI backend receiving dashboard questions. Empty = disabled (no default backend shipped).</target>
+            </trans-unit>
+            <trans-unit id="h8OG.GR">
+                <source>description.ai_assistant_dashboard_not_enabled</source>
+                <target>Enable it and set an endpoint and token to activate it</target>
+            </trans-unit>
+            <trans-unit id="JK32Qas">
+                <source>description.ai_assistant_dashboard_token</source>
+                <target>Bearer token sent to the dashboard AI assistant endpoint</target>
+            </trans-unit>
+            <trans-unit id="et.XNnu">
+                <source>description.ai_assistant_rephrase_api_key</source>
+                <target>API key for the chosen provider, billed to its owner</target>
+            </trans-unit>
+            <trans-unit id="_bGjWVc">
+                <source>description.ai_assistant_rephrase_base_uri</source>
+                <target>Base URI of the OpenAI-compatible API, required only for euria</target>
+            </trans-unit>
+            <trans-unit id="bWfhcXt">
+                <source>description.ai_assistant_rephrase_model</source>
+                <target>Rephrase model id - optional for Anthropic/OpenAI (sensible default), required for Euria (unstable catalog, no safe default)</target>
+            </trans-unit>
+            <trans-unit id="ArNa8qa">
+                <source>description.ai_assistant_rephrase_provider</source>
+                <target>AI provider for the rephrase button: anthropic, openai or euria</target>
+            </trans-unit>
+            <trans-unit id="NF06pAx">
+                <source>description.ai_rephrase_failure_alert</source>
+                <target>Check the configured AI rephrase provider and API key</target>
+            </trans-unit>
+            <trans-unit id="BXljqwk">
+                <source>description.ai_rephrase_not_enabled</source>
+                <target>Set a provider and API key to enable rephrasing</target>
+            </trans-unit>
+            <trans-unit id="sQ9y3iP">
+                <source>description.block_showcase_url</source>
+                <target>Url of the block showcase the sidebar link opens - leave empty to fall back on the c975L ecosystem's own showcase</target>
+            </trans-unit>
+            <trans-unit id="o3sVBy1">
+                <source>description.email_debug</source>
+                <target>When enabled, a ROLE_SUPER_ADMIN sees a preview instead of a real send</target>
+            </trans-unit>
+            <trans-unit id="re7MGHJ">
+                <source>description.recaptcha3_score_threshold</source>
+                <target>Score threshold (between 0 and 1) below which ReCaptcha v3 considers the submission suspicious</target>
+            </trans-unit>
+            <trans-unit id="n0vSdf_">
+                <source>description.recaptcha3_secret_key</source>
+                <target>Secret key for ReCaptcha v3</target>
+            </trans-unit>
+            <trans-unit id="mGj2Whf">
+                <source>description.recaptcha3_site_key</source>
+                <target>Site key for ReCaptcha v3</target>
+            </trans-unit>
+            <trans-unit id="_IvRuw9">
+                <source>description.site_enable_cookie_consent</source>
+                <target>Enable the use of cookie consent</target>
+            </trans-unit>
+            <trans-unit id="nZli24w">
+                <source>description.site_form_delay</source>
+                <target>Minimum delay, in seconds, between showing and submitting a public form before treating it as a bot</target>
+            </trans-unit>
+            <trans-unit id="a2s6MLC">
+                <source>description.site_form_gdpr</source>
+                <target>Adds a mandatory GDPR consent checkbox to public forms</target>
+            </trans-unit>
+            <trans-unit id="Q4suaeP">
+                <source>description.site_other_cookies</source>
+                <target>Other cookies info for the legal notice (HTML allowed, not translated)</target>
+            </trans-unit>
+            <trans-unit id="vvM5TVl">
+                <source>description.site_other_copyright</source>
+                <target>Other copyright info for the legal notice (HTML allowed, not translated)</target>
+            </trans-unit>
+            <trans-unit id="ooJKbLK">
+                <source>description.theme_color_background</source>
+                <target>Background color. Empty = default color</target>
+            </trans-unit>
+            <trans-unit id="GaAjAQb">
+                <source>description.theme_color_primary</source>
+                <target>Main color (buttons, titles, links). Empty = default color</target>
+            </trans-unit>
+            <trans-unit id="9N1ZUqN">
+                <source>description.theme_color_primary_dark_mode</source>
+                <target>Primary color in dark mode. Empty = reuses the primary color above</target>
+            </trans-unit>
+            <trans-unit id="7x7ms2E">
+                <source>description.theme_color_secondary</source>
+                <target>Secondary color. Empty = default color</target>
+            </trans-unit>
+            <trans-unit id="dpNF49d">
+                <source>description.theme_color_secondary_dark_mode</source>
+                <target>Secondary color in dark mode. Empty = reuses the secondary color above</target>
+            </trans-unit>
+            <trans-unit id="hv_YTIS">
+                <source>description.theme_color_text</source>
+                <target>Text color. Empty = default color</target>
+            </trans-unit>
+            <trans-unit id="xh2PQgs">
+                <source>description.theme_font_family_accent</source>
+                <target>Optional font for badges/labels/eyebrow text. Empty = default font</target>
+            </trans-unit>
+            <trans-unit id="VrXoCYj">
+                <source>description.theme_font_family_body</source>
+                <target>Font for body text. Empty = default font</target>
+            </trans-unit>
+            <trans-unit id="OxzRF6z">
+                <source>description.theme_font_family_title</source>
+                <target>Font for titles (h1-h6). Empty = default font</target>
+            </trans-unit>
+            <trans-unit id="WtvAdQ9">
+                <source>description.theme_mode</source>
+                <target>Display mode applied site-wide for every visitor</target>
+            </trans-unit>
+            <trans-unit id="vnYPhlr">
+                <source>description.url_cookies_policy</source>
+                <target>Cookies policy page URL, e.g. https://example.com/pages/cookies</target>
+            </trans-unit>
+            <trans-unit id="x3a79aa">
+                <source>label.ai_assistant_dashboard_enabled</source>
+                <target>Dashboard AI assistant</target>
+            </trans-unit>
+            <trans-unit id="x7eb147">
+                <source>label.ai_assistant_dashboard_endpoint</source>
+                <target>AI assistant backend url</target>
+            </trans-unit>
+            <trans-unit id="Fd2PHDs">
+                <source>label.ai_assistant_dashboard_not_enabled</source>
+                <target>Dashboard AI assistant not enabled</target>
+            </trans-unit>
+            <trans-unit id="xa3232c">
+                <source>label.ai_assistant_dashboard_token</source>
+                <target>AI assistant backend token</target>
+            </trans-unit>
+            <trans-unit id="xc806c7">
+                <source>label.ai_assistant_rephrase_api_key</source>
+                <target>Rephrase API key</target>
+            </trans-unit>
+            <trans-unit id="x128330">
+                <source>label.ai_assistant_rephrase_base_uri</source>
+                <target>Rephrase API base uri</target>
+            </trans-unit>
+            <trans-unit id="x0e07e1">
+                <source>label.ai_assistant_rephrase_model</source>
+                <target>Rephrase model</target>
+            </trans-unit>
+            <trans-unit id="xb159be">
+                <source>label.ai_assistant_rephrase_provider</source>
+                <target>Rephrase AI provider</target>
+            </trans-unit>
+            <trans-unit id="RFJ8N8R">
+                <source>label.ai_rephrase_failure_alert</source>
+                <target>AI rephrase feature failed on its last attempt</target>
+            </trans-unit>
+            <trans-unit id="H21MUkk">
+                <source>label.ai_rephrase_not_enabled</source>
+                <target>AI rephrase feature not enabled</target>
+            </trans-unit>
+            <trans-unit id="x4750b9">
+                <source>label.block_showcase_url</source>
+                <target>Block showcase url</target>
+            </trans-unit>
+            <trans-unit id=".HY9J1w">
+                <source>label.email_debug</source>
+                <target>Email - Debug mode</target>
+            </trans-unit>
+            <trans-unit id="DRvJXiP">
+                <source>label.recaptcha3_score_threshold</source>
+                <target>ReCaptcha - Score threshold</target>
+            </trans-unit>
+            <trans-unit id=".Pi.fDj">
+                <source>label.recaptcha3_secret_key</source>
+                <target>ReCaptcha - Secret key</target>
+            </trans-unit>
+            <trans-unit id="Ps.ODsR">
+                <source>label.recaptcha3_site_key</source>
+                <target>ReCaptcha - Site key</target>
+            </trans-unit>
+            <trans-unit id="VkhtV_A">
+                <source>label.site_enable_cookie_consent</source>
+                <target>Enable Cookie Consent</target>
+            </trans-unit>
+            <trans-unit id="UdYcxIh">
+                <source>label.site_form_delay</source>
+                <target>Public forms anti-bot delay</target>
+            </trans-unit>
+            <trans-unit id="jM0HrcE">
+                <source>label.site_form_gdpr</source>
+                <target>Show GDPR consent checkbox on public forms</target>
+            </trans-unit>
+            <trans-unit id="cF7QFBj">
+                <source>label.site_other_cookies</source>
+                <target>Site Other Cookies</target>
+            </trans-unit>
+            <trans-unit id="SRPjCF3">
+                <source>label.site_other_copyright</source>
+                <target>Site Other Copyright</target>
+            </trans-unit>
+            <trans-unit id="copCVwP">
+                <source>label.theme_color_background</source>
+                <target>Background color</target>
+            </trans-unit>
+            <trans-unit id="9DEZ6f_">
+                <source>label.theme_color_primary</source>
+                <target>Primary color</target>
+            </trans-unit>
+            <trans-unit id="SJuQktg">
+                <source>label.theme_color_primary_dark_mode</source>
+                <target>Primary color (dark mode)</target>
+            </trans-unit>
+            <trans-unit id=".Ql4TGy">
+                <source>label.theme_color_secondary</source>
+                <target>Secondary color</target>
+            </trans-unit>
+            <trans-unit id="UXK9CEY">
+                <source>label.theme_color_secondary_dark_mode</source>
+                <target>Secondary color (dark mode)</target>
+            </trans-unit>
+            <trans-unit id="8qVnRtK">
+                <source>label.theme_color_text</source>
+                <target>Text color</target>
+            </trans-unit>
+            <trans-unit id="XSfCsDh">
+                <source>label.theme_font_family_accent</source>
+                <target>Accent font</target>
+            </trans-unit>
+            <trans-unit id="WJJDk6p">
+                <source>label.theme_font_family_body</source>
+                <target>Body font</target>
+            </trans-unit>
+            <trans-unit id="tQraffI">
+                <source>label.theme_font_family_title</source>
+                <target>Titles font</target>
+            </trans-unit>
+            <trans-unit id="LOI7_Sr">
+                <source>label.theme_mode</source>
+                <target>Light/dark mode</target>
+            </trans-unit>
+            <trans-unit id="ZkdMN2x">
+                <source>label.ui_ai_assistant_dashboard_enabled</source>
+                <target>Donovan (Q&amp;A) - Enabled</target>
+            </trans-unit>
+            <trans-unit id="umye009">
+                <source>label.ui_ai_assistant_dashboard_endpoint</source>
+                <target>Donovan (Q&amp;A) - Endpoint</target>
+            </trans-unit>
+            <trans-unit id="hTKz9St">
+                <source>label.ui_ai_assistant_dashboard_token</source>
+                <target>Donovan (Q&amp;A) - Token</target>
+            </trans-unit>
+            <trans-unit id="b01mpQ2">
+                <source>label.ui_ai_assistant_rephrase_api_key</source>
+                <target>Donovan (Site) - LLM API key</target>
+            </trans-unit>
+            <trans-unit id="ipeseMe">
+                <source>label.ui_ai_assistant_rephrase_base_uri</source>
+                <target>Donovan (Site) - Base URI</target>
+            </trans-unit>
+            <trans-unit id="tfKSd09">
+                <source>label.ui_ai_assistant_rephrase_model</source>
+                <target>Donovan (Site) - LLM model</target>
+            </trans-unit>
+            <trans-unit id="nUpavak">
+                <source>label.ui_ai_assistant_rephrase_provider</source>
+                <target>Donovan (Site) - LLM provider</target>
+            </trans-unit>
+            <trans-unit id="Je6f2_l">
+                <source>label.ui_block_showcase_url</source>
+                <target>Block showcase - Url</target>
+            </trans-unit>
+            <trans-unit id="vSe2.fp">
+                <source>label.url_cookies_policy</source>
+                <target>URL Cookies Policy</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

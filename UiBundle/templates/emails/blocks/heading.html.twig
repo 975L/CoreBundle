@@ -1,0 +1,10 @@
+{# No inline color/font, so the theme's own typography applies; "text-left" must sit on the tag itself, which the theme targets directly #}
+<tr>
+    <td style="padding:0 24px 16px;">
+        {% if 'h1' == level %}
+            <h1 class="text-left" style="margin:0;font-size:24px;line-height:32px;font-weight:bold;">{{ heading }}</h1>
+        {% else %}
+            <h2 class="text-left" style="margin:0;font-size:20px;line-height:28px;font-weight:bold;">{{ heading }}</h2>
+        {% endif %}
+    </td>
+</tr>

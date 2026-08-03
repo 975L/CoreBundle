@@ -1,0 +1,25 @@
+{# Unlike the other single-media kinds, Hero rotates through every attached media via "medias" #}
+{% set medias = block.media %}
+{% set media = medias|length == 1 ? medias|first : null %}
+{# Intrinsic pixel size, not the free-text width/height which may hold an unusable "50%"; kept out of the tag, which parses attributes only #}
+<twig:c975LUi:Hero:Hero
+    badge="{{ badge|default('') }}"
+    title="{{ title }}"
+    level="{{ titleLevel|default('h1') }}"
+    subtitle="{{ subtitle|default('') }}"
+    primaryLabel="{{ primaryLabel|default('') }}"
+    primaryUrl="{{ primaryUrl|default('') }}"
+    secondaryLabel="{{ secondaryLabel|default('') }}"
+    secondaryUrl="{{ secondaryUrl|default('') }}"
+    statValue="{{ statValue|default('') }}"
+    statLabel="{{ statLabel|default('') }}"
+    src="{{ media ? vich_uploader_asset(media) : '' }}"
+    alt="{{ media ? media.alt : '' }}"
+    width="{{ media ? media.intrinsicWidth : '' }}"
+    height="{{ media ? media.intrinsicHeight : '' }}"
+    medias="{{ medias|length > 1 ? medias : [] }}"
+    mediaLayout="{{ mediaLayout|default('') }}"
+    hasBackgroundImage="{{ hasBackgroundImage|default(false) }}"
+    background="{{ background|default('') }}"
+    id="{{ anchor_id }}"
+/>

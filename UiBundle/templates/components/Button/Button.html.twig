@@ -1,0 +1,21 @@
+{# Static usage : <twig:c975LUi:Button:Button label="Label" url="/path" [type="primary"] [target=""] [icon=""] [download=false] [inline=false] /> #}
+{# Dynamic usage (Block system) : see templates/blocks/Button.html.twig #}
+
+{% set type = type | default('primary') %}
+{% set target = target | default('') %}
+{% set icon = icon | default('') %}
+{% set download = download | default(false) | to_bool %}
+{% set inline = inline | default(false) | to_bool %}
+
+{% if not inline %}
+    <p class="text-center">
+{% endif %}
+    <a href="{{ url }}" role="button" class="btn btn-{{ type }}" {% if target != '' %}target="{{ target }}"{% endif %} {% if download %}download{% endif %}>
+        {% if icon != '' %}
+            <twig:c975LUi:Image:Icon src="{{ icon }}" width="16" height="16" class="white"/>
+        {% endif %}
+        {{ label|raw }}
+    </a>
+{% if not inline %}
+    </p>
+{% endif %}

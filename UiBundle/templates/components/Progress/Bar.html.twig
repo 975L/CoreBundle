@@ -1,0 +1,18 @@
+{# <twig:c975LUi:Progress:Bar progressPercent="{{ progressPercent }}" [label="Skill"] [text="true"] [id=""]/> #}
+{# "??" not "default", which also substitutes on an explicit false and would turn "show percent" back on #}
+{% set text = text ?? true %}
+{# Width through a precomputed class: a style attribute is never covered by a CSP nonce #}
+{% set widthStep = max(0, min(100, progressPercent|round)) %}
+{% if label %}
+    <div class="progress-header">
+        <span class="progress-label">{{ label }}</span>
+        {% if "true" == text %}<span class="progress-percent">{{ progressPercent }}%</span>{% endif %}
+    </div>
+{% endif %}
+<div class="progress-container">
+    <div class="progress-bar progress-bar--w{{ widthStep }}"{% if id|default('') %} id="{{ id }}"{% endif %}>
+        {% if "true" == text and not label %}
+            <span class="progress-text">{{ progressPercent }}%</span>
+        {% endif %}
+    </div>
+</div>

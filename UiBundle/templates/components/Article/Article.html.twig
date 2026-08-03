@@ -1,0 +1,22 @@
+{# Static usage : <twig:c975LUi:Article:Article article="{{ article }}"/> #}
+{# or explicit props : title="" content="" [detail=""] [mediaList=[]] [id=""] [uid=""] #}
+
+{% set title = title|default(article.title|default('')) %}
+{% set slug = slug|default(article.slug|default('')) %}
+{% set content = content|default(article.content|default('')) %}
+{% set hook = hook|default(article.hook|default('')) %}
+{% set detail = detail|default(article.detail|default('')) %}
+{% set mediaList = mediaList|default(article is defined ? article.medias|default([]) : []) %}
+{% set id = id|default('') %}
+{# uid keeps the slider's internal id unique across duplicated blocks; it must not touch the article's own public anchor #}
+{% set uid = uid|default('') %}
+
+<article class="site-article"{% if id %} id="{{ id }}"{% endif %}>
+    <h2>{{ title }}</h2>
+    {% if mediaList|length > 0 %}
+        <twig:c975LUi:Slider:Slider media="{{ mediaList }}" id="{{ (id is defined and id) ? id ~ (uid ? '-' ~ uid : '') ~ '-slider' : 'article-' ~ slug }}" duration="3500"/>
+    {% endif %}
+    {# The article variant of the text_hook block; the slider reads the same hook but keeps its own text style #}
+    {% if hook %}<div class="text-hook text-hook--article">{{ hook|raw|nl2br }}</div>{% endif %}
+    {{ content|raw|nl2br }}
+</article>

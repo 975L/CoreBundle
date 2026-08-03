@@ -1,0 +1,112 @@
+{# Page shell for an app running Config+Ui plus a satellite bundle (shop, book, gallery...) with no site foundation on top - SiteBundle's own layout, with its navbar, footer, menus and per-Page SEO, takes over whenever it is installed (see the scaffolded templates/layout.html.twig, which extends whichever of the two exists). Everything below is what a site genuinely cannot go live without and that no longer depends on having pages: the theme, the site graphics, the share tags, the fonts, the cookie banner #}
+{% if site_media('logo') is not null %}
+    {% set logo = absolute_url(asset('/' ~ site_media('logo').filename)) ~ (site_media('logo').updatedAt ? '?v=' ~ site_media('logo').updatedAt.timestamp : '') %}
+{% endif %}
+{% if site_media('favicon') is not null %}
+    {% set favicon = absolute_url(asset('/' ~ site_media('favicon').filename)) ~ (site_media('favicon').updatedAt ? '?v=' ~ site_media('favicon').updatedAt.timestamp : '') %}
+{% endif %}
+{% if site_media('apple-touch-icon') is not null %}
+    {% set appleTouchIcon = absolute_url(asset('/' ~ site_media('apple-touch-icon').filename)) ~ (site_media('apple-touch-icon').updatedAt ? '?v=' ~ site_media('apple-touch-icon').updatedAt.timestamp : '') %}
+{% endif %}
+
+{# ogImage: whatever the rendering template set, then the site's default og-image, then the logo - same order as SiteBundle's layout, minus the per-Page override it has and this one can't #}
+{% if ogImage is not defined or ogImage == null %}
+    {% if site_media('og-image') is not null %}
+        {% set ogImage = absolute_url(asset('/' ~ site_media('og-image').filename)) ~ (site_media('og-image').updatedAt ? '?v=' ~ site_media('og-image').updatedAt.timestamp : '') %}
+    {% elseif logo is defined %}
+        {% set ogImage = logo %}
+    {% endif %}
+{% endif %}
+
+{% set siteName = config('site-name') %}
+{% set pageTitle = title is defined and title != '' ? (siteName ? title ~ ' - ' ~ siteName : title) : siteName %}
+
+<!DOCTYPE html>
+{# "auto" leaves data-theme unset, so prefers-color-scheme takes over #}
+<html lang="{{ app.request.locale|default('en') }}"{% if config('theme-mode') in ['light', 'dark'] %} data-theme="{{ config('theme-mode') }}"{% endif %}>
+    <head>
+        {% block head %}
+            {% block meta %}
+                <meta charset="UTF-8">
+                {# The comma is not optional: the viewport content is a comma-separated list, so "width=device-width initial-scale=1.0" is one single unparseable token and the whole directive is dropped #}
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                {# Turbo reads this to nonce the inline tags it re-executes, which the CSP would otherwise block #}
+                <meta name="csp-nonce" content="{{ csp_nonce('script') }}">
+
+                {# "noindex, follow" on every error page: "status_code" is only ever set by Symfony's error renderer, and a 404/500 rendered with this layout would otherwise inherit the "index, follow" default and invite search engines to index it #}
+                <meta name="robots" content="{{ robots|default(status_code is defined and status_code >= 400 ? 'noindex, follow' : 'index, follow') }}">
+
+                <title>{% block title %}{{ pageTitle }}{% endblock %}</title>
+                <meta property="og:title" content="{{ pageTitle }}">
+                <meta property="og:type" content="website">
+                {% if siteName %}
+                    <meta property="og:site_name" content="{{ siteName }}">
+                {% endif %}
+                {% if config('site-author') %}
+                    <meta name="author" content="{{ config('site-author') }}">
+                {% endif %}
+                <meta name="copyright" content="{{ site_copyright() }}">
+                {% if description is defined and description is not empty %}
+                    <meta name="description" content="{{ description }}">
+                    <meta property="og:description" content="{{ description|slice(0, 150) }}">
+                {% endif %}
+                {% if ogImage is defined %}
+                    <meta property="og:image" content="{{ ogImage }}">
+                {% endif %}
+
+                {% set canonicalUrl = canonical_url() %}
+                {% if canonicalUrl %}
+                    <meta property="og:url" content="{{ canonicalUrl }}">
+                    <link rel="canonical" href="{{ canonicalUrl }}">
+                {% endif %}
+
+                {% if favicon is defined %}
+                    <link rel="icon" type="image/x-icon" href="{{ favicon }}">
+                {% endif %}
+                {% if appleTouchIcon is defined %}
+                    <link rel="apple-touch-icon" href="{{ appleTouchIcon }}">
+                    <link rel="apple-touch-icon-precomposed" href="{{ appleTouchIcon }}">
+                {% endif %}
+            {% endblock %}
+
+            {# Before the stylesheets, the @font-face rules sitting inside them; crossorigin is required even same-origin #}
+            {% block fontPreload %}
+                {% for font in font_preloads() %}
+                    <link rel="preload" href="{{ asset('/' ~ font.path) }}" as="font" type="{{ font.type }}" crossorigin>
+                {% endfor %}
+            {% endblock %}
+
+            {# data-turbo-track="reload": Turbo Drive doesn't re-evaluate the <head> between navigations, so after a deployment a visitor already on the site would get the new HTML with the old assets. Marked this way, the tags are compared by Turbo on every navigation and a changed href triggers a full reload #}
+            {% block stylesheets %}
+                {% for stylesheet in bundle_stylesheets() %}
+                    <link rel="stylesheet" href="{{ stylesheet }}" data-turbo-track="reload">
+                {% endfor %}
+            {% endblock %}
+
+            {% block javascripts %}
+                {% block importmap %}
+                    {{ importmap(['app']|merge(bundle_scripts()), {'nonce': csp_nonce('script'), 'data-turbo-track': 'reload'}) }}
+                {% endblock %}
+            {% endblock %}
+        {% endblock %}
+    </head>
+
+    <body>
+        {% block body %}
+            <main>
+                {% block flashes %}
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="flash alert alert-{{ label }} text-center" role="alert">{{ message|raw }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endblock %}
+
+                {% block content %}{% endblock %}
+            </main>
+
+            {# Carries its own "site-enable-cookie-consent" guard, so nothing to check here #}
+            <twig:c975LUi:Cookie:Consent />
+        {% endblock %}
+    </body>
+</html>

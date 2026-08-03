@@ -1,0 +1,265 @@
+/* FORMS */
+@use 'sass:list';
+
+// SiteBundle declares the --input-*/--form-*/--label-* tokens; _tokens.scss defaults them without it
+
+// The text-like input types, written once: a type missing from one of five lists is a field that looks right until judged
+$text-input-types: date, datetime-local, email, month, number, search, tel, time, url, week, password, text;
+
+// The attributes making a field verifiable: ":user-valid" alone would paint any touched field green
+$constraints: '[required]', '[pattern]', '[minlength]', '[maxlength]', '[type="email"]', '[type="url"]', '[type="number"]', '[type="tel"]';
+
+// The two states, written once: they are read by the rules painting the field and again by the ones
+// hanging its glyph on the wrapper, and a state added to one but not the other is a half-marked field
+$invalid-state: ':is(.error, :user-invalid, :autofill:invalid, :-webkit-autofill:invalid)';
+$valid-state: ':is(.success, :is(#{$constraints}):is(:user-valid, :is(:autofill, :-webkit-autofill):valid))';
+
+// "<prefix>input[type="date"]<state>, <prefix>input[type="datetime-local"]<state>, ..." as a
+// comma-separated selector list. The prefix is what lets the same list be reused inside :has()
+@function text-inputs($state: '', $prefix: '') {
+    $selector: ();
+    @each $type in $text-input-types {
+        $selector: list.append($selector, #{'#{$prefix}input[type="#{$type}"]#{$state}'}, comma);
+    }
+
+    @return $selector;
+}
+
+form {
+    width: var(--form-width);
+    margin: 0 auto 1em auto;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+label {
+    display: block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--black);
+}
+
+label.required::after {
+    content: "*";
+}
+
+input {
+    margin-bottom: 1em;
+}
+
+#{text-inputs()} {
+    display: block;
+    width: 100%;
+    height: 34px;
+    // A box-shadow takes no room in the layout, so the 3px validation ring is drawn over whatever sits
+    // above and below - its own label, the previous field. The top margin is what keeps it clear
+    margin-block: var(--input-margin-block);
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    background-color: var(--input-background);
+    border: 1px solid transparent;
+    border-bottom: 2px solid var(--input-border-bottom-color);
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    color: var(--form-input-color);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="text"] {
+    writing-mode: horizontal-tb !important;
+    padding-block: 1px;
+    padding-inline: 2px;
+}
+
+button[type="submit"],
+input[type="submit"] {
+    width: 100%;
+    border: none;
+}
+
+form div div:has(input[type="radio"]),
+form div div:has(input[type="checkbox"]) {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: left;
+}
+
+form div div:has(input[type="radio"]) label,
+form div div:has(input[type="checkbox"]) label {
+    font-weight: normal;
+    margin-left: 2px;
+}
+
+textarea {
+    margin-block: var(--input-margin-block);
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    background-color: var(--input-background);
+    border: 1px solid var(--input-border-bottom-color);
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    color: var(--form-input-color);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#{text-inputs(':hover')},
+textarea:hover {
+    border: 1px solid var(--input-border-color);
+    border-bottom: 2px solid var(--input-border-color);
+    box-shadow: 0 0 10px 2px var(--input-shadow-color);
+}
+
+#{text-inputs(':focus')},
+textarea:focus {
+    border: 1px solid var(--input-focus-border-color);
+    border-bottom: 2px solid var(--input-focus-border-color);
+    box-shadow: 0 0 10px 2px var(--input-focus-shadow-color);
+    color: var(--black);
+}
+
+.control-label {
+    color: var(--label-color);
+}
+
+.control-label.required {
+    color: var(--required-color);
+}
+
+.control-label.required::after {
+    content: "*";
+}
+
+// Built by assets/js/password.js around the input alone, not its label, so the eye stays centered on it
+.has-toggle {
+    position: relative;
+}
+
+.has-toggle input[type="password"],
+.has-toggle input[type="text"] {
+    // Room for the eye, plus the validation glyph the wrapper rules below park to its left
+    padding-right: 64px;
+}
+
+.has-toggle .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+}
+
+// The eye is an <img> no currentColor reaches, so a dark theme inverts it instead
+.toggle-password img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    filter: var(--input-icon-filter);
+}
+
+/* VALIDATION FEEDBACK */
+
+// ":user-*", not ":valid"/":invalid", which match from page load and would redden an untouched form
+// The type list is interpolated to tie the ":focus" rules' specificity, source order settling it
+// The ✓/✗ glyph carries the state without color alone (WCAG 1.4.1); a background-image, <input> taking no pseudo-element
+// Its fill can't follow the token, so the two hexes below must be restated if you retune it
+// ":is()" is what makes the two states share one rule safely: it is forgiving, so a browser not knowing
+// ":user-invalid" (Chrome < 119, Safari < 16.5) drops that argument alone. Listed flat, the one unknown
+// selector would invalidate the whole list and take the ".error" feedback down with it - on browsers
+// where the JS-driven check is the only one there is
+// ":autofill:invalid" covers the value the browser proposes on its own: autofilling is not user
+// interaction, so ":user-invalid" never fires on it and a prefilled login stayed unjudged. Plain
+// ":invalid" is safe in that pairing - a field the browser has filled always has content to judge.
+// ":-webkit-autofill" rides along for the versions predating the standard name, both harmless where
+// unknown thanks to the forgiving ":is()"
+#{text-inputs($invalid-state)},
+textarea:is(.error, :user-invalid) {
+    border: 1px solid var(--input-invalid-border-color);
+    border-bottom: 2px solid var(--input-invalid-border-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-invalid-shadow-color) 25%, transparent);
+    background-color: color-mix(in srgb, var(--input-invalid-border-color) 12%, var(--input-background));
+}
+
+// Same forgiving wrapper as above, ".success" surviving on its own where ":user-valid" is unknown
+#{text-inputs($valid-state)},
+textarea:is(.success, :is([required], [minlength], [maxlength]):user-valid) {
+    border: 1px solid var(--input-valid-border-color);
+    border-bottom: 2px solid var(--input-valid-border-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-valid-shadow-color) 25%, transparent);
+    background-color: color-mix(in srgb, var(--input-valid-border-color) 12%, var(--input-background));
+}
+
+
+// The ✓/✗ carrying the state alongside the color - WCAG 1.4.1 forbids color as its only vehicle, and
+// red/green is exactly the pair deutan/protan color blindness cannot separate (~8% of men).
+//
+// It hangs on the field's wrapper rather than on the field itself. An <input> takes no pseudo-element, so
+// the glyph used to be a background-image on it - which Chrome throws away on an autofilled field, its own
+// UA sheet forcing "background-image: none !important" there. No author rule outranks a UA !important, so
+// a prefilled field kept its colored border and lost its glyph. Read off the wrapper through :has(), one
+// mechanism covers every state on every field, autofill included.
+//
+// Anchored from the bottom, not centered: the wrapper is either Symfony's own field <div> (label then
+// input) or the .has-toggle the password controller builds (input alone), and only the bottom edge sits
+// in the same place in both. --input-glyph-offset is that distance - retune it for a form theme that
+// puts anything after the input.
+div:has(#{text-inputs($invalid-state, '> ')}),
+div:has(#{text-inputs($valid-state, '> ')}) {
+    position: relative;
+}
+
+div:has(#{text-inputs($invalid-state, '> ')})::after,
+div:has(#{text-inputs($valid-state, '> ')})::after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    bottom: var(--input-glyph-offset);
+    width: 15px;
+    height: 15px;
+    background-repeat: no-repeat;
+    background-size: 15px 15px;
+    pointer-events: none;
+}
+
+// Pushed left of the eye the password controller injects, which sits at the same right edge
+.has-toggle::after {
+    right: 36px;
+}
+
+div:has(#{text-inputs($invalid-state, '> ')})::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23dc3545' d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E");
+}
+
+div:has(#{text-inputs($valid-state, '> ')})::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%2328a745' d='M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z'/%3E%3C/svg%3E");
+}
+
+// Its own token: the border red falls to 4.14:1 on the dark page, under what WCAG AA asks of body text
+.error-message {
+    color: var(--input-invalid-text-color);
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #{text-inputs()},
+    textarea {
+        transition: none;
+    }
+}

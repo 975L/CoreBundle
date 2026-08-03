@@ -1,0 +1,14 @@
+{# Static usage: <twig:c975LUi:Section:Features cards="{{ [{icon: '', title: '...', text: '...'}] }}" [eyebrow=""] [title=""] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/SectionFeatures.html.twig #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="section-features-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        {{ include('@c975LUi/components/Section/_head.html.twig') }}
+        <div class="section-features">
+            {% for c in cards %}
+                <twig:c975LUi:Card:Card title="{{ c.title }}" level="h3" icon="{{ c.icon ? [c.icon, '', 22, 22] : [] }}" content="{{ c.text }}"/>
+            {% endfor %}
+        </div>
+    </div>
+</{{ tag }}>

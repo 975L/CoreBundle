@@ -1,0 +1,14 @@
+{# Adapter for the dynamic Block system — resolves the uploaded medias into the Video:Video component: the video file itself plus, optionally, an image used as its cover (poster) #}
+{% set video = block.media|filter(item => item.mimeType starts with 'video/')|first %}
+{% set poster = block.media|filter(item => item.mimeType starts with 'image/')|first %}
+{% set options = options|default([]) %}
+{% set width = width|default('') %}
+{% set height = height|default('') %}
+{# Sized by nothing, a <video> reserves the spec's default 300x150 box and shifts the whole page once its metadata arrives. The video file's own pixel size can't be read server-side (no ffprobe on a managed host, and getimagesize() doesn't decode a video container), but the cover image's can, and it was recorded on upload (see VichImageResizeListener): resizing keeps that image proportional, so its width/height pair carries the right ratio for the player. .img-responsive (max-width:100% + height:auto) turns the pair back into a fluid box, exactly as it does for an image. Nothing to fall back on without a cover, and an admin-set size always wins #}
+{% if '' == width and '' == height and poster and poster.width and poster.height %}
+    {% set width = poster.width %}
+    {% set height = poster.height %}
+{% endif %}
+{% if video %}
+    <twig:c975LUi:Video:Video src="{{ vich_uploader_asset(video) }}" type="{{ video.mimeType }}" poster="{{ poster ? vich_uploader_asset(poster) : '' }}" title="{{ title|default('') }}" description="{{ description|default('') }}" autoplay="{{ 'autoplay' in options }}" muted="{{ 'muted' in options }}" loop="{{ 'loop' in options }}" width="{{ width }}" height="{{ height }}" class="{{ class|default([]) }}"/>
+{% endif %}

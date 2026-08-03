@@ -1,0 +1,31 @@
+{# Static usage : <twig:c975LUi:Image:Image src="your-path/file.ext" [label=""] [class=""] [classLabel=""] [alt=""] [width=""] [height=""] [above=false] [priority=false] /> #}
+{# or with an already-resolved URL : <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" .../> #}
+
+{% set above = above|default(false)|to_bool %}
+{% set label = label|default('') %}
+{# "priority": set it on the one above-the-fold image likely to be the LCP element #}
+{% set priority = priority|default(false)|to_bool %}
+{# "img-responsive" and width/height go together, except with a height and no width: "height: auto" would win #}
+{% set heightOnly = height is defined and height != '' and (width is not defined or width == '') %}
+{% set imgResponsive = heightOnly ? '' : 'img-responsive' %}
+{% set imgSrc = imgSrc|default(src is defined and src ? asset(src) : '') %}
+
+{% if imgSrc %}
+    <p class="text-center">
+        {% if above and label != '' %}
+            <span class="img-above {{ classLabel|default('') }}">{{ label|raw }}</span>
+            <br>
+        {% endif %}
+        {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative #}
+        <img src="{{ imgSrc }}"
+            class="img {{ imgResponsive }} {{ class|default('') }}"
+            alt="{{ alt|default('') }}"{% if alt|default('') == '' %} aria-hidden="true"{% endif %}
+            {% if width is defined and width != '' %}width="{{ width }}"{% endif %}
+            {% if height is defined and height != '' %}height="{{ height }}"{% endif %}
+            {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+        {% if not above and label != '' %}
+            <br>
+            <span class="img-below {{ classLabel|default('') }}">{{ label|raw }}</span>
+        {% endif %}
+    </p>
+{% endif %}

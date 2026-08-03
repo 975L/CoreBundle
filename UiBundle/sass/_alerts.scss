@@ -1,0 +1,42 @@
+/* ALERTS */
+.alert {
+    padding: 1em;
+    margin: 1em auto;
+    max-width: var(--alert-max-width, 700px);
+    border: 1px solid transparent;
+    border-radius: 5px;
+}
+
+// Descendants included: the theme's "*" rule colors each nested tag directly, beating inheritance
+.alert,
+.alert * {
+    color: var(--alert-color);
+}
+
+.alert a,
+.alert a:visited {
+    color: var(--alert-color);
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: var(--alert-success-background);
+}
+
+.alert-info {
+    background-color: var(--alert-info-background);
+}
+
+.alert-danger,
+.alert-danger * {
+    color: var(--alert-danger-color);
+}
+
+.alert-danger {
+    background-color: var(--alert-danger-background);
+}
+
+.alert-warning {
+    background-color: var(--alert-warning-background);
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="es" datatype="plaintext" original="validators.en.xlf">
+        <body>
+            <trans-unit id="57FGRQf">
+                <source>text.captcha_failed</source>
+                <target>No se ha podido verificar que su envío proviene de una persona, inténtelo de nuevo</target>
+            </trans-unit>
+            <trans-unit id="6FTtLRx">
+                <source>text.checkbox_required</source>
+                <target>Debe marcar esta casilla.</target>
+            </trans-unit>
+            <trans-unit id="ihtG6M4">
+                <source>text.email_domain_unreachable</source>
+                <target>El dominio de esta dirección de correo no parece aceptar correo</target>
+            </trans-unit>
+            <trans-unit id="peoWeuy">
+                <source>text.feature_bar_items_max</source>
+                <target>Una barra de argumentos puede tener como máximo {{ limit }} elementos.</target>
+            </trans-unit>
+            <trans-unit id="bQpc9FG">
+                <source>text.hero_media_max</source>
+                <target>Una sección hero puede tener como máximo {{ limit }} imágenes.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

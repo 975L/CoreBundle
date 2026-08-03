@@ -1,0 +1,84 @@
+{
+    "name": "c975l/ui-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony bundle providing the c975L ecosystem's shared front-end foundation \u2014 dynamic blocks, media library, and reusable CSS/JS/font/form registries used by every satellite bundle.",
+    "keywords": [
+        "symfony",
+        "bundle",
+        "ui"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Laurent Marquet",
+            "email": "laurent.marquet@laposte.net",
+            "homepage": "https://github.com/LaurentMarquet",
+            "role": "Developer"
+        },
+        {
+            "name": "975L Community",
+            "homepage": "https://github.com/975L"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "c975l/config-bundle": "^6.0",
+        "doctrine/orm": "^3.6",
+        "easycorp/easyadmin-bundle": "^5.1",
+        "egulias/email-validator": "^4.0",
+        "imagine/imagine": "^1.5",
+        "nelmio/security-bundle": "^3.9",
+        "sensiolabs/minify-bundle": "^1.2",
+        "symfony/form": "^8.0",
+        "symfony/http-client": "^8.0",
+        "symfony/mailer": "^8.0",
+        "symfony/security-bundle": "^8.0",
+        "symfony/yaml": "^8.0",
+        "twig/intl-extra": "^3.26",
+        "vich/uploader-bundle": "^2.9"
+    },
+    "require-dev": {
+        "chrome-php/chrome": "^1.16",
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "phpunit/phpunit": "^13.2",
+        "symfony/browser-kit": "^8.0",
+        "symfony/css-selector": "^8.0",
+        "symfony/maker-bundle": "^1.67",
+        "symfony/phpunit-bridge": "^8.0",
+        "symfony/rate-limiter": "^8.1",
+        "symfony/var-dumper": "^8.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "c975L\\UiBundle\\": "src/",
+            "c975L\\UiBundle\\Migrations\\": "migrations/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "c975L\\UiBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "support": {
+        "email": "contact@975l.com",
+        "source": "https://github.com/975L/UiBundle",
+        "issues": "https://github.com/975L/UiBundle/issues"
+    },
+    "suggest": {
+        "chrome-php/chrome": "To run \"c975l:ui:layout-audit\", which measures a rendered page against the layout invariants the sass tests cannot check. Install it in the consuming site, not here: the command runs from that site's console.",
+        "ext-imagick": "To upload an SVG as favicon or apple-touch-icon: GD has no SVG decoder, so without it those two roles only accept raster images (see SvgRasterizer)."
+    }
+}

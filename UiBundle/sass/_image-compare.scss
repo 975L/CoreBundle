@@ -1,0 +1,104 @@
+// Same measure as a slider and as the body copy, the three sharing one column - and the same symmetric room as a slider
+.image-compare {
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: var(--image-compare-margin-block, 3em) auto;
+}
+
+.image-compare-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    cursor: ew-resize;
+    touch-action: pan-y;
+}
+
+.image-compare-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    // No -webkit-user-drag: both <img> carry draggable="false", same effect without a vendor extension
+    user-select: none;
+}
+
+// "after" sizes the frame; "before" is stacked over it, clipped to --image-compare-position
+.image-compare-before {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    object-fit: cover;
+    clip-path: inset(0 calc(100% - var(--image-compare-position, 50%)) 0 0);
+}
+
+.image-compare-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--image-compare-position, 50%);
+    width: 3px;
+    margin-left: -1.5px;
+    background: #fff;
+    pointer-events: none;
+}
+
+.image-compare-handle-arrows {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 36px;
+    height: 36px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.image-compare-handle-arrows::before,
+.image-compare-handle-arrows::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+}
+
+.image-compare-handle-arrows::before {
+    left: 8px;
+    border-right: 7px solid var(--primary, #007bff);
+    transform: translateY(-50%);
+}
+
+.image-compare-handle-arrows::after {
+    right: 8px;
+    border-left: 7px solid var(--primary, #007bff);
+    transform: translateY(-50%);
+}
+
+.image-compare-tag {
+    position: absolute;
+    top: 10px;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 4px 10px;
+    font-size: 13px;
+    border-radius: 20px;
+    pointer-events: none;
+}
+
+.image-compare-tag-before {
+    left: 10px;
+}
+
+.image-compare-tag-after {
+    right: 10px;
+}
+
+// Keyboard driver of --image-compare-position, kept visible under the frame rather than overlaid on it
+.image-compare-range {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    accent-color: var(--primary, #007bff);
+}

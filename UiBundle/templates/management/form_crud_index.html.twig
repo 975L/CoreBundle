@@ -1,0 +1,13 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{% block main %}
+    <p>{{ ('label.info_form'|trans({}, 'ui')) }}</p>
+
+    {# Same note/key as email_template_crud_index.html.twig - shared translation, this is the more natural home for it since it's Forms that actually get the automatic GDPR checkbox #}
+    <p>{{ 'label.info_form_gdpr'|trans({
+        '%link_open%': '<a href="' ~ config_edit_url('site-form-gdpr') ~ '">',
+        '%link_close%': '</a>',
+    }, 'ui')|raw }}</p>
+
+    {{ parent() }}
+{% endblock main %}

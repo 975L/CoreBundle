@@ -1,0 +1,928 @@
+/* PAGE SECTIONS */
+
+@use 'sass:math';
+
+// Hero slideshow: kept in step with BlockType::HERO_MEDIA_MAX by HeroSlideshowTimingTest
+$hero-slide-max: 9;
+$hero-slide-seconds: 6;
+
+$page-section-bp-sm: 621px;
+$page-section-bp-md: 861px;
+$page-section-bp-lg: 1025px;
+
+// One measure for the whole page: --body-max-width, declared by SiteBundle, restated for UiBundle alone
+.section-wrap {
+    // Restated for UiBundle alone, else the gutters add to the measure instead of fitting inside it
+    box-sizing: border-box;
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
+    margin: 0 auto;
+    padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+}
+
+// font-weight pinned: with no title the eyebrow becomes the section's <h2> and would come out bold
+.section-eyebrow {
+    font-family: var(--font-family-accent);
+    font-weight: 400;
+    font-size: 12.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin: 0 0 14px;
+}
+
+.section-title {
+    font-family: var(--font-family-title);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-size: clamp(30px, 4.4vw, 42px);
+    line-height: 1.1;
+    margin: 0 0 48px;
+    color: var(--text);
+}
+
+.section-head {
+    max-width: var(--section-head-max-width, 640px);
+}
+
+// Cancels SiteBundle's page-wide "section { margin: 1em auto }", which parts two flats meant to touch
+// By class, not by the bare "section" element: a slider is a <section> too, and matching it stripped
+// the vertical room it sets for itself, leaving it flush against the block above and below
+// Vertical only: the shorthand's "0" would also drop the horizontal "auto" a centered section reads,
+// and beat the negative margins the colored flats and .hero--has-bg break out of the measure with
+main :is(.blocks, .block-animation, .block-editable) > :is(
+    .hero,
+    .feature-bar,
+    .text-section,
+    .section-features-section,
+    .section-cards-section,
+    .expertise-banner,
+    .process-steps,
+    .portfolio-grid,
+    .collection-grid,
+    .cta-band,
+    .flex-columns-section
+) {
+    margin-block: 0;
+}
+
+// Shared vertical rhythm; .hero/.cta-band/.feature-bar/.flex-columns-section handle their own
+.section-features-section,
+.section-cards-section,
+.expertise-banner,
+.process-steps,
+.portfolio-grid,
+.collection-grid {
+    padding-top: clamp(48px, 8vw, 84px);
+}
+
+// Lighter than the sections above: text_section commonly opens a page, right under its own <h1>
+.text-section {
+    padding-top: clamp(24px, 4vw, 48px);
+}
+
+// Only on a flat: without it the text would sit flush against the band's bottom edge
+.text-section.section--bg-muted,
+.text-section.section--bg-primary,
+.text-section.section--bg-dark {
+    padding-bottom: clamp(24px, 4vw, 48px);
+}
+
+// As a column slot the page-level top padding would misalign the column against its siblings
+.flex-columns__col > .section-features-section,
+.flex-columns__col > .section-cards-section,
+.flex-columns__col > .expertise-banner,
+.flex-columns__col > .process-steps,
+.flex-columns__col > .portfolio-grid,
+.flex-columns__col > .collection-grid,
+.flex-columns__col > .text-section {
+    padding-top: 0;
+}
+
+// The outer section already applied the gutter once; kept last so it wins on equal specificity
+.flex-columns__col .section-wrap {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Buttons for this block family only - kept out of sass/_buttons.scss's .btn/.btn-* on purpose */
+.section-btn {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: var(--radius-btn);
+    text-align: center;
+    text-decoration: none;
+}
+
+.section-btn--primary {
+    background: var(--primary);
+    color: var(--button-color);
+    padding: 16px 30px;
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.section-btn--primary:hover {
+    background: var(--button-background-primary-dark);
+    color: var(--button-color);
+    text-decoration: none;
+}
+
+.section-btn--ghost {
+    color: var(--section-text, var(--text));
+    border-bottom: 2px solid var(--section-accent, var(--primary));
+    border-radius: 0;
+    padding-bottom: 3px;
+}
+
+// Else the theme's global "a:hover" wins, this class having no :hover of its own
+.section-btn--ghost:hover {
+    color: var(--section-text, var(--text));
+    text-decoration: none;
+}
+
+.section-btn--dark {
+    background: var(--text);
+    color: var(--button-color);
+    padding: 11px 20px;
+}
+
+// Same reason as .section-btn--ghost:hover above
+.section-btn--dark:hover {
+    color: var(--button-color);
+    text-decoration: none;
+}
+
+/* ---- colored background, opt-in per section ---- */
+// Full-bleed past --body-max-width, else the flat paints a centered stripe under a full-width navbar
+.section--bg-muted,
+.section--bg-primary,
+.section--bg-dark {
+    position: relative;
+    left: var(--section-flat-offset, 50%);
+    right: var(--section-flat-offset, 50%);
+    width: var(--section-flat-width, 100vw);
+    margin-left: var(--section-flat-margin-x, -50vw);
+    margin-right: var(--section-flat-margin-x, -50vw);
+    background-color: var(--section-background);
+}
+
+// A flat used as a column slot paints its column, so it drops the breakout above
+.flex-columns__col .section--bg-muted,
+.flex-columns__col .section--bg-primary,
+.flex-columns__col .section--bg-dark {
+    left: auto;
+    right: auto;
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.section--bg-muted {
+    --section-background: var(--section-bg-muted, var(--surface-alt));
+    --section-border: var(--border-color);
+    // Restated, not inherited: a muted flat nested in a dark one would otherwise keep its white text
+    --section-text: var(--text);
+    --section-text-soft: var(--label-color);
+    --section-accent: var(--primary);
+    --section-overlay: var(--surface-accent);
+}
+
+// Shared: both flats are dark enough for white text, the derived tones mixed back into their own color
+.section--bg-primary,
+.section--bg-dark {
+    --section-text: var(--white);
+    --section-text-soft: color-mix(in srgb, var(--white) 78%, var(--section-background));
+    --section-accent: color-mix(in srgb, var(--white) 88%, var(--section-background));
+    --section-border: color-mix(in srgb, var(--white) 22%, transparent);
+    --section-overlay: color-mix(in srgb, var(--white) 16%, transparent);
+}
+
+.section--bg-primary {
+    --section-background: var(--section-bg-primary, var(--primary));
+}
+
+.section--bg-dark {
+    --section-background: var(--section-bg-dark, var(--text));
+}
+
+// "*" because the theme colors every element instead of letting it inherit
+.section--bg-primary,
+.section--bg-primary *,
+.section--bg-dark,
+.section--bg-dark * {
+    color: var(--section-text);
+}
+
+// The theme's "a:hover" outranks the blanket rule above; the underline is left to the theme
+.section--bg-primary a:hover,
+.section--bg-dark a:hover {
+    color: var(--section-text);
+}
+
+// Declared at the top of this file, so the blanket rule above would win on source order
+.section--bg-primary .section-eyebrow,
+.section--bg-dark .section-eyebrow {
+    color: var(--section-accent);
+}
+
+// The primary CTA is a --primary flat itself, so on a colored band it inverts and drops its shadow
+.section--bg-primary .section-btn--primary,
+.section--bg-dark .section-btn--primary {
+    background: var(--white);
+    color: var(--section-btn-color, var(--primary));
+    box-shadow: none;
+}
+
+.section--bg-primary .section-btn--primary:hover,
+.section--bg-dark .section-btn--primary:hover {
+    background: var(--section-text-soft);
+    color: var(--section-btn-color, var(--primary));
+}
+
+/* ---- hero ---- */
+// Centering is the stacked default, reset once the breakpoint below puts media and text side by side
+.hero .section-wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 56px;
+    align-items: center;
+    padding-top: clamp(48px, 8vw, 84px);
+    padding-bottom: clamp(48px, 8vw, 84px);
+}
+
+.hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-family-accent);
+    font-size: 12.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--section-text, var(--primary));
+    background: var(--section-overlay, var(--surface-accent));
+    padding: 7px 13px;
+    border-radius: var(--radius-btn);
+    margin-bottom: 26px;
+}
+
+// Tokens declared nowhere, each rule carrying its own fallback: a design routinely retunes the hero alone
+.hero__title {
+    font-family: var(--font-family-title);
+    font-weight: 500;
+    letter-spacing: var(--hero-title-letter-spacing, -0.01em);
+    font-size: var(--hero-title-size, clamp(40px, 6vw, 66px));
+    line-height: var(--hero-title-line-height, 1.03);
+    margin: 0 0 24px;
+    color: var(--section-text, var(--text));
+}
+
+// TrixEditor always wraps its output in a <div>; typography restated, display:contents not inheriting everywhere
+.hero__title > div,
+.hero__sub > div {
+    display: contents;
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+}
+
+.hero__title em {
+    color: var(--section-accent, var(--primary));
+    font-style: italic;
+}
+
+.hero__sub {
+    font-size: var(--hero-sub-size, 19px);
+    color: var(--section-text-soft, var(--label-color));
+    max-width: var(--hero-sub-max-width, 480px);
+    margin: 0 0 34px;
+}
+
+.hero__cta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+// width, not just max-width: sizing from a percentage child collapses the box to a few px
+.hero__media {
+    position: relative;
+    width: 100%;
+    max-width: var(--hero-media-max-width, 520px);
+}
+
+.hero__media img {
+    display: block;
+    max-width: 100%;
+    border-radius: var(--radius-panel);
+    box-shadow: var(--box-shadow);
+    border: 6px solid var(--card-background);
+    aspect-ratio: 4 / 3.2;
+    // contain, not cover: an off-ratio upload is letterboxed rather than cropped
+    object-fit: contain;
+    background: var(--card-background);
+    width: 100%;
+    // Mandatory: the img's height attribute is a presentational hint that would beat the aspect-ratio above
+    height: auto;
+}
+
+// Crossfade, 6s per slide; keyframes can't read the slide count, hence the data-count list below
+.hero__media--slideshow {
+    aspect-ratio: 4 / 3.2;
+}
+
+.hero__media--slideshow img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    // Fallback for a count past $hero-slide-max, which only a static twig usage can reach: the narrowest
+    // window declared, so the extra slides overlap an earlier turn rather than sitting opaque for good
+    animation-name: hero-slide-fade-#{$hero-slide-max};
+    animation-duration: #{$hero-slide-max * $hero-slide-seconds}s;
+}
+
+@for $slide from 1 through $hero-slide-max {
+    .hero__media--slideshow img:nth-child(#{$slide}) {
+        animation-delay: #{($slide - 1) * $hero-slide-seconds}s;
+    }
+}
+
+// One duration and one keyframe per count: the visible window is a slide's own share of the cycle, so
+// with a single shared keyframe every slide but the last would still be opaque when its turn is over.
+// From 2, the component only building a slideshow once a second media is attached
+@for $count from 2 through $hero-slide-max {
+    // The cycle a single slide owns, its neighbours fading over the 12% on either side of it
+    $share: math.div(100%, $count);
+
+    .hero__media--slideshow[data-count="#{$count}"] img {
+        animation-name: hero-slide-fade-#{$count};
+        animation-duration: #{$count * $hero-slide-seconds}s;
+    }
+
+    @keyframes hero-slide-fade-#{$count} {
+        0% { opacity: 0; transform: translateX(16px); }
+        #{$share * 0.12} { opacity: 1; transform: translateX(0); }
+        #{$share} { opacity: 1; transform: translateX(0); }
+        #{$share * 1.12} { opacity: 0; transform: translateX(-16px); }
+        100% { opacity: 0; transform: translateX(-16px); }
+    }
+}
+
+// The other mediaLayout: every media at once rather than in turn, for a logo wall or a set of icons.
+// Nothing animates, so this one has no cap of its own beyond the form's shared HERO_MEDIA_MAX
+.hero__media--grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+// Square tiles, not the framed 4/3.2 screenshots the slideshow shows: these are marks, sitting on the
+// flat rather than on a card, so they take the section's own chip tones instead of --card-background
+.hero__media--grid img {
+    aspect-ratio: 1;
+    // Mandatory next to the aspect-ratio above, same as .hero__media img: the img's height attribute is
+    // a presentational hint that would otherwise beat it (ImageAspectRatioHeightTest)
+    height: auto;
+    padding: 27%;
+    box-sizing: border-box;
+    object-fit: contain;
+    border: 1px solid var(--section-border, var(--border-color));
+    border-radius: 14px;
+    background: var(--section-overlay, transparent);
+    box-shadow: none;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.hero__media--grid img:hover {
+    border-color: var(--section-accent, var(--border-accent));
+}
+
+// The crossfade has no visible pause control, so this is the only way to opt out of it (WCAG 2.2.2)
+@media (prefers-reduced-motion: reduce) {
+    .hero__media--slideshow img {
+        animation: none;
+        opacity: 0;
+        transform: none;
+    }
+
+    .hero__media--slideshow img:first-child {
+        opacity: 1;
+    }
+}
+
+.hero__stat {
+    position: absolute;
+    bottom: -26px;
+    left: 0;
+    background: var(--card-background);
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.hero__stat b {
+    font-family: var(--font-family-title);
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.hero__stat span {
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--label-color);
+}
+
+// Full-bleed background-image variant, same breakout as .banner-title
+.hero.hero--has-bg {
+    position: relative;
+    left: var(--section-flat-offset, 50%);
+    right: var(--section-flat-offset, 50%);
+    width: var(--section-flat-width, 100vw);
+    margin-left: var(--section-flat-margin-x, -50vw);
+    margin-right: var(--section-flat-margin-x, -50vw);
+    // Fixed values, there being no flat color to mix into; --section-accent is left unset on purpose
+    --section-text: var(--white);
+    --section-text-soft: var(--white);
+    --section-overlay: rgba(255, 255, 255, .15);
+}
+
+// A real <img>: a background-image needs a style attribute no CSP nonce covers
+.hero.hero--has-bg .hero__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+// Fixed dark overlay so the text stays readable whatever the image - a ::before, there being no wrapper
+.hero.hero--has-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, .45);
+    z-index: 1;
+}
+
+.hero.hero--has-bg .section-wrap {
+    position: relative;
+    z-index: 2;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+}
+
+.hero.hero--has-bg .hero__text {
+    max-width: var(--hero-text-max-width, 720px);
+}
+
+.hero.hero--has-bg .hero__sub {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero.hero--has-bg .hero__cta {
+    justify-content: center;
+}
+
+.hero.hero--has-bg .hero__stat {
+    position: static;
+    margin-top: 24px;
+}
+
+/* ---- feature_bar ---- */
+.feature-bar {
+    background: var(--section-background, var(--surface-alt));
+    border-top: 1px solid var(--section-border, var(--border-color));
+    border-bottom: 1px solid var(--section-border, var(--border-color));
+}
+
+// A colored band is already separated from its surroundings by its own color, hairlines redundant
+.feature-bar.section--bg-primary,
+.feature-bar.section--bg-dark {
+    border-top: none;
+    border-bottom: none;
+}
+
+// The only flat-carrying kind with no .section-wrap, so it restates the measure the breakout removes
+.feature-bar.section--bg-muted .feature-bar__grid,
+.feature-bar.section--bg-primary .feature-bar__grid,
+.feature-bar.section--bg-dark .feature-bar__grid {
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
+    margin: 0 auto;
+}
+
+.feature-bar__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.feature-bar__grid[data-count="1"] {
+    grid-template-columns: 1fr;
+}
+
+// Centered: flush-left reads as a stray indent inside an equal-width cell of a divided row
+.feature-bar__item {
+    padding: 24px 26px;
+    border-right: 0;
+    border-bottom: 1px solid var(--section-border, var(--border-color));
+    font-size: 14px;
+    text-align: center;
+    color: var(--section-text-soft, var(--label-color));
+}
+
+// Sized and weighted as a title, not left at the UA's bold, so a site retunes it through the same token
+.feature-bar__item b {
+    display: block;
+    color: var(--section-text, var(--text));
+    font-family: var(--font-family-title);
+    font-weight: var(--font-title-weight);
+    font-size: 24px;
+    margin-bottom: 3px;
+}
+
+/* ---- section_features ---- */
+.section-features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+// Items reuse .card, whose width/margin are tuned for the flex ".cards" row, not for a grid cell
+.section-features .card {
+    width: 100%;
+    margin: 0;
+}
+
+/* ---- section_cards ---- */
+// Reuses ".cards" as-is, already sized to fit three per row inside the ".section-wrap" measure
+
+/* ---- flex_columns - flex/wrap, not a fixed grid: column count follows the slots editors add ---- */
+// The gutter is a custom property because the per-column widths below subtract it from their percentage
+.flex-columns {
+    --flex-columns-gap: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--flex-columns-gap);
+}
+
+.flex-columns__col {
+    flex: 1 1 280px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ---- expertise_banner ---- */
+// Dark whatever the site's mode: a contrast panel, not a themed surface
+.expertise-banner__inner {
+    background: var(--surface-inverse);
+    border-radius: var(--radius-panel);
+    padding: 36px 24px;
+    color: var(--text-on-inverse);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: center;
+}
+
+.expertise-banner .section-eyebrow {
+    color: var(--button-background-primary-light);
+}
+
+.expertise-banner__title {
+    font-family: var(--font-family-title);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-size: clamp(28px, 3.8vw, 38px);
+    line-height: 1.12;
+    margin: 0 0 16px;
+    color: var(--button-color);
+}
+
+.expertise-banner__text {
+    font-size: 16px;
+    color: var(--text-on-inverse);
+    margin: 0;
+}
+
+// SiteBundle's global "*" rule matches each Trix tag directly, beating inheritance; needs a <div> wrapper
+.expertise-banner__text * {
+    color: var(--text-on-inverse);
+}
+
+.section-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.section-tag {
+    border: 1px solid color-mix(in srgb, var(--text-on-inverse) 25%, transparent);
+    border-radius: var(--radius-btn);
+    padding: 11px 20px;
+    font-family: var(--font-family-accent);
+    font-size: 14px;
+    color: var(--text-on-inverse);
+}
+
+/* ---- process_steps ---- */
+.section-steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.section-step {
+    border-top: 2px solid var(--border-accent);
+    padding-top: 20px;
+}
+
+.section-step--first {
+    border-top-color: var(--primary);
+}
+
+.section-step__num {
+    font-family: var(--font-family-title);
+    font-size: 15px;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.section-step__title {
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0 0 8px;
+    color: var(--text);
+}
+
+.section-step__text {
+    font-size: 14.5px;
+    color: var(--label-color);
+    margin: 0;
+    line-height: 1.55;
+}
+
+/* ---- portfolio_grid ---- */
+.portfolio-grid__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+}
+
+.portfolio-grid__head .section-eyebrow {
+    margin-bottom: 8px;
+}
+
+.portfolio-grid__head .section-title {
+    margin: 0;
+}
+
+.portfolio-grid__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.portfolio-grid__project {
+    display: block;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-panel);
+    overflow: hidden;
+    text-decoration: none;
+}
+
+// Overrides the theme's "a:hover" underline: this anchor wraps a whole card, not a run of text
+.portfolio-grid__project:hover,
+.portfolio-grid__project:visited:hover {
+    text-decoration: none;
+}
+
+.portfolio-grid__project-img {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--surface-alt);
+}
+
+.portfolio-grid__project-img img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    // contain, not cover: same reasoning as .hero__media img, screenshots must not be cropped
+    object-fit: contain;
+    background: var(--card-background);
+    transition: transform .4s ease;
+}
+
+.portfolio-grid__project:hover .portfolio-grid__project-img img {
+    transform: scale(1.04);
+}
+
+.portfolio-grid__project-body {
+    padding: 24px;
+}
+
+.portfolio-grid__project-title {
+    font-weight: 600;
+    font-size: 19px;
+    margin: 0 0 5px;
+    color: var(--text);
+}
+
+.portfolio-grid__project-text {
+    font-size: 14px;
+    color: var(--label-color);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ---- collection ---- */
+// Default variant reuses .cards/.card; the "portfolio" variant uses .portfolio-grid__grid instead
+
+.collection-grid__head {
+    margin-bottom: 36px;
+}
+
+.collection-grid__head .section-title {
+    margin: 0;
+}
+
+/* ---- cta_band ---- */
+.cta-band {
+    padding-top: clamp(48px, 8vw, 84px);
+    padding-bottom: clamp(48px, 8vw, 84px);
+}
+
+.cta-band__inner {
+    background: var(--primary);
+    border-radius: var(--radius-panel);
+    padding: 36px 24px;
+    text-align: center;
+    color: var(--button-color);
+}
+
+.cta-band__title {
+    font-family: var(--font-family-title);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-size: clamp(32px, 5vw, 46px);
+    line-height: 1.1;
+    margin: 0 0 18px;
+    color: var(--button-color);
+}
+
+.cta-band__text {
+    font-size: 18px;
+    color: color-mix(in srgb, var(--button-color) 80%, transparent);
+    max-width: var(--cta-band-text-max-width, 560px);
+    margin: 0 auto 32px;
+}
+
+.cta-band__text * {
+    color: color-mix(in srgb, var(--button-color) 80%, transparent);
+}
+
+.cta-band .section-btn {
+    background: var(--card-background);
+    color: var(--primary);
+    font-weight: 700;
+    padding: 17px 36px;
+}
+
+.cta-band .section-btn:hover {
+    background: var(--card-background);
+    color: var(--button-background-primary-dark);
+}
+
+/* ======================= RESPONSIVE (mobile-first: min-width, ascending) ======================= */
+@media (min-width: $page-section-bp-sm) {
+    .feature-bar__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    // Each count takes exactly as many columns as it has items, else the row trails empty ones
+    .feature-bar__grid[data-count="2"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .feature-bar__item {
+        border-right: 1px solid var(--section-border, var(--border-color));
+        border-bottom: none;
+    }
+
+    .feature-bar__item:last-child {
+        border-right: 0;
+    }
+
+    .feature-bar__item:nth-child(3) {
+        border-right: 0;
+    }
+
+    .feature-bar__item:nth-child(n+4) {
+        border-top: 1px solid var(--section-border, var(--border-color));
+    }
+
+    .section-features,
+    .section-steps,
+    .portfolio-grid__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero__stat {
+        left: -26px;
+    }
+
+    .expertise-banner__inner {
+        padding: 40px;
+    }
+
+    .portfolio-grid__project-body {
+        padding: 20px 22px;
+    }
+
+    .cta-band__inner {
+        padding: 64px 56px;
+    }
+}
+
+@media (min-width: $page-section-bp-md) {
+    .hero .section-wrap {
+        grid-template-columns: 1.15fr .85fr;
+        justify-items: normal;
+        text-align: left;
+        gap: 48px;
+    }
+
+    .hero__cta {
+        justify-content: flex-start;
+    }
+
+    .hero__media {
+        max-width: none;
+    }
+
+    .expertise-banner__inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        padding: 52px 56px;
+    }
+
+    // Width in twelfths, each unit handing back the (12 - n)/12 of the gutter it doesn't need so any set summing to 12 fills the row
+    @for $span from 1 through 12 {
+        .flex-columns__col--#{$span} {
+            --flex-columns-span: #{$span};
+            flex: 0 0 calc(100% * var(--flex-columns-span) / 12 - var(--flex-columns-gap) * (12 - var(--flex-columns-span)) / 12);
+        }
+    }
+}
+
+@media (min-width: $page-section-bp-lg) {
+    .feature-bar__grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    // Same as the palier above, up to the five columns this row is sized for
+    .feature-bar__grid[data-count="3"] {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .feature-bar__grid[data-count="4"] {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    // Item 3 ends the first row of five and gets its divider back, unless it is also the last one
+    .feature-bar__item:nth-child(3):not(:last-child) {
+        border-right: 1px solid var(--section-border, var(--border-color));
+    }
+
+    .feature-bar__item:nth-child(n+4) {
+        border-top: none;
+    }
+
+    .section-features,
+    .portfolio-grid__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .section-steps {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

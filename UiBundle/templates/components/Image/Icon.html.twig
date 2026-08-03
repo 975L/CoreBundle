@@ -1,0 +1,4 @@
+{# <twig:c975LUi:Image:Icon src="your-path/file.ext" [class="your-css-classes"] [width=""] [height=""] [title=""] [priority=false]/> #}
+{# "priority": set it on an above-the-fold icon, so it is not lazy-loaded (see Image.html.twig) #}
+{% set priority = priority|default(false)|to_bool %}
+<img src="{{ asset(src) }}" alt="" aria-hidden="true" class="icon {{ class|default("") }}" {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %} {% if title is defined and title != "" %} title="{{ title }}" {% endif %} {% if priority %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}>

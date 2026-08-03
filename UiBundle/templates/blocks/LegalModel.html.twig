@@ -1,0 +1,3 @@
+{# The whole document - model, locale fallback, customization delta and %config% markers - is resolved by LegalModelRenderer #}
+{# The wrapper hosts the controller alone (it is display:contents, so it changes nothing for a visitor): an editor gets a per-section "Edit" button from it, see legal-model-edit.js #}
+<div class="legal-editable" data-controller="legal-model-edit">{{ legal_model(block) }}</div>

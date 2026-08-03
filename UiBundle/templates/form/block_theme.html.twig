@@ -1,0 +1,28 @@
+{# The tag is rendered directly: a recursive form_widget(form) resolves to the parent TYPE's block and silently downgrades this to an <input type="text"> #}
+{% block trix_editor_widget %}
+    {% set attr = attr|merge({
+        class: (attr.class|default('') ~ ' form-control ea-text-editor-content d-none')|trim,
+        'data-number-of-rows': '5',
+        'data-trix-editor-config': 'null',
+    }) %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+    {% if ai_rephrase_enabled() %}
+        {{ include('@c975LUi/form/_ai_rephrase.html.twig', {field_id: form.vars.id}) }}
+    {% endif %}
+{% endblock %}
+
+{# Opt-in via attr['data-ai-rephrase']: a plain textarea also carries raw JSON/config values dashboard-wide #}
+{% block textarea_widget %}
+    {# EasyAdmin only styles "textarea.form-control"; without it the native default width applies #}
+    {% set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+    {% if attr['data-ai-rephrase'] is defined and ai_rephrase_enabled() %}
+        {{ include('@c975LUi/form/_ai_rephrase.html.twig', {field_id: form.vars.id}) }}
+    {% endif %}
+{% endblock %}
+
+{% block empty_collection %}
+<div class="empty collection-empty"></div>
+{% endblock %}

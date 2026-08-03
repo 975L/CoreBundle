@@ -1,0 +1,9 @@
+{# <twig:c975LUi:Text:Hook text="{{ text }}"/> #}
+{# A <div>, never a <p>: raw Trix HTML is already block-level and the browser would split the <p> #}
+{# No nl2br: Trix already encodes its line breaks, so it would double them into blank lines #}
+{# --standalone is the component's alone: an article's hook is framed by the title and body around it #}
+{# Wrapped as every other section-level block, else the bar sits flat against the viewport's left edge #}
+{# ".flex-columns__col .section-wrap" drops the gutter back off when the hook sits inside a column #}
+<div class="section-wrap">
+    <div class="text-hook text-hook--standalone">{{ text|raw }}</div>
+</div>

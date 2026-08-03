@@ -1,0 +1,18 @@
+{# Static usage: <twig:c975LUi:Process:Steps title="..." steps="{{ [{title: '...', text: '...'}] }}" [eyebrow=""] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/ProcessSteps.html.twig #}
+<section class="process-steps"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+        <h2 class="section-title">{{ title }}</h2>
+        <div class="section-steps">
+            {% for s in steps %}
+                <div class="section-step {{ loop.first ? 'section-step--first' }}">
+                    <div class="section-step__num">{{ 'label.step_number'|trans({'%number%': '%02d'|format(loop.index)}, 'ui') }}</div>
+                    <h3 class="section-step__title">{{ s.title }}</h3>
+                    {# A <div>, not a <p>: raw Trix HTML is already block-level and the browser would split the <p> #}
+                    <div class="section-step__text">{{ s.text|raw }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

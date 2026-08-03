@@ -1,0 +1,10 @@
+{# Items are never stored on this block: they are pulled live from "source" and rendered as never-persisted "collection_item" blocks #}
+<twig:c975LUi:Collection:Grid
+    eyebrow="{{ eyebrow|default('') }}"
+    title="{{ title|default('') }}"
+    linkLabel="{{ linkLabel|default('') }}"
+    linkUrl="{{ linkUrl|default('') }}"
+    items="{{ collection_render_items(source, limit|default(null), detailPage|default(null), variant|default(null)) }}"
+    variant="{{ variant|default('') }}"
+    id="{{ anchor_id }}"
+/>

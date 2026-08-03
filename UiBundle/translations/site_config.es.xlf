@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="es" target-language="es" datatype="plaintext" original="site_config.es.xlf">
+        <body>
+            <trans-unit id="GS_2sku">
+                <source>description.ai_assistant_dashboard_enabled</source>
+                <target>Activa (true) o desactiva (false) el asistente de IA del panel</target>
+            </trans-unit>
+            <trans-unit id="f2Stp0E">
+                <source>description.ai_assistant_dashboard_endpoint</source>
+                <target>URL del backend IA que recibe las preguntas del panel. Vacío = desactivado (sin backend por defecto).</target>
+            </trans-unit>
+            <trans-unit id="h8OG.GR">
+                <source>description.ai_assistant_dashboard_not_enabled</source>
+                <target>Actívelo y configure un endpoint y un token para activarlo</target>
+            </trans-unit>
+            <trans-unit id="JK32Qas">
+                <source>description.ai_assistant_dashboard_token</source>
+                <target>Token Bearer enviado al endpoint del asistente de IA del panel</target>
+            </trans-unit>
+            <trans-unit id="et.XNnu">
+                <source>description.ai_assistant_rephrase_api_key</source>
+                <target>Clave API del proveedor elegido, facturada a su titular</target>
+            </trans-unit>
+            <trans-unit id="_bGjWVc">
+                <source>description.ai_assistant_rephrase_base_uri</source>
+                <target>URI base de la API compatible con OpenAI, necesaria solo para euria</target>
+            </trans-unit>
+            <trans-unit id="bWfhcXt">
+                <source>description.ai_assistant_rephrase_model</source>
+                <target>Modelo de reformulación - opcional para Anthropic/OpenAI (por defecto razonable), obligatorio para Euria (catálogo inestable, sin valor seguro)</target>
+            </trans-unit>
+            <trans-unit id="ArNa8qa">
+                <source>description.ai_assistant_rephrase_provider</source>
+                <target>Proveedor de IA del botón de reformulación: anthropic, openai o euria</target>
+            </trans-unit>
+            <trans-unit id="NF06pAx">
+                <source>description.ai_rephrase_failure_alert</source>
+                <target>Compruebe el proveedor y la clave API de reformulación configurados</target>
+            </trans-unit>
+            <trans-unit id="BXljqwk">
+                <source>description.ai_rephrase_not_enabled</source>
+                <target>Configure proveedor y clave API para activar la reformulación</target>
+            </trans-unit>
+            <trans-unit id="sQ9y3iP">
+                <source>description.block_showcase_url</source>
+                <target>URL de la vitrina de bloques que abre el enlace de la barra lateral - vacío para recurrir a la vitrina del ecosistema c975L</target>
+            </trans-unit>
+            <trans-unit id="o3sVBy1">
+                <source>description.email_debug</source>
+                <target>Si activado, ROLE_SUPER_ADMIN ve una vista previa en vez de un envío real</target>
+            </trans-unit>
+            <trans-unit id="re7MGHJ">
+                <source>description.recaptcha3_score_threshold</source>
+                <target>Umbral de puntuación (entre 0 y 1) por debajo del cual ReCaptcha v3 considera el envío sospechoso</target>
+            </trans-unit>
+            <trans-unit id="n0vSdf_">
+                <source>description.recaptcha3_secret_key</source>
+                <target>Clave secreta para ReCaptcha v3</target>
+            </trans-unit>
+            <trans-unit id="mGj2Whf">
+                <source>description.recaptcha3_site_key</source>
+                <target>Clave de sitio para ReCaptcha v3</target>
+            </trans-unit>
+            <trans-unit id="_IvRuw9">
+                <source>description.site_enable_cookie_consent</source>
+                <target>Activar el uso de consentimiento de cookies</target>
+            </trans-unit>
+            <trans-unit id="nZli24w">
+                <source>description.site_form_delay</source>
+                <target>Retraso mínimo, en segundos, entre mostrar y enviar un formulario público antes de considerarlo un bot</target>
+            </trans-unit>
+            <trans-unit id="a2s6MLC">
+                <source>description.site_form_gdpr</source>
+                <target>Añade una casilla RGPD obligatoria a los formularios públicos</target>
+            </trans-unit>
+            <trans-unit id="Q4suaeP">
+                <source>description.site_other_cookies</source>
+                <target>Otra información sobre cookies del aviso legal (HTML permitido, no traducido)</target>
+            </trans-unit>
+            <trans-unit id="vvM5TVl">
+                <source>description.site_other_copyright</source>
+                <target>Otra información de copyright del aviso legal (HTML permitido, no traducido)</target>
+            </trans-unit>
+            <trans-unit id="ooJKbLK">
+                <source>description.theme_color_background</source>
+                <target>Color de fondo. Vacío = color por defecto</target>
+            </trans-unit>
+            <trans-unit id="GaAjAQb">
+                <source>description.theme_color_primary</source>
+                <target>Color principal (botones, títulos, enlaces). Vacío = color por defecto</target>
+            </trans-unit>
+            <trans-unit id="9N1ZUqN">
+                <source>description.theme_color_primary_dark_mode</source>
+                <target>Color primario en modo oscuro. Vacío = reutiliza el color primario</target>
+            </trans-unit>
+            <trans-unit id="7x7ms2E">
+                <source>description.theme_color_secondary</source>
+                <target>Color secundario del sitio. Vacío = color por defecto</target>
+            </trans-unit>
+            <trans-unit id="dpNF49d">
+                <source>description.theme_color_secondary_dark_mode</source>
+                <target>Color secundario en modo oscuro. Vacío = reutiliza el color secundario</target>
+            </trans-unit>
+            <trans-unit id="hv_YTIS">
+                <source>description.theme_color_text</source>
+                <target>Color del texto. Vacío = color por defecto</target>
+            </trans-unit>
+            <trans-unit id="xh2PQgs">
+                <source>description.theme_font_family_accent</source>
+                <target>Fuente opcional para insignias/etiquetas/introducción. Vacío = fuente por defecto</target>
+            </trans-unit>
+            <trans-unit id="VrXoCYj">
+                <source>description.theme_font_family_body</source>
+                <target>Fuente del texto. Vacío = fuente por defecto</target>
+            </trans-unit>
+            <trans-unit id="OxzRF6z">
+                <source>description.theme_font_family_title</source>
+                <target>Fuente de los títulos (h1-h6). Vacío = fuente por defecto</target>
+            </trans-unit>
+            <trans-unit id="WtvAdQ9">
+                <source>description.theme_mode</source>
+                <target>Modo de visualización aplicado a todo el sitio para todos los visitantes</target>
+            </trans-unit>
+            <trans-unit id="vnYPhlr">
+                <source>description.url_cookies_policy</source>
+                <target>URL de la política de cookies, ej. https://example.com/pages/cookies</target>
+            </trans-unit>
+            <trans-unit id="x3a79aa">
+                <source>label.ai_assistant_dashboard_enabled</source>
+                <target>Asistente IA del panel</target>
+            </trans-unit>
+            <trans-unit id="x7eb147">
+                <source>label.ai_assistant_dashboard_endpoint</source>
+                <target>URL del backend del asistente IA</target>
+            </trans-unit>
+            <trans-unit id="Fd2PHDs">
+                <source>label.ai_assistant_dashboard_not_enabled</source>
+                <target>Asistente IA del panel no activado</target>
+            </trans-unit>
+            <trans-unit id="xa3232c">
+                <source>label.ai_assistant_dashboard_token</source>
+                <target>Token del backend del asistente IA</target>
+            </trans-unit>
+            <trans-unit id="xc806c7">
+                <source>label.ai_assistant_rephrase_api_key</source>
+                <target>Clave API de la reformulación</target>
+            </trans-unit>
+            <trans-unit id="x128330">
+                <source>label.ai_assistant_rephrase_base_uri</source>
+                <target>URL base de la API de reformulación</target>
+            </trans-unit>
+            <trans-unit id="x0e07e1">
+                <source>label.ai_assistant_rephrase_model</source>
+                <target>Modelo de reformulación</target>
+            </trans-unit>
+            <trans-unit id="xb159be">
+                <source>label.ai_assistant_rephrase_provider</source>
+                <target>Proveedor IA de la reformulación</target>
+            </trans-unit>
+            <trans-unit id="RFJ8N8R">
+                <source>label.ai_rephrase_failure_alert</source>
+                <target>La reformulación IA falló en su último intento</target>
+            </trans-unit>
+            <trans-unit id="H21MUkk">
+                <source>label.ai_rephrase_not_enabled</source>
+                <target>Función de reformulación IA no activada</target>
+            </trans-unit>
+            <trans-unit id="x4750b9">
+                <source>label.block_showcase_url</source>
+                <target>URL del escaparate de blocks</target>
+            </trans-unit>
+            <trans-unit id=".HY9J1w">
+                <source>label.email_debug</source>
+                <target>Email - Modo depuración</target>
+            </trans-unit>
+            <trans-unit id="DRvJXiP">
+                <source>label.recaptcha3_score_threshold</source>
+                <target>ReCaptcha - Umbral de puntuación</target>
+            </trans-unit>
+            <trans-unit id=".Pi.fDj">
+                <source>label.recaptcha3_secret_key</source>
+                <target>ReCaptcha - Clave secreta</target>
+            </trans-unit>
+            <trans-unit id="Ps.ODsR">
+                <source>label.recaptcha3_site_key</source>
+                <target>ReCaptcha - Clave de sitio</target>
+            </trans-unit>
+            <trans-unit id="VkhtV_A">
+                <source>label.site_enable_cookie_consent</source>
+                <target>Activar el consentimiento de cookies</target>
+            </trans-unit>
+            <trans-unit id="UdYcxIh">
+                <source>label.site_form_delay</source>
+                <target>Retraso anti-bot de los formularios públicos</target>
+            </trans-unit>
+            <trans-unit id="jM0HrcE">
+                <source>label.site_form_gdpr</source>
+                <target>Mostrar casilla de consentimiento RGPD en los formularios públicos</target>
+            </trans-unit>
+            <trans-unit id="cF7QFBj">
+                <source>label.site_other_cookies</source>
+                <target>Otra información sobre cookies</target>
+            </trans-unit>
+            <trans-unit id="SRPjCF3">
+                <source>label.site_other_copyright</source>
+                <target>Otros derechos de autor del sitio</target>
+            </trans-unit>
+            <trans-unit id="copCVwP">
+                <source>label.theme_color_background</source>
+                <target>Color de fondo</target>
+            </trans-unit>
+            <trans-unit id="9DEZ6f_">
+                <source>label.theme_color_primary</source>
+                <target>Color primario</target>
+            </trans-unit>
+            <trans-unit id="SJuQktg">
+                <source>label.theme_color_primary_dark_mode</source>
+                <target>Color primario (modo oscuro)</target>
+            </trans-unit>
+            <trans-unit id=".Ql4TGy">
+                <source>label.theme_color_secondary</source>
+                <target>Color secundario</target>
+            </trans-unit>
+            <trans-unit id="UXK9CEY">
+                <source>label.theme_color_secondary_dark_mode</source>
+                <target>Color secundario (modo oscuro)</target>
+            </trans-unit>
+            <trans-unit id="8qVnRtK">
+                <source>label.theme_color_text</source>
+                <target>Color del texto</target>
+            </trans-unit>
+            <trans-unit id="XSfCsDh">
+                <source>label.theme_font_family_accent</source>
+                <target>Fuente de acento</target>
+            </trans-unit>
+            <trans-unit id="WJJDk6p">
+                <source>label.theme_font_family_body</source>
+                <target>Fuente del texto</target>
+            </trans-unit>
+            <trans-unit id="tQraffI">
+                <source>label.theme_font_family_title</source>
+                <target>Fuente de los títulos</target>
+            </trans-unit>
+            <trans-unit id="LOI7_Sr">
+                <source>label.theme_mode</source>
+                <target>Modo claro/oscuro</target>
+            </trans-unit>
+            <trans-unit id="ZkdMN2x">
+                <source>label.ui_ai_assistant_dashboard_enabled</source>
+                <target>Donovan (Q&amp;A) - Activado</target>
+            </trans-unit>
+            <trans-unit id="umye009">
+                <source>label.ui_ai_assistant_dashboard_endpoint</source>
+                <target>Donovan (Q&amp;A) - Endpoint</target>
+            </trans-unit>
+            <trans-unit id="hTKz9St">
+                <source>label.ui_ai_assistant_dashboard_token</source>
+                <target>Donovan (Q&amp;A) - Token</target>
+            </trans-unit>
+            <trans-unit id="b01mpQ2">
+                <source>label.ui_ai_assistant_rephrase_api_key</source>
+                <target>Donovan (Sitio) - Clave API LLM</target>
+            </trans-unit>
+            <trans-unit id="ipeseMe">
+                <source>label.ui_ai_assistant_rephrase_base_uri</source>
+                <target>Donovan (Sitio) - URI base</target>
+            </trans-unit>
+            <trans-unit id="tfKSd09">
+                <source>label.ui_ai_assistant_rephrase_model</source>
+                <target>Donovan (Sitio) - Modelo LLM</target>
+            </trans-unit>
+            <trans-unit id="nUpavak">
+                <source>label.ui_ai_assistant_rephrase_provider</source>
+                <target>Donovan (Sitio) - Proveedor LLM</target>
+            </trans-unit>
+            <trans-unit id="Je6f2_l">
+                <source>label.ui_block_showcase_url</source>
+                <target>Vitrina de bloques - URL</target>
+            </trans-unit>
+            <trans-unit id="vSe2.fp">
+                <source>label.url_cookies_policy</source>
+                <target>URL de la política de cookies</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

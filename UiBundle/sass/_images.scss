@@ -1,0 +1,96 @@
+/* IMAGES */
+img {
+    overflow: clip;
+}
+
+.img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.img-rounded {
+    border-radius: 15px;
+}
+
+.img-thumbnail {
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.img-circle {
+    border-radius: 50%;
+}
+
+.img-square {
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+}
+
+.img-shadow {
+    box-shadow: 0 0 10px 2px var(--input-shadow-color);
+}
+
+span.img-below {
+    display: block;
+    margin-top: 20px;
+}
+
+img.icon {
+    width: 24px;
+    height: 24px;
+}
+
+img.icon-big {
+    width: 48px;
+    height: 48px;
+}
+
+img.white {
+    filter: invert(99%) sepia(16%) saturate(3%) hue-rotate(50deg) brightness(103%) contrast(100%);
+}
+
+// The iframe stays an inline replaced element, so it takes its parent's text-align to be centered
+.video-iframe-consent {
+    text-align: center;
+}
+
+// Responsive cap only - the real width/height come from video-iframe.js's #id-scoped rule
+.video-iframe-consent iframe {
+    max-width: 100%;
+}
+
+.video-iframe-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    aspect-ratio: 16 / 9;
+    text-align: center;
+    padding: 1.5rem;
+    background-color: var(--input-shadow-color);
+    border-radius: var(--radius-btn);
+}
+
+// Shared by the "video", "video_iframe" and "audio" blocks, all three rendering the same <figure>
+.video-figure,
+.video-iframe-figure,
+.audio-figure {
+    margin: 0;
+}
+
+.video-title,
+.video-iframe-title,
+.audio-title {
+    margin-bottom: 0.5rem;
+}
+
+.video-description,
+.video-iframe-description,
+.audio-description {
+    margin-top: 0.5rem;
+}

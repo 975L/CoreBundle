@@ -1,0 +1,24 @@
+/* EMAIL IMAGES */
+
+// No object-fit/aspect-ratio counterpart to the page's own rules: neither is supported widely enough in
+// mail clients to be relied on, and a picture that ignores them collapses rather than degrades
+.img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.img-rounded {
+    border-radius: 15px;
+}
+
+.img-thumbnail {
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.img-circle {
+    border-radius: 50%;
+}

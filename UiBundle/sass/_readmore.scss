@@ -1,0 +1,47 @@
+// Body copy like any other, so it sits on the same measure - unbounded it ran the full page frame, ~160 characters to the line
+.readmore {
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: 1em auto;
+}
+
+.readmore-toggle {
+    display: none;
+}
+
+.readmore-content {
+    display: -webkit-box;
+    -webkit-line-clamp: var(--readmore-lines);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.readmore-toggle:checked ~ .readmore-content {
+    display: block;
+    -webkit-line-clamp: unset;
+}
+
+.read-less {
+    display: none;
+}
+
+.readmore-toggle:checked ~ .readmore-toggle-label .read-more {
+    display: none;
+}
+
+.readmore-toggle:checked ~ .readmore-toggle-label .read-less {
+    display: inline;
+}
+
+// A link in everything but the tag, so it takes the theme's link color - a <label> is out of reach of the "a" rules
+.readmore-toggle-label {
+    color: var(--link-color, #007bff);
+    cursor: pointer;
+    text-decoration: underline;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+// Mixed out of the link color itself, not out of --primary: a theme setting a distinct link color keeps its own darker step
+.readmore-toggle-label:hover {
+    color: color-mix(in srgb, var(--link-color, #007bff) 85%, black);
+}

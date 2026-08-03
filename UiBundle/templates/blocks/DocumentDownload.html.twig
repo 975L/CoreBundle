@@ -1,0 +1,18 @@
+{# One download card per attached PDF; document_thumbnail_path() checks the .webp exists on disk rather than guessing it #}
+{% set medias = block.media %}
+{% set isMulti = medias|length > 1 %}
+{% for media in medias %}
+    {% set thumbnailPath = document_thumbnail_path(media) %}
+    {# No "download" attribute: it would deny the browser's own native PDF preview #}
+    <a class="document-download" href="{{ vich_uploader_asset(media) }}" target="_blank" rel="noopener">
+        {% if thumbnailPath %}
+            {# Decorative, the link's label already naming the document; aria-hidden doubles the empty alt so checkers don't read it as missing #}
+            <img class="document-download__thumb" src="{{ asset(thumbnailPath) }}" alt="" aria-hidden="true" loading="lazy">
+        {% else %}
+            <span class="document-download__thumb document-download__thumb--empty"></span>
+        {% endif %}
+        <span class="document-download__label">{{ isMulti ? (media.name|default(label)) : label }}</span>
+        {# Not translated: a file-type badge, not a sentence #}
+        <span class="document-download__ext">{{ buttonLabel|default('.PDF') }}</span>
+    </a>
+{% endfor %}

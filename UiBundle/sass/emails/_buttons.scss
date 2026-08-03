@@ -1,0 +1,44 @@
+/* EMAIL BUTTONS */
+
+// The call to action of templates/emails/blocks/button.html.twig. Kept to the flat variants the email
+// templates actually use: no :hover pair, a mail client having no hover to offer, and no box-shadow,
+// which Outlook drops and the others render inconsistently around a table cell
+.btn {
+    display: inline-block;
+    border-radius: var(--radius-btn);
+    border: none;
+    padding: 0.7rem 1.2rem;
+    margin: 1em auto;
+    text-decoration: none;
+    color: var(--button-color);
+    font-family: var(--font-family-title);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: var(--button-secondary-color);
+}
+
+.btn-success {
+    background-color: var(--button-background-success);
+}
+
+.btn-danger {
+    background-color: var(--button-background-danger);
+}
+
+// The label has to be restated on the anchor itself: a global "a" color rule would otherwise repaint it
+a.btn,
+a.btn:visited {
+    color: var(--button-color);
+    text-decoration: none;
+}
+
+a.btn-secondary,
+a.btn-secondary:visited {
+    color: var(--button-secondary-color);
+}

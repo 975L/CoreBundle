@@ -1,0 +1,38 @@
+/* DOCUMENT DOWNLOAD */
+.document-download {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0.5em 0;
+    padding: 0.75em 1em;
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--radius-card);
+    background-color: var(--card-background);
+    color: inherit;
+    text-decoration: none;
+}
+
+// A4-ish ratio, top-anchored so the page's title stays in frame instead of a centered crop
+.document-download__thumb {
+    width: 64px;
+    height: 90px;
+    object-fit: cover;
+    object-position: top;
+    border-radius: calc(var(--radius-card) / 2);
+    flex-shrink: 0;
+}
+
+.document-download__thumb--empty {
+    background-color: var(--input-border-color);
+}
+
+.document-download__label {
+    flex-grow: 1;
+}
+
+.document-download__ext {
+    color: var(--primary);
+    font-size: 0.85em;
+    white-space: nowrap;
+}

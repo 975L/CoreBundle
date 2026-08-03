@@ -1,0 +1,22 @@
+{# <twig:c975LUi:Text:Section title="{{ title }}" slug="{{ slug }}" content="{{ content }}" [eyebrow=""] [src="{{ vich_uploader_asset(media) }}"] [alt="{{ media.alt }}"] [background=""]/> #}
+{% set eyebrow = eyebrow|default('') %}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
+{% set tag = (title or eyebrow) ? 'section' : 'div' %}
+{# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
+{% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<{{ tag }} class="text-section{{ background }}"{% if slug|default('') %} id="{{ slug }}"{% endif %}>
+    <div class="section-wrap">
+        {# With no title the eyebrow becomes the <h2>, keeping its eyebrow look #}
+        {% if title %}
+            {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+            <h2>{{ title }}</h2>
+        {% elseif eyebrow %}
+            <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+        {% endif %}
+        {% if src is defined and src %}
+            <twig:c975LUi:Image:Image imgSrc="{{ src }}" alt="{{ alt|default('') }}" class="img-rounded img-responsive"/>
+        {% endif %}
+        {# No nl2br: Trix already encodes its line breaks, so it would double them into blank lines #}
+        {{ content|raw }}
+    </div>
+</{{ tag }}>

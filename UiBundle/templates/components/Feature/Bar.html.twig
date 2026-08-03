@@ -1,0 +1,13 @@
+{# Static usage: <twig:c975LUi:Feature:Bar items="{{ [{title: '...', text: '...'}] }}" [background=""] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/FeatureBar.html.twig #}
+{# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
+{% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+{# A <div>: this band never carries a heading, and a headingless <section> is invalid HTML #}
+<div class="feature-bar{{ background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    {# data-count so the row takes as many columns as it has entries instead of trailing empty ones #}
+    <div class="feature-bar__grid" data-count="{{ items|length }}">
+        {% for item in items %}
+            <div class="feature-bar__item"><b>{{ item.title }}</b>{{ item.text }}</div>
+        {% endfor %}
+    </div>
+</div>

@@ -1,0 +1,15 @@
+{% form_theme form with ['@EasyAdmin/crud/form_theme.html.twig', '@c975LUi/form/block_theme.html.twig', '@c975LUi/form/icon_picker_theme.html.twig'] %}
+
+{% for child in form.data %}
+    {{ form_row(child) }}
+{% endfor %}
+{{ form_rest(form.data) }}
+{% if form.medias is defined %}
+    {{ form_row(form.medias) }}
+{% endif %}
+{% if form.mediaUpload is defined %}
+    {{ form_row(form.mediaUpload) }}
+{% endif %}
+{% if form.slots is defined %}
+    {{ form_row(form.slots) }}
+{% endif %}

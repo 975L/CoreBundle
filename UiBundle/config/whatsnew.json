@@ -1,0 +1,1042 @@
+[
+    {
+        "date": "2026-08-02",
+        "description": [
+            {
+                "en": "The site's theme, its favicon and logo, and the cookie banner are now available whichever modules you have installed, instead of requiring the page-management one",
+                "fr": "Le thème du site, son favicon et son logo, ainsi que le bandeau cookies sont désormais disponibles quels que soient les modules installés, au lieu d'exiger celui de gestion des pages",
+                "es": "El tema del sitio, su favicon y su logotipo, así como el banner de cookies, ya están disponibles sean cuales sean los módulos instalados, en lugar de exigir el de gestión de páginas"
+            },
+            {
+                "en": "A site without page management now serves a real page shell: theme, favicon, share preview, fonts and cookie banner included",
+                "fr": "Un site sans gestion de pages sert désormais une vraie page : thème, favicon, aperçu de partage, polices et bandeau cookies compris",
+                "es": "Un sitio sin gestión de páginas ahora sirve una página completa: tema, favicon, vista previa para compartir, tipografías y banner de cookies incluidos"
+            },
+            {
+                "en": "The legal documents (legal notice, privacy policy, terms of sales, terms of use, cookies, copyright) and the screen customizing them section by section are now available whichever modules you have installed",
+                "fr": "Les documents juridiques (mentions légales, règles de confidentialité, conditions de vente et d'utilisation, cookies, copyright) et l'écran qui les personnalise section par section sont désormais disponibles quels que soient les modules installés",
+                "es": "Los documentos legales (aviso legal, política de privacidad, condiciones de venta y de uso, cookies, copyright) y la pantalla que los personaliza sección por sección ya están disponibles sean cuales sean los módulos instalados"
+            },
+            {
+                "en": "You can now upload your own fonts and use them across the site, whichever modules you have installed",
+                "fr": "Vous pouvez désormais téléverser vos propres polices et les utiliser sur tout le site, quels que soient les modules installés",
+                "es": "Ahora puede subir sus propias tipografías y usarlas en todo el sitio, sean cuales sean los módulos instalados"
+            },
+            {
+                "en": "Importing a whole batch of fonts at once is much faster",
+                "fr": "L'import d'un lot entier de polices d'un coup est nettement plus rapide",
+                "es": "Importar un lote entero de tipografías de una vez es mucho más rápido"
+            },
+            {
+                "en": "The font menus now list every available font, instead of only those from one source",
+                "fr": "Les menus de polices listent désormais toutes les polices disponibles, et non plus celles d'une seule source",
+                "es": "Los menús de tipografías ahora muestran todas las disponibles, y no solo las de una única fuente"
+            },
+            {
+                "en": "Uploading an SVG whose text is not converted to shapes now warns you, that text showing in another font for a visitor who lacks yours",
+                "fr": "Le téléversement d'un SVG dont le texte n'est pas converti en formes vous avertit désormais, ce texte s'affichant dans une autre police chez un visiteur qui n'a pas la vôtre",
+                "es": "Subir un SVG cuyo texto no está convertido en formas ahora le avisa, ya que ese texto se mostrará con otra tipografía a quien no tenga la suya"
+            },
+            {
+                "en": "The media library, the forms and the e-mail templates are now in the back-office menu on every site, not only those with the site module",
+                "fr": "La bibliothèque de médias, les formulaires et les modèles d'e-mails sont désormais dans le menu du back-office sur tous les sites, et non plus seulement ceux dotés du module site",
+                "es": "La biblioteca de medios, los formularios y las plantillas de correo están ahora en el menú del back-office en todos los sitios, no solo en los que tienen el módulo de sitio"
+            }
+        ]
+    },
+    {
+        "date": "2026-08-01",
+        "description": [
+            {
+                "en": "A new \"Contact details\" block gathers your address, phone, e-mail and opening hours, and tells search engines about them at the same time",
+                "fr": "Un nouveau block « Coordonnées » réunit votre adresse, téléphone, e-mail et horaires, et les signale en même temps aux moteurs de recherche",
+                "es": "Un nuevo bloque «Datos de contacto» reúne su dirección, teléfono, correo y horarios, y los comunica al mismo tiempo a los motores de búsqueda"
+            },
+            {
+                "en": "Opening hours are now filled in day by day rather than as one line of code, and consecutive days are shown as a range",
+                "fr": "Les horaires se saisissent désormais jour par jour plutôt qu'en une ligne de code, et les jours qui se suivent s'affichent en plage",
+                "es": "Los horarios se introducen ahora día a día en lugar de en una línea de código, y los días seguidos se muestran como un intervalo"
+            },
+            {
+                "en": "Every field of that block is optional - fill in only what your business actually has",
+                "fr": "Tous les champs de ce block sont facultatifs - ne remplissez que ce que votre établissement a réellement",
+                "es": "Todos los campos de ese bloque son opcionales: rellene solo lo que su establecimiento realmente tiene"
+            },
+            {
+                "en": "Opening and closing times are picked in a clock field, so there is no format left to get wrong",
+                "fr": "Les heures d'ouverture et de fermeture se choisissent dans un champ horaire, il n'y a donc plus de format à ne pas rater",
+                "es": "Las horas de apertura y cierre se eligen en un campo horario, así que ya no hay ningún formato que equivocar"
+            },
+            {
+                "en": "A website or map address typed without \"https://\" is now completed for you, and a malformed e-mail is refused before saving",
+                "fr": "Une adresse de site ou de carte tapée sans « https:// » est désormais complétée pour vous, et un e-mail mal formé est refusé avant l'enregistrement",
+                "es": "Una dirección de sitio o de mapa escrita sin «https://» se completa ahora automáticamente, y un correo mal formado se rechaza antes de guardar"
+            },
+            {
+                "en": "A page holding a block whose type no longer exists now leaves it out instead of failing to open",
+                "fr": "Une page contenant un block dont le type n'existe plus l'ignore désormais au lieu de ne plus s'ouvrir",
+                "es": "Una página que contiene un bloque cuyo tipo ya no existe ahora lo omite en lugar de no abrirse"
+            },
+            {
+                "en": "The old \"SEO Rich Snippet\" block is gone, replaced by that one",
+                "fr": "L'ancien block « Rich Snippet SEO » a disparu, remplacé par celui-ci",
+                "es": "El antiguo bloque «Rich Snippet SEO» ha desaparecido, sustituido por este"
+            },
+            {
+                "en": "A title banner no longer sits flush against the block right below it",
+                "fr": "Un bandeau de titre n'est plus collé au block juste en dessous",
+                "es": "Un banner de título ya no queda pegado al bloque justo debajo"
+            },
+            {
+                "en": "Swiping a slider now moves one image at a time, and the dots below follow along",
+                "fr": "Balayer un diaporama fait désormais défiler une seule image à la fois, et les puces en dessous suivent",
+                "es": "Deslizar un carrusel ahora pasa una sola imagen a la vez, y los puntos de abajo lo siguen"
+            },
+            {
+                "en": "In a full-width slider, the image being swiped to now settles centred on the screen",
+                "fr": "Dans un diaporama pleine largeur, l'image vers laquelle on balaye se place désormais au centre de l'écran",
+                "es": "En un carrusel a ancho completo, la imagen a la que se desliza se coloca ahora centrada en la pantalla"
+            },
+            {
+                "en": "A piece of advice about your page now takes you straight to the field to fill in, instead of to the top of a long form",
+                "fr": "Un conseil sur votre page vous emmène désormais directement sur le champ à remplir, au lieu du haut d'un long formulaire",
+                "es": "Un consejo sobre su página le lleva ahora directamente al campo que hay que rellenar, en lugar de a la parte superior de un formulario largo"
+            },
+            {
+                "en": "Duplicating a block no longer gives the copy the same identifier as the original, which could send a link to the wrong one",
+                "fr": "Dupliquer un block ne donne plus à la copie le même identifiant qu'à l'original, ce qui pouvait envoyer un lien sur le mauvais",
+                "es": "Duplicar un bloque ya no da a la copia el mismo identificador que al original, lo que podía enviar un enlace al equivocado"
+            },
+            {
+                "en": "A hero's images can now be shown all together as a grid instead of fading one after the other - handy for a row of logos or icons",
+                "fr": "Les images d'un hero peuvent désormais s'afficher toutes ensemble en grille au lieu de défiler l'une après l'autre - pratique pour une rangée de logos ou d'icônes",
+                "es": "Las imágenes de un hero pueden mostrarse ahora todas juntas en cuadrícula en lugar de pasar una tras otra: práctico para una fila de logotipos o iconos"
+            },
+            {
+                "en": "A hero now takes up to 9 images instead of 6",
+                "fr": "Un hero accepte désormais jusqu'à 9 images au lieu de 6",
+                "es": "Un hero admite ahora hasta 9 imágenes en lugar de 6"
+            },
+            {
+                "en": "The \"Contact details\" block now spreads its fields over the whole width available instead of a narrow column, and follows the colors of the section it sits in",
+                "fr": "Le block « Coordonnées » répartit désormais ses champs sur toute la largeur disponible au lieu d'une colonne étroite, et suit les couleurs de la section qui l'accueille",
+                "es": "El bloque «Datos de contacto» reparte ahora sus campos por todo el ancho disponible en lugar de una columna estrecha, y sigue los colores de la sección que lo acoge"
+            },
+            {
+                "en": "The e-mail of that block is now shown as plain text rather than as a clickable link, which spam robots collect first",
+                "fr": "L'e-mail de ce block s'affiche désormais en texte simple plutôt qu'en lien cliquable, que les robots à spam collectent en premier",
+                "es": "El correo de ese bloque se muestra ahora como texto simple en lugar de como enlace, que los robots de spam recogen primero"
+            },
+            {
+                "en": "A card can now be given an accent color, drawn as a colored rule across its top edge",
+                "fr": "Une card peut désormais recevoir une couleur d'accent, tracée en filet coloré sur son bord supérieur",
+                "es": "Una tarjeta puede recibir ahora un color de acento, trazado como un filete de color en su borde superior"
+            },
+            {
+                "en": "A hero's images no longer stop on the last one after a first pass: they keep taking turns, each shown as long as the others",
+                "fr": "Les images d'un hero ne s'arrêtent plus sur la dernière après un premier passage : elles continuent de défiler, chacune affichée aussi longtemps que les autres",
+                "es": "Las imágenes de un hero ya no se detienen en la última tras una primera vuelta: siguen pasando, cada una mostrada tanto tiempo como las demás"
+            },
+            {
+                "en": "A link written in the description of the \"Contact details\" block is now visible as a link again",
+                "fr": "Un lien écrit dans la description du block « Coordonnées » se voit de nouveau comme un lien",
+                "es": "Un enlace escrito en la descripción del bloque «Datos de contacto» vuelve a verse como un enlace"
+            },
+            {
+                "en": "The \"Contact details\" block now lines up with the sections around it instead of running edge to edge across the page",
+                "fr": "Le block « Coordonnées » s'aligne désormais sur les sections qui l'entourent au lieu de s'étaler d'un bord à l'autre de la page",
+                "es": "El bloque «Datos de contacto» se alinea ahora con las secciones que lo rodean en lugar de extenderse de un borde a otro de la página"
+            },
+            {
+                "en": "On a phone, the opening hours now drop the times under the days, and a long e-mail or web address wraps instead of spilling out of the panel",
+                "fr": "Sur téléphone, les horaires placent désormais les heures sous les jours, et un e-mail ou une adresse web longue passe à la ligne au lieu de déborder du panneau",
+                "es": "En el teléfono, los horarios colocan ahora las horas bajo los días, y un correo o dirección web larga pasa a la línea siguiente en lugar de desbordar el panel"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-31",
+        "description": [
+            {
+                "en": "The sidebar's \"Block showcase\" link now opens the ecosystem's dedicated site, and its address can be changed in Config to point at your own showcase",
+                "fr": "Le lien « Vitrine des blocks » de la barre latérale ouvre désormais le site dédié de l'écosystème, et son adresse peut être changée dans la Configuration pour pointer sur votre propre vitrine",
+                "es": "El enlace «Vitrina de bloques» de la barra lateral abre ahora el sitio dedicado del ecosistema, y su dirección puede cambiarse en la Configuración para apuntar a su propia vitrina"
+            },
+            {
+                "en": "You can now upload an SVG as favicon or Apple touch icon, for a sharper icon than a small image blown up",
+                "fr": "Vous pouvez désormais téléverser un SVG comme favicon ou icône Apple touch, pour une icône plus nette qu'une petite image agrandie",
+                "es": "Ahora puede subir un SVG como favicono o icono Apple touch, para un icono más nítido que una imagen pequeña ampliada"
+            },
+            {
+                "en": "An uploaded favicon is now really converted to the right size and format - re-upload yours to replace the one stored as it was",
+                "fr": "Un favicon téléversé est désormais réellement converti à la bonne taille et au bon format - téléversez à nouveau le vôtre pour remplacer celui enregistré tel quel",
+                "es": "Un favicono subido se convierte ahora realmente al tamaño y formato correctos - vuelva a subir el suyo para reemplazar el guardado tal cual"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-30",
+        "description": [
+            {
+                "en": "Fixed a slider hugging the left edge of the page instead of sitting centred like the text around it",
+                "fr": "Correction d'un diaporama collé au bord gauche de la page au lieu d'être centré comme le texte autour de lui",
+                "es": "Corregido un carrusel pegado al borde izquierdo de la página en lugar de estar centrado como el texto a su alrededor"
+            },
+            {
+                "en": "Fixed a banner or a coloured section losing the full width of the page it is meant to span",
+                "fr": "Correction d'une bannière ou d'une section colorée qui perdait la pleine largeur de page qu'elle doit occuper",
+                "es": "Corregida una portada o una sección de color que perdía el ancho completo de página que debe ocupar"
+            },
+            {
+                "en": "Sliders, image comparisons and \"read more\" blocks are now laid out on the same column width as the text they sit with, instead of running wider than it",
+                "fr": "Les diaporamas, comparaisons d'images et blocs « lire la suite » s'affichent désormais sur la même largeur de colonne que le texte qui les entoure, au lieu de déborder au-delà",
+                "es": "Los carruseles, las comparaciones de imágenes y los bloques «leer más» se muestran ahora con el mismo ancho de columna que el texto que los rodea, en lugar de sobresalir"
+            },
+            {
+                "en": "The \"read more\" link now takes the colour of the site's other links, in place of a blue it kept whatever the theme",
+                "fr": "Le lien « lire la suite » prend désormais la couleur des autres liens du site, à la place d'un bleu qu'il gardait quel que soit le thème",
+                "es": "El enlace «leer más» toma ahora el color de los demás enlaces del sitio, en lugar de un azul que mantenía fuera cual fuera el tema"
+            },
+            {
+                "en": "Fixed the alignment buttons of a text editor moving text in another editor of the same page",
+                "fr": "Correction des boutons d'alignement d'un éditeur de texte qui déplaçaient le texte d'un autre éditeur de la même page",
+                "es": "Corregidos los botones de alineación de un editor de texto que movían el texto de otro editor de la misma página"
+            },
+            {
+                "en": "An article's hook phrase is now marked out by the site's accent colour and aligned with the article it introduces",
+                "fr": "La phrase d'accroche d'un article est désormais mise en valeur par la couleur d'accent du site et alignée sur l'article qu'elle introduit",
+                "es": "La frase de entrada de un artículo se destaca ahora con el color de acento del sitio y se alinea con el artículo que introduce"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-29",
+        "description": [
+            {
+                "en": "The dashboard now offers guided projects for the shared screens: uploading an image into the media library and reusing it, building a form field by field, and tailoring an e-mail the site sends",
+                "fr": "Le tableau de bord propose désormais des parcours guidés pour les écrans partagés : téléverser une image dans la médiathèque et la réutiliser, construire un formulaire champ par champ, et personnaliser un e-mail que le site envoie",
+                "es": "El panel ofrece ahora recorridos guiados para las pantallas compartidas: subir una imagen a la mediateca y reutilizarla, construir un formulario campo a campo y personalizar un correo que el sitio envía"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-29",
+        "description": [
+            {
+                "en": "The eye button showing or hiding a password, and the checks warning that a password is too weak or that the two you typed differ, now work on every form of the site instead of only on the sign-up one",
+                "fr": "Le bouton œil qui affiche ou masque un mot de passe, ainsi que les contrôles signalant un mot de passe trop faible ou deux saisies différentes, fonctionnent désormais sur tous les formulaires du site et non plus seulement sur celui d'inscription",
+                "es": "El botón de ojo que muestra u oculta una contraseña, así como las comprobaciones que avisan de una contraseña demasiado débil o de dos entradas distintas, ahora funcionan en todos los formularios del sitio y no solo en el de registro"
+            },
+            {
+                "en": "Fixed the eye button sliding out of the password field as soon as an error message appeared underneath it",
+                "fr": "Correction du bouton œil qui se décalait hors du champ mot de passe dès qu'un message d'erreur apparaissait en dessous",
+                "es": "Corregido el botón de ojo que se desplazaba fuera del campo de contraseña en cuanto aparecía un mensaje de error debajo"
+            },
+            {
+                "en": "A field now turns green once what you typed is what was expected, and red otherwise, in place of the blue outline shown whatever the content",
+                "fr": "Un champ passe désormais au vert quand ce que vous avez saisi correspond à ce qui était attendu, et au rouge sinon, à la place du contour bleu affiché quel que soit le contenu",
+                "es": "Un campo ahora se pone verde cuando lo que ha escrito coincide con lo esperado, y rojo en caso contrario, en lugar del contorno azul mostrado fuera cual fuera el contenido"
+            },
+            {
+                "en": "Fixed the forms of a site in dark mode: the text typed in a field was nearly unreadable, the field had no visible outline of its own and the show/hide password eye was black on black",
+                "fr": "Correction des formulaires d'un site en mode sombre : le texte saisi dans un champ était à peine lisible, le champ n'avait aucun contour visible et l'œil d'affichage du mot de passe était noir sur noir",
+                "es": "Corregidos los formularios de un sitio en modo oscuro: el texto escrito en un campo era apenas legible, el campo no tenía ningún contorno visible y el ojo para mostrar la contraseña era negro sobre negro"
+            },
+            {
+                "en": "A new “Lead-in paragraph” block sets an introduction apart from the text that follows, marked by a colored bar down its side",
+                "fr": "Un nouveau bloc « Paragraphe d'accroche » met en avant une introduction par rapport au texte qui suit, signalée par une barre colorée sur son côté",
+                "es": "Un nuevo bloque «Párrafo de entrada» destaca una introducción respecto al texto que sigue, señalada por una barra de color en su lateral"
+            },
+            {
+                "en": "Emails sent by the site now keep their colors and their layout in Gmail, Outlook and on mobile, instead of arriving as plain unstyled text",
+                "fr": "Les emails envoyés par le site conservent désormais leurs couleurs et leur mise en page dans Gmail, Outlook et sur mobile, au lieu d'arriver en texte brut sans style",
+                "es": "Los correos enviados por el sitio conservan ahora sus colores y su diseño en Gmail, Outlook y en el móvil, en lugar de llegar como texto sin formato"
+            },
+            {
+                "en": "An invalid or valid field now also shows a ✗ or a ✓, so its state is never given by color alone",
+                "fr": "Un champ invalide ou valide affiche aussi un ✗ ou un ✓, afin que son état ne soit jamais donné par la seule couleur",
+                "es": "Un campo inválido o válido muestra también un ✗ o un ✓, para que su estado nunca dependa solo del color"
+            },
+            {
+                "en": "A field your browser filled in for you is now checked like one you typed yourself",
+                "fr": "Un champ rempli automatiquement par votre navigateur est désormais contrôlé comme un champ que vous auriez saisi vous-même",
+                "es": "Un campo rellenado automáticamente por su navegador se comprueba ahora igual que uno escrito por usted"
+            },
+            {
+                "en": "Fixed the submit button of a form becoming clickable again while the password still failed its own check",
+                "fr": "Correction du bouton d'envoi d'un formulaire redevenant cliquable alors que le mot de passe ne passait toujours pas son propre contrôle",
+                "es": "Corregido el botón de envío de un formulario que volvía a ser pulsable mientras la contraseña seguía sin superar su propia comprobación"
+            },
+            {
+                "en": "Fixed your password manager offering an existing password on a sign-up form after you showed then hid what you had typed",
+                "fr": "Correction de votre gestionnaire de mots de passe proposant un mot de passe existant sur un formulaire d'inscription après avoir affiché puis masqué votre saisie",
+                "es": "Corregido el gestor de contraseñas que proponía una contraseña existente en un formulario de registro tras mostrar y volver a ocultar lo escrito"
+            },
+            {
+                "en": "Fixed a raw code being shown in place of the message when adding a sixth argument to a reassurance bar or a seventh image to a hero",
+                "fr": "Correction d'un code brut affiché à la place du message lors de l'ajout d'un sixième argument à une bande de réassurance ou d'une septième image à un hero",
+                "es": "Corregido un código en bruto mostrado en lugar del mensaje al añadir un sexto argumento a una barra de argumentos o una séptima imagen a un hero"
+            },
+            {
+                "en": "Fixed a rule being dropped from each stylesheet the site assembles, leaving parts of a page unstyled",
+                "fr": "Correction d'une règle perdue dans chacune des feuilles de style assemblées par le site, laissant des parties de page sans style",
+                "es": "Corregida una regla perdida en cada hoja de estilos que el sitio ensambla, dejando partes de una página sin estilo"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-28",
+        "description": [
+            {
+                "en": "A \"Flexible columns\" section is now filled with \"Column\" blocks, each holding whichever blocks you put inside it",
+                "fr": "Une section « Colonnes flexibles » se remplit désormais de blocs « Colonne », chacun accueillant les blocs que vous y placez",
+                "es": "Una sección «Columnas flexibles» ahora se rellena con bloques «Columna», cada uno con los bloques que coloque dentro"
+            },
+            {
+                "en": "Each column can now be given its own width, from 1 to 12 units of the row, instead of always sharing it evenly - a row is full when its columns add up to 12",
+                "fr": "Chaque colonne peut désormais recevoir sa propre largeur, de 1 à 12 unités de la rangée, au lieu de toujours la partager à parts égales - une rangée est pleine quand ses colonnes totalisent 12",
+                "es": "Ahora puede darse a cada columna su propia anchura, de 1 a 12 unidades de la fila, en lugar de repartirla siempre a partes iguales - una fila está llena cuando sus columnas suman 12"
+            },
+            {
+                "en": "A hero block no longer needs a button: leave a label or its link empty and the button disappears, along with the whole row when you set neither",
+                "fr": "Un bloc héros n'exige plus de bouton : laissez un libellé ou son lien vide et le bouton disparaît, ainsi que toute la rangée si vous n'en renseignez aucun",
+                "es": "Un bloque héroe ya no exige un botón: deje vacío un texto o su enlace y el botón desaparece, junto con toda la fila si no rellena ninguno"
+            },
+            {
+                "en": "Two colored sections placed one after the other now touch, instead of showing a strip of page background between them",
+                "fr": "Deux sections colorées placées l'une après l'autre se touchent désormais, au lieu de laisser apparaître une bande de fond de page entre elles",
+                "es": "Dos secciones de color colocadas una tras otra ahora se tocan, en lugar de dejar ver una franja de fondo de página entre ellas"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-27",
+        "description": [
+            {
+                "en": "The text section block now has an eyebrow field, the small uppercase line above the title already offered by the other section blocks",
+                "fr": "Le bloc section de texte dispose désormais d'un champ surtitre, la petite ligne en majuscules au-dessus du titre déjà proposée par les autres blocs de section",
+                "es": "El bloque sección de texto ahora tiene un campo antetítulo, la pequeña línea en mayúsculas sobre el título que ya ofrecen los demás bloques de sección"
+            },
+            {
+                "en": "The hero, feature bar and text section blocks can now be painted on a full-width colored flat, whose text and buttons invert automatically to stay readable",
+                "fr": "Les blocs héros, bandeau de points forts et section de texte peuvent désormais être peints sur un aplat de couleur pleine largeur, dont les textes et boutons s'inversent automatiquement pour rester lisibles",
+                "es": "Los bloques héroe, barra de puntos fuertes y sección de texto ahora pueden pintarse sobre un fondo de color a todo lo ancho, cuyos textos y botones se invierten automáticamente para seguir siendo legibles"
+            },
+            {
+                "en": "Putting a word in bold or italics no longer changes its color - it now keeps the color of the text around it, even on a colored background",
+                "fr": "Mettre un mot en gras ou en italique ne change plus sa couleur - il garde désormais celle du texte qui l'entoure, y compris sur un fond coloré",
+                "es": "Poner una palabra en negrita o cursiva ya no cambia su color: ahora conserva el del texto que la rodea, incluso sobre un fondo de color"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-26",
+        "description": [
+            {
+                "en": "Deploying a design change now takes effect right away, without having to clear the blocks cache by hand",
+                "fr": "Déployer une modification de design prend désormais effet immédiatement, sans avoir à vider le cache des blocs à la main",
+                "es": "Desplegar un cambio de diseño ahora surte efecto de inmediato, sin tener que vaciar a mano la caché de bloques"
+            },
+            {
+                "en": "Embedded videos are no longer loaded before consent has been given, and only once you scroll near them",
+                "fr": "Les vidéos intégrées ne sont plus chargées avant le consentement, et seulement lorsque vous approchez d'elles en faisant défiler la page",
+                "es": "Los vídeos incrustados ya no se cargan antes de dar el consentimiento, y solo cuando se acerca a ellos al desplazarse"
+            },
+            {
+                "en": "Public pages now only download the scripts they actually use",
+                "fr": "Les pages publiques ne téléchargent plus que les scripts qu'elles utilisent réellement",
+                "es": "Las páginas públicas ahora solo descargan los scripts que realmente utilizan"
+            },
+            {
+                "en": "Images now reserve their space before loading, so the page no longer jumps as they appear",
+                "fr": "Les images réservent désormais leur place avant leur chargement, la page ne saute donc plus à mesure qu'elles apparaissent",
+                "es": "Las imágenes ahora reservan su espacio antes de cargarse, por lo que la página ya no salta a medida que aparecen"
+            },
+            {
+                "en": "Fixed the Donovan assistant's question box and the AI rephrase button never sending anything",
+                "fr": "Correction de l'encart de questions de l'assistant Donovan et du bouton de reformulation IA qui n'envoyaient jamais rien",
+                "es": "Corregidos el cuadro de preguntas del asistente Donovan y el botón de reformulación IA, que nunca enviaban nada"
+            },
+            {
+                "en": "Saving an image with its width and height left empty no longer erases the size detected on upload",
+                "fr": "Enregistrer une image en laissant sa largeur et sa hauteur vides n'efface plus la taille détectée à l'envoi",
+                "es": "Guardar una imagen dejando su anchura y altura vacías ya no borra el tamaño detectado al subirla"
+            },
+            {
+                "en": "Pages carrying a form load much faster: the anti-spam check is now only downloaded when a visitor actually starts filling the form in, and no longer places a Google cookie on people who never submit anything",
+                "fr": "Les pages contenant un formulaire se chargent bien plus vite : la protection anti-spam n'est désormais téléchargée que lorsqu'un visiteur commence réellement à remplir le formulaire, et ne dépose plus de cookie Google chez ceux qui n'envoient rien",
+                "es": "Las páginas con formulario cargan mucho más rápido: la protección antispam solo se descarga cuando el visitante empieza realmente a rellenar el formulario, y ya no deja una cookie de Google a quienes no envían nada"
+            },
+            {
+                "en": "Image dimensions are now detected on upload, so pages no longer jump as images load",
+                "fr": "Les dimensions des images sont désormais détectées à l'envoi, les pages ne sautent plus au chargement des images",
+                "es": "Las dimensiones de las imágenes se detectan ahora al subirlas, por lo que las páginas ya no saltan al cargarse"
+            },
+            {
+                "en": "A video block is now created by uploading the video file itself, with no path or format to fill in",
+                "fr": "Un block vidéo se crée désormais en envoyant directement le fichier vidéo, sans chemin ni format à renseigner",
+                "es": "Un bloque de vídeo se crea ahora subiendo directamente el archivo de vídeo, sin ruta ni formato que rellenar"
+            },
+            {
+                "en": "A video block's cover image is now uploaded like any other image, instead of being typed in as a path",
+                "fr": "L'image de couverture d'un block vidéo s'envoie désormais comme n'importe quelle image, au lieu d'être saisie sous forme de chemin",
+                "es": "La imagen de portada de un bloque de vídeo se sube ahora como cualquier otra imagen, en lugar de escribirse como una ruta"
+            },
+            {
+                "en": "A video block's autoplay, mute and loop settings are now picked together from a single list",
+                "fr": "Les options de lecture automatique, sourdine et boucle d'un block vidéo se choisissent désormais dans une seule liste",
+                "es": "Las opciones de reproducción automática, silencio y bucle de un bloque de vídeo se eligen ahora en una sola lista"
+            },
+            {
+                "en": "An audio block is now created by uploading the file alone, with no format to choose",
+                "fr": "Un block audio se crée désormais en envoyant le seul fichier, sans format à choisir",
+                "es": "Un bloque de audio se crea ahora subiendo únicamente el archivo, sin formato que elegir"
+            },
+            {
+                "en": "Fixed secondary and link buttons showing barely readable text",
+                "fr": "Correction des boutons secondaires et liens dont le texte était à peine lisible",
+                "es": "Corregidos los botones secundarios y de enlace cuyo texto era apenas legible"
+            },
+            {
+                "en": "The confetti animation no longer loads anything from an external service",
+                "fr": "L'animation de confettis ne charge plus rien depuis un service externe",
+                "es": "La animación de confeti ya no carga nada desde un servicio externo"
+            },
+            {
+                "en": "Screen readers now announce an image link by its own caption instead of just saying \"image\"",
+                "fr": "Les lecteurs d'écran annoncent désormais une image cliquable par sa propre légende, au lieu de dire simplement « image »",
+                "es": "Los lectores de pantalla anuncian ahora una imagen enlazada por su propio pie de foto, en lugar de decir solo «imagen»"
+            },
+            {
+                "en": "A video block now takes a title, a description and css classes, like an embedded video block",
+                "fr": "Un block vidéo accepte désormais un titre, une description et des classes css, comme un block vidéo intégrée",
+                "es": "Un bloque de vídeo acepta ahora un título, una descripción y clases css, como un bloque de vídeo incrustado"
+            },
+            {
+                "en": "An audio block now takes a title, a description and css classes too",
+                "fr": "Un block audio accepte lui aussi désormais un titre, une description et des classes css",
+                "es": "Un bloque de audio acepta ahora también un título, una descripción y clases css"
+            },
+            {
+                "en": "A hero block can now render its title as an h2, for a page whose template already shows its own title",
+                "fr": "Un block hero peut désormais afficher son titre en h2, pour une page dont le gabarit affiche déjà son propre titre",
+                "es": "Un bloque hero puede ahora mostrar su título como h2, para una página cuya plantilla ya muestra su propio título"
+            },
+            {
+                "en": "Hero block images are shown at their proper size again, instead of stretching out of their frame",
+                "fr": "Les images d'un block hero s'affichent à nouveau à la bonne taille, au lieu de déborder de leur cadre",
+                "es": "Las imágenes de un bloque hero vuelven a mostrarse con el tamaño correcto, en lugar de desbordar su marco"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-24",
+        "description": [
+            {
+                "en": "Fixed the AI rephrase and AI assistant panels not responding to clicks",
+                "fr": "Correction des encarts de reformulation IA et d'assistant IA qui ne répondaient plus aux clics",
+                "es": "Corregidos los paneles de reformulación IA y asistente IA que no respondían a los clics"
+            },
+            {
+                "en": "Fixed video embeds staying blank after accepting cookies",
+                "fr": "Correction des vidéos intégrées qui restaient vides après acceptation des cookies",
+                "es": "Corregidos los vídeos incrustados que permanecían en blanco tras aceptar las cookies"
+            },
+            {
+                "en": "Fixed video embeds ignoring their configured width/height and displaying at the wrong size",
+                "fr": "Correction des vidéos intégrées qui ignoraient la largeur/hauteur configurée et s'affichaient à la mauvaise taille",
+                "es": "Corregidos los vídeos incrustados que ignoraban el ancho/alto configurado y se mostraban con un tamaño incorrecto"
+            },
+            {
+                "en": "Fixed the header banner's text and image not centering on mobile",
+                "fr": "Correction du texte et de l'image de la bannière d'en-tête qui ne se centraient pas sur mobile",
+                "es": "Corregidos el texto y la imagen del banner de cabecera que no se centraban en móvil"
+            },
+            {
+                "en": "Fixed the header banner's image shrinking to a tiny blob on smaller screens",
+                "fr": "Correction de l'image de la bannière d'en-tête qui se réduisait à un minuscule point sur les petits écrans",
+                "es": "Corregida la imagen del banner de cabecera, que se reducía a un pequeño punto en pantallas más pequeñas"
+            },
+            {
+                "en": "Fixed the progress bar not showing any fill",
+                "fr": "Correction de la barre de progression qui n'affichait aucun remplissage",
+                "es": "Corregida la barra de progreso, que no mostraba ningún relleno"
+            },
+            {
+                "en": "The dashboard guided tour's \"Block showcase\" and \"Donovan\" steps now have a description",
+                "fr": "Les étapes « Vitrine des blocks » et « Donovan » de la visite guidée du tableau de bord ont désormais une description",
+                "es": "Los pasos «Vitrina de bloques» y «Donovan» del recorrido guiado del panel de control ahora tienen una descripción"
+            },
+            {
+                "en": "Fixed uploading a PDF document failing on some hosting providers",
+                "fr": "Correction de l'envoi d'un document PDF qui échouait chez certains hébergeurs",
+                "es": "Corregido el envío de un documento PDF que fallaba en algunos proveedores de alojamiento"
+            },
+            {
+                "en": "Text sections now let you upload an image directly, instead of typing its URL by hand",
+                "fr": "Les sections de texte permettent désormais d'ajouter une image directement, sans avoir à saisir son URL",
+                "es": "Las secciones de texto ahora permiten añadir una imagen directamente, sin necesidad de escribir su URL"
+            },
+            {
+                "en": "Fixed rich text in Card, Collection item and Process step blocks sometimes losing its formatting (colors, styles)",
+                "fr": "Correction du texte enrichi des blocs Carte, Élément de collection et Étape de processus qui perdait parfois sa mise en forme (couleurs, styles)",
+                "es": "Corregido el texto enriquecido de los bloques Tarjeta, Elemento de colección y Etapa de proceso que a veces perdía su formato (colores, estilos)"
+            },
+            {
+                "en": "Fixed the header banner's title sometimes displaying formatting marks instead of properly formatted text",
+                "fr": "Correction du titre de la bannière d'en-tête qui affichait parfois des marques de mise en forme au lieu d'un texte correctement formaté",
+                "es": "Corregido el título del banner de cabecera que a veces mostraba marcas de formato en lugar de texto correctamente formateado"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-23",
+        "description": [
+            {
+                "en": "Fixed a crash when adding a new item to some collections in the back office",
+                "fr": "Correction d'un plantage lors de l'ajout d'un nouvel élément dans certaines collections du back-office",
+                "es": "Corregido: un fallo al añadir un nuevo elemento en algunas colecciones del back-office"
+            },
+            {
+                "en": "Alert messages (success, error, info) are now centered and easier to read",
+                "fr": "Les messages d'alerte (succès, erreur, info) sont désormais centrés et plus lisibles",
+                "es": "Los mensajes de alerta (éxito, error, info) ahora están centrados y son más legibles"
+            },
+            {
+                "en": "PDF preview thumbnails are now bigger and show the actual page instead of a tiny crop",
+                "fr": "Les miniatures d'aperçu des PDF sont désormais plus grandes et montrent la page réelle au lieu d'un recadrage minuscule",
+                "es": "Las miniaturas de vista previa de PDF ahora son más grandes y muestran la página real en lugar de un recorte diminuto"
+            },
+            {
+                "en": "Attaching several PDFs to a Document download block now shows one card per file, opening in a new tab instead of forcing a download",
+                "fr": "Le fait d'attacher plusieurs PDF à un bloc Téléchargement de document affiche désormais une carte par fichier, ouverte dans un nouvel onglet au lieu de forcer un téléchargement",
+                "es": "Adjuntar varios PDF a un bloque Descarga de documento ahora muestra una tarjeta por archivo, abierta en una nueva pestaña en lugar de forzar una descarga"
+            },
+            {
+                "en": "The block type picker's categories now follow a logical order instead of alphabetical",
+                "fr": "Les catégories du sélecteur de type de bloc suivent désormais un ordre logique au lieu de l'ordre alphabétique",
+                "es": "Las categorías del selector de tipo de bloque ahora siguen un orden lógico en lugar de alfabético"
+            },
+            {
+                "en": "Fixed the portfolio section's header not showing when only an intro label was set",
+                "fr": "Correction de l'en-tête de la section portfolio qui ne s'affichait pas quand seul le libellé d'introduction était renseigné",
+                "es": "Corregido: el encabezado de la sección de portfolio no se mostraba cuando solo se indicaba la etiqueta de introducción"
+            },
+            {
+                "en": "Fixed some links and buttons still appearing clickable when there was nothing to link to",
+                "fr": "Correction de certains liens et boutons qui restaient cliquables alors qu'ils ne menaient nulle part",
+                "es": "Corregido: algunos enlaces y botones seguían pareciendo clicables aunque no llevaban a ninguna parte"
+            },
+            {
+                "en": "The Donovan assistant now also has its own card directly on the dashboard home",
+                "fr": "L'assistant Donovan dispose désormais aussi de sa propre carte directement sur l'accueil du tableau de bord",
+                "es": "El asistente Donovan ahora también tiene su propia tarjeta directamente en el inicio del panel"
+            },
+            {
+                "en": "You can now ask a YouTube video embed to use the no-cookie version",
+                "fr": "Vous pouvez désormais demander à une vidéo YouTube intégrée d'utiliser la version sans cookie",
+                "es": "Ahora puede pedir que un vídeo de YouTube incrustado use la versión sin cookies"
+            },
+            {
+                "en": "You can now add a title and description to a video embed",
+                "fr": "Vous pouvez désormais ajouter un titre et une description à une vidéo intégrée",
+                "es": "Ahora puede añadir un título y una descripción a un vídeo incrustado"
+            },
+            {
+                "en": "Fixed the rich-text editor staying hidden when adding a new item to certain collections",
+                "fr": "Correction de l'éditeur de texte enrichi qui restait caché lors de l'ajout d'un nouvel élément dans certaines collections",
+                "es": "Corregido: el editor de texto enriquecido permanecía oculto al añadir un nuevo elemento en algunas colecciones"
+            },
+            {
+                "en": "The cache-clearing shortcut is now grouped under Maintenance",
+                "fr": "Le raccourci de vidage du cache est désormais classé dans la catégorie Maintenance",
+                "es": "El acceso directo para vaciar la caché ahora está clasificado en la categoría Mantenimiento"
+            },
+            {
+                "en": "Added a new \"Card grid\" section, stacking several full Card blocks (image, link, button...) with their own title and anchor",
+                "fr": "Ajout d'une nouvelle section \"Grille de cartes\", empilant plusieurs blocs Carte complets (image, lien, bouton...) avec leur propre titre et ancre",
+                "es": "Añadida una nueva sección \"Cuadrícula de tarjetas\", que apila varios bloques Tarjeta completos (imagen, enlace, botón...) con su propio título y ancla"
+            },
+            {
+                "en": "You can now drag an already-saved block into a different section (or back out to the page's main list), not just reorder it within the same one",
+                "fr": "Vous pouvez désormais glisser un bloc déjà enregistré vers une autre section (ou le faire ressortir vers la liste principale de la page), pas seulement le réordonner au sein de la même section",
+                "es": "Ahora puede arrastrar un bloque ya guardado a otra sección (o devolverlo a la lista principal de la página), no solo reordenarlo dentro de la misma sección"
+            },
+            {
+                "en": "The simple icon/title/text grid section is now called \"Feature grid\" to avoid confusion with the new Card grid",
+                "fr": "La section grille icône/titre/texte simple s'appelle désormais \"Grille d'atouts\" pour éviter la confusion avec la nouvelle Grille de cartes",
+                "es": "La sección de cuadrícula simple icono/título/texto ahora se llama \"Cuadrícula de características\" para evitar confusión con la nueva Cuadrícula de tarjetas"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-22",
+        "description": [
+            {
+                "en": "A new page section lets you lay several blocks out side by side, or stack them within a column",
+                "fr": "Une nouvelle section de page permet de disposer plusieurs blocs côte à côte, ou de les empiler dans une colonne",
+                "es": "Una nueva sección de página permite colocar varios bloques uno al lado del otro, o apilarlos dentro de una columna"
+            },
+            {
+                "en": "You can now duplicate a repeatable item (a step, a card, a slide...) inside a section in one click",
+                "fr": "Vous pouvez désormais dupliquer un élément répétable (une étape, une carte, une diapositive...) dans une section en un clic",
+                "es": "Ahora puede duplicar un elemento repetible (un paso, una tarjeta, una diapositiva...) dentro de una sección en un clic"
+            },
+            {
+                "en": "Fixed the reCAPTCHA settings not being available in the Security configuration",
+                "fr": "Correction des réglages reCAPTCHA qui n'étaient pas disponibles dans la configuration Sécurité",
+                "es": "Corregido: los ajustes de reCAPTCHA no estaban disponibles en la configuración de Seguridad"
+            },
+            {
+                "en": "The Forms, Form field templates, Email templates and Media library screens now explain what they're for and what to watch out for",
+                "fr": "Les écrans Formulaires, Modèles de champ de formulaire, Modèles d'e-mail et Bibliothèque de médias expliquent désormais à quoi ils servent et les précautions à prendre",
+                "es": "Las pantallas Formularios, Plantillas de campo de formulario, Plantillas de correo y Biblioteca de medios ahora explican para qué sirven y qué precauciones tomar"
+            },
+            {
+                "en": "Removed the separate view page on Forms, Form field templates and Email templates - edit now shows everything",
+                "fr": "Suppression de la page de consultation séparée sur les formulaires, modèles de champ et modèles d'e-mail : la page de modification affiche désormais tout",
+                "es": "Se eliminó la página de consulta independiente en formularios, plantillas de campo y plantillas de correo: la página de edición ahora lo muestra todo"
+            },
+            {
+                "en": "Added a Cancel button when creating or editing an entry across the back office",
+                "fr": "Ajout d'un bouton Annuler lors de la création ou de la modification d'une entrée dans tout le back-office",
+                "es": "Añadido un botón Cancelar al crear o modificar una entrada en todo el back-office"
+            },
+            {
+                "en": "Fixed a PDF's thumbnail not showing on the Media library index and edit screens",
+                "fr": "Correction de la miniature d'un PDF qui ne s'affichait pas sur les écrans d'index et de modification de la Bibliothèque de médias",
+                "es": "Corregido: la miniatura de un PDF no se mostraba en las pantallas de índice y edición de la Biblioteca de medios"
+            },
+            {
+                "en": "You can now give a PDF a name used to build its stored file name instead of a generic one",
+                "fr": "Vous pouvez désormais donner un nom à un PDF, utilisé pour construire son nom de fichier stocké au lieu d'un nom générique",
+                "es": "Ahora puede darle un nombre a un PDF, usado para construir su nombre de archivo almacenado en lugar de uno genérico"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-21",
+        "description": [
+            {
+                "en": "The AI assistant can now answer questions about creating forms, email templates, and reusable field templates",
+                "fr": "L'assistant IA peut désormais répondre aux questions sur la création de formulaires, de modèles d'email et de modèles de champs réutilisables",
+                "es": "El asistente de IA ahora puede responder preguntas sobre la creación de formularios, plantillas de email y plantillas de campos reutilizables"
+            },
+            {
+                "en": "The navigation menu now visually reacts when the page is scrolled",
+                "fr": "Le menu de navigation réagit désormais visuellement lors du défilement de la page",
+                "es": "El menú de navegación ahora reacciona visualmente al desplazarse por la página"
+            },
+            {
+                "en": "Fixed slider caption links losing their white color",
+                "fr": "Correction des liens de légende du slider qui perdaient leur couleur blanche",
+                "es": "Corregido: los enlaces de la leyenda del slider perdían su color blanco"
+            },
+            {
+                "en": "The hero section can now show its image as a full-width background behind the text",
+                "fr": "La section hero peut désormais afficher son image en fond, pleine largeur, derrière le texte",
+                "es": "La sección hero ahora puede mostrar su imagen como fondo a todo lo ancho, detrás del texto"
+            },
+            {
+                "en": "The hero section's subtitle can now have parts of its text emphasized",
+                "fr": "Le sous-titre de la section hero permet désormais de mettre certains mots en valeur",
+                "es": "El subtítulo de la sección hero ahora permite resaltar partes del texto"
+            },
+            {
+                "en": "Fixed the hero section's title and subtitle sometimes not displaying with the correct font on some browsers",
+                "fr": "Correction du titre et du sous-titre de la section hero qui n'affichaient parfois pas la bonne police sur certains navigateurs",
+                "es": "Corregido: el título y el subtítulo de la sección hero a veces no mostraban la fuente correcta en algunos navegadores"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-20",
+        "description": [
+            {
+                "en": "Admins can now enable an email debug mode to preview emails instead of sending them for real",
+                "fr": "Les administrateurs peuvent désormais activer un mode débogage email pour prévisualiser les e-mails au lieu de les envoyer réellement",
+                "es": "Los administradores ahora pueden activar un modo de depuración de correo para previsualizar los correos en lugar de enviarlos de verdad"
+            },
+            {
+                "en": "On sites with a branded email design, previews now show that same design instead of a plain layout",
+                "fr": "Sur les sites avec un habillage e-mail personnalisé, les aperçus affichent désormais ce même habillage au lieu d'une mise en page basique",
+                "es": "En los sitios con un diseño de correo personalizado, las vistas previas ahora muestran ese mismo diseño en lugar de un formato básico"
+            },
+            {
+                "en": "Fixed the anti-spam check sometimes blocking form submission on sites with a strict security policy",
+                "fr": "Correction de la vérification anti-spam qui pouvait bloquer l'envoi d'un formulaire sur les sites à politique de sécurité stricte",
+                "es": "Corregido: la verificación antispam podía bloquear el envío de un formulario en sitios con una política de seguridad estricta"
+            },
+            {
+                "en": "Forms now show a note indicating which fields are required",
+                "fr": "Les formulaires affichent désormais une note indiquant les champs obligatoires",
+                "es": "Los formularios ahora muestran una nota que indica qué campos son obligatorios"
+            },
+            {
+                "en": "Fixed some page buttons briefly changing style when hovered",
+                "fr": "Correction de certains boutons de page qui changeaient brièvement de style au survol",
+                "es": "Corregido: algunos botones de página cambiaban brevemente de estilo al pasar el cursor"
+            },
+            {
+                "en": "Fixed the header banner title sometimes displaying with the wrong size",
+                "fr": "Correction du titre de la bannière d'en-tête qui s'affichait parfois avec une mauvaise taille",
+                "es": "Corregido: el título del banner de cabecera a veces se mostraba con un tamaño incorrecto"
+            },
+            {
+                "en": "Multi-line text fields in forms are now taller and easier to fill in",
+                "fr": "Les champs de texte multiligne des formulaires sont désormais plus grands et plus faciles à remplir",
+                "es": "Los campos de texto multilínea de los formularios ahora son más altos y más fáciles de completar"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-19",
+        "description": [
+            {
+                "en": "You can now build custom forms in the back office and place them anywhere on a page as a block",
+                "fr": "Vous pouvez désormais créer des formulaires personnalisés dans le back office et les placer où vous voulez sur une page",
+                "es": "Ahora puede crear formularios personalizados en el back office y colocarlos donde quiera en una página"
+            },
+            {
+                "en": "People filling in a form can now ask to receive a copy of what they sent by email",
+                "fr": "Les personnes qui remplissent un formulaire peuvent désormais demander à recevoir une copie de leur envoi par e-mail",
+                "es": "Las personas que completan un formulario ahora pueden solicitar recibir una copia de su envío por correo electrónico"
+            },
+            {
+                "en": "Forms now have stronger built-in spam protection, with optional Google reCAPTCHA support",
+                "fr": "Les formulaires bénéficient désormais d'une protection anti-spam renforcée, avec prise en charge optionnelle de Google reCAPTCHA",
+                "es": "Los formularios ahora cuentan con una protección antispam reforzada, con soporte opcional para Google reCAPTCHA"
+            },
+            {
+                "en": "New optional AI assistant (\"Donovan\") in the back office, able to suggest which block to use",
+                "fr": "Nouvel assistant IA optionnel (« Donovan ») dans le back office, capable de suggérer quel bloc utiliser",
+                "es": "Nuevo asistente de IA opcional (\"Donovan\") en el back office, capaz de sugerir qué bloque usar"
+            },
+            {
+                "en": "You can now ask AI to rephrase your text in a different tone or length with one click",
+                "fr": "Vous pouvez désormais demander à l'IA de reformuler votre texte dans un autre ton ou une autre longueur en un clic",
+                "es": "Ahora puede pedirle a la IA que reformule su texto en otro tono o longitud con un solo clic"
+            },
+            {
+                "en": "You'll now see a warning in the back office if an AI feature stops working, e.g. an expired key",
+                "fr": "Un avertissement s'affiche désormais dans le back office si une fonctionnalité IA cesse de fonctionner, par ex. une clé expirée",
+                "es": "Ahora verá una advertencia en el back office si una función de IA deja de funcionar, por ejemplo, una clave caducada"
+            },
+            {
+                "en": "You can now design your own email templates in the back office, block by block",
+                "fr": "Vous pouvez désormais concevoir vos propres modèles d'e-mail dans le back office, bloc par bloc",
+                "es": "Ahora puede diseñar sus propias plantillas de correo electrónico en el back office, bloque a bloque"
+            },
+            {
+                "en": "When building a form, you can now pick ready-made fields (email, phone, message...) instead of creating them from scratch",
+                "fr": "Lors de la création d'un formulaire, vous pouvez désormais choisir des champs prêts à l'emploi (e-mail, téléphone, message...) au lieu de les créer de zéro",
+                "es": "Al crear un formulario, ahora puede elegir campos ya preparados (correo electrónico, teléfono, mensaje...) en lugar de crearlos desde cero"
+            },
+            {
+                "en": "You can now temporarily disable a form without having to remove it from its page",
+                "fr": "Vous pouvez désormais désactiver temporairement un formulaire sans avoir à le retirer de sa page",
+                "es": "Ahora puede desactivar temporalmente un formulario sin tener que quitarlo de su página"
+            },
+            {
+                "en": "Forms can now include new field types: password, phone number, date, website address and number",
+                "fr": "Les formulaires peuvent désormais inclure de nouveaux types de champs : mot de passe, téléphone, date, adresse web et nombre",
+                "es": "Los formularios ahora pueden incluir nuevos tipos de campo: contraseña, teléfono, fecha, dirección web y número"
+            },
+            {
+                "en": "Editors now see an \"Edit\" button appear over a block, to jump straight to it",
+                "fr": "Les éditeurs voient désormais apparaître un bouton « Modifier » au survol d'un bloc, pour y accéder directement",
+                "es": "Los editores ahora ven aparecer un botón \"Editar\" sobre un bloque, para acceder directamente a él"
+            },
+            {
+                "en": "Fixed a required checkbox in a form silently accepting submission when left unchecked",
+                "fr": "Correction d'une case à cocher obligatoire d'un formulaire qui acceptait l'envoi même non cochée",
+                "es": "Corregido: una casilla obligatoria de un formulario aceptaba el envío incluso sin marcar"
+            },
+            {
+                "en": "Email addresses submitted through a form are now checked to make sure the domain really exists",
+                "fr": "Les adresses e-mail envoyées via un formulaire sont désormais vérifiées pour s'assurer que le domaine existe réellement",
+                "es": "Las direcciones de correo enviadas a través de un formulario ahora se verifican para confirmar que el dominio existe realmente"
+            },
+            {
+                "en": "You can now add a clickable link next to a form field's label, e.g. pointing to your terms of use",
+                "fr": "Vous pouvez désormais ajouter un lien cliquable à côté du libellé d'un champ de formulaire, par ex. vers vos conditions d'utilisation",
+                "es": "Ahora puede añadir un enlace en el que se puede hacer clic junto a la etiqueta de un campo de formulario, por ejemplo hacia sus condiciones de uso"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-17",
+        "description": [
+            {
+                "en": "Page sections can now carry a short anchor, so you can build a one-page menu linking straight to them",
+                "fr": "Les sections de page peuvent désormais recevoir une ancre courte, pour créer un menu qui pointe directement vers elles",
+                "es": "Las secciones de página ahora pueden llevar un ancla corta, para crear un menú que apunte directamente a ellas"
+            },
+            {
+                "en": "Buttons and call-to-action links can now point to a section of the same page, not just an external address",
+                "fr": "Les boutons et liens d'appel à l'action peuvent désormais pointer vers une section de la même page, pas seulement vers une adresse externe",
+                "es": "Los botones y enlaces de llamada a la acción ahora pueden apuntar a una sección de la misma página, no solo a una dirección externa"
+            },
+            {
+                "en": "Titles in a collection section can now link to their own detail page",
+                "fr": "Les titres d'une section collection peuvent désormais pointer vers leur propre page de détail",
+                "es": "Los títulos de una sección de colección ahora pueden enlazar a su propia página de detalle"
+            },
+            {
+                "en": "A collection section can now be displayed as cards or as a portfolio grid",
+                "fr": "Une section collection peut désormais s'afficher en cartes ou en grille portfolio",
+                "es": "Una sección de colección ahora puede mostrarse como tarjetas o como cuadrícula de portafolio"
+            },
+            {
+                "en": "The header banner block can now cycle automatically through several images when more than one is attached",
+                "fr": "Le bloc bannière d'en-tête peut désormais faire défiler automatiquement plusieurs images lorsque plus d'une est ajoutée",
+                "es": "El bloque de banner de cabecera ahora puede pasar automáticamente por varias imágenes cuando se añade más de una"
+            },
+            {
+                "en": "Header banner and portfolio images are no longer cropped when their proportions don't match the display box",
+                "fr": "Les images de la bannière d'en-tête et du portfolio ne sont plus recadrées lorsque leurs proportions ne correspondent pas au cadre d'affichage",
+                "es": "Las imágenes del banner de cabecera y del portafolio ya no se recortan cuando sus proporciones no coinciden con el marco de visualización"
+            },
+            {
+                "en": "Header banner images now look sharper on high-resolution screens",
+                "fr": "Les images de la bannière d'en-tête sont désormais plus nettes sur les écrans haute résolution",
+                "es": "Las imágenes del banner de cabecera ahora se ven más nítidas en pantallas de alta resolución"
+            },
+            {
+                "en": "Portfolio project links now open in a new tab",
+                "fr": "Les liens des projets du portfolio s'ouvrent désormais dans un nouvel onglet",
+                "es": "Los enlaces de los proyectos del portafolio ahora se abren en una pestaña nueva"
+            },
+            {
+                "en": "Fixed the call-to-action band text sometimes showing in the wrong color",
+                "fr": "Correction du texte du bandeau d'appel à l'action qui s'affichait parfois dans la mauvaise couleur",
+                "es": "Corregido el texto de la banda de llamada a la acción que a veces se mostraba en el color incorrecto"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-16",
+        "description": [
+            {
+                "en": "New block: downloadable document card (e.g. a PDF), with an automatic preview thumbnail",
+                "fr": "Nouveau bloc : fiche de document téléchargeable (par ex. un PDF), avec vignette d'aperçu automatique",
+                "es": "Nuevo bloque: tarjeta de documento descargable (por ejemplo, un PDF), con miniatura de vista previa automática"
+            },
+            {
+                "en": "New block: a section that automatically shows the latest items from another part of the site (e.g. books, products)",
+                "fr": "Nouveau bloc : une section qui affiche automatiquement les derniers éléments d'une autre partie du site (par ex. livres, produits)",
+                "es": "Nuevo bloque: una sección que muestra automáticamente los últimos elementos de otra parte del sitio (por ejemplo, libros, productos)"
+            },
+            {
+                "en": "The progress bar block can now carry its own caption (e.g. a skill name)",
+                "fr": "Le bloc barre de progression peut désormais porter sa propre légende (par ex. un nom de compétence)",
+                "es": "El bloque de barra de progreso ahora puede llevar su propia leyenda (por ejemplo, un nombre de habilidad)"
+            },
+            {
+                "en": "The video embed block now waits for cookie consent before loading, and uses YouTube's privacy-enhanced mode",
+                "fr": "Le bloc vidéo intégrée attend désormais le consentement aux cookies avant de se charger, et utilise le mode confidentialité renforcée de YouTube",
+                "es": "El bloque de vídeo incrustado ahora espera el consentimiento de cookies antes de cargarse, y usa el modo de privacidad mejorada de YouTube"
+            },
+            {
+                "en": "Fixed the image comparison and image slider blocks sometimes not working at all on sites with stricter security settings",
+                "fr": "Correction des blocs comparateur d'images et diaporama qui ne fonctionnaient parfois pas du tout sur les sites aux réglages de sécurité renforcés",
+                "es": "Corregidos los bloques de comparación de imágenes y carrusel que a veces no funcionaban en absoluto en sitios con ajustes de seguridad más estrictos"
+            },
+            {
+                "en": "Fixed the articles slider not refreshing when a referenced article was updated",
+                "fr": "Correction du diaporama d'articles qui ne se mettait pas à jour lorsqu'un article référencé était modifié",
+                "es": "Corregido el carrusel de artículos que no se actualizaba cuando se modificaba un artículo referenciado"
+            },
+            {
+                "en": "The block example gallery has moved out of the back office to a single online showcase page, linked from the sidebar",
+                "fr": "La galerie d'exemples de blocs a quitté le back-office pour une unique page de vitrine en ligne, accessible depuis le menu latéral",
+                "es": "La galería de ejemplos de bloques ha salido del back-office hacia una única página de muestra en línea, enlazada desde el menú lateral"
+            },
+            {
+                "en": "Fixed a remaining case where the expertise banner block's text could still turn unreadable (black on dark background)",
+                "fr": "Correction d'un cas restant où le texte du bloc bandeau d'expertise pouvait encore devenir illisible (noir sur fond sombre)",
+                "es": "Corregido un caso restante en el que el texto del bloque de banner de experiencia aún podía volverse ilegible (negro sobre fondo oscuro)"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-15",
+        "description": [
+            {
+                "en": "The block example gallery is now open to editors, not just super admins",
+                "fr": "La galerie d'exemples de blocs est désormais accessible aux éditeurs, pas seulement aux super administrateurs",
+                "es": "La galería de ejemplos de bloques ahora está abierta a los editores, no solo a los superadministradores"
+            },
+            {
+                "en": "Super admins can now add a new photo directly from the media library",
+                "fr": "Les super administrateurs peuvent désormais ajouter une nouvelle photo directement depuis la médiathèque",
+                "es": "Los superadministradores ahora pueden añadir una nueva foto directamente desde la mediateca"
+            },
+            {
+                "en": "New block: before/after image comparator, with a draggable slider",
+                "fr": "Nouveau bloc : comparateur d'images avant/après, avec un curseur glissant",
+                "es": "Nuevo bloque: comparador de imágenes antes/después, con un control deslizante"
+            },
+            {
+                "en": "You can now upload much larger photos and files to the media library",
+                "fr": "Vous pouvez désormais téléverser des photos et fichiers bien plus volumineux dans la médiathèque",
+                "es": "Ahora puede subir fotos y archivos mucho más grandes a la mediateca"
+            },
+            {
+                "en": "Fixed the slider sometimes jumping the whole page back up when it changed slide automatically",
+                "fr": "Correction du curseur qui faisait parfois remonter toute la page lors du changement automatique de diapositive",
+                "es": "Corregido el control deslizante que a veces hacía saltar toda la página al cambiar de diapositiva automáticamente"
+            },
+            {
+                "en": "The block example gallery is now easier to browse, with quick links to jump straight to a block",
+                "fr": "La galerie d'exemples de blocs est plus facile à parcourir, avec des liens rapides pour accéder directement à un bloc",
+                "es": "La galería de ejemplos de bloques es más fácil de explorar, con enlaces rápidos para acceder directamente a un bloque"
+            },
+            {
+                "en": "The block example gallery now shows real photos, video and audio instead of generic placeholders",
+                "fr": "La galerie d'exemples de blocs affiche désormais de vraies photos, vidéo et audio, au lieu d'exemples génériques",
+                "es": "La galería de ejemplos de bloques ahora muestra fotos, vídeo y audio reales en lugar de ejemplos genéricos"
+            },
+            {
+                "en": "Fixed the expertise banner block's text sometimes turning unreadable (black on dark background)",
+                "fr": "Correction du texte du bloc bandeau d'expertise parfois illisible (noir sur fond sombre)",
+                "es": "Corregido el texto del bloque de banner de experiencia que a veces era ilegible (negro sobre fondo oscuro)"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-14",
+        "description": [
+            {
+                "en": "New blocks (hero, feature_bar, section_cards, expertise_banner, process_steps, portfolio_grid, cta_band) have been added",
+                "fr": "Nouveaux blocs (hero, feature_bar, section_cards, expertise_banner, process_steps, portfolio_grid, cta_band) ont été ajoutés",
+                "es": "Se han añadido nuevos bloques (hero, feature_bar, section_cards, expertise_banner, process_steps, portfolio_grid, cta_band)"
+            },
+            {
+                "en": "New page section blocks: Hero, Feature bar, Card grid, Expertise banner, Process steps, Portfolio grid, Call-to-action band",
+                "fr": "Nouveaux blocs de section de page : Hero, Bande de réassurance, Grille de cartes, Bandeau d'expertise, Étapes de méthode, Grille de réalisations, Bandeau d'appel à l'action",
+                "es": "Nuevos bloques de sección de página: Hero, Barra de argumentos, Cuadrícula de tarjetas, Banner de experiencia, Pasos del proceso, Cuadrícula de proyectos, Banda de llamada a la acción"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-13",
+        "description": [
+            {
+                "en": "You can now add videos to the slider",
+                "fr": "Vous pouvez désormais ajouter des vidéos au diaporama",
+                "es": "Ahora puede agregar videos al deslizador"
+            },
+            {
+                "en": "You can set a freeflow parameter for Slider",
+                "fr": "Vous pouvez désormais définir un paramètre freeflow pour le diaporama",
+                "es": "Ahora puede establecer un parámetro de flujo libre para el deslizador"
+            },
+            {
+                "en": "You can now upload multiple files at the same time (Slider)",
+                "fr": "Vous pouvez désormais télécharger plusieurs fichiers en même temps (Diaporama)",
+                "es": "Ahora puede subir varios archivos al mismo tiempo (Deslizador)"
+            },
+            {
+                "en": "New Block BannerTitle",
+                "fr": "Nouveau bloc TitreBannière",
+                "es": "Nuevo bloque TítuloBanner"
+            },
+            {
+                "en": "You can now preview every available block type with sample content before adding one",
+                "fr": "Vous pouvez désormais prévisualiser tous les types de blocs disponibles avec un exemple de contenu avant d'en ajouter un",
+                "es": "Ahora puede obtener una vista previa de todos los tipos de bloques disponibles con contenido de ejemplo antes de agregar uno"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-12",
+        "description": [
+            {
+                "en": "You can now modify the media directly from the media library, without having to open each media's edit screen",
+                "fr": "Vous pouvez désormais modifier les médias directement depuis la bibliothèque de médias, sans avoir à ouvrir l'écran d'édition de chaque média",
+                "es": "Ahora puede modificar los medios directamente desde la biblioteca de medios, sin tener que abrir la pantalla de edición de cada medio"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-12",
+        "description": [
+            {
+                "en": "Added animations on blocks",
+                "fr": "Ajout d'animations sur les blocs",
+                "es": "Se añadieron animaciones en los bloques"
+            },
+            {
+                "en": "Added cache system on rendering pages, that's makes web faster",
+                "fr": "Ajout d'un système de cache lors du rendu des pages, ce qui rend le web plus rapide",
+                "es": "Se añadió un sistema de caché al renderizar páginas, lo que hace que la web sea más rápida"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-11",
+        "description": [
+            {
+                "en": "Improved the icon picker used across the back office",
+                "fr": "Amélioration du sélecteur d'icônes utilisé dans le back-office",
+                "es": "Mejorado el selector de iconos utilizado en el back-office"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-10",
+        "description": [
+            {
+                "en": "Fixed an issue that allowed invalid favicon/app icon files to be uploaded",
+                "fr": "Correction d'un problème qui permettait de mettre en ligne des fichiers de favicon/icône d'application invalides",
+                "es": "Corregido un problema que permitía subir archivos de favicon/icono de aplicación no válidos"
+            },
+            {
+                "en": "The rich text editor now has a \"center text\" option",
+                "fr": "L'éditeur de texte enrichi propose désormais une option « centrer le texte »",
+                "es": "El editor de texto enriquecido ahora ofrece una opción «centrar texto»"
+            },
+            {
+                "en": "The Card block can now include an image",
+                "fr": "Le bloc Carte peut désormais inclure une image",
+                "es": "El bloque Tarjeta ahora puede incluir una imagen"
+            },
+            {
+                "en": "Favicon and app icon uploads are now automatically resized to the right format",
+                "fr": "Les favicons et icônes d'application mis en ligne sont désormais automatiquement redimensionnés au bon format",
+                "es": "Los favicons e iconos de aplicación subidos ahora se redimensionan automáticamente al formato correcto"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-05",
+        "description": [
+            {
+                "en": "Added a Media Library to the dashboard, showing every image and file, and where each one is used on the site",
+                "fr": "Ajout d'une Bibliothèque de médias dans le tableau de bord, affichant tous les images et fichiers, ainsi que leur utilisation sur le site",
+                "es": "Añadida una Biblioteca de medios en el panel de control, que muestra todas las imágenes y archivos, y dónde se usa cada uno en el sitio"
+            },
+            {
+                "en": "You can now duplicate an image or media block in one click",
+                "fr": "Vous pouvez désormais dupliquer un bloc image ou média en un clic",
+                "es": "Ahora puede duplicar un bloque de imagen o medio en un clic"
+            },
+            {
+                "en": "A newly picked image now shows a live preview before you save",
+                "fr": "Une image tout juste sélectionnée s'affiche désormais en aperçu instantané avant l'enregistrement",
+                "es": "Una imagen recién seleccionada ahora muestra una vista previa instantánea antes de guardar"
+            },
+            {
+                "en": "Added swipe navigation and press-and-hold to pause on the image slider",
+                "fr": "Ajout de la navigation par balayage et de la mise en pause par appui long sur le diaporama",
+                "es": "Añadida la navegación por deslizamiento y la pausa mediante pulsación prolongada en el carrusel de imágenes"
+            },
+            {
+                "en": "Site-wide images (favicon, app icon, social-sharing image, logo) are now managed from a single place",
+                "fr": "Les images communes au site (favicon, icône d'application, image de partage, logo) se gèrent désormais depuis un seul et même endroit",
+                "es": "Las imágenes comunes del sitio (favicon, icono de aplicación, imagen de compartición, logo) ahora se gestionan desde un único lugar"
+            }
+        ]
+    }
+]

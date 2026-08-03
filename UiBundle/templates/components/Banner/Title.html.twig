@@ -1,0 +1,13 @@
+{# <twig:c975LUi:Banner:Title title="Title" [level="h2"] [src="your-path/file.ext"] [alt=""] [maxHeight=""]/> #}
+{% set level = level|default('h2') %}
+{% set imgSrc = src is defined and src ? asset(src) : '' %}
+
+{% set styles = [] %}
+{% if imgSrc %}{% set styles = styles|merge(["background-image:url('" ~ imgSrc ~ "')"]) %}{% endif %}
+{% if maxHeight is defined and maxHeight %}{% set styles = styles|merge(['max-height:' ~ maxHeight ~ 'px']) %}{% endif %}
+
+<div class="banner-title"{% if styles %} style="{{ styles|join(';') }}"{% endif %}{% if alt is defined and alt %} role="img" aria-label="{{ alt }}"{% endif %}>
+    <div class="banner-title-overlay">
+        <{{ level }} class="banner-title-text">{{ title }}</{{ level }}>
+    </div>
+</div>

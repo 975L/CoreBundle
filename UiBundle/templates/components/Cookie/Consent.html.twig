@@ -1,0 +1,19 @@
+{# <twig:c975LUi:Cookie:Consent/> #}
+{# Self-sufficient fragment: the "is it enabled" guard lives here rather than in each layout calling it, so a site with no SiteBundle gets the same banner from the minimal shell (see @c975LUi/layout.html.twig) without repeating the config check #}
+{% if config('site-enable-cookie-consent') %}
+    {% set cookiesPolicyUrl = config('url-cookies-policy') %}
+    {# Kebab-case on both sides: Stimulus doesn't dasherize the identifier when deriving value names #}
+    <div data-controller="cookie-consent"
+         data-cookie-consent-stylesheet-value="{{ asset('bundles/c975lui/css/cookieconsent.css') }}"
+         data-cookie-consent-script-value="{{ asset('bundles/c975lui/js/cookieconsent.umd.js') }}"
+         data-cookie-consent-message-value="{{ 'text.cookies_banner'|trans({}, 'ui') }}"
+         data-cookie-consent-label-value="{{ 'label.cookies_dialog'|trans({}, 'ui') }}"
+         data-cookie-consent-accept-value="{{ 'label.cookies_accept'|trans({}, 'ui') }}"
+         data-cookie-consent-reject-value="{{ 'label.cookies_reject'|trans({}, 'ui') }}"
+         {% if cookiesPolicyUrl %}
+             data-cookie-consent-policy-url-value="{{ cookiesPolicyUrl }}"
+             data-cookie-consent-policy-label-value="{{ 'label.cookies_policy'|trans({}, 'ui') }}"
+         {% endif %}
+         data-cookie-consent-lang-value="{{ app.request.locale }}">
+    </div>
+{% endif %}

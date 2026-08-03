@@ -1,0 +1,173 @@
+/* CONTACT DETAILS */
+
+// A panel, laid out on the width it is given: the fields flow as an auto-fit grid rather than as one
+// narrow label/value column, so the block fills a full-width slot and folds down to one column in a
+// flex_columns cell. Every color reads a --section-* token first, so the panel inverts by itself when
+// it is dropped inside a colored flat (see sass/_page-sections.scss), and its own neutral otherwise.
+.contact-details {
+    // Restated for UiBundle alone, as .section-wrap does: without it the padding adds to the width and the panel overflows its slot
+    box-sizing: border-box;
+    margin-block: clamp(24px, 4vw, 40px);
+    padding: clamp(20px, 3.2vw, 40px);
+    border: 1px solid var(--section-border, var(--border-color));
+    border-radius: var(--radius-panel);
+    background-color: var(--section-overlay, var(--card-background));
+}
+
+// A bare "contact_details" block hangs straight under ".blocks", with no ".section-wrap" to measure it,
+// so it ran the full page width while every section around it stopped at the shared measure
+// Mobile first: the panel takes the room it is given and only stops growing once it reaches that measure
+// Gutters as margins, not padding: the panel paints a border and a background, which stay inside them,
+// and the calc() takes them off the measure so the fields line up with a neighbouring ".section-wrap"
+.blocks > .contact-details,
+.block-animation > .contact-details,
+.block-editable > .contact-details {
+    --contact-details-gutter: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    width: calc(100% - 2 * var(--contact-details-gutter));
+    max-width: calc(var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--contact-details-gutter));
+    margin-inline: auto;
+}
+
+// Logo and name on one line, the name wrapping under it only once there is no room left
+.contact-details__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(16px, 2.4vw, 28px);
+    padding-bottom: clamp(16px, 2.4vw, 28px);
+    margin-bottom: clamp(20px, 3vw, 32px);
+    border-bottom: 1px solid var(--section-border, var(--border-color));
+}
+
+.contact-details__logo {
+    flex: 0 0 auto;
+    max-height: 72px;
+    width: auto;
+}
+
+// min-width so a long unbreakable word shrinks the text column instead of overflowing the panel
+.contact-details__intro {
+    flex: 1 1 240px;
+    min-width: 0;
+}
+
+.contact-details__name {
+    margin: 0;
+    color: var(--section-text, var(--text));
+    font-family: var(--font-family-title);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-size: clamp(20px, 2.6vw, 28px);
+    line-height: 1.15;
+}
+
+.contact-details__description {
+    margin-top: 0.6em;
+    color: var(--section-text-soft, var(--label-color));
+}
+
+// The theme writes color on every element instead of letting it inherit, so the rich text is repainted.
+// Links are left out of it: the theme tells them apart by color alone, which this rule would flatten
+.contact-details__description *:not(a) {
+    color: var(--section-text-soft, var(--label-color));
+}
+
+// Underlined rather than recolored: the panel inverts inside a colored flat, where the theme's own
+// link color may not read at all, and an underline holds whatever the surrounding text is painted
+// The theme's own "a:hover" has the very same specificity, so the hover state is restated here too
+.contact-details__description a,
+.contact-details__description a:hover {
+    color: var(--section-text, var(--text));
+    text-decoration: underline;
+}
+
+// auto-fit, so the same markup is a row of fields on a full-width slot and a single column in a narrow one
+// min() so the track never asks for more than the panel has, which would push the grid past its own box
+// --contact-details-col-min, the smallest a field column may get before the grid drops one, is read
+// rather than declared, so a site setting it in :root from its own theme is what applies
+.contact-details__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--contact-details-col-min, 210px)), 1fr));
+    gap: clamp(16px, 2.4vw, 28px);
+    margin: 0;
+}
+
+// Label above value, not beside it: a fixed label column would waste most of the width it reserves
+.contact-details__item dt {
+    margin-bottom: 6px;
+    font-family: var(--font-family-accent);
+    font-size: 12.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--section-text-soft, var(--label-color));
+}
+
+// overflow-wrap for the narrowest column the grid folds to: an email or a url is one unbreakable word
+.contact-details__item dd {
+    margin: 0;
+    color: var(--section-text, var(--text));
+    line-height: 1.5;
+    overflow-wrap: break-word;
+}
+
+.contact-details__hours {
+    margin-top: clamp(20px, 3vw, 32px);
+    padding-top: clamp(16px, 2.4vw, 28px);
+    border-top: 1px solid var(--section-border, var(--border-color));
+}
+
+// Same treatment as a field label, the hours being one more group inside the very same panel
+.contact-details__hours-title {
+    margin: 0 0 0.9em;
+    font-family: var(--font-family-accent);
+    font-size: 12.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--section-text-soft, var(--label-color));
+}
+
+// Wider tracks than a field: a day range and its times read as one line and must not be split over two
+.contact-details__list--hours {
+    --contact-details-col-min: 260px;
+    gap: 0 clamp(24px, 4vw, 48px);
+}
+
+// wrap so the times drop under the days on a phone rather than push the row past the panel: the times
+// are held on one line by "white-space: nowrap" below, which leaves the row nothing else to give
+.contact-details__item--hours {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1em;
+    padding-block: 0.5em;
+    border-bottom: 1px solid var(--section-border, var(--border-color));
+}
+
+.contact-details__item--hours dt {
+    margin-bottom: 0;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--section-text, var(--text));
+}
+
+// tabular-nums so the times line up column-wise from one row to the next
+.contact-details__item--hours dd {
+    color: var(--section-text-soft, var(--label-color));
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.contact-details__map {
+    margin: clamp(20px, 3vw, 32px) 0 0;
+}
+
+// The bundle-wide "a.btn" is a centered block capped at 300px; under a panel of left-aligned fields it reads as a stray centered element
+.contact-details__map a.btn {
+    display: inline-block;
+    margin: 0;
+    max-width: none;
+}

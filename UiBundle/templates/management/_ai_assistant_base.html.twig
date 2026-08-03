@@ -1,0 +1,87 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block main %}
+    <h1>{{ assistantName }}</h1>
+    <p class="text-muted">{{ 'label.ai_assistant_subtitle'|trans({}, 'ui') }}</p>
+
+    <h2>{{ 'label.ai_rephrase_section_title'|trans({}, 'ui') }}</h2>
+    {% if not rephraseEnabled %}
+        <p>{{ 'label.ai_rephrase_setup_intro'|trans({}, 'ui') }}</p>
+        <ul>
+            {% if 'ui-ai-assistant-rephrase-provider' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-provider'] }}">{{ 'label.ai_rephrase_setup_step_provider'|trans({}, 'ui') }}</a></li>
+            {% endif %}
+            {% if 'ui-ai-assistant-rephrase-api-key' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-api-key'] }}">{{ 'label.ai_rephrase_setup_step_key'|trans({}, 'ui') }}</a></li>
+            {% endif %}
+            {% if 'ui-ai-assistant-rephrase-base-uri' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-base-uri'] }}">{{ 'label.ai_rephrase_setup_step_base_uri'|trans({}, 'ui') }}</a></li>
+            {% endif %}
+            {% if 'ui-ai-assistant-rephrase-model' in missingSlugs %}
+                <li><a href="{{ configLinks['ui-ai-assistant-rephrase-model'] }}">{{ 'label.ai_rephrase_setup_step_model_required'|trans({}, 'ui') }}</a></li>
+            {% endif %}
+        </ul>
+        {% if 'ui-ai-assistant-rephrase-model' not in missingSlugs %}
+            <p class="text-muted small">
+                {{ 'label.ai_rephrase_setup_model_optional'|trans({}, 'ui') }}
+                <a href="{{ configLinks['ui-ai-assistant-rephrase-model'] }}">{{ 'label.ai_rephrase_setup_step_model'|trans({}, 'ui') }}</a>
+            </p>
+        {% endif %}
+
+        {# Same three-part structure for every provider, so the instructions read the same whichever is picked #}
+        <p class="text-muted small mb-1">{{ 'label.ai_rephrase_get_key_intro'|trans({}, 'ui') }}</p>
+        <ul class="small text-muted">
+            <li>
+                <strong>Anthropic</strong> — <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> :
+                {{ 'label.ai_rephrase_get_key_anthropic'|trans({}, 'ui') }}
+            </li>
+            <li>
+                <strong>OpenAI</strong> — <a href="https://platform.openai.com" target="_blank" rel="noopener">platform.openai.com</a> :
+                {{ 'label.ai_rephrase_get_key_openai'|trans({}, 'ui') }}
+            </li>
+            <li>
+                <strong>Euria (Infomaniak)</strong> — <a href="https://manager.infomaniak.com" target="_blank" rel="noopener">manager.infomaniak.com</a> :
+                {{ 'label.ai_rephrase_get_key_euria'|trans({}, 'ui') }}
+            </li>
+        </ul>
+    {% else %}
+        {# Free-standing rephrase, not tied to any CMS field: the same partial on a plain textarea #}
+        <p class="text-muted">{{ 'label.ai_rephrase_freeform_intro'|trans({}, 'ui') }}</p>
+        <textarea id="ai-rephrase-freeform" class="form-control mb-2" rows="6"></textarea>
+        {{ include('@c975LUi/form/_ai_rephrase.html.twig', {field_id: 'ai-rephrase-freeform'}) }}
+
+        {% if rephraseUsage %}
+            <p class="text-muted mt-3">
+                {{ 'label.ai_rephrase_usage_this_month'|trans({
+                    '%input%': rephraseUsage.inputTokens,
+                    '%output%': rephraseUsage.outputTokens,
+                }, 'ui') }}
+            </p>
+        {% endif %}
+    {% endif %}
+
+    {# ROLE_SUPER_ADMIN, so the section hides rather than showing controls that would 403 on submit #}
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <h2 class="mt-4">{{ 'label.ai_assistant_dashboard_section_title'|trans({}, 'ui') }}</h2>
+        {% if not enabled %}
+            <p>{{ 'label.ai_assistant_setup_intro'|trans({}, 'ui') }}</p>
+            <ul>
+                {% if 'ui-ai-assistant-dashboard-enabled' in missingSlugs %}
+                    <li><a href="{{ configLinks['ui-ai-assistant-dashboard-enabled'] }}">{{ 'label.ai_assistant_setup_step_enabled'|trans({}, 'ui') }}</a></li>
+                {% endif %}
+                {% if 'ui-ai-assistant-dashboard-endpoint' in missingSlugs %}
+                    <li><a href="{{ configLinks['ui-ai-assistant-dashboard-endpoint'] }}">{{ 'label.ai_assistant_setup_step_endpoint'|trans({}, 'ui') }}</a></li>
+                {% endif %}
+                {% if 'ui-ai-assistant-dashboard-token' in missingSlugs %}
+                    <li><a href="{{ configLinks['ui-ai-assistant-dashboard-token'] }}">{{ 'label.ai_assistant_setup_step_token'|trans({}, 'ui') }}</a></li>
+                {% endif %}
+            </ul>
+            <p class="text-muted small">{{ 'label.ai_assistant_setup_credentials_help'|trans({}, 'ui') }}</p>
+        {% else %}
+            {{ include('@c975LUi/management/_ai_assistant_widget.html.twig') }}
+        {% endif %}
+    {% endif %}
+
+    {# App extension point: override ai_assistant.html.twig and extend THIS base file, never itself - a bundle override is a flat replace and would infinite-loop #}
+    {% block extra_backends %}{% endblock %}
+{% endblock main %}

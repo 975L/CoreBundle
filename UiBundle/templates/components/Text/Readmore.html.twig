@@ -1,0 +1,10 @@
+{# Static usage: <twig:c975LUi:Text:Readmore text="{{ text }}" id="{{ id }}"/> #}
+{# The wrapper carries the reading measure; the three stay siblings inside it, the checked-state rules matching on "~" #}
+<div class="readmore">
+    <input type="checkbox" id="readmore-toggle-{{ id }}" class="readmore-toggle" hidden>
+    <div class="readmore-content">{{ text|raw|nl2br }}</div>
+    <label for="readmore-toggle-{{ id }}" class="readmore-toggle-label">
+        <span class="read-more">{{ 'label.readmore'|trans({}, 'site') }}</span>
+        <span class="read-less">{{ 'label.readless'|trans({}, 'site') }}</span>
+    </label>
+</div>

@@ -1,0 +1,31 @@
+/* EMAIL TABLES */
+
+// An email is laid out in tables, so these have to stay conservative: the blocks under
+// templates/emails/blocks build their structure out of <table>/<tr>/<td> and must not inherit the
+// decorated look the page's own data tables get
+table {
+    width: auto;
+    border-collapse: collapse;
+    border-spacing: 10px;
+    margin: 0 auto 1em auto;
+    background-color: transparent;
+}
+
+table.border {
+    border: 2px solid var(--primary);
+}
+
+th {
+    padding: 0.5em 1em;
+    text-align: center;
+    border-bottom: 5px solid var(--primary);
+    font-weight: normal;
+    font-family: var(--font-family-title);
+    font-size: 1.5em;
+}
+
+td {
+    text-align: center;
+    font-family: var(--font-family-body);
+    padding: 10px;
+}

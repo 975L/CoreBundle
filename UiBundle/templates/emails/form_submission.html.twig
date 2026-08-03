@@ -1,0 +1,17 @@
+{# Default template used by SendEmailFormAction when Form::$actionConfig has no "template" override #}
+<!DOCTYPE html>
+<html>
+    <body style="font-family:sans-serif;">
+        <h1>{{ form.name }}</h1>
+        <table cellpadding="6" style="border-collapse:collapse;">
+            <tbody>
+                {% for label, value in fields %}
+                    <tr>
+                        <td style="text-align:left;border-bottom:1px solid #ddd;"><strong>{{ label }}</strong></td>
+                        <td style="text-align:left;border-bottom:1px solid #ddd;">{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

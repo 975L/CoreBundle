@@ -1,0 +1,64 @@
+/* ICON PICKER (form/icon_picker_theme.html.twig + assets/js/icon-picker.js) */
+.ui-icon-picker {
+    position: relative;
+}
+
+.ui-icon-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ui-icon-preview {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.ui-icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: .375rem;
+    padding: 8px;
+    background: #fff;
+    position: absolute;
+    z-index: 1050;
+    min-width: 100%;
+}
+
+.ui-icon-item {
+    border: none;
+    background: none;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: .25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 10px;
+    max-width: 64px;
+    line-height: 1.2;
+
+    &:hover {
+        background: #e9ecef;
+    }
+
+    img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 60px;
+    }
+}

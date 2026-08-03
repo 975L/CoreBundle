@@ -1,0 +1,385 @@
+// Visually hidden but accessible to screen readers
+.visuallyhidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    // clip-path rather than the deprecated clip: rect(), same result
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+// Laid out on the same measure as the body copy (--reading-max-width, declared by SiteBundle), so a slider never outruns the text it sits with
+// Symmetric room above and below: the former "1em auto 3em" left a slider all but flush against the block introducing it
+.slider {
+    position: relative;
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: var(--slider-margin-block, 3em) auto;
+    // Fallback so the slider never collapses to 0 height, its content being absolutely positioned
+    aspect-ratio: 16 / 9;
+}
+
+// Single rich slide rendered outside the slider markup - same measure and same room as a multi-slide one
+.slider-single {
+    position: relative;
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: var(--slider-margin-block, 3em) auto;
+}
+
+.slider-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 100%;
+    // Slides translateX() beyond this box, which would extend the page's scrollable area
+    overflow: hidden;
+    // Rounds the clipping box itself, else a sub-pixel gap shows a square sliver at the corners
+    border-radius: 15px;
+}
+
+.slider-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: none;
+    cursor: pointer;
+    animation: 0.5s ease-in-out both;
+}
+
+// A real class, not an inline style: a nonce-based CSP can't cover one. Set server-side on slide one
+// Declared after the rule above so its display wins on equal specificity
+.slider-item-active {
+    display: block;
+}
+
+.slider-item.slide-in-right {
+    animation-name: slideInFromRight;
+}
+
+.slider-item.slide-in-left {
+    animation-name: slideInFromLeft;
+}
+
+.slider-item.slide-out-right {
+    animation-name: slideOutToRight;
+}
+
+.slider-item.slide-out-left {
+    animation-name: slideOutToLeft;
+}
+
+.slider-img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+// Black letterbox background while a video slide's metadata/first frame is still loading
+.slider-video {
+    background: #000;
+}
+
+// Wraps .slider-img when imageLinksToUrl is used - behaves like the img so its ratio rules keep working
+.slider-img-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.slider-ratio-2-3 { aspect-ratio: 2 / 3; }
+.slider-ratio-3-4 { aspect-ratio: 3 / 4; }
+.slider-ratio-1-1 { aspect-ratio: 1 / 1; }
+.slider-ratio-4-3 { aspect-ratio: 4 / 3; }
+.slider-ratio-3-2 { aspect-ratio: 3 / 2; }
+.slider-ratio-9-16 { aspect-ratio: 9 / 16; }
+.slider-ratio-16-9 { aspect-ratio: 16 / 9; }
+.slider-ratio-21-9 { aspect-ratio: 21 / 9; }
+
+// "slider-sized" is set by resizeSlider(); without a definite height a descendant's height: 100% collapses
+.slider-ratio-2-3 .slider-list,
+.slider-ratio-3-4 .slider-list,
+.slider-ratio-9-16 .slider-list,
+.slider-ratio-1-1 .slider-list,
+.slider-ratio-4-3 .slider-list,
+.slider-ratio-3-2 .slider-list,
+.slider-ratio-16-9 .slider-list,
+.slider-ratio-21-9 .slider-list,
+.slider-sized .slider-list,
+.slider-ratio-2-3 .slider-item,
+.slider-ratio-3-4 .slider-item,
+.slider-ratio-9-16 .slider-item,
+.slider-ratio-1-1 .slider-item,
+.slider-ratio-4-3 .slider-item,
+.slider-ratio-3-2 .slider-item,
+.slider-ratio-16-9 .slider-item,
+.slider-ratio-21-9 .slider-item,
+.slider-sized .slider-item {
+    height: 100%;
+}
+
+.slider-ratio-2-3 .slider-img,
+.slider-ratio-3-4 .slider-img,
+.slider-ratio-9-16 .slider-img,
+.slider-ratio-1-1 .slider-img,
+.slider-ratio-4-3 .slider-img,
+.slider-ratio-3-2 .slider-img,
+.slider-ratio-16-9 .slider-img,
+.slider-ratio-21-9 .slider-img,
+.slider-sized .slider-img {
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.slider-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 15px 15px 0 0;
+}
+
+.slider-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 0 0 15px 15px;
+}
+
+// Explicit, not inherited: the theme colors <a> directly, which beats the caption's inherited white
+.slider-title a,
+.slider-text a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.slider-title a:hover,
+.slider-text a:hover {
+    text-decoration: underline;
+}
+
+.slider-text div {
+    color: #fff;
+}
+
+.slider-credits,
+.slider-rights-reserved {
+    position: absolute;
+    width: 100%;
+    left: 50%;
+    margin: 0;
+    transform: translateX(-50%);
+    background: var(--button-background-primary-light);
+    color: #fff;
+    padding: 4px;
+    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+}
+
+.slider-credits {
+    bottom: 0;
+    border-radius: 0 0 15px 15px;
+}
+
+.slider-rights-reserved {
+    top: 0;
+    border-radius: 15px 15px 0 0;
+}
+
+.slider-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.slider-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    pointer-events: auto;
+    opacity: 0.9;
+}
+
+.slider-button:hover {
+    opacity: 1;
+}
+
+.slider-button img {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+
+.slider-play-pause {
+    position: absolute;
+    bottom: -26px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary, #007bff);
+    color: #fff;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+
+.slider-play-pause:hover {
+    background: var(--button-background-primary-dark);
+}
+
+.slider-play-pause span {
+    color: #fff;
+    font-weight: bold;
+}
+
+.slider-dots {
+	position: absolute;
+	bottom: -40px;
+	display: flex;
+    justify-content: center;
+    transform: translateX(-50%);
+    left: 50%;
+    list-style: none;
+    padding: 0;
+}
+
+.slider-dots span {
+    display: none;
+}
+
+// Swipe replaces the arrows on touch - hidden, not removed, so a keyboard still reaches them on focus
+@media (hover: none) and (pointer: coarse) {
+    .slider-button,
+    .slider-play-pause {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .slider-button:focus-visible,
+    .slider-play-pause:focus-visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.slider-dot {
+	margin-inline: 2px;
+	width: 10px;
+	height: 14px;
+	background-color: #fff0;
+	border: 2px solid var(--primary);
+	border-radius: 100%;
+	box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
+}
+
+.slider-dot.active {
+	background-color: var(--primary);
+}
+
+.slider img.angle {
+    height: 60px;
+}
+
+// Every slide side by side out to the viewport edges; raw vw would let the scrollbar create its own
+.slider-freeflow {
+    // One slide's width, shared: the list's side padding is derived from it so a slide can sit dead center, first and last included
+    --slider-freeflow-item: clamp(240px, 55vw, 480px);
+    max-width: none;
+    width: var(--slider-freeflow-vw, 100vw);
+    margin-left: calc(50% - (var(--slider-freeflow-vw, 100vw) / 2));
+    aspect-ratio: auto;
+    // No overflow here (it happens on .slider-list): overflow-x alone forces overflow-y to auto
+}
+
+// Scrolls natively rather than by transform, which left revealed slides unpainted in some engines
+.slider-freeflow .slider-list {
+    display: flex;
+    gap: 16px;
+    // Half a viewport minus half a slide: the current slide is centered while its neighbours show through the padding, which overflow clips at the padding box rather than here
+    padding-inline: calc(50% - var(--slider-freeflow-item) / 2);
+    // Else padding-inline adds to the width above instead of being carved out of it
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    // Vertical panning stays the browser's; the horizontal drag is slider.js', whose own snap-to-one-slide replaces a fling carrying several
+    touch-action: pan-y;
+    // Redundant next to the buttons/dots - scrollbar-width alone, the vendor properties being flagged
+    scrollbar-width: none;
+}
+
+// While a finger drags the list, scrollLeft is written frame by frame - snapping and smooth scrolling would each fight that
+.slider-freeflow .slider-list.slider-dragging {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+}
+
+.slider-freeflow .slider-item {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto;
+    flex: 0 0 var(--slider-freeflow-item);
+    scroll-snap-align: center;
+    display: block;
+    cursor: pointer;
+    animation: none;
+
+    // Mobile-first: 3/4, widening to 16/9 from 768px up - an explicit ratio="..." below always wins
+    aspect-ratio: 3 / 4;
+}
+
+.slider-freeflow .slider-img,
+.slider-freeflow .slider-video {
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+@media (min-width: 768px) {
+    .slider-freeflow .slider-item { aspect-ratio: 16 / 9; }
+}
+
+.slider-freeflow.slider-ratio-2-3 .slider-item { aspect-ratio: 2 / 3; }
+.slider-freeflow.slider-ratio-3-4 .slider-item { aspect-ratio: 3 / 4; }
+.slider-freeflow.slider-ratio-1-1 .slider-item { aspect-ratio: 1 / 1; }
+.slider-freeflow.slider-ratio-4-3 .slider-item { aspect-ratio: 4 / 3; }
+.slider-freeflow.slider-ratio-3-2 .slider-item { aspect-ratio: 3 / 2; }
+.slider-freeflow.slider-ratio-9-16 .slider-item { aspect-ratio: 9 / 16; }
+.slider-freeflow.slider-ratio-16-9 .slider-item { aspect-ratio: 16 / 9; }
+.slider-freeflow.slider-ratio-21-9 .slider-item { aspect-ratio: 21 / 9; }

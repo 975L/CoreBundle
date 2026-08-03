@@ -1,0 +1,38 @@
+{# Adapter for "collection" items only, never picklable nor persisted; "detailUrl"/"variant" are added by CollectionExtension::renderItems() #}
+{% if variant is defined and variant == 'portfolio' %}
+    {# Reuses portfolio-grid's classes so a Collection can look like a PortfolioGrid with no override #}
+    {% set href = detailUrl|default(null) ?: url|default(null) %}
+    {# Nothing to link to: a href="#" would be a dead link that still looks clickable #}
+    {% set tag = href ? 'a' : 'div' %}
+    <{{ tag }} class="portfolio-grid__project"{% if href %} href="{{ href }}"{% if not detailUrl and url %} target="_blank" rel="noopener"{% endif %}{% endif %}>
+        {% if imageUrl %}
+            {# "imageUrl" alone is a bare string, so the dimensions come from the attached media instead #}
+            {% set itemMedia = block.media|length > 0 ? block.media|first : null %}
+            <div class="portfolio-grid__project-img">
+                <img src="{{ imageUrl }}" alt="{{ title }}"{% if itemMedia and itemMedia.intrinsicWidth %} width="{{ itemMedia.intrinsicWidth }}"{% endif %}{% if itemMedia and itemMedia.intrinsicHeight %} height="{{ itemMedia.intrinsicHeight }}"{% endif %} loading="lazy">
+            </div>
+        {% endif %}
+        <div class="portfolio-grid__project-body">
+            <h3 class="portfolio-grid__project-title">{{ title }}</h3>
+            {% if content %}<p class="portfolio-grid__project-text">{{ content }}</p>{% endif %}
+        </div>
+    </{{ tag }}>
+{% else %}
+    {% set resolvedImageUrl = imageUrl|default(null) %}
+    {% if resolvedImageUrl or url %}
+        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ class|default([])|join(' ') }}">
+            {% if resolvedImageUrl %}
+                {# Pixel size so the card reserves its image's box; nothing when the image is a bare string #}
+                {% set cardMedia = block.media|length > 0 ? block.media|first : null %}
+                <twig:c975LUi:Image:Link src="{{ resolvedImageUrl }}" class="{{ cardMedia ? cardMedia.cssClasses|join(' ') : '' }}" url="{{ url }}" target="{{ target|default('') }}" alt="{{ title }}" width="{{ cardMedia ? cardMedia.intrinsicWidth : '' }}" height="{{ cardMedia ? cardMedia.intrinsicHeight : '' }}"/>
+            {% endif %}
+            <div class="card-data">
+                {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
+                {% if content %}<div class="text-center">{{ content|raw|nl2br }}</div>{% endif %}
+                {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
+            </div>
+        </twig:c975LUi:Card:Card>
+    {% else %}
+        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" content="{{ content }}" class="{{ class|default([])|join(' ') }}"/>
+    {% endif %}
+{% endif %}

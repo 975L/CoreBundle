@@ -1,0 +1,91 @@
+/* Bounces */
+.animation.bounce-horizontal {
+    animation: bounceHorizontal 0.5s infinite ease-in-out;
+}
+
+.animation.bounce-vertical {
+    animation: bounceVertical 0.5s infinite ease-in-out;
+}
+
+/* Rotations horizontal */
+.animation.rotate-x5deg {
+    animation: rotateX5deg 0.5s infinite ease-in-out;
+}
+
+.animation.rotate-x10deg {
+    animation: rotateX10deg 0.5s infinite ease-in-out;
+}
+
+.animation.rotate-x15deg {
+    animation: rotateX15deg 0.5s infinite ease-in-out;
+}
+
+/* Rotations vertical */
+.animation.rotate-y5deg {
+    animation: rotateY5deg 0.5s infinite ease-in-out;
+}
+
+.animation.rotate-y10deg {
+    animation: rotateY10deg 0.5s infinite ease-in-out;
+}
+
+.animation.rotate-y15deg {
+    animation: rotateY15deg 0.5s infinite ease-in-out;
+}
+
+/* Slides */
+.animation.slide-in-left {
+    animation: slideInFromLeft 0.5s ease-out;
+}
+
+.animation.slide-in-right {
+    animation: slideInFromRight 0.5s ease-out;
+}
+
+/* Fades */
+.animation.fade-in {
+    animation: fadeIn 1s ease-in-out both;
+}
+.animation.fade-in-bottom {
+    animation: fadeInBottom 1s ease-in-out both;
+}
+.animation.fade-in-top {
+    animation: fadeInTop 1s ease-in-out both;
+}
+.animation.fade-in-left {
+    animation: fadeInLeft 1s ease-in-out both;
+}
+.animation.fade-in-right {
+    animation: fadeInRight 1s ease-in-out both;
+}
+
+/* Zoom */
+.animation.zoom-in {
+    animation: zoomIn 1s ease-in-out both;
+}
+
+// Applied to "> *": .block-animation is display:contents and has no box of its own
+.block-animation.slide-in-left > * {
+    animation: slideInFromLeft 0.5s ease-out both;
+}
+.block-animation.slide-in-right > * {
+    animation: slideInFromRight 0.5s ease-out both;
+}
+.block-animation.fade-in > * {
+    animation: fadeIn 1s ease-in-out both;
+}
+.block-animation.fade-in-bottom > * {
+    animation: fadeInBottom 1s ease-in-out both;
+}
+.block-animation.fade-in-top > * {
+    animation: fadeInTop 1s ease-in-out both;
+}
+.block-animation.fade-in-left > * {
+    animation: fadeInLeft 1s ease-in-out both;
+}
+.block-animation.fade-in-right > * {
+    animation: fadeInRight 1s ease-in-out both;
+}
+.block-animation.zoom-in > * {
+    animation: zoomIn 1s ease-in-out both;
+}

@@ -1,0 +1,38 @@
+{# Static usage  : render(controller('c975L\\UiBundle\\Controller\\FormController::fragment', {'name': 'contact'})) #}
+{# Dynamic usage : {{ render_block(block) }} — via FormBlock.html.twig #}
+{% trans_default_domain 'ui' %}
+
+{# A <div>: this block never carries a heading, and a headingless <section> is invalid HTML #}
+<div>
+    {% for label, messages in app.flashes(['success', 'danger']) %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">{{ message|trans }}</div>
+        {% endfor %}
+    {% endfor %}
+    {# "hidden" excluded: the visitor never sees an asterisk for an invisible required field #}
+    {% set hasRequired = false %}
+    {% for child in form %}
+        {% if child.vars.required and 'hidden' not in child.vars.block_prefixes %}
+            {% set hasRequired = true %}
+        {% endif %}
+    {% endfor %}
+    {{ form_start(form, {'action': path('ui_form_submit', {'name': uiForm.name}), 'attr': {'data-turbo': 'false'}}) }}
+        {{ form_widget(form) }}
+        <div>
+            <input type="submit" name="submit" title="{{ 'label.send'|trans }}" class="btn btn-primary" value="{{ 'label.send'|trans }}">
+        </div>
+        {# Admin-defined, stored on the Form itself and not on the Block embedding it, so they survive the standalone re-render a failed submission goes through - see Form::getLinks() #}
+        {% if uiForm.links is not empty %}
+            <p class="mt-2">
+                {% for link in uiForm.links %}
+                    <a href="{{ link.url }}">{{ link.label }}</a>{{ not loop.last ? ' · ' }}
+                {% endfor %}
+            </p>
+        {% endif %}
+        {% if hasRequired %}
+            <p class="text-muted">
+                {{ 'text.form_required_note'|trans }}
+            </p>
+        {% endif %}
+    {{ form_end(form) }}
+</div>

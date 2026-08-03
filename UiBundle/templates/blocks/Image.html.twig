@@ -1,0 +1,4 @@
+{# Adapter for the dynamic Block system — resolves the media file into the Image component; display metadata lives on the Media entity itself #}
+{% set media = block.media|first %}
+{# "src", not "imgSrc", so the component makes it absolute: a mail client can't resolve a relative one #}
+<twig:c975LUi:Image:Image src="{{ media ? vich_uploader_asset(media) : '' }}" label="{{ media ? media.label : '' }}" class="{{ media ? media.cssClasses|join(' ') : '' }}" alt="{{ media ? media.alt : '' }}" width="{{ media ? media.width : '' }}" height="{{ media ? media.height : '' }}" above="{{ media ? media.above : false }}"/>

@@ -1,0 +1,29 @@
+// Generates no box, so the block's own element stays the flex/grid item and "> *" carries the animation
+.block-animation {
+    display: contents;
+}
+
+// Same reason, one level up: hosts the animateScroll controller without becoming the flex/grid item
+.blocks {
+    display: contents;
+}
+
+// Hidden until animate-scroll.js swaps this for the animation class
+.block-animation.hidden > * {
+    opacity: 0;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .animation {
+        animation: none;
+    }
+
+    .block-animation > * {
+        animation: none;
+    }
+
+    .block-animation.hidden > * {
+        opacity: 1;
+    }
+}

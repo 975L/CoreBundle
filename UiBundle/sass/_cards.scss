@@ -1,0 +1,101 @@
+/* CARDS */
+.cards {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+// A bare run of "card" blocks has no ".section-wrap" around it, so it restates the page measure here
+.blocks > .cards {
+    box-sizing: border-box;
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
+    margin: 0 auto;
+    padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+}
+
+// 380px, not 400px: three cards plus two gaps must fit ".section-wrap"'s 1312px content measure
+.card {
+    margin: 1em auto;
+    width: clamp(300px, 380px, 90vw);
+    border: 1px solid var(--input-border-color);
+    border-radius: var(--radius-card);
+    background-color: var(--card-background);
+    display: flex;
+    flex-direction: column;
+    // Containing block for the accent rule below, which would otherwise position itself against whatever
+    // happens to be positioned further up the page. No "overflow: hidden" to go with it: the rule rounds
+    // its own top corners instead, so a card deliberately letting something spill out still can
+    position: relative;
+}
+
+// The twelve hues BlockAccentChoiceType offers, drawn as a rule across the card's top edge. Each reads its
+// own token (see sass/_tokens.scss), so a site retunes a hue from its own theme.css without the stored
+// value - a color name, not a meaning - ever changing with it
+%card-accent-rule {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    // Follows the card's own top corners rather than being clipped by an "overflow" on the card itself
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+// Written out rather than looped over the twelve names: an interpolated var(--block-accent-#{$hue}) reads
+// as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
+.card--accent-red::before { @extend %card-accent-rule; background: var(--block-accent-red); }
+.card--accent-orange::before { @extend %card-accent-rule; background: var(--block-accent-orange); }
+.card--accent-yellow::before { @extend %card-accent-rule; background: var(--block-accent-yellow); }
+.card--accent-lime::before { @extend %card-accent-rule; background: var(--block-accent-lime); }
+.card--accent-green::before { @extend %card-accent-rule; background: var(--block-accent-green); }
+.card--accent-teal::before { @extend %card-accent-rule; background: var(--block-accent-teal); }
+.card--accent-cyan::before { @extend %card-accent-rule; background: var(--block-accent-cyan); }
+.card--accent-blue::before { @extend %card-accent-rule; background: var(--block-accent-blue); }
+.card--accent-indigo::before { @extend %card-accent-rule; background: var(--block-accent-indigo); }
+.card--accent-violet::before { @extend %card-accent-rule; background: var(--block-accent-violet); }
+.card--accent-pink::before { @extend %card-accent-rule; background: var(--block-accent-pink); }
+.card--accent-grey::before { @extend %card-accent-rule; background: var(--block-accent-grey); }
+
+// ".cards" already spaces its children with "gap" - a card's own margin would stack on top of it
+.cards > .card {
+    margin: 0;
+}
+
+.card-header,
+h2.card-header {
+    background-color: var(--primary);
+    color: var(--white);
+    border-bottom: 1px solid var(--input-border-color);
+    padding: 0.5em 1em;
+    margin: 0;
+    width: 100%;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+// Title link: the theme's "*" and "a:hover" match it directly and beat inheritance, hence restated here
+.card-header a,
+.card-header a:visited {
+    color: inherit;
+    font-family: inherit;
+    text-decoration: none;
+}
+
+.card-header a:hover,
+.card-header a:visited:hover {
+    color: inherit;
+    text-decoration: underline;
+}
+
+.card-body {
+    padding: 1em;
+    flex: 1;
+}
+
+.card-data {
+    margin-top: 1em;
+}

@@ -1,0 +1,53 @@
+{# Static usage: <twig:c975LUi:Hero:Hero title="..." [primaryLabel=""] [primaryUrl=""] [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [mediaLayout="slideshow"] [hasBackgroundImage=false] [background=""] [level="h1"]/> #}
+{# Dynamic usage (Block system): see templates/blocks/Hero.html.twig #}
+{% set medias = medias|default([]) %}
+{% set hasBackgroundImage = hasBackgroundImage|default(false)|to_bool %}
+{# "h2" when the page template already prints its own <h1> #}
+{% set level = level|default('h1') %}
+{# Background mode uses a single static image, the slideshow only making sense next to the text #}
+{% set bgSrc = hasBackgroundImage ? (medias|length ? vich_uploader_asset(medias|first) : src) : '' %}
+{# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
+{% set background = not bgSrc and background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<section class="hero{{ bgSrc ? ' hero--has-bg' : background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    {% if bgSrc %}
+        {# A real <img>: a CSS background-image needs a style attribute no CSP nonce covers #}
+        <img class="hero__bg" src="{{ bgSrc }}" alt="" aria-hidden="true" fetchpriority="high">
+    {% endif %}
+    <div class="section-wrap">
+        <div class="hero__text">
+            {% if badge %}<span class="hero__badge">{{ badge }}</span>{% endif %}
+            <{{ level }} class="hero__title">{{ title|trix_inline }}</{{ level }}>
+            {% if subtitle %}<div class="hero__sub">{{ subtitle|raw }}</div>{% endif %}
+            {# Both label and url required: either alone prints a broken button, and the row hides when neither is set #}
+            {% set hasPrimary = primaryLabel|default('') and primaryUrl|default('') %}
+            {% set hasSecondary = secondaryLabel|default('') and secondaryUrl|default('') %}
+            {% if hasPrimary or hasSecondary %}
+                <div class="hero__cta">
+                    {% if hasPrimary %}<a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>{% endif %}
+                    {% if hasSecondary %}<a class="section-btn section-btn--ghost" href="{{ secondaryUrl }}">{{ secondaryLabel }}</a>{% endif %}
+                </div>
+            {% endif %}
+            {% if bgSrc and statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
+        </div>
+        {% if not bgSrc %}
+            {% if medias|length > 1 %}
+                {# Matched, not interpolated, same as "background" above; anything else means the crossfade, which is what every hero stored before this field existed asks for #}
+                {% set isGrid = mediaLayout|default('') == 'grid' %}
+                {# Crossfade: pure CSS, no control of its own, disabled under prefers-reduced-motion. Grid: all medias at once, so no timing and no data-count to read #}
+                <div class="hero__media hero__media--{{ isGrid ? 'grid' : 'slideshow' }}"{% if not isGrid %} data-count="{{ medias|length }}"{% endif %}>
+                    {# Intrinsic pixel size, not the free-text width/height which may hold an unusable "50%" #}
+                    {% for m in medias %}
+                        <img src="{{ vich_uploader_asset(m) }}" alt="" aria-hidden="true"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %}{% if loop.first %} fetchpriority="high"{% endif %}>
+                    {% endfor %}
+                    {% if statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
+                </div>
+            {% elseif src %}
+                <div class="hero__media">
+                    {# Eager and high priority: the hero image is the page's LCP element #}
+                    <img src="{{ src }}" alt="{{ alt }}"{% if alt|default('') == '' %} aria-hidden="true"{% endif %}{% if width|default('') %} width="{{ width }}"{% endif %}{% if height|default('') %} height="{{ height }}"{% endif %} fetchpriority="high">
+                    {% if statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>

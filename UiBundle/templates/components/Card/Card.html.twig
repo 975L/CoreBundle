@@ -1,0 +1,16 @@
+{# Static usage: <twig:c975LUi:Card:Card id="id" title="Title" [titleUrl=""] [level="h2"] [icon="{{ ['file.ext', 'css-classes', width, height] }}"] [lang=""]>Your content</twig:c975LUi:Card:Card> #}
+{% set icon = icon | default("") %}
+{% set lang = lang | default("") %}
+{% set titleUrl = titleUrl | default("") %}
+{% set id = id | default("") %}
+{# id/data-animation only written when actually set, same as every other component here - an empty id="" is invalid HTML (and every card after the first a "duplicate ID" on top of it), and animate-scroll.js reads data-animation as the class name to add, so an empty one is nothing to animate anyway #}
+<div class="card box-shadow {{ class|default("") }}"{% if id %} id="{{ id }}"{% endif %}{% if dataAnimation|default("") %} data-animation="{{ dataAnimation }}"{% endif %}{% if lang %} lang="{{ lang }}"{% endif %}>
+    {% if icon != "" %}
+        <{{ level|default('h2') }} class="card-header"><twig:c975LUi:Image:Icon src="{{ icon[0] }}" class="{{ icon[1] }}" width="{{ icon[2] }}" height="{{ icon[3] }}"/> {% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
+    {% else %}
+        <{{ level|default('h2') }} class="card-header">{% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
+    {% endif %}
+    <div class="card-body">
+        {% block content %}{{ content|raw|nl2br }}{% endblock %}
+    </div>
+</div>

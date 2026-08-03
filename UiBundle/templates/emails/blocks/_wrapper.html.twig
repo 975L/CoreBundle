@@ -1,0 +1,36 @@
+{# Fallback shell when no EmailLayoutProviderInterface is registered: table layout and a self-contained <style> supplying the classes a real theme would #}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title></title>
+        <style>
+            h1, h2 { color: #1a1a1a; font-family: Arial, Helvetica, sans-serif; }
+            body, td, .text-left { font-family: Arial, Helvetica, sans-serif; color: #333333; }
+            .text-left { text-align: left; }
+            .text-center { text-align: center; }
+            .btn { color: #ffffff; }
+            .btn-primary { background-color: #2563eb; }
+        </style>
+    </head>
+    <body style="margin:0;padding:0;background-color:#f4f4f5;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f5;border-spacing:0;margin:0;">
+            <tr>
+                <td align="center" style="padding:24px 16px;">
+                    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;border-spacing:0;margin:0;">
+                        <tr>
+                            <td style="padding:8px 0 0;line-height:0;font-size:0;">&nbsp;</td>
+                        </tr>
+                        {% for block in blocksHtml %}
+                            {{ block|raw }}
+                        {% endfor %}
+                        <tr>
+                            <td style="padding:0 0 8px;line-height:0;font-size:0;">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

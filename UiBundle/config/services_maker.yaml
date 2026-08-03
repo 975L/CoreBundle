@@ -1,0 +1,6 @@
+services:
+    c975L\UiBundle\Maker\MakeBlockCommand:
+        tags: ['maker.command']
+
+    c975L\UiBundle\Maker\MakeDonovanQaCommand:
+        tags: ['maker.command']

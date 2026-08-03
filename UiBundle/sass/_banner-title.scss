@@ -1,0 +1,41 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+// Full-bleed breakout past the page container, same technique as _slider.scss's freeflow but CSS-only
+.banner-title {
+    position: relative;
+    left: 50%;
+    right: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    // Keeps the next block off the banner, which the full-bleed breakout would otherwise sit flush against
+    margin-bottom: 3em;
+    min-height: 200px;
+    overflow: hidden;
+    display: flex;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+// Fixed dark overlay so the title stays readable regardless of the uploaded background image
+.banner-title-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 40px 20px;
+    background-color: rgba(0, 0, 0, .4);
+    text-align: center;
+}
+
+.banner-title-text {
+    margin: 0;
+    color: #fff;
+}

@@ -1,0 +1,17 @@
+/* RICH TEXT */
+
+// The theme's "* { color: var(--text) }" colors these directly; <a> is left out on purpose
+b,
+strong,
+i,
+em,
+u,
+s,
+del,
+ins,
+sub,
+sup,
+small,
+span {
+    color: inherit;
+}

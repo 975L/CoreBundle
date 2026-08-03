@@ -1,0 +1,11 @@
+{# Re-checked, not trusted from the caller: is_granted() is an in-memory check, no extra query #}
+{% set canEditBlock = editUrl is defined and editUrl is not empty and is_granted(config('site-role-editor')) %}
+{% if block.animation or canEditBlock %}
+    {# "hidden" is added by animate-scroll.js on connect(), so it never applies if the script fails to load #}
+    <div class="{{ block.animation ? 'block-animation scroll' : 'block-editable' }}"
+        {% if block.animation %} data-animation="{{ block.animation }}"{% endif %}
+        {% if canEditBlock %} data-block-id="{{ block.id }}" data-block-edit-url="{{ editUrl }}"{% endif %}
+    >{{ render_block(block) }}</div>
+{% else %}
+    {{ render_block(block) }}
+{% endif %}

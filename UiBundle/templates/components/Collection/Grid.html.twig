@@ -1,0 +1,33 @@
+{# Static usage: <twig:c975LUi:Collection:Grid items="{{ [...] }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [variant=""] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/Collection.html.twig #}
+{# Each "items" entry is already-rendered HTML; the "portfolio" variant borrows PortfolioGrid's grid and head so it matches a real one on the same page #}
+{% set isPortfolio = variant is defined and variant == 'portfolio' %}
+{# A headingless <section> is invalid HTML; only the portfolio variant can be headed by its eyebrow #}
+{% set hasHeading = title|default('') or (isPortfolio and eyebrow|default('')) %}
+{% set tag = hasHeading ? 'section' : 'div' %}
+<{{ tag }} class="collection-grid{{ isPortfolio ? ' collection-grid--portfolio' : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        {% if isPortfolio and (eyebrow or title or linkLabel) %}
+            <div class="portfolio-grid__head">
+                <div>
+                    {% if title|default('') %}
+                        {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+                        <h2 class="section-title">{{ title }}</h2>
+                    {% elseif eyebrow|default('') %}
+                        <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+                    {% endif %}
+                </div>
+                {% if linkLabel and linkUrl %}<a class="section-btn section-btn--ghost" href="{{ linkUrl }}">{{ linkLabel }}</a>{% endif %}
+            </div>
+        {% elseif title %}
+            <div class="collection-grid__head">
+                <h2 class="section-title">{{ title }}</h2>
+            </div>
+        {% endif %}
+        <div class="{{ isPortfolio ? 'portfolio-grid__grid' : 'cards' }}">
+            {% for html in items %}
+                {{ html|raw }}
+            {% endfor %}
+        </div>
+    </div>
+</{{ tag }}>

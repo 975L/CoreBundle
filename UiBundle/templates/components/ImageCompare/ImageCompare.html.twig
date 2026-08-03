@@ -1,0 +1,23 @@
+{# Usage: <twig:c975LUi:ImageCompare:ImageCompare media="{{ [beforeMedia, afterMedia] }}" id="id" [startPosition="50"] [beforeLabel=""] [afterLabel=""] [class=""] /> #}
+{# "media" must be an ordered collection/array holding exactly two images: the first is "before", the second is "after" #}
+{% set class = class|default([])|join(' ') %}
+{% set startPosition = startPosition|default(50) %}
+{% set mediaList = media|default([]) %}
+{% set beforeMedia = mediaList[0]|default(null) %}
+{% set afterMedia = mediaList[1]|default(null) %}
+{% if beforeMedia and afterMedia %}
+    {# No inline style attribute, never covered by a CSP nonce: image-compare.js sets the start position on connect() #}
+    <div id="{{ id }}" class="image-compare {{ class }}" data-controller="imageCompare">
+        <div class="image-compare-frame" data-imageCompare-target="frame">
+            <img src="{{ vich_uploader_asset(afterMedia) }}" alt="{{ afterMedia.alt }}" class="image-compare-img image-compare-after" width="{{ afterMedia.width }}" height="{{ afterMedia.height }}" draggable="false">
+            <img src="{{ vich_uploader_asset(beforeMedia) }}" alt="{{ beforeMedia.alt }}" class="image-compare-img image-compare-before" width="{{ beforeMedia.width }}" height="{{ beforeMedia.height }}" draggable="false">
+            {% if beforeLabel %}<span class="image-compare-tag image-compare-tag-before">{{ beforeLabel }}</span>{% endif %}
+            {% if afterLabel %}<span class="image-compare-tag image-compare-tag-after">{{ afterLabel }}</span>{% endif %}
+            <div class="image-compare-handle" aria-hidden="true"><span class="image-compare-handle-arrows"></span></div>
+        </div>
+        <input type="range" min="0" max="100" value="{{ startPosition }}" class="image-compare-range" data-imageCompare-target="range" data-action="input->imageCompare#update" aria-label="{{ "label.compare_position"|trans({}, "ui") }}" aria-valuetext="{{ startPosition }}%">
+    </div>
+{% elseif beforeMedia or afterMedia %}
+    {% set media = afterMedia ?? beforeMedia %}
+    <img src="{{ vich_uploader_asset(media) }}" alt="{{ media.alt }}" class="img-responsive img-rounded box-shadow {{ class }}" width="{{ media.width }}" height="{{ media.height }}">
+{% endif %}

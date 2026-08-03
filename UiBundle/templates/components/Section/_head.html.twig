@@ -1,0 +1,13 @@
+{# Shared head for the Section:* components; with no title the eyebrow becomes the <h2>, so the section is never headingless #}
+{% set eyebrow = eyebrow|default('') %}
+{% set title = title|default('') %}
+{% if eyebrow or title %}
+    <div class="section-head">
+        {% if title %}
+            {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+            <h2 class="section-title">{{ title }}</h2>
+        {% else %}
+            <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+        {% endif %}
+    </div>
+{% endif %}

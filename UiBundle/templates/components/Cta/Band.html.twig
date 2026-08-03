@@ -1,0 +1,11 @@
+{# Static usage: <twig:c975LUi:Cta:Band title="..." ctaLabel="..." ctaUrl="..." [text=""] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/CtaBand.html.twig #}
+<section class="cta-band"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        <div class="cta-band__inner">
+            <h2 class="cta-band__title">{{ title }}</h2>
+            {% if text %}<div class="cta-band__text">{{ text|raw }}</div>{% endif %}
+            <a class="section-btn" href="{{ ctaUrl }}">{{ ctaLabel }}</a>
+        </div>
+    </div>
+</section>

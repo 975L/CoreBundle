@@ -1,0 +1,67 @@
+[
+    {
+        "slug": "creer-formulaire",
+        "title": {
+            "fr": "Créer un formulaire",
+            "en": "Create a form",
+            "es": "Crear un formulario"
+        },
+        "body": {
+            "fr": "Menu **Gestion → Formulaires**, bouton d'ajout. Renseigner le **Nom** (identifiant technique unique) puis choisir une **Action** (nativement \"send_email\"). Dans **Champs**, cliquer sur **Ajouter un nouvel élément** pour chaque champ : Libellé, Texte indicatif, Obligatoire, et **Type** (Texte, Texte long, Email, Case à cocher, Mot de passe, URL, Téléphone, Nombre, Date...) ; un menu **Ajouter depuis un modèle…** permet aussi de partir d'un champ réutilisable existant (écran **Modèles de champs**). Réordonner les champs par glisser-déposer, puis enregistrer.\nUne fois créé, le formulaire est inséré sur une page via un bloc de type **Formulaire**, qui propose de choisir le formulaire dans une liste déroulante. Chaque formulaire reçoit automatiquement une case RGPD et une protection anti-bot, sans configuration supplémentaire.",
+            "en": "Menu **Management → Forms**, add button. Fill in the **Name** (unique technical identifier), then pick an **Action** (natively \"send_email\"). In **Fields**, click **Add new item** for each field: Label, Placeholder, Required, and **Type** (Text, Long text, Email, Checkbox, Password, URL, Phone, Number, Date...); an **Add from a template…** dropdown also lets you start from an existing reusable field (**Field templates** screen). Reorder fields by drag-and-drop, then save.\nOnce created, the form is inserted on a page through a **Form** block, which lets you pick the form from a dropdown list. Every form automatically gets a GDPR checkbox and anti-bot protection, with no extra configuration needed.",
+            "es": "Menú **Gestión → Formularios**, botón de añadir. Rellenar el **Nombre** (identificador técnico único) y elegir una **Acción** (nativamente \"send_email\"). En **Campos**, hacer clic en **Añadir nuevo elemento** para cada campo: Etiqueta, Texto indicativo, Obligatorio y **Tipo** (Texto, Texto largo, Email, Casilla, Contraseña, URL, Teléfono, Número, Fecha...); un menú **Añadir desde una plantilla…** también permite partir de un campo reutilizable existente (pantalla **Plantillas de campos**). Reordenar los campos arrastrándolos, y guardar.\nUna vez creado, el formulario se inserta en una página mediante un bloque de tipo **Formulario**, que permite elegir el formulario en una lista desplegable. Cada formulario recibe automáticamente una casilla RGPD y una protección anti-bot, sin configuración adicional."
+        }
+    },
+    {
+        "slug": "creer-modele-email",
+        "title": {
+            "fr": "Créer un modèle d'email",
+            "en": "Create an email template",
+            "es": "Crear una plantilla de email"
+        },
+        "body": {
+            "fr": "Menu **Gestion → Modèles d'email**, bouton d'ajout. Renseigner le **Nom** (clé technique, jamais visible par le destinataire). Dans **Blocs**, cliquer sur **Ajouter un nouvel élément** pour chaque bloc du corps de l'email : Titre, Texte, Bouton, Image, Séparateur, Espacement, ou **Tableau des champs soumis** (affiche les réponses d'un formulaire). N'importe quel champ texte peut contenir une variable `{{ nom_variable }}`, remplacée à l'envoi. Réordonner les blocs par glisser-déposer, enregistrer, puis utiliser l'action **Aperçu** (icône enveloppe) pour vérifier le rendu HTML réel sans envoyer d'email.\nCe modèle est ensuite utilisé soit comme email de notification d'un formulaire (champ `emailTemplate` de son action), soit depuis n'importe quel autre email du site via son nom.",
+            "en": "Menu **Management → Email templates**, add button. Fill in the **Name** (technical key, never shown to the recipient). In **Blocks**, click **Add new item** for each block of the email body: Heading, Text, Button, Image, Separator, Spacer, or **Submitted fields table** (shows a form's answers). Any text field can contain a `{{ variable_name }}` placeholder, replaced when the email is sent. Reorder blocks by drag-and-drop, save, then use the **Preview** action (envelope icon) to check the real HTML rendering without sending an email.\nThis template is then used either as a form's notification email (its action's `emailTemplate` field), or from any other email on the site by its name.",
+            "es": "Menú **Gestión → Plantillas de email**, botón de añadir. Rellenar el **Nombre** (clave técnica, nunca visible para el destinatario). En **Bloques**, hacer clic en **Añadir nuevo elemento** para cada bloque del cuerpo del email: Título, Texto, Botón, Imagen, Separador, Espaciado, o **Tabla de campos enviados** (muestra las respuestas de un formulario). Cualquier campo de texto puede contener una variable `{{ nombre_variable }}`, sustituida al enviar. Reordenar los bloques arrastrándolos, guardar, y usar la acción **Vista previa** (icono de sobre) para comprobar el renderizado HTML real sin enviar ningún email.\nEsta plantilla se usa después como email de notificación de un formulario (campo `emailTemplate` de su acción), o desde cualquier otro email del sitio por su nombre."
+        }
+    },
+    {
+        "slug": "gerer-medias",
+        "title": {
+            "fr": "Ajouter et gérer un média",
+            "en": "Add and manage a media file",
+            "es": "Añadir y gestionar un archivo multimedia"
+        },
+        "body": {
+            "fr": "Menu **Gestion → Bibliothèque de médias**. L'ajout direct (bouton Ajouter) est réservé aux super-admins : en pratique, un média se rattache normalement via le formulaire d'un Bloc (image, article...), pas depuis cet écran. Champs disponibles : **Fichier** (upload, 100 Mo max), **Texte Alternatif**, **Légende**, **Largeur**/**Hauteur**, **Légende au-dessus**, **Classes CSS**, **Crédits**, **Droits réservés**. Le redimensionnement et la conversion en webp sont automatiques après l'upload, il n'y a pas d'outil de recadrage manuel. La fiche d'un média affiche où il est utilisé (« Pas encore utilisé » sinon).\nPour changer le favicon, le logo ou l'image Open Graph par défaut du site, ça passe par l'écran **Images du site**, pas par la Bibliothèque de médias.",
+            "en": "Menu **Management → Media library**. Direct upload (Add button) is reserved to super-admins: in practice, a media file is normally attached through a Block's own form (image, article...), not from this screen. Available fields: **File** (upload, 100 MB max), **Alt text**, **Caption**, **Width**/**Height**, **Caption above**, **CSS classes**, **Credits**, **Rights reserved**. Resizing and webp conversion happen automatically after upload, there's no manual cropping tool. A media's detail screen shows where it's used (\"Not used yet\" otherwise).\nTo change the site's favicon, logo, or default Open Graph image, that goes through the **Site graphics** screen, not the Media library.",
+            "es": "Menú **Gestión → Biblioteca de medios**. La subida directa (botón Añadir) está reservada a super-administradores: en la práctica, un archivo multimedia se adjunta normalmente a través del propio formulario de un Bloque (imagen, artículo...), no desde esta pantalla. Campos disponibles: **Archivo** (subida, 100 MB máx.), **Texto alternativo**, **Leyenda**, **Ancho**/**Alto**, **Leyenda arriba**, **Clases CSS**, **Créditos**, **Derechos reservados**. El redimensionado y la conversión a webp son automáticos tras la subida, no hay herramienta de recorte manual. La ficha de un medio muestra dónde se usa (« Aún no usado » en caso contrario).\nPara cambiar el favicon, el logo o la imagen Open Graph por defecto del sitio, hay que pasar por la pantalla **Imágenes del sitio**, no por la Biblioteca de medios."
+        }
+    },
+    {
+        "slug": "creer-modele-champ",
+        "title": {
+            "fr": "Créer un modèle de champ réutilisable",
+            "en": "Create a reusable field template",
+            "es": "Crear una plantilla de campo reutilizable"
+        },
+        "body": {
+            "fr": "Accessible depuis le bouton **Modèles de champs** dans la barre d'outils des écrans **Formulaires** ou **Modèles d'email** (pas dans le menu latéral). Champs : **Nom**, **Libellé**, **Texte indicatif**, **Type**, **Obligatoire par défaut**. Un modèle marqué « Restreint » (semé automatiquement à la création du site) ne peut pas être supprimé ni renommé, mais ses autres champs restent modifiables.\nDans l'écran Formulaires, le menu **Ajouter depuis un modèle…** copie ponctuellement les valeurs d'un modèle dans un nouveau champ - modifier le modèle ensuite n'affecte jamais les formulaires qui l'ont déjà utilisé.",
+            "en": "Accessible from the **Field templates** toolbar button on the **Forms** or **Email templates** screens (not from the sidebar menu). Fields: **Name**, **Label**, **Placeholder**, **Type**, **Required by default**. A template marked « Restricted » (seeded automatically when the site was created) can't be deleted or renamed, but its other fields stay editable.\nOn the Forms screen, the **Add from a template…** dropdown copies a template's values into a new field once - editing the template afterwards never affects forms that already used it.",
+            "es": "Accesible desde el botón **Plantillas de campos** en la barra de herramientas de las pantallas **Formularios** o **Plantillas de email** (no desde el menú lateral). Campos: **Nombre**, **Etiqueta**, **Texto indicativo**, **Tipo**, **Obligatorio por defecto**. Una plantilla marcada como « Restringida » (sembrada automáticamente al crear el sitio) no se puede eliminar ni renombrar, pero sus demás campos siguen siendo editables.\nEn la pantalla Formularios, el menú **Añadir desde una plantilla…** copia puntualmente los valores de una plantilla en un nuevo campo - modificar la plantilla después nunca afecta a los formularios que ya la usaron."
+        }
+    },
+    {
+        "slug": "graphiques-du-site",
+        "title": {
+            "fr": "Changer le favicon, le logo ou l'image Open Graph",
+            "en": "Change the favicon, logo, or Open Graph image",
+            "es": "Cambiar el favicon, el logo o la imagen Open Graph"
+        },
+        "body": {
+            "fr": "Menu **Gestion → Graphiques du site**. Créer une fiche, choisir le **Rôle** (Favicon, Icône Apple Touch, Image Open Graph, Logo, ou Error image), puis téléverser le **Fichier** directement dans ce formulaire (pas via la Bibliothèque de médias). Chaque rôle sauf « Error image » est un singleton : une fois pris, il n'apparaît plus dans la liste des rôles disponibles à la création - pour le changer, modifier la fiche existante plutôt que d'en créer une nouvelle.",
+            "en": "Menu **Management → Site graphics**. Create a record, pick the **Role** (Favicon, Apple Touch Icon, Open Graph Image, Logo, or Error image), then upload the **File** directly in this form (not through the Media library). Every role except « Error image » is a singleton: once taken, it no longer appears in the list of roles available at creation - to change it, edit the existing record instead of creating a new one.",
+            "es": "Menú **Gestión → Gráficos del sitio**. Crear una ficha, elegir el **Rol** (Favicon, Icono Apple Touch, Imagen Open Graph, Logo, o Error image), y subir el **Archivo** directamente en este formulario (no a través de la Biblioteca de medios). Cada rol excepto « Error image » es único: una vez asignado, ya no aparece en la lista de roles disponibles al crear - para cambiarlo, editar la ficha existente en lugar de crear una nueva."
+        }
+    }
+]

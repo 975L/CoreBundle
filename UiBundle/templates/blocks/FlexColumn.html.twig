@@ -1,0 +1,2 @@
+{# No chrome of its own: a bare vertical stack of "slots", the ".flex-columns__col" wrapper doing the styling #}
+{% for slot in block.slots %}{{ render_block(slot) }}{% endfor %}

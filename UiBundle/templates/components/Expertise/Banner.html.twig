@@ -1,0 +1,19 @@
+{# Static usage: <twig:c975LUi:Expertise:Banner title="..." [eyebrow=""] [text=""] [tags="{{ ['Symfony', 'PHP'] }}"] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/ExpertiseBanner.html.twig #}
+<section class="expertise-banner"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        <div class="expertise-banner__inner">
+            <div>
+                {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+                <h2 class="expertise-banner__title">{{ title }}</h2>
+                {# A <div>, not a <p>: raw rich-text is already block-level and the browser would split the <p> #}
+                {% if text %}<div class="expertise-banner__text">{{ text|raw }}</div>{% endif %}
+            </div>
+            {% if tags|length > 0 %}
+                <div class="section-tags">
+                    {% for t in tags %}<span class="section-tag">{{ t }}</span>{% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>

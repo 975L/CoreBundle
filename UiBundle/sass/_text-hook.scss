@@ -1,0 +1,36 @@
+/* TEXT HOOK */
+
+// The lead-in paragraph, every value overridable and none read without a fallback
+// --section-text first, so a hook in a colored flat follows that flat's inverted text
+.text-hook {
+    font-size: var(--text-hook-size, clamp(17px, 1.7vw, 20px));
+    line-height: var(--text-hook-line-height, 1.65);
+    max-width: var(--text-hook-max-width, 62ch);
+    color: var(--text-hook-color, var(--section-text, var(--text)));
+    margin: 0 0 var(--text-hook-margin-bottom, 24px);
+}
+
+// The block on its own has nothing around it to be read against, where an article's hook already sits
+// under a title, inside a body of text. --section-accent first, so the bar follows a colored flat
+.text-hook--standalone {
+    border-inline-start: var(--text-hook-bar-width, 3px) solid var(--section-accent, var(--primary));
+    padding-inline-start: var(--text-hook-bar-gap, 20px);
+    margin-block: var(--text-hook-standalone-margin, 32px);
+}
+
+// An article's hook is already placed by the title above it, so it is marked out by the accent color in place of a bar
+// Its own measure is dropped too: a hook the editor centered would otherwise read off-center against the article it introduces
+.text-hook--article {
+    max-width: var(--text-hook-article-max-width, none);
+    color: var(--text-hook-article-color, var(--section-accent, var(--primary)));
+    margin-block: var(--text-hook-article-margin, 24px);
+}
+
+// Trix's own block tags would otherwise add their margins to the hook's
+.text-hook > :first-child {
+    margin-top: 0;
+}
+
+.text-hook > :last-child {
+    margin-bottom: 0;
+}

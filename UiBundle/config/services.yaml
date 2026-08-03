@@ -1,0 +1,525 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    c975L\UiBundle\:
+        resource: '../src/'
+        # Maker/ excluded: it extends symfony/maker-bundle's AbstractMaker, a dev-only dependency -
+        # registered separately in services_maker.yaml, imported only when that class is available
+        # (see c975LUiBundle::loadExtension()), so a plain resource-glob scan never autoloads it in prod
+        # Model/ excluded: plain value objects (e.g. CollectionItem) built by application code, not services -
+        # autowiring one fails on its first scalar constructor argument
+        # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same
+        # stylesheet analysis over their own sheets, never instantiated by the application itself
+        exclude: '../src/{DependencyInjection,Entity,Maker,Model,Testing}'
+
+    c975L\UiBundle\Service\StylesheetProvider:
+        tags:
+            - { name: 'ui.stylesheet', priority: 100 }
+            - { name: 'ui.management_stylesheet', priority: 100 }
+
+    # Between the bundles (100) and an app's own theme files (auto-tagged at -100 by StylesheetRegistryPass): the admin's theme values have to override every bundle's compiled defaults, and to be overridden in turn by any token the site took back in its assets/styles/themes/*.css
+    c975L\UiBundle\Service\ThemeVariablesStylesheetProvider:
+        tags:
+            - { name: 'ui.stylesheet', priority: 0 }
+
+    c975L\UiBundle\Service\ScriptProvider:
+        tags:
+            - { name: 'ui.script', priority: 100 }
+            - { name: 'ui.admin_script', priority: 100 }
+
+    c975L\UiBundle\Controller\FormController:
+        arguments:
+            $formLimiterFactory: '@?limiter.ui_form'
+
+    # Ui Blocks
+    ui.block.article:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: article
+              label: "label.block_article"
+              description: "label.block_article_description"
+              form: c975L\UiBundle\Form\Block\ArticleType
+              template: '@c975LUi/blocks/Article.html.twig'
+              category: 'label.category_elements'
+              media_types: 'image/*'
+              media_multi_upload: true
+              priority: 90
+              pickable: true
+              cacheable: true
+
+    ui.block.alert:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: alert
+              label: "label.block_alert"
+              description: "label.block_alert_description"
+              form: c975L\UiBundle\Form\Block\AlertType
+              template: '@c975LUi/blocks/Alert.html.twig'
+              category: 'label.category_elements'
+              priority: 70
+              pickable: true
+              cacheable: true
+
+    ui.block.audio:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: audio
+              label: "label.block_audio"
+              description: "label.block_audio_description"
+              form: c975L\UiBundle\Form\Block\AudioType
+              template: '@c975LUi/blocks/Audio.html.twig'
+              category: 'label.category_media'
+              # Explicit list rather than "audio/*", same reasoning as the "video" kind below: these are the formats every browser's <audio> can play, and the block's own form no longer asks for the format, it's read back from the uploaded file's mimeType
+              media_types: 'audio/mpeg,audio/ogg,audio/wav'
+              media_help: 'label.audio_media_help'
+              priority: 70
+              pickable: true
+              cacheable: true
+
+    ui.block.banner_title:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: banner_title
+              label: "label.block_banner_title"
+              description: "label.block_banner_title_description"
+              form: c975L\UiBundle\Form\Block\BannerTitleType
+              template: '@c975LUi/blocks/BannerTitle.html.twig'
+              category: 'label.category_media'
+              media_types: 'image/*'
+              media_required: true
+              priority: 90
+              pickable: true
+              cacheable: true
+
+    ui.block.button:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: button
+              label: "label.block_button"
+              description: "label.block_button_description"
+              form: c975L\UiBundle\Form\Block\ButtonType
+              template: '@c975LUi/blocks/Button.html.twig'
+              category: 'label.category_elements'
+              priority: 80
+              pickable: true
+              cacheable: true
+
+    ui.block.card:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: card
+              label: "label.block_card"
+              description: "label.block_card_description"
+              form: c975L\UiBundle\Form\Block\CardType
+              template: '@c975LUi/blocks/Card.html.twig'
+              category: 'label.category_elements'
+              media_types: 'image/*'
+              priority: 100
+              pickable: true
+              cacheable: true
+
+    # Never offered in the block picker (pickable: false) - only ever built transiently by
+    # CollectionExtension::renderItems(), one per "collection" block item, see CollectionItemType
+    ui.block.collection_item:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: collection_item
+              label: "label.block_card"
+              form: c975L\UiBundle\Form\Block\CollectionItemType
+              template: '@c975LUi/blocks/CollectionItem.html.twig'
+              category: 'label.category_elements'
+              pickable: false
+              cacheable: false
+
+    ui.block.contact_details:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: contact_details
+              label: "label.block_contact_details"
+              description: "label.block_contact_details_description"
+              form: c975L\UiBundle\Form\Block\ContactDetailsType
+              template: '@c975LUi/blocks/ContactDetails.html.twig'
+              category: 'label.category_elements'
+              # Optional logo, shown next to the name and published as the snippet's "image"
+              media_types: 'image/*'
+              priority: 55
+              pickable: true
+              cacheable: true
+
+    ui.block.document_download:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: document_download
+              label: "label.block_document_download"
+              description: "label.block_document_download_description"
+              form: c975L\UiBundle\Form\Block\DocumentDownloadType
+              template: '@c975LUi/blocks/DocumentDownload.html.twig'
+              category: 'label.category_elements'
+              media_types: 'application/pdf'
+              media_required: true
+              media_help: 'label.document_download_media_help'
+              priority: 50
+              pickable: true
+              cacheable: true
+
+    ui.block.image:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: image
+              label: "label.block_image"
+              description: "label.block_image_description"
+              form: c975L\UiBundle\Form\Block\ImageType
+              template: '@c975LUi/blocks/Image.html.twig'
+              category: 'label.category_media'
+              media_types: 'image/*'
+              priority: 100
+              pickable: true
+              cacheable: true
+
+    ui.block.image_compare:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: image_compare
+              label: "label.block_image_compare"
+              description: "label.block_image_compare_description"
+              form: c975L\UiBundle\Form\Block\ImageCompareType
+              template: '@c975LUi/blocks/ImageCompare.html.twig'
+              category: 'label.category_media'
+              media_types: 'image/*'
+              media_required: true
+              priority: 85
+              pickable: true
+              cacheable: true
+
+    ui.block.progress_bar:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: progress_bar
+              label: "label.block_progress_bar"
+              description: "label.block_progress_bar_description"
+              form: c975L\UiBundle\Form\Block\ProgressBarType
+              template: '@c975LUi/blocks/ProgressBar.html.twig'
+              category: 'label.category_elements'
+              priority: 60
+              pickable: true
+              cacheable: true
+
+    ui.block.slider:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: slider
+              label: "label.block_slider"
+              description: "label.block_slider_description"
+              form: c975L\UiBundle\Form\Block\SliderType
+              template: '@c975LUi/blocks/Slider.html.twig'
+              category: 'label.category_media'
+              media_types: 'image/*,video/*'
+              media_multi_upload: true
+              priority: 90
+              pickable: true
+              cacheable: true
+
+    ui.block.text_hook:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: text_hook
+              label: "label.block_text_hook"
+              description: "label.block_text_hook_description"
+              form: c975L\UiBundle\Form\Block\TextHookType
+              template: '@c975LUi/blocks/TextHook.html.twig'
+              category: 'label.category_text'
+              priority: 95
+              pickable: true
+              cacheable: true
+
+    ui.block.text_readmore:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: text_readmore
+              label: "label.block_text_readmore"
+              description: "label.block_text_readmore_description"
+              form: c975L\UiBundle\Form\Block\ReadmoreType
+              template: '@c975LUi/blocks/TextReadmore.html.twig'
+              category: 'label.category_text'
+              priority: 90
+              pickable: true
+              cacheable: true
+
+    ui.block.text_section:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: text_section
+              label: "label.block_text_section"
+              description: "label.block_text_section_description"
+              form: c975L\UiBundle\Form\Block\TextSectionType
+              template: '@c975LUi/blocks/TextSection.html.twig'
+              category: 'label.category_text'
+              media_types: 'image/*'
+              priority: 100
+              pickable: true
+              cacheable: true
+
+    ui.block.video:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: video
+              label: "label.block_video"
+              description: "label.block_video_description"
+              form: c975L\UiBundle\Form\Block\VideoType
+              template: '@c975LUi/blocks/Video.html.twig'
+              category: 'label.category_media'
+              # Explicit list rather than "video/*": these three are the formats every browser's <video> can actually play, and it's this list that fills the upload's "accept" - the block's own form no longer asks for the format, it's read back from the uploaded file's mimeType. "image/*" is the optional cover image (poster), see blocks/Video.html.twig
+              media_types: 'video/mp4,video/webm,video/ogg,image/*'
+              media_help: 'label.video_media_help'
+              priority: 80
+              pickable: true
+              cacheable: true
+
+    ui.block.video_iframe:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: video_iframe
+              label: "label.block_video_iframe"
+              description: "label.block_video_iframe_description"
+              form: c975L\UiBundle\Form\Block\VideoIframeType
+              template: '@c975LUi/blocks/VideoIframe.html.twig'
+              category: 'label.category_media'
+              priority: 60
+              pickable: true
+              cacheable: true
+
+    # Page section blocks (landing-page style sections, see README "Sections de page")
+    ui.block.hero:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: hero
+              label: "label.block_hero"
+              description: "label.block_hero_description"
+              form: c975L\UiBundle\Form\Block\HeroType
+              template: '@c975LUi/blocks/Hero.html.twig'
+              category: 'label.category_sections'
+              media_types: 'image/*'
+              media_multi_upload: true
+              priority: 100
+              pickable: true
+              cacheable: true
+
+    ui.block.feature_bar:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: feature_bar
+              label: "label.block_feature_bar"
+              description: "label.block_feature_bar_description"
+              form: c975L\UiBundle\Form\Block\FeatureBarType
+              template: '@c975LUi/blocks/FeatureBar.html.twig'
+              category: 'label.category_sections'
+              priority: 90
+              pickable: true
+              cacheable: true
+
+    ui.block.section_features:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: section_features
+              label: "label.block_section_features"
+              description: "label.block_section_features_description"
+              form: c975L\UiBundle\Form\Block\SectionFeaturesType
+              template: '@c975LUi/blocks/SectionFeatures.html.twig'
+              category: 'label.category_sections'
+              priority: 80
+              pickable: true
+              cacheable: true
+
+    # Slots are real nested Block rows (see Block::$slots), each picked/edited through the normal
+    # kind form - not cacheable itself: a slot's own cache invalidation doesn't propagate to this
+    # block's cache key, same reasoning as "collection" above. Each slot still caches independently.
+    ui.block.flex_columns:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: flex_columns
+              label: "label.block_flex_columns"
+              description: "label.block_flex_columns_description"
+              form: c975L\UiBundle\Form\Block\FlexColumnsType
+              template: '@c975LUi/blocks/FlexColumns.html.twig'
+              category: 'label.category_sections'
+              priority: 75
+              pickable: true
+              cacheable: false
+              container: true
+              slot_context: 'flex_columns_slot'
+
+    # A single flex_columns column, itself grouping several other blocks (its own "slots") - only ever
+    # meant to be picked as a flex_columns row's own slot (contexts restricts it to
+    # BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT, which is exclusive, so it is also the ONLY kind offered there).
+    # Every real picker passes a context (PageCrudController 'page', MenuCrudController 'menu',
+    # BlockFormController the container's own slot context), so this kind only ever shows up in a
+    # flex_columns row's slots - a context-less caller would still list it, harmless if it ever happens,
+    # it just renders its slots with no wrapper of its own.
+    # Its priority only ever ranks it in such a context-less picker, never in a row's slots, where the
+    # exclusive context already leaves it alone in the list - so it stays where every other kind of the
+    # "sections" category puts it, rather than opening one it has no business opening.
+    ui.block.flex_column:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: flex_column
+              label: "label.block_flex_column"
+              description: "label.block_flex_column_description"
+              form: c975L\UiBundle\Form\Block\FlexColumnType
+              template: '@c975LUi/blocks/FlexColumn.html.twig'
+              category: 'label.category_sections'
+              priority: 74
+              pickable: true
+              cacheable: false
+              container: true
+              contexts: 'flex_columns_slot'
+              slot_context: 'flex_slot_nested'
+
+    # A stack of full "card" blocks (or any other kind) with a section-level eyebrow/title/anchor - same
+    # container mechanism as flex_columns above, but its slots render inside ".cards" (see
+    # components/Section/Cards.html.twig), the same fixed-width flex row used when "card" blocks are placed
+    # bare and consecutively in the page flow (see Blocks.html.twig) - giving that exact look plus an anchor
+    # and section head, which bare consecutive "card" blocks can't have on their own.
+    ui.block.section_cards:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: section_cards
+              label: "label.block_section_cards"
+              description: "label.block_section_cards_description"
+              form: c975L\UiBundle\Form\Block\SectionCardsType
+              template: '@c975LUi/blocks/SectionCards.html.twig'
+              category: 'label.category_sections'
+              priority: 79
+              pickable: true
+              cacheable: false
+              container: true
+
+    ui.block.expertise_banner:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: expertise_banner
+              label: "label.block_expertise_banner"
+              description: "label.block_expertise_banner_description"
+              form: c975L\UiBundle\Form\Block\ExpertiseBannerType
+              template: '@c975LUi/blocks/ExpertiseBanner.html.twig'
+              category: 'label.category_sections'
+              priority: 70
+              pickable: true
+              cacheable: true
+
+    ui.block.process_steps:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: process_steps
+              label: "label.block_process_steps"
+              description: "label.block_process_steps_description"
+              form: c975L\UiBundle\Form\Block\ProcessStepsType
+              template: '@c975LUi/blocks/ProcessSteps.html.twig'
+              category: 'label.category_sections'
+              priority: 60
+              pickable: true
+              cacheable: true
+
+    ui.block.portfolio_grid:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: portfolio_grid
+              label: "label.block_portfolio_grid"
+              description: "label.block_portfolio_grid_description"
+              form: c975L\UiBundle\Form\Block\PortfolioGridType
+              template: '@c975LUi/blocks/PortfolioGrid.html.twig'
+              category: 'label.category_sections'
+              media_types: 'image/*'
+              media_multi_upload: true
+              priority: 55
+              pickable: true
+              cacheable: true
+
+    # Not cacheable: its items come from another bundle's own entity (see CollectionSourceProviderInterface),
+    # which BlockCacheInvalidationListener has no way to invalidate on - see BlockCacheTagProviderInterface
+    # (Phase 0) for the pattern used to make a referenced-data block cacheable, not applied here for now
+    ui.block.collection:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: collection
+              label: "label.block_collection"
+              description: "label.block_collection_description"
+              form: c975L\UiBundle\Form\Block\CollectionType
+              template: '@c975LUi/blocks/Collection.html.twig'
+              category: 'label.category_sections'
+              priority: 54
+              pickable: true
+              cacheable: false
+
+    ui.block.cta_band:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: cta_band
+              label: "label.block_cta_band"
+              description: "label.block_cta_band_description"
+              form: c975L\UiBundle\Form\Block\CtaBandType
+              template: '@c975LUi/blocks/CtaBand.html.twig'
+              category: 'label.category_sections'
+              priority: 50
+              pickable: true
+              cacheable: true
+
+    ui.block.legal_model:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: legal_model
+              label: "label.block_legal_model"
+              description: "label.block_legal_model_description"
+              form: c975L\UiBundle\Form\Block\LegalModelType
+              template: '@c975LUi/blocks/LegalModel.html.twig'
+              category: 'label.category_legal'
+              pickable: true
+              # Cached, but its render resolves live %config% markers a Block event can't cover - see LegalModelCacheTagProvider / LegalPlaceholderCacheListener
+              cacheable: true
+
+    ui.block.form:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: form
+              label: "label.block_form"
+              description: "label.block_form_description"
+              form: c975L\UiBundle\Form\Block\FormPickerType
+              template: '@c975LUi/components/Form/FormBlock.html.twig'
+              icon: '📝'
+              category: 'label.category_forms'
+              pickable: true
+              # Embeds a Symfony form with its own CSRF token - never cache, every visitor needs a fresh one
+              cacheable: false

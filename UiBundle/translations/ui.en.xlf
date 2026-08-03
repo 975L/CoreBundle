@@ -1,0 +1,2203 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="ui.en.xlf">
+        <body>
+            <trans-unit id="DYrEVzQ">
+                <source>action.export_selection</source>
+                <target>Export selection</target>
+            </trans-unit>
+            <trans-unit id="7TaPAuT">
+                <source>action.font_bulk_import</source>
+                <target>Bulk import</target>
+            </trans-unit>
+            <trans-unit id="QAAW6KH">
+                <source>description.guided_project_ui_email_template</source>
+                <target>Rework the content of an e-mail the site sends, the same way a page is reworked</target>
+            </trans-unit>
+            <trans-unit id="mdUTrNv">
+                <source>description.guided_project_ui_form</source>
+                <target>Build a form field by field, then drop it into a page</target>
+            </trans-unit>
+            <trans-unit id="uJW0NPA">
+                <source>description.guided_project_ui_media</source>
+                <target>Put an image in the media library once and for all, and reuse it everywhere</target>
+            </trans-unit>
+            <trans-unit id="zxZzGhU">
+                <source>description.guided_step_ui_email_template_blocks</source>
+                <target>The same blocks as in a page; the styling itself comes from the site's own charter.</target>
+            </trans-unit>
+            <trans-unit id="y1jNFHF">
+                <source>description.guided_step_ui_email_template_check</source>
+                <target>Trigger the e-mail from the site (a forgotten-password request, say) to read it in a real inbox.</target>
+            </trans-unit>
+            <trans-unit id="Qj7imei">
+                <source>description.guided_step_ui_email_template_open</source>
+                <target>The e-mails the site sends are made of blocks, exactly like a page.</target>
+            </trans-unit>
+            <trans-unit id="WdMcqav">
+                <source>description.guided_step_ui_form_action</source>
+                <target>The action decides what happens on submit: sending an e-mail, signing somebody up, resetting a password.</target>
+            </trans-unit>
+            <trans-unit id="KgGbEW5">
+                <source>description.guided_step_ui_form_fields</source>
+                <target>One field per piece of information asked for, and no more: every extra field costs answers.</target>
+            </trans-unit>
+            <trans-unit id="VCImx1K">
+                <source>description.guided_step_ui_form_name</source>
+                <target>This name is the one you will find again in the form block.</target>
+            </trans-unit>
+            <trans-unit id="UsF2mKW">
+                <source>description.guided_step_ui_form_open</source>
+                <target>A form is built here, independently of the page that will show it.</target>
+            </trans-unit>
+            <trans-unit id="d48MvaE">
+                <source>description.guided_step_ui_form_place</source>
+                <target>Add a form block to a page, and pick the one you have just created.</target>
+            </trans-unit>
+            <trans-unit id="RDmEru5">
+                <source>description.guided_step_ui_media_alt</source>
+                <target>The alternative text is what screen readers read, and what the health check reports when it is missing.</target>
+            </trans-unit>
+            <trans-unit id="c8dJg4g">
+                <source>description.guided_step_ui_media_file</source>
+                <target>The image is resized and renamed on save: no need to prepare it beforehand.</target>
+            </trans-unit>
+            <trans-unit id=".imAjIX">
+                <source>description.guided_step_ui_media_open</source>
+                <target>Every image of the site in one place: an image uploaded once serves in as many blocks as you like.</target>
+            </trans-unit>
+            <trans-unit id="rZ020hF">
+                <source>description.guided_step_ui_media_reuse</source>
+                <target>In a page's block, pick it from the media library rather than uploading it again.</target>
+            </trans-unit>
+            <trans-unit id="emqi7.W">
+                <source>description.legal_customize</source>
+                <target>The texts below are the bundle's own: edit them in place. As long as you leave a section alone it keeps being updated along with the bundle; the moment you change it, it becomes yours and you take responsibility for it. Drag a card by its header to reorder. The content of these pages is your editorial and legal responsibility either way.</target>
+            </trans-unit>
+            <trans-unit id="YgzofbB">
+                <source>description.legal_drift</source>
+                <target>The text the bundle ships for this section has changed since you rewrote it. Nothing was modified on your side: here is the new wording, yours to judge.</target>
+            </trans-unit>
+            <trans-unit id="EBXU68o">
+                <source>description.legal_extra_sections</source>
+                <target>Your own sections, appended at the end of the level you pick. The bundle knows nothing about them and will never change them.</target>
+            </trans-unit>
+            <trans-unit id="THY3L8B">
+                <source>description.legal_placeholders</source>
+                <target>These markers are replaced by the site configuration when the page is displayed, in your own text too:</target>
+            </trans-unit>
+            <trans-unit id="_QnNrWi">
+                <source>flash.block_cache_cleared</source>
+                <target>Blocks cache cleared</target>
+            </trans-unit>
+            <trans-unit id="nUlFj1t">
+                <source>flash.block_move_failed</source>
+                <target>Failed to move the block</target>
+            </trans-unit>
+            <trans-unit id="7AVJlDV">
+                <source>flash.block_moved</source>
+                <target>Block moved</target>
+            </trans-unit>
+            <trans-unit id="tymp2.R">
+                <source>flash.font_bulk_import_invalid_token</source>
+                <target>Invalid or expired form, please try again.</target>
+            </trans-unit>
+            <trans-unit id="ZpEnHov">
+                <source>flash.font_bulk_import_no_files</source>
+                <target>No font file selected.</target>
+            </trans-unit>
+            <trans-unit id="qpZ4cFd">
+                <source>flash.font_bulk_import_skipped</source>
+                <target>Skipped (invalid format or too large): %files%</target>
+            </trans-unit>
+            <trans-unit id="KdHpBKb">
+                <source>flash.font_bulk_import_success</source>
+                <target>%count% font(s) imported.</target>
+            </trans-unit>
+            <trans-unit id="oGPPygw">
+                <source>flash.legal_model_customized</source>
+                <target>Customization saved.</target>
+            </trans-unit>
+            <trans-unit id="QQjuExD">
+                <source>label.accent</source>
+                <target>Accent color</target>
+            </trans-unit>
+            <trans-unit id="3WdU8Yt">
+                <source>label.accent_blue</source>
+                <target>Blue</target>
+            </trans-unit>
+            <trans-unit id="Hjbe3j6">
+                <source>label.accent_cyan</source>
+                <target>Cyan</target>
+            </trans-unit>
+            <trans-unit id="1Vht7QA">
+                <source>label.accent_green</source>
+                <target>Green</target>
+            </trans-unit>
+            <trans-unit id="Ydp7.Bv">
+                <source>label.accent_grey</source>
+                <target>Grey</target>
+            </trans-unit>
+            <trans-unit id="gPqGH8J">
+                <source>label.accent_help</source>
+                <target>A colored rule across the top of the block. Each hue is a token this site can retune in its own theme.css.</target>
+            </trans-unit>
+            <trans-unit id="a0o36dG">
+                <source>label.accent_indigo</source>
+                <target>Indigo</target>
+            </trans-unit>
+            <trans-unit id="zw5XiGm">
+                <source>label.accent_lime</source>
+                <target>Lime</target>
+            </trans-unit>
+            <trans-unit id="UI62VsU">
+                <source>label.accent_none</source>
+                <target>None (no rule)</target>
+            </trans-unit>
+            <trans-unit id="n69tBBq">
+                <source>label.accent_orange</source>
+                <target>Orange</target>
+            </trans-unit>
+            <trans-unit id="E1wsvqN">
+                <source>label.accent_pink</source>
+                <target>Pink</target>
+            </trans-unit>
+            <trans-unit id="aar1.Jx">
+                <source>label.accent_red</source>
+                <target>Red</target>
+            </trans-unit>
+            <trans-unit id="qognJD7">
+                <source>label.accent_teal</source>
+                <target>Teal</target>
+            </trans-unit>
+            <trans-unit id="SO4GymR">
+                <source>label.accent_violet</source>
+                <target>Violet</target>
+            </trans-unit>
+            <trans-unit id="sSvmdWT">
+                <source>label.accent_yellow</source>
+                <target>Yellow</target>
+            </trans-unit>
+            <trans-unit id="5ZMPsA1">
+                <source>label.action</source>
+                <target>Action</target>
+            </trans-unit>
+            <trans-unit id="vUB71DX">
+                <source>label.action_config</source>
+                <target>Action configuration (JSON)</target>
+            </trans-unit>
+            <trans-unit id="b1lgVCs">
+                <source>label.action_config_help</source>
+                <target>Optional, depends on the action - e.g. "send_email": to, from, subject, template, senderEmailField, receiveCopy</target>
+            </trans-unit>
+            <trans-unit id="3x6lvCI">
+                <source>label.action_help</source>
+                <target>What happens when this form is submitted</target>
+            </trans-unit>
+            <trans-unit id="CEVgeJ7">
+                <source>label.address</source>
+                <target>Address</target>
+            </trans-unit>
+            <trans-unit id="Jg4DS40">
+                <source>label.address_complement</source>
+                <target>Address complement</target>
+            </trans-unit>
+            <trans-unit id="iro8szH">
+                <source>label.after_label</source>
+                <target>After label</target>
+            </trans-unit>
+            <trans-unit id="M0SU0On">
+                <source>label.ai_assistant_ask</source>
+                <target>Ask</target>
+            </trans-unit>
+            <trans-unit id="U3i0V7W">
+                <source>label.ai_assistant_dashboard_section_title</source>
+                <target>Dashboard assistant</target>
+            </trans-unit>
+            <trans-unit id="yJ_8hXS">
+                <source>label.ai_assistant_menu_suffix</source>
+                <target>AI Agent</target>
+            </trans-unit>
+            <trans-unit id="Ohcg3dV">
+                <source>label.ai_assistant_question</source>
+                <target>Ask a question about the block system…</target>
+            </trans-unit>
+            <trans-unit id="dUHWBt0">
+                <source>label.ai_assistant_setup_credentials_help</source>
+                <target>Endpoint and token come from your AI backend operator - ask them for these values.</target>
+            </trans-unit>
+            <trans-unit id="M_RyUU0">
+                <source>label.ai_assistant_setup_intro</source>
+                <target>Ask questions about the block system. Not yet enabled:</target>
+            </trans-unit>
+            <trans-unit id="Ueq8Dbo">
+                <source>label.ai_assistant_setup_step_enabled</source>
+                <target>Enable "Dashboard AI assistant"</target>
+            </trans-unit>
+            <trans-unit id="wA18Cg5">
+                <source>label.ai_assistant_setup_step_endpoint</source>
+                <target>Set its endpoint</target>
+            </trans-unit>
+            <trans-unit id="FU9E2qy">
+                <source>label.ai_assistant_setup_step_token</source>
+                <target>Set its token</target>
+            </trans-unit>
+            <trans-unit id="ZQt.2mZ">
+                <source>label.ai_assistant_subtitle</source>
+                <target>Ask about the block system</target>
+            </trans-unit>
+            <trans-unit id="nSvy0he">
+                <source>label.ai_rephrase_button</source>
+                <target>Rephrase with %name%</target>
+            </trans-unit>
+            <trans-unit id="enuoD98">
+                <source>label.ai_rephrase_error</source>
+                <target>Rephrasing failed - check the configured AI key</target>
+            </trans-unit>
+            <trans-unit id="BibrD4_">
+                <source>label.ai_rephrase_freeform_intro</source>
+                <target>Rephrase any text with your own AI key.</target>
+            </trans-unit>
+            <trans-unit id="lbTeDuW">
+                <source>label.ai_rephrase_get_key_anthropic</source>
+                <target>"API Keys" menu → Create Key (usage-based billing)</target>
+            </trans-unit>
+            <trans-unit id="FmJ_zJA">
+                <source>label.ai_rephrase_get_key_euria</source>
+                <target>"AI Tools" section → create a product → generate a token (1M free credits the 1st month). Recommended model: mistralai/Mistral-Small-4-119B-2603</target>
+            </trans-unit>
+            <trans-unit id="PtpvV2Y">
+                <source>label.ai_rephrase_get_key_intro</source>
+                <target>Where to get an API key, depending on the provider you pick above:</target>
+            </trans-unit>
+            <trans-unit id="R470bGE">
+                <source>label.ai_rephrase_get_key_openai</source>
+                <target>"API keys" menu → Create new secret key (usage-based billing)</target>
+            </trans-unit>
+            <trans-unit id="HcPTRy4">
+                <source>label.ai_rephrase_length_paragraph_1</source>
+                <target>1 paragraph</target>
+            </trans-unit>
+            <trans-unit id="aH168ks">
+                <source>label.ai_rephrase_length_paragraph_2</source>
+                <target>2 paragraphs</target>
+            </trans-unit>
+            <trans-unit id="GPEIzUN">
+                <source>label.ai_rephrase_length_paragraph_3</source>
+                <target>3 paragraphs</target>
+            </trans-unit>
+            <trans-unit id="2F_RIiS">
+                <source>label.ai_rephrase_length_paragraph_4</source>
+                <target>4 paragraphs</target>
+            </trans-unit>
+            <trans-unit id="IBSUMh0">
+                <source>label.ai_rephrase_length_same</source>
+                <target>Same length</target>
+            </trans-unit>
+            <trans-unit id="BY92Pns">
+                <source>label.ai_rephrase_length_social_summary</source>
+                <target>Social network summary</target>
+            </trans-unit>
+            <trans-unit id="QiHYMJE">
+                <source>label.ai_rephrase_section_title</source>
+                <target>Content rephrasing</target>
+            </trans-unit>
+            <trans-unit id="mmRyhFV">
+                <source>label.ai_rephrase_setup_intro</source>
+                <target>Rephrase text fields with your own AI key. Not yet enabled:</target>
+            </trans-unit>
+            <trans-unit id="41oFAKN">
+                <source>label.ai_rephrase_setup_model_optional</source>
+                <target>Optional -</target>
+            </trans-unit>
+            <trans-unit id="lnnGqK7">
+                <source>label.ai_rephrase_setup_step_base_uri</source>
+                <target>Set the base URI (required for euria)</target>
+            </trans-unit>
+            <trans-unit id="_eIfjEL">
+                <source>label.ai_rephrase_setup_step_key</source>
+                <target>Set an API key</target>
+            </trans-unit>
+            <trans-unit id="OdvK_mS">
+                <source>label.ai_rephrase_setup_step_model</source>
+                <target>override the model (a sensible default is used otherwise)</target>
+            </trans-unit>
+            <trans-unit id="xBoqLs1">
+                <source>label.ai_rephrase_setup_step_model_required</source>
+                <target>set the model (mandatory for Euria - recommended: mistralai/Mistral-Small-4-119B-2603)</target>
+            </trans-unit>
+            <trans-unit id="g1CSOaz">
+                <source>label.ai_rephrase_setup_step_provider</source>
+                <target>Set a provider (anthropic, openai or euria)</target>
+            </trans-unit>
+            <trans-unit id="K9cs9xu">
+                <source>label.ai_rephrase_style_concise</source>
+                <target>Concise</target>
+            </trans-unit>
+            <trans-unit id="JU3oJpv">
+                <source>label.ai_rephrase_style_enthusiastic</source>
+                <target>Enthusiastic</target>
+            </trans-unit>
+            <trans-unit id="ghwFkCg">
+                <source>label.ai_rephrase_style_expanded</source>
+                <target>Expanded</target>
+            </trans-unit>
+            <trans-unit id="rayT1j6">
+                <source>label.ai_rephrase_style_friendly</source>
+                <target>Friendly</target>
+            </trans-unit>
+            <trans-unit id="B8OD9BS">
+                <source>label.ai_rephrase_style_neutral</source>
+                <target>Neutral</target>
+            </trans-unit>
+            <trans-unit id="fZ27AgE">
+                <source>label.ai_rephrase_style_persuasive</source>
+                <target>Persuasive</target>
+            </trans-unit>
+            <trans-unit id="hyknADH">
+                <source>label.ai_rephrase_style_professional</source>
+                <target>Professional</target>
+            </trans-unit>
+            <trans-unit id="y6grKIM">
+                <source>label.ai_rephrase_style_simple</source>
+                <target>Simple</target>
+            </trans-unit>
+            <trans-unit id="RxS7h2_">
+                <source>label.ai_rephrase_suggestion_label</source>
+                <target>Rephrased suggestion:</target>
+            </trans-unit>
+            <trans-unit id="SfCl424">
+                <source>label.ai_rephrase_usage_this_month</source>
+                <target>AI rephrase this month: %input% input tokens, %output% output.</target>
+            </trans-unit>
+            <trans-unit id="DnqwII7">
+                <source>label.alert_kind</source>
+                <target>Alert Kind</target>
+            </trans-unit>
+            <trans-unit id="vbyuEEV">
+                <source>label.all_rights_reserved</source>
+                <target>© All rights reserved</target>
+            </trans-unit>
+            <trans-unit id="ZeoyzAJ">
+                <source>label.alt_text</source>
+                <target>Alt Text</target>
+            </trans-unit>
+            <trans-unit id="PmT6SQr">
+                <source>label.anchor</source>
+                <target>Anchor</target>
+            </trans-unit>
+            <trans-unit id="ufovuez">
+                <source>label.anchor_help</source>
+                <target>Short id to link a menu entry to this section (e.g. "services"). Empty = derived from the title.</target>
+            </trans-unit>
+            <trans-unit id="Qw41.0s">
+                <source>label.animation</source>
+                <target>Animation</target>
+            </trans-unit>
+            <trans-unit id="JGaBfn3">
+                <source>label.animation_fade_in</source>
+                <target>Fade in</target>
+            </trans-unit>
+            <trans-unit id="HYnd45z">
+                <source>label.animation_fade_in_bottom</source>
+                <target>Fade in from bottom</target>
+            </trans-unit>
+            <trans-unit id="lxRnK0D">
+                <source>label.animation_fade_in_left</source>
+                <target>Fade in from left</target>
+            </trans-unit>
+            <trans-unit id="lwfHCPG">
+                <source>label.animation_fade_in_right</source>
+                <target>Fade in from right</target>
+            </trans-unit>
+            <trans-unit id="TCWadfp">
+                <source>label.animation_fade_in_top</source>
+                <target>Fade in from top</target>
+            </trans-unit>
+            <trans-unit id="rKMQJOU">
+                <source>label.animation_help</source>
+                <target>Entrance effect played once the block scrolls into view</target>
+            </trans-unit>
+            <trans-unit id="9iWaqu4">
+                <source>label.animation_none</source>
+                <target>None</target>
+            </trans-unit>
+            <trans-unit id="_fWwjgq">
+                <source>label.animation_slide_in_left</source>
+                <target>Slide in from left</target>
+            </trans-unit>
+            <trans-unit id="Mzl7Qsx">
+                <source>label.animation_slide_in_right</source>
+                <target>Slide in from right</target>
+            </trans-unit>
+            <trans-unit id="dS_p9re">
+                <source>label.animation_zoom_in</source>
+                <target>Zoom in</target>
+            </trans-unit>
+            <trans-unit id="gBMbs0d">
+                <source>label.apple_touch_icon</source>
+                <target>Apple touch icon</target>
+            </trans-unit>
+            <trans-unit id="vmcoEjK">
+                <source>label.attached_to_block</source>
+                <target>Attached to block #%id% (%kind%)</target>
+            </trans-unit>
+            <trans-unit id="y8V5g.l">
+                <source>label.audio_media_help</source>
+                <target>Upload the audio file (MP3, OGG or WAV)</target>
+            </trans-unit>
+            <trans-unit id="SXeZ5Tg">
+                <source>label.autoplay</source>
+                <target>Autoplay</target>
+            </trans-unit>
+            <trans-unit id="1GXuSep">
+                <source>label.back_to_list</source>
+                <target>Back to list</target>
+            </trans-unit>
+            <trans-unit id="taGjIwv">
+                <source>label.badge</source>
+                <target>Badge</target>
+            </trans-unit>
+            <trans-unit id="3RQoM3j">
+                <source>label.before_label</source>
+                <target>Before label</target>
+            </trans-unit>
+            <trans-unit id="h3s2JeO">
+                <source>label.block_alert</source>
+                <target>Alert</target>
+            </trans-unit>
+            <trans-unit id="kgPP_WT">
+                <source>label.block_alert_description</source>
+                <target>Colored boxed message (info, success, warning, error)</target>
+            </trans-unit>
+            <trans-unit id="PhL7j8v">
+                <source>label.block_article</source>
+                <target>Article</target>
+            </trans-unit>
+            <trans-unit id="y5di6Da">
+                <source>label.block_article_description</source>
+                <target>Rich text with an image, for classic editorial content</target>
+            </trans-unit>
+            <trans-unit id="ZV5skX4">
+                <source>label.block_audio</source>
+                <target>Audio</target>
+            </trans-unit>
+            <trans-unit id="DPtpV2F">
+                <source>label.block_audio_description</source>
+                <target>Embedded audio player from a file</target>
+            </trans-unit>
+            <trans-unit id="vZ4r_TG">
+                <source>label.block_banner_title</source>
+                <target>Title Banner</target>
+            </trans-unit>
+            <trans-unit id="mrR4xZH">
+                <source>label.block_banner_title_description</source>
+                <target>Full-width title over a background image</target>
+            </trans-unit>
+            <trans-unit id="lWfyux5">
+                <source>label.block_button</source>
+                <target>Button</target>
+            </trans-unit>
+            <trans-unit id="Wmp8c5v">
+                <source>label.block_button_description</source>
+                <target>Link button with customizable icon, target and style</target>
+            </trans-unit>
+            <trans-unit id="hx8R41l">
+                <source>label.block_card</source>
+                <target>Card</target>
+            </trans-unit>
+            <trans-unit id=".3RQG.T">
+                <source>label.block_card_description</source>
+                <target>Card with title and content, optional image and button</target>
+            </trans-unit>
+            <trans-unit id="As0wFKi">
+                <source>label.block_clear_cache</source>
+                <target>Clear blocks cache</target>
+            </trans-unit>
+            <trans-unit id="oNRe7ra">
+                <source>label.block_collection</source>
+                <target>Collection</target>
+            </trans-unit>
+            <trans-unit id="3Jvr6rD">
+                <source>label.block_collection_description</source>
+                <target>Items from an external collection (books, products, projects...)</target>
+            </trans-unit>
+            <trans-unit id="5bLnE9a">
+                <source>label.block_contact_details</source>
+                <target>Contact details</target>
+            </trans-unit>
+            <trans-unit id="Mpx_7uy">
+                <source>label.block_contact_details_description</source>
+                <target>Full contact details, published as SEO structured data too</target>
+            </trans-unit>
+            <trans-unit id="bsmLvZG">
+                <source>label.block_cta_band</source>
+                <target>Call-to-action band</target>
+            </trans-unit>
+            <trans-unit id="Cxlk5Fm">
+                <source>label.block_cta_band_description</source>
+                <target>Centered panel with title, text and button</target>
+            </trans-unit>
+            <trans-unit id="TB1..KE">
+                <source>label.block_document_download</source>
+                <target>Document download</target>
+            </trans-unit>
+            <trans-unit id="usj0ynl">
+                <source>label.block_document_download_description</source>
+                <target>Downloadable PDF card with automatic thumbnail</target>
+            </trans-unit>
+            <trans-unit id="bVISlaX">
+                <source>label.block_expertise_banner</source>
+                <target>Expertise banner</target>
+            </trans-unit>
+            <trans-unit id="5fesXvj">
+                <source>label.block_expertise_banner_description</source>
+                <target>Dark panel with text and a list of tags</target>
+            </trans-unit>
+            <trans-unit id="wwgapeb">
+                <source>label.block_feature_bar</source>
+                <target>Feature bar</target>
+            </trans-unit>
+            <trans-unit id="MoHlt5.">
+                <source>label.block_feature_bar_description</source>
+                <target>Row of short arguments (title + caption)</target>
+            </trans-unit>
+            <trans-unit id="HukIExg">
+                <source>label.block_flex_column</source>
+                <target>Column</target>
+            </trans-unit>
+            <trans-unit id="AgAapZS">
+                <source>label.block_flex_column_description</source>
+                <target>Groups several blocks in one column of a "Flexible columns" section</target>
+            </trans-unit>
+            <trans-unit id="wTHlzdj">
+                <source>label.block_flex_columns</source>
+                <target>Flexible columns</target>
+            </trans-unit>
+            <trans-unit id="ywC8FXr">
+                <source>label.block_flex_columns_description</source>
+                <target>Section title followed by flexible columns, each one an existing block of your choice</target>
+            </trans-unit>
+            <trans-unit id="VW1LdXQ">
+                <source>label.block_form</source>
+                <target>Form</target>
+            </trans-unit>
+            <trans-unit id="gt4MsPl">
+                <source>label.block_form_description</source>
+                <target>Embeds a custom form, picked by name</target>
+            </trans-unit>
+            <trans-unit id="vS0y_SI">
+                <source>label.block_hero</source>
+                <target>Hero</target>
+            </trans-unit>
+            <trans-unit id="Q1pxRji">
+                <source>label.block_hero_description</source>
+                <target>Header banner with title, subtitle, call-to-action buttons and image</target>
+            </trans-unit>
+            <trans-unit id="G2WuVyp">
+                <source>label.block_image</source>
+                <target>Image</target>
+            </trans-unit>
+            <trans-unit id="vldrPHe">
+                <source>label.block_image_compare</source>
+                <target>Before/after comparator</target>
+            </trans-unit>
+            <trans-unit id="VvjSa6l">
+                <source>label.block_image_compare_description</source>
+                <target>Draggable slider to compare two images, before/after</target>
+            </trans-unit>
+            <trans-unit id="oOl_Afv">
+                <source>label.block_image_description</source>
+                <target>Standalone image with caption and credits</target>
+            </trans-unit>
+            <trans-unit id="RWsirqJ">
+                <source>label.block_kind</source>
+                <target>Block Kind</target>
+            </trans-unit>
+            <trans-unit id="CZn_467">
+                <source>label.block_kind_legacy_slot_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ This block sits directly as a column, which is no longer offered: add a Column to the row, drag this block into it, and you will then be able to set its width.&lt;/span&gt;</target>
+            </trans-unit>
+            <trans-unit id="C4gS09K">
+                <source>label.block_legal_model</source>
+                <target>Legal Model</target>
+            </trans-unit>
+            <trans-unit id="48e0zxX">
+                <source>label.block_legal_model_description</source>
+                <target>Inserts an existing legal text template (T&amp;Cs, legal notice...)</target>
+            </trans-unit>
+            <trans-unit id="QVfWY7f">
+                <source>label.block_media_required</source>
+                <target>An image is required for this block type.</target>
+            </trans-unit>
+            <trans-unit id="zClb.Hs">
+                <source>label.block_portfolio_grid</source>
+                <target>Portfolio grid</target>
+            </trans-unit>
+            <trans-unit id="U0.BNoy">
+                <source>label.block_portfolio_grid_description</source>
+                <target>Grid of illustrated projects with outbound links</target>
+            </trans-unit>
+            <trans-unit id="7utMlyj">
+                <source>label.block_process_steps</source>
+                <target>Process steps</target>
+            </trans-unit>
+            <trans-unit id="IDyPib2">
+                <source>label.block_process_steps_description</source>
+                <target>Section title followed by numbered steps</target>
+            </trans-unit>
+            <trans-unit id="hOGW1n.">
+                <source>label.block_progress_bar</source>
+                <target>Progress bar</target>
+            </trans-unit>
+            <trans-unit id="9dhuRA6">
+                <source>label.block_progress_bar_description</source>
+                <target>Progress bar showing a percentage</target>
+            </trans-unit>
+            <trans-unit id="lfFkpqd">
+                <source>label.block_section_cards</source>
+                <target>Card grid</target>
+            </trans-unit>
+            <trans-unit id="JGjBAw6">
+                <source>label.block_section_cards_description</source>
+                <target>Section title followed by a stack of full Card blocks (image, link, button...)</target>
+            </trans-unit>
+            <trans-unit id="nicqRAF">
+                <source>label.block_section_features</source>
+                <target>Feature grid</target>
+            </trans-unit>
+            <trans-unit id="QV38vzS">
+                <source>label.block_section_features_description</source>
+                <target>Section title followed by a grid of features (icon, title, text)</target>
+            </trans-unit>
+            <trans-unit id="CaDaMse">
+                <source>label.block_showcase</source>
+                <target>Block showcase</target>
+            </trans-unit>
+            <trans-unit id="8e_hG_b">
+                <source>label.block_showcase_help</source>
+                <target>A gallery of every block type available, with a live preview of each - useful when picking which one to add to a page</target>
+            </trans-unit>
+            <trans-unit id="qY3htPq">
+                <source>label.block_slider</source>
+                <target>Image/video slider</target>
+            </trans-unit>
+            <trans-unit id="tg4Ac7t">
+                <source>label.block_slider_description</source>
+                <target>Image and video slideshow with per-slide captions and credits</target>
+            </trans-unit>
+            <trans-unit id="bQUaJnq">
+                <source>label.block_text_hook</source>
+                <target>Hook phrase</target>
+            </trans-unit>
+            <trans-unit id="HtLTMcA">
+                <source>label.block_text_hook_description</source>
+                <target>Lead-in paragraph opening an article or a page, set apart from the text it introduces</target>
+            </trans-unit>
+            <trans-unit id="7Ix0upV">
+                <source>label.block_text_readmore</source>
+                <target>Text with Read more</target>
+            </trans-unit>
+            <trans-unit id="QJul.49">
+                <source>label.block_text_readmore_description</source>
+                <target>Long text with a Read more / Read less link</target>
+            </trans-unit>
+            <trans-unit id="kbV7qQg">
+                <source>label.block_text_section</source>
+                <target>Text section</target>
+            </trans-unit>
+            <trans-unit id="ysms.Go">
+                <source>label.block_text_section_description</source>
+                <target>Simple rich text section</target>
+            </trans-unit>
+            <trans-unit id="75SOdh8">
+                <source>label.block_video</source>
+                <target>Video</target>
+            </trans-unit>
+            <trans-unit id="iXzS_mG">
+                <source>label.block_video_description</source>
+                <target>Embedded video player from a file</target>
+            </trans-unit>
+            <trans-unit id="UbocQXH">
+                <source>label.block_video_iframe</source>
+                <target>External video (iframe)</target>
+            </trans-unit>
+            <trans-unit id="kn9rxUI">
+                <source>label.block_video_iframe_description</source>
+                <target>External video embedded via iframe (YouTube, Vimeo...)</target>
+            </trans-unit>
+            <trans-unit id="OncQEBy">
+                <source>label.blocks</source>
+                <target>Blocks</target>
+            </trans-unit>
+            <trans-unit id="Veb3Xov">
+                <source>label.button_label</source>
+                <target>Button label</target>
+            </trans-unit>
+            <trans-unit id="005PUha">
+                <source>label.button_label_help</source>
+                <target>If empty, shows the URL</target>
+            </trans-unit>
+            <trans-unit id="hf84S_z">
+                <source>label.caption</source>
+                <target>Caption</target>
+            </trans-unit>
+            <trans-unit id="ok3xrBt">
+                <source>label.caption_above</source>
+                <target>Caption Above</target>
+            </trans-unit>
+            <trans-unit id="zIIun3q">
+                <source>label.caption_help</source>
+                <target>Leave empty if not used</target>
+            </trans-unit>
+            <trans-unit id="gTzWFQi">
+                <source>label.cards</source>
+                <target>Cards</target>
+            </trans-unit>
+            <trans-unit id="OIBxzL2">
+                <source>label.category_elements</source>
+                <target>Elements</target>
+            </trans-unit>
+            <trans-unit id="g_xnymx">
+                <source>label.category_forms</source>
+                <target>Forms</target>
+            </trans-unit>
+            <trans-unit id="pEtdnUp">
+                <source>label.category_general</source>
+                <target>General</target>
+            </trans-unit>
+            <trans-unit id="_13H57u">
+                <source>label.category_legal</source>
+                <target>Legal</target>
+            </trans-unit>
+            <trans-unit id="d1._mOj">
+                <source>label.category_media</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="dtctwtg">
+                <source>label.category_sections</source>
+                <target>Page sections</target>
+            </trans-unit>
+            <trans-unit id="NPiHsbs">
+                <source>label.category_seo</source>
+                <target>SEO</target>
+            </trans-unit>
+            <trans-unit id="rNkvkGH">
+                <source>label.category_text</source>
+                <target>Text</target>
+            </trans-unit>
+            <trans-unit id="FmMAhdO">
+                <source>label.choose_block_kind</source>
+                <target>Choose Block Kind</target>
+            </trans-unit>
+            <trans-unit id="_vIEuOe">
+                <source>label.choose_form</source>
+                <target>Choose a form</target>
+            </trans-unit>
+            <trans-unit id="MXpeMi7">
+                <source>label.city</source>
+                <target>City</target>
+            </trans-unit>
+            <trans-unit id="m0L.u3G">
+                <source>label.closes</source>
+                <target>Closing</target>
+            </trans-unit>
+            <trans-unit id="Z2OPJRi">
+                <source>label.collection_limit_help</source>
+                <target>Leave empty to show everything</target>
+            </trans-unit>
+            <trans-unit id="6A6G2AK">
+                <source>label.column_width</source>
+                <target>Column width</target>
+            </trans-unit>
+            <trans-unit id="9jH0xoL">
+                <source>label.column_width_1</source>
+                <target>1 / 12</target>
+            </trans-unit>
+            <trans-unit id="QBl9hmg">
+                <source>label.column_width_10</source>
+                <target>10 / 12 (five sixths)</target>
+            </trans-unit>
+            <trans-unit id="YDSSeO_">
+                <source>label.column_width_11</source>
+                <target>11 / 12</target>
+            </trans-unit>
+            <trans-unit id="1sXrmIU">
+                <source>label.column_width_12</source>
+                <target>12 / 12 (full width)</target>
+            </trans-unit>
+            <trans-unit id="4ov3LBJ">
+                <source>label.column_width_2</source>
+                <target>2 / 12 (one sixth)</target>
+            </trans-unit>
+            <trans-unit id="XRvthLN">
+                <source>label.column_width_3</source>
+                <target>3 / 12 (one quarter)</target>
+            </trans-unit>
+            <trans-unit id="tXi8tEC">
+                <source>label.column_width_4</source>
+                <target>4 / 12 (one third)</target>
+            </trans-unit>
+            <trans-unit id="4lAS3Ps">
+                <source>label.column_width_5</source>
+                <target>5 / 12</target>
+            </trans-unit>
+            <trans-unit id="odyqJHL">
+                <source>label.column_width_6</source>
+                <target>6 / 12 (half)</target>
+            </trans-unit>
+            <trans-unit id="YYx9WGu">
+                <source>label.column_width_7</source>
+                <target>7 / 12</target>
+            </trans-unit>
+            <trans-unit id="_GNeBb8">
+                <source>label.column_width_8</source>
+                <target>8 / 12 (two thirds)</target>
+            </trans-unit>
+            <trans-unit id="0DLNTY1">
+                <source>label.column_width_9</source>
+                <target>9 / 12 (three quarters)</target>
+            </trans-unit>
+            <trans-unit id="Dm_9gMR">
+                <source>label.column_width_auto</source>
+                <target>Automatic (even columns)</target>
+            </trans-unit>
+            <trans-unit id="vk_1BWG">
+                <source>label.column_width_help</source>
+                <target>How many twelfths of the row this column takes - the columns of a row must add up to 12. Applies from wide screens up: below that, every column takes the full width.</target>
+            </trans-unit>
+            <trans-unit id="jfLIJSU">
+                <source>label.compare_position</source>
+                <target>Comparison slider position</target>
+            </trans-unit>
+            <trans-unit id="f2Yr2j4">
+                <source>label.contact_details_name_help</source>
+                <target>Business name; without it no structured data is published</target>
+            </trans-unit>
+            <trans-unit id="f7w7ZE0">
+                <source>label.content</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="rpDgbSi">
+                <source>label.cookies_accept</source>
+                <target>Accept</target>
+            </trans-unit>
+            <trans-unit id="qrNBASP">
+                <source>label.cookies_dialog</source>
+                <target>Cookie consent</target>
+            </trans-unit>
+            <trans-unit id="HCj0D9c">
+                <source>label.cookies_policy</source>
+                <target>Cookies Policy</target>
+            </trans-unit>
+            <trans-unit id="QqHGDx.">
+                <source>label.cookies_reject</source>
+                <target>Reject</target>
+            </trans-unit>
+            <trans-unit id="LBVSVcj">
+                <source>label.copyright</source>
+                <target>Copyright</target>
+            </trans-unit>
+            <trans-unit id="dVpp9GV">
+                <source>label.country</source>
+                <target>Country</target>
+            </trans-unit>
+            <trans-unit id="rhXgMnd">
+                <source>label.country_code</source>
+                <target>Country Code (e.g.: FR)</target>
+            </trans-unit>
+            <trans-unit id="iripoC5">
+                <source>label.create_site_graphic</source>
+                <target>Create a graphic:</target>
+            </trans-unit>
+            <trans-unit id="efSspGE">
+                <source>label.credits</source>
+                <target>Credits</target>
+            </trans-unit>
+            <trans-unit id="5jHwDZM">
+                <source>label.credits_help</source>
+                <target>Leave empty if not used</target>
+            </trans-unit>
+            <trans-unit id="Q0reZxI">
+                <source>label.css_class_circle</source>
+                <target>Circle</target>
+            </trans-unit>
+            <trans-unit id="Pk4K_qq">
+                <source>label.css_class_rounded</source>
+                <target>Rounded corners</target>
+            </trans-unit>
+            <trans-unit id="XUngOt2">
+                <source>label.css_class_shadow</source>
+                <target>Shadow</target>
+            </trans-unit>
+            <trans-unit id="HuQhojJ">
+                <source>label.css_class_square</source>
+                <target>Square (cropped)</target>
+            </trans-unit>
+            <trans-unit id="rfgXZtK">
+                <source>label.css_class_thumbnail</source>
+                <target>Thumbnail (border)</target>
+            </trans-unit>
+            <trans-unit id="L_FTusH">
+                <source>label.css_class_width_100</source>
+                <target>Width 100px</target>
+            </trans-unit>
+            <trans-unit id="GP_pSvR">
+                <source>label.css_class_width_125</source>
+                <target>Width 125px</target>
+            </trans-unit>
+            <trans-unit id="S0JPVfl">
+                <source>label.css_class_width_150</source>
+                <target>Width 150px</target>
+            </trans-unit>
+            <trans-unit id="EZT1KD6">
+                <source>label.css_class_width_200</source>
+                <target>Width 200px</target>
+            </trans-unit>
+            <trans-unit id="lhUGuQS">
+                <source>label.css_class_width_250</source>
+                <target>Width 250px</target>
+            </trans-unit>
+            <trans-unit id="r6z.dbq">
+                <source>label.css_class_width_300</source>
+                <target>Width 300px</target>
+            </trans-unit>
+            <trans-unit id="kZu9jPS">
+                <source>label.css_class_width_350</source>
+                <target>Width 350px</target>
+            </trans-unit>
+            <trans-unit id="14m.DkO">
+                <source>label.css_class_width_400</source>
+                <target>Width 400px</target>
+            </trans-unit>
+            <trans-unit id="byunT9o">
+                <source>label.css_class_width_450</source>
+                <target>Width 450px</target>
+            </trans-unit>
+            <trans-unit id="4s3Piiv">
+                <source>label.css_class_width_500</source>
+                <target>Width 500px</target>
+            </trans-unit>
+            <trans-unit id="YB09_6U">
+                <source>label.css_classes</source>
+                <target>CSS Classes</target>
+            </trans-unit>
+            <trans-unit id="cZ3ULNf">
+                <source>label.css_classes_help</source>
+                <target>Select the styles to apply</target>
+            </trans-unit>
+            <trans-unit id="frpVRdg">
+                <source>label.cta_label</source>
+                <target>Button label</target>
+            </trans-unit>
+            <trans-unit id="N05sbUe">
+                <source>label.danger</source>
+                <target>Danger</target>
+            </trans-unit>
+            <trans-unit id="VAiO2A1">
+                <source>label.days</source>
+                <target>Days</target>
+            </trans-unit>
+            <trans-unit id="Zb4xuOb">
+                <source>label.description</source>
+                <target>Description</target>
+            </trans-unit>
+            <trans-unit id="0.g7Tcu">
+                <source>label.detail</source>
+                <target>Detail</target>
+            </trans-unit>
+            <trans-unit id="noigMYa">
+                <source>label.detail_page</source>
+                <target>Detail page</target>
+            </trans-unit>
+            <trans-unit id="IzGNrfq">
+                <source>label.detail_page_help</source>
+                <target>Slug of the Page showing item details (e.g. "blocks-detail"). Empty if none.</target>
+            </trans-unit>
+            <trans-unit id="Foc_O2K">
+                <source>label.directions</source>
+                <target>Directions</target>
+            </trans-unit>
+            <trans-unit id="dqONr5r">
+                <source>label.document_download_media_help</source>
+                <target>One file = one download card. Attach several files to offer several documents - give each a distinct "File name" then, it becomes that card's own title.</target>
+            </trans-unit>
+            <trans-unit id="1vyz2Yp">
+                <source>label.edit</source>
+                <target>Edit</target>
+            </trans-unit>
+            <trans-unit id="ykW6lkh">
+                <source>label.email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="2yOsQwt">
+                <source>label.email_block_alt</source>
+                <target>Alt text</target>
+            </trans-unit>
+            <trans-unit id="m8gmgju">
+                <source>label.email_block_alt_help</source>
+                <target>Used by "Image" blocks</target>
+            </trans-unit>
+            <trans-unit id="9tTmK_c">
+                <source>label.email_block_content</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="kx2920k">
+                <source>label.email_block_content_help</source>
+                <target>"Text" block: plain text, one paragraph per blank line</target>
+            </trans-unit>
+            <trans-unit id="6Qeq_j5">
+                <source>label.email_block_heading</source>
+                <target>Heading</target>
+            </trans-unit>
+            <trans-unit id="mmNOvXv">
+                <source>label.email_block_heading_help</source>
+                <target>Used by "Heading" blocks</target>
+            </trans-unit>
+            <trans-unit id="uZj2jIP">
+                <source>label.email_block_height</source>
+                <target>Height (px)</target>
+            </trans-unit>
+            <trans-unit id="5bORkdb">
+                <source>label.email_block_height_help</source>
+                <target>Used by "Spacer" blocks</target>
+            </trans-unit>
+            <trans-unit id="5Uu4z4a">
+                <source>label.email_block_label</source>
+                <target>Label</target>
+            </trans-unit>
+            <trans-unit id="ynNAvLE">
+                <source>label.email_block_label_help</source>
+                <target>Used by "Button" blocks</target>
+            </trans-unit>
+            <trans-unit id="1.nnpZV">
+                <source>label.email_block_level</source>
+                <target>Heading size</target>
+            </trans-unit>
+            <trans-unit id="APwN_P_">
+                <source>label.email_block_type</source>
+                <target>Block type</target>
+            </trans-unit>
+            <trans-unit id="anOPkl0">
+                <source>label.email_block_type_button</source>
+                <target>Button</target>
+            </trans-unit>
+            <trans-unit id="y3c19vA">
+                <source>label.email_block_type_divider</source>
+                <target>Divider</target>
+            </trans-unit>
+            <trans-unit id=".gwMhKu">
+                <source>label.email_block_type_fields_table</source>
+                <target>Submitted fields table</target>
+            </trans-unit>
+            <trans-unit id="MiC7rY2">
+                <source>label.email_block_type_heading</source>
+                <target>Heading</target>
+            </trans-unit>
+            <trans-unit id="xwVOhi1">
+                <source>label.email_block_type_image</source>
+                <target>Image</target>
+            </trans-unit>
+            <trans-unit id="PgFPB.F">
+                <source>label.email_block_type_spacer</source>
+                <target>Spacer</target>
+            </trans-unit>
+            <trans-unit id="0WOspfI">
+                <source>label.email_block_type_text</source>
+                <target>Text</target>
+            </trans-unit>
+            <trans-unit id="LOWmfEh">
+                <source>label.email_block_url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="RVuCAKX">
+                <source>label.email_block_url_help</source>
+                <target>"Button"/"Image" blocks - accepts {{ signed_url }}, or a relative path (e.g. /medias/logo.webp) completed with the "site-url" config.</target>
+            </trans-unit>
+            <trans-unit id="l3sqAHz">
+                <source>label.email_blocks</source>
+                <target>Blocks</target>
+            </trans-unit>
+            <trans-unit id="btmHLEL">
+                <source>label.email_templates</source>
+                <target>Email templates</target>
+            </trans-unit>
+            <trans-unit id="fZX2vH1">
+                <source>label.error_image</source>
+                <target>Error image</target>
+            </trans-unit>
+            <trans-unit id="VTM8IxQ">
+                <source>label.eyebrow</source>
+                <target>Eyebrow</target>
+            </trans-unit>
+            <trans-unit id="akTKyKA">
+                <source>label.favicon</source>
+                <target>Favicon</target>
+            </trans-unit>
+            <trans-unit id="aSdYCtp">
+                <source>label.field_label</source>
+                <target>Label</target>
+            </trans-unit>
+            <trans-unit id="4E9MVsf">
+                <source>label.field_placeholder</source>
+                <target>Placeholder</target>
+            </trans-unit>
+            <trans-unit id="GvBwpCn">
+                <source>label.field_required</source>
+                <target>Required</target>
+            </trans-unit>
+            <trans-unit id="Ukddqgx">
+                <source>label.field_required_default</source>
+                <target>Required by default</target>
+            </trans-unit>
+            <trans-unit id="dXx62_i">
+                <source>label.field_required_default_help</source>
+                <target>Starting value copied into the added field - editable per form afterward, with no retroactive effect on this template.</target>
+            </trans-unit>
+            <trans-unit id="CeXhLuW">
+                <source>label.field_type</source>
+                <target>Type</target>
+            </trans-unit>
+            <trans-unit id="M6FCi_L">
+                <source>label.field_type_checkbox</source>
+                <target>Checkbox</target>
+            </trans-unit>
+            <trans-unit id="i_1FF7D">
+                <source>label.field_type_date</source>
+                <target>Date</target>
+            </trans-unit>
+            <trans-unit id="t1joywv">
+                <source>label.field_type_email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="QAHrzzP">
+                <source>label.field_type_number</source>
+                <target>Number</target>
+            </trans-unit>
+            <trans-unit id="jh4LNZD">
+                <source>label.field_type_password</source>
+                <target>Password</target>
+            </trans-unit>
+            <trans-unit id="W8d8wUD">
+                <source>label.field_type_password_repeated</source>
+                <target>Password (with confirmation)</target>
+            </trans-unit>
+            <trans-unit id="geUIki.">
+                <source>label.field_type_tel</source>
+                <target>Phone</target>
+            </trans-unit>
+            <trans-unit id="jkCOy15">
+                <source>label.field_type_text</source>
+                <target>Text</target>
+            </trans-unit>
+            <trans-unit id="TaahD6y">
+                <source>label.field_type_textarea</source>
+                <target>Long text</target>
+            </trans-unit>
+            <trans-unit id="t.S8ima">
+                <source>label.field_type_url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="0SwMN5n">
+                <source>label.field_url</source>
+                <target>Link (optional)</target>
+            </trans-unit>
+            <trans-unit id="VSQ1Vkt">
+                <source>label.field_url_link</source>
+                <target>read</target>
+            </trans-unit>
+            <trans-unit id="RWFrajX">
+                <source>label.fields</source>
+                <target>Fields</target>
+            </trans-unit>
+            <trans-unit id="DmcAvc0">
+                <source>label.file</source>
+                <target>File</target>
+            </trans-unit>
+            <trans-unit id="hYgYtv3">
+                <source>label.file_name</source>
+                <target>File name</target>
+            </trans-unit>
+            <trans-unit id="PrnCmc_">
+                <source>label.file_name_help</source>
+                <target>Used to name the stored file. Also used as the download card's title when several files are attached.</target>
+            </trans-unit>
+            <trans-unit id="ubt8hID">
+                <source>label.fixed_icon_invalid_format</source>
+                <target>Unsupported format for this role - upload a %formats% image</target>
+            </trans-unit>
+            <trans-unit id="ZbTNTSZ">
+                <source>label.font</source>
+                <target>Font</target>
+            </trans-unit>
+            <trans-unit id="7NbFp1S">
+                <source>label.font_bulk_import</source>
+                <target>Bulk font import</target>
+            </trans-unit>
+            <trans-unit id="n9yTG4w">
+                <source>label.font_bulk_import_help</source>
+                <target>Select several TTF, WOFF or WOFF2 files at once (max 5 MB each) - each file's name, weight and style are guessed from its filename (eg. "OpenSans-Bold.ttf", "Roboto-ExtraLightItalic.woff2"). Review the imported fonts afterward and fix any wrong guess.</target>
+            </trans-unit>
+            <trans-unit id="x75HSFP">
+                <source>label.font_file_help</source>
+                <target>Accepted formats: TTF, WOFF, WOFF2 (max 5 MB). Stored in public/medias/fonts and turned into a @font-face rule offered by the theme's font pickers.</target>
+            </trans-unit>
+            <trans-unit id="pAzRTZZ">
+                <source>label.font_file_invalid_extension</source>
+                <target>Invalid file: only TTF, WOFF and WOFF2 fonts are accepted.</target>
+            </trans-unit>
+            <trans-unit id="WAbfqVw">
+                <source>label.font_name</source>
+                <target>Font name</target>
+            </trans-unit>
+            <trans-unit id="SvJOd0k">
+                <source>label.font_style</source>
+                <target>Style</target>
+            </trans-unit>
+            <trans-unit id="gxpM4OM">
+                <source>label.font_style_italic</source>
+                <target>Italic</target>
+            </trans-unit>
+            <trans-unit id="N4V609U">
+                <source>label.font_style_normal</source>
+                <target>Normal</target>
+            </trans-unit>
+            <trans-unit id="EtdrCKk">
+                <source>label.font_weight</source>
+                <target>Weight</target>
+            </trans-unit>
+            <trans-unit id="DcBb0E8">
+                <source>label.font_weight_black</source>
+                <target>Black</target>
+            </trans-unit>
+            <trans-unit id="8OpFiI0">
+                <source>label.font_weight_bold</source>
+                <target>Bold</target>
+            </trans-unit>
+            <trans-unit id="rsh_BqU">
+                <source>label.font_weight_extra_bold</source>
+                <target>Extra Bold</target>
+            </trans-unit>
+            <trans-unit id="vwDLQY.">
+                <source>label.font_weight_extra_light</source>
+                <target>Extra Light</target>
+            </trans-unit>
+            <trans-unit id="Mp.YqFV">
+                <source>label.font_weight_light</source>
+                <target>Light</target>
+            </trans-unit>
+            <trans-unit id="qL7Gp9j">
+                <source>label.font_weight_medium</source>
+                <target>Medium</target>
+            </trans-unit>
+            <trans-unit id="zLV2aBT">
+                <source>label.font_weight_regular</source>
+                <target>Regular</target>
+            </trans-unit>
+            <trans-unit id=".hfRymY">
+                <source>label.font_weight_semibold</source>
+                <target>SemiBold</target>
+            </trans-unit>
+            <trans-unit id="2A7.7yO">
+                <source>label.font_weight_thin</source>
+                <target>Thin</target>
+            </trans-unit>
+            <trans-unit id="0SfE11h">
+                <source>label.font_weight_variable</source>
+                <target>Variable (100-900)</target>
+            </trans-unit>
+            <trans-unit id="kjFy2J8">
+                <source>label.fonts</source>
+                <target>Fonts</target>
+            </trans-unit>
+            <trans-unit id="atiwZVV">
+                <source>label.force_download</source>
+                <target>Force Download</target>
+            </trans-unit>
+            <trans-unit id="NwThH9S">
+                <source>label.form_disabled</source>
+                <target>This form is not currently available.</target>
+            </trans-unit>
+            <trans-unit id="MIzqoNl">
+                <source>label.form_enabled</source>
+                <target>Enabled</target>
+            </trans-unit>
+            <trans-unit id="aHJ.yX_">
+                <source>label.form_field_template_picker_placeholder</source>
+                <target>Add from a template…</target>
+            </trans-unit>
+            <trans-unit id="PTqH6C7">
+                <source>label.form_field_templates</source>
+                <target>Field templates</target>
+            </trans-unit>
+            <trans-unit id="Kq3Vb7T">
+                <source>label.form_link_label</source>
+                <target>Link text</target>
+            </trans-unit>
+            <trans-unit id="hZ2mWpA">
+                <source>label.form_link_url</source>
+                <target>Link address</target>
+            </trans-unit>
+            <trans-unit id="xL9tRc4">
+                <source>label.form_links</source>
+                <target>Links</target>
+            </trans-unit>
+            <trans-unit id="nB6yUe1">
+                <source>label.form_links_help</source>
+                <target>Shown right under the submit button, e.g. a link to the sign-in page under a registration form. Use a path of this site (/pages/my-page) or a full address.</target>
+            </trans-unit>
+            <trans-unit id="PR6XC0B">
+                <source>label.form_picker_disabled_suffix</source>
+                <target> (disabled)</target>
+            </trans-unit>
+            <trans-unit id="Z0p9Gpw">
+                <source>label.form_picker_name</source>
+                <target>Form</target>
+            </trans-unit>
+            <trans-unit id="OD0CMev">
+                <source>label.form_submission_failed</source>
+                <target>An error occurred, your submission could not be processed.</target>
+            </trans-unit>
+            <trans-unit id="0azLXwc">
+                <source>label.form_submitted</source>
+                <target>Thank you, your submission has been received.</target>
+            </trans-unit>
+            <trans-unit id="EptgKcw">
+                <source>label.forms</source>
+                <target>Forms</target>
+            </trans-unit>
+            <trans-unit id="2MWiSL1">
+                <source>label.friday</source>
+                <target>Friday</target>
+            </trans-unit>
+            <trans-unit id="j0VRPpz">
+                <source>label.guided_project_ui_email_template</source>
+                <target>Tailor an e-mail</target>
+            </trans-unit>
+            <trans-unit id="3Fft64_">
+                <source>label.guided_project_ui_form</source>
+                <target>Create a form</target>
+            </trans-unit>
+            <trans-unit id="FtKKNNJ">
+                <source>label.guided_project_ui_media</source>
+                <target>Upload an image</target>
+            </trans-unit>
+            <trans-unit id="PB512zY">
+                <source>label.guided_step_ui_email_template_blocks</source>
+                <target>Change its content</target>
+            </trans-unit>
+            <trans-unit id="3aTC5K2">
+                <source>label.guided_step_ui_email_template_check</source>
+                <target>See it for real</target>
+            </trans-unit>
+            <trans-unit id="bg69z38">
+                <source>label.guided_step_ui_email_template_edit</source>
+                <target>Open a template</target>
+            </trans-unit>
+            <trans-unit id="Xc6DkDW">
+                <source>label.guided_step_ui_email_template_open</source>
+                <target>Open the e-mail templates</target>
+            </trans-unit>
+            <trans-unit id="Z9rpyhM">
+                <source>label.guided_step_ui_email_template_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="L0azB6X">
+                <source>label.guided_step_ui_form_action</source>
+                <target>Pick what it triggers</target>
+            </trans-unit>
+            <trans-unit id="X4RitF7">
+                <source>label.guided_step_ui_form_fields</source>
+                <target>Add the fields</target>
+            </trans-unit>
+            <trans-unit id="KTKHTlN">
+                <source>label.guided_step_ui_form_name</source>
+                <target>Name it</target>
+            </trans-unit>
+            <trans-unit id="kWp5g6w">
+                <source>label.guided_step_ui_form_new</source>
+                <target>Create a form</target>
+            </trans-unit>
+            <trans-unit id="ZwXHcDY">
+                <source>label.guided_step_ui_form_open</source>
+                <target>Open the forms</target>
+            </trans-unit>
+            <trans-unit id="SDXqkqS">
+                <source>label.guided_step_ui_form_place</source>
+                <target>Drop it into a page</target>
+            </trans-unit>
+            <trans-unit id="GAmp352">
+                <source>label.guided_step_ui_form_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="p04wYUK">
+                <source>label.guided_step_ui_media_alt</source>
+                <target>Describe the image</target>
+            </trans-unit>
+            <trans-unit id="djlrG7S">
+                <source>label.guided_step_ui_media_file</source>
+                <target>Pick the file</target>
+            </trans-unit>
+            <trans-unit id="NuH7Bc_">
+                <source>label.guided_step_ui_media_new</source>
+                <target>Upload an image</target>
+            </trans-unit>
+            <trans-unit id="r.hPN1d">
+                <source>label.guided_step_ui_media_open</source>
+                <target>Open the media library</target>
+            </trans-unit>
+            <trans-unit id="i9J5GNX">
+                <source>label.guided_step_ui_media_reuse</source>
+                <target>Reuse it</target>
+            </trans-unit>
+            <trans-unit id="Sr6aDii">
+                <source>label.guided_step_ui_media_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="epZIsrh">
+                <source>label.health_check_legal_model_drift</source>
+                <target>%count% section(s) you rewrote have changed in the "%model%" model: %sections%</target>
+            </trans-unit>
+            <trans-unit id="sv1fnt2">
+                <source>label.health_check_svg_fonts_not_vectorized</source>
+                <target>%file% carries text that is not vectorized%fonts%: convert it to paths, or it will render with another font for anyone missing that one</target>
+            </trans-unit>
+            <trans-unit id="sv1fnt3">
+                <source>label.health_check_svg_fonts_ok</source>
+                <target>%file% depends on no font, its text is vectorized</target>
+            </trans-unit>
+            <trans-unit id="7YLjRTG">
+                <source>label.height</source>
+                <target>Height</target>
+            </trans-unit>
+            <trans-unit id="bsXW2bW">
+                <source>label.height_help</source>
+                <target>Auto-detected on upload, in pixels</target>
+            </trans-unit>
+            <trans-unit id="HNLe9LP">
+                <source>label.hero_background_image</source>
+                <target>Show image as a full-width background</target>
+            </trans-unit>
+            <trans-unit id="KPqN5C4">
+                <source>label.hero_background_image_help</source>
+                <target>Uses the first uploaded image as a full-width background behind the text instead of showing it beside it.</target>
+            </trans-unit>
+            <trans-unit id="CYanl3o">
+                <source>label.hero_media_layout</source>
+                <target>Media layout</target>
+            </trans-unit>
+            <trans-unit id="pR14F4R">
+                <source>label.hero_media_layout_grid</source>
+                <target>Grid</target>
+            </trans-unit>
+            <trans-unit id="20aFlK4">
+                <source>label.hero_media_layout_help</source>
+                <target>How the images added below are shown beside the text, from the second one on. Ignored when they are used as a background image.</target>
+            </trans-unit>
+            <trans-unit id="qQIbICK">
+                <source>label.hero_media_layout_slideshow</source>
+                <target>Slideshow</target>
+            </trans-unit>
+            <trans-unit id="7uubg0.">
+                <source>label.hero_title_level</source>
+                <target>Heading level of the title</target>
+            </trans-unit>
+            <trans-unit id="1WgTvBQ">
+                <source>label.hero_title_level_help</source>
+                <target>h1 when this hero opens the page and carries its title, h2 when the page template already prints its own title above it.</target>
+            </trans-unit>
+            <trans-unit id="p_CIk0t">
+                <source>label.hook</source>
+                <target>Hook phrase</target>
+            </trans-unit>
+            <trans-unit id="lqEFtzf">
+                <source>label.icon</source>
+                <target>Icon</target>
+            </trans-unit>
+            <trans-unit id="lld2Fga">
+                <source>label.icon_path</source>
+                <target>Icon Path (optional)</target>
+            </trans-unit>
+            <trans-unit id="jGMjpWb">
+                <source>label.id</source>
+                <target>ID</target>
+            </trans-unit>
+            <trans-unit id="O9m6y0C">
+                <source>label.identifier</source>
+                <target>Identifier</target>
+            </trans-unit>
+            <trans-unit id="LsG34kN">
+                <source>label.identifier_help</source>
+                <target>No spaces, accents, capitals or special characters</target>
+            </trans-unit>
+            <trans-unit id="O_0K8EM">
+                <source>label.image</source>
+                <target>Image</target>
+            </trans-unit>
+            <trans-unit id="wufmcmY">
+                <source>label.info_email_debug</source>
+                <target>A ROLE_SUPER_ADMIN sees a preview instead of a real send while %link_open%this key%link_close% is enabled.</target>
+            </trans-unit>
+            <trans-unit id="3u1hIgT">
+                <source>label.info_email_template</source>
+                <target>The site's email templates, each built from content blocks. Create, edit or preview a template; a restricted template keeps its name fixed and can't be deleted.</target>
+            </trans-unit>
+            <trans-unit id="z7IyPeJ">
+                <source>label.info_font</source>
+                <target>Custom font files uploaded for the site (ttf, woff, woff2). Add, edit or delete a font; each weight and style forms a distinct variant usable in the theme configuration.</target>
+            </trans-unit>
+            <trans-unit id="ryIqK8x">
+                <source>label.info_form</source>
+                <target>The site's forms (contact, newsletter...), each with its own fields and submit action. Create, edit or delete a form; a restricted form keeps its name fixed and can't be deleted.</target>
+            </trans-unit>
+            <trans-unit id="SKYFMvl">
+                <source>label.info_form_field_template</source>
+                <target>Ready-made fields for building a form. Create, edit or delete a template; a restricted template keeps its name fixed but stays editable and can never be deleted.</target>
+            </trans-unit>
+            <trans-unit id="Cdp6GrZ">
+                <source>label.info_form_gdpr</source>
+                <target>GDPR checkbox auto-added to forms, controlled by %link_open%this key%link_close%.</target>
+            </trans-unit>
+            <trans-unit id="KDIeeFV">
+                <source>label.info_legal_model</source>
+                <target>The legal texts shipped with the bundle stay maintained and updated. Page by page, you can hide a section, rewrite it, move it or add your own: only what you change stops following the updates.</target>
+            </trans-unit>
+            <trans-unit id="Rj7vT.7">
+                <source>label.info_media</source>
+                <target>All uploaded media (pages, blocks, site graphics). Edit a media's caption, alt text or credits; site-wide graphics (favicon, logo...) stay read-only here and are managed from Site graphics.</target>
+            </trans-unit>
+            <trans-unit id="MwU6S3V">
+                <source>label.info_site_graphic</source>
+                <target>Site-wide graphics: favicon, Apple Touch icon, default Open Graph image, logo and error images. Each role (except error image) can only be used once; replace the file to update it.</target>
+            </trans-unit>
+            <trans-unit id="tuC.GA7">
+                <source>label.information</source>
+                <target>Information</target>
+            </trans-unit>
+            <trans-unit id="XWd5FgF">
+                <source>label.inline</source>
+                <target>Display Inline (without p tag)</target>
+            </trans-unit>
+            <trans-unit id="HBJI6qv">
+                <source>label.items</source>
+                <target>Items</target>
+            </trans-unit>
+            <trans-unit id="NdoELG0">
+                <source>label.kind</source>
+                <target>Kind</target>
+            </trans-unit>
+            <trans-unit id="RzBZ4z7">
+                <source>label.latest_update</source>
+                <target>Latest update</target>
+            </trans-unit>
+            <trans-unit id="FBSuKKD">
+                <source>label.latitude</source>
+                <target>Latitude</target>
+            </trans-unit>
+            <trans-unit id="cazagrU">
+                <source>label.layout</source>
+                <target>Layout</target>
+            </trans-unit>
+            <trans-unit id="G5YCcSc">
+                <source>label.layout_default</source>
+                <target>Standard</target>
+            </trans-unit>
+            <trans-unit id="Yu9kLYA">
+                <source>label.layout_freeflow</source>
+                <target>Freeflow</target>
+            </trans-unit>
+            <trans-unit id="_bVYSgu">
+                <source>label.layout_help</source>
+                <target>Standard: one slide at a time. Freeflow: all slides side by side, overflowing the screen.</target>
+            </trans-unit>
+            <trans-unit id="xeLDFrp">
+                <source>label.legal_customize</source>
+                <target>Customize</target>
+            </trans-unit>
+            <trans-unit id="VSv_bRo">
+                <source>label.legal_customize_help</source>
+                <target>Section by section customization is done from "Legal models", in the menu.</target>
+            </trans-unit>
+            <trans-unit id="DOLV88Z">
+                <source>label.legal_drift</source>
+                <target>Update available</target>
+            </trans-unit>
+            <trans-unit id="n10xHFc">
+                <source>label.legal_drift_count</source>
+                <target>%count% section(s)</target>
+            </trans-unit>
+            <trans-unit id="ZqqDoeS">
+                <source>label.legal_extra_add</source>
+                <target>Add a section</target>
+            </trans-unit>
+            <trans-unit id="GlT9ghq">
+                <source>label.legal_extra_parent</source>
+                <target>Attach to</target>
+            </trans-unit>
+            <trans-unit id="7IwEdF.">
+                <source>label.legal_extra_parent_top</source>
+                <target>Top level</target>
+            </trans-unit>
+            <trans-unit id="LT7uKbV">
+                <source>label.legal_extra_remove</source>
+                <target>Remove this section</target>
+            </trans-unit>
+            <trans-unit id="xAZplVp">
+                <source>label.legal_extra_sections</source>
+                <target>Added sections</target>
+            </trans-unit>
+            <trans-unit id="Kq7mZ3a">
+                <source>label.legal_model_unknown</source>
+                <target>Unknown model</target>
+            </trans-unit>
+            <trans-unit id="IAyzYCW">
+                <source>label.legal_models</source>
+                <target>Legal models</target>
+            </trans-unit>
+            <trans-unit id="AnsvoFg">
+                <source>label.legal_models_none</source>
+                <target>No page holds a legal model.</target>
+            </trans-unit>
+            <trans-unit id="7BkQCei">
+                <source>label.legal_notice</source>
+                <target>Legal notice</target>
+            </trans-unit>
+            <trans-unit id="tetbtS5">
+                <source>label.legal_unit_content</source>
+                <target>Text</target>
+            </trans-unit>
+            <trans-unit id="vmakjCm">
+                <source>label.legal_unit_hidden</source>
+                <target>Hidden</target>
+            </trans-unit>
+            <trans-unit id="Xqx0K.j">
+                <source>label.legal_unit_reset</source>
+                <target>Back to the bundle's text</target>
+            </trans-unit>
+            <trans-unit id="Kd9zmXR">
+                <source>label.legal_unit_title</source>
+                <target>Title</target>
+            </trans-unit>
+            <trans-unit id="mQCftNN">
+                <source>label.legal_units_overridden</source>
+                <target>Rewritten sections</target>
+            </trans-unit>
+            <trans-unit id="vW5NwgU">
+                <source>label.limit</source>
+                <target>Maximum number shown</target>
+            </trans-unit>
+            <trans-unit id="ut_.nR5">
+                <source>label.link</source>
+                <target>Link</target>
+            </trans-unit>
+            <trans-unit id="c7Md7WI">
+                <source>label.link_label</source>
+                <target>Link label</target>
+            </trans-unit>
+            <trans-unit id="CicLx_A">
+                <source>label.logo</source>
+                <target>Logo</target>
+            </trans-unit>
+            <trans-unit id="A3tB9aX">
+                <source>label.longitude</source>
+                <target>Longitude</target>
+            </trans-unit>
+            <trans-unit id="vWpOH7s">
+                <source>label.loop</source>
+                <target>Loop</target>
+            </trans-unit>
+            <trans-unit id="TGYsC6q">
+                <source>label.map_url</source>
+                <target>Map link</target>
+            </trans-unit>
+            <trans-unit id="qKF181v">
+                <source>label.map_url_help</source>
+                <target>URL of the Google Maps or OpenStreetMap listing</target>
+            </trans-unit>
+            <trans-unit id="z9uF1b7">
+                <source>label.max_height</source>
+                <target>Max height</target>
+            </trans-unit>
+            <trans-unit id="HC6BXIl">
+                <source>label.max_height_help</source>
+                <target>In pixels, leave empty for an automatic height</target>
+            </trans-unit>
+            <trans-unit id="hC0xs1.">
+                <source>label.media</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="5JB.rhD">
+                <source>label.media_help</source>
+                <target>For a single-file type (Image/Video/Audio), only the first one is used</target>
+            </trans-unit>
+            <trans-unit id="qSNIB62">
+                <source>label.media_library</source>
+                <target>Media Library</target>
+            </trans-unit>
+            <trans-unit id="ViqheWp">
+                <source>label.media_multi_upload</source>
+                <target>Add several files</target>
+            </trans-unit>
+            <trans-unit id="WR7vwm2">
+                <source>label.media_multi_upload_help</source>
+                <target>Select several files at once to add them all in one go</target>
+            </trans-unit>
+            <trans-unit id="rfS8Ak_">
+                <source>label.mobile</source>
+                <target>Mobile</target>
+            </trans-unit>
+            <trans-unit id="lXynwwU">
+                <source>label.model</source>
+                <target>Model</target>
+            </trans-unit>
+            <trans-unit id="yfK.uss">
+                <source>label.monday</source>
+                <target>Monday</target>
+            </trans-unit>
+            <trans-unit id="bBt_4n5">
+                <source>label.muted</source>
+                <target>Muted</target>
+            </trans-unit>
+            <trans-unit id="aSiMEIt">
+                <source>label.name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="LjUTZw0">
+                <source>label.new_tab</source>
+                <target>New Tab</target>
+            </trans-unit>
+            <trans-unit id="xOMkNTu">
+                <source>label.no_collection_source_available</source>
+                <target>No collection source available yet</target>
+            </trans-unit>
+            <trans-unit id="VZ9ErQ0">
+                <source>label.not_published</source>
+                <target>Not published</target>
+            </trans-unit>
+            <trans-unit id="qOJK2CP">
+                <source>label.not_used_anywhere</source>
+                <target>Not used anywhere yet</target>
+            </trans-unit>
+            <trans-unit id="GJNimRX">
+                <source>label.og_image</source>
+                <target>Open Graph image</target>
+            </trans-unit>
+            <trans-unit id="IBymOD8">
+                <source>label.opening_hours</source>
+                <target>Opening Hours</target>
+            </trans-unit>
+            <trans-unit id="vue6pQ5">
+                <source>label.opens</source>
+                <target>Opening</target>
+            </trans-unit>
+            <trans-unit id="OmyXHwr">
+                <source>label.page</source>
+                <target>Page</target>
+            </trans-unit>
+            <trans-unit id="hz5aZk6">
+                <source>label.password_confirm</source>
+                <target>Confirm password</target>
+            </trans-unit>
+            <trans-unit id="KXf3t5l">
+                <source>label.phone</source>
+                <target>Phone</target>
+            </trans-unit>
+            <trans-unit id="Rfi.GLm">
+                <source>label.position</source>
+                <target>Position</target>
+            </trans-unit>
+            <trans-unit id="Pmyk5As">
+                <source>label.postal_code</source>
+                <target>Postal Code</target>
+            </trans-unit>
+            <trans-unit id="wqV.yBO">
+                <source>label.price_range</source>
+                <target>Price Range</target>
+            </trans-unit>
+            <trans-unit id="NZ3n3re">
+                <source>label.primary</source>
+                <target>Primary</target>
+            </trans-unit>
+            <trans-unit id="QActmhs">
+                <source>label.primary_label</source>
+                <target>Primary button label</target>
+            </trans-unit>
+            <trans-unit id="D5HPeKU">
+                <source>label.primary_url</source>
+                <target>Primary button URL</target>
+            </trans-unit>
+            <trans-unit id="h3TeJLZ">
+                <source>label.privacy_policy</source>
+                <target>Privacy policy</target>
+            </trans-unit>
+            <trans-unit id="DKWkb19">
+                <source>label.progress_percent</source>
+                <target>Progress Percentage (0-100)</target>
+            </trans-unit>
+            <trans-unit id="8NHfPcl">
+                <source>label.ratio</source>
+                <target>Ratio</target>
+            </trans-unit>
+            <trans-unit id="ZyXs0V7">
+                <source>label.ratio_16_9</source>
+                <target>16:9</target>
+            </trans-unit>
+            <trans-unit id="2Dd5Jrs">
+                <source>label.ratio_1_1</source>
+                <target>1:1 (square)</target>
+            </trans-unit>
+            <trans-unit id="UvlE6Sl">
+                <source>label.ratio_21_9</source>
+                <target>21:9 (wide)</target>
+            </trans-unit>
+            <trans-unit id="Kjif37J">
+                <source>label.ratio_2_3</source>
+                <target>2:3 (portrait)</target>
+            </trans-unit>
+            <trans-unit id="2b1M_U1">
+                <source>label.ratio_3_2</source>
+                <target>3:2</target>
+            </trans-unit>
+            <trans-unit id="cJJ9bun">
+                <source>label.ratio_3_4</source>
+                <target>3:4 (portrait)</target>
+            </trans-unit>
+            <trans-unit id="7Ll0Ym6">
+                <source>label.ratio_4_3</source>
+                <target>4:3</target>
+            </trans-unit>
+            <trans-unit id="_tveAG8">
+                <source>label.ratio_9_16</source>
+                <target>9:16 (story)</target>
+            </trans-unit>
+            <trans-unit id="PQpF61w">
+                <source>label.ratio_free</source>
+                <target>Free</target>
+            </trans-unit>
+            <trans-unit id="0RFcVRF">
+                <source>label.ratio_help</source>
+                <target>Free keeps the image's natural ratio; a fixed ratio crops it to fit</target>
+            </trans-unit>
+            <trans-unit id="oNE5b8K">
+                <source>label.receive_copy</source>
+                <target>Receive a copy</target>
+            </trans-unit>
+            <trans-unit id="0Eekznl">
+                <source>label.region</source>
+                <target>Region / county</target>
+            </trans-unit>
+            <trans-unit id="_iSWIYI">
+                <source>label.restricted</source>
+                <target>Restricted</target>
+            </trans-unit>
+            <trans-unit id="uKaQklK">
+                <source>label.rights_reserved</source>
+                <target>Rights Reserved</target>
+            </trans-unit>
+            <trans-unit id="Gj4Ca1d">
+                <source>label.role</source>
+                <target>Role</target>
+            </trans-unit>
+            <trans-unit id="bMMjC9k">
+                <source>label.same_window</source>
+                <target>Same Window</target>
+            </trans-unit>
+            <trans-unit id="jLb96os">
+                <source>label.saturday</source>
+                <target>Saturday</target>
+            </trans-unit>
+            <trans-unit id="znwE9XF">
+                <source>label.save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="lIBbVVe">
+                <source>label.schema_type</source>
+                <target>Schema.org Type</target>
+            </trans-unit>
+            <trans-unit id="TQmxSNJ">
+                <source>label.schema_type_help</source>
+                <target>Business type declared to search engines</target>
+            </trans-unit>
+            <trans-unit id="fPfYMVc">
+                <source>label.search_block_kind</source>
+                <target>Search a block kind...</target>
+            </trans-unit>
+            <trans-unit id="CHMbXyk">
+                <source>label.search_icon</source>
+                <target>Search icon...</target>
+            </trans-unit>
+            <trans-unit id="knthYeK">
+                <source>label.secondary</source>
+                <target>Secondary</target>
+            </trans-unit>
+            <trans-unit id="zan9Usw">
+                <source>label.secondary_label</source>
+                <target>Secondary button label</target>
+            </trans-unit>
+            <trans-unit id="CqXEJAM">
+                <source>label.secondary_url</source>
+                <target>Secondary button URL</target>
+            </trans-unit>
+            <trans-unit id="LqQIe5o">
+                <source>label.section_background</source>
+                <target>Section background</target>
+            </trans-unit>
+            <trans-unit id="S3aOJc1">
+                <source>label.section_background_dark</source>
+                <target>Dark</target>
+            </trans-unit>
+            <trans-unit id="dG59CiC">
+                <source>label.section_background_help</source>
+                <target>Paints the section as a full-width flat - the text, dividers and buttons it holds invert automatically to stay readable.</target>
+            </trans-unit>
+            <trans-unit id="gxWXTr3">
+                <source>label.section_background_muted</source>
+                <target>Light grey</target>
+            </trans-unit>
+            <trans-unit id="UcA_IiR">
+                <source>label.section_background_none</source>
+                <target>None (page background)</target>
+            </trans-unit>
+            <trans-unit id="r82HE3G">
+                <source>label.section_background_primary</source>
+                <target>Primary color</target>
+            </trans-unit>
+            <trans-unit id="8wG6aGH">
+                <source>label.send</source>
+                <target>Send</target>
+            </trans-unit>
+            <trans-unit id="M2zj2An">
+                <source>label.show_percent</source>
+                <target>Show Percentage</target>
+            </trans-unit>
+            <trans-unit id="rttit_o">
+                <source>label.site_graphic</source>
+                <target>Site graphic</target>
+            </trans-unit>
+            <trans-unit id="0pHTiGE">
+                <source>label.site_graphic_file_help</source>
+                <target>Auto-resized: favicon to 48×48 px (.ico), Apple touch icon to 114×114 px (.png).</target>
+            </trans-unit>
+            <trans-unit id="6.3yMVA">
+                <source>label.site_graphic_missing</source>
+                <target>No file has been uploaded yet</target>
+            </trans-unit>
+            <trans-unit id="sDMW24b">
+                <source>label.site_graphics</source>
+                <target>Site graphics</target>
+            </trans-unit>
+            <trans-unit id="_ukBYp5">
+                <source>label.slide_duration</source>
+                <target>Duration between slides in ms (0 = manual)</target>
+            </trans-unit>
+            <trans-unit id="WTG_sdU">
+                <source>label.slides</source>
+                <target>Slides</target>
+            </trans-unit>
+            <trans-unit id="JSH4l3s">
+                <source>label.slots</source>
+                <target>Columns</target>
+            </trans-unit>
+            <trans-unit id="dVwFNwZ">
+                <source>label.slots_cards</source>
+                <target>Cards</target>
+            </trans-unit>
+            <trans-unit id="EcQhzh6">
+                <source>label.slots_legacy_kinds_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ These blocks sit directly as columns, which is no longer offered: %blocks%. For each of them, add a Column to the row, drag the block into it, and you will then be able to set its width.&lt;/span&gt;</target>
+            </trans-unit>
+            <trans-unit id="0kGqgMZ">
+                <source>label.slug</source>
+                <target>Slug</target>
+            </trans-unit>
+            <trans-unit id="Pv_ZKGY">
+                <source>label.source</source>
+                <target>Source</target>
+            </trans-unit>
+            <trans-unit id="3D9cZ_b">
+                <source>label.start_position</source>
+                <target>Start position</target>
+            </trans-unit>
+            <trans-unit id="XGg3CFc">
+                <source>label.start_position_help</source>
+                <target>Initial position of the comparison handle, as a percentage (0 to 100)</target>
+            </trans-unit>
+            <trans-unit id="7vavDKv">
+                <source>label.stat_label</source>
+                <target>Stat caption</target>
+            </trans-unit>
+            <trans-unit id="PrNxLVX">
+                <source>label.stat_value</source>
+                <target>Stat value</target>
+            </trans-unit>
+            <trans-unit id="FkNEdr1">
+                <source>label.step_number</source>
+                <target>Step %number%</target>
+            </trans-unit>
+            <trans-unit id="zE4iFSo">
+                <source>label.steps</source>
+                <target>Steps</target>
+            </trans-unit>
+            <trans-unit id="LBLIQe_">
+                <source>label.street_address</source>
+                <target>Street Address</target>
+            </trans-unit>
+            <trans-unit id="XWMpUxP">
+                <source>label.style</source>
+                <target>Style</target>
+            </trans-unit>
+            <trans-unit id="Vttl6XU">
+                <source>label.subtitle</source>
+                <target>Subtitle</target>
+            </trans-unit>
+            <trans-unit id="04zDTq_">
+                <source>label.success</source>
+                <target>Success</target>
+            </trans-unit>
+            <trans-unit id="qshQBQs">
+                <source>label.sunday</source>
+                <target>Sunday</target>
+            </trans-unit>
+            <trans-unit id="p8ZavMW">
+                <source>label.tags</source>
+                <target>Tags</target>
+            </trans-unit>
+            <trans-unit id="FAw4doM">
+                <source>label.target</source>
+                <target>Target</target>
+            </trans-unit>
+            <trans-unit id="ua7HEiS">
+                <source>label.terms_of_sales</source>
+                <target>Terms of sales</target>
+            </trans-unit>
+            <trans-unit id="wIPeOCe">
+                <source>label.terms_of_use</source>
+                <target>Terms of use</target>
+            </trans-unit>
+            <trans-unit id="zDdJoWc">
+                <source>label.text</source>
+                <target>Text</target>
+            </trans-unit>
+            <trans-unit id="ZkFsxeA">
+                <source>label.thursday</source>
+                <target>Thursday</target>
+            </trans-unit>
+            <trans-unit id="ZIbme0L">
+                <source>label.title</source>
+                <target>Title</target>
+            </trans-unit>
+            <trans-unit id="EE5wbzn">
+                <source>label.title_level</source>
+                <target>Title Level</target>
+            </trans-unit>
+            <trans-unit id="CooV25J">
+                <source>label.tuesday</source>
+                <target>Tuesday</target>
+            </trans-unit>
+            <trans-unit id="mcQ1Bzu">
+                <source>label.url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="WEtNrDf">
+                <source>label.used_in</source>
+                <target>Used in</target>
+            </trans-unit>
+            <trans-unit id="0wLkovt">
+                <source>label.variant</source>
+                <target>Presentation</target>
+            </trans-unit>
+            <trans-unit id="KqQ5azR">
+                <source>label.variant_card</source>
+                <target>Card (default)</target>
+            </trans-unit>
+            <trans-unit id="db5EUws">
+                <source>label.variant_help</source>
+                <target>How items are displayed, applied to the whole collection.</target>
+            </trans-unit>
+            <trans-unit id="29S6.HK">
+                <source>label.variant_portfolio</source>
+                <target>Portfolio grid</target>
+            </trans-unit>
+            <trans-unit id="pt4FACS">
+                <source>label.video_file</source>
+                <target>Video file</target>
+            </trans-unit>
+            <trans-unit id="zu9yC8P">
+                <source>label.video_file_or_poster</source>
+                <target>Video file or cover image</target>
+            </trans-unit>
+            <trans-unit id="5dQP9xW">
+                <source>label.video_iframe_accept</source>
+                <target>Show content</target>
+            </trans-unit>
+            <trans-unit id="wBwi8fo">
+                <source>label.video_iframe_consent_required</source>
+                <target>This content comes from a third-party site (YouTube or similar) and requires your consent to be displayed.</target>
+            </trans-unit>
+            <trans-unit id="cXYQ_gN">
+                <source>label.video_media_help</source>
+                <target>Upload the video file (MP4, WebM or OGG) and, optionally, an image used as the player's cover</target>
+            </trans-unit>
+            <trans-unit id="j2.KKFd">
+                <source>label.video_no_cookie</source>
+                <target>Use no-cookie version (YouTube only)</target>
+            </trans-unit>
+            <trans-unit id="M9btWjW">
+                <source>label.video_options</source>
+                <target>Playback options</target>
+            </trans-unit>
+            <trans-unit id="tXt9_R.">
+                <source>label.video_options_help</source>
+                <target>Most browsers only allow autoplay on a muted video</target>
+            </trans-unit>
+            <trans-unit id="3_3BeFr">
+                <source>label.video_poster</source>
+                <target>Cover image</target>
+            </trans-unit>
+            <trans-unit id="4aBckcp">
+                <source>label.video_url</source>
+                <target>Video URL (YouTube, Vimeo...)</target>
+            </trans-unit>
+            <trans-unit id="WcOat7C">
+                <source>label.warning</source>
+                <target>Warning</target>
+            </trans-unit>
+            <trans-unit id="rJFIqnF">
+                <source>label.website</source>
+                <target>Website</target>
+            </trans-unit>
+            <trans-unit id="NJAWGqA">
+                <source>label.wednesday</source>
+                <target>Wednesday</target>
+            </trans-unit>
+            <trans-unit id="K0YHYQb">
+                <source>label.width</source>
+                <target>Width</target>
+            </trans-unit>
+            <trans-unit id="6BAKM_y">
+                <source>label.width_help</source>
+                <target>Auto-detected on upload, in pixels</target>
+            </trans-unit>
+            <trans-unit id="2lWOypu">
+                <source>text.cookies_banner</source>
+                <target>This site uses a session cookie required for it to work, and may embed third-party content (videos, etc.) requiring your consent.</target>
+            </trans-unit>
+            <trans-unit id="UAH_ycC">
+                <source>text.form_required_note</source>
+                <target>* Required field</target>
+            </trans-unit>
+            <trans-unit id="G1fcoic">
+                <source>text.password_mismatch</source>
+                <target>Passwords do not match</target>
+            </trans-unit>
+            <trans-unit id="sv9tx2p">
+                <source>text.svg_text_not_vectorized</source>
+                <target>%filename% carries text that is not vectorized%fonts%: it will render with another font for a visitor who does not have it installed. Convert the text to paths before publishing it (Inkscape: Path &gt; Object to Path).</target>
+            </trans-unit>
+            <trans-unit id="we221_t">
+                <source>text.too_many_attempts</source>
+                <target>Too many attempts, please try again later.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

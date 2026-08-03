@@ -1,0 +1,128 @@
+{# Static usage: <twig:c975LUi:Contact:Details [schemaType=""] [name=""] [description=""] [imageUrl=""] [addressStreetAddress=""] [addressComplement=""] [addressPostalCode=""] [addressLocality=""] [addressRegion=""] [addressCountryName=""] [addressCountryCode=""] [telephone=""] [mobile=""] [email=""] [url=""] [hours=[]] [priceRange=""] [mapUrl=""] [latitude=""] [longitude=""] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/ContactDetails.html.twig #}
+{% trans_default_domain 'ui' %}
+
+{# Every prop is optional, so each one is read through default() and only rendered once filled in #}
+{% set name = name|default('') %}
+{% set imageUrl = imageUrl|default('') %}
+{% set hours = hours|default([]) %}
+{# Filtered before the heading, not inside the loop: a row saved with days but no times would otherwise print "Opening hours" over an empty list. Same rule as ContactSnippetBuilder::openingHours() #}
+{% set openRanges = hours|filter(row => row.days|default([]) is not empty and row.opens|default('') and row.closes|default('')) %}
+{% set addressLines = [addressStreetAddress|default(''), addressComplement|default('')]|filter(v => v is not empty) %}
+{% set cityLine = [addressPostalCode|default(''), addressLocality|default('')]|filter(v => v is not empty)|join(' ') %}
+{% set regionLine = [addressRegion|default(''), addressCountryName|default('')]|filter(v => v is not empty)|join(' - ') %}
+
+<div class="contact-details"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    {% if imageUrl or name or description|default('') %}
+        <div class="contact-details__head">
+            {% if imageUrl %}
+                {# Decorative: the name right next to it already labels the business #}
+                <img class="contact-details__logo" src="{{ imageUrl }}" alt="" aria-hidden="true" loading="lazy">
+            {% endif %}
+            <div class="contact-details__intro">
+                {% if name %}<p class="contact-details__name">{{ name }}</p>{% endif %}
+                {% if description|default('') %}<div class="contact-details__description">{{ description|raw }}</div>{% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# Each pair wrapped in a <div>, the shape a <dl> takes to be laid out as a grid: auto-placement would otherwise drop a dt and its own dd in two unrelated cells #}
+    <dl class="contact-details__list">
+        {% if addressLines is not empty or cityLine or regionLine %}
+            <div class="contact-details__item">
+                <dt>{{ 'label.address'|trans }}</dt>
+                <dd class="contact-details__address">
+                    {% for line in addressLines %}{{ line }}<br>{% endfor %}
+                    {% if cityLine %}{{ cityLine }}<br>{% endif %}
+                    {% if regionLine %}{{ regionLine }}{% endif %}
+                </dd>
+            </div>
+        {% endif %}
+
+        {% if telephone|default('') %}
+            <div class="contact-details__item">
+                <dt>{{ 'label.phone'|trans }}</dt>
+                {# Spaces stripped from the href only: a dialer needs the bare number, the visitor reads the spaced one #}
+                <dd><a href="tel:{{ telephone|replace({' ': '', '.': ''}) }}">{{ telephone }}</a></dd>
+            </div>
+        {% endif %}
+
+        {% if mobile|default('') %}
+            <div class="contact-details__item">
+                <dt>{{ 'label.mobile'|trans }}</dt>
+                <dd><a href="tel:{{ mobile|replace({' ': '', '.': ''}) }}">{{ mobile }}</a></dd>
+            </div>
+        {% endif %}
+
+        {% if email|default('') %}
+            <div class="contact-details__item">
+                <dt>{{ 'label.email'|trans }}</dt>
+                {# Plain text, no mailto: the address is there for a human to read, and a linked one is the first thing a harvester follows #}
+                <dd>{{ email }}</dd>
+            </div>
+        {% endif %}
+
+        {% if url|default('') %}
+            <div class="contact-details__item">
+                <dt>{{ 'label.website'|trans }}</dt>
+                <dd><a href="{{ url }}">{{ url }}</a></dd>
+            </div>
+        {% endif %}
+
+        {% if priceRange|default('') %}
+            <div class="contact-details__item">
+                <dt>{{ 'label.price_range'|trans }}</dt>
+                <dd>{{ priceRange }}</dd>
+            </div>
+        {% endif %}
+    </dl>
+
+    {% if openRanges is not empty %}
+        <div class="contact-details__hours">
+            <p class="contact-details__hours-title">{{ 'label.opening_hours'|trans }}</p>
+            <dl class="contact-details__list contact-details__list--hours">
+                {% for row in openRanges %}
+                    <div class="contact-details__item contact-details__item--hours">
+                        {# Consecutive days collapse into a range, so "Mo-Fr" reads as one line instead of five #}
+                        <dt>
+                            {%- for run in contact_day_runs(row.days) -%}
+                                {{- ('label.' ~ run|first|lower)|trans -}}
+                                {%- if run|length > 1 %} - {{ ('label.' ~ run|last|lower)|trans }}{% endif -%}
+                                {%- if not loop.last %}, {% endif -%}
+                            {%- endfor -%}
+                        </dt>
+                        <dd>{{ row.opens }} - {{ row.closes }}</dd>
+                    </div>
+                {% endfor %}
+            </dl>
+        </div>
+    {% endif %}
+
+    {% if mapUrl|default('') %}
+        <p class="contact-details__map"><a class="btn btn-primary" href="{{ mapUrl }}" target="_blank" rel="noopener">{{ 'label.directions'|trans }}</a></p>
+    {% endif %}
+
+    {# A data block, not executed code - the CSP script-src still covers it, so a site running a nonce-only policy must nonce this tag in its own override #}
+    {% set snippet = contact_json_ld({
+        schemaType: schemaType|default(''),
+        name: name,
+        description: description|default(''),
+        addressStreetAddress: addressStreetAddress|default(''),
+        addressComplement: addressComplement|default(''),
+        addressPostalCode: addressPostalCode|default(''),
+        addressLocality: addressLocality|default(''),
+        addressRegion: addressRegion|default(''),
+        addressCountryCode: addressCountryCode|default(''),
+        telephone: telephone|default(''),
+        mobile: mobile|default(''),
+        email: email|default(''),
+        url: url|default(''),
+        priceRange: priceRange|default(''),
+        mapUrl: mapUrl|default(''),
+        latitude: latitude|default(''),
+        longitude: longitude|default(''),
+        hours: hours,
+    }, imageUrl) %}
+    {# "raw" because the payload went through a variable, which drops the function's own is_safe marking; the builder already escaped every character that could close the tag #}
+    {% if snippet %}<script type="application/ld+json">{{ snippet|raw }}</script>{% endif %}
+</div>

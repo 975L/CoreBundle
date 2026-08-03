@@ -1,0 +1,37 @@
+/* MEDIA GRID (management/media_index.html.twig) */
+.management-media-grid {
+    display: flex !important;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.management-media-grid__item {
+    display: block;
+    width: 150px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.management-media-grid__thumb {
+    /* !important needed to win over EasyAdmin's own content-panel img rules */
+    width: 150px !important;
+    height: 150px !important;
+    object-fit: contain;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 4px;
+}
+
+.management-media-grid__placeholder {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 4px;
+    font-size: .75rem;
+    text-align: center;
+    padding: .25rem;
+    overflow-wrap: anywhere;
+}

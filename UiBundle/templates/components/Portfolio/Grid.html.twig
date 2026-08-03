@@ -1,0 +1,36 @@
+{# Static usage: <twig:c975LUi:Portfolio:Grid media="{{ block.media }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [id=""]/> #}
+{# Dynamic usage (Block system): see templates/blocks/PortfolioGrid.html.twig #}
+{# Per-project title/text/link come from each media's own label/description/url, no separate collection #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="portfolio-grid"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        <div class="portfolio-grid__head">
+            <div>
+                {% if title|default('') %}
+                    {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+                    <h2 class="section-title">{{ title }}</h2>
+                {% elseif eyebrow|default('') %}
+                    <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+                {% endif %}
+            </div>
+            {% if linkLabel and linkUrl %}<a class="section-btn section-btn--ghost" href="{{ linkUrl }}">{{ linkLabel }}</a>{% endif %}
+        </div>
+        <div class="portfolio-grid__grid">
+            {% for m in media %}
+                {# No "url" on this media: nothing to link to, so this must not render as an <a> at all - a href="#" would be a dead link that still looks clickable #}
+                {% set tag = m.url ? 'a' : 'div' %}
+                <{{ tag }} class="portfolio-grid__project"{% if m.url %} href="{{ m.url }}" target="_blank" rel="noopener"{% endif %}>
+                    <div class="portfolio-grid__project-img">
+                        {# Pixel size reserves the box so the grid doesn't reflow as each image lands #}
+                        <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %} loading="lazy">
+                    </div>
+                    <div class="portfolio-grid__project-body">
+                        <h3 class="portfolio-grid__project-title">{{ m.label }}</h3>
+                        {% if m.description %}<p class="portfolio-grid__project-text">{{ m.description }}</p>{% endif %}
+                    </div>
+                </{{ tag }}>
+            {% endfor %}
+        </div>
+    </div>
+</{{ tag }}>

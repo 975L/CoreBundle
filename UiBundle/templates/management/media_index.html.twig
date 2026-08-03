@@ -1,0 +1,34 @@
+{% extends '@EasyAdmin/crud/index.html.twig' %}
+
+{# Flex gallery instead of the default table: a media library reads better as thumbnails than as rows #}
+{% block main %}
+    <p>{{ ('label.info_media'|trans({}, 'ui')) }}</p>
+
+    <div class="management-media-grid">
+        {% for entity in entities %}
+            {% if entity.isAccessible %}
+                {% set media = entity.instance %}
+                {% set thumbnailPath = media.filename ? document_thumbnail_path(media) : null %}
+                <a href="{{ entity.defaultActionUrl }}" class="management-media-grid__item">
+                    {% if media.filename and media.mimeType starts with 'image/' %}
+                        <img src="{{ vich_uploader_asset(media) }}" alt="{{ media.alt }}" width="150" height="150" class="management-media-grid__thumb">
+                    {% elseif thumbnailPath %}
+                        <img src="{{ asset(thumbnailPath) }}" alt="{{ media.alt }}" width="150" height="150" class="management-media-grid__thumb">
+                    {% else %}
+                        <div class="management-media-grid__placeholder">
+                            {{ media.filename }}
+                        </div>
+                    {% endif %}
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if entities|length > 0 %}
+        <div class="content-panel-footer without-padding without-border">
+            {{ include(ea.templatePath('crud/paginator'), {render_detailed_pagination: true}) }}
+        </div>
+    {% endif %}
+
+    {{ include('@EasyAdmin/crud/includes/_action_confirmation_modal.html.twig', with_context: false) }}
+{% endblock main %}
