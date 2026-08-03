@@ -1,0 +1,602 @@
+[
+    {
+        "date": "2026-08-03",
+        "description": [
+            {
+                "en": "The dates of failed messages are shown at the right time again, and the alert email is no longer skipped for the failures right after one was sent",
+                "fr": "Les dates des messages échoués s'affichent de nouveau à la bonne heure, et l'email d'alerte n'est plus sauté pour les échecs survenant juste après un envoi",
+                "es": "Las fechas de los mensajes fallidos vuelven a mostrarse a la hora correcta, y el correo de alerta ya no se omite para los fallos ocurridos justo después de un envío"
+            },
+            {
+                "en": "The checks on your robots.txt and sitemap no longer report them as missing when your site address was saved with a slash at the end",
+                "fr": "Les contrôles de votre robots.txt et de votre sitemap ne les signalent plus comme manquants lorsque l'adresse de votre site a été enregistrée avec une barre oblique à la fin",
+                "es": "Las comprobaciones de su robots.txt y de su sitemap ya no los señalan como ausentes cuando la dirección de su sitio se guardó con una barra al final"
+            },
+            {
+                "en": "A redirection saved without a destination address no longer takes down the pages it covers",
+                "fr": "Une redirection enregistrée sans adresse de destination ne met plus en panne les pages qu'elle couvre",
+                "es": "Una redirección guardada sin dirección de destino ya no deja fuera de servicio las páginas que cubre"
+            },
+            {
+                "en": "Exporting your tables no longer reports a failure when the export actually went through, and says what went wrong when it really failed",
+                "fr": "L'export de vos tables ne signale plus un échec alors que l'export s'est bien déroulé, et indique ce qui a échoué quand c'est réellement le cas",
+                "es": "La exportación de sus tablas ya no informa de un fallo cuando la exportación se realizó correctamente, e indica qué ha fallado cuando realmente ocurre"
+            },
+            {
+                "en": "The copyright at the bottom of your pages no longer shows 1970 when the date your site went online was typed in an unrecognized format",
+                "fr": "Le copyright en bas de vos pages n'affiche plus 1970 lorsque la date de mise en ligne de votre site a été saisie dans un format non reconnu",
+                "es": "El copyright al pie de sus páginas ya no muestra 1970 cuando la fecha de puesta en línea de su sitio se escribió en un formato no reconocido"
+            }
+        ]
+    },
+    {
+        "date": "2026-08-02",
+        "description": [
+            {
+                "en": "Redirections are now available whichever modules you have installed: an address that changed is redirected whether it was a page's or a product's",
+                "fr": "Les redirections sont désormais disponibles quels que soient les modules installés : une adresse qui change est redirigée qu'il s'agisse d'une page ou d'un produit",
+                "es": "Las redirecciones ya están disponibles sean cuales sean los módulos instalados: una dirección que cambia se redirige tanto si era de una página como de un producto"
+            },
+            {
+                "en": "The certificate, security headers, robots.txt and content-quality checks now run on a site with no pages at all",
+                "fr": "Les contrôles du certificat, des en-têtes de sécurité, du robots.txt et de la qualité du contenu s'exécutent désormais sur un site sans aucune page",
+                "es": "Las comprobaciones del certificado, de las cabeceras de seguridad, del robots.txt y de la calidad del contenido se ejecutan ahora en un sitio sin ninguna página"
+            },
+            {
+                "en": "The account-confirmation and password-reset emails are now written from a template you can edit in the back office, instead of being fixed in the code",
+                "fr": "Les emails de confirmation de compte et de réinitialisation de mot de passe s'écrivent désormais à partir d'un modèle modifiable dans le back-office, au lieu d'être figés dans le code",
+                "es": "Los correos de confirmación de cuenta y de restablecimiento de contraseña se redactan ahora a partir de una plantilla editable en el back office, en lugar de estar fijados en el código"
+            },
+            {
+                "en": "A role held by an account is no longer taken away without warning when it stops being one of the roles offered on your site",
+                "fr": "Un rôle attribué à un compte ne lui est plus retiré sans prévenir lorsqu'il ne fait plus partie des rôles proposés sur votre site",
+                "es": "Un rol asignado a una cuenta ya no se le retira sin avisar cuando deja de figurar entre los roles ofrecidos en su sitio"
+            },
+            {
+                "en": "The fields of the new-password form are shown in your language rather than as raw labels",
+                "fr": "Les champs du formulaire de nouveau mot de passe s'affichent dans votre langue plutôt que sous forme de libellés bruts",
+                "es": "Los campos del formulario de nueva contraseña se muestran en su idioma en lugar de como etiquetas sin traducir"
+            },
+            {
+                "en": "Cleaning up failed messages now runs even when no sender address has been filled in, where it used to stop before purging anything",
+                "fr": "Le nettoyage des messages échoués s'exécute désormais même si aucune adresse d'expéditeur n'est renseignée, alors qu'il s'arrêtait avant d'avoir purgé quoi que ce soit",
+                "es": "La limpieza de los mensajes fallidos se ejecuta ahora aunque no se haya indicado ninguna dirección de remitente, cuando antes se detenía sin purgar nada"
+            }
+        ]
+    },
+    {
+        "date": "2026-08-01",
+        "description": [
+            {
+                "en": "Maintenance tasks (backup, sitemaps, health check) no longer all start at the same minute on every site, so sites sharing a server stop competing for it at night",
+                "fr": "Les tâches de maintenance (sauvegarde, sitemaps, bilan de santé) ne démarrent plus toutes à la même minute sur tous les sites, les sites hébergés sur un même serveur cessant ainsi de se le disputer la nuit",
+                "es": "Las tareas de mantenimiento (copia de seguridad, sitemaps, estado de salud) ya no se inician todas en el mismo minuto en todos los sitios, por lo que los sitios que comparten servidor dejan de competir por él durante la noche"
+            },
+            {
+                "en": "The health check now watches the database server itself, and says when its load comes from a background process rather than from your visitors",
+                "fr": "Le bilan de santé surveille désormais le serveur de base de données lui-même, et indique quand sa charge vient d'un processus de fond plutôt que de vos visiteurs",
+                "es": "El estado de salud ahora vigila el propio servidor de base de datos e indica cuándo su carga proviene de un proceso de fondo y no de sus visitantes"
+            },
+            {
+                "en": "Your site can now report what it runs and what its last health check found to a dashboard of your choosing, so several sites can be watched from one place - nothing leaves the site until you fill in the destination in the settings",
+                "fr": "Votre site peut désormais rapporter ce qu'il fait tourner et ce qu'a trouvé son dernier bilan de santé vers un tableau de bord de votre choix, ce qui permet de surveiller plusieurs sites au même endroit - rien ne quitte le site tant que vous n'avez pas renseigné la destination dans les paramètres",
+                "es": "Su sitio ahora puede informar de lo que ejecuta y de lo que encontró su último estado de salud a un panel de su elección, lo que permite vigilar varios sitios desde un mismo lugar - nada sale del sitio hasta que indique el destino en los ajustes"
+            },
+            {
+                "en": "Starting a health check now shows how far along it is, the page filling in the results on its own as they arrive",
+                "fr": "Lancer un bilan de santé affiche désormais son avancement, la page se complétant d'elle-même au fur et à mesure des résultats",
+                "es": "Iniciar un estado de salud ahora muestra su avance, y la página se va completando sola a medida que llegan los resultados"
+            },
+            {
+                "en": "Health check advice now links straight to the screen and field to correct, rather than only to the external report",
+                "fr": "Les conseils du bilan de santé renvoient désormais directement à l'écran et au champ à corriger, et plus seulement au rapport externe",
+                "es": "Los consejos del estado de salud ahora enlazan directamente con la pantalla y el campo que hay que corregir, y no solo con el informe externo"
+            },
+            {
+                "en": "The back office now picks up its own style updates straight after an update, instead of keeping the old ones until a forced reload",
+                "fr": "Le back-office reprend désormais ses mises à jour de style dès la mise à jour, au lieu de conserver les anciennes jusqu'à un rechargement forcé",
+                "es": "El back office ahora aplica sus actualizaciones de estilo justo después de una actualización, en lugar de conservar las antiguas hasta una recarga forzada"
+            },
+            {
+                "en": "On the health check screen, a page's rows are now separated by a plain line instead of a colored background, which could contradict the status shown on the row itself",
+                "fr": "Sur l'écran du bilan de santé, les lignes d'une page sont désormais séparées par un simple trait plutôt que par un fond coloré, qui pouvait contredire le statut affiché sur la ligne elle-même",
+                "es": "En la pantalla del estado de salud, las filas de una página ahora se separan con una simple línea en lugar de un fondo de color, que podía contradecir el estado mostrado en la propia fila"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-31",
+        "description": [
+            {
+                "en": "Importing a configuration export now fills in the secrets still left empty on this site, instead of leaving them blank for good",
+                "fr": "L'import d'un export de configuration remplit désormais les secrets encore vides sur ce site, au lieu de les laisser vides définitivement",
+                "es": "La importación de una exportación de configuración rellena ahora los secretos todavía vacíos en este sitio, en lugar de dejarlos vacíos para siempre"
+            },
+            {
+                "en": "A site whose settings have not been loaded yet no longer closes its back office to everyone, yourself included",
+                "fr": "Un site dont les réglages n'ont pas encore été chargés ne ferme plus son back-office à tout le monde, vous compris",
+                "es": "Un sitio cuyos ajustes aún no se han cargado ya no cierra su back office a todo el mundo, usted incluido"
+            },
+            {
+                "en": "The back office no longer sends you back to the login page when you are already signed in",
+                "fr": "Le back-office ne vous renvoie plus vers la page de connexion alors que vous êtes déjà connecté",
+                "es": "El back office ya no le devuelve a la página de inicio de sesión cuando ya ha iniciado sesión"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-29",
+        "description": [
+            {
+                "en": "The dashboard now offers guided projects for the back office itself: finding and changing a setting, running a health check and knowing where to start on what it reports, and rehearsing the maintenance switch on a quiet day",
+                "fr": "Le tableau de bord propose désormais des parcours guidés pour le back-office lui-même : trouver et modifier un réglage, lancer un bilan de santé et savoir par quoi commencer dans ce qu'il signale, et répéter à froid la bascule en maintenance",
+                "es": "El panel ofrece ahora recorridos guiados para el propio back office: encontrar y modificar un ajuste, lanzar un estado de salud y saber por dónde empezar con lo que informa, y ensayar en frío el cambio a mantenimiento"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-29",
+        "description": [
+            {
+                "en": "Maintenance mode now really closes the site: until its access token was filled in by hand, every visitor was let straight through while the dashboard said the site was closed",
+                "fr": "Le mode maintenance ferme désormais vraiment le site : tant que son jeton d'accès n'était pas rempli à la main, tous les visiteurs passaient alors que le tableau de bord annonçait le site fermé",
+                "es": "El modo mantenimiento cierra ahora realmente el sitio: mientras su token de acceso no se rellenaba a mano, todos los visitantes pasaban aunque el panel indicara el sitio cerrado"
+            },
+            {
+                "en": "Closing the site now hands you a ready-made link on the dashboard: give it to a client signing off on the work, or to anyone who has to see the site as its visitors will, without creating them an account",
+                "fr": "Fermer le site vous donne désormais un lien tout prêt sur le tableau de bord : donnez-le au client qui valide le travail, ou à qui doit voir le site comme le verront les visiteurs, sans lui créer de compte",
+                "es": "Cerrar el sitio le ofrece ahora un enlace listo en el panel: déselo al cliente que valida el trabajo, o a quien deba ver el sitio como lo verán los visitantes, sin crearle una cuenta"
+            },
+            {
+                "en": "The dashboard now tells you the site is closed, and turns that warning red once the closure has lasted long enough for search engines to start dropping your pages",
+                "fr": "Le tableau de bord vous signale désormais que le site est fermé, et passe l'avertissement en rouge dès que la fermeture dure assez longtemps pour que les moteurs de recherche commencent à retirer vos pages",
+                "es": "El panel le indica ahora que el sitio está cerrado, y pone el aviso en rojo en cuanto el cierre dura lo suficiente para que los buscadores empiecen a retirar sus páginas"
+            },
+            {
+                "en": "Reopening the site is now immediate for everyone: the maintenance page can no longer stay cached somewhere along the way once the site is back up",
+                "fr": "La réouverture du site est désormais immédiate pour tout le monde : la page de maintenance ne peut plus rester en cache quelque part une fois le site revenu",
+                "es": "La reapertura del sitio es ahora inmediata para todos: la página de mantenimiento ya no puede quedarse en caché por el camino una vez que el sitio ha vuelto"
+            },
+            {
+                "en": "A weekly email can now tell you that the backups of the last 7 days all went through — with what was saved, what failed and how long the longest stretch without a backup was — for the sites whose dashboard you don't open every day",
+                "fr": "Un email hebdomadaire peut désormais vous confirmer que les sauvegardes des 7 derniers jours se sont toutes bien passées — avec ce qui a été sauvegardé, ce qui a échoué et la plus longue période sans sauvegarde — pour les sites dont vous n'ouvrez pas le tableau de bord tous les jours",
+                "es": "Un correo semanal puede ahora confirmarle que todas las copias de seguridad de los últimos 7 días se realizaron correctamente — con lo que se guardó, lo que falló y el periodo más largo sin copia — para los sitios cuyo panel no abre todos los días"
+            },
+            {
+                "en": "That email arrives even when no backup ran at all, and says so: it is sent on its own schedule instead of riding on a backup run that may never reach its last line",
+                "fr": "Cet email arrive même quand plus aucune sauvegarde n'a tourné, et le dit : il part selon son propre planning au lieu de dépendre d'une sauvegarde qui peut ne jamais aller à son terme",
+                "es": "Ese correo llega incluso cuando no se ha ejecutado ninguna copia, y lo indica: se envía según su propia planificación en lugar de depender de una copia que puede no llegar a completarse"
+            },
+            {
+                "en": "The dashboard now tells you the state of the last backup, and warns you when no backup has run for too long — the one thing a report email can never do, since an email that is never sent is exactly what nobody notices",
+                "fr": "Le tableau de bord indique désormais l'état de la dernière sauvegarde, et vous alerte quand plus aucune sauvegarde n'a tourné depuis trop longtemps — ce qu'un email de rapport ne pourra jamais faire, un email jamais envoyé étant justement ce que personne ne remarque",
+                "es": "El panel indica ahora el estado de la última copia de seguridad y le avisa cuando hace demasiado tiempo que no se ejecuta ninguna — algo que un correo de informe nunca podrá hacer, ya que un correo que nunca se envía es precisamente lo que nadie nota"
+            },
+            {
+                "en": "Each backup is now checked before being counted as done: its archives are read back, their size recorded, and the tables actually saved compared against the database's own list",
+                "fr": "Chaque sauvegarde est désormais vérifiée avant d'être considérée comme faite : ses archives sont relues, leur taille enregistrée, et les tables réellement sauvegardées comparées à la liste de la base",
+                "es": "Cada copia de seguridad se verifica ahora antes de darse por hecha: se releen sus archivos, se registra su tamaño y las tablas realmente guardadas se comparan con la lista de la base de datos"
+            },
+            {
+                "en": "The site's private files are backed up too, and the server now keeps a rolling window of backups instead of relying on someone copying them off before they pile up",
+                "fr": "Les fichiers privés du site sont sauvegardés eux aussi, et le serveur conserve désormais un nombre de jours de sauvegardes plutôt que d'attendre que quelqu'un les recopie ailleurs",
+                "es": "Los archivos privados del sitio también se respaldan, y el servidor conserva ahora un número de días de copias en lugar de esperar a que alguien las copie a otro lugar"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-28",
+        "description": [
+            {
+                "en": "A new \"Guided projects\" button on the dashboard walks you through a whole task step by step — creating a page, adding a block, putting it in a menu — following you from screen to screen and pointing at what to click",
+                "fr": "Un nouveau bouton « Projets guidés » sur le tableau de bord vous accompagne pas à pas dans une tâche complète — créer une page, ajouter un bloc, la mettre dans un menu — en vous suivant d'écran en écran et en pointant ce sur quoi cliquer",
+                "es": "Un nuevo botón «Proyectos guiados» en el panel le acompaña paso a paso en una tarea completa — crear una página, añadir un bloque, ponerla en un menú — siguiéndole de pantalla en pantalla y señalando dónde hacer clic"
+            },
+            {
+                "en": "Each guided project can be replayed as often as you like, and picks up where you left it if you close the panel and come back later",
+                "fr": "Chaque projet guidé peut être rejoué autant de fois que vous le voulez, et reprend là où vous l'aviez laissé si vous fermez le panneau et y revenez plus tard",
+                "es": "Cada proyecto guiado puede repetirse tantas veces como quiera, y se reanuda donde lo dejó si cierra el panel y vuelve más tarde"
+            },
+            {
+                "en": "In the Health check, the line opening each page's block is now colored with that page's overall result, so you see at a glance which pages are fine and which need attention",
+                "fr": "Dans le Bilan de santé, la ligne qui ouvre le bloc de chaque page est désormais colorée selon le résultat global de cette page, pour voir d'un coup d'œil lesquelles vont bien et lesquelles demandent votre attention",
+                "es": "En el Estado de salud, la línea que abre el bloque de cada página aparece ahora coloreada según el resultado global de esa página, para ver de un vistazo cuáles están bien y cuáles requieren su atención"
+            },
+            {
+                "en": "Those colors now follow the light or dark theme of the back office",
+                "fr": "Ces couleurs suivent désormais le thème clair ou sombre du back-office",
+                "es": "Esos colores siguen ahora el tema claro u oscuro del back office"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-27",
+        "description": [
+            {
+                "en": "A new \"Obsolete configs\" page lists the settings the site no longer uses, shows what each one still holds, and deletes the ones you tick",
+                "fr": "Une nouvelle page \"Configurations obsolètes\" liste les paramètres que le site n'utilise plus, montre ce que chacun contient encore, et supprime ceux que vous cochez",
+                "es": "Una nueva página \"Configuraciones obsoletas\" enumera los ajustes que el sitio ya no utiliza, muestra lo que cada uno contiene todavía y elimina los que marque"
+            },
+            {
+                "en": "A new \"SQL + secrets\" export hands your passwords and keys over to another environment of the same site, so they don't have to be typed in again",
+                "fr": "Un nouvel export \"SQL + secrets\" transmet vos mots de passe et clés à un autre environnement du même site, pour ne pas avoir à les ressaisir",
+                "es": "Una nueva exportación \"SQL + secretos\" transfiere sus contraseñas y claves a otro entorno del mismo sitio, para no tener que volver a escribirlas"
+            },
+            {
+                "en": "A setting marked as secret but still empty no longer shows as \"••••••••\" in the list, which hid the very ones you are asked to fill in",
+                "fr": "Un paramètre marqué comme secret mais encore vide ne s'affiche plus \"••••••••\" dans la liste, ce qui masquait justement ceux qu'on vous demande de remplir",
+                "es": "Un ajuste marcado como secreto pero aún vacío ya no aparece como \"••••••••\" en la lista, lo que ocultaba precisamente los que se le pide rellenar"
+            },
+            {
+                "en": "The deployment checks now appear once in the Health check's \"Site\" section, instead of being repeated on every page",
+                "fr": "Les vérifications de déploiement apparaissent désormais une seule fois dans la section \"Site\" du Bilan de santé, au lieu d'être répétées sur chaque page",
+                "es": "Las comprobaciones de despliegue aparecen ahora una sola vez en la sección \"Sitio\" del Estado de salud, en lugar de repetirse en cada página"
+            },
+            {
+                "en": "\"Run health check now\" no longer keeps you waiting: the checks run in the background and their results show up on the page as they complete",
+                "fr": "\"Lancer le bilan de santé maintenant\" ne vous fait plus attendre : les vérifications tournent en arrière-plan et leurs résultats s'affichent sur la page au fur et à mesure",
+                "es": "\"Ejecutar el estado de salud ahora\" ya no le hace esperar: las comprobaciones se ejecutan en segundo plano y sus resultados aparecen en la página a medida que terminan"
+            },
+            {
+                "en": "The dashboard now alerts you when the last health check left errors or points to keep an eye on, with the date it ran",
+                "fr": "Le tableau de bord vous signale désormais les erreurs et les points à surveiller laissés par le dernier bilan de santé, avec sa date",
+                "es": "El panel le avisa ahora de los errores y los puntos a vigilar que dejó el último estado de salud, con su fecha"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-26",
+        "description": [
+            {
+                "en": "The Health check tips are now the ones for the page they sit under, instead of repeating the last checked page's ones on every row",
+                "fr": "Les conseils du Bilan de santé correspondent désormais bien à la page sous laquelle ils s'affichent, au lieu de répéter sur chaque ligne ceux de la dernière page vérifiée",
+                "es": "Los consejos del Estado de salud corresponden ahora a la página bajo la que aparecen, en lugar de repetir en cada fila los de la última página comprobada"
+            },
+            {
+                "en": "A Health check tip covering several items (e.g. images missing an alt text) can now be unfolded to see each one, with a link straight to it",
+                "fr": "Un conseil du Bilan de santé qui porte sur plusieurs éléments (ex. des images sans texte alternatif) peut désormais être déplié pour voir chacun d'eux, avec un lien direct vers celui-ci",
+                "es": "Un consejo del Estado de salud que afecta a varios elementos (p. ej. imágenes sin texto alternativo) ahora puede desplegarse para ver cada uno, con un enlace directo a él"
+            },
+            {
+                "en": "The dashboard's \"Made by\" logo now also shows when its path points to a file of your own site rather than to a full address",
+                "fr": "Le logo « Réalisé par » du tableau de bord s'affiche désormais aussi quand son chemin pointe vers un fichier de votre propre site plutôt que vers une adresse complète",
+                "es": "El logotipo «Realizado por» del panel de control ahora también se muestra cuando su ruta apunta a un archivo de su propio sitio en lugar de a una dirección completa"
+            },
+            {
+                "en": "A new \"Create sitemaps\" button on the dashboard rebuilds the sitemaps search engines read, covering everything published on your site, without waiting for the nightly refresh",
+                "fr": "Un nouveau bouton « Créer les sitemaps » sur le tableau de bord régénère les sitemaps que lisent les moteurs de recherche, pour tout ce qui est publié sur votre site, sans attendre la mise à jour de la nuit",
+                "es": "Un nuevo botón «Crear sitemaps» en el panel de control regenera los sitemaps que leen los motores de búsqueda, con todo lo publicado en su sitio, sin esperar la actualización nocturna"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-24",
+        "description": [
+            {
+                "en": "Added a trend chart and an \"Export (CSV)\" button on the Health check page, plus click-to-sort and search/status/kind filters on its table",
+                "fr": "Ajout d'un graphique de tendance et d'un bouton « Exporter (CSV) » sur la page Bilan de santé, ainsi que d'un tri au clic et de filtres recherche/statut/type sur son tableau",
+                "es": "Añadido un gráfico de tendencia y un botón «Exportar (CSV)» en la página de Estado de salud, además de ordenación al hacer clic y filtros de búsqueda/estado/tipo en su tabla"
+            },
+            {
+                "en": "The Health check table now shows Lighthouse-style colored score gauges for PageSpeed results, instead of a raw technical details dump",
+                "fr": "Le tableau du Bilan de santé affiche désormais des jauges de score colorées façon Lighthouse pour les résultats PageSpeed, au lieu d'un pavé de détails techniques brut",
+                "es": "La tabla de Estado de salud ahora muestra medidores de puntuación en color al estilo Lighthouse para los resultados de PageSpeed, en lugar de un volcado de detalles técnicos en bruto"
+            },
+            {
+                "en": "The Health check table now shows a single \"last checked\" date instead of repeating it on every row, and shows the site-wide security headers result on its own line instead of mixed in with per-page results",
+                "fr": "Le tableau du Bilan de santé affiche désormais une seule date de « dernière vérification » au lieu de la répéter sur chaque ligne, et affiche le résultat des en-têtes de sécurité (valable pour tout le site) sur sa propre ligne plutôt que mélangé aux résultats par page",
+                "es": "La tabla de Estado de salud ahora muestra una única fecha de «última comprobación» en lugar de repetirla en cada fila, y muestra el resultado de los encabezados de seguridad (válido para todo el sitio) en su propia línea en lugar de mezclado con los resultados por página"
+            },
+            {
+                "en": "The Health check page now groups every site-wide check (security headers, TLS certificate, robots.txt/sitemap, redirects) into its own \"Site\" section, separate from the per-page results",
+                "fr": "La page Bilan de santé regroupe désormais toutes les vérifications valables pour tout le site (en-têtes de sécurité, certificat TLS, robots.txt/sitemap, redirections) dans une section « Site » distincte des résultats par page",
+                "es": "La página de Estado de salud agrupa ahora todas las comprobaciones válidas para todo el sitio (encabezados de seguridad, certificado TLS, robots.txt/sitemap, redirecciones) en una sección «Sitio» distinta de los resultados por página"
+            },
+            {
+                "en": "The guided tour panel is now centered on screen instead of anchored to the bottom-right corner, and now opens the collapsed \"Advanced\" menu itself when a step points inside it",
+                "fr": "Le panneau de la visite guidée est désormais centré à l'écran au lieu d'être ancré en bas à droite, et ouvre désormais lui-même le menu replié « Avancé » quand une étape s'y trouve",
+                "es": "El panel del recorrido guiado ahora está centrado en la pantalla en lugar de anclado en la esquina inferior derecha, y ahora abre por sí mismo el menú plegado «Avanzado» cuando un paso se encuentra dentro"
+            },
+            {
+                "en": "The guided tour now follows the sidebar's own order (top to bottom, then the collapsed \"Advanced\" menu) instead of a flat alphabetical order, and the \"Import content\" and \"site\" steps now have a description",
+                "fr": "La visite guidée suit désormais l'ordre du menu latéral lui-même (de haut en bas, puis le menu replié « Avancé ») au lieu d'un ordre alphabétique global, et les étapes « Importer du contenu » et « site » ont désormais une description",
+                "es": "El recorrido guiado ahora sigue el propio orden del menú lateral (de arriba a abajo, luego el menú plegado «Avanzado») en lugar de un orden alfabético global, y los pasos «Importar contenido» y «sitio» ahora tienen una descripción"
+            },
+            {
+                "en": "Added a \"Visit the site\" link at the bottom of the dashboard's Links section",
+                "fr": "Ajout d'un lien « Voir le site » en bas de la section Liens du tableau de bord",
+                "es": "Añadido un enlace «Ver el sitio» en la parte inferior de la sección Enlaces del panel de control"
+            },
+            {
+                "en": "Health check results can now show a direct edit link to the checked page, and tips on how to fix what's wrong",
+                "fr": "Les résultats du Bilan de santé peuvent désormais afficher un lien direct pour modifier la page vérifiée, ainsi que des conseils pour corriger ce qui ne va pas",
+                "es": "Los resultados del Estado de salud ahora pueden mostrar un enlace directo para editar la página comprobada, así como consejos para corregir lo que falla"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-23",
+        "description": [
+            {
+                "en": "Added a \"Health check\" dashboard page showing the latest Lighthouse scores and console errors for every published page, with a button to run it on demand",
+                "fr": "Ajout d'une page « Bilan de santé » sur le tableau de bord affichant les derniers scores Lighthouse et erreurs console de chaque page publiée, avec un bouton pour le lancer à la demande",
+                "es": "Añadida una página de «Estado de salud» en el panel de control que muestra las últimas puntuaciones de Lighthouse y errores de consola de cada página publicada, con un botón para ejecutarlo bajo demanda"
+            },
+            {
+                "en": "Added a \"Guided tour\" button on the dashboard, explaining each menu item in turn",
+                "fr": "Ajout d'un bouton « Visite guidée » sur le tableau de bord, expliquant chaque élément de menu l'un après l'autre",
+                "es": "Añadido un botón de «Visita guiada» en el panel de control, que explica cada elemento del menú uno por uno"
+            },
+            {
+                "en": "The Health check page now also shows what needs attention, not just the dashboard",
+                "fr": "La page Bilan de santé affiche désormais elle aussi ce qui nécessite votre attention, et pas seulement le tableau de bord",
+                "es": "La página de Estado de salud ahora también muestra lo que requiere atención, no solo el panel de control"
+            },
+            {
+                "en": "Added an \"Export sync (everything)\" dashboard shortcut to download a single file with everything to keep another site in sync, instead of exporting each part separately",
+                "fr": "Ajout d'un raccourci « Exporter la synchro (tout) » sur le tableau de bord pour télécharger en un seul fichier tout ce qu'il faut pour synchroniser un autre site, au lieu d'exporter chaque partie séparément",
+                "es": "Añadido un atajo «Exportar la sincronización (todo)» en el panel de control para descargar en un solo archivo todo lo necesario para sincronizar otro sitio, en lugar de exportar cada parte por separado"
+            },
+            {
+                "en": "Fixed the back-office menu sometimes showing an extra bullet next to its items",
+                "fr": "Correction d'une puce superflue qui s'affichait parfois à côté des éléments du menu du back-office",
+                "es": "Corregida una viñeta adicional que a veces aparecía junto a los elementos del menú del back-office"
+            },
+            {
+                "en": "The dashboard now shows an essential-actions checklist, linking straight to the handful of settings every site needs",
+                "fr": "Le tableau de bord affiche désormais une liste des actions essentielles, avec un lien direct vers les quelques réglages indispensables à tout site",
+                "es": "El panel de control ahora muestra una lista de acciones esenciales, con un enlace directo a los pocos ajustes que todo sitio necesita"
+            },
+            {
+                "en": "The back-office menu now tucks less-used sections into a collapsible \"Advanced\" menu, keeping the main menu focused",
+                "fr": "Le menu du back-office regroupe désormais les sections les moins utilisées dans un menu « Avancé » repliable, pour garder le menu principal épuré",
+                "es": "El menú del back-office ahora agrupa las secciones menos usadas en un menú «Avanzado» plegable, manteniendo el menú principal despejado"
+            },
+            {
+                "en": "The dashboard's quick actions are now shown as a tidy grid of tiles instead of a row of buttons",
+                "fr": "Les actions rapides du tableau de bord s'affichent désormais sous forme de vignettes bien rangées plutôt qu'en rangée de boutons",
+                "es": "Los accesos rápidos del panel de control ahora se muestran como una cuadrícula de fichas en lugar de una fila de botones"
+            },
+            {
+                "en": "Related dashboard quick actions (e.g. every export) are now grouped together in the tile grid",
+                "fr": "Les actions rapides du tableau de bord liées au même sujet (ex. les exports) sont désormais regroupées dans la grille",
+                "es": "Los accesos rápidos del panel de control relacionados (p. ej. las exportaciones) ahora se agrupan juntos en la cuadrícula"
+            },
+            {
+                "en": "Removed a red highlight that made some quick-action tiles look turned on",
+                "fr": "Suppression d'un surlignage rouge qui donnait à tort l'impression que certaines vignettes étaient activées",
+                "es": "Eliminado un resaltado rojo que hacía parecer que algunas fichas de acceso rápido estaban activadas"
+            },
+            {
+                "en": "Fixed a dashboard quick action that could stay invisible to everyone",
+                "fr": "Correction d'une vignette d'action rapide qui pouvait rester invisible pour tout le monde",
+                "es": "Corregida una ficha de acceso rápido que podía permanecer invisible para todos"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-22",
+        "description": [
+            {
+                "en": "The configuration page now explains what it's for and what to watch out for when editing values",
+                "fr": "La page de configuration explique désormais à quoi elle sert et les précautions à prendre en modifiant les valeurs",
+                "es": "La página de configuración ahora explica para qué sirve y qué precauciones tomar al modificar los valores"
+            },
+            {
+                "en": "Removed the separate view page for a configuration entry — edit now shows everything, including sensitive values",
+                "fr": "Suppression de la page de consultation séparée d'une configuration : la page de modification affiche désormais tout, y compris les valeurs sensibles",
+                "es": "Se eliminó la página de consulta independiente de una configuración: la página de edición ahora muestra todo, incluidos los valores sensibles"
+            },
+            {
+                "en": "Added a Cancel button when editing a configuration entry",
+                "fr": "Ajout d'un bouton Annuler lors de la modification d'une configuration",
+                "es": "Añadido un botón Cancelar al modificar una configuración"
+            },
+            {
+                "en": "You can now export the configuration as a file and re-import it on another site to keep them in sync",
+                "fr": "Vous pouvez désormais exporter la configuration dans un fichier et le réimporter sur un autre site pour les synchroniser",
+                "es": "Ahora puede exportar la configuración a un archivo y volver a importarlo en otro sitio para mantenerlos sincronizados"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-21",
+        "description": [
+            {
+                "en": "Font-related settings are now chosen from a list instead of being typed in, so there's no more risk of a typo",
+                "fr": "Les réglages liés aux polices se choisissent désormais dans une liste au lieu d'être saisis à la main, il n'y a plus de risque de faute de frappe",
+                "es": "Los ajustes relacionados con las fuentes ahora se eligen de una lista en lugar de escribirse a mano, sin riesgo de errores tipográficos"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-20",
+        "description": [
+            {
+                "en": "You can now export the SQL configuration directly from the dashboard, without opening the Configuration section first",
+                "fr": "Vous pouvez désormais exporter la configuration SQL directement depuis le tableau de bord, sans passer par la section Configuration",
+                "es": "Ahora puedes exportar la configuración SQL directamente desde el panel, sin necesidad de abrir antes la sección Configuración"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-19",
+        "description": [
+            {
+                "en": "Searching in the config list now matches what you actually see on screen, not just internal names",
+                "fr": "La recherche dans la liste des configurations correspond désormais à ce que vous voyez à l'écran, et non plus seulement aux noms internes",
+                "es": "La búsqueda en la lista de configuraciones ahora coincide con lo que ves en pantalla, no solo con los nombres internos"
+            },
+            {
+                "en": "JSON values are now displayed nicely formatted and easier to read",
+                "fr": "Les valeurs JSON sont désormais affichées de manière lisible et bien mise en forme",
+                "es": "Los valores JSON ahora se muestran bien formateados y son más fáciles de leer"
+            },
+            {
+                "en": "Fixed the Edit/Detail icons sometimes stacking on two lines in the config list",
+                "fr": "Correction des icônes Modifier/Voir qui s'affichaient parfois sur deux lignes dans la liste des configurations",
+                "es": "Corregido que los iconos Editar/Ver aparecieran a veces en dos líneas en la lista de configuraciones"
+            },
+            {
+                "en": "The configuration list is now organized by category — pick one to see its entries, instead of scrolling one long list",
+                "fr": "La liste des configurations est désormais organisée par catégorie : choisissez-en une pour voir ses entrées, au lieu de faire défiler une longue liste",
+                "es": "La lista de configuraciones ahora está organizada por categorías: elige una para ver sus entradas, en lugar de desplazarte por una lista larga"
+            },
+            {
+                "en": "Theme settings (colors, fonts, light/dark mode) are now edited from the Configuration section instead of a separate Theme page, and site administrators can now edit them directly, not just super-administrators",
+                "fr": "Les réglages du thème (couleurs, polices, mode clair/sombre) se modifient désormais depuis la section Configuration, et non plus depuis une page Thème séparée, et les administrateurs du site peuvent désormais les modifier directement, pas seulement les super-administrateurs",
+                "es": "Los ajustes del tema (colores, fuentes, modo claro/oscuro) ahora se editan desde la sección Configuración en lugar de una página Tema aparte, y los administradores del sitio ya pueden editarlos directamente, no solo los superadministradores"
+            },
+            {
+                "en": "Fixed message-cleanup settings showing an untranslated category name in the configuration list",
+                "fr": "Correction de l'affichage d'un nom de catégorie non traduit pour les réglages de nettoyage des messages dans la liste des configurations",
+                "es": "Corregido que los ajustes de limpieza de mensajes mostraran un nombre de categoría sin traducir en la lista de configuraciones"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-17",
+        "description": [
+            {
+                "en": "The ready-made theme presets option is temporarily hidden while we improve it",
+                "fr": "L'option des thèmes prêts à l'emploi est temporairement masquée le temps d'une amélioration",
+                "es": "La opción de temas predefinidos está temporalmente oculta mientras la mejoramos"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-16",
+        "description": [
+            {
+                "en": "Applying a ready-made theme now only changes the site's shape (corners, shadows, navigation) - your chosen colors and fonts are kept",
+                "fr": "L'application d'un thème prêt à l'emploi ne change désormais que la forme du site (arrondis, ombres, navigation) - vos couleurs et polices sont conservées",
+                "es": "Aplicar un tema predefinido ahora solo cambia la forma del sitio (bordes, sombras, navegación) - tus colores y fuentes se conservan"
+            },
+            {
+                "en": "You can now preview a theme before applying it",
+                "fr": "Vous pouvez désormais prévisualiser un thème avant de l'appliquer",
+                "es": "Ahora puede previsualizar un tema antes de aplicarlo"
+            },
+            {
+                "en": "The Edit and View buttons in back-office lists are now more compact icons",
+                "fr": "Les boutons Modifier et Voir dans les listes du back-office sont désormais des icônes plus compactes",
+                "es": "Los botones Editar y Ver en las listas del back-office ahora son iconos más compactos"
+            },
+            {
+                "en": "Fixed some back-office menu links that could point to the wrong page",
+                "fr": "Correction de certains liens du menu du back-office qui pouvaient pointer vers la mauvaise page",
+                "es": "Corrección de algunos enlaces del menú del back-office que podían apuntar a la página incorrecta"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-15",
+        "description": [
+            {
+                "en": "You can now customize your site's theme (colors, fonts, light/dark mode) from a dedicated Theme page in the back office",
+                "fr": "Vous pouvez désormais personnaliser le thème de votre site (couleurs, polices, mode clair/sombre) depuis une page Thème dédiée dans le back-office",
+                "es": "Ahora puede personalizar el tema de su sitio (colores, fuentes, modo claro/oscuro) desde una página Tema dedicada en el back-office"
+            },
+            {
+                "en": "Ready-made theme presets can now be applied in one click from the Theme page",
+                "fr": "Des thèmes prêts à l'emploi peuvent désormais être appliqués en un clic depuis la page Thème",
+                "es": "Ahora se pueden aplicar temas predefinidos con un solo clic desde la página Tema"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-14",
+        "description": [
+            {
+                "en": "You can now link management menu in MenuLink Block",
+                "fr": "Vous pouvez désormais lier le menu de gestion dans le bloc MenuLink",
+                "es": "Ahora puede vincular el menú de administración en el bloque MenuLink"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-11",
+        "description": [
+            {
+                "en": "Added a new \"Editor\" role, alongside \"Admin\", for more fine-grained access control",
+                "fr": "Ajout d'un nouveau rôle « Éditeur », aux côtés du rôle « Admin », pour un contrôle d'accès plus fin",
+                "es": "Añadido un nuevo rol «Editor», junto al rol «Admin», para un control de acceso más preciso"
+            },
+            {
+                "en": "Access to configuration entries can now be restricted to super-administrators only",
+                "fr": "L'accès à certaines entrées de configuration peut désormais être réservé aux super-administrateurs",
+                "es": "El acceso a determinadas entradas de configuración ahora puede reservarse solo a los superadministradores"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-09",
+        "description": [
+            {
+                "en": "Configuration descriptions are now displayed in your language in the back office",
+                "fr": "Les descriptions des configurations s'affichent désormais dans votre langue dans le back-office",
+                "es": "Las descripciones de las configuraciones ahora se muestran en su idioma en el back-office"
+            },
+            {
+                "en": "The dashboard alerts now have a cleaner, icon-free look",
+                "fr": "Les alertes du tableau de bord ont désormais un affichage plus épuré, sans icône",
+                "es": "Las alertas del panel de control ahora tienen un aspecto más limpio, sin icono"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-05",
+        "description": [
+            {
+                "en": "Fixed the maintenance page so it displays correctly on mobile",
+                "fr": "Correction de l'affichage de la page de maintenance sur mobile",
+                "es": "Corregida la visualización de la página de mantenimiento en móvil"
+            },
+            {
+                "en": "The login page and the back office stay reachable during maintenance mode, and administrators are no longer locked out while it's on",
+                "fr": "La page de connexion et le back-office restent accessibles en mode maintenance, et les administrateurs n'en sont plus bloqués",
+                "es": "La página de inicio de sesión y el back-office siguen accesibles en modo mantenimiento, y los administradores ya no quedan bloqueados"
+            },
+            {
+                "en": "Added dashboard shortcuts to clear the configuration cache and to turn maintenance mode on or off in one click",
+                "fr": "Ajout de raccourcis sur le tableau de bord pour vider le cache de configuration et activer/désactiver le mode maintenance en un clic",
+                "es": "Añadidos atajos en el panel de control para vaciar la caché de configuración y activar o desactivar el modo mantenimiento en un clic"
+            },
+            {
+                "en": "Menu items can now link directly to a page provided by another module, not just to a page of the site (e.g. the contact page)",
+                "fr": "Les éléments de menu peuvent désormais pointer directement vers une page fournie par un autre module, et pas seulement vers une page du site (la page de contact par exemple)",
+                "es": "Los elementos de menú ahora pueden enlazar directamente a una página aportada por otro módulo, no solo a una página del sitio (la página de contacto, por ejemplo)"
+            },
+            {
+                "en": "Configuration values can now be edited with a rich text editor, not just plain text",
+                "fr": "Les valeurs de configuration peuvent désormais être modifiées avec un éditeur de texte enrichi, et pas seulement en texte simple",
+                "es": "Los valores de configuración ahora se pueden editar con un editor de texto enriquecido, y no solo en texto plano"
+            },
+            {
+                "en": "The dashboard alerts list is now shared across every module and more compact",
+                "fr": "La liste des alertes du tableau de bord est désormais commune à tous les modules et plus compacte",
+                "es": "La lista de alertas del panel de control ahora es común a todos los módulos y más compacta"
+            },
+            {
+                "en": "The \"What's new\" section is now available in English, French and Spanish",
+                "fr": "La section « Quoi de neuf » est désormais disponible en anglais, français et espagnol",
+                "es": "La sección de novedades ya está disponible en inglés, francés y español"
+            }
+        ]
+    },
+    {
+        "date": "2026-07-04",
+        "description": [
+            {
+                "en": "Added the \"What's new\" section to the dashboard and menu",
+                "fr": "Ajout de la section « Quoi de neuf » sur le tableau de bord et le menu",
+                "es": "Añadida la sección de novedades en el panel de control y el menú"
+            },
+            {
+                "en": "Configuration alerts are now shown directly in the configuration list, with a nicer editor for long text values",
+                "fr": "Les alertes de configuration s'affichent désormais directement dans la liste des configurations, avec un éditeur plus agréable pour les textes longs",
+                "es": "Las alertas de configuración ahora se muestran directamente en el listado de configuración, con un editor más cómodo para los textos largos"
+            }
+        ]
+    }
+]

@@ -1,0 +1,48 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% import '@c975LConfig/management/health_check/_macros.html.twig' as health_check %}
+
+{% block main %}
+    <h1>{{ ('label.health_check'|trans({}, 'config')) }}</h1>
+    <p>{{ ('description.health_check'|trans({}, 'config')) }}</p>
+
+    {{ include('@c975LConfig/management/_alerts.html.twig', {
+        alerts: alerts,
+        title: 'label.items_not_filled'|trans({}, 'config'),
+    }) }}
+
+    <div class="mb-3 d-flex gap-2">
+        <form method="post" action="{{ path('management_health_check_run') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('management_health_check_run') }}">
+            <button type="submit" class="btn btn-primary">{{ 'action.health_check_run'|trans({}, 'config') }}</button>
+        </form>
+        <a href="{{ path('management_health_check_export') }}" class="btn btn-outline-secondary">{{ 'action.health_check_export'|trans({}, 'config') }}</a>
+    </div>
+
+    {% if runProgress %}
+        <div class="alert alert-info d-flex align-items-center gap-2"
+             data-controller="health-check-progress"
+             data-health-check-progress-url-value="{{ path('management_health_check_progress') }}"
+             data-health-check-progress-done-value="{{ runProgress.done }}"
+             data-health-check-progress-timed-out-message-value="{{ 'label.health_check_run_timed_out'|trans({}, 'config') }}">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" data-health-check-progress-target="spinner"></span>
+            <span aria-live="polite" data-health-check-progress-target="message">{{ 'label.health_check_run_progress'|trans({'%done%': runProgress.done, '%total%': runProgress.total}, 'config') }}</span>
+        </div>
+    {% endif %}
+
+    {% if trendChart %}
+        <h2>{{ 'label.health_check_trend'|trans({}, 'config') }}</h2>
+        {{ render_chart(trendChart) }}
+    {% endif %}
+
+    {% if lastCheckedAt %}
+        <p class="text-muted">{{ 'label.health_check_last_checked_at'|trans({'%date%': lastCheckedAt|format_datetime('medium', 'short')}, 'config') }}</p>
+    {% endif %}
+
+    {% if siteResults %}
+        <h2>{{ 'label.health_check_site_heading'|trans({}, 'config') }}</h2>
+        {{ include('@c975LConfig/management/health_check/_table.html.twig', { results: siteResults, kinds: siteKinds, showFilters: siteResults|length > 5, advice: advice, group: false }) }}
+    {% endif %}
+
+    <h2>{{ 'label.health_check_pages_heading'|trans({}, 'config') }}</h2>
+    {{ include('@c975LConfig/management/health_check/_table.html.twig', { results: results, kinds: kinds, advice: advice }) }}
+{% endblock main %}

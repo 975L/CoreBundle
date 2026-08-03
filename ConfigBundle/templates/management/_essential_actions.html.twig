@@ -1,0 +1,15 @@
+{# Renders the essential-actions panel; a permanent quick-access entry point, not a one-time wizard, so every action stays a link once done #}
+<h2>
+    {{ 'label.essential_actions_title'|trans({}, 'config') }}
+    <small class="text-muted">{{ 'label.essential_actions_subtitle'|trans({ '%done%': progress.done, '%total%': progress.total }, 'config') }}</small>
+</h2>
+
+<ul class="list-unstyled">
+    {% for action in actions %}
+        <li>
+            <i class="fa {{ action.isDone ? 'fa-check-circle text-success' : 'fa-circle-o' }}"></i>
+            <a href="{{ action.url }}" class="{{ action.isDone ? 'text-muted' : '' }}">{{ action.label|trans({}, action.translation_domain) }}</a>
+            {%- if action.description %} — <span class="text-muted small">{{ action.description|trans({}, action.translation_domain) }}</span>{% endif %}
+        </li>
+    {% endfor %}
+</ul>

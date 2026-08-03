@@ -1,0 +1,1515 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="config.en.xlf">
+        <body>
+            <trans-unit id="svdf7gF">
+                <source>action.config_prune_delete</source>
+                <target>Delete the selected entries</target>
+            </trans-unit>
+            <trans-unit id="IogkyYC">
+                <source>action.content_import</source>
+                <target>Import</target>
+            </trans-unit>
+            <trans-unit id="4noVC8G">
+                <source>action.export_for_sync</source>
+                <target>Sync</target>
+            </trans-unit>
+            <trans-unit id="w6w8vOt">
+                <source>action.export_sql_with_sensitive</source>
+                <target>SQL + secrets</target>
+            </trans-unit>
+            <trans-unit id="BQn6LPq">
+                <source>action.health_check_export</source>
+                <target>Export (CSV)</target>
+            </trans-unit>
+            <trans-unit id="uNJVXca">
+                <source>action.health_check_run</source>
+                <target>Run health check now</target>
+            </trans-unit>
+            <trans-unit id="ALmOjg.">
+                <source>action.preview_preset</source>
+                <target>Preview: %label%</target>
+            </trans-unit>
+            <trans-unit id="1RI0n59">
+                <source>confirm.apply_preset</source>
+                <target>Apply this preset? It switches the site's visual shape (rounded corners, shadows, navigation...) - your colors and fonts are not affected.</target>
+            </trans-unit>
+            <trans-unit id="BTepaai">
+                <source>description.backup_alert</source>
+                <target>On %date%: %summary%</target>
+            </trans-unit>
+            <trans-unit id="RjVWU19">
+                <source>description.backup_alert_never_ran</source>
+                <target>Backup is configured but no run has been recorded yet</target>
+            </trans-unit>
+            <trans-unit id="5sURNHK">
+                <source>description.config</source>
+                <target>Site configuration, organized by group. You can edit each entry's value from its edit page; proceed with care, an incorrect value can disrupt how the site works. Sensitive values are shown in clear text on the edit page, but stay stored encrypted in the database.</target>
+            </trans-unit>
+            <trans-unit id="QYdNDiU">
+                <source>description.config_prune</source>
+                <target>Entries left in database that no configs*.json declares anymore, e.g. a setting a bundle dropped, or a bundle uninstalled. Nothing is deleted until the form below is submitted.</target>
+            </trans-unit>
+            <trans-unit id="mf1xPAY">
+                <source>description.essential_action_email</source>
+                <target>Who sends and who receives the site's notifications</target>
+            </trans-unit>
+            <trans-unit id="B0uyS_u">
+                <source>description.essential_action_identity</source>
+                <target>Name, tagline, logo and favicon</target>
+            </trans-unit>
+            <trans-unit id="sACx.jR">
+                <source>description.essential_action_legal</source>
+                <target>Contact email and publication director</target>
+            </trans-unit>
+            <trans-unit id="kRHelm.">
+                <source>description.essential_action_roles</source>
+                <target>Who can do what in the back office</target>
+            </trans-unit>
+            <trans-unit id="DJGspy9">
+                <source>description.guided_project_config_health_check</source>
+                <target>Have the site checked from the outside, read what is reported and know where to start</target>
+            </trans-unit>
+            <trans-unit id="EHg5ZWS">
+                <source>description.guided_project_config_maintenance</source>
+                <target>Rehearse, on a quiet day, the move nobody wants to discover on the day it is needed</target>
+            </trans-unit>
+            <trans-unit id="kwjx7gS">
+                <source>description.guided_project_config_settings</source>
+                <target>Find a setting, change it, and understand what the dashboard makes of it</target>
+            </trans-unit>
+            <trans-unit id="w22XwFU">
+                <source>description.guided_step_config_health_check_again</source>
+                <target>Once corrected, run it again: the trend chart at the top of the page shows whether the site is improving.</target>
+            </trans-unit>
+            <trans-unit id="QG5uvYM">
+                <source>description.guided_step_config_health_check_fix</source>
+                <target>Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list.</target>
+            </trans-unit>
+            <trans-unit id="tLFBlPG">
+                <source>description.guided_step_config_health_check_open</source>
+                <target>Pages not found, redirects, security headers, certificate, sitemaps, W3C validation: the site is combed through from the outside.</target>
+            </trans-unit>
+            <trans-unit id="JwcISzW">
+                <source>description.guided_step_config_health_check_read</source>
+                <target>One row per url and per family. Filter by status to keep only what is wrong.</target>
+            </trans-unit>
+            <trans-unit id=".gWOAiY">
+                <source>description.guided_step_config_health_check_run</source>
+                <target>One job per family of checks is queued: the page waits for nothing, the results land as they come.</target>
+            </trans-unit>
+            <trans-unit id="KUmw7pU">
+                <source>description.guided_step_config_maintenance_check</source>
+                <target>Open the site in a private browsing window: that is exactly what they have in front of them.</target>
+            </trans-unit>
+            <trans-unit id="wgS33Ny">
+                <source>description.guided_step_config_maintenance_disable</source>
+                <target>The same shortcut, its label changed, puts the site back online.</target>
+            </trans-unit>
+            <trans-unit id="_73o9ee">
+                <source>description.guided_step_config_maintenance_done</source>
+                <target>The switch is one click away: nothing forces you to warn ahead for a few minutes of work.</target>
+            </trans-unit>
+            <trans-unit id="pR3dqe6">
+                <source>description.guided_step_config_maintenance_enable</source>
+                <target>Your visitors get the maintenance page; you, signed in, keep seeing the site.</target>
+            </trans-unit>
+            <trans-unit id="xVtLKDB">
+                <source>description.guided_step_config_maintenance_open</source>
+                <target>The dashboard shortcuts are immediate actions, with no screen in between.</target>
+            </trans-unit>
+            <trans-unit id="3BtYhFM">
+                <source>description.guided_step_config_settings_alerts</source>
+                <target>Essential entries left empty are raised as dashboard alerts, until they get filled in.</target>
+            </trans-unit>
+            <trans-unit id="no3aHY3">
+                <source>description.guided_step_config_settings_entry</source>
+                <target>Each entry is declared by the bundle using it, which sets its label, its kind and its group.</target>
+            </trans-unit>
+            <trans-unit id="ctGNsEA">
+                <source>description.guided_step_config_settings_group</source>
+                <target>Identity, e-mails, legal notices, security: each group gathers the entries of one subject.</target>
+            </trans-unit>
+            <trans-unit id="WdcL8nZ">
+                <source>description.guided_step_config_settings_open</source>
+                <target>Every setting of the site lives here, grouped by subject — none of them is to be written in a file.</target>
+            </trans-unit>
+            <trans-unit id="qd4IzF2">
+                <source>description.guided_step_config_settings_value</source>
+                <target>An entry marked sensitive is encrypted in the database and never shown in clear again.</target>
+            </trans-unit>
+            <trans-unit id="sXfnWsf">
+                <source>description.health_check</source>
+                <target>Lighthouse scores, accessibility issues and console errors for every published page, refreshed periodically or on demand.</target>
+            </trans-unit>
+            <trans-unit id="FXQDiiD">
+                <source>description.health_check_alert</source>
+                <target>Last run on %date%</target>
+            </trans-unit>
+            <trans-unit id="0MwgbmU">
+                <source>description.maintenance_alert</source>
+                <target>Since %date%. The site is closed to your visitors and to search engines.</target>
+            </trans-unit>
+            <trans-unit id="u4.sgjf">
+                <source>description.maintenance_alert_long</source>
+                <target>Since %date%. Past a few days, search engines drop the pages from their results: bring the site back up, or publish a temporary home page.</target>
+            </trans-unit>
+            <trans-unit id="VwWnpJK">
+                <source>description.maintenance_preview_link</source>
+                <target>Anyone opening %url% sees the site as usual, for the next 6 hours.</target>
+            </trans-unit>
+            <trans-unit id="vDZMvYG">
+                <source>description.messenger_alert_admin</source>
+                <target>Technical issue auto-reported to the dev team. No action required.</target>
+            </trans-unit>
+            <trans-unit id="khpNT6d">
+                <source>description.messenger_alert_super_admin</source>
+                <target>Send failures unrelated to a blacklisted address. Click for details.</target>
+            </trans-unit>
+            <trans-unit id="5OjCR2m">
+                <source>description.messenger_failed</source>
+                <target>Messages that failed to send; minor cases (blacklist, spam) are purged after retention.</target>
+            </trans-unit>
+            <trans-unit id="QEO2q6_">
+                <source>description.site_link</source>
+                <target>Opens your site in a new tab, exactly as your visitors see it</target>
+            </trans-unit>
+            <trans-unit id="t2I77Fh">
+                <source>description.whatsnew</source>
+                <target>What changed recently on this dashboard and across every installed bundle.</target>
+            </trans-unit>
+            <trans-unit id="duvD5dn">
+                <source>flash.config_cache_cleared</source>
+                <target>Config cache cleared</target>
+            </trans-unit>
+            <trans-unit id="n9r4S2p">
+                <source>flash.config_prune_deleted</source>
+                <target>%count% config entrie(s) deleted</target>
+            </trans-unit>
+            <trans-unit id="pFXTVkA">
+                <source>flash.config_prune_nothing_deleted</source>
+                <target>No entry selected, nothing deleted</target>
+            </trans-unit>
+            <trans-unit id="VcrLnzm">
+                <source>flash.config_sitemaps_created</source>
+                <target>Sitemaps created successfully</target>
+            </trans-unit>
+            <trans-unit id="x.ODRRJ">
+                <source>flash.config_sitemaps_error</source>
+                <target>Sitemaps could not be created: %error%</target>
+            </trans-unit>
+            <trans-unit id="8oxIund">
+                <source>flash.content_import_file_too_large</source>
+                <target>The uploaded file is too large</target>
+            </trans-unit>
+            <trans-unit id="BV77uDV">
+                <source>flash.content_import_invalid_json</source>
+                <target>The uploaded file is not a valid export</target>
+            </trans-unit>
+            <trans-unit id="qi0A_IU">
+                <source>flash.content_import_invalid_token</source>
+                <target>Invalid security token, please try again</target>
+            </trans-unit>
+            <trans-unit id="W4hekV1">
+                <source>flash.content_import_invalid_zip</source>
+                <target>The uploaded file is not a valid zip archive</target>
+            </trans-unit>
+            <trans-unit id="UqYNg.4">
+                <source>flash.content_import_no_file</source>
+                <target>No file was uploaded</target>
+            </trans-unit>
+            <trans-unit id="EMNY23Y">
+                <source>flash.content_import_success</source>
+                <target>%created% created, %updated% updated</target>
+            </trans-unit>
+            <trans-unit id="o6n3nWr">
+                <source>flash.content_import_success_kind</source>
+                <target>%kind%: %created% created, %updated% updated</target>
+            </trans-unit>
+            <trans-unit id="irAKSdg">
+                <source>flash.content_import_unsupported_kind</source>
+                <target>No import provider is registered yet for "%kind%"</target>
+            </trans-unit>
+            <trans-unit id="VM4hYMi">
+                <source>flash.health_check_queued</source>
+                <target>Health check started in the background: %count% check(s) queued</target>
+            </trans-unit>
+            <trans-unit id="Adv4I1e">
+                <source>flash.health_check_run_invalid_token</source>
+                <target>Invalid security token, please try again</target>
+            </trans-unit>
+            <trans-unit id="YmaBUaQ">
+                <source>flash.maintenance_disabled</source>
+                <target>Maintenance mode disabled</target>
+            </trans-unit>
+            <trans-unit id="HLroN8C">
+                <source>flash.maintenance_enabled</source>
+                <target>Maintenance mode enabled</target>
+            </trans-unit>
+            <trans-unit id="z.Yxr72">
+                <source>flash.messenger_deleted</source>
+                <target>Message #%id% deleted</target>
+            </trans-unit>
+            <trans-unit id="liKyPhk">
+                <source>flash.messenger_group_deleted</source>
+                <target>%count% message(s) deleted</target>
+            </trans-unit>
+            <trans-unit id="7wqIvFf">
+                <source>flash.messenger_not_found</source>
+                <target>Message #%id% not found (already processed?)</target>
+            </trans-unit>
+            <trans-unit id="td7ZlY3">
+                <source>flash.messenger_purged</source>
+                <target>%count% message(s) purged</target>
+            </trans-unit>
+            <trans-unit id="ZBV1Jze">
+                <source>flash.messenger_retry_failed</source>
+                <target>Retry of message #%id% failed: %error%</target>
+            </trans-unit>
+            <trans-unit id="vmblKo8">
+                <source>flash.messenger_retry_success</source>
+                <target>Message #%id% sent successfully</target>
+            </trans-unit>
+            <trans-unit id="ZD8H9hY">
+                <source>flash.user_registration_disabled</source>
+                <target>User registration disabled</target>
+            </trans-unit>
+            <trans-unit id="DX2vnwV">
+                <source>flash.user_registration_enabled</source>
+                <target>User registration enabled</target>
+            </trans-unit>
+            <trans-unit id="NbIpWIT">
+                <source>help.value</source>
+                <target>Only this value is editable (the rest comes from the bundles). Encrypted if sensitive.</target>
+            </trans-unit>
+            <trans-unit id="SXn0aeS">
+                <source>help.value_json</source>
+                <target>Enter a valid JSON array, e.g. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
+            </trans-unit>
+            <trans-unit id="2R4Y3Vo">
+                <source>help.value_theme_color</source>
+                <target>Hex (#b30000), rgb()/rgba(), hsl()/hsla(), or a CSS name (e.g. tomato)</target>
+            </trans-unit>
+            <trans-unit id="IDGH76b">
+                <source>label.backup_alert_error</source>
+                <target>The last backup failed</target>
+            </trans-unit>
+            <trans-unit id="vffMDf7">
+                <source>label.backup_alert_never_ran</source>
+                <target>No backup recorded</target>
+            </trans-unit>
+            <trans-unit id="sdd_iX3">
+                <source>label.backup_alert_stale</source>
+                <target>Last backup %hours% h ago</target>
+            </trans-unit>
+            <trans-unit id="VpZXj4C">
+                <source>label.backup_alert_warning</source>
+                <target>The last backup needs a check</target>
+            </trans-unit>
+            <trans-unit id="Y1doo6_">
+                <source>label.backup_digest_errors</source>
+                <target>Errors:</target>
+            </trans-unit>
+            <trans-unit id="2gwqXik">
+                <source>label.backup_digest_gap</source>
+                <target>Longest stretch without a backup: %hours% h (over the %max% h expected)</target>
+            </trans-unit>
+            <trans-unit id="OJuxvJB">
+                <source>label.backup_digest_intro</source>
+                <target>Site %site% - last %days% days (since %since%)</target>
+            </trans-unit>
+            <trans-unit id="GpMJ6SN">
+                <source>label.backup_digest_issue</source>
+                <target>- %message% (x%count%)</target>
+            </trans-unit>
+            <trans-unit id="HXzTqcI">
+                <source>label.backup_digest_last_run</source>
+                <target>Last run on %date%: %summary%</target>
+            </trans-unit>
+            <trans-unit id=".pEGgt6">
+                <source>label.backup_digest_none</source>
+                <target>No backup has been recorded over the last %days% days. Check that the scheduler or the crontab still runs c975l:config:backup on this server.</target>
+            </trans-unit>
+            <trans-unit id="F0eyfw.">
+                <source>label.backup_digest_retention</source>
+                <target>Retention (%days% days): %runs% run(s) kept on the server, oldest %oldest%</target>
+            </trans-unit>
+            <trans-unit id="xIydbYy">
+                <source>label.backup_digest_runs</source>
+                <target>%count% run(s): %ok% ok, %warning% warning(s), %error% error(s)</target>
+            </trans-unit>
+            <trans-unit id="5O2VuUx">
+                <source>label.backup_digest_sql_trend</source>
+                <target>SQL archive over the period: %first% -&gt; %last%</target>
+            </trans-unit>
+            <trans-unit id="7qtyVbj">
+                <source>label.backup_digest_subject_error</source>
+                <target>[ERROR] Backups over the last %days% days - %site%</target>
+            </trans-unit>
+            <trans-unit id="l76tlyo">
+                <source>label.backup_digest_subject_none</source>
+                <target>[ALERT] No backup over the last %days% days - %site%</target>
+            </trans-unit>
+            <trans-unit id="X5Mx1zt">
+                <source>label.backup_digest_subject_ok</source>
+                <target>[OK] Backups over the last %days% days - %site%</target>
+            </trans-unit>
+            <trans-unit id="iJCViub">
+                <source>label.backup_digest_subject_warning</source>
+                <target>[WARNING] Backups over the last %days% days - %site%</target>
+            </trans-unit>
+            <trans-unit id="M6cJ.ah">
+                <source>label.backup_digest_warnings</source>
+                <target>Warnings:</target>
+            </trans-unit>
+            <trans-unit id="13FkC7i">
+                <source>label.boolean</source>
+                <target>Boolean (True/False)</target>
+            </trans-unit>
+            <trans-unit id="fqXGPNB">
+                <source>label.config</source>
+                <target>Configuration</target>
+            </trans-unit>
+            <trans-unit id="fZmwU0Q">
+                <source>label.config_clear_cache</source>
+                <target>Clear config cache</target>
+            </trans-unit>
+            <trans-unit id="OMw.Hf5">
+                <source>label.config_export_sql</source>
+                <target>Export (SQL) the configuration</target>
+            </trans-unit>
+            <trans-unit id="SYVeUIq">
+                <source>label.config_export_sync_all</source>
+                <target>Export sync (everything)</target>
+            </trans-unit>
+            <trans-unit id="QCljyMm">
+                <source>label.config_prune</source>
+                <target>Obsolete configs</target>
+            </trans-unit>
+            <trans-unit id="Yrynu_0">
+                <source>label.config_prune_irreversible</source>
+                <target>Deletion is irreversible and takes the stored value with it. Export your configs first if a bundle is only temporarily uninstalled.</target>
+            </trans-unit>
+            <trans-unit id="Ll7hDYv">
+                <source>label.config_prune_no_declaration</source>
+                <target>No configs*.json found: nothing declares config entries here, so no entry can be considered obsolete.</target>
+            </trans-unit>
+            <trans-unit id="jGTH0yg">
+                <source>label.config_prune_none</source>
+                <target>No obsolete config entry.</target>
+            </trans-unit>
+            <trans-unit id="6XuQx8_">
+                <source>label.config_prune_unreadable</source>
+                <target>The following configs*.json can't be read, so everything they declare would wrongly show up as obsolete. Fix them, then reload this page.</target>
+            </trans-unit>
+            <trans-unit id="W.zT_E8">
+                <source>label.config_sitemaps_create</source>
+                <target>Create sitemaps</target>
+            </trans-unit>
+            <trans-unit id="MYK2PZj">
+                <source>label.confirm_your_email</source>
+                <target>Confirm your email</target>
+            </trans-unit>
+            <trans-unit id="l7sg2Pt">
+                <source>label.content_import</source>
+                <target>Import content</target>
+            </trans-unit>
+            <trans-unit id="lUu8ay1">
+                <source>label.content_import_help</source>
+                <target>Upload a zip export produced by a bundle's own export action (eg. a page exported from the Pages screen).</target>
+            </trans-unit>
+            <trans-unit id="BOyuRcf">
+                <source>label.create_account</source>
+                <target>Create an account</target>
+            </trans-unit>
+            <trans-unit id="emPIlPf">
+                <source>label.creation</source>
+                <target>Creation</target>
+            </trans-unit>
+            <trans-unit id="id1d4o4">
+                <source>label.dashboard</source>
+                <target>Dashboard</target>
+            </trans-unit>
+            <trans-unit id="QkYrM9J">
+                <source>label.date</source>
+                <target>Date</target>
+            </trans-unit>
+            <trans-unit id="Zb4xuOb">
+                <source>label.description</source>
+                <target>Description</target>
+            </trans-unit>
+            <trans-unit id="ykW6lkh">
+                <source>label.email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="Uy9DSA6">
+                <source>label.email_address_verified</source>
+                <target>Your email address has been verified.</target>
+            </trans-unit>
+            <trans-unit id="2W9fCVk">
+                <source>label.essential_action_email</source>
+                <target>Outgoing emails</target>
+            </trans-unit>
+            <trans-unit id="lGDhwCB">
+                <source>label.essential_action_identity</source>
+                <target>Site identity</target>
+            </trans-unit>
+            <trans-unit id="6DZxkzD">
+                <source>label.essential_action_legal</source>
+                <target>Contact &amp; legal notice</target>
+            </trans-unit>
+            <trans-unit id="pI7WW0o">
+                <source>label.essential_action_roles</source>
+                <target>Roles &amp; access</target>
+            </trans-unit>
+            <trans-unit id="BuD8LTT">
+                <source>label.essential_actions_subtitle</source>
+                <target>%done%/%total% configured</target>
+            </trans-unit>
+            <trans-unit id="LTU8OLc">
+                <source>label.essential_actions_title</source>
+                <target>Essential actions</target>
+            </trans-unit>
+            <trans-unit id="J2sBc_e">
+                <source>label.export</source>
+                <target>Export</target>
+            </trans-unit>
+            <trans-unit id="TRqZ6vK">
+                <source>label.export_tables</source>
+                <target>Export (SQL) "site_xxx" tables</target>
+            </trans-unit>
+            <trans-unit id="Sct9raH">
+                <source>label.false</source>
+                <target>False</target>
+            </trans-unit>
+            <trans-unit id="9kwOG_r">
+                <source>label.forgot_password</source>
+                <target>Forgot your password?</target>
+            </trans-unit>
+            <trans-unit id="gN2_MMc">
+                <source>label.from_path</source>
+                <target>Source path</target>
+            </trans-unit>
+            <trans-unit id="GnuqUyG">
+                <source>label.from_path_help</source>
+                <target>URL path with leading / (e.g. /la-guilde-des-seigneurs)</target>
+            </trans-unit>
+            <trans-unit id="qrvRsVy">
+                <source>label.gone</source>
+                <target>Gone (410)</target>
+            </trans-unit>
+            <trans-unit id="AcObL2B">
+                <source>label.gone_help</source>
+                <target>Checked = the url is declared permanently removed (410 Gone), with no redirect: "From path" may end with * to cover a whole folder (e.g. /apidoc/*), and "To url" stays empty</target>
+            </trans-unit>
+            <trans-unit id="gEHa5iE">
+                <source>label.group</source>
+                <target>Group</target>
+            </trans-unit>
+            <trans-unit id="3US4Fj6">
+                <source>label.group_ai</source>
+                <target>AI</target>
+            </trans-unit>
+            <trans-unit id="8cYr.kC">
+                <source>label.group_analytics</source>
+                <target>Analytics</target>
+            </trans-unit>
+            <trans-unit id="ZRIEXFg">
+                <source>label.group_backup</source>
+                <target>Backup</target>
+            </trans-unit>
+            <trans-unit id="YT1qsFL">
+                <source>label.group_credits</source>
+                <target>Credits</target>
+            </trans-unit>
+            <trans-unit id="XRPo6XS">
+                <source>label.group_email</source>
+                <target>Email</target>
+            </trans-unit>
+            <trans-unit id="0lC5dLu">
+                <source>label.group_form</source>
+                <target>Form</target>
+            </trans-unit>
+            <trans-unit id="h_MNGx0">
+                <source>label.group_general</source>
+                <target>General</target>
+            </trans-unit>
+            <trans-unit id="7y32L1t">
+                <source>label.group_items_count</source>
+                <target>Item count</target>
+            </trans-unit>
+            <trans-unit id="U8p5Mto">
+                <source>label.group_legal</source>
+                <target>Legal</target>
+            </trans-unit>
+            <trans-unit id="McCkmrn">
+                <source>label.group_messenger</source>
+                <target>Messenger</target>
+            </trans-unit>
+            <trans-unit id="1sMeaZb">
+                <source>label.group_payment</source>
+                <target>Payment</target>
+            </trans-unit>
+            <trans-unit id="NontQa3">
+                <source>label.group_security</source>
+                <target>Security</target>
+            </trans-unit>
+            <trans-unit id="AqgvWw8">
+                <source>label.group_shop</source>
+                <target>Shop</target>
+            </trans-unit>
+            <trans-unit id="Fb_L38w">
+                <source>label.group_system</source>
+                <target>System</target>
+            </trans-unit>
+            <trans-unit id="mw.jVyj">
+                <source>label.group_theme</source>
+                <target>Theme</target>
+            </trans-unit>
+            <trans-unit id="RSrMvT0">
+                <source>label.guided_project_config_health_check</source>
+                <target>Run a health check</target>
+            </trans-unit>
+            <trans-unit id="crTt37.">
+                <source>label.guided_project_config_maintenance</source>
+                <target>Put the site into maintenance</target>
+            </trans-unit>
+            <trans-unit id="8QVNypE">
+                <source>label.guided_project_config_settings</source>
+                <target>Set the site's configuration</target>
+            </trans-unit>
+            <trans-unit id="bw6vzfK">
+                <source>label.guided_project_done</source>
+                <target>Already followed</target>
+            </trans-unit>
+            <trans-unit id="3j1dPiE">
+                <source>label.guided_project_goto</source>
+                <target>Go to this screen</target>
+            </trans-unit>
+            <trans-unit id="IDRprtX">
+                <source>label.guided_project_pause</source>
+                <target>Pause</target>
+            </trans-unit>
+            <trans-unit id="3ElmLm6">
+                <source>label.guided_project_quit</source>
+                <target>Give up</target>
+            </trans-unit>
+            <trans-unit id="4hd_MXn">
+                <source>label.guided_project_replay</source>
+                <target>Replay</target>
+            </trans-unit>
+            <trans-unit id="W154v_q">
+                <source>label.guided_project_resume</source>
+                <target>Resume</target>
+            </trans-unit>
+            <trans-unit id="XjZ9eKk">
+                <source>label.guided_project_start</source>
+                <target>Start</target>
+            </trans-unit>
+            <trans-unit id="D_JG6Lt">
+                <source>label.guided_projects</source>
+                <target>Guided projects</target>
+            </trans-unit>
+            <trans-unit id="aOZmqdz">
+                <source>label.guided_projects_intro</source>
+                <target>Your progress is stored in this browser, not on the site: it won't follow you to another computer.</target>
+            </trans-unit>
+            <trans-unit id="R_aUKTH">
+                <source>label.guided_step_config_health_check_again</source>
+                <target>Run it again</target>
+            </trans-unit>
+            <trans-unit id="5Mjqbt4">
+                <source>label.guided_step_config_health_check_fix</source>
+                <target>Deal with an error</target>
+            </trans-unit>
+            <trans-unit id="SS7Ap3H">
+                <source>label.guided_step_config_health_check_open</source>
+                <target>Open the health check</target>
+            </trans-unit>
+            <trans-unit id="_6zUE5G">
+                <source>label.guided_step_config_health_check_read</source>
+                <target>Read the results</target>
+            </trans-unit>
+            <trans-unit id="AcvSEaZ">
+                <source>label.guided_step_config_health_check_run</source>
+                <target>Run the check now</target>
+            </trans-unit>
+            <trans-unit id="nMjkcTU">
+                <source>label.guided_step_config_maintenance_check</source>
+                <target>Check what visitors see</target>
+            </trans-unit>
+            <trans-unit id="qrKigve">
+                <source>label.guided_step_config_maintenance_disable</source>
+                <target>Put the site back online</target>
+            </trans-unit>
+            <trans-unit id="4fgoBY9">
+                <source>label.guided_step_config_maintenance_done</source>
+                <target>Now you know</target>
+            </trans-unit>
+            <trans-unit id="Am8yZqI">
+                <source>label.guided_step_config_maintenance_enable</source>
+                <target>Switch the site into maintenance</target>
+            </trans-unit>
+            <trans-unit id="uiJ8s5u">
+                <source>label.guided_step_config_maintenance_open</source>
+                <target>Open the dashboard</target>
+            </trans-unit>
+            <trans-unit id="yK2RVv_">
+                <source>label.guided_step_config_settings_alerts</source>
+                <target>What the dashboard makes of it</target>
+            </trans-unit>
+            <trans-unit id="ebzQ_RB">
+                <source>label.guided_step_config_settings_entry</source>
+                <target>Open an entry</target>
+            </trans-unit>
+            <trans-unit id="ymonOC9">
+                <source>label.guided_step_config_settings_group</source>
+                <target>Pick a group</target>
+            </trans-unit>
+            <trans-unit id="Xid8Tgb">
+                <source>label.guided_step_config_settings_open</source>
+                <target>Open the configuration</target>
+            </trans-unit>
+            <trans-unit id="XBS3oAU">
+                <source>label.guided_step_config_settings_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="1pezZfR">
+                <source>label.guided_step_config_settings_value</source>
+                <target>Fill the value in</target>
+            </trans-unit>
+            <trans-unit id="RXDF6wx">
+                <source>label.health_check</source>
+                <target>Health check</target>
+            </trans-unit>
+            <trans-unit id="ZVYErlG">
+                <source>label.health_check_advice_backup_errors</source>
+                <target>%count% error(s) during the backup</target>
+            </trans-unit>
+            <trans-unit id="OCPGpq8">
+                <source>label.health_check_advice_backup_retention</source>
+                <target>%count% backup(s) still on the server, oldest from %oldest% (retention: %days% days)</target>
+            </trans-unit>
+            <trans-unit id="n1ZVO85">
+                <source>label.health_check_advice_backup_warnings</source>
+                <target>%count% point(s) to check</target>
+            </trans-unit>
+            <trans-unit id="PGeLVGk">
+                <source>label.health_check_advice_database_load_aborted</source>
+                <target>%count% refused or interrupted connection(s) over %days% day(s)</target>
+            </trans-unit>
+            <trans-unit id="oEGMrlr">
+                <source>label.health_check_advice_database_load_background</source>
+                <target>%rate% transactions/s during the %seconds% s of the check, ie. %share% % of the average: this load does not come from visitors but from a background process (Messenger worker polling a Doctrine transport, sessions stored in the database, scheduled tasks)</target>
+            </trans-unit>
+            <trans-unit id="SIVhsrW">
+                <source>label.health_check_advice_database_load_empty</source>
+                <target>%empty% % of the transactions hold no write at all (%rate% transactions/s for %writes% write(s)/s): a transaction opened around a read costs a page nothing, but it is that ratio that saturates a database server long before its cpu</target>
+            </trans-unit>
+            <trans-unit id="9j_RkYU">
+                <source>label.health_check_advice_database_load_locks</source>
+                <target>%count% InnoDB row lock wait(s) over %days% day(s)</target>
+            </trans-unit>
+            <trans-unit id="qINjVhb">
+                <source>label.health_check_advice_database_load_slow</source>
+                <target>%count% slow query(ies) recorded over %days% day(s)</target>
+            </trans-unit>
+            <trans-unit id="kUWeqbk">
+                <source>label.health_check_advice_details</source>
+                <target>See the detail (%count%)</target>
+            </trans-unit>
+            <trans-unit id="0NB_2s2">
+                <source>label.health_check_advice_fix_link</source>
+                <target>Fix it</target>
+            </trans-unit>
+            <trans-unit id="hXk1bLK">
+                <source>label.health_check_advice_link</source>
+                <target>See full report</target>
+            </trans-unit>
+            <trans-unit id="l7Bn1sZ">
+                <source>label.health_check_alert_errors</source>
+                <target>Health check: %count% result(s) in error</target>
+            </trans-unit>
+            <trans-unit id="Zn2gDQp">
+                <source>label.health_check_alert_warnings</source>
+                <target>Health check: %count% result(s) to keep an eye on</target>
+            </trans-unit>
+            <trans-unit id=".2ZbORB">
+                <source>label.health_check_backup_errors</source>
+                <target>%count% error(s)</target>
+            </trans-unit>
+            <trans-unit id="48lP9PI">
+                <source>label.health_check_backup_files_complete</source>
+                <target>complete, %size%</target>
+            </trans-unit>
+            <trans-unit id="AiD6SaT">
+                <source>label.health_check_backup_files_none</source>
+                <target>no modified file</target>
+            </trans-unit>
+            <trans-unit id="LNWUNwV">
+                <source>label.health_check_backup_files_partial</source>
+                <target>partial, %count% file(s), %size%</target>
+            </trans-unit>
+            <trans-unit id="uVOosIa">
+                <source>label.health_check_backup_sql_shrank</source>
+                <target>The SQL archive lost %percent% % of its size compared to the previous one (%previous%)</target>
+            </trans-unit>
+            <trans-unit id="jH91Kr4">
+                <source>label.health_check_backup_warnings</source>
+                <target>%count% point(s) to check</target>
+            </trans-unit>
+            <trans-unit id="z_WhL6.">
+                <source>label.health_check_content_quality_broken_external_links</source>
+                <target>%count% broken external link(s)</target>
+            </trans-unit>
+            <trans-unit id="KNYNgu2">
+                <source>label.health_check_content_quality_broken_links</source>
+                <target>%count% broken internal link(s)</target>
+            </trans-unit>
+            <trans-unit id="FnwQdHx">
+                <source>label.health_check_content_quality_call_failed</source>
+                <target>Content check failed: %message%</target>
+            </trans-unit>
+            <trans-unit id="LFH1s4O">
+                <source>label.health_check_content_quality_description_too_long</source>
+                <target>"%field%" too long (%length% characters)</target>
+            </trans-unit>
+            <trans-unit id="Ox8evki">
+                <source>label.health_check_content_quality_description_too_short</source>
+                <target>"%field%" too short (%length% characters)</target>
+            </trans-unit>
+            <trans-unit id="ME83NQd">
+                <source>label.health_check_content_quality_images_without_alt</source>
+                <target>%count% image(s) without alt text</target>
+            </trans-unit>
+            <trans-unit id="I4Rz7aG">
+                <source>label.health_check_content_quality_missing_social_tags</source>
+                <target>%count% missing share tag(s)</target>
+            </trans-unit>
+            <trans-unit id="BJy8gU9">
+                <source>label.health_check_content_quality_no_description</source>
+                <target>"%field%" missing</target>
+            </trans-unit>
+            <trans-unit id="wg7L155">
+                <source>label.health_check_content_quality_no_h1</source>
+                <target>missing &lt;h1&gt;</target>
+            </trans-unit>
+            <trans-unit id="n0fEOV8">
+                <source>label.health_check_content_quality_no_title</source>
+                <target>missing title</target>
+            </trans-unit>
+            <trans-unit id="VeQ3n7J">
+                <source>label.health_check_content_quality_ok</source>
+                <target>No content issues found</target>
+            </trans-unit>
+            <trans-unit id="BqgaVw8">
+                <source>label.health_check_content_quality_redirects</source>
+                <target>Redirects in %count% hop(s) to %url%</target>
+            </trans-unit>
+            <trans-unit id="nbaBi.g">
+                <source>label.health_check_content_quality_several_h1</source>
+                <target>%count% &lt;h1&gt; on the page</target>
+            </trans-unit>
+            <trans-unit id="rALqDws">
+                <source>label.health_check_content_quality_title_too_long</source>
+                <target>title too long (%length% characters)</target>
+            </trans-unit>
+            <trans-unit id="3V1EipY">
+                <source>label.health_check_content_quality_title_too_short</source>
+                <target>title too short (%length% characters)</target>
+            </trans-unit>
+            <trans-unit id="hkMfaN_">
+                <source>label.health_check_database_load</source>
+                <target>Database load</target>
+            </trans-unit>
+            <trans-unit id="tYs1_8u">
+                <source>label.health_check_database_load_no_sample</source>
+                <target>The server counters were reset during the measure: rates will be available at the next check</target>
+            </trans-unit>
+            <trans-unit id="YqS3lup">
+                <source>label.health_check_database_load_summary</source>
+                <target>%windowRate% transactions/s on average over %days% day(s) (%rate%/s during the check), %empty% % of them holding no write</target>
+            </trans-unit>
+            <trans-unit id="NMvAShl">
+                <source>label.health_check_database_load_summary_baseline</source>
+                <target>%rate% transactions/s during the check, %empty% % of them holding no write — the average will be available at the next check</target>
+            </trans-unit>
+            <trans-unit id="o2aBneA">
+                <source>label.health_check_database_load_unavailable</source>
+                <target>The server counters cannot be read: %message%</target>
+            </trans-unit>
+            <trans-unit id="PdqEAPY">
+                <source>label.health_check_database_load_unsupported</source>
+                <target>Load counters can only be read on MySQL/MariaDB (%platform%)</target>
+            </trans-unit>
+            <trans-unit id="ZEoDmkn">
+                <source>label.health_check_deployment_call_failed</source>
+                <target>Deployment check failed: %message%</target>
+            </trans-unit>
+            <trans-unit id="O9kLgA7">
+                <source>label.health_check_deployment_https</source>
+                <target>https redirect</target>
+            </trans-unit>
+            <trans-unit id="7ZjpK.P">
+                <source>label.health_check_deployment_not_found</source>
+                <target>404 page</target>
+            </trans-unit>
+            <trans-unit id="EUFNbMU">
+                <source>label.health_check_details</source>
+                <target>Details</target>
+            </trans-unit>
+            <trans-unit id="wjAjiIq">
+                <source>label.health_check_edit_page</source>
+                <target>Edit in CRUD</target>
+            </trans-unit>
+            <trans-unit id="l1Wf172">
+                <source>label.health_check_filter_placeholder</source>
+                <target>Search url, label, summary...</target>
+            </trans-unit>
+            <trans-unit id="WEpANpz">
+                <source>label.health_check_gauge_accessibility</source>
+                <target>Accessibility</target>
+            </trans-unit>
+            <trans-unit id="uVOnlx3">
+                <source>label.health_check_gauge_best_practices</source>
+                <target>Best practices</target>
+            </trans-unit>
+            <trans-unit id="1eWuHWd">
+                <source>label.health_check_gauge_performance</source>
+                <target>Performance</target>
+            </trans-unit>
+            <trans-unit id="VRmd3ap">
+                <source>label.health_check_gauge_seo</source>
+                <target>SEO</target>
+            </trans-unit>
+            <trans-unit id="5oHSgYP">
+                <source>label.health_check_https_redirect_insecure</source>
+                <target>http redirects to an insecure url</target>
+            </trans-unit>
+            <trans-unit id="Zyn9CBY">
+                <source>label.health_check_https_redirect_missing</source>
+                <target>http does not redirect to https (HTTP %status%)</target>
+            </trans-unit>
+            <trans-unit id="c5wEJdP">
+                <source>label.health_check_https_redirect_ok</source>
+                <target>http correctly redirects to https</target>
+            </trans-unit>
+            <trans-unit id="o3s6n4c">
+                <source>label.health_check_kind</source>
+                <target>Check</target>
+            </trans-unit>
+            <trans-unit id="Pv.1XR6">
+                <source>label.health_check_last_checked_at</source>
+                <target>Last checked: %date%</target>
+            </trans-unit>
+            <trans-unit id="YvTkRdQ">
+                <source>label.health_check_not_found_default_page</source>
+                <target>Generic 404 page, not the site's own</target>
+            </trans-unit>
+            <trans-unit id="uCcSKeY">
+                <source>label.health_check_not_found_ok</source>
+                <target>Custom 404 page</target>
+            </trans-unit>
+            <trans-unit id="ywo1XVT">
+                <source>label.health_check_not_found_wrong_status</source>
+                <target>An unknown url answers HTTP %status% instead of 404</target>
+            </trans-unit>
+            <trans-unit id="6XIJPsF">
+                <source>label.health_check_pages_heading</source>
+                <target>Pages</target>
+            </trans-unit>
+            <trans-unit id="tn.Riea">
+                <source>label.health_check_redirect_chain</source>
+                <target>Chains through %hops% other redirect(s)</target>
+            </trans-unit>
+            <trans-unit id="nkB4fxf">
+                <source>label.health_check_redirect_loop</source>
+                <target>Redirect loop detected</target>
+            </trans-unit>
+            <trans-unit id="tYM8NWt">
+                <source>label.health_check_redirect_ok</source>
+                <target>Direct redirect, no chaining</target>
+            </trans-unit>
+            <trans-unit id="QDn5iu_">
+                <source>label.health_check_robots_blocks_everything</source>
+                <target>robots.txt disallows all crawling (Disallow: / for User-agent: *)</target>
+            </trans-unit>
+            <trans-unit id="r4uXdga">
+                <source>label.health_check_robots_missing</source>
+                <target>robots.txt is missing or empty</target>
+            </trans-unit>
+            <trans-unit id="o1UGYYf">
+                <source>label.health_check_robots_ok</source>
+                <target>robots.txt is reachable and does not block everything</target>
+            </trans-unit>
+            <trans-unit id="q59PHEf">
+                <source>label.health_check_run_progress</source>
+                <target>Health check running: %done%/%total% check(s) done. This page updates itself.</target>
+            </trans-unit>
+            <trans-unit id="9jWwVLR">
+                <source>label.health_check_run_timed_out</source>
+                <target>Some checks still have not returned anything: make sure the Messenger worker is running (messenger:consume), then run the health check again.</target>
+            </trans-unit>
+            <trans-unit id="D2qT.fs">
+                <source>label.health_check_security_headers_call_failed</source>
+                <target>Security headers check failed: %message%</target>
+            </trans-unit>
+            <trans-unit id="YByjYVO">
+                <source>label.health_check_security_headers_cors_wildcard</source>
+                <target>CORS allows any origin (*)</target>
+            </trans-unit>
+            <trans-unit id="_ls5_jv">
+                <source>label.health_check_security_headers_missing</source>
+                <target>missing: %headers%</target>
+            </trans-unit>
+            <trans-unit id="JOx_E7E">
+                <source>label.health_check_security_headers_scope</source>
+                <target>these headers apply to the whole site, checked once via the homepage</target>
+            </trans-unit>
+            <trans-unit id="Z5MQYLr">
+                <source>label.health_check_seo_files_call_failed</source>
+                <target>Request failed: %message%</target>
+            </trans-unit>
+            <trans-unit id="EAt9YJO">
+                <source>label.health_check_site_heading</source>
+                <target>Site</target>
+            </trans-unit>
+            <trans-unit id="STCbZQM">
+                <source>label.health_check_sitemap_empty</source>
+                <target>%file% declares no url</target>
+            </trans-unit>
+            <trans-unit id="P8iNFef">
+                <source>label.health_check_sitemap_index_empty</source>
+                <target>sitemap-index.xml does not reference any sitemap</target>
+            </trans-unit>
+            <trans-unit id="vdPK5K0">
+                <source>label.health_check_sitemap_index_invalid</source>
+                <target>sitemap-index.xml does not look like a valid sitemap index</target>
+            </trans-unit>
+            <trans-unit id="FOd3j4t">
+                <source>label.health_check_sitemap_index_ok</source>
+                <target>sitemap-index.xml is reachable and references %count% sitemap(s)</target>
+            </trans-unit>
+            <trans-unit id="D6twj5K">
+                <source>label.health_check_sitemap_invalid</source>
+                <target>%file% does not look like a valid sitemap</target>
+            </trans-unit>
+            <trans-unit id="hRrR7wP">
+                <source>label.health_check_sitemap_missing</source>
+                <target>%file% is missing</target>
+            </trans-unit>
+            <trans-unit id="ixM01t_">
+                <source>label.health_check_sitemap_ok</source>
+                <target>%file% is reachable and well-formed</target>
+            </trans-unit>
+            <trans-unit id="fbeNKQY">
+                <source>label.health_check_sitemap_ok_urls</source>
+                <target>%file% is reachable and declares %count% url(s)</target>
+            </trans-unit>
+            <trans-unit id="f06Aer8">
+                <source>label.health_check_sitemap_stale</source>
+                <target>%file% has not been regenerated since %date%</target>
+            </trans-unit>
+            <trans-unit id="t.pDm_y">
+                <source>label.health_check_ssl_certificate_call_failed</source>
+                <target>Could not read the TLS certificate: %message%</target>
+            </trans-unit>
+            <trans-unit id="huusFBh">
+                <source>label.health_check_ssl_certificate_not_https</source>
+                <target>Site not served over HTTPS, certificate not checked</target>
+            </trans-unit>
+            <trans-unit id="15UA7WE">
+                <source>label.health_check_status</source>
+                <target>Status</target>
+            </trans-unit>
+            <trans-unit id="JvPh_wR">
+                <source>label.health_check_status_error</source>
+                <target>Error</target>
+            </trans-unit>
+            <trans-unit id="bTmh.Fl">
+                <source>label.health_check_status_ok</source>
+                <target>OK</target>
+            </trans-unit>
+            <trans-unit id="_qvT.iU">
+                <source>label.health_check_status_skipped</source>
+                <target>Not tested</target>
+            </trans-unit>
+            <trans-unit id="FK6UmpN">
+                <source>label.health_check_status_warning</source>
+                <target>Warning</target>
+            </trans-unit>
+            <trans-unit id="DXINO1n">
+                <source>label.health_check_summary</source>
+                <target>Summary</target>
+            </trans-unit>
+            <trans-unit id="0RxuWX_">
+                <source>label.health_check_summary_backup</source>
+                <target>%tables% tables · SQL %sql% · Files: %files% · %duration%</target>
+            </trans-unit>
+            <trans-unit id="tVOszC6">
+                <source>label.health_check_summary_security_headers</source>
+                <target>%present%/%total% security headers present</target>
+            </trans-unit>
+            <trans-unit id="lF7WRuH">
+                <source>label.health_check_summary_ssl_certificate</source>
+                <target>Expires in %days% day(s) (%date%)</target>
+            </trans-unit>
+            <trans-unit id="TuTVoK5">
+                <source>label.health_check_trend</source>
+                <target>Trend</target>
+            </trans-unit>
+            <trans-unit id="5NWxr7E">
+                <source>label.health_check_url_gone</source>
+                <target>Deliberately removed (HTTP 410), but still declared</target>
+            </trans-unit>
+            <trans-unit id="m8vgu62">
+                <source>label.health_check_url_http_error</source>
+                <target>Answers HTTP %status%</target>
+            </trans-unit>
+            <trans-unit id="NPIEmDn">
+                <source>label.health_check_url_inconclusive</source>
+                <target>Answers HTTP %status% to the checker, page not analysed</target>
+            </trans-unit>
+            <trans-unit id="k22BaC2">
+                <source>label.health_check_url_not_found</source>
+                <target>Not found (HTTP 404) although it is declared</target>
+            </trans-unit>
+            <trans-unit id="_ldsYSV">
+                <source>label.health_check_url_unreachable</source>
+                <target>Unreachable (no answer from the server)</target>
+            </trans-unit>
+            <trans-unit id="BheTXiv">
+                <source>label.health_check_view_url</source>
+                <target>Open tested page</target>
+            </trans-unit>
+            <trans-unit id="4sz8iu4">
+                <source>label.hide_sensitive</source>
+                <target>Hide sensitive data</target>
+            </trans-unit>
+            <trans-unit id="rszWvKi">
+                <source>label.info_redirect</source>
+                <target>List of the site's URL redirects. You can create, edit or delete a redirect; double-check the source and target URLs, a mistake can break a link or cause a redirect loop.</target>
+            </trans-unit>
+            <trans-unit id="NZUMwSH">
+                <source>label.info_theme</source>
+                <target>Colors, fonts, light/dark mode. Manual editing reserved to ROLE_SUPER_ADMIN; presets stay available from editor role.</target>
+            </trans-unit>
+            <trans-unit id="14MwZnc">
+                <source>label.info_user</source>
+                <target>List of the site's users. You can edit a user's roles or delete them; be careful, changing roles immediately changes their back-office access rights.</target>
+            </trans-unit>
+            <trans-unit id="cxSqi5b">
+                <source>label.info_user_registration</source>
+                <target>Visitor registration toggles in one click from %link_open%the dashboard%link_close% (admin-only).</target>
+            </trans-unit>
+            <trans-unit id="waNryE6">
+                <source>label.info_user_roles</source>
+                <target>Roles listed below (other than ROLE_SUPER_ADMIN) come from %link_open%this key%link_close%.</target>
+            </trans-unit>
+            <trans-unit id="Puo8mCm">
+                <source>label.int</source>
+                <target>Integer (1, 2, 3, ...)</target>
+            </trans-unit>
+            <trans-unit id="gDPKXt0">
+                <source>label.invalid_json</source>
+                <target>This value must be a valid JSON array</target>
+            </trans-unit>
+            <trans-unit id="GD0aiBK">
+                <source>label.invalid_theme_color</source>
+                <target>This value doesn't look like a valid CSS color</target>
+            </trans-unit>
+            <trans-unit id="Tau.iPf">
+                <source>label.is_restricted</source>
+                <target>Restricted</target>
+            </trans-unit>
+            <trans-unit id="2Q0svza">
+                <source>label.is_restricted_help</source>
+                <target>If enabled, only a ROLE_SUPER_ADMIN can view/edit this config</target>
+            </trans-unit>
+            <trans-unit id="EBMtHmf">
+                <source>label.is_sensitive</source>
+                <target>Sensitive</target>
+            </trans-unit>
+            <trans-unit id="fxTWmw2">
+                <source>label.is_sensitive_help</source>
+                <target>If sensitive is enabled, the value is encrypted in the database</target>
+            </trans-unit>
+            <trans-unit id="gH74JM1">
+                <source>label.items_not_filled</source>
+                <target>Items not filled in yet</target>
+            </trans-unit>
+            <trans-unit id="xvnZ7bJ">
+                <source>label.items_not_filled_for</source>
+                <target>%entity% not filled in yet</target>
+            </trans-unit>
+            <trans-unit id="NdoELG0">
+                <source>label.kind</source>
+                <target>Type</target>
+            </trans-unit>
+            <trans-unit id="y.9x3G.">
+                <source>label.label</source>
+                <target>Label</target>
+            </trans-unit>
+            <trans-unit id="7BYqEbj">
+                <source>label.links</source>
+                <target>Links</target>
+            </trans-unit>
+            <trans-unit id="vDCVRyf">
+                <source>label.maintenance</source>
+                <target>Maintenance</target>
+            </trans-unit>
+            <trans-unit id="JYXDc.L">
+                <source>label.maintenance_alert</source>
+                <target>Site in maintenance mode</target>
+            </trans-unit>
+            <trans-unit id="t435StY">
+                <source>label.maintenance_disable</source>
+                <target>Disable maintenance mode</target>
+            </trans-unit>
+            <trans-unit id="NjPEnP0">
+                <source>label.maintenance_enable</source>
+                <target>Enable maintenance mode</target>
+            </trans-unit>
+            <trans-unit id="bA8bvIF">
+                <source>label.maintenance_message</source>
+                <target>We're working to bring you a better experience. Check back soon!</target>
+            </trans-unit>
+            <trans-unit id="kLtAgow">
+                <source>label.maintenance_preview_link</source>
+                <target>Maintenance preview link</target>
+            </trans-unit>
+            <trans-unit id="_0OT.Rv">
+                <source>label.management</source>
+                <target>Management</target>
+            </trans-unit>
+            <trans-unit id="Vbng0S2">
+                <source>label.management_interface</source>
+                <target>Management Interface</target>
+            </trans-unit>
+            <trans-unit id="EfqOe8j">
+                <source>label.menu_advanced</source>
+                <target>Advanced</target>
+            </trans-unit>
+            <trans-unit id="CzQFJOJ">
+                <source>label.messenger_actions</source>
+                <target>Actions</target>
+            </trans-unit>
+            <trans-unit id="4Fh5Zeh">
+                <source>label.messenger_alert_admin</source>
+                <target>A technical issue has been automatically reported</target>
+            </trans-unit>
+            <trans-unit id="dEw0nxL">
+                <source>label.messenger_alert_super_admin</source>
+                <target>%count% important Messenger failure(s)</target>
+            </trans-unit>
+            <trans-unit id="rTPONzA">
+                <source>label.messenger_by_error</source>
+                <target>Summary by error</target>
+            </trans-unit>
+            <trans-unit id="q9nBbQt">
+                <source>label.messenger_count</source>
+                <target>Count</target>
+            </trans-unit>
+            <trans-unit id="mciG46c">
+                <source>label.messenger_delete</source>
+                <target>Delete</target>
+            </trans-unit>
+            <trans-unit id="vbhcK2l">
+                <source>label.messenger_delete_confirm</source>
+                <target>Permanently delete this message?</target>
+            </trans-unit>
+            <trans-unit id="z7Q92q7">
+                <source>label.messenger_delete_group</source>
+                <target>Delete the %count%</target>
+            </trans-unit>
+            <trans-unit id="ZeJTUAH">
+                <source>label.messenger_delete_group_confirm</source>
+                <target>Permanently delete these %count% message(s)?</target>
+            </trans-unit>
+            <trans-unit id="TQZxTCT">
+                <source>label.messenger_detail</source>
+                <target>Detail</target>
+            </trans-unit>
+            <trans-unit id="UoTyvJn">
+                <source>label.messenger_error</source>
+                <target>Error</target>
+            </trans-unit>
+            <trans-unit id="2XKsaDm">
+                <source>label.messenger_error_class</source>
+                <target>Error class</target>
+            </trans-unit>
+            <trans-unit id="PdEOB0V">
+                <source>label.messenger_error_code</source>
+                <target>Code</target>
+            </trans-unit>
+            <trans-unit id="T2GT4MH">
+                <source>label.messenger_failed</source>
+                <target>Failed messages</target>
+            </trans-unit>
+            <trans-unit id="27CLL4k">
+                <source>label.messenger_from</source>
+                <target>Sender</target>
+            </trans-unit>
+            <trans-unit id="fT5KqIP">
+                <source>label.messenger_important</source>
+                <target>Important</target>
+            </trans-unit>
+            <trans-unit id="KgJXzDG">
+                <source>label.messenger_minor</source>
+                <target>Minor</target>
+            </trans-unit>
+            <trans-unit id="odFrop6">
+                <source>label.messenger_none</source>
+                <target>No failed messages</target>
+            </trans-unit>
+            <trans-unit id=".FS8LLE">
+                <source>label.messenger_purge_now</source>
+                <target>Purge now</target>
+            </trans-unit>
+            <trans-unit id="CXyZbmf">
+                <source>label.messenger_retries</source>
+                <target>Retries</target>
+            </trans-unit>
+            <trans-unit id="Jjf5VFk">
+                <source>label.messenger_retry</source>
+                <target>Retry</target>
+            </trans-unit>
+            <trans-unit id="OBazAhq">
+                <source>label.messenger_subject</source>
+                <target>Subject</target>
+            </trans-unit>
+            <trans-unit id="_DmTgAf">
+                <source>label.messenger_to</source>
+                <target>Recipient</target>
+            </trans-unit>
+            <trans-unit id="IkuuVf9">
+                <source>label.messenger_transport</source>
+                <target>Original transport</target>
+            </trans-unit>
+            <trans-unit id="baXk6pr">
+                <source>label.modification</source>
+                <target>Modification</target>
+            </trans-unit>
+            <trans-unit id="nP2wKd8">
+                <source>label.new_password</source>
+                <target>New password</target>
+            </trans-unit>
+            <trans-unit id="iUnyZyo">
+                <source>label.no_health_check</source>
+                <target>No health check results yet</target>
+            </trans-unit>
+            <trans-unit id="ZixQpOO">
+                <source>label.no_reset_password_token_found</source>
+                <target>No reset password token found in the URL or in the session.</target>
+            </trans-unit>
+            <trans-unit id="gKQ4vEW">
+                <source>label.no_whatsnew</source>
+                <target>No release notes yet</target>
+            </trans-unit>
+            <trans-unit id="qm9C7WD">
+                <source>label.onboarding_close</source>
+                <target>Close</target>
+            </trans-unit>
+            <trans-unit id=".1_mjgz">
+                <source>label.onboarding_finish</source>
+                <target>Finish</target>
+            </trans-unit>
+            <trans-unit id="A1h8Yfw">
+                <source>label.onboarding_next</source>
+                <target>Next</target>
+            </trans-unit>
+            <trans-unit id="SLzP.HC">
+                <source>label.onboarding_previous</source>
+                <target>Previous</target>
+            </trans-unit>
+            <trans-unit id="ZCAnxZ3">
+                <source>label.onboarding_start</source>
+                <target>Guided tour</target>
+            </trans-unit>
+            <trans-unit id="yaiKGee">
+                <source>label.password</source>
+                <target>Password</target>
+            </trans-unit>
+            <trans-unit id="cR7hXm4">
+                <source>label.password_confirm</source>
+                <target>Confirm password</target>
+            </trans-unit>
+            <trans-unit id="LLkv7Ba">
+                <source>label.password_reset_request</source>
+                <target>Your password reset request</target>
+            </trans-unit>
+            <trans-unit id="A.D0sBG">
+                <source>label.permanent</source>
+                <target>Permanent (301)</target>
+            </trans-unit>
+            <trans-unit id="DOLd5Pf">
+                <source>label.permanent_help</source>
+                <target>Checked = permanent redirect 301 (SEO), unchecked = temporary 302</target>
+            </trans-unit>
+            <trans-unit id="ozwU3T.">
+                <source>label.please_sign_in</source>
+                <target>Please sign in</target>
+            </trans-unit>
+            <trans-unit id="Cb.i5pM">
+                <source>label.presets</source>
+                <target>Presets</target>
+            </trans-unit>
+            <trans-unit id="h5p4XS_">
+                <source>label.redirect</source>
+                <target>Redirect</target>
+            </trans-unit>
+            <trans-unit id="MJxBTAS">
+                <source>label.redirects</source>
+                <target>Redirects</target>
+            </trans-unit>
+            <trans-unit id="pvYiOoS">
+                <source>label.reset_password</source>
+                <target>Reset your password</target>
+            </trans-unit>
+            <trans-unit id="0PZB8zr">
+                <source>label.roles</source>
+                <target>Roles</target>
+            </trans-unit>
+            <trans-unit id="RZMXcMI">
+                <source>label.severity</source>
+                <target>Severity</target>
+            </trans-unit>
+            <trans-unit id="Vf7llby">
+                <source>label.severity_danger</source>
+                <target>Danger</target>
+            </trans-unit>
+            <trans-unit id="CzebRT7">
+                <source>label.severity_info</source>
+                <target>Info</target>
+            </trans-unit>
+            <trans-unit id="p1cJlit">
+                <source>label.severity_warning</source>
+                <target>Warning</target>
+            </trans-unit>
+            <trans-unit id="6b0IH3c">
+                <source>label.shortcuts</source>
+                <target>Shortcuts</target>
+            </trans-unit>
+            <trans-unit id="co161qf">
+                <source>label.shortcuts_category_export</source>
+                <target>Export</target>
+            </trans-unit>
+            <trans-unit id="1HQLOkW">
+                <source>label.shortcuts_category_maintenance</source>
+                <target>Maintenance</target>
+            </trans-unit>
+            <trans-unit id="h0l5yRP">
+                <source>label.shortcuts_category_other</source>
+                <target>Other</target>
+            </trans-unit>
+            <trans-unit id="kUBLlK6">
+                <source>label.shortcuts_category_site</source>
+                <target>Site</target>
+            </trans-unit>
+            <trans-unit id="06NLlwK">
+                <source>label.show_sensitive</source>
+                <target>Show sensitive data</target>
+            </trans-unit>
+            <trans-unit id="UsWSixX">
+                <source>label.sign_in</source>
+                <target>Sign in</target>
+            </trans-unit>
+            <trans-unit id="lnfUWu.">
+                <source>label.signout</source>
+                <target>Sign Out</target>
+            </trans-unit>
+            <trans-unit id="WZuD44S">
+                <source>label.site_link</source>
+                <target>Site: %name%</target>
+            </trans-unit>
+            <trans-unit id="0kGqgMZ">
+                <source>label.slug</source>
+                <target>Slug</target>
+            </trans-unit>
+            <trans-unit id="o8eL7Qn">
+                <source>label.slug_exists</source>
+                <target>The slug already exists</target>
+            </trans-unit>
+            <trans-unit id="sIJNQm6">
+                <source>label.summary_social_network</source>
+                <target>Social network summary</target>
+            </trans-unit>
+            <trans-unit id="zDdJoWc">
+                <source>label.text</source>
+                <target>Text</target>
+            </trans-unit>
+            <trans-unit id="0BVSEus">
+                <source>label.theme</source>
+                <target>Theme</target>
+            </trans-unit>
+            <trans-unit id="Es83kpS">
+                <source>label.theme_mode_auto</source>
+                <target>Auto (follows the visitor's device)</target>
+            </trans-unit>
+            <trans-unit id="lcI61Wi">
+                <source>label.theme_mode_dark</source>
+                <target>Dark</target>
+            </trans-unit>
+            <trans-unit id="V9AXtDG">
+                <source>label.theme_mode_light</source>
+                <target>Light</target>
+            </trans-unit>
+            <trans-unit id="pU0wOZ0">
+                <source>label.to_url</source>
+                <target>Target URL</target>
+            </trans-unit>
+            <trans-unit id="AVZ1p4W">
+                <source>label.to_url_help</source>
+                <target>Full URL (https://...) or absolute path (/series/la-guilde)</target>
+            </trans-unit>
+            <trans-unit id="sS6ch7.">
+                <source>label.true</source>
+                <target>True</target>
+            </trans-unit>
+            <trans-unit id="mcQ1Bzu">
+                <source>label.url</source>
+                <target>URL</target>
+            </trans-unit>
+            <trans-unit id="ExAFOiH">
+                <source>label.user</source>
+                <target>User</target>
+            </trans-unit>
+            <trans-unit id="hKJPguf">
+                <source>label.user_registration_disable</source>
+                <target>Disable user registration</target>
+            </trans-unit>
+            <trans-unit id="IpO0rga">
+                <source>label.user_registration_enable</source>
+                <target>Enable user registration</target>
+            </trans-unit>
+            <trans-unit id="GQQkfB3">
+                <source>label.users</source>
+                <target>Users</target>
+            </trans-unit>
+            <trans-unit id="hgGixhc">
+                <source>label.value</source>
+                <target>Value</target>
+            </trans-unit>
+            <trans-unit id="jMNDg2i">
+                <source>label.value_sensitive</source>
+                <target>Value (leave empty to keep current value)</target>
+            </trans-unit>
+            <trans-unit id="kzywktm">
+                <source>label.whatsnew</source>
+                <target>What's New</target>
+            </trans-unit>
+            <trans-unit id="bjdEET4">
+                <source>label.whatsnew_see_all</source>
+                <target>See all release notes</target>
+            </trans-unit>
+            <trans-unit id="m3ORa7e">
+                <source>text.link_expires_in</source>
+                <target>This link will expire in</target>
+            </trans-unit>
+            <trans-unit id="vcT08Ej">
+                <source>text.logged_in_as</source>
+                <target>You are logged in as %user%,</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

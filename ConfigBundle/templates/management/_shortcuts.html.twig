@@ -1,0 +1,23 @@
+{# Renders the dashboard shortcuts as one flat grid of tiles, ordered by category with no heading per category
+ # A shortcut is a CSRF-protected POST form unless it declares 'method' => 'GET'; 'role' is optional
+ # The caller checks shortcuts|length > 0 #}
+<div class="shortcuts-grid">
+{% for shortcut in shortcuts %}
+    {% if shortcut.role is not defined or is_granted(shortcut.role) %}
+        {% if 'GET' == shortcut.method|default('POST') %}
+            <a href="{{ path(shortcut.route) }}" class="shortcut-tile">
+                <i class="{{ shortcut.icon }}"></i>
+                <span>{{ shortcut.label }}</span>
+            </a>
+        {% else %}
+            <form method="post" action="{{ path(shortcut.route) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token(shortcut.route) }}">
+                <button type="submit" class="shortcut-tile">
+                    <i class="{{ shortcut.icon }}"></i>
+                    <span>{{ shortcut.label }}</span>
+                </button>
+            </form>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+</div>

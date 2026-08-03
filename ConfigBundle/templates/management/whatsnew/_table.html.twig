@@ -1,0 +1,26 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>{{ ('label.date'|trans({}, 'config')) }}</th>
+            <th>{{ ('label.description'|trans({}, 'config')) }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in entries %}
+            <tr>
+                <td>{{ entry.date|format_date('long') }}</td>
+                <td>
+                    <ul class="mb-0">
+                        {% for description in entry.description %}
+                            <li>{{ description }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">{{ ('label.no_whatsnew'|trans({}, 'config')) }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
