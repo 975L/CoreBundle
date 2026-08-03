@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Command;
 use c975L\ConfigBundle\Command\ConfigPruneCommand;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
+use c975L\ConfigBundle\Service\BundleLocator;
 use c975L\ConfigBundle\Service\ConfigDeclarationLocator;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,6 +46,17 @@ class ConfigPruneCommandTest extends TestCase
         $this->filesystem->dumpFile($dir . '/configs.json', json_encode(array_map(fn ($slug) => ['slug' => $slug], $slugs)));
     }
 
+    // The bundles the fabricated vendor/c975l/* directories stand for, as the kernel would report them
+    private function bundleLocator(): BundleLocator
+    {
+        $metadata = [];
+        foreach (glob($this->projectDir . '/vendor/c975l/*', \GLOB_ONLYDIR) ?: [] as $directory) {
+            $metadata[basename($directory)] = ['path' => $directory, 'namespace' => 'c975L\\Test'];
+        }
+
+        return new BundleLocator($metadata);
+    }
+
     private function createTester(
         array $slugsInDatabase,
         ?EntityManagerInterface $manager = null,
@@ -58,7 +70,7 @@ class ConfigPruneCommandTest extends TestCase
 
         return new CommandTester(new ConfigPruneCommand(
             $repository,
-            new ConfigDeclarationLocator($this->projectDir),
+            new ConfigDeclarationLocator($this->bundleLocator(), $this->projectDir),
             $configService ?? $this->createStub(ConfigServiceInterface::class),
             $manager ?? $this->createStub(EntityManagerInterface::class),
         ));

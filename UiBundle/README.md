@@ -2,16 +2,20 @@
 
 Symfony bundle providing the c975L ecosystem's shared front-end foundation — dynamic blocks, media library, and reusable CSS/JS/font/form registries used by every satellite bundle.
 
-[![GitHub](https://img.shields.io/github/license/975L/UiBundle)](https://github.com/975L/UiBundle/blob/master/LICENSE)
-[![Packagist Version](https://img.shields.io/packagist/v/c975l/ui-bundle)](https://packagist.org/packages/c975l/ui-bundle)
-[![PHP Version](https://img.shields.io/packagist/php-v/c975l/ui-bundle)](https://packagist.org/packages/c975l/ui-bundle)
-[![Codacy Grade](https://app.codacy.com/project/badge/Grade/d09243de129a42dfb8bdb5db014bdbc7)](https://app.codacy.com/gh/975L/UiBundle/dashboard)
+[![GitHub](https://img.shields.io/github/license/975L/CoreBundle)](https://github.com/975L/CoreBundle/blob/main/LICENSE)
+[![Packagist Version](https://img.shields.io/packagist/v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
+[![PHP Version](https://img.shields.io/packagist/php-v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
+
+> This bundle ships inside **[`c975l/core-bundle`](../README.md)**, alongside
+> [ConfigBundle](../ConfigBundle/README.md) — one package, two bundles, one release. `composer
+> require c975l/ui-bundle` is superseded; see the package [README](../README.md) and
+> [UPGRADE.md](../UPGRADE.md). The namespace `c975L\UiBundle\` is unchanged.
 
 ## Why UiBundle
 
 ![UiBundle](../.github/images/UiBundle.svg)
 
-The shared foundation every c975L satellite bundle builds on, alongside [ConfigBundle](https://github.com/975L/ConfigBundle): the Block system, media library, shared CSS/JS registries, Forms and Emails all live here so [SiteBundle](https://github.com/975L/SiteBundle), [ShopBundle](https://github.com/975L/ShopBundle), [BookBundle](https://github.com/975L/BookBundle), [GalleryBundle](https://github.com/975L/GalleryBundle) and [SocialBundle](https://github.com/975L/SocialBundle) don't each reinvent them. A satellite bundle adds its own block kind (`BlockRegistryPass`), stylesheet (`StylesheetRegistryPass`) or form action (`FormActionRegistry`) without ever touching UiBundle's code — just tag a service.
+The shared foundation every c975L satellite bundle builds on, alongside [ConfigBundle](../ConfigBundle/README.md): the Block system, media library, shared CSS/JS registries, Forms and Emails all live here so [SiteBundle](https://github.com/975L/SiteBundle), [ShopBundle](https://github.com/975L/ShopBundle), [BookBundle](https://github.com/975L/BookBundle), [GalleryBundle](https://github.com/975L/GalleryBundle) and [SocialBundle](https://github.com/975L/SocialBundle) don't each reinvent them. A satellite bundle adds its own block kind (`BlockRegistryPass`), stylesheet (`StylesheetRegistryPass`) or form action (`FormActionRegistry`) without ever touching UiBundle's code — just tag a service.
 
 See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/pages/ui-bundle), and browse every block kind live in the [block gallery](https://bundles.975l.com/pages/blocks).
 
@@ -116,7 +120,7 @@ An invalid field gets `.error` plus an `.error-message` paragraph after it; a va
 
 > Until UiBundle 2.0, a form whose fields are named `registration_form_plainPassword` / `registration_form_confirmPassword` still gets both checks with no attribute at all — that pair of ids was hardcoded in SiteBundle's `basic` controller before this moved here. Opting into the attributes above disables the fallback for that field.
 
-Their `importmap.php` entries are added automatically the first time you `composer update` after installing UiBundle — see [Contributing importmap entries from other bundles](https://github.com/975L/ConfigBundle#contributing-importmap-entries-from-other-bundles) in ConfigBundle's README, nothing to add by hand.
+Their `importmap.php` entries are added automatically the first time you `composer update` after installing UiBundle — see [Contributing importmap entries from other bundles](../ConfigBundle/README.md#contributing-importmap-entries-from-other-bundles) in ConfigBundle's README, nothing to add by hand.
 
 ### Making these controllers available in EasyAdmin (blocks editor, sortable, kind-switcher)
 
@@ -1597,7 +1601,7 @@ Deliberately not a `HealthCheckProviderInterface`: those run from cron on the ma
 > [!TIP]
 > If this project **helps you save development time**:
 >
-> - [**star** it on GitHub](https://github.com/975L/UiBundle) — helps others find it
-> - [**open an issue**](https://github.com/975L/UiBundle/issues/new) to share how you use it — genuinely useful feedback
+> - [**star** it on GitHub](https://github.com/975L/CoreBundle) — helps others find it
+> - [**open an issue**](https://github.com/975L/CoreBundle/issues/new) to share how you use it — genuinely useful feedback
 >
 > And if you'd like to support the work directly, the **Sponsor** button at the top of the GitHub page is there for that. Thank you!

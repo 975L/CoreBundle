@@ -46,6 +46,20 @@ Everything below was written as `config-bundle 6.0.0` and `ui-bundle 1.18.0`. Ne
 
 ### ConfigBundle
 
+**A c975L bundle is located through the kernel now, not through `vendor/c975l/*`.** Four services guessed a bundle's directory from its Composer package name — and this package ships two bundles one directory below that guess, so `c975l:config:load-all` loaded nothing, `c975l:scaffold:install` copied nothing, `c975l:config:check-importmap` reported clean, and `c975l:deprecations:check` blamed nobody. They all ask `Service\BundleLocator` now, which reads `%kernel.bundles_metadata%` and keeps the `c975L\` namespaces. **Nothing to run**, with one consequence worth knowing: only the bundles **registered in `config/bundles.php`** are discovered, where the glob read anything sitting in `vendor/`. A bundle installed but not registered contributes nothing to the application anyway.
+
+**`ImportmapProviderInterface::get*ImportmapEntries()` returns a path relative to your own bundle.** `ImportmapRegistry` prefixes it with wherever that bundle really sits, so no bundle spells out its place under `vendor/` — the very assumption this merge broke, and which would break again the next time two bundles ship together. A provider the application itself ships is left untouched: its paths are the project root's own, exactly as they appear in `importmap.php`.
+
+```diff
+ '@c975l/my-bundle/controllers-admin.js' => [
+-    'path' => './vendor/c975l/my-bundle/assets/controllers-admin.js',
++    'path' => 'assets/controllers-admin.js',
+     'entrypoint' => true,
+ ],
+```
+
+In this ecosystem that means `c975l/site-bundle`, `c975l/gallery-bundle` and `c975l/social-bundle`, five entries between them. A satellite left unchanged writes a path prefixed twice into `importmap.php`, which AssetMapper cannot resolve — so update it in the same release that bumps its `c975l/core-bundle` requirement.
+
 **Redirects, the site-wide health checks and the content-quality machinery moved here from SiteBundle.** None of them needed a Page: a url that changed needs a redirect whether it was a page's or a product's, a TLS certificate belongs to the host, and a shop's own urls deserve the same content checks a page gets. Namespace for namespace:
 
 | Was, in SiteBundle | Now |

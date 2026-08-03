@@ -1,12 +1,14 @@
 # c975L CoreBundle
 
-The two base bricks of the c975L ecosystem, shipped together: **ConfigBundle** (database-backed configuration, EasyAdmin dashboard, user accounts, health checks, sitemaps) and **UiBundle** (blocks, media library, theme, forms, emails).
+The base of the c975L ecosystem in a single package: **ConfigBundle** (database-backed configuration, EasyAdmin dashboard, user accounts, health check, sitemaps) and **UiBundle** (page blocks, media library, theme, legal models, forms, emails). Two bundles, one package, one release.
 
 [![GitHub](https://img.shields.io/github/license/975L/CoreBundle)](https://github.com/975L/CoreBundle/blob/main/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
 
 ## One package, two bundles
+
+![CoreBundle](.github/images/CoreBundle.svg)
 
 This is **not** a merged bundle. A Composer package is not a Symfony bundle: this package ships the two bundles unchanged, each with its own namespace, its own `services.yaml`, its own `configs.json`, its own translation domain and its own dashboard section.
 

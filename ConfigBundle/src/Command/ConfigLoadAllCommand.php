@@ -40,7 +40,7 @@ class ConfigLoadAllCommand extends Command
         $files = $this->declarationLocator->findFiles();
 
         if (empty($files)) {
-            $io->warning('No configs*.json found in vendor/c975l/*/config/ nor in config/');
+            $io->warning('No configs*.json found in the registered c975L bundles\' config/ nor in the application\'s own config/');
 
             return Command::SUCCESS;
         }

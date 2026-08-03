@@ -16,18 +16,20 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 class ConfigDeclarationLocator
 {
     public function __construct(
+        private readonly BundleLocator $bundleLocator,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }
 
-    // Returns every declaration file: the installed c975L bundles' ones, plus the consuming application's own config/configs*.json
+    // Returns every declaration file: the registered c975L bundles' ones, plus the consuming application's own config/configs*.json
     public function findFiles(): array
     {
-        $files = array_merge(
-            glob($this->projectDir . '/vendor/c975l/*/config/configs*.json') ?: [],
-            glob($this->projectDir . '/config/configs*.json') ?: [],
-        );
+        $files = glob($this->projectDir . '/config/configs*.json') ?: [];
+
+        foreach ($this->bundleLocator->subdirectories('config') as $directory) {
+            $files = array_merge($files, glob($directory . '/configs*.json') ?: []);
+        }
 
         sort($files);
 

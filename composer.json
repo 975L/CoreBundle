@@ -1,7 +1,7 @@
 {
     "name": "c975l/core-bundle",
     "type": "symfony-bundle",
-    "description": "The two base bricks of the c975L ecosystem, shipped together: ConfigBundle (database-backed configuration, EasyAdmin dashboard, user accounts, health checks, sitemaps) and UiBundle (blocks, media library, theme, forms, emails). Two distinct bundles, one package.",
+    "description": "The base of the c975L ecosystem in a single package: ConfigBundle (database-backed configuration, EasyAdmin dashboard, user accounts, health check, sitemaps) and UiBundle (page blocks, media library, theme, legal models, forms, emails). Two bundles, one package, one release.",
     "keywords": [
         "symfony",
         "bundle",

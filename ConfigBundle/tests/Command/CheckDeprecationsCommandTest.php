@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Command;
 
 use c975L\ConfigBundle\Command\CheckDeprecationsCommand;
+use c975L\ConfigBundle\Service\BundleLocator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -45,7 +46,7 @@ class CheckDeprecationsCommandTest extends TestCase
 
     private function createTester(): CommandTester
     {
-        return new CommandTester(new CheckDeprecationsCommand($this->projectDir, 'dev'));
+        return new CommandTester(new CheckDeprecationsCommand(new BundleLocator([]), $this->projectDir, 'dev'));
     }
 
     public function testExecuteWarnsWhenLogFileIsMissing(): void

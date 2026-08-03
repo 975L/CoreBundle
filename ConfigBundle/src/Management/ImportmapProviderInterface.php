@@ -16,7 +16,7 @@ namespace c975L\ConfigBundle\Management;
 interface ImportmapProviderInterface
 {
     /**
-     * Entries for scripts loaded on the /management dashboard only (typically also returned by BundleScriptAdminProviderInterface::getAdminScripts()). 'path' is relative to the project root exactly as it should appear in importmap.php (e.g. './vendor/c975l/my-bundle/assets/controllers-admin.js'). Return [] if none.
+     * Entries for scripts loaded on the /management dashboard only (typically also returned by BundleScriptAdminProviderInterface::getAdminScripts()). 'path' is relative to the declaring bundle's own directory (e.g. 'assets/controllers-admin.js'), ImportmapRegistry prefixing it with where that bundle sits under vendor/ - a bundle never spells that out itself, its package being free to ship several bundles. A provider shipped by the application itself gets no prefix: its paths are the project root's own, exactly as they appear in importmap.php. Return [] if none.
      *
      * @return array<string, array{path: string, entrypoint?: bool}> import name (e.g. '@c975l/my-bundle/controllers-admin.js') => entry
      */

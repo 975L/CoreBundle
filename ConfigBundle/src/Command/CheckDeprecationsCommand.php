@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Command;
 
+use c975L\ConfigBundle\Service\BundleLocator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,6 +26,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 class CheckDeprecationsCommand extends Command
 {
     public function __construct(
+        private readonly BundleLocator $bundleLocator,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
         #[Autowire(param: 'kernel.environment')]
@@ -99,15 +101,10 @@ class CheckDeprecationsCommand extends Command
         return $messages;
     }
 
-    // Where a deprecation is worth looking for: the app's own code, plus every installed c975L bundle
+    // Where a deprecation is worth looking for: the app's own code, plus every registered c975L bundle
     private function sourceDirs(): array
     {
-        $sourceDirs = ['app' => $this->projectDir . '/src'];
-        foreach (array_filter(glob($this->projectDir . '/vendor/c975l/*') ?: [], 'is_dir') as $dir) {
-            $sourceDirs[basename($dir)] = $dir . '/src';
-        }
-
-        return $sourceDirs;
+        return ['app' => $this->projectDir . '/src'] + $this->bundleLocator->subdirectories('src');
     }
 
     private function renderReport(SymfonyStyle $io, array $report): void

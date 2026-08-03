@@ -19,7 +19,7 @@ class ImportmapProvider implements ImportmapProviderInterface
     {
         return [
             '@c975l/ui-bundle/controllers-admin.js' => [
-                'path' => './vendor/c975l/ui-bundle/assets/controllers-admin.js',
+                'path' => 'assets/controllers-admin.js',
                 'entrypoint' => true,
             ],
         ];
@@ -29,7 +29,7 @@ class ImportmapProvider implements ImportmapProviderInterface
     {
         return [
             '@c975l/ui-bundle/controllers.js' => [
-                'path' => './vendor/c975l/ui-bundle/assets/controllers.js',
+                'path' => 'assets/controllers.js',
                 'entrypoint' => true,
             ],
         ];

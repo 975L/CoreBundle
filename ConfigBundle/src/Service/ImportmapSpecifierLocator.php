@@ -17,15 +17,16 @@ use Symfony\Component\Finder\Finder;
 class ImportmapSpecifierLocator
 {
     public function __construct(
+        private readonly BundleLocator $bundleLocator,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }
 
-    // Returns every bare specifier imported across the installed c975L bundles' assets. Relative ones ("./js/menu.js") are skipped: AssetMapper resolves those from the importing file itself, they never need an entry of their own
+    // Returns every bare specifier imported across the registered c975L bundles' assets. Relative ones ("./js/menu.js") are skipped: AssetMapper resolves those from the importing file itself, they never need an entry of their own
     public function findBareSpecifiers(): array
     {
-        $directories = glob($this->projectDir . '/vendor/c975l/*/assets', GLOB_ONLYDIR) ?: [];
+        $directories = array_values($this->bundleLocator->subdirectories('assets'));
         if ([] === $directories) {
             return [];
         }

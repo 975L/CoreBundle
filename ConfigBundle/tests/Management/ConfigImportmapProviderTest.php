@@ -21,7 +21,7 @@ class ConfigImportmapProviderTest extends TestCase
 
         $this->assertSame([
             '@c975l/config-bundle/controllers-admin.js' => [
-                'path' => './vendor/c975l/config-bundle/assets/controllers-admin.js',
+                'path' => 'assets/controllers-admin.js',
                 'entrypoint' => true,
             ],
         ], $entries);

@@ -2,16 +2,20 @@
 
 Symfony bundle providing the EasyAdmin dashboard and database-backed configuration at the root of the c975L ecosystem — the shared hub every satellite bundle plugs into for menus, exports/imports, alerts, and other cross-bundle dashboard contributions.
 
-[![GitHub](https://img.shields.io/github/license/975L/ConfigBundle)](https://github.com/975L/ConfigBundle/blob/master/LICENSE)
-[![Packagist Version](https://img.shields.io/packagist/v/c975l/config-bundle)](https://packagist.org/packages/c975l/config-bundle)
-[![PHP Version](https://img.shields.io/packagist/php-v/c975l/config-bundle)](https://packagist.org/packages/c975l/config-bundle)
-[![Codacy Grade](https://app.codacy.com/project/badge/Grade/42533e7972fc42f980e93048225f3f31)](https://app.codacy.com/gh/975L/ConfigBundle/dashboard)
+[![GitHub](https://img.shields.io/github/license/975L/CoreBundle)](https://github.com/975L/CoreBundle/blob/main/LICENSE)
+[![Packagist Version](https://img.shields.io/packagist/v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
+[![PHP Version](https://img.shields.io/packagist/php-v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
+
+> This bundle ships inside **[`c975l/core-bundle`](../README.md)**, alongside
+> [UiBundle](../UiBundle/README.md) — one package, two bundles, one release. `composer require
+> c975l/config-bundle` is superseded; see the package [README](../README.md) and
+> [UPGRADE.md](../UPGRADE.md). The namespace `c975L\ConfigBundle\` is unchanged.
 
 ## Why ConfigBundle
 
 ![ConfigBundle](../.github/images/ConfigBundle.svg)
 
-The root of the c975L ecosystem — every other bundle ([UiBundle](https://github.com/975L/UiBundle), [SiteBundle](https://github.com/975L/SiteBundle), [ShopBundle](https://github.com/975L/ShopBundle), [BookBundle](https://github.com/975L/BookBundle), [GalleryBundle](https://github.com/975L/GalleryBundle), [SocialBundle](https://github.com/975L/SocialBundle)...) depends on it, directly or through UiBundle. It's the single place for application configuration: no per-app `.env` for business config, no duplicated dashboard entry mechanism — a satellite bundle just implements `MenuProviderInterface` (or one of its siblings) and gets an EasyAdmin entry for free.
+The root of the c975L ecosystem — every other bundle ([UiBundle](../UiBundle/README.md), [SiteBundle](https://github.com/975L/SiteBundle), [ShopBundle](https://github.com/975L/ShopBundle), [BookBundle](https://github.com/975L/BookBundle), [GalleryBundle](https://github.com/975L/GalleryBundle), [SocialBundle](https://github.com/975L/SocialBundle)...) depends on it, directly or through UiBundle. It's the single place for application configuration: no per-app `.env` for business config, no duplicated dashboard entry mechanism — a satellite bundle just implements `MenuProviderInterface` (or one of its siblings) and gets an EasyAdmin entry for free.
 
 See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.com/pages/config-bundle).
 
@@ -180,7 +184,7 @@ This list is closed on purpose so filtering stays useful; if none fits, leave `g
 
 ## Loading config entries into the database
 
-Auto-discovers every `vendor/c975l/*/config/configs*.json` file **plus the application's own `config/configs*.json`**, and loads them in one shot — a bundle can ship several files (e.g. `configs.json` plus `configs-css.json` for theme variables), each loaded independently:
+Auto-discovers the `config/configs*.json` of every c975L bundle registered in `config/bundles.php` **plus the application's own `config/configs*.json`**, and loads them in one shot — a bundle can ship several files (e.g. `configs.json` plus `configs-css.json` for theme variables), each loaded independently:
 
 ```bash
 php bin/console c975l:config:load-all
@@ -272,7 +276,7 @@ Any entry with a `severity` and an empty `value` shows up as a colored alert (da
 
 ### JS assets loaded on the dashboard
 
-The `/management` dashboard loads dedicated AssetMapper entries (not your site's main `app` entry), so that satellite bundles needing Stimulus controllers in the back-office don't drag your site's front-end stylesheet into EasyAdmin. `c975l/ui-bundle` contributes one for its block editor — see the [UiBundle README](https://github.com/975L/UiBundle#installation) for how to define that entry.
+The `/management` dashboard loads dedicated AssetMapper entries (not your site's main `app` entry), so that satellite bundles needing Stimulus controllers in the back-office don't drag your site's front-end stylesheet into EasyAdmin. `c975l/ui-bundle` contributes one for its block editor — see the [UiBundle README](../UiBundle/README.md#installation) for how to define that entry.
 
 ConfigBundle contributes its own, `@c975l/config-bundle/controllers-admin.js`, for the dashboard's guided tour (see [Contributing menu items from other bundles](#contributing-menu-items-from-other-bundles) below for how a bundle's own menu entries feed into it) and its Health check trend chart (see below). This entry (and any other c975L bundle's own admin JS) is added to your `importmap.php` automatically — see [Contributing importmap entries from other bundles](#contributing-importmap-entries-from-other-bundles) below, nothing to add by hand.
 
@@ -727,12 +731,12 @@ use c975L\ConfigBundle\Management\ImportmapProviderInterface;
 
 class ImportmapProvider implements ImportmapProviderInterface
 {
-    // Import name => ['path' => string, 'entrypoint' => bool]. 'path' is relative to the project root, exactly as it should appear in importmap.php
+    // Import name => ['path' => string, 'entrypoint' => bool]. 'path' is relative to your bundle's own directory: ImportmapRegistry prefixes it with wherever that bundle sits under vendor/, so you never spell it out yourself
     public function getAdminImportmapEntries(): array
     {
         return [
             '@c975l/my-bundle/controllers-admin.js' => [
-                'path' => './vendor/c975l/my-bundle/assets/controllers-admin.js',
+                'path' => 'assets/controllers-admin.js',
                 'entrypoint' => true,
             ],
         ];
@@ -1746,8 +1750,8 @@ class MyService
 > [!TIP]
 > If this project **helps you save development time**:
 >
-> - [**star** it on GitHub](https://github.com/975L/ConfigBundle) — helps others find it
-> - [**open an issue**](https://github.com/975L/ConfigBundle/issues/new) to share how you use it — genuinely useful feedback
+> - [**star** it on GitHub](https://github.com/975L/CoreBundle) — helps others find it
+> - [**open an issue**](https://github.com/975L/CoreBundle/issues/new) to share how you use it — genuinely useful feedback
 >
 > And if you'd like to support the work directly, the **Sponsor** button at the top of the GitHub page is there for that. Thank you!
 

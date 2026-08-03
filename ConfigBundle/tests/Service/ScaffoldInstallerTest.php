@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Service\BundleLocator;
 use c975L\ConfigBundle\Service\ScaffoldInstaller;
 use c975L\UiBundle\Entity\Media;
 use PHPUnit\Framework\TestCase;
@@ -56,6 +57,17 @@ class ScaffoldInstallerTest extends TestCase
         return $result;
     }
 
+    // The bundles the fabricated vendor/c975l/* directories stand for, as the kernel would report them
+    private function bundleLocator(): BundleLocator
+    {
+        $metadata = [];
+        foreach (glob($this->projectDir . '/vendor/c975l/*', \GLOB_ONLYDIR) ?: [] as $directory) {
+            $metadata[basename($directory)] = ['path' => $directory, 'namespace' => 'c975L\\Test'];
+        }
+
+        return new BundleLocator($metadata);
+    }
+
     // Fabricates vendor/c975l/<bundleName>/scaffold/{src,templates} with the given file => content map
     private function addScaffoldBundle(string $bundleName, array $files): void
     {
@@ -82,7 +94,7 @@ class ScaffoldInstallerTest extends TestCase
             'src/Controller/FooController.php' => 'foo',
             'templates/foo.html.twig' => 'bar',
         ]);
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $result = $installer->install();
 
@@ -98,7 +110,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'new-content']);
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'original-content');
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $result = $installer->install();
 
@@ -112,7 +124,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         $this->addScaffoldBundle('config-bundle', ['templates/a.html.twig' => 'a']);
         $this->addScaffoldBundle('site-bundle', ['templates/b.html.twig' => 'b']);
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $result = $installer->install();
 
@@ -125,7 +137,7 @@ class ScaffoldInstallerTest extends TestCase
     public function testInstallAppendsExistingFilesToGitignoreOnlyOnce(): void
     {
         file_put_contents($this->projectDir . '/.gitignore', "vendor/\n");
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $installer->install();
         $installer->install();
@@ -138,7 +150,7 @@ class ScaffoldInstallerTest extends TestCase
     // Back-office written content (uploaded medias, site-wide graphics under their role name) gets ignored too, so a deploy resetting the working tree never wipes what production uploaded
     public function testInstallGitignoresBackOfficeWrittenContent(): void
     {
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $installer->install();
 
@@ -153,7 +165,7 @@ class ScaffoldInstallerTest extends TestCase
     public function testInstallDoesNotDuplicateAlreadyPresentRules(): void
     {
         file_put_contents($this->projectDir . '/.gitignore', "public/medias\npublic/favicon.*\n");
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $installer->install();
 
@@ -162,10 +174,10 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertSame(1, substr_count($gitignore, 'public/favicon.*'));
     }
 
-    // No vendor/c975l directory at all (e.g. a dry run before composer install): install() must not error out
+    // No c975L bundle registered at all: install() must not error out
     public function testInstallHandlesMissingVendorDirectoryGracefully(): void
     {
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 0], $this->counts($installer->install()));
     }
@@ -176,7 +188,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'same-content']);
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'same-content');
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $result = $installer->install();
 
@@ -191,7 +203,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addScaffoldBundle('site-bundle', ['assets/styles/themes/site.css' => ':root { --radius-btn: 0; }']);
         mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
         file_put_contents($this->projectDir . '/assets/styles/themes/site.css', ':root { --radius-btn: 999px; }');
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $result = $installer->install();
 
@@ -207,7 +219,7 @@ class ScaffoldInstallerTest extends TestCase
         file_put_contents($this->projectDir . '/assets/styles/themes/ui.css', ':root {}');
         file_put_contents($this->projectDir . '/assets/app.js', "import './styles/themes/ui.css';\n");
         $this->addThemeProvider();
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $reminder = $installer->themeImportReminder();
 
@@ -225,7 +237,7 @@ class ScaffoldInstallerTest extends TestCase
         file_put_contents($this->projectDir . '/assets/styles/themes/site.css', ':root {}');
         file_put_contents($this->projectDir . '/assets/styles/app.css', "@import url(\"./themes/site.css\");\n");
         $this->addThemeProvider();
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $reminder = (string) $installer->themeImportReminder();
 
@@ -239,7 +251,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
         file_put_contents($this->projectDir . '/assets/styles/themes/site.css', ':root {}');
         file_put_contents($this->projectDir . '/assets/app.js', "import './styles/themes/site.css';\n");
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $reminder = (string) $installer->themeImportReminder();
 
@@ -255,7 +267,7 @@ class ScaffoldInstallerTest extends TestCase
         file_put_contents($this->projectDir . '/assets/styles/themes/site.css', ':root {}');
         file_put_contents($this->projectDir . '/assets/app.js', "import './styles/app.css';\n");
         file_put_contents($this->projectDir . '/assets/styles/app.css', "body { color: red; }\n");
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $this->assertNull($installer->themeImportReminder());
     }
@@ -263,7 +275,7 @@ class ScaffoldInstallerTest extends TestCase
     // No scaffolded theme yet: nothing to warn about
     public function testThemeImportReminderIsNullWithoutAnyScaffoldedTheme(): void
     {
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $this->assertNull($installer->themeImportReminder());
     }
@@ -273,7 +285,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
         file_put_contents($this->projectDir . '/assets/styles/themes/ui.css', ':root {}');
-        $installer = new ScaffoldInstaller($this->projectDir);
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $this->assertNull($installer->themeImportReminder());
     }
@@ -288,7 +300,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'my-own-kernel');
 
-        $result = (new ScaffoldInstaller($this->projectDir))->install(['src/Scheduler']);
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
 
         $this->assertSame(['copied' => 1, 'backedUp' => 0, 'skipped' => 0], $this->counts($result));
         $this->assertSame('new-schedule', file_get_contents($this->projectDir . '/src/Scheduler/MaintenanceSchedule.php'));
@@ -300,7 +312,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         $this->addScaffoldBundle('site-bundle', ['src/SchedulerOther/Foo.php' => 'foo']);
 
-        $result = (new ScaffoldInstaller($this->projectDir))->install(['src/Scheduler']);
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
 
         $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 0], $this->counts($result));
         $this->assertFileDoesNotExist($this->projectDir . '/src/SchedulerOther/Foo.php');
@@ -311,7 +323,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         $this->addScaffoldBundle('site-bundle', ['src/Scheduler/MaintenanceSchedule.php' => 'new-schedule']);
 
-        $result = (new ScaffoldInstaller($this->projectDir))->install(['src/Scheduler', 'src/Sheduler', 'scaffold/src/Scheduler']);
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler', 'src/Sheduler', 'scaffold/src/Scheduler']);
 
         $this->assertSame(['src/Sheduler', 'scaffold/src/Scheduler'], $result['unmatched']);
     }
@@ -323,7 +335,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/src/Scheduler', 0775, true);
         file_put_contents($this->projectDir . '/src/Scheduler/MaintenanceSchedule.php', 'same-content');
 
-        $result = (new ScaffoldInstaller($this->projectDir))->install(['src/Scheduler']);
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
 
         $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 1], $this->counts($result));
         $this->assertSame([], $result['unmatched']);
@@ -336,7 +348,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'original-content');
 
-        $result = (new ScaffoldInstaller($this->projectDir))->install([], true);
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], true);
 
         $this->assertSame(['copied' => 1, 'backedUp' => 1, 'skipped' => 0], $this->counts($result));
         $this->assertSame(['src/Kernel.php'], $result['files']);

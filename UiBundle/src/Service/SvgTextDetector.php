@@ -68,7 +68,8 @@ class SvgTextDetector
         $predicate = implode(' or ', array_map(static fn (string $name): string => 'local-name()="' . $name . '"', self::TEXT_ELEMENTS));
         $nodes = $svg->xpath('//*[' . $predicate . ']');
 
-        return null === $nodes ? [] : array_values($nodes);
+        // Not a comparison against null alone: xpath() answers false on an expression it cannot parse, whatever the stubs say of its return type
+        return is_array($nodes) ? array_values($nodes) : [];
     }
 
     // Null for anything that is not an SVG document. Re-read on each call rather than memoized: a cache would put state into a service the upload listener and the health check both hold, to save one parse of a file measured in kilobytes

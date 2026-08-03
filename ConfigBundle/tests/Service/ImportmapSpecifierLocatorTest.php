@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests\Service;
 
+use c975L\ConfigBundle\Service\BundleLocator;
 use c975L\ConfigBundle\Service\ImportmapSpecifierLocator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
@@ -46,9 +47,20 @@ class ImportmapSpecifierLocatorTest extends TestCase
         );
     }
 
+    // The bundles the fabricated vendor/c975l/* directories stand for, as the kernel would report them
+    private function bundleLocator(): BundleLocator
+    {
+        $metadata = [];
+        foreach (glob($this->projectDir . '/vendor/c975l/*', \GLOB_ONLYDIR) ?: [] as $directory) {
+            $metadata[basename($directory)] = ['path' => $directory, 'namespace' => 'c975L\\Test'];
+        }
+
+        return new BundleLocator($metadata);
+    }
+
     private function createLocator(): ImportmapSpecifierLocator
     {
-        return new ImportmapSpecifierLocator($this->projectDir);
+        return new ImportmapSpecifierLocator($this->bundleLocator(), $this->projectDir);
     }
 
     public function testFindBareSpecifiersReturnsNothingWhenNoBundleIsInstalled(): void

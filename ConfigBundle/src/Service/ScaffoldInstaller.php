@@ -25,6 +25,7 @@ class ScaffoldInstaller
     private const THEME_PROVIDER = 'src/Service/ThemeStylesheetProvider.php';
 
     public function __construct(
+        private readonly BundleLocator $bundleLocator,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
     ) {
@@ -39,7 +40,7 @@ class ScaffoldInstaller
         $files = [];
         $matchedPaths = [];
 
-        foreach (glob($this->projectDir . '/vendor/c975l/*') ?: [] as $bundleDir) {
+        foreach ($this->bundleLocator->directories() as $bundleDir) {
             foreach (self::SCAFFOLD_DIRS as $dir) {
                 $scaffoldDir = $bundleDir . '/scaffold/' . $dir;
                 if (!is_dir($scaffoldDir)) {

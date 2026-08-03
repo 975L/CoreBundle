@@ -17,7 +17,7 @@ class ConfigImportmapProvider implements ImportmapProviderInterface
     {
         return [
             '@c975l/config-bundle/controllers-admin.js' => [
-                'path' => './vendor/c975l/config-bundle/assets/controllers-admin.js',
+                'path' => 'assets/controllers-admin.js',
                 'entrypoint' => true,
             ],
         ];

@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Command;
 use c975L\ConfigBundle\Command\CheckImportmapCommand;
 use c975L\ConfigBundle\Management\ImportmapProviderInterface;
 use c975L\ConfigBundle\Management\ImportmapRegistry;
+use c975L\ConfigBundle\Service\BundleLocator;
 use c975L\ConfigBundle\Service\ImportmapSpecifierLocator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\AssetMapper\ImportMap\ImportMapConfigReader;
@@ -48,13 +49,24 @@ class CheckImportmapCommandTest extends TestCase
         return $provider;
     }
 
+    // The bundles the fabricated vendor/c975l/* directories stand for, as the kernel would report them
+    private function bundleLocator(): BundleLocator
+    {
+        $metadata = [];
+        foreach (glob($this->projectDir . '/vendor/c975l/*', \GLOB_ONLYDIR) ?: [] as $directory) {
+            $metadata[basename($directory)] = ['path' => $directory, 'namespace' => 'c975L\\Test'];
+        }
+
+        return new BundleLocator($metadata);
+    }
+
     private function createTester(array $providers): CommandTester
     {
         $configReader = new ImportMapConfigReader($this->importmapFile, new RemotePackageStorage(sys_get_temp_dir()));
 
         return new CommandTester(new CheckImportmapCommand(
-            new ImportmapRegistry($providers),
-            new ImportmapSpecifierLocator($this->projectDir),
+            new ImportmapRegistry($providers, new BundleLocator([]), $this->projectDir),
+            new ImportmapSpecifierLocator($this->bundleLocator(), $this->projectDir),
             $configReader,
             $this->projectDir,
         ));
