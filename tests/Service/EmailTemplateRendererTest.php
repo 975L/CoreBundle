@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Registry\EmailLayoutRegistry;
+use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
@@ -29,7 +30,7 @@ class EmailTemplateRendererTest extends TestCase
         $configService = $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => $siteUrl]);
 
         // No EmailLayoutProviderInterface registered - render() falls back to the standalone _wrapper.html.twig
-        return new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry());
+        return new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry(), $this->createStub(EmailTemplateRepository::class));
     }
 
     private function addBlock(EmailTemplate $emailTemplate, string $type): EmailBlock
@@ -229,7 +230,7 @@ class EmailTemplateRendererTest extends TestCase
             }
         });
 
-        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, $registry);
+        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, $registry, $this->createStub(EmailTemplateRepository::class));
 
         $emailTemplate = new EmailTemplate();
         $this->addBlock($emailTemplate, EmailBlock::TYPE_HEADING)->setHeading('Hello');
@@ -239,5 +240,27 @@ class EmailTemplateRendererTest extends TestCase
         $this->assertStringContainsString('id="branded-layout"', $html);
         $this->assertStringContainsString('Hello', $html);
         $this->assertStringNotContainsString('<!DOCTYPE', $html);
+    }
+
+    // What a bundle sending a transactional email has is the name it seeded, not the entity - and a template renamed or deleted from the back-office must be reported, not sent as a blank email
+    public function testRenderNamedResolvesTheTemplateByNameAndReturnsNullWhenUnknown(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_HEADING)->setHeading('Hello');
+
+        $loader = new FilesystemLoader();
+        $loader->addPath(__DIR__ . '/../../templates', 'c975LUi');
+        $configService = $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => 'https://example.test']);
+
+        $repository = $this->createStub(EmailTemplateRepository::class);
+        $repository->method('findOneBy')->willReturnMap([
+            [['name' => 'account_validation'], null, $emailTemplate],
+            [['name' => 'renamed_away'], null, null],
+        ]);
+
+        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry(), $repository);
+
+        $this->assertStringContainsString('Hello', (string) $renderer->renderNamed('account_validation'));
+        $this->assertNull($renderer->renderNamed('renamed_away'));
     }
 }

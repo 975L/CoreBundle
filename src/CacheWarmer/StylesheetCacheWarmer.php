@@ -37,7 +37,7 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
         return [];
     }
 
-    // Rebuilds site.css/admin.css from every currently registered stylesheet - public so it can also be called at runtime (see SiteBundle's ThemeVariablesCssListener) when a contributed stylesheet's content changes (e.g. a theme config update), instead of waiting for the next cache:warmup
+    // Rebuilds site.css/admin.css from every currently registered stylesheet - public so it can also be called at runtime (see ThemeVariablesCssListener) when a contributed stylesheet's content changes (e.g. a theme config update), instead of waiting for the next cache:warmup
     public function compileAll(): void
     {
         $buildPath = $this->projectDir . '/public/bundles/build';
@@ -67,7 +67,7 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
                 continue;
             }
 
-            // Some contributed stylesheets are generated at runtime (e.g. SiteBundle's ThemeVariablesCssListener) and may not exist yet on a fresh install
+            // Some contributed stylesheets are generated at runtime (e.g. ThemeVariablesCssListener) and may not exist yet on a fresh install
             // An app's own sheet under assets/ is read from the project root: it is an AssetMapper source, never copied to public/ - concatenating it here is what keeps a site's theme files down to the single request the bundles already share
             $path = StylesheetRegistry::isAppAsset($stylesheet)
                 ? $this->projectDir . '/' . $stylesheet

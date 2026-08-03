@@ -15,12 +15,13 @@ use PHPUnit\Framework\TestCase;
 
 class StylesheetProviderTest extends TestCase
 {
+    // Last one out is the @font-face sheet FontCssListener compiles from the admin-uploaded Font rows - its position doesn't matter, @font-face rules don't participate in the cascade
     public function testGetStylesheetsReturnsUiBundlePublicStylesheets(): void
     {
         $provider = new StylesheetProvider();
 
         $this->assertSame(
-            ['bundles/c975lui/css/animations.min.css', 'bundles/c975lui/css/styles.min.css'],
+            ['bundles/c975lui/css/animations.min.css', 'bundles/c975lui/css/styles.min.css', 'bundles/build/site-fonts-uploaded.css'],
             $provider->getStylesheets()
         );
     }

@@ -50,5 +50,18 @@
             "en": "Accessible from the **Field templates** toolbar button on the **Forms** or **Email templates** screens (not from the sidebar menu). Fields: **Name**, **Label**, **Placeholder**, **Type**, **Required by default**. A template marked « Restricted » (seeded automatically when the site was created) can't be deleted or renamed, but its other fields stay editable.\nOn the Forms screen, the **Add from a template…** dropdown copies a template's values into a new field once - editing the template afterwards never affects forms that already used it.",
             "es": "Accesible desde el botón **Plantillas de campos** en la barra de herramientas de las pantallas **Formularios** o **Plantillas de email** (no desde el menú lateral). Campos: **Nombre**, **Etiqueta**, **Texto indicativo**, **Tipo**, **Obligatorio por defecto**. Una plantilla marcada como « Restringida » (sembrada automáticamente al crear el sitio) no se puede eliminar ni renombrar, pero sus demás campos siguen siendo editables.\nEn la pantalla Formularios, el menú **Añadir desde una plantilla…** copia puntualmente los valores de una plantilla en un nuevo campo - modificar la plantilla después nunca afecta a los formularios que ya la usaron."
         }
+    },
+    {
+        "slug": "graphiques-du-site",
+        "title": {
+            "fr": "Changer le favicon, le logo ou l'image Open Graph",
+            "en": "Change the favicon, logo, or Open Graph image",
+            "es": "Cambiar el favicon, el logo o la imagen Open Graph"
+        },
+        "body": {
+            "fr": "Menu **Gestion → Graphiques du site**. Créer une fiche, choisir le **Rôle** (Favicon, Icône Apple Touch, Image Open Graph, Logo, ou Error image), puis téléverser le **Fichier** directement dans ce formulaire (pas via la Bibliothèque de médias). Chaque rôle sauf « Error image » est un singleton : une fois pris, il n'apparaît plus dans la liste des rôles disponibles à la création - pour le changer, modifier la fiche existante plutôt que d'en créer une nouvelle.",
+            "en": "Menu **Management → Site graphics**. Create a record, pick the **Role** (Favicon, Apple Touch Icon, Open Graph Image, Logo, or Error image), then upload the **File** directly in this form (not through the Media library). Every role except « Error image » is a singleton: once taken, it no longer appears in the list of roles available at creation - to change it, edit the existing record instead of creating a new one.",
+            "es": "Menú **Gestión → Gráficos del sitio**. Crear una ficha, elegir el **Rol** (Favicon, Icono Apple Touch, Imagen Open Graph, Logo, o Error image), y subir el **Archivo** directamente en este formulario (no a través de la Biblioteca de medios). Cada rol excepto « Error image » es único: una vez asignado, ya no aparece en la lista de roles disponibles al crear - para cambiarlo, editar la ficha existente en lugar de crear una nueva."
+        }
     }
 ]

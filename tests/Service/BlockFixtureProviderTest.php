@@ -22,7 +22,7 @@ class BlockFixtureProviderTest extends TestCase
         $fixtures = (new BlockFixtureProvider())->getFixtures();
 
         $this->assertSame(
-            ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'],
+            ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band', 'legal_model'],
             array_keys($fixtures)
         );
     }

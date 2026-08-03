@@ -29,4 +29,14 @@ class BlockRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['kind' => $kind]);
     }
+
+    /**
+     * Every block of a given kind, whatever entity owns them - what a screen listing one kind site-wide works on (see LegalModelController), no owner needed and therefore no dependency on the bundle providing one.
+     *
+     * @return Block[]
+     */
+    public function findByKind(string $kind): array
+    {
+        return $this->findBy(['kind' => $kind], ['id' => 'ASC']);
+    }
 }

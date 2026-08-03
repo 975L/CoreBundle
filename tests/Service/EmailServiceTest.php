@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Registry\EmailLayoutRegistry;
 use c975L\UiBundle\Service\EmailService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -45,6 +46,7 @@ class EmailServiceTest extends TestCase
         array $configValues = [],
         bool $isSuperAdmin = false,
         string $renderedHtml = '',
+        ?EmailLayoutRegistry $emailLayoutRegistry = null,
     ): EmailService {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnCallback(
@@ -63,7 +65,7 @@ class EmailServiceTest extends TestCase
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturn($renderedHtml);
 
-        return new EmailService($configService, $mailer, $twig, $security);
+        return new EmailService($configService, $mailer, $twig, $emailLayoutRegistry ?? new EmailLayoutRegistry(), $security);
     }
 
     public function testSendBuildsEmailFromRequestAndCallsMailerOnce(): void
@@ -288,5 +290,89 @@ class EmailServiceTest extends TestCase
         $this->assertTrue($result);
         $this->assertCount(0, $mailer->sent);
         $this->assertStringContainsString('<p>Already rendered</p>', (string) $service->consumeDebugPreview());
+    }
+
+    // A bundle shipping the body of its email alone: the layout comes from whichever EmailLayoutProviderInterface is registered, so the branding stays in one place instead of one {% extends %} per bundle
+    public function testWrapLayoutRendersTheTemplateAndWrapsItThroughTheRegistry(): void
+    {
+        $registry = new EmailLayoutRegistry();
+        $registry->addProvider(new class implements \c975L\UiBundle\Contract\EmailLayoutProviderInterface {
+            public function wrap(string $bodyHtml): string
+            {
+                return '<div id="branded">' . $bodyHtml . '</div>';
+            }
+        });
+
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer, renderedHtml: '<p>body</p>', emailLayoutRegistry: $registry);
+
+        $service->send(new EmailSendRequest(
+            subject: 'Order',
+            context: [],
+            template: '@c975LPayment/emails/confirm_order.html.twig',
+            from: 'shop@example.test',
+            to: 'buyer@example.test',
+            wrapLayout: true,
+        ));
+
+        $this->assertSame('<div id="branded"><p>body</p></div>', $mailer->sent[0]->getHtmlBody());
+        $this->assertNull($mailer->sent[0]->getHtmlTemplate());
+    }
+
+    // No provider registered: the body goes out as it is rather than not at all
+    public function testWrapLayoutFallsBackOnTheBodyWhenNoLayoutIsRegistered(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer, renderedHtml: '<p>body</p>');
+
+        $service->send(new EmailSendRequest(
+            subject: 'Order',
+            context: [],
+            template: '@c975LPayment/emails/confirm_order.html.twig',
+            from: 'shop@example.test',
+            to: 'buyer@example.test',
+            wrapLayout: true,
+        ));
+
+        $this->assertSame('<p>body</p>', $mailer->sent[0]->getHtmlBody());
+    }
+
+    // A blind copy, invisible to the recipient - what a shop keeping a record of every order email needs, and what copyToEmail (a second, separate message) is not
+    public function testBccIsAddedToTheEmail(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer);
+
+        $service->send(new EmailSendRequest(
+            subject: 'Order',
+            context: [],
+            html: '<p>body</p>',
+            from: 'shop@example.test',
+            to: 'buyer@example.test',
+            bcc: 'archive@example.test',
+        ));
+
+        $this->assertSame('archive@example.test', $mailer->sent[0]->getBcc()[0]->getAddress());
+    }
+
+    // The copy is a clone of the main email, so it would carry its Bcc along and the archive would receive the message twice
+    public function testBccIsNotCarriedOverToTheCopy(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer);
+
+        $service->send(new EmailSendRequest(
+            subject: 'Order',
+            context: [],
+            html: '<p>body</p>',
+            from: 'shop@example.test',
+            to: 'buyer@example.test',
+            copyToEmail: 'buyer-copy@example.test',
+            bcc: 'archive@example.test',
+        ));
+
+        $this->assertCount(2, $mailer->sent);
+        $this->assertSame('archive@example.test', $mailer->sent[0]->getBcc()[0]->getAddress());
+        $this->assertSame([], $mailer->sent[1]->getBcc());
     }
 }

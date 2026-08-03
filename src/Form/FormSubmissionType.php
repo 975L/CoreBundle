@@ -127,7 +127,7 @@ class FormSubmissionType extends AbstractType
             ]);
         }
 
-        // Falls back to true if "site-form-gdpr" isn't seeded, e.g. c975l/site-bundle isn't installed
+        // Falls back to true if "site-form-gdpr" isn't seeded yet, an app having to run ConfigBundle's config load for this bundle's own configs.json keys to exist
         if ($this->configService->get('site-form-gdpr') ?? true) {
             $builder->add('gdpr', CheckboxType::class, [
                 'label' => 'text.gdpr',

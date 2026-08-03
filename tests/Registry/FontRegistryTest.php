@@ -23,7 +23,8 @@ class FontRegistryTest extends TestCase
         $this->assertSame([], $registry->getFonts());
     }
 
-    public function testGetFontsDelegatesToRegisteredProvider(): void
+    // The select needs a stable, alphabetical list, whatever order a provider answers in
+    public function testGetFontsSortsWhatItsProviderReturns(): void
     {
         $provider = $this->createStub(FontProviderInterface::class);
         $provider->method('getFonts')->willReturn(['Roboto', 'Lato']);
@@ -31,11 +32,11 @@ class FontRegistryTest extends TestCase
         $registry = new FontRegistry();
         $registry->addProvider($provider);
 
-        $this->assertSame(['Roboto', 'Lato'], $registry->getFonts());
+        $this->assertSame(['Lato', 'Roboto'], $registry->getFonts());
     }
 
-    // Only one app-wide font source is expected - the first registered provider wins
-    public function testGetFontsKeepsFirstProviderResultWhenSeveralAreRegistered(): void
+    // Font families add up - this bundle's own FontService always being registered, a "first one wins" would silently mask an app's provider
+    public function testGetFontsMergesEveryProvider(): void
     {
         $providerA = $this->createStub(FontProviderInterface::class);
         $providerA->method('getFonts')->willReturn(['Roboto']);
@@ -47,6 +48,22 @@ class FontRegistryTest extends TestCase
         $registry->addProvider($providerA);
         $registry->addProvider($providerB);
 
-        $this->assertSame(['Roboto'], $registry->getFonts());
+        $this->assertSame(['Lato', 'Roboto'], $registry->getFonts());
+    }
+
+    // The same family declared by two providers (an uploaded font also listed in the app's theme) must appear once
+    public function testGetFontsDeduplicatesAcrossProviders(): void
+    {
+        $providerA = $this->createStub(FontProviderInterface::class);
+        $providerA->method('getFonts')->willReturn(['Roboto', 'Lato']);
+
+        $providerB = $this->createStub(FontProviderInterface::class);
+        $providerB->method('getFonts')->willReturn(['Lato', 'Inter']);
+
+        $registry = new FontRegistry();
+        $registry->addProvider($providerA);
+        $registry->addProvider($providerB);
+
+        $this->assertSame(['Inter', 'Lato', 'Roboto'], $registry->getFonts());
     }
 }

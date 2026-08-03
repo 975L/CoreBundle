@@ -35,6 +35,19 @@ class MediaRepository extends ServiceEntityRepository
         return $this->findBy(['role' => Media::getSingletonRoles()]);
     }
 
+    // @return Media[] Rows whose stored file may still be SVG markup, for a check that then reads each one (see SiteBundle's SvgFontsHealthCheckProvider). Both the mime type and the extension are looked at: an icon role's file is renamed to the role's own .ico/.png on upload, so only the mime type it came in with says what it holds
+    public function findSvgCandidates(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.mimeType LIKE :svgMimeType')
+            ->orWhere('m.filename LIKE :svgExtension')
+            ->setParameter('svgMimeType', 'image/svg%')
+            ->setParameter('svgExtension', '%.svg')
+            ->orderBy('m.filename', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     // Picks one row at random among all sharing a repeatable role (e.g. a pool of error images)
     public function findRandomByRole(string $role): ?Media
     {

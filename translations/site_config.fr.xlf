@@ -62,9 +62,101 @@
                 <source>description.recaptcha3_site_key</source>
                 <target>Clé de site pour ReCaptcha v3</target>
             </trans-unit>
+            <trans-unit id="_IvRuw9">
+                <source>description.site_enable_cookie_consent</source>
+                <target>Activer l'utilisation de cookie consent</target>
+            </trans-unit>
+            <trans-unit id="nZli24w">
+                <source>description.site_form_delay</source>
+                <target>Délai minimum, en secondes, entre l'affichage et l'envoi d'un formulaire public avant de le considérer comme un bot</target>
+            </trans-unit>
+            <trans-unit id="a2s6MLC">
+                <source>description.site_form_gdpr</source>
+                <target>Ajoute une case de consentement RGPD obligatoire aux formulaires publics</target>
+            </trans-unit>
+            <trans-unit id="Q4suaeP">
+                <source>description.site_other_cookies</source>
+                <target>Autres informations sur les cookies des mentions légales (HTML autorisé, non traduit)</target>
+            </trans-unit>
+            <trans-unit id="vvM5TVl">
+                <source>description.site_other_copyright</source>
+                <target>Autres informations de copyright des mentions légales (HTML autorisé, non traduit)</target>
+            </trans-unit>
+            <trans-unit id="ooJKbLK">
+                <source>description.theme_color_background</source>
+                <target>Couleur de fond. Vide = couleur par défaut</target>
+            </trans-unit>
+            <trans-unit id="GaAjAQb">
+                <source>description.theme_color_primary</source>
+                <target>Couleur principale (boutons, titres, liens). Vide = couleur par défaut</target>
+            </trans-unit>
+            <trans-unit id="9N1ZUqN">
+                <source>description.theme_color_primary_dark_mode</source>
+                <target>Couleur primaire en mode sombre. Vide = reprend la couleur primaire</target>
+            </trans-unit>
+            <trans-unit id="7x7ms2E">
+                <source>description.theme_color_secondary</source>
+                <target>Couleur secondaire du site. Vide = couleur par défaut</target>
+            </trans-unit>
+            <trans-unit id="dpNF49d">
+                <source>description.theme_color_secondary_dark_mode</source>
+                <target>Couleur secondaire en mode sombre. Vide = reprend la couleur secondaire</target>
+            </trans-unit>
+            <trans-unit id="hv_YTIS">
+                <source>description.theme_color_text</source>
+                <target>Couleur du texte. Vide = couleur par défaut</target>
+            </trans-unit>
+            <trans-unit id="xh2PQgs">
+                <source>description.theme_font_family_accent</source>
+                <target>Police optionnelle pour badges/étiquettes/accroches. Vide = police par défaut</target>
+            </trans-unit>
+            <trans-unit id="VrXoCYj">
+                <source>description.theme_font_family_body</source>
+                <target>Police du texte courant. Vide = police par défaut</target>
+            </trans-unit>
+            <trans-unit id="OxzRF6z">
+                <source>description.theme_font_family_title</source>
+                <target>Police des titres (h1-h6). Vide = police par défaut</target>
+            </trans-unit>
+            <trans-unit id="WtvAdQ9">
+                <source>description.theme_mode</source>
+                <target>Mode d'affichage appliqué à tout le site pour tous les visiteurs</target>
+            </trans-unit>
+            <trans-unit id="vnYPhlr">
+                <source>description.url_cookies_policy</source>
+                <target>URL de la politique de cookies, ex. https://example.com/pages/cookies</target>
+            </trans-unit>
+            <trans-unit id="x3a79aa">
+                <source>label.ai_assistant_dashboard_enabled</source>
+                <target>Assistant IA du tableau de bord</target>
+            </trans-unit>
+            <trans-unit id="x7eb147">
+                <source>label.ai_assistant_dashboard_endpoint</source>
+                <target>URL du backend de l'assistant IA</target>
+            </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>
                 <target>Assistant IA du tableau de bord non activé</target>
+            </trans-unit>
+            <trans-unit id="xa3232c">
+                <source>label.ai_assistant_dashboard_token</source>
+                <target>Jeton du backend de l'assistant IA</target>
+            </trans-unit>
+            <trans-unit id="xc806c7">
+                <source>label.ai_assistant_rephrase_api_key</source>
+                <target>Clé API de la reformulation</target>
+            </trans-unit>
+            <trans-unit id="x128330">
+                <source>label.ai_assistant_rephrase_base_uri</source>
+                <target>URL de base de l'API de reformulation</target>
+            </trans-unit>
+            <trans-unit id="x0e07e1">
+                <source>label.ai_assistant_rephrase_model</source>
+                <target>Modèle de reformulation</target>
+            </trans-unit>
+            <trans-unit id="xb159be">
+                <source>label.ai_assistant_rephrase_provider</source>
+                <target>Fournisseur IA de la reformulation</target>
             </trans-unit>
             <trans-unit id="RFJ8N8R">
                 <source>label.ai_rephrase_failure_alert</source>
@@ -73,6 +165,10 @@
             <trans-unit id="H21MUkk">
                 <source>label.ai_rephrase_not_enabled</source>
                 <target>Fonction de reformulation IA non activée</target>
+            </trans-unit>
+            <trans-unit id="x4750b9">
+                <source>label.block_showcase_url</source>
+                <target>URL de la vitrine des blocks</target>
             </trans-unit>
             <trans-unit id=".HY9J1w">
                 <source>label.email_debug</source>
@@ -89,6 +185,66 @@
             <trans-unit id="Ps.ODsR">
                 <source>label.recaptcha3_site_key</source>
                 <target>ReCaptcha - Clé de site</target>
+            </trans-unit>
+            <trans-unit id="VkhtV_A">
+                <source>label.site_enable_cookie_consent</source>
+                <target>Activer le consentement aux cookies</target>
+            </trans-unit>
+            <trans-unit id="UdYcxIh">
+                <source>label.site_form_delay</source>
+                <target>Délai anti-bot des formulaires publics</target>
+            </trans-unit>
+            <trans-unit id="jM0HrcE">
+                <source>label.site_form_gdpr</source>
+                <target>Afficher la case à cocher RGPD sur les formulaires publics</target>
+            </trans-unit>
+            <trans-unit id="cF7QFBj">
+                <source>label.site_other_cookies</source>
+                <target>Autres informations sur les cookies</target>
+            </trans-unit>
+            <trans-unit id="SRPjCF3">
+                <source>label.site_other_copyright</source>
+                <target>Autres droits d'auteur du site</target>
+            </trans-unit>
+            <trans-unit id="copCVwP">
+                <source>label.theme_color_background</source>
+                <target>Couleur de fond</target>
+            </trans-unit>
+            <trans-unit id="9DEZ6f_">
+                <source>label.theme_color_primary</source>
+                <target>Couleur primaire</target>
+            </trans-unit>
+            <trans-unit id="SJuQktg">
+                <source>label.theme_color_primary_dark_mode</source>
+                <target>Couleur primaire (mode sombre)</target>
+            </trans-unit>
+            <trans-unit id=".Ql4TGy">
+                <source>label.theme_color_secondary</source>
+                <target>Couleur secondaire</target>
+            </trans-unit>
+            <trans-unit id="UXK9CEY">
+                <source>label.theme_color_secondary_dark_mode</source>
+                <target>Couleur secondaire (mode sombre)</target>
+            </trans-unit>
+            <trans-unit id="8qVnRtK">
+                <source>label.theme_color_text</source>
+                <target>Couleur du texte</target>
+            </trans-unit>
+            <trans-unit id="XSfCsDh">
+                <source>label.theme_font_family_accent</source>
+                <target>Police d'accent</target>
+            </trans-unit>
+            <trans-unit id="WJJDk6p">
+                <source>label.theme_font_family_body</source>
+                <target>Police du texte</target>
+            </trans-unit>
+            <trans-unit id="tQraffI">
+                <source>label.theme_font_family_title</source>
+                <target>Police des titres</target>
+            </trans-unit>
+            <trans-unit id="LOI7_Sr">
+                <source>label.theme_mode</source>
+                <target>Mode clair/sombre</target>
             </trans-unit>
             <trans-unit id="ZkdMN2x">
                 <source>label.ui_ai_assistant_dashboard_enabled</source>
@@ -121,6 +277,10 @@
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>
                 <target>Vitrine des blocks - URL</target>
+            </trans-unit>
+            <trans-unit id="vSe2.fp">
+                <source>label.url_cookies_policy</source>
+                <target>URL de la politique de cookies</target>
             </trans-unit>
         </body>
     </file>

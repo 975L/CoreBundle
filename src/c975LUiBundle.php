@@ -13,12 +13,15 @@ namespace c975L\UiBundle;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockCacheTagProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockEditUrlProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockFixtureProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\BlockLocationProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockOwnerResolverPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailLayoutProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FontProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormActionProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\FormBlockDependencyProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\FormPageUrlProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormThemeRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\GalleryShowcaseProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\MediaUsageProviderPass;
@@ -52,10 +55,13 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new WhatsNewProviderPass());
         $container->addCompilerPass(new MediaUsageProviderPass());
         $container->addCompilerPass(new BlockEditUrlProviderPass());
+        $container->addCompilerPass(new BlockLocationProviderPass());
         $container->addCompilerPass(new EmailLayoutProviderPass());
         $container->addCompilerPass(new FontProviderPass());
         $container->addCompilerPass(new FormThemeRegistryPass());
         $container->addCompilerPass(new FormActionProviderPass());
+        $container->addCompilerPass(new FormPageUrlProviderPass());
+        $container->addCompilerPass(new FormBlockDependencyProviderPass());
     }
 
     public function prependExtension(ContainerConfigurator $configurator, ContainerBuilder $container): void
@@ -87,6 +93,15 @@ class c975LUiBundle extends AbstractBundle
                 'storage' => '@' . NestedFileSystemStorage::class,
                 'mappings' => [
                     'block_media' => [
+                        'uri_prefix' => '',
+                        'upload_destination' => '%kernel.project_dir%/public',
+                        'namer' => UiMediaNamer::class,
+                        'inject_on_load' => false,
+                        'delete_on_update' => true,
+                        'delete_on_remove' => true,
+                    ],
+                    // Admin-uploaded font files (ttf/woff/woff2), stored under public/medias/fonts (see Font::getVichMediaPath) - see FontCssListener for the generated @font-face rules
+                    'site_font' => [
                         'uri_prefix' => '',
                         'upload_destination' => '%kernel.project_dir%/public',
                         'namer' => UiMediaNamer::class,

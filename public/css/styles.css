@@ -1137,6 +1137,24 @@ img.white {
   margin-top: 0.5rem;
 }
 
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+.legal-editable {
+  display: contents;
+}
+
+.legal div {
+  max-width: var(--reading-max-width, min(75ch, 90vw));
+  margin: 1em auto;
+  scroll-margin-top: var(--scroll-offset, 80px);
+  text-align: justify;
+}
+
 /* PAGE SECTIONS */
 .section-wrap {
   box-sizing: border-box;

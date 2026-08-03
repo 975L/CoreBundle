@@ -22,9 +22,17 @@ class FontRegistry
         $this->providers[] = $provider;
     }
 
-    // The first registered provider wins; an empty array means none is installed, so the caller falls back
+    // Every provider contributes - font families add up, an app declaring its own @font-face ones next to the uploaded families of FontService. An empty array means none is installed, so the caller falls back
     public function getFonts(): array
     {
-        return [] === $this->providers ? [] : $this->providers[0]->getFonts();
+        $fonts = [];
+        foreach ($this->providers as $provider) {
+            $fonts = [...$fonts, ...$provider->getFonts()];
+        }
+
+        $fonts = array_values(array_unique($fonts));
+        sort($fonts);
+
+        return $fonts;
     }
 }

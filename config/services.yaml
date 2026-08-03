@@ -20,6 +20,11 @@ services:
             - { name: 'ui.stylesheet', priority: 100 }
             - { name: 'ui.management_stylesheet', priority: 100 }
 
+    # Between the bundles (100) and an app's own theme files (auto-tagged at -100 by StylesheetRegistryPass): the admin's theme values have to override every bundle's compiled defaults, and to be overridden in turn by any token the site took back in its assets/styles/themes/*.css
+    c975L\UiBundle\Service\ThemeVariablesStylesheetProvider:
+        tags:
+            - { name: 'ui.stylesheet', priority: 0 }
+
     c975L\UiBundle\Service\ScriptProvider:
         tags:
             - { name: 'ui.script', priority: 100 }
@@ -488,6 +493,20 @@ services:
               category: 'label.category_sections'
               priority: 50
               pickable: true
+              cacheable: true
+
+    ui.block.legal_model:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: legal_model
+              label: "label.block_legal_model"
+              description: "label.block_legal_model_description"
+              form: c975L\UiBundle\Form\Block\LegalModelType
+              template: '@c975LUi/blocks/LegalModel.html.twig'
+              category: 'label.category_legal'
+              pickable: true
+              # Cached, but its render resolves live %config% markers a Block event can't cover - see LegalModelCacheTagProvider / LegalPlaceholderCacheListener
               cacheable: true
 
     ui.block.form:

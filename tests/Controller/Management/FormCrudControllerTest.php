@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\FormCrudController;
 use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Entity\Form;
+use c975L\UiBundle\Form\FormLinkType;
 use c975L\UiBundle\Registry\FormActionRegistry;
 use c975L\UiBundle\Service\FormFieldNamer;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -149,5 +150,22 @@ class FormCrudControllerTest extends TestCase
         $rowAttr = $fieldsField->getAsDto()->getFormTypeOptions()['row_attr'];
         $this->assertSame('/management/form-field-template/catalog', $rowAttr['data-form-field-template-catalog-url']);
         $this->assertSame('Add from a template…', $rowAttr['data-form-field-template-picker-placeholder']);
+    }
+
+    // "links" is a virtual property backed by Form::$actionConfig, so it has to be mapped after "actionConfigJson": the raw JSON setter runs first and the links are then written on top of what it produced
+    public function testConfigureFieldsEditsTheLinksAsACollectionMappedAfterTheRawActionConfig(): void
+    {
+        $properties = [];
+        $linksField = null;
+        foreach ($this->createController()->configureFields(Crud::PAGE_EDIT) as $field) {
+            $properties[] = $field->getAsDto()->getProperty();
+            if ($field instanceof CollectionField && 'links' === $field->getAsDto()->getProperty()) {
+                $linksField = $field;
+            }
+        }
+
+        $this->assertNotNull($linksField);
+        $this->assertSame(FormLinkType::class, $linksField->getAsDto()->getCustomOption(CollectionField::OPTION_ENTRY_TYPE));
+        $this->assertGreaterThan(array_search('actionConfigJson', $properties, true), array_search('links', $properties, true));
     }
 }

@@ -1,5 +1,94 @@
 # UPGRADE
 
+## v1.18.0
+
+**The theme, the site graphics and the cookie banner moved here from SiteBundle.** All three are what a site cannot go live without, and none of them had anything to do with having pages: an app running Config + Ui plus a shop compiled no theme at all (so every `--c975l-*` token this bundle's CSS reads was missing), had no screen to upload a favicon from, and shipped no GDPR banner.
+
+| Was, in SiteBundle | Now |
+|---|---|
+| `Listener\ThemeVariablesCssListener` | `c975L\UiBundle\Listener\ThemeVariablesCssListener` |
+| `Twig\ThemeVariablesExtension` (`theme_variables_css()`) | `c975L\UiBundle\Twig\ThemeVariablesExtension` |
+| the ten `theme-*` configs | declared here |
+| `Controller\Management\SiteGraphicCrudController` | `c975L\UiBundle\Controller\Management\SiteGraphicCrudController` |
+| `Management\SiteGraphic{Alert,Export,Import}Provider` | `c975L\UiBundle\Management\*` |
+| `Form\OgImageType` | `c975L\UiBundle\Form\OgImageType` |
+| `templates/components/General/CookieConsent.html.twig` | `<twig:c975LUi:Cookie:Consent />` |
+| `site-enable-cookie-consent`, `url-cookies-policy` | declared here |
+| `Management\SvgFontsHealthCheckProvider` | `c975L\UiBundle\Management\SvgFontsHealthCheckProvider` |
+
+**Nothing to run** — same slugs, same `Media` roles, same `theme_variables_css()`/`site_media()` function names, same generated `bundles/build/site-theme.css`. Four things worth knowing:
+
+- **`bundles/build/site-theme.css` is contributed by `Service\ThemeVariablesStylesheetProvider`**, tagged at priority `0`: after every bundle's compiled defaults (100) and before the app's own `assets/styles/themes/*.css` (auto-tagged at -100). It used to ride along in SiteBundle's own provider, where its position relative to this bundle's sheets was luck rather than intent.
+- **The cookie banner carries its own `site-enable-cookie-consent` guard.** A layout renders `<twig:c975LUi:Cookie:Consent />` unconditionally; drop the surrounding `{% if %}` if you had one.
+- **The library files moved with it**: `bundles/c975lui/css/cookieconsent.css` and `bundles/c975lui/js/cookieconsent.umd.js` (were `c975lsite`). The Stimulus controller is registered lazily, so it only loads on a page that actually renders the banner.
+- **The keys moved domain too**: the site-graphic ones (`label.favicon`, `label.logo`, `label.site_graphic*`, `label.role`…) and the cookie ones (`text.cookies_banner`, `label.cookies_*`) are in `ui` now, the `theme-*` labels in this bundle's `site_config`. Move any app-level override accordingly.
+
+**`templates/layout.html.twig` is no longer a bare shell.** It now renders the theme mode, the site graphics (favicon, apple-touch icon, og:image, logo), the share tags, the canonical link, the robots meta, the font preloads and the cookie banner — the minimum a site running without SiteBundle has to serve. Its blocks (`head`, `meta`, `title`, `fontPreload`, `stylesheets`, `javascripts`, `importmap`, `body`, `flashes`, `content`) mirror SiteBundle's, so a template written against one extends the other unchanged.
+
+**`EmailSendRequest` gained `bcc` and `wrapLayout`, and `EmailService` an `EmailLayoutRegistry` argument.** Both exist so a bundle can ship the *body* of its email and nothing else, the layout staying in one place:
+
+```php
+$emailService->send(new EmailSendRequest(
+    subject: $subject,
+    context: ['basket' => $basket],
+    template: '@c975LPayment/emails/confirm_order.html.twig',  // the body alone, no {% extends %}
+    wrapLayout: true,
+    to: $basket->getEmail(),
+    bcc: $shopArchiveAddress,
+));
+```
+
+`wrapLayout: true` renders the template and wraps the result through whichever `EmailLayoutProviderInterface` is registered — SiteBundle's branded layout when installed, the bare body otherwise. It is the path for **structured** email content (a basket recap, a ticket list) that an `EmailTemplate` cannot express: block substitution is literal, with no loop, and a customer never edits a table of order lines anyway. Editable prose keeps going through `EmailTemplate`/`renderNamed()`.
+
+`bcc` is a real blind copy, distinct from `copyToEmail` which sends a **second**, separate message with its own Reply-To stripped.
+
+**Update your instantiation** of `EmailService` if you build it by hand rather than through the container — the registry is its fourth argument now.
+
+**Nine shared pieces moved out of SiteBundle.** None of them had anything to do with the notion of a site, and several were being hand-duplicated by bundles that require this one and not SiteBundle. What lands here:
+
+| Was in SiteBundle | Is now |
+|---|---|
+| `Form\VichImageOptions` | `c975L\UiBundle\Form\VichImageOptions` |
+| `Controller\Management\Trait\UniqueSlugTrait` | `c975L\UiBundle\Service\UniqueSlug` (static) |
+| `Controller\Management\Trait\BlockMoveRowAttrTrait` | `c975L\UiBundle\Service\BlockMoveRowAttrBuilder` (service) |
+| `Management\BlockFocusUrlTrait` | `c975L\UiBundle\Service\BlockFocusUrl` (static) |
+| `Listener\AbstractBlockCacheInvalidationListener` | `c975L\UiBundle\Listener\AbstractBlockCacheInvalidationListener` |
+| `Management\BlockDataExporter` / `BlockDataImporter` | `c975L\UiBundle\Management\*` |
+| `Controller\DownloadController` | `c975L\UiBundle\Controller\DownloadController` |
+
+The three traits became classes: a trait shared across bundles is only ever analysed against the users living in the same package, so its callers' own properties read nowhere else look dead to PHPStan. `BlockMoveRowAttrBuilder` is a service rather than a static class because it needs a url generator, a CSRF token manager and a translator — which the trait used to borrow from whichever controller used it.
+
+**`BlockDataImporter` no longer knows SiteBundle.** It used to take `DefaultPagesImporter` to backfill the Form/EmailTemplate a `form`-kind Block points at. It now asks `FormBlockDependencyRegistry`, and **every** provider answers in turn — SiteBundle owns `contact`, ConfigBundle owns `register`/`reset_password_request`, and a satellite can own its own. Implement `Contract\FormBlockDependencyProviderInterface` to join in; auto-discovered, nothing to tag.
+
+**`DownloadController` was moved, not merged.** `PrivateFileResponseFactory` serves the digital items bought through ShopBundle/CrowdfundingBundle, from outside `public/` and behind its own access checks; this controller only puts a `Content-Disposition: attachment` on a file the web server already serves. Two different jobs, both here now, still separate.
+
+**Eight config labels were translated nowhere.** `label.ai_assistant_*` (seven keys) and `label.block_showcase_url` had their `description.*` counterpart in `site_config.*.xlf` but no `label.*` entry, so those rows showed the raw key in the back-office. Added in the three locales.
+
+**`site-form-delay` and `site-form-gdpr` moved here from SiteBundle.** This bundle's `FormBotProtection` and `FormSubmissionType` are what read them, and both already fell back to a hardcoded default when SiteBundle wasn't installed — so a Config + Ui + satellite app had a working anti-spam delay and consent checkbox, just no way to configure either. Same slugs, same group, **nothing to run**.
+
+**The legal models moved here from SiteBundle**, along with the `legal_model` block, its customization screen and its drift health check. A site running this bundle with a shop, a book catalogue or a gallery but no page management still owes its visitors a privacy policy — and nothing in a legal document is about pages. The 18 templates are reached at `@c975LUi/models/{country}/{model}.{locale}.html.twig`, the screen at `management_ui_legal_models`, and every `label.legal_*` key moved to the `ui` domain. Blocks keep their kind and their whole `data`, so **nothing to run**; see `c975l/site-bundle`'s UPGRADE for the full before/after table. The two configs those models read on their own, `site-other-copyright` and `site-other-cookies`, are declared here now — same slugs, same `legal` group.
+
+Two things are new around it:
+
+- **`Contract\BlockLocationProviderInterface`** — implement it (auto-discovered, no tag) and return `['label' => …, 'url' => …, 'published' => …]` keyed by `Block::$id` for the blocks your bundle owns. That is what fills the "Legal models" screen's first column and gives the drift check the public url it tests. Not implementing it means those screens list the blocks with no location, which is what an app with no page management gets.
+- **`Service\LegalModelEditUrl::build()`** — call it first in your own `BlockEditUrlProviderInterface`, before falling back on `BlockFocusUrl`: a `legal_model` block is edited on its own screen, not on its row in your form. It answers `null` for everything else.
+
+**`twig/intl-extra` is a new requirement**, the four dated models formatting their "latest update" with `format_datetime()`. Composer pulls it in on its own.
+
+**Fonts moved here from SiteBundle.** This bundle already owned `FontProviderInterface`, `FontRegistry` and `FontChoiceType`, and its blocks are what pick a font — the entity and its back-office were the only half living elsewhere. `Entity\Font`, `FontRepository`, `FontCrudController`, `FontBulkImportController`, `FontService`, `FontFilenameParser`, `FontCssListener`, `FontPreloadExtension`, `Font{Export,Import}Provider` and the four `font_*` templates are `c975L\UiBundle\*` now, and the `label.fonts`/`label.font_*`/`flash.font_*` translations moved to the `ui` domain with them. The `site_font` table and the compiled `bundles/build/site-fonts-uploaded.css` are untouched, so **nothing to run**.
+
+**This bundle declares its own menu entries now.** "Media library", "Forms", "Email templates" and "Fonts" were contributed by SiteBundle's `MenuProvider` on this bundle's behalf, so an app running Config + Ui + a satellite bundle had none of those four screens in its back-office. They come from `c975L\UiBundle\Management\MenuProvider` from now on. Entries are sorted by translated label at merge time, so the sidebar is unchanged on a site running SiteBundle.
+
+**Five generic Twig helpers moved here from SiteBundle**: `nl2br` (overriding Twig's own so it emits `<br>` and not `<br />`), `linkify`, `route_exists`, `template_exists` and `asset_exists`. Same names, same behaviour. `asset_exists` was already being called from BookBundle templates, which require this bundle and not SiteBundle — those calls only worked when a site happened to install both.
+
+**`EmailTemplateRenderer` gained an `EmailTemplateRepository` argument** and a `renderNamed()` method: the full standalone document for a template designated by its name rather than held as an entity, which is what a bundle sending a transactional email has. It returns `null` when no template carries that name, so the caller decides what a missing template means. **Update your instantiation** if you build the service by hand rather than through the container.
+
+**Added `Service\FormSeeder`**, the persistence half of what SiteBundle's `DefaultPagesImporter` used to do alone: `ensureForm()` and `ensureEmailTemplate()`, idempotent and backfilling, so each bundle only carries its own field and block definitions. SiteBundle keeps `contact`, ConfigBundle takes `register` and `reset_password_request`.
+
+**Added `FormPageUrlProviderInterface` + `FormPageUrlRegistry` + the `form_url()` Twig function**, answering "where is this named Form really reachable on the front end": the richer page a bundle contributes (SiteBundle's `Page` carrying the matching `form` Block, an admin-editable per-locale slug), else this bundle's own `ui_form_submit` route. It always returns something, so a template no longer has to know which bundles are installed.
+
+**Added `Service\BuildFileWriter`**, replacing SiteBundle's `Listener\Trait\BuildFileWriterTrait` — a trait shared across bundles is only ever analysed against the users living in the same package, so its callers' own `$projectDir` looked write-only to PHPStan. Static and stateless, same behaviour. Its `ArchiveFileTrait` counterpart became `c975L\ConfigBundle\Management\ArchiveFileRegistrar` for the same reason.
+
 ## > v1.15.0
 
 **The `rich_snippet` block kind is gone, replaced by `contact_details`.** With it go `Form\Block\RichSnippetType`, `templates/blocks/RichSnippet.html.twig`, the `<twig:c975LUi:General:RichSnippet>` component and `sass/_snippet.scss` (the `.rich-snippet` rules). The old kind published its structured data as microdata written straight onto the elements it displayed, which pinned the layout to the markup and left an empty node behind for every field an editor didn't fill in - and its opening hours were one machine-formatted line (`Mo-Fr 09:00-18:00`) shown to visitors as such.

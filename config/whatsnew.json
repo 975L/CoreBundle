@@ -1,5 +1,50 @@
 [
     {
+        "date": "2026-08-02",
+        "description": [
+            {
+                "en": "The site's theme, its favicon and logo, and the cookie banner are now available whichever modules you have installed, instead of requiring the page-management one",
+                "fr": "Le thème du site, son favicon et son logo, ainsi que le bandeau cookies sont désormais disponibles quels que soient les modules installés, au lieu d'exiger celui de gestion des pages",
+                "es": "El tema del sitio, su favicon y su logotipo, así como el banner de cookies, ya están disponibles sean cuales sean los módulos instalados, en lugar de exigir el de gestión de páginas"
+            },
+            {
+                "en": "A site without page management now serves a real page shell: theme, favicon, share preview, fonts and cookie banner included",
+                "fr": "Un site sans gestion de pages sert désormais une vraie page : thème, favicon, aperçu de partage, polices et bandeau cookies compris",
+                "es": "Un sitio sin gestión de páginas ahora sirve una página completa: tema, favicon, vista previa para compartir, tipografías y banner de cookies incluidos"
+            },
+            {
+                "en": "The legal documents (legal notice, privacy policy, terms of sales, terms of use, cookies, copyright) and the screen customizing them section by section are now available whichever modules you have installed",
+                "fr": "Les documents juridiques (mentions légales, règles de confidentialité, conditions de vente et d'utilisation, cookies, copyright) et l'écran qui les personnalise section par section sont désormais disponibles quels que soient les modules installés",
+                "es": "Los documentos legales (aviso legal, política de privacidad, condiciones de venta y de uso, cookies, copyright) y la pantalla que los personaliza sección por sección ya están disponibles sean cuales sean los módulos instalados"
+            },
+            {
+                "en": "You can now upload your own fonts and use them across the site, whichever modules you have installed",
+                "fr": "Vous pouvez désormais téléverser vos propres polices et les utiliser sur tout le site, quels que soient les modules installés",
+                "es": "Ahora puede subir sus propias tipografías y usarlas en todo el sitio, sean cuales sean los módulos instalados"
+            },
+            {
+                "en": "Importing a whole batch of fonts at once is much faster",
+                "fr": "L'import d'un lot entier de polices d'un coup est nettement plus rapide",
+                "es": "Importar un lote entero de tipografías de una vez es mucho más rápido"
+            },
+            {
+                "en": "The font menus now list every available font, instead of only those from one source",
+                "fr": "Les menus de polices listent désormais toutes les polices disponibles, et non plus celles d'une seule source",
+                "es": "Los menús de tipografías ahora muestran todas las disponibles, y no solo las de una única fuente"
+            },
+            {
+                "en": "Uploading an SVG whose text is not converted to shapes now warns you, that text showing in another font for a visitor who lacks yours",
+                "fr": "Le téléversement d'un SVG dont le texte n'est pas converti en formes vous avertit désormais, ce texte s'affichant dans une autre police chez un visiteur qui n'a pas la vôtre",
+                "es": "Subir un SVG cuyo texto no está convertido en formas ahora le avisa, ya que ese texto se mostrará con otra tipografía a quien no tenga la suya"
+            },
+            {
+                "en": "The media library, the forms and the e-mail templates are now in the back-office menu on every site, not only those with the site module",
+                "fr": "La bibliothèque de médias, les formulaires et les modèles d'e-mails sont désormais dans le menu du back-office sur tous les sites, et non plus seulement ceux dotés du module site",
+                "es": "La biblioteca de medios, los formularios y las plantillas de correo están ahora en el menú del back-office en todos los sitios, no solo en los que tienen el módulo de sitio"
+            }
+        ]
+    },
+    {
         "date": "2026-08-01",
         "description": [
             {

@@ -12,8 +12,11 @@ app.register('menu', MenuController);
 const LAZY_CONTROLLERS = {
     blockEditOverlay: () => import('./js/block-edit-overlay.js'),
     captcha: () => import('./js/captcha.js'),
+    // Kebab-case identifier on purpose - Stimulus derives value attribute names from the identifier as registered, so a camelCase one silently breaks every "data-cookie-consent-*-value" binding
+    'cookie-consent': () => import('./js/cookie-consent.js'),
     confetti: () => import('./js/confetti.js'),
     imageCompare: () => import('./js/image-compare.js'),
+    'legal-model-edit': () => import('./js/legal-model-edit.js'),
     password: () => import('./js/password.js'),
     slider: () => import('./js/slider.js'),
     videoIframe: () => import('./js/video-iframe.js'),

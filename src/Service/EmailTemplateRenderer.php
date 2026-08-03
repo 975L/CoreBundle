@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Registry\EmailLayoutRegistry;
+use c975L\UiBundle\Repository\EmailTemplateRepository;
 
 // Compiles an EmailTemplate's blocks into one email-safe HTML document; separate from render_block(), the email-safe vocabulary being deliberately closed
 class EmailTemplateRenderer
@@ -22,7 +23,23 @@ class EmailTemplateRenderer
         private readonly \Twig\Environment $twig,
         private readonly ConfigServiceInterface $configService,
         private readonly EmailLayoutRegistry $emailLayoutRegistry,
+        private readonly EmailTemplateRepository $emailTemplateRepository,
     ) {
+    }
+
+    /**
+     * Same as render(), for a template designated by name rather than held as an entity - what a bundle sending a
+     * transactional email has (a fixed name it seeded, e.g. ConfigBundle's "account_validation"), instead of a
+     * per-app Twig file it would have to know the path of. Null when no template carries that name, so the caller
+     * decides what a missing template means rather than sending a blank email.
+     *
+     * @param array<string, scalar> $variables see renderBody()
+     */
+    public function renderNamed(string $name, array $variables = []): ?string
+    {
+        $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name]);
+
+        return null !== $emailTemplate ? $this->render($emailTemplate, $variables) : null;
     }
 
     /**

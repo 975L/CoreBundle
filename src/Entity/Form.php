@@ -102,22 +102,61 @@ class Form
         return $this;
     }
 
-    // Virtual, not persisted - lets FormCrudController edit $actionConfig as raw JSON text instead of needing a dynamic per-action sub-form
+    // Virtual, not persisted - lets FormCrudController edit $actionConfig as raw JSON text instead of needing a dynamic per-action sub-form. "links" is left out: it has its own collection editor (see getLinks()), and showing it twice would let one editor silently undo the other
     public function getActionConfigJson(): ?string
     {
-        return null === $this->actionConfig ? null : json_encode($this->actionConfig, JSON_PRETTY_PRINT);
+        $actionConfig = $this->actionConfig ?? [];
+        unset($actionConfig['links']);
+
+        return [] === $actionConfig ? null : json_encode($actionConfig, JSON_PRETTY_PRINT);
     }
 
     public function setActionConfigJson(?string $actionConfigJson): self
     {
-        if (null === $actionConfigJson || '' === trim($actionConfigJson)) {
-            $this->actionConfig = null;
+        // Kept aside and put back below, the raw JSON never carrying it in the first place
+        $links = $this->actionConfig['links'] ?? null;
 
-            return $this;
+        $decoded = null === $actionConfigJson || '' === trim($actionConfigJson) ? null : json_decode($actionConfigJson, true);
+        $this->actionConfig = is_array($decoded) ? $decoded : null;
+
+        if (null !== $links) {
+            $this->actionConfig = array_merge($this->actionConfig ?? [], ['links' => $links]);
         }
 
-        $decoded = json_decode($actionConfigJson, true);
-        $this->actionConfig = is_array($decoded) ? $decoded : null;
+        return $this;
+    }
+
+    /**
+     * Virtual, not persisted - the links shown under the submit button (e.g. register's "already have an account?"),
+     * stored in $actionConfig rather than in a column of their own, like "offerReceiveCopy" already is: both are read
+     * by FormController/Form.html.twig, not by the FormActionInterface the rest of that config belongs to.
+     *
+     * @return list<array{label: string, url: string}>
+     */
+    public function getLinks(): array
+    {
+        return $this->actionConfig['links'] ?? [];
+    }
+
+    public function setLinks(array $links): self
+    {
+        // Only entries actually filled in - the collection's "+ Add" row submits an empty pair when left untouched
+        $links = array_values(array_filter($links, static fn (mixed $link): bool => is_array($link)
+            && '' !== trim((string) ($link['label'] ?? ''))
+            && '' !== trim((string) ($link['url'] ?? ''))));
+
+        $actionConfig = $this->actionConfig ?? [];
+        if ([] === $links) {
+            // Stored empty rather than dropped: that is what lets FormSeeder tell "emptied by the admin" from "never seeded" (it goes by the key being there), so an admin who clears the links keeps them cleared instead of having them seeded back on the next deploy
+            $actionConfig['links'] = [];
+        } else {
+            $actionConfig['links'] = array_map(static fn (array $link): array => [
+                'label' => trim((string) $link['label']),
+                'url' => trim((string) $link['url']),
+            ], $links);
+        }
+
+        $this->actionConfig = [] === $actionConfig ? null : $actionConfig;
 
         return $this;
     }

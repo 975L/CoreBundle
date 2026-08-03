@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Model\EmailSendRequest;
+use c975L\UiBundle\Registry\EmailLayoutRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Mailer\MailerInterface;
@@ -28,6 +29,7 @@ class EmailService
         private readonly ConfigServiceInterface $configService,
         private readonly MailerInterface $mailer,
         private readonly \Twig\Environment $twig,
+        private readonly EmailLayoutRegistry $emailLayoutRegistry,
         private readonly Security $security,
     ) {
     }
@@ -52,7 +54,7 @@ class EmailService
             : null;
     }
 
-    // Builds the TemplatedEmail(s) for a request - the main one, plus a copy to $request->copyToEmail if set (its own Reply-To stripped, to avoid exposing the main recipient's address to the copy holder)
+    // Builds the TemplatedEmail(s) for a request - the main one, plus a copy to $request->copyToEmail if set (its own Reply-To stripped, to avoid exposing the main recipient's address to the copy holder, and its Bcc too, the archive needing a single exemplary)
     private function buildEmails(EmailSendRequest $request): array
     {
         $from = $this->resolveAddress($request->from, $request->fromName, 'email-from');
@@ -74,6 +76,10 @@ class EmailService
 
         if (null !== $request->html) {
             $email->html($request->html);
+        } elseif (null !== $request->template && $request->wrapLayout) {
+            // Rendered here rather than left to the mailer, so the registry's layout can be wrapped around it - a bundle then ships the body of its email alone, and the branding stays wherever EmailLayoutProviderInterface is implemented (SiteBundle's when installed, none otherwise)
+            $body = $this->twig->render($request->template, $request->context);
+            $email->html($this->emailLayoutRegistry->wrap($body) ?? $body);
         } elseif (null !== $request->template) {
             $email->htmlTemplate($request->template);
         } else {
@@ -81,12 +87,18 @@ class EmailService
         }
         $email->context($request->context);
 
+        if (null !== $request->bcc) {
+            $email->bcc(new Address($request->bcc));
+        }
+
         $emails = [$email];
 
         if (null !== $request->copyToEmail) {
             $copy = clone $email;
             $copy->to(new Address($request->copyToEmail));
             $copy->getHeaders()->remove('Reply-To');
+            // The blind copy archives the message that was actually sent, not each of its copies - the clone would otherwise carry it too, and the archive would get two of everything
+            $copy->getHeaders()->remove('Bcc');
             $emails[] = $copy;
         }
 

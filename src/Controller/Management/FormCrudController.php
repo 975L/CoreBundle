@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Form\FormFieldType;
+use c975L\UiBundle\Form\FormLinkType;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Registry\FormActionRegistry;
 use c975L\UiBundle\Service\FormFieldNamer;
@@ -101,9 +102,12 @@ class FormCrudController extends AbstractCrudController
                 );
             }
 
-            if (!isset($data['fields'])) {
-                $data['fields'] = [];
-                $event->setData($data);
+            // Same for "links", whose last row being removed would otherwise leave Form::setLinks() never called and the old links in place
+            foreach (['fields', 'links'] as $collection) {
+                if (!isset($data[$collection])) {
+                    $data[$collection] = [];
+                    $event->setData($data);
+                }
             }
         });
 
@@ -155,6 +159,15 @@ class FormCrudController extends AbstractCrudController
                         ->generateUrl(),
                     'data-form-field-template-picker-placeholder' => $this->translator->trans('label.form_field_template_picker_placeholder', [], 'ui'),
                 ])
+                ->hideOnIndex(),
+            // Not a Doctrine association but a virtual property backed by Form::$actionConfig (see Form::getLinks()) - declared after "actionConfigJson" so a save writes the raw JSON first and these links on top of it, never the other way round
+            CollectionField::new('links')
+                ->setLabel(t('label.form_links', [], 'ui'))
+                ->setEntryType(FormLinkType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->setFormTypeOption('by_reference', false)
+                ->setHelp(t('label.form_links_help', [], 'ui'))
                 ->hideOnIndex(),
         ];
     }

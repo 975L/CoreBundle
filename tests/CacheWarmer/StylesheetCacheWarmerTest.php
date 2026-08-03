@@ -166,7 +166,7 @@ class StylesheetCacheWarmerTest extends TestCase
         );
     }
 
-    // A contributed stylesheet can be generated at runtime (e.g. SiteBundle's ThemeVariablesCssListener) and may not exist yet on a fresh install - it must be skipped, not raise a warning
+    // A contributed stylesheet can be generated at runtime (e.g. ThemeVariablesCssListener) and may not exist yet on a fresh install - it must be skipped, not raise a warning
     public function testWarmUpSkipsAMissingLocalStylesheet(): void
     {
         $this->createCssFile('bundles/c975lsite/css/styles.min.css', '.site{color:blue}');

@@ -1,0 +1,65 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block main %}
+    <h1>{{ ('label.legal_models'|trans({}, 'ui')) }}</h1>
+
+    <p>{{ ('label.info_legal_model'|trans({}, 'ui')) }}</p>
+
+    {% if rows|length > 0 %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{{ ('label.page'|trans({}, 'ui')) }}</th>
+                        <th>{{ ('label.model'|trans({}, 'ui')) }}</th>
+                        <th>{{ ('label.legal_unit_hidden'|trans({}, 'ui')) }}</th>
+                        <th>{{ ('label.legal_units_overridden'|trans({}, 'ui')) }}</th>
+                        <th>{{ ('label.legal_extra_sections'|trans({}, 'ui')) }}</th>
+                        <th>{{ ('label.legal_drift'|trans({}, 'ui')) }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {# Where the document sits is contributed by whichever bundle owns the block (see BlockLocationProviderInterface); nothing owns it, nothing to show #}
+                        <td>
+                            {% if row.location %}
+                                {{ row.location.label }}
+                                {% if not row.location.published %}
+                                    <span class="badge badge-secondary">{{ ('label.not_published'|trans({}, 'ui')) }}</span>
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ (row.label|trans({}, 'ui')) }}</td>
+                        <td>{{ row.hidden ?: '-' }}</td>
+                        <td>{{ row.overridden ?: '-' }}</td>
+                        <td>{{ row.extra ?: '-' }}</td>
+                        <td>
+                            {% if row.drifted > 0 %}
+                                <span class="badge badge-info">{{ ('label.legal_drift_count'|trans({'%count%': row.drifted}, 'ui')) }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-nowrap">
+                            {# A block whose model this bundle no longer ships has nothing to customize: the screen 404s on it, so it is named as such rather than linked #}
+                            {% if row.known %}
+                                <a href="{{ path('management_ui_legal_model_customize', {block: row.block.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    {{ ('label.legal_customize'|trans({}, 'ui')) }}
+                                </a>
+                            {% else %}
+                                <span class="badge badge-warning">{{ ('label.legal_model_unknown'|trans({}, 'ui')) }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>{{ ('label.legal_models_none'|trans({}, 'ui')) }}</p>
+    {% endif %}
+{% endblock main %}

@@ -17,7 +17,7 @@ namespace c975L\UiBundle\Service;
 //
 // Done here rather than at sass compile time on purpose: --primary reads
 // "var(--c975l-color-primary, var(--button-background-primary))", and --c975l-color-primary is written at
-// runtime by the app's own theme config (SiteBundle's ThemeVariablesCssListener). A literal baked by sass
+// runtime by the app's own theme config (ThemeVariablesCssListener). A literal baked by sass
 // would freeze every site on the bundle's default palette instead of the one its admin picked.
 class CssVariableResolver
 {

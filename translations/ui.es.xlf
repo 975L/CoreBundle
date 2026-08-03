@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="ui.en.xlf">
         <body>
+            <trans-unit id="DYrEVzQ">
+                <source>action.export_selection</source>
+                <target>Exportar la selección</target>
+            </trans-unit>
+            <trans-unit id="7TaPAuT">
+                <source>action.font_bulk_import</source>
+                <target>Importación masiva</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Retocar el contenido de un correo que el sitio envía, igual que se retoca una página</target>
@@ -62,6 +70,22 @@
                 <source>description.guided_step_ui_media_reuse</source>
                 <target>En el bloque de una página, elíjala de la mediateca en lugar de volver a subirla.</target>
             </trans-unit>
+            <trans-unit id="emqi7.W">
+                <source>description.legal_customize</source>
+                <target>Los textos siguientes son los del bundle: modifíquelos directamente. Mientras no toque una sección, esta sigue actualizándose con el bundle; en cuanto la modifica, pasa a ser suya y usted asume la responsabilidad. Arrastre una tarjeta por su encabezado para cambiar el orden. En cualquier caso, el contenido de estas páginas es su responsabilidad editorial y jurídica.</target>
+            </trans-unit>
+            <trans-unit id="YgzofbB">
+                <source>description.legal_drift</source>
+                <target>El texto que el bundle proporciona para esta sección ha cambiado desde que usted la reescribió. No se ha modificado nada: esta es la nueva versión, usted decide si le concierne.</target>
+            </trans-unit>
+            <trans-unit id="EBXU68o">
+                <source>description.legal_extra_sections</source>
+                <target>Sus propias secciones, añadidas al final del nivel elegido. El bundle no las conoce y nunca las modificará.</target>
+            </trans-unit>
+            <trans-unit id="THY3L8B">
+                <source>description.legal_placeholders</source>
+                <target>Estos marcadores se sustituyen por la configuración del sitio al mostrarse la página, también en sus propios textos:</target>
+            </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
                 <target>Caché de bloques vaciada</target>
@@ -73,6 +97,26 @@
             <trans-unit id="7AVJlDV">
                 <source>flash.block_moved</source>
                 <target>Bloque movido</target>
+            </trans-unit>
+            <trans-unit id="tymp2.R">
+                <source>flash.font_bulk_import_invalid_token</source>
+                <target>Formulario no válido o expirado, inténtelo de nuevo.</target>
+            </trans-unit>
+            <trans-unit id="ZpEnHov">
+                <source>flash.font_bulk_import_no_files</source>
+                <target>Ningún archivo de fuente seleccionado.</target>
+            </trans-unit>
+            <trans-unit id="qpZ4cFd">
+                <source>flash.font_bulk_import_skipped</source>
+                <target>Omitido (formato no válido o demasiado grande): %files%</target>
+            </trans-unit>
+            <trans-unit id="KdHpBKb">
+                <source>flash.font_bulk_import_success</source>
+                <target>%count% fuente(s) importada(s).</target>
+            </trans-unit>
+            <trans-unit id="oGPPygw">
+                <source>flash.legal_model_customized</source>
+                <target>Personalización guardada.</target>
             </trans-unit>
             <trans-unit id="QQjuExD">
                 <source>label.accent</source>
@@ -390,6 +434,10 @@
                 <source>label.animation_zoom_in</source>
                 <target>Acercamiento</target>
             </trans-unit>
+            <trans-unit id="gBMbs0d">
+                <source>label.apple_touch_icon</source>
+                <target>Icono Apple Touch</target>
+            </trans-unit>
             <trans-unit id="vmcoEjK">
                 <source>label.attached_to_block</source>
                 <target>Adjunto al bloque #%id% (%kind%)</target>
@@ -401,6 +449,10 @@
             <trans-unit id="SXeZ5Tg">
                 <source>label.autoplay</source>
                 <target>Reproducción automática</target>
+            </trans-unit>
+            <trans-unit id="1GXuSep">
+                <source>label.back_to_list</source>
+                <target>Volver a la lista</target>
             </trans-unit>
             <trans-unit id="taGjIwv">
                 <source>label.badge</source>
@@ -566,6 +618,14 @@
                 <source>label.block_kind_legacy_slot_help</source>
                 <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Este bloque está colocado directamente como columna, lo que ya no se ofrece: añade una Columna a la fila, arrastra este bloque dentro y entonces podrás ajustar su anchura.&lt;/span&gt;</target>
             </trans-unit>
+            <trans-unit id="C4gS09K">
+                <source>label.block_legal_model</source>
+                <target>Modelo legal</target>
+            </trans-unit>
+            <trans-unit id="48e0zxX">
+                <source>label.block_legal_model_description</source>
+                <target>Inserta una plantilla de texto legal existente (CGU, aviso legal...)</target>
+            </trans-unit>
             <trans-unit id="QVfWY7f">
                 <source>label.block_media_required</source>
                 <target>Se requiere una imagen para este tipo de bloque.</target>
@@ -706,6 +766,10 @@
                 <source>label.category_general</source>
                 <target>General</target>
             </trans-unit>
+            <trans-unit id="_13H57u">
+                <source>label.category_legal</source>
+                <target>Legal</target>
+            </trans-unit>
             <trans-unit id="d1._mOj">
                 <source>label.category_media</source>
                 <target>Multimedia</target>
@@ -814,6 +878,26 @@
                 <source>label.content</source>
                 <target>Contenido</target>
             </trans-unit>
+            <trans-unit id="rpDgbSi">
+                <source>label.cookies_accept</source>
+                <target>Aceptar</target>
+            </trans-unit>
+            <trans-unit id="qrNBASP">
+                <source>label.cookies_dialog</source>
+                <target>Consentimiento de cookies</target>
+            </trans-unit>
+            <trans-unit id="HCj0D9c">
+                <source>label.cookies_policy</source>
+                <target>Política de cookies</target>
+            </trans-unit>
+            <trans-unit id="QqHGDx.">
+                <source>label.cookies_reject</source>
+                <target>Rechazar</target>
+            </trans-unit>
+            <trans-unit id="LBVSVcj">
+                <source>label.copyright</source>
+                <target>Derechos de autor</target>
+            </trans-unit>
             <trans-unit id="dVpp9GV">
                 <source>label.country</source>
                 <target>País</target>
@@ -821,6 +905,10 @@
             <trans-unit id="rhXgMnd">
                 <source>label.country_code</source>
                 <target>Código de país (ej.: ES)</target>
+            </trans-unit>
+            <trans-unit id="iripoC5">
+                <source>label.create_site_graphic</source>
+                <target>Crear un gráfico:</target>
             </trans-unit>
             <trans-unit id="efSspGE">
                 <source>label.credits</source>
@@ -1034,9 +1122,17 @@
                 <source>label.email_templates</source>
                 <target>Plantillas de email</target>
             </trans-unit>
+            <trans-unit id="fZX2vH1">
+                <source>label.error_image</source>
+                <target>Imagen de error</target>
+            </trans-unit>
             <trans-unit id="VTM8IxQ">
                 <source>label.eyebrow</source>
                 <target>Antetítulo</target>
+            </trans-unit>
+            <trans-unit id="akTKyKA">
+                <source>label.favicon</source>
+                <target>Favicon</target>
             </trans-unit>
             <trans-unit id="aSdYCtp">
                 <source>label.field_label</source>
@@ -1130,6 +1226,90 @@
                 <source>label.fixed_icon_invalid_format</source>
                 <target>Formato no compatible con este rol - suba una imagen %formats%</target>
             </trans-unit>
+            <trans-unit id="ZbTNTSZ">
+                <source>label.font</source>
+                <target>Fuente</target>
+            </trans-unit>
+            <trans-unit id="7NbFp1S">
+                <source>label.font_bulk_import</source>
+                <target>Importación masiva de fuentes</target>
+            </trans-unit>
+            <trans-unit id="n9yTG4w">
+                <source>label.font_bulk_import_help</source>
+                <target>Seleccione varios archivos TTF, WOFF o WOFF2 a la vez (5 MB máx. cada uno) - el nombre, el peso y el estilo de cada archivo se deducen de su nombre de archivo (ej. «OpenSans-Bold.ttf», «Roboto-ExtraLightItalic.woff2»). Revise después las fuentes importadas y corrija cualquier deducción errónea.</target>
+            </trans-unit>
+            <trans-unit id="x75HSFP">
+                <source>label.font_file_help</source>
+                <target>Formatos aceptados: TTF, WOFF, WOFF2 (máx. 5 MB). Se almacena en public/medias/fonts y se convierte en una regla @font-face, disponible en los selectores de fuente del tema.</target>
+            </trans-unit>
+            <trans-unit id="pAzRTZZ">
+                <source>label.font_file_invalid_extension</source>
+                <target>Archivo no válido: solo se aceptan fuentes TTF, WOFF y WOFF2.</target>
+            </trans-unit>
+            <trans-unit id="WAbfqVw">
+                <source>label.font_name</source>
+                <target>Nombre de la fuente</target>
+            </trans-unit>
+            <trans-unit id="SvJOd0k">
+                <source>label.font_style</source>
+                <target>Estilo</target>
+            </trans-unit>
+            <trans-unit id="gxpM4OM">
+                <source>label.font_style_italic</source>
+                <target>Cursiva</target>
+            </trans-unit>
+            <trans-unit id="N4V609U">
+                <source>label.font_style_normal</source>
+                <target>Normal</target>
+            </trans-unit>
+            <trans-unit id="EtdrCKk">
+                <source>label.font_weight</source>
+                <target>Grosor</target>
+            </trans-unit>
+            <trans-unit id="DcBb0E8">
+                <source>label.font_weight_black</source>
+                <target>Negra</target>
+            </trans-unit>
+            <trans-unit id="8OpFiI0">
+                <source>label.font_weight_bold</source>
+                <target>Negrita</target>
+            </trans-unit>
+            <trans-unit id="rsh_BqU">
+                <source>label.font_weight_extra_bold</source>
+                <target>Extra negrita</target>
+            </trans-unit>
+            <trans-unit id="vwDLQY.">
+                <source>label.font_weight_extra_light</source>
+                <target>Extra ligera</target>
+            </trans-unit>
+            <trans-unit id="Mp.YqFV">
+                <source>label.font_weight_light</source>
+                <target>Ligera</target>
+            </trans-unit>
+            <trans-unit id="qL7Gp9j">
+                <source>label.font_weight_medium</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="zLV2aBT">
+                <source>label.font_weight_regular</source>
+                <target>Regular</target>
+            </trans-unit>
+            <trans-unit id=".hfRymY">
+                <source>label.font_weight_semibold</source>
+                <target>Seminegrita</target>
+            </trans-unit>
+            <trans-unit id="2A7.7yO">
+                <source>label.font_weight_thin</source>
+                <target>Fina</target>
+            </trans-unit>
+            <trans-unit id="0SfE11h">
+                <source>label.font_weight_variable</source>
+                <target>Variable (100-900)</target>
+            </trans-unit>
+            <trans-unit id="kjFy2J8">
+                <source>label.fonts</source>
+                <target>Fuentes</target>
+            </trans-unit>
             <trans-unit id="atiwZVV">
                 <source>label.force_download</source>
                 <target>Forzar Descarga</target>
@@ -1149,6 +1329,22 @@
             <trans-unit id="PTqH6C7">
                 <source>label.form_field_templates</source>
                 <target>Modelos de campos</target>
+            </trans-unit>
+            <trans-unit id="Kq3Vb7T">
+                <source>label.form_link_label</source>
+                <target>Texto del enlace</target>
+            </trans-unit>
+            <trans-unit id="hZ2mWpA">
+                <source>label.form_link_url</source>
+                <target>Dirección del enlace</target>
+            </trans-unit>
+            <trans-unit id="xL9tRc4">
+                <source>label.form_links</source>
+                <target>Enlaces</target>
+            </trans-unit>
+            <trans-unit id="nB6yUe1">
+                <source>label.form_links_help</source>
+                <target>Se muestran justo debajo del botón de envío, por ejemplo un enlace a la página de inicio de sesión debajo de un formulario de registro. Utilice una ruta de este sitio (/pages/mi-pagina) o una dirección completa.</target>
             </trans-unit>
             <trans-unit id="PR6XC0B">
                 <source>label.form_picker_disabled_suffix</source>
@@ -1258,6 +1454,18 @@
                 <source>label.guided_step_ui_media_save</source>
                 <target>Guardar</target>
             </trans-unit>
+            <trans-unit id="epZIsrh">
+                <source>label.health_check_legal_model_drift</source>
+                <target>%count% sección(es) que usted reescribió han cambiado en el modelo «%model%» : %sections%</target>
+            </trans-unit>
+            <trans-unit id="sv1fnt2">
+                <source>label.health_check_svg_fonts_not_vectorized</source>
+                <target>%file% contiene texto sin vectorizar%fonts%: conviértalo en trazados, o se mostrará con otra tipografía para quien no tenga esa</target>
+            </trans-unit>
+            <trans-unit id="sv1fnt3">
+                <source>label.health_check_svg_fonts_ok</source>
+                <target>%file% no depende de ninguna tipografía, su texto está vectorizado</target>
+            </trans-unit>
             <trans-unit id="7YLjRTG">
                 <source>label.height</source>
                 <target>Altura</target>
@@ -1334,6 +1542,10 @@
                 <source>label.info_email_template</source>
                 <target>Las plantillas de correo del sitio, cada una compuesta de bloques de contenido. Cree, modifique o previsualice una plantilla; una plantilla restringida mantiene su nombre fijo y no puede eliminarse.</target>
             </trans-unit>
+            <trans-unit id="z7IyPeJ">
+                <source>label.info_font</source>
+                <target>Archivos de fuentes personalizadas subidos para el sitio (ttf, woff, woff2). Añada, modifique o elimine una fuente; cada peso y estilo forma una variante distinta utilizable en la configuración del tema.</target>
+            </trans-unit>
             <trans-unit id="ryIqK8x">
                 <source>label.info_form</source>
                 <target>Los formularios del sitio (contacto, boletín...), cada uno con sus propios campos y su acción de envío. Cree, modifique o elimine un formulario; un formulario restringido mantiene su nombre fijo y no puede eliminarse.</target>
@@ -1346,9 +1558,17 @@
                 <source>label.info_form_gdpr</source>
                 <target>Casilla RGPD añadida automáticamente a los formularios, según %link_open%esta clave%link_close%.</target>
             </trans-unit>
+            <trans-unit id="KDIeeFV">
+                <source>label.info_legal_model</source>
+                <target>Los textos legales incluidos en el bundle siguen mantenidos y actualizados. Página por página, puede ocultar una sección, reescribirla, moverla o añadir las suyas: solo lo que modifica deja de seguir las actualizaciones.</target>
+            </trans-unit>
             <trans-unit id="Rj7vT.7">
                 <source>label.info_media</source>
                 <target>Todos los archivos multimedia subidos (páginas, bloques, gráficos del sitio). Modifique la leyenda, el texto alternativo o los créditos de un archivo; los gráficos globales del sitio (favicon, logo...) permanecen de solo lectura aquí y se gestionan desde Gráficos del sitio.</target>
+            </trans-unit>
+            <trans-unit id="MwU6S3V">
+                <source>label.info_site_graphic</source>
+                <target>Gráficos globales del sitio: favicon, icono Apple Touch, imagen Open Graph por defecto, logo e imágenes de error. Cada rol (salvo la imagen de error) solo puede usarse una vez; reemplace el archivo para actualizarlo.</target>
             </trans-unit>
             <trans-unit id="tuC.GA7">
                 <source>label.information</source>
@@ -1365,6 +1585,10 @@
             <trans-unit id="NdoELG0">
                 <source>label.kind</source>
                 <target>Tipo</target>
+            </trans-unit>
+            <trans-unit id="RzBZ4z7">
+                <source>label.latest_update</source>
+                <target>Ultima actualización</target>
             </trans-unit>
             <trans-unit id="FBSuKKD">
                 <source>label.latitude</source>
@@ -1386,6 +1610,78 @@
                 <source>label.layout_help</source>
                 <target>Estándar: una diapositiva a la vez. Desbordamiento: todas una junto a otra, fuera de pantalla.</target>
             </trans-unit>
+            <trans-unit id="xeLDFrp">
+                <source>label.legal_customize</source>
+                <target>Personalizar</target>
+            </trans-unit>
+            <trans-unit id="VSv_bRo">
+                <source>label.legal_customize_help</source>
+                <target>La personalización sección por sección se hace desde «Modelos legales», en el menú.</target>
+            </trans-unit>
+            <trans-unit id="DOLV88Z">
+                <source>label.legal_drift</source>
+                <target>Actualización disponible</target>
+            </trans-unit>
+            <trans-unit id="n10xHFc">
+                <source>label.legal_drift_count</source>
+                <target>%count% sección(es)</target>
+            </trans-unit>
+            <trans-unit id="ZqqDoeS">
+                <source>label.legal_extra_add</source>
+                <target>Añadir una sección</target>
+            </trans-unit>
+            <trans-unit id="GlT9ghq">
+                <source>label.legal_extra_parent</source>
+                <target>Adjuntar a</target>
+            </trans-unit>
+            <trans-unit id="7IwEdF.">
+                <source>label.legal_extra_parent_top</source>
+                <target>Primer nivel</target>
+            </trans-unit>
+            <trans-unit id="LT7uKbV">
+                <source>label.legal_extra_remove</source>
+                <target>Eliminar esta sección</target>
+            </trans-unit>
+            <trans-unit id="xAZplVp">
+                <source>label.legal_extra_sections</source>
+                <target>Secciones añadidas</target>
+            </trans-unit>
+            <trans-unit id="Kq7mZ3a">
+                <source>label.legal_model_unknown</source>
+                <target>Modelo desconocido</target>
+            </trans-unit>
+            <trans-unit id="IAyzYCW">
+                <source>label.legal_models</source>
+                <target>Modelos legales</target>
+            </trans-unit>
+            <trans-unit id="AnsvoFg">
+                <source>label.legal_models_none</source>
+                <target>Ninguna página contiene un modelo legal.</target>
+            </trans-unit>
+            <trans-unit id="7BkQCei">
+                <source>label.legal_notice</source>
+                <target>Aviso Legal</target>
+            </trans-unit>
+            <trans-unit id="tetbtS5">
+                <source>label.legal_unit_content</source>
+                <target>Texto</target>
+            </trans-unit>
+            <trans-unit id="vmakjCm">
+                <source>label.legal_unit_hidden</source>
+                <target>Oculta</target>
+            </trans-unit>
+            <trans-unit id="Xqx0K.j">
+                <source>label.legal_unit_reset</source>
+                <target>Volver al texto del bundle</target>
+            </trans-unit>
+            <trans-unit id="Kd9zmXR">
+                <source>label.legal_unit_title</source>
+                <target>Título</target>
+            </trans-unit>
+            <trans-unit id="mQCftNN">
+                <source>label.legal_units_overridden</source>
+                <target>Secciones reescritas</target>
+            </trans-unit>
             <trans-unit id="vW5NwgU">
                 <source>label.limit</source>
                 <target>Número máximo mostrado</target>
@@ -1397,6 +1693,10 @@
             <trans-unit id="c7Md7WI">
                 <source>label.link_label</source>
                 <target>Texto del enlace</target>
+            </trans-unit>
+            <trans-unit id="CicLx_A">
+                <source>label.logo</source>
+                <target>Logo</target>
             </trans-unit>
             <trans-unit id="A3tB9aX">
                 <source>label.longitude</source>
@@ -1446,6 +1746,10 @@
                 <source>label.mobile</source>
                 <target>Móvil</target>
             </trans-unit>
+            <trans-unit id="lXynwwU">
+                <source>label.model</source>
+                <target>Modelo</target>
+            </trans-unit>
             <trans-unit id="yfK.uss">
                 <source>label.monday</source>
                 <target>Lunes</target>
@@ -1466,9 +1770,17 @@
                 <source>label.no_collection_source_available</source>
                 <target>Todavía no hay ninguna fuente de colección disponible</target>
             </trans-unit>
+            <trans-unit id="VZ9ErQ0">
+                <source>label.not_published</source>
+                <target>No publicada</target>
+            </trans-unit>
             <trans-unit id="qOJK2CP">
                 <source>label.not_used_anywhere</source>
                 <target>Aún no utilizado</target>
+            </trans-unit>
+            <trans-unit id="GJNimRX">
+                <source>label.og_image</source>
+                <target>Imagen Open Graph</target>
             </trans-unit>
             <trans-unit id="IBymOD8">
                 <source>label.opening_hours</source>
@@ -1477,6 +1789,10 @@
             <trans-unit id="vue6pQ5">
                 <source>label.opens</source>
                 <target>Apertura</target>
+            </trans-unit>
+            <trans-unit id="OmyXHwr">
+                <source>label.page</source>
+                <target>Página</target>
             </trans-unit>
             <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
@@ -1509,6 +1825,10 @@
             <trans-unit id="D5HPeKU">
                 <source>label.primary_url</source>
                 <target>URL del botón principal</target>
+            </trans-unit>
+            <trans-unit id="h3TeJLZ">
+                <source>label.privacy_policy</source>
+                <target>Política de privacidad</target>
             </trans-unit>
             <trans-unit id="DKWkb19">
                 <source>label.progress_percent</source>
@@ -1574,6 +1894,10 @@
                 <source>label.rights_reserved</source>
                 <target>Derechos reservados</target>
             </trans-unit>
+            <trans-unit id="Gj4Ca1d">
+                <source>label.role</source>
+                <target>Rol</target>
+            </trans-unit>
             <trans-unit id="bMMjC9k">
                 <source>label.same_window</source>
                 <target>Misma Ventana</target>
@@ -1581,6 +1905,10 @@
             <trans-unit id="jLb96os">
                 <source>label.saturday</source>
                 <target>Sábado</target>
+            </trans-unit>
+            <trans-unit id="znwE9XF">
+                <source>label.save</source>
+                <target>Guardar</target>
             </trans-unit>
             <trans-unit id="lIBbVVe">
                 <source>label.schema_type</source>
@@ -1641,6 +1969,22 @@
             <trans-unit id="M2zj2An">
                 <source>label.show_percent</source>
                 <target>Mostrar porcentaje</target>
+            </trans-unit>
+            <trans-unit id="rttit_o">
+                <source>label.site_graphic</source>
+                <target>Gráfico del sitio</target>
+            </trans-unit>
+            <trans-unit id="0pHTiGE">
+                <source>label.site_graphic_file_help</source>
+                <target>Redimensionado automático: favicon a 48×48 px (.ico), icono Apple Touch a 114×114 px (.png).</target>
+            </trans-unit>
+            <trans-unit id="6.3yMVA">
+                <source>label.site_graphic_missing</source>
+                <target>Aún no se ha subido ningún archivo</target>
+            </trans-unit>
+            <trans-unit id="sDMW24b">
+                <source>label.site_graphics</source>
+                <target>Gráficos del sitio</target>
             </trans-unit>
             <trans-unit id="_ukBYp5">
                 <source>label.slide_duration</source>
@@ -1721,6 +2065,14 @@
             <trans-unit id="FAw4doM">
                 <source>label.target</source>
                 <target>Destino</target>
+            </trans-unit>
+            <trans-unit id="ua7HEiS">
+                <source>label.terms_of_sales</source>
+                <target>Condiciones generales de venta</target>
+            </trans-unit>
+            <trans-unit id="wIPeOCe">
+                <source>label.terms_of_use</source>
+                <target>Términos de uso</target>
             </trans-unit>
             <trans-unit id="zDdJoWc">
                 <source>label.text</source>
@@ -1826,6 +2178,10 @@
                 <source>label.width_help</source>
                 <target>Detectada automáticamente al subir, en píxeles</target>
             </trans-unit>
+            <trans-unit id="2lWOypu">
+                <source>text.cookies_banner</source>
+                <target>Este sitio utiliza una cookie de sesión necesaria para su funcionamiento y puede incluir contenido de terceros (vídeos, etc.) que requiere su consentimiento.</target>
+            </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>
                 <target>* Campo obligatorio</target>
@@ -1833,6 +2189,10 @@
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>
                 <target>Las contraseñas no coinciden</target>
+            </trans-unit>
+            <trans-unit id="sv9tx2p">
+                <source>text.svg_text_not_vectorized</source>
+                <target>%filename% contiene texto sin vectorizar%fonts%: se mostrará con otra tipografía para un visitante que no la tenga instalada. Convierta el texto en trazados antes de publicarlo (Inkscape: Trayecto &gt; Objeto a trayecto).</target>
             </trans-unit>
             <trans-unit id="we221_t">
                 <source>text.too_many_attempts</source>

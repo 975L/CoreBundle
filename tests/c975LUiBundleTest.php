@@ -69,6 +69,30 @@ class c975LUiBundleTest extends TestCase
         $this->assertSame(['@c975l/ui-bundle'], array_values($paths));
     }
 
+    // Every entity of this bundle carrying an uploaded file needs its mapping declared here - Font's used to come from SiteBundle, which an app running Config + Ui plus a satellite bundle doesn't have, and an upload then died on "No mapping named site_font configured"
+    public function testPrependExtensionRegistersAVichMappingForEveryUploadingEntity(): void
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension($this->extension('vich_uploader'));
+
+        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $mappings = $container->getExtensionConfig('vich_uploader')[0]['mappings'];
+
+        $this->assertSame(['block_media', 'site_font'], array_keys($mappings));
+        $this->assertSame($mappings['block_media'], $mappings['site_font'], 'Both mappings store into public/ through the same namer.');
+    }
+
+    // An app without VichUploaderBundle must still boot: prepending config for an unregistered extension throws
+    public function testPrependExtensionSkipsTheVichMappingsWithoutVich(): void
+    {
+        $container = new ContainerBuilder();
+
+        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $this->assertSame([], $container->getExtensionConfig('vich_uploader'));
+    }
+
     // Both captcha compiler passes went away with karser/karser-recaptcha3-bundle - nothing may still reference them
     public function testBuildRegistersNoCaptchaCompilerPass(): void
     {

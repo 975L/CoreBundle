@@ -23,9 +23,10 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 
 - **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
 - **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails)
-- **Styling** — [automatic CSS injection](#automatic-css-injection) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components)
+- **Styling** — [automatic CSS injection](#automatic-css-injection) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections)
+- **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
 
 ## Features
@@ -36,7 +37,10 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Drag-and-drop position ordering for blocks and media
 - One-click duplication of a block or a media row in EasyAdmin, including its files
 - Live preview of a newly picked image in EasyAdmin, before saving
-- Site-wide media roles (favicon, apple-touch-icon, og-image, logo) retrievable anywhere via `site_media()`
+- Site-wide media roles (favicon, apple-touch-icon, og-image, logo, error-image pool) with their own admin screen, retrievable anywhere via `site_media()`
+- Admin-editable theme (colors, fonts, light/dark mode) compiled to CSS custom properties, and inlinable into emails
+- GDPR cookie banner (`vanilla-cookieconsent` v3, self-hosted), carrying its own enabled/disabled guard
+- A minimal page layout with the theme, the site graphics, the share tags and the banner, for an app running without SiteBundle
 - Media Library in EasyAdmin: browse every `Media` regardless of how it's attached, and see where it's used
 - AJAX kind-switcher in EasyAdmin
 - Extensible: register your own block kinds via a service tag
@@ -44,6 +48,8 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Reusable drag-and-drop sortable script for any EasyAdmin `CollectionField`
 - Font-family provider contract (`FontProviderInterface`/`FontRegistry`) plus a generic `FontChoiceType` select, reused by ConfigBundle's font-kind config fields
 - Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private downloads (`PrivateFileResponseFactory`)
+- Shared plumbing every satellite bundle needs without needing SiteBundle: unique slugs, block edit URLs, sortable row attributes, generated-stylesheet writing, Vich upload options, block cache invalidation, block export/import
+- Generic Twig helpers (`nl2br`, `linkify`, `route_exists`, `template_exists`, `asset_exists`)
 - Layout invariants checked without a browser (`Testing\StylesheetCascade`, shipped for the bundles depending on this one), plus `c975l:ui:layout-audit` for what only a rendered page shows
 
 ---
@@ -83,7 +89,7 @@ Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captc
 
 The `confetti` controller loads its `canvas-confetti` library from the copy vendored in this bundle (`public/js/confetti.browser.min.js`) rather than from a CDN. Point it elsewhere with `data-confetti-script-value="/your/own/path.js"` on the same element.
 
-The `videoIframe` controller never injects its iframe before consent has been given, and then only once the element nears the viewport. It looks for a consent banner registered as either `cookie-consent` (what SiteBundle's `<twig:c975LSite:General:CookieConsent/>` writes) or `cookieConsent`; with no banner in the page at all it treats the content as unrestricted and loads it on approach.
+The `videoIframe` controller never injects its iframe before consent has been given, and then only once the element nears the viewport. It looks for a consent banner registered as either `cookie-consent` (what this bundle's `<twig:c975LUi:Cookie:Consent />` writes) or `cookieConsent`; with no banner in the page at all it treats the content as unrestricted and loads it on approach.
 
 #### The `password` controller
 
@@ -177,6 +183,12 @@ When you call `$page->removeBlock($block)`, the trait queues the block in a `pen
 
 `ROLE_EDITOR` users (and above) see a small "Edit" hover button on each rendered block, jumping straight to that block on its owning entity's EasyAdmin edit screen. Implement **`Contract\BlockEditUrlProviderInterface::getEditUrls(array $blocks): array`** (tagged automatically, picked up by `BlockEditUrlProviderPass`) and return an edit URL keyed by `Block::$id` for every block your bundle owns (e.g. SiteBundle's `Page`) - `Registry\BlockEditUrlRegistry` merges every provider's map, and edit URLs are resolved once per `Blocks.html.twig` collection (one query), not per block. Nothing to do if you don't own blocks or don't want them editable this way.
 
+Call `Service\LegalModelEditUrl::build()` first in your own implementation, as SiteBundle does: a `legal_model` block is edited on its own customization screen (see [Legal models](#legal-models)), not on its row in your form, and that helper answers `null` for everything else.
+
+### Where a block sits
+
+The screens listing one kind across the whole site - the "Legal models" one - show where each block lives, which the bundle owning it is the only one to know. Implement **`Contract\BlockLocationProviderInterface::getLocations(array $blocks): array`** (auto-discovered by `BlockLocationProviderPass`) and return `['label' => …, 'url' => …, 'published' => …]` keyed by `Block::$id`, `url` being the public address the block is read at and `null` when it has none. Nothing implementing it simply means those screens list the blocks with no location - which is what an app running this bundle without any page management gets.
+
 ---
 
 ## EasyAdmin integration
@@ -238,6 +250,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `hero` | Page sections | `HeroType` | `blocks/Hero.html.twig` |
 | `image` | Media | `ImageType` | `blocks/Image.html.twig` |
 | `image_compare` | Media | `ImageCompareType` | `blocks/ImageCompare.html.twig` |
+| `legal_model` | Legal | `LegalModelType` | `blocks/LegalModel.html.twig` |
 | `portfolio_grid` | Page sections | `PortfolioGridType` | `blocks/PortfolioGrid.html.twig` |
 | `process_steps` | Page sections | `ProcessStepsType` | `blocks/ProcessSteps.html.twig` |
 | `progress_bar` | Elements | `ProgressBarType` | `blocks/ProgressBar.html.twig` |
@@ -593,7 +606,11 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 - **`Contract\FormActionInterface`**/**`Registry\FormActionRegistry`** let a bundle process a `Form`'s submission (tagged provider, one `getKey()` per implementation) without UiBundle knowing what that action actually does - `Form::$action` stores which key handles a given form, `Form::$actionConfig` (raw JSON, editable straight from `FormCrudController`) is free-shape config read only by that action.
 - **`Service\SendEmailFormAction`** (key `send_email`) is the built-in provider: it lets a form built purely through the admin still notify someone by email, configured via `actionConfig`'s `to`/`from`/`replyTo`/`subject`/`template`/`senderEmailField`/`offerReceiveCopy` (all optional - unset ones fall back to the site-wide `email-*` config keys/a default template), or `emailTemplate` (an `EmailTemplate` name, see "Email builder" below) to send a compiled `EmailTemplate` instead of `template`. It's backed by a generic **`Service\EmailService`** (`Model\EmailSendRequest` in, bool out, `getLastError()`/`consumeDebugPreview()` for the `ROLE_SUPER_ADMIN` + `email-debug` preview instead of a silent real send). Implement `Contract\DebugPreviewCapableInterface` on your own action to get the same debug-preview behavior.
 - **Protection**, shared with every other c975L public form (contact/register/reset): a rotating honeypot + submission-timing check (`Service\FormBotProtection`, merges what used to be separate SiteBundle/ContactFormBundle implementations), site-wide GDPR checkbox and reCAPTCHA v3 (`Service\CaptchaVerifier`/`Form\CaptchaType`, a no-op unless the `recaptcha3-site-key`/`recaptcha3-secret-key` ConfigBundle keys are both filled in - see [reCAPTCHA](#recaptcha)), and an optional shared rate limiter (`Service\RateLimiterGuard`, configure `limiter.ui_form` in `config/packages/rate_limiter.yaml` to enable it - unconfigured, nothing is rate-limited). Every `email`-typed field also gets a live MX/A DNS check (`Validator\Constraints\DnsEmail`) on top of format/`Assert\Email` validation, and every required `checkbox`-typed field uses `IsTrue` (an unchecked box isn't `NotBlank`).
+- **`Form::$links`** (`Form\FormLinkType`, its own label/url collection on `FormCrudController`) are the links shown right under a form's submit button - typically the way out of a dead end (register's "already have an account, sign in", a reset-password form's way back). They live on the `Form` itself, inside `actionConfig` rather than in a column of their own, so they follow it everywhere it's rendered: through the `form` block, through the bare route, and through the standalone re-render a failed submission goes through.
 - **`Service\FormPrefillHelper`** lets app code pre-fill (and lock) a `Form`'s field(s) from session right before redirecting a visitor to it (e.g. a listing page's "Contact us about this" link setting the `subject` field) - no query string needed, cleared automatically once the submission succeeds.
+- **`Service\FormSeeder`** is how a bundle gets its own `Form`/`EmailTemplate` rows in place out of the box: `ensureForm(name, coreFieldsByLocale, action, actionConfig, linksByLocale)` and `ensureEmailTemplate(name, blocksByLocale)`, both idempotent, both seeding `restricted` rows. A `Form` seeded by an earlier version is backfilled in place rather than left stale, and a field's `url` - like the form's own `links` - is only ever written while it's still unset, so an admin's edit is never overwritten. Neither method flushes - the caller decides when, so a batch of seeds stays one transaction.
+- **`Contract\FormPageUrlProviderInterface`**/**`Registry\FormPageUrlRegistry`** and the **`form_url(name)`** Twig function answer where a named `Form` is actually reachable on the front end. A bundle displaying that form on something richer than this bundle's bare `ui_form_submit` route contributes its URL (SiteBundle answers with the `Page` carrying the matching `form` block, an admin-editable per-locale slug); the first provider with an answer wins, and with none the bare route is used - so a template linking to a form never has to know which bundles are installed.
+- **Two ConfigBundle keys** drive the shared protections, both under the *form* group: `site-form-delay` (seconds a submission must take at minimum, the timing half of `FormBotProtection`) and `site-form-gdpr` (whether the site-wide consent checkbox is shown). They live here rather than in SiteBundle, this bundle's form layer being what reads them.
 
 ### reCAPTCHA
 
@@ -628,7 +645,19 @@ $builder->add('captcha', CaptchaType::class, [
 
 ## Font picker
 
-**`Form\FontChoiceType`** is a generic font-family `<select>` (`getParent()` is `ChoiceType`), not tied to any other system here - any bundle/app form can `add('font', FontChoiceType::class)` to offer a select built from whatever **`Registry\FontRegistry`** knows about, instead of a plain text field. Implement `Contract\FontProviderInterface::getFonts(): array` (auto-discovered the same way as `BlockFixtureProviderInterface`, no tag needed - see `DependencyInjection\Compiler\FontProviderPass`) in a bundle/app declaring `@font-face` font-family names of its own (e.g. SiteBundle); only the first registered provider is used, and an empty array (no provider installed) is a valid fallback a caller can handle its own way. `c975l/config-bundle`'s `ConfigCrudController` is the first consumer: it uses `FontChoiceType` for its `font`-kind config rows (e.g. `theme-font-family-title`), merging in whatever raw value is already stored so a font removed from `@font-face` since stays selectable instead of silently disappearing.
+**`Form\FontChoiceType`** is a generic font-family `<select>` (`getParent()` is `ChoiceType`), not tied to any other system here - any bundle/app form can `add('font', FontChoiceType::class)` to offer a select built from whatever **`Registry\FontRegistry`** knows about, instead of a plain text field. Implement `Contract\FontProviderInterface::getFonts(): array` (auto-discovered the same way as `BlockFixtureProviderInterface`, no tag needed - see `DependencyInjection\Compiler\FontProviderPass`) in a bundle/app declaring `@font-face` font-family names of its own (this bundle's own `Service\FontService` answers with every uploaded family, see [Fonts](#fonts) below); every registered provider contributes, the registry returning their deduplicated, alphabetically sorted union - font families add up rather than replace each other, so an app declaring `@font-face` families of its own gets them alongside the uploaded ones instead of masking them. An empty array (no provider installed) is a valid fallback a caller can handle its own way. `c975l/config-bundle`'s `ConfigCrudController` is the first consumer: it uses `FontChoiceType` for its `font`-kind config rows (e.g. `theme-font-family-title`), merging in whatever raw value is already stored so a font removed from `@font-face` since stays selectable instead of silently disappearing.
+
+---
+
+## Fonts
+
+An admin uploads their own font files straight from the dashboard (`Controller\Management\FontCrudController`, TTF/WOFF/WOFF2, 5 MB max) — no dev/deploy needed. Each upload is one `Entity\Font` row (name/weight/style + the file, stored under `public/medias/fonts`); `Listener\FontCssListener` (Doctrine listener + `CacheWarmerInterface`) compiles every row into `public/bundles/build/site-fonts-uploaded.css`, one `@font-face` block per row, contributed by this bundle's own `StylesheetProvider`. No format conversion happens server-side (WOFF2 encoding needs Brotli + glyph-table transforms that plain PHP can't do without a system binary) — an admin wanting broad browser fallback just uploads the same font in more than one format, producing several `@font-face` rules with identical `font-family`/weight/style that the browser picks between.
+
+The Font list's "Bulk import" toolbar action (`Controller\Management\FontBulkImportController`) uploads several font files at once instead of one row at a time: each file's name/weight/style is guessed from its filename (`Service\FontFilenameParser`, following the `FamilyName-WeightStyle.ext` convention used by Google Fonts and most foundries, eg. `OpenSans-Bold.ttf`), then goes through the same `Font`/`FontCssListener` pipeline as a single upload. A wrong guess is fixed afterward on that row's own edit screen.
+
+`Service\FontService` is this bundle's own `FontProviderInterface` implementation, so every uploaded family shows up in the `FontChoiceType` select above — which is what the `theme-font-family-*` configs of `c975l/site-bundle` are rendered with. Selected fonts can be exported the same way as any other content: an "Export selection" batch action, `site-role-admin`-gated, producing a zip re-importable via ConfigBundle's **Import content** screen (`Management\FontImportProvider`). `Management\FontExportProvider` also plugs Fonts into ConfigBundle's **Export sync (everything)** dashboard shortcut.
+
+`Twig\FontPreloadExtension` exposes **`font_preloads()`**: the admin-uploaded font files the current theme actually uses (2 at most, `path` + MIME `type` each), to emit as `<link rel="preload">` in the `<head>` — the `@font-face` rules live inside the compiled stylesheet, so without it the browser only discovers the files after downloading *and* parsing it. Cached, refreshed on any font or theme-font change.
 
 ---
 
@@ -636,11 +665,11 @@ $builder->add('captcha', CaptchaType::class, [
 
 A separate, email-safe (table layout, inline CSS, no JS) block-based system for composing email bodies (`Entity\EmailTemplate`/`EmailBlock`, tables `site_email_template`/`site_email_block`) - deliberately **not** a reuse of the page `Block` system: an email-safe vocabulary has to stay closed (no arbitrary markup can survive Outlook/Gmail), so `EmailBlock::$type` resolves through a plain `match()` in `Service\EmailTemplateRenderer` instead of a DI-tagged registry, and every kind shares one flat set of columns (same principle as `FormField`, see its own docblock) instead of a per-kind dynamic sub-form.
 
-- **`Controller\Management\EmailTemplateCrudController`** (menu entry under SiteBundle's "Email templates", if installed) lists/creates/edits every `EmailTemplate`. Its `blocks` collection is a drag-and-drop `CollectionField` of `Form\EmailBlockType` entries, same sortable mechanism as `Form`'s own `fields`. A "Preview" action renders the compiled HTML in a new tab (admin-only, placeholder variables left untouched). Both this index and `FormCrudController`'s own show a GDPR guidance note linking straight to the `site-form-gdpr` config row, via `Twig\ConfigLinkExtension`'s **`config_edit_url(slug)`** function (falls back to the plain Config list when that slug hasn't been loaded into DB yet).
+- **`Controller\Management\EmailTemplateCrudController`** (the "Email templates" menu entry this bundle contributes) lists/creates/edits every `EmailTemplate`. Its `blocks` collection is a drag-and-drop `CollectionField` of `Form\EmailBlockType` entries, same sortable mechanism as `Form`'s own `fields`. A "Preview" action renders the compiled HTML in a new tab (admin-only, placeholder variables left untouched). Both this index and `FormCrudController`'s own show a GDPR guidance note linking straight to the `site-form-gdpr` config row, via `Twig\ConfigLinkExtension`'s **`config_edit_url(slug)`** function (falls back to the plain Config list when that slug hasn't been loaded into DB yet).
 - **Block kinds** (`EmailBlock::TYPE_*`): `heading` (h1/h2), `text` (plain text, split into `<p>` paragraphs on blank lines - deliberately not rich/Trix text, keeps the email-safe HTML fully server-controlled), `button` (bulletproof table-based button), `image` (a plain URL for now, not a Media picker - see below), `divider`, `spacer`, and `fields_table` (renders a `variables['fields']` label ⇒ value array as a table, e.g. a `Form` submission's answers - see `SendEmailFormAction` below).
 - **`image`'s url** can be just a path (e.g. `/medias/logo.webp`) instead of a full absolute URL - `EmailTemplateRenderer` resolves it against the single `site-url` ConfigBundle parameter (same one `fullLayout.html.twig` itself already builds the logo's `src` from), so the domain lives in one place instead of being hand-typed into every image block and going stale the day it changes. An already-absolute url (`http(s)://`, an external/CDN image) is left as-is.
 - **Placeholders**: any `heading`/`content`/`label`/`url`/`alt` field may contain a `{{ variable_name }}` token, resolved by `EmailTemplateRenderer` via a literal `strtr()` against the `$variables` array passed to `render()`/`renderBody()` - **not** real Twig evaluation (an `EmailBlock`'s text is admin-authored data, not code; handing it to `Twig::createTemplate()` would open a server-side template injection hole).
-- **`EmailTemplateRenderer::render()`** returns one standalone `<html>` document. When an `EmailLayoutProviderInterface` is registered (e.g. SiteBundle, bringing its own branded header/footer), the compiled body is wrapped through it - so the admin **preview** action and a real `EmailTemplate`-based send (e.g. `SendEmailFormAction`) both render the same way a recipient would actually see it. With no provider registered (e.g. an app with no SiteBundle), it falls back to its own bare, un-branded shell (`templates/emails/blocks/_wrapper.html.twig`). Implement `Contract\EmailLayoutProviderInterface::wrap(string $bodyHtml): string` (auto-discovered the same way as `BlockFixtureProviderInterface`, no tag needed - see `Registry\EmailLayoutRegistry`/`DependencyInjection\Compiler\EmailLayoutProviderPass`) to provide your own; only the first registered provider is used. **`renderBody()`** returns just the compiled `<table>` fragment, with no document/layout of its own - meant to be embedded inside a real `.html.twig` template via the **`email_template_body(name, variables)`** Twig function (`Twig\EmailTemplateExtension`, `is_safe: html`), the same way for every email that's actually sent. This is how every real send-path email shares one layout: `c975l/site-bundle`'s scaffold `registration/confirmation_email.html.twig`/`reset_password/email.html.twig` and its bundle-owned `templates/emails/contact_notification.html.twig` all plainly `{% extends "@c975LSite/emails/layout.html.twig" %}` and call `email_template_body('account_validation'|'password_reset'|'contact_notification', {...})` in their `content` block - an explicit, ordinary Twig `extends`, not a bundle-template-override. `email_template_body()` silently renders nothing if `name` isn't found, so a missing/renamed `EmailTemplate` never breaks the email it's embedded into.
+- **`EmailTemplateRenderer::render()`** returns one standalone `<html>` document. When an `EmailLayoutProviderInterface` is registered (e.g. SiteBundle, bringing its own branded header/footer), the compiled body is wrapped through it - so the admin **preview** action and a real `EmailTemplate`-based send (e.g. `SendEmailFormAction`) both render the same way a recipient would actually see it. With no provider registered (e.g. an app with no SiteBundle), it falls back to its own bare, un-branded shell (`templates/emails/blocks/_wrapper.html.twig`). Implement `Contract\EmailLayoutProviderInterface::wrap(string $bodyHtml): string` (auto-discovered the same way as `BlockFixtureProviderInterface`, no tag needed - see `Registry\EmailLayoutRegistry`/`DependencyInjection\Compiler\EmailLayoutProviderPass`) to provide your own; only the first registered provider is used. **`renderBody()`** returns just the compiled `<table>` fragment, with no document/layout of its own - meant to be embedded inside a real `.html.twig` template via the **`email_template_body(name, variables)`** Twig function (`Twig\EmailTemplateExtension`, `is_safe: html`), the same way for every email that's actually sent. **`renderNamed(name, variables)`** is `render()` for a template designated by its name rather than held as an entity - what a bundle sending a transactional email has, instead of a per-app Twig path it would have to know. It returns `null` when no template carries that name, so the caller decides what a missing template means; `c975l/config-bundle` uses it for the `account_validation`/`password_reset` emails, which therefore have no `.html.twig` file of their own at all. A template that does want a file around it - `c975l/site-bundle`'s `templates/emails/contact_notification.html.twig` - plainly `{% extends "@c975LSite/emails/layout.html.twig" %}` and calls `email_template_body('contact_notification', {...})` in its `content` block, an explicit, ordinary Twig `extends`, not a bundle-template-override. `email_template_body()` silently renders nothing if `name` isn't found, so a missing/renamed `EmailTemplate` never breaks the email it's embedded into.
 - **The shared email stylesheet** (`sass/emails.scss` and its `sass/emails/` partials, compiled to `public/css/emails.min.css`) is the base every c975L bundle sending mail renders against - six of them do (Ui, Site, Shop, Payment, Social, Crowdfunding) and only one can count on SiteBundle being installed, which is why it lives here. It is deliberately not `styles.scss` with overrides: an email is laid out in tables and read by clients that ignore most of a page stylesheet, so the page's layout layer (sections, flats, grids, flex) has no counterpart in it. Reach it from your own email layout through the **`@c975LUiCss`** Twig namespace, before adding your branding:
 
 ```twig
@@ -743,7 +772,7 @@ Both keys are the consuming app's own, entered as `sensitive` config (encrypted 
 
 `BlockExtension::renderBlock()` (called by the `render_block()` Twig function, itself used by the `<twig:c975LUi:Blocks:Block>` component) caches each block's rendered HTML in `cache.app` (via `TagAwareCacheInterface`), keyed by `block_render_{id}_{locale}` with an infinite TTL - no re-render, no DB round trip for the block's own data, on every subsequent hit across every visitor. `BlockCacheInvalidationListener` (`src/Listener/`) invalidates it automatically: it listens to `postUpdate`/`preRemove` on both `Block` and `Media` (an image/audio/video swap doesn't touch the parent `Block`'s own fields, so it has to be watched too) and calls `$cache->invalidateTags(['block_{id}'])`. This fires for *any* origin - EasyAdmin, an importer, another bundle - since it's a Doctrine listener on the entity class itself, not tied to a specific controller.
 
-Locale is part of the cache key because a kind's template can render different content per `app.request.locale` even though `Block::$data` didn't change (e.g. SiteBundle's `legal_model`, which includes a different legal-text template per locale).
+Locale is part of the cache key because a kind's template can render different content per `app.request.locale` even though `Block::$data` didn't change (e.g. `legal_model`, which includes a different legal-text template per locale).
 
 The key carries **no template version**, so a release that only changes a Twig template invalidates nothing on its own — every page would keep serving the markup built by the previous release. `BlockCacheClearer` (`src/Service/`) covers that: it implements Symfony's `CacheClearerInterface`, so `bin/console cache:clear` invalidates the whole `blocks_all` tag. Any deployment already running `cache:clear` therefore picks up template changes with no step of its own, and nothing needs to be repeated in each site's deploy script. The dashboard's own "clear cache" shortcut (`BlockShortcutController`) stays available for clearing it by hand between deployments.
 
@@ -777,6 +806,162 @@ class ArticlesSliderCacheTagProvider implements BlockCacheTagProviderInterface
 SiteBundle's own `ArticlesSliderCacheTagProvider` is a real example: `articles_slider` resolves another `Page`'s own `article` blocks live at render time, so its listener tags the render with `articles_slider_{pageId}` and invalidates that tag whenever one of that page's articles changes.
 
 ---
+
+## Legal models
+
+Pre-built legal templates are available for **France**, in French (`fr`), English (`en`) and Spanish (`es`).
+They live here rather than in SiteBundle so a site running Ui with a satellite bundle (shop, book…) and no page
+management at all still has its terms of sales and its privacy policy.
+Templates live under `templates/models/{country}/{model}.{locale}.html.twig` — the country is a directory,
+the locale a filename suffix:
+
+| Model | Path |
+| --- | --- |
+| Cookies policy | `@c975LUi/models/france/cookies.{locale}.html.twig` |
+| Copyright | `@c975LUi/models/france/copyright.{locale}.html.twig` |
+| Legal notice | `@c975LUi/models/france/legal-notice.{locale}.html.twig` |
+| Privacy policy | `@c975LUi/models/france/privacy-policy.{locale}.html.twig` |
+| Terms of sales | `@c975LUi/models/france/terms-of-sales.{locale}.html.twig` |
+| Terms of use | `@c975LUi/models/france/terms-of-use.{locale}.html.twig` |
+
+They pull the site's own data from ConfigBundle as they render, and a few sections only appear once the
+matching config value is filled in — `site-other-cookies` and `site-other-copyright` add their own section,
+`site-owner` the "Owner" one, and the Matomo opt-out link in the cookies policy needs `site-matomo-url`.
+
+**Feel free to contribute translations or add templates for other countries.**
+
+### Rendering a model
+
+The normal way is the `legal_model` block: pick a model and, optionally, a "latest update" date from the
+back-office. SiteBundle's `c975l:site:pages:import-defaults` already creates one such page per model, on a site running it. The block renders the model for the *current request locale*, so a page
+served in `en` picks `legal-notice.en.html.twig` on its own — no per-locale page needed.
+
+The four models that carry a date (legal notice, privacy policy, terms of sales, terms of use) display the
+**later** of two values: the model's own revision date, hardcoded at the top of the template, and the
+`latestUpdate` set on the block. A model revised upstream therefore can never display a date older than its
+own content. The cookies policy and the copyright notice display no date at all.
+
+To render a model with no block anywhere — an app holding no page management, or one serving its terms of
+sales from its own controller — `legal_model_html()` renders the same finished document, `%config%` markers
+resolved and all:
+
+```twig
+{{ legal_model_html('france/terms-of-sales', '2026-01-01') }}
+```
+
+Its third and fourth arguments are the customization delta and the locale, both optional: passing none renders
+the bundle's own text in the request's locale. There is no customization screen behind that call - a delta
+handed to it is the caller's own.
+
+The plain `{% include %}` works too, for a page wanting the template and nothing else:
+
+```twig
+{% extends 'layout.html.twig' %}
+
+{% trans_default_domain 'ui' %}
+{% set title = 'label.terms_of_sales'|trans %}
+
+{% block content %}
+    {% include '@c975LUi/models/france/terms-of-sales.fr.html.twig' with {latestUpdate: '2026-01-01'} %}
+{% endblock %}
+```
+
+Always pass `latestUpdate` there, even as `null` — the four dated models read it unguarded, so omitting it
+entirely throws under `strict_variables`. Passing `null` falls back on the model's own revision date.
+
+The models are plain markup, with no Twig `{% block %}` of their own: there is nothing to `{% embed %}`. To
+rework a model wholesale as a developer, override the template in the app
+(`templates/bundles/c975LUiBundle/models/france/…`) — Symfony's usual bundle template override. To let the
+site's own owner adjust it from the back-office, see below.
+
+### Customizing a model, unit by unit
+
+**Management → Legal models** (in the sidebar's collapsed "Advanced" submenu) lists every `legal_model` block
+of the site and opens a screen where the site's owner can, section by section:
+
+- **hide** a section that doesn't apply (a showcase site with no terms of sales),
+- **rewrite** its wording, and retitle it,
+- **move** it, by dragging its card,
+- **add** sections of their own, at the top level or nested under one of the model's, and remove them again.
+
+Its first column says where each document sits, which only the bundle owning the block can tell: implement
+`BlockLocationProviderInterface` (SiteBundle does, for its pages) and the column fills in, along with the
+public url the drift check below tests. Nothing implementing it means a screen listing the documents with no
+location, which is exactly what an app with no page management gets.
+
+The screen shows the bundle's own text, editable in place - not empty "override me" fields. Each card has a
+"back to the bundle's text" button, which is also how a section is put back on the updatable path. Reordering
+reuses the same drag and drop as the block collections (`ea-sortable`), scoped per level: a sub-section is
+dragged inside its own section and never climbs out of it.
+
+The screen is also reachable from the page itself: browsing a legal page while logged in as `site-role-editor`,
+UiBundle's hover **Edit** button — which points at the block's row in the Page form for any other block — opens
+this screen instead (`LegalModelEditUrl`, called by whichever bundle owns the block - SiteBundle's `SiteBlockEditUrlProvider` for a Page), and hovering one section of the document rather than the
+document as a whole lands straight on that section's own card (`focusUnit`, read by the `legal-model`
+controller). The per-section URLs are built client-side by the `legal-model-edit` controller, from the one URL
+the block's wrapper carries: a rendered `legal_model` block is cached and served to every visitor alike, so no
+editor-only URL is ever rendered into it.
+
+What makes this different from copying the model into the page: **only what was explicitly changed is
+stored**. What comes back from the editor is compared against the bundle's own wording, so opening the screen
+and saving it untouched stores nothing at all. The comparison ignores the `class`/`style` attributes, because
+Trix re-serializes whatever it is handed and drops them - taking that for a rewrite would freeze every section
+of the document on its first save. The delta lives in the block's `data` under `customization`, keyed by the `data-legal-id` each
+`<section>` and `<h3>` of the templates carries — identifiers slugified from the English headings, so they
+mean the same thing in all three locales and a delta survives a locale switch. Everything untouched keeps
+being rendered from the bundle's own template, which means **it keeps arriving with every `composer update`**.
+A block with no delta at all skips the DOM pass entirely and renders exactly what it rendered before this
+existed — nothing to migrate, on any existing site.
+
+The granularity is the `<section>` and, inside it, the `<h3>`: a section's own body is what sits between its
+heading and its first sub-section, so rewriting a section leaves its sub-sections alone, and vice versa.
+
+### `%config%` markers
+
+The models read the site's own data through `legal_var()` rather than `config()`: `site-name`, `site-owner`,
+`site-director`, `site-director-location`, `site-contact-email`, `site-contact-phone`, `site-producer`,
+`site-hosting-provider` and `site-dpo` - all nine declared by ConfigBundle, so they are there whatever else the
+site installs. It resolves on the spot, so a model rendered any way at all — a
+`legal_model` block, or the plain `{% include %}` shown above — reads as finished text, with nothing to
+post-process.
+
+The customization screen is the one place that sees them as `%site-name%` markers instead, and what the client
+writes there is stored carrying those markers. `LegalModelRenderer` substitutes whatever is left over the
+finished document.
+
+That's what keeps a rewritten section alive: a client who retypes the liability clause can still write
+`%site-name%` in it, and renaming the site later still updates their text. Only those nine slugs substitute;
+anything else stays inert text, so no back-office field can read a config value the models never showed. The
+markers are listed on the customization screen itself.
+
+Note that a `legal_model` block is cached per (block, locale) like any other. Saving the customization flushes
+it; changing a ConfigBundle value does not — use the "Clear the block cache" dashboard shortcut, exactly as
+for every other block that reads the configuration.
+
+### When the bundle reworks a text you had rewritten
+
+Each override stores a fingerprint of the bundle wording it replaced. When a later release rewords that same
+passage, the `legal_model` health check provider reports it on ConfigBundle's **Health check** page — as an
+`ok` row, never a warning: it feeds neither the dashboard alerts nor the digest email. The customization
+screen then shows the new wording next to the section, and nothing else happens. Merging two versions of a
+legal text is not something a bundle gets to decide: the page is the site owner's responsibility, and the
+update is offered, never applied.
+
+A site that never customized anything reports nothing at all — it simply keeps receiving the updates.
+
+---
+
+## Generic Twig filters and functions
+
+Five general-purpose helpers, none of them tied to blocks or media - they live here rather than in SiteBundle (where they started) so an app running on ConfigBundle + UiBundle alone still has them.
+
+| Helper | Role |
+| --- | --- |
+| `\|nl2br` | Overrides Twig's native filter to emit `<br>` rather than its XHTML `<br />`, which the W3C validator flags. Keeps the native `pre_escape`, so `{{ value\|nl2br }}` still escapes its input and only an explicit `{{ value\|raw\|nl2br }}` passes markup through |
+| `\|linkify` | Turns bare `http(s)://` URLs in a plain string into real `<a target="_blank" rel="noopener noreferrer">` links. Splits the raw string first and escapes each part separately, so a quote right after a URL still stops the match; trailing sentence punctuation stays out of the href |
+| `route_exists(name)` | Whether a route of that name is declared - what a shared template needs before linking to a route only some installs declare |
+| `template_exists(path)` | Whether `templates/<path>` exists in the app, for an override a bundle offers but doesn't ship |
+| `asset_exists(path)` | Whether `public/<path>` or `assets/<path>` exists, same idea for an optional image/stylesheet |
 
 ## Reusable Twig components
 
@@ -969,16 +1154,16 @@ never changes with consent state, so it stays cacheable.
 It has **no composer dependency on any consent-banner bundle**. Instead it reacts to an optional,
 documented contract, checked at connect time:
 
-- a `[data-controller~="cookieConsent"]` element present somewhere on the page (if absent, it fails
+- a `[data-controller~="cookie-consent"]` (or `cookieConsent`) element present somewhere on the page (if absent, it fails
   open and renders the iframe immediately — a site with no consent banner isn't blocked by this),
 - a `window.CookieConsent` global exposing [`vanilla-cookieconsent`](https://cookieconsent.orestbida.com/)
   v3's API (`acceptedCategory('content')`, `acceptCategory('content')`),
 - its `cc:onConsent`/`cc:onChange` DOM events, so the placeholder upgrades to the real iframe live,
   without a page reload, as soon as consent is given.
 
-`c975l/site-bundle`'s `<twig:c975LSite:General:CookieConsent/>` is a ready-made provider of this
-contract (see its own README) — but any consuming app's own banner satisfying the same contract
-works just as well.
+This bundle's own `<twig:c975LUi:Cookie:Consent />` (see [Cookie banner](#cookie-banner)) is a
+ready-made provider of that contract — but any consuming app's own banner satisfying it works just
+as well.
 
 ---
 
@@ -1029,6 +1214,12 @@ Media::ROLE_LOGO;             // 'logo'
 
 That rasterizing goes through `ext-imagick`, a Composer **suggest** rather than a requirement. Without the extension the two roles simply keep accepting raster images only: `Validator\FixedIconFormat` refuses the SVG at upload time, listing the formats it does accept, rather than storing markup under an `.ico` name no browser can read. The same refusal covers an SVG ImageMagick can't render (its own internal renderer, used when the librsvg delegate isn't installed, chokes on a fair share of real-world markup) — so an icon is never silently broken, it is either converted or turned down.
 
+### SVG text that isn't vectorized
+
+An SVG served through an `<img>` is rendered as an isolated document: it reaches neither the page's `@font-face` rules nor its stylesheet. So an `<svg>` still drawing its text with a `<text>` element needs that font on the **visitor's own machine**, and falls back to whatever the renderer picks otherwise — the same story server-side, where `SvgRasterizer` flattens an icon role with the fonts the server happens to carry. Self-hosting the font on the site changes nothing; converting the text to paths (Inkscape: *Path > Object to Path*) is the fix.
+
+It is the one defect an author cannot see, their own machine being the one that has the font, so `Service\SvgTextDetector` looks for it and `Listener\SvgTextWarningListener` flashes a warning on the upload itself — hooked on `vich_uploader.post_upload` rather than on a CRUD controller, so a site graphic, a block's media and a gallery photo are all covered at once. A **flash, not a validation error**: the file is perfectly storable, it just won't look the same to everyone. The detector decides on content and never on the name (an icon role's stored file already carries the role's `.ico`/`.png` while still holding the uploaded markup), names the families each `<text>` depends on, and is what the `svg-fonts` health check reuses to report the files already in place.
+
 Retrieve it anywhere in Twig with the `site_media()` function, which returns `null` if none was uploaded yet:
 
 ```twig
@@ -1037,6 +1228,44 @@ Retrieve it anywhere in Twig with the `site_media()` function, which returns `nu
     <link rel="icon" href="{{ vich_uploader_asset(favicon) }}">
 {% endif %}
 ```
+
+---
+
+## Site graphics
+
+The favicon, Apple touch icon, logo, default Open Graph image and error-image pool are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
+
+The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, linking to the same pre-filled form. The buttons disappear once the four singleton graphics exist — `error-image` is a pool, added through the plain "new" action.
+
+`SiteGraphicExportProvider`/`SiteGraphicImportProvider` plug them into ConfigBundle's **Export sync (everything)** shortcut and **Import content** screen: a singleton role matches by its own role on import, while the repeatable `error-image` pool is replaced wholesale (no natural key of its own to match against). `SiteGraphicMediaUsageProvider` is what makes the Media library say "this one is the favicon".
+
+`Form\OgImageType` embeds a single `Media` upload, for an entity of your own carrying a share image.
+
+---
+
+## Theme
+
+The site's colors, fonts and light/dark mode are admin-editable config keys of the `theme` group, declared here because the `--c975l-*` custom properties they compile to are the ones this bundle's own CSS reads: `theme-color-primary`, `theme-color-secondary`, their two `-dark-mode` counterparts, `theme-color-background`, `theme-color-text`, `theme-font-family-title`/`-body`/`-accent` and `theme-mode` (`auto`/`light`/`dark`).
+
+`Listener\ThemeVariablesCssListener` compiles them into `public/bundles/build/site-theme.css` on every change — a Doctrine listener on the `Config` entity, and a `CacheWarmerInterface` too, so a fresh file exists after a deploy even without an admin re-saving anything. The mapping is mechanical (`theme-color-primary` → `--c975l-color-primary`), so a new key needs no lookup table; a bare custom font name gets a generic fallback appended (`sans-serif`/`monospace`) in case the `@font-face` fails to load.
+
+`Service\ThemeVariablesStylesheetProvider` contributes that file at **priority `0`**: after every bundle's compiled defaults (tagged 100) and before an app's own `assets/styles/themes/*.css` (auto-tagged at -100). That is what makes the admin's values win over the bundles and lose to a token the site took back.
+
+`theme_variables_css()` returns the same compiled CSS as a string, for inlining where a `<link>` isn't possible — emails, chiefly.
+
+---
+
+## Cookie banner
+
+```twig
+<twig:c975LUi:Cookie:Consent />
+```
+
+Wraps [`vanilla-cookieconsent`](https://cookieconsent.orestbida.com/) v3 (MIT), served from this bundle (`public/js/cookieconsent.umd.js` + `public/css/cookieconsent.css`) rather than from a CDN: a third party must not receive the visitor's IP before any consent is given, and it keeps the CSP free of an external `script-src`/`style-src` host. Its Stimulus controller is registered lazily, so it only loads on a page that actually renders the component.
+
+**The component carries its own guard**: it renders nothing unless `site-enable-cookie-consent` is on, so a layout includes it unconditionally. `url-cookies-policy` (optional) links the banner to your cookies page.
+
+Deliberately binary — one non-essential category (`content`), two buttons (accept/reject), no preferences panel to build or maintain. That single category is what the [`video_iframe`](#video-blocks) block waits on before creating its real iframe.
 
 ---
 
@@ -1294,6 +1523,31 @@ public function configureAssets(): Assets
 ```
 
 Unlike the JS admin mechanism (`BundleScriptAdminProviderInterface`), no AssetMapper/importmap entry is needed — `addCssFile()` resolves plain public paths via Symfony's asset package, same as `getStylesheets()` above.
+
+---
+
+## Shared building blocks for satellite bundles
+
+A set of small, dependency-free helpers every c975L bundle attaching blocks or uploading files needs. They live here rather than in SiteBundle, where most of them started as traits: a trait shared across packages is only ever analysed against the callers living in the same package, so a bundle copying it got no help from static analysis - and four satellite bundles (shop, book, gallery, crowdfunding) needed them without needing SiteBundle at all.
+
+| Helper | Role |
+| --- | --- |
+| `Service\UniqueSlug::build($slugger, $base, $collides)` | Normalizes a raw slug and appends `-2`, `-3`… until `$collides()` reports the candidate free. The scope uniqueness is checked against stays the caller's business (site-wide for a page, per-group for a collection item); only the suffixing is fixed here |
+| `Service\BlockFocusUrl::build($adminUrlGenerator, $crudFqcn, $entityId, $block)` | The EasyAdmin edit URL of a block's owner, optionally jumping straight to that block's own row (`focusBlock`) |
+| `Service\BlockMoveRowAttrBuilder::build($ownerType, $ownerId)` | The `row_attr` array `ea-sortable.js` reads to drag a saved block into a container - URL, CSRF token and failure label included. A service, not a trait: no caller has to know the route id. Returns `[]` for an unsaved entity, so the sortable simply doesn't arm itself |
+| `Service\BuildFileWriter::write($projectDir, $filename, $contents)` | The one way a listener drops a generated stylesheet into `public/bundles/build/`. Written to a temp file then `rename()`d, so a request reading it mid-rewrite never gets half a stylesheet |
+| `Form\VichImageOptions::default($maxSize, $required)` | The five Vich image-upload options (`allow_delete`, `download_uri`, `asset_helper`, the `File` size constraint…), for both an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` |
+| `Listener\AbstractBlockCacheInvalidationListener` | The Doctrine lifecycle wiring of a listener reacting to one block kind changing - `postPersist`/`postUpdate`/`preRemove` all delegate to the subclass's `invalidate()`, which only has to say which kind it filters on and which cache tag it drops |
+
+### Exporting and importing blocks
+
+**`Management\BlockDataExporter`**/**`Management\BlockDataImporter`** are the shared Block/Media serialization behind every content export carrying a block collection (SiteBundle's `Page`, its `Menu`…), so the recursive walk through a container kind's slots is written once rather than per entity. A block nested in a `flex_columns` round-trips like a top-level one, medias and files included.
+
+A content export carries the blocks alone, never the `Form`/`EmailTemplate` a `form`-kind block points at. Implement **`Contract\FormBlockDependencyProviderInterface::ensureFormBlockDependenciesExist(array $blockData)`** (auto-discovered, no tag needed - see `FormBlockDependencyProviderPass`) to seed yours on the way in; the importer asks every registered provider in turn, and a bundle owning none of the imported form names simply does nothing.
+
+### Forcing a download
+
+**`Controller\DownloadController`** (route `download_file`, `/download/{file}`) adds a `Content-Disposition: attachment` on top of a file the web server already serves from `public/` - what a "download this PDF" link needs. It is deliberately **not** merged with `Service\PrivateFileResponseFactory`, which serves the digital items bought through ShopBundle/CrowdfundingBundle from outside `public/` and keeps its own access checks.
 
 ---
 

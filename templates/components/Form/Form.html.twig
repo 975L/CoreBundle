@@ -21,6 +21,14 @@
         <div>
             <input type="submit" name="submit" title="{{ 'label.send'|trans }}" class="btn btn-primary" value="{{ 'label.send'|trans }}">
         </div>
+        {# Admin-defined, stored on the Form itself and not on the Block embedding it, so they survive the standalone re-render a failed submission goes through - see Form::getLinks() #}
+        {% if uiForm.links is not empty %}
+            <p class="mt-2">
+                {% for link in uiForm.links %}
+                    <a href="{{ link.url }}">{{ link.label }}</a>{{ not loop.last ? ' · ' }}
+                {% endfor %}
+            </p>
+        {% endif %}
         {% if hasRequired %}
             <p class="text-muted">
                 {{ 'text.form_required_note'|trans }}

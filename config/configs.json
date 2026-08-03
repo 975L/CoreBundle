@@ -130,5 +130,181 @@
         "group": "security",
         "severity": "warning",
         "description": "description.recaptcha3_score_threshold"
+    },
+    {
+        "label": "label.site_form_delay",
+        "slug": "site-form-delay",
+        "sensitive": false,
+        "restricted": true,
+        "value": 3,
+        "kind": "text",
+        "group": "form",
+        "severity": null,
+        "description": "description.site_form_delay"
+    },
+    {
+        "label": "label.site_form_gdpr",
+        "slug": "site-form-gdpr",
+        "sensitive": false,
+        "restricted": true,
+        "value": "true",
+        "kind": "bool",
+        "group": "form",
+        "severity": "warning",
+        "description": "description.site_form_gdpr"
+    },
+    {
+        "label": "label.theme_color_primary",
+        "slug": "theme-color-primary",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_color_primary"
+    },
+    {
+        "label": "label.theme_color_secondary",
+        "slug": "theme-color-secondary",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_color_secondary"
+    },
+    {
+        "label": "label.theme_color_primary_dark_mode",
+        "slug": "theme-color-primary-dark-mode",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_color_primary_dark_mode"
+    },
+    {
+        "label": "label.theme_color_secondary_dark_mode",
+        "slug": "theme-color-secondary-dark-mode",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_color_secondary_dark_mode"
+    },
+    {
+        "label": "label.theme_color_background",
+        "slug": "theme-color-background",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_color_background"
+    },
+    {
+        "label": "label.theme_color_text",
+        "slug": "theme-color-text",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_color_text"
+    },
+    {
+        "label": "label.theme_font_family_title",
+        "slug": "theme-font-family-title",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "font",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_font_family_title"
+    },
+    {
+        "label": "label.theme_font_family_body",
+        "slug": "theme-font-family-body",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "font",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_font_family_body"
+    },
+    {
+        "label": "label.theme_font_family_accent",
+        "slug": "theme-font-family-accent",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "font",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_font_family_accent"
+    },
+    {
+        "label": "label.theme_mode",
+        "slug": "theme-mode",
+        "sensitive": false,
+        "restricted": false,
+        "value": "auto",
+        "kind": "text",
+        "group": "theme",
+        "severity": null,
+        "description": "description.theme_mode"
+    },
+    {
+        "label": "label.url_cookies_policy",
+        "slug": "url-cookies-policy",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "legal",
+        "severity": "warning",
+        "description": "description.url_cookies_policy"
+    },
+    {
+        "label": "label.site_other_copyright",
+        "slug": "site-other-copyright",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "html",
+        "group": "legal",
+        "severity": null,
+        "description": "description.site_other_copyright"
+    },
+    {
+        "label": "label.site_other_cookies",
+        "slug": "site-other-cookies",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "html",
+        "group": "legal",
+        "severity": null,
+        "description": "description.site_other_cookies"
+    },
+    {
+        "label": "label.site_enable_cookie_consent",
+        "slug": "site-enable-cookie-consent",
+        "sensitive": false,
+        "restricted": true,
+        "value": "true",
+        "kind": "bool",
+        "group": "analytics",
+        "severity": null,
+        "description": "description.site_enable_cookie_consent"
     }
 ]

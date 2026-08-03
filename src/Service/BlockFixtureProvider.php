@@ -275,6 +275,12 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'ctaUrl' => 'https://example.com/contact',
                 ],
             ],
+            'legal_model' => [
+                '' => [
+                    'model' => 'france/legal-notice',
+                    'latestUpdate' => '2026-01-01',
+                ],
+            ],
         ];
     }
 

@@ -1,0 +1,22 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+// Transparent to the parent's layout (as .block-editable), only hosts the legal-model-edit controller
+.legal-editable {
+    display: contents;
+}
+
+// The measure a legal document's body copy is laid out on, matching what SiteBundle gives .text and
+// .site-article - a document rendered on a site holding no page management at all still reads correctly
+.legal div {
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: 1em auto;
+    // Reserves room above the anchor target so a fixed/sticky header doesn't cover it after an in-page jump
+    scroll-margin-top: var(--scroll-offset, 80px);
+    text-align: justify;
+}

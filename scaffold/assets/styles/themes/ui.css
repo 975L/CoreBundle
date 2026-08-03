@@ -1,19 +1,8 @@
-/* This site's UiBundle tokens, in the c975L theme format: everything ships commented out at the bundle's
-   own default, so the active lines below are, at a glance, exactly what this design decides. The format and
-   how it layers are documented in c975l/site-bundle's readme ("Themes"), the defaults themselves in this
-   bundle's sass/_tokens.scss.
-
-   One file per bundle, each holding what that bundle reads: this one travels with UiBundle, which every
-   other c975L bundle sits on, so a site running ShopBundle or BookBundle without SiteBundle still gets its
-   whole retunable surface. Shapes, buttons, forms, alerts and surfaces are here rather than in site.css for
-   that reason - UiBundle reads them all, SiteBundle merely reads some of them too.
-
-   Colors and fonts are deliberately absent (--primary, --secondary, --background, --text, --font-family-*):
-   admin-editable from the backoffice and compiled into bundles/build/site-theme.css. Overriding them here
-   would take the site's palette away from its admin. So are the per-variant section tokens (--section-text,
-   --section-accent, --section-border, --section-overlay): UiBundle mixes them out of each flat's own
-   background, inside the .section--bg-* rules, and one value in :root would collapse the three variants
-   into a single look. Retune --section-bg-* below instead. */
+/* This site's UiBundle tokens: every line ships commented out at its default, so what stays active is what the design decides */
+/* Format in c975l/site-bundle's readme ("Themes"), defaults in this bundle's sass/_tokens.scss */
+/* One file per bundle - this one travels with UiBundle, so a site without SiteBundle keeps its whole surface */
+/* Colors and fonts are absent on purpose: admin-editable, compiled into bundles/build/site-theme.css */
+/* So are --section-text/-accent/-border/-overlay, mixed per flat in .section--bg-* - retune --section-bg-* below */
 :root {
     /* --radius-btn: 5px; */
     /* --radius-card: 10px; */
@@ -33,6 +22,10 @@
        and comparisons sharing that column. Well under --body-max-width, which frames the page and never
        carries a line of text. Set it in "ch" rather than "px" for a measure that follows the body font */
     /* --reading-max-width: min(75ch, 90vw); */
+
+    /* Gap left above an anchor target, so a sticky navbar doesn't cover it - match the navbar's height.
+       Read by both bundles (a legal document's sections here, an article and a "text" block in SiteBundle) */
+    /* --scroll-offset: 80px; */
 
     /* The room kept above and below a slider and a comparison, the two block kinds laying out their own
        vertical rhythm rather than taking the one the section-level blocks share */
