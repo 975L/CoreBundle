@@ -21,6 +21,7 @@ class ConfigAlertProvider implements AlertProviderInterface
     public function __construct(
         private readonly ConfigRepository $configRepository,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly ConfigLabelResolver $configLabelResolver,
     ) {
     }
 
@@ -30,7 +31,8 @@ class ConfigAlertProvider implements AlertProviderInterface
 
         foreach ($this->configRepository->findRequiringAttention() as $config) {
             $alerts[] = [
-                'label' => $config->getLabelTranslationKey(),
+                // Resolved here rather than left as a key for the template: the label of an app's own config is often stored in clear, and the template's trans() has no way of falling back to it
+                'label' => $this->configLabelResolver->resolve($config),
                 'description' => $config->getDescription(),
                 'severity' => $config->getSeverity(),
                 'url' => $this->adminUrlGenerator

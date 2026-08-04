@@ -20,9 +20,11 @@ interface MenuProviderInterface
     public function getMenuSection(): array;
 
     /**
+     * 'controller' is usually a CRUD controller, whose index action the entry opens. It can also be a plain controller carrying an #[AdminRoute] method, for a screen that belongs in a section next to the CRUD items it reads from rather than in the "links" section below (e.g. an overview of what a CRUD lists) - such a controller needs a method named index() for the entry to resolve with no further work, or an explicit 'action' naming the method to open. Anything outside the dashboard (a public page, another app) is a link, not a menu - see getLinks() below.
+     *
      * 'tier' is optional, defaults to the provider's own getMenuSection() 'tier' (itself defaulting to 'essential') - set it on an individual item to move just that one to the collapsed "Avancé" submenu while its section keeps its other items at the top level (e.g. a bundle keeping "Pages" essential but tucking away "Redirections"). 'description' is optional too, a one-line "what is this for" sentence (same $translation_domain) reused as-is from the item's own page rather than a separate onboarding-only string - every item gets a step in the onboarding tour (see OnboardingStepBuilder) regardless, one without a description simply shows its label with no explanatory text.
      *
-     * @return array<string, array{controller: class-string, label: string, translation_domain: string, icon: string, tier?: 'essential'|'advanced', description?: string}> slug => menu item
+     * @return array<string, array{controller: class-string, label: string, translation_domain: string, icon: string, action?: string, tier?: 'essential'|'advanced', description?: string}> slug => menu item
      */
     public function getMenus(): array;
 

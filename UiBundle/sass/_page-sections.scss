@@ -91,6 +91,13 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding-top: var(--section-space-tight, #{$section-space-tight});
 }
 
+// A bare run of "card" blocks is a page-level row too (Blocks.html.twig wraps it itself), and the one that
+// carried no step: its cards drop their own margin inside the row, so it sat flush against the block above -
+// visibly so under a colored flat, whose background then ran straight into the first card
+.blocks > .cards {
+    padding-top: var(--section-space, #{$section-space});
+}
+
 // Only on a flat: the step above a block belongs to the block itself, but a colored band paints down to its
 // own edge, and without a bottom padding of its own the text would sit flush against that edge
 .text-section.section--bg-muted,

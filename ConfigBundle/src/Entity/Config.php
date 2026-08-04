@@ -96,9 +96,10 @@ class Config
     #[ORM\Column]
     private ?int $id = null;
 
+    // Defaulted rather than left uninitialized: the label is read back to be displayed (see ConfigLabelResolver), and a config built in code without one would otherwise fatal on access instead of simply having nothing to show - NotBlank still rejects an empty one on the paths that create configs for real
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
-    private string $label;
+    private string $label = '';
 
     #[ORM\Column(name: 'slug', length: 100, unique: true)]
     #[Assert\NotBlank]

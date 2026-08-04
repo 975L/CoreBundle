@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\ConfigAlertProvider;
 use c975L\ConfigBundle\Management\ConfigExportProvider;
+use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ConfigSqlExporter;
@@ -130,6 +131,7 @@ class ConfigCrudControllerTest extends TestCase
             $contentExporter ?? $this->createStub(ContentExporter::class),
             $configExportProvider ?? new ConfigExportProvider($connection, $security),
             $this->createStub(ConfigAlertProvider::class),
+            new ConfigLabelResolver($translator),
             $configRepository ?? $this->createStub(ConfigRepository::class),
             $adminUrlGenerator ?? $this->createAdminUrlGenerator(),
             $fontRegistry ?? new FontRegistry(),
@@ -489,8 +491,8 @@ class ConfigCrudControllerTest extends TestCase
 
         $connection = $this->createStub(Connection::class);
         $connection->method('fetchAllAssociative')->willReturn([
-            ['slug' => 'ai-help-llm-enabled', 'description' => 'description.ai_help_llm_enabled'],
-            ['slug' => 'site-name', 'description' => null],
+            ['slug' => 'ai-help-llm-enabled', 'label' => 'stored label', 'description' => 'description.ai_help_llm_enabled'],
+            ['slug' => 'site-name', 'label' => 'stored label', 'description' => null],
         ]);
 
         $translator = $this->createStub(TranslatorInterface::class);
@@ -528,6 +530,7 @@ class ConfigCrudControllerTest extends TestCase
             $this->createStub(ContentExporter::class),
             new ConfigExportProvider($connection, $security),
             $this->createStub(ConfigAlertProvider::class),
+            new ConfigLabelResolver($translator),
             $this->createStub(ConfigRepository::class),
             $this->createAdminUrlGenerator(),
             new FontRegistry(),

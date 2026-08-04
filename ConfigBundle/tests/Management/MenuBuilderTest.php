@@ -13,6 +13,8 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\MenuProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Menu\MenuItemInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -140,6 +142,23 @@ class MenuBuilderTest extends TestCase
         $itemDto = $items[1]->getAsDto();
         $this->assertSame('label.config', $itemDto->getLabel()->getMessage());
         $this->assertSame('ROLE_SUPER_ADMIN', $itemDto->getPermission());
+    }
+
+    // EasyAdmin only falls back to "index" on its own for a CRUD controller, so an entry pointing at a plain #[AdminRoute] screen would resolve to no route at all if the action were left unset (see MenuProviderInterface::getMenus())
+    public function testGetMenuItemsNamesTheActionEachEntryOpens(): void
+    {
+        $section = ['label' => 'label.management', 'translation_domain' => 'site'];
+        $provider = $this->createProvider($section, [
+            'config' => ['controller' => 'ConfigCrudController', 'label' => 'label.config', 'translation_domain' => 'config', 'icon' => 'fa fa-cog'],
+            'overview' => ['controller' => 'OverviewController', 'label' => 'label.overview', 'translation_domain' => 'config', 'icon' => 'fa fa-list', 'action' => 'show'],
+        ]);
+        $builder = new MenuBuilder([$provider], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        // [0] is the section header, its two entries following in alphabetical order
+        $items = iterator_to_array($builder->getMenuItems(), false);
+
+        $this->assertSame(Action::INDEX, $items[1]->getAsDto()->getRouteParameters()[EA::CRUD_ACTION]);
+        $this->assertSame('show', $items[2]->getAsDto()->getRouteParameters()[EA::CRUD_ACTION]);
     }
 
     public function testGetMenuItemsOnlyAppendsALinksSectionWhenLinksExist(): void

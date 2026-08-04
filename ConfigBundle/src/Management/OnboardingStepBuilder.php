@@ -36,7 +36,8 @@ class OnboardingStepBuilder
         foreach ($this->menuBuilder->getOrderedMenus() as $menu) {
             $url = $this->adminUrlGenerator->unsetAll()
                 ->setController($menu['controller'])
-                ->setAction(Action::INDEX)
+                // Same action resolution as MenuBuilder::getMenuItems(), and for the same reason: a step is highlighted by matching its url against the sidebar's own href, so an item naming its action has to be read the same way here
+                ->setAction($menu['action'] ?? Action::INDEX)
                 ->generateUrl();
 
             $steps[] = $this->buildStep($url, $menu);

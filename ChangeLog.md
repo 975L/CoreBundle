@@ -1,5 +1,25 @@
 # ChangeLog
 
+## v1.2.2
+
+A config shows the label its own site wrote, not a translation key
+
+### ConfigBundle
+
+- Added `ConfigLabelResolver`, falling back to the label stored by the import when a config's `label.xxx` key has no `site_config` translation (04/08/2026)
+- The dashboard alert, the Configuration list, its edit page and its cross-group search all displayed that raw key instead (04/08/2026)
+- `Config::$label` defaults to an empty string rather than staying uninitialized, no longer fataling when read back for display (04/08/2026)
+- A menu entry can point at a plain controller carrying an `#[AdminRoute]`, not only at a CRUD one (04/08/2026)
+- `MenuBuilder` names the action each entry opens (`index` unless the entry sets its own `action`) instead of leaving EasyAdmin to guess it (04/08/2026)
+- `OnboardingStepBuilder` reads that same `action`, the tour highlighting a step by matching its url against the sidebar's own href (04/08/2026)
+- `ManagementTargetsTestCase::testEveryMenuEntryPointsToACrudController()` becomes `testEveryMenuEntryPointsToAResolvableController()`, accepting either shape (04/08/2026)
+- `ManagementTargetsTestCaseTest` runs that case over the entry shapes no bundle here declares yet (04/08/2026)
+
+### UiBundle
+
+- The `.blocks > .cards` row, synthesized around consecutive `card` blocks, carries the same `--section-space` step as every other page-level block instead of sitting flush against the one above it (04/08/2026)
+- `SectionRhythmTest` locks that step, the row being the one page-level block the reset names no kind for (04/08/2026)
+
 ## v1.2.1
 
 The deployment workflow answers to the same suite as the code

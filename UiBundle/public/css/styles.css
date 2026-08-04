@@ -1224,6 +1224,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   padding-top: var(--section-space-tight, clamp(24px, 4vw, 48px));
 }
 
+.blocks > .cards {
+  padding-top: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
 .text-section.section--bg-muted,
 .text-section.section--bg-primary,
 .text-section.section--bg-dark {

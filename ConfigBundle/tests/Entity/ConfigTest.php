@@ -25,6 +25,12 @@ class ConfigTest extends TestCase
         $this->assertSame('label.site_maintenance_hash', $config->getLabelTranslationKey());
     }
 
+    // A config built in code carries no label yet, and is read back for display (see ConfigLabelResolver) before anything has set one - an uninitialized property would fatal there instead of simply having nothing to show
+    public function testGetLabelReturnsAnEmptyStringOnAFreshConfig(): void
+    {
+        $this->assertSame('', (new Config())->getLabel());
+    }
+
     public function testSetValueCoercesBooleansToTrueOrFalseStrings(): void
     {
         $config = new Config();

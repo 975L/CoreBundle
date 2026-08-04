@@ -188,6 +188,8 @@ For `json`, `value` is the raw JSON-encoded string (e.g. `"[\"ROLE_ADMIN\",\"ROL
 Set `sensitive: true` for any entry that holds secrets (API keys, passwords, etc.) — the value is encrypted at rest and masked in the admin list.
 Set `restricted: true` on top of that for secrets shared across the whole install rather than per-site data — see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin).
 
+`label` and `description` are displayed through the `site_config` translation domain, but neither has to be a key. The label is looked up as `label.<slug with underscores>` (so `console-digest-mailto` → `label.console_digest_mailto`) and the description as whatever string it holds (`description.xxx` by convention); when the lookup finds nothing, the text written in the json is displayed as-is. A bundle shipping configs for several locales therefore keeps its `translations/site_config.*.xlf`, while an application declaring its own configs can simply write both in clear.
+
 `group` is optional and clusters entries on the "pick a group" screen (see below). It must be one of the fixed values in `Config::GROUPS`, each backed by a `label.group_*` translation key:
 
 | Value | Meaning |
@@ -695,6 +697,20 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 **Alphabetical ordering:** within a section, menu items are always sorted alphabetically by their translated label.
 
 **Advanced tier:** both `getMenuSection()` and each entry in `getMenus()` accept an optional `'tier' => 'advanced'` key (default `'essential'`). Items opting into it are pulled out of their section and collected into one collapsed "Advanced" submenu at the bottom of the sidebar, instead of staying under their own section header — set it on `getMenuSection()` to move every item of that provider's section, or on an individual entry in `getMenus()` to move just that one (its section keeps its other items at the top level). Several providers commonly share one section (e.g. Config/Site/UiBundle all merge into "management"), so an item's own `tier` never drags along another provider's items sharing that same section.
+
+**Non-CRUD screens:** `controller` is usually a CRUD controller, whose index action the entry opens. It can also be a plain controller carrying an `#[AdminRoute]` method — for a screen belonging in a section next to the CRUD items it reads from (an overview of what a CRUD lists, say) rather than in the "Links" section below them. Name its action with a `index()` method, or point at another one explicitly:
+
+```php
+'overview' => [
+    'controller' => SiteOverviewController::class,
+    'action' => 'show',
+    'label' => 'label.overview',
+    'translation_domain' => 'my_bundle',
+    'icon' => 'fas fa-list-check',
+],
+```
+
+Anything outside the dashboard (a public page, another app) is a link, not a menu — see below.
 
 **Links section:** `getLinks()` exposes links to plain routes (e.g. a public page), each entry shaped like:
 

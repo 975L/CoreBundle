@@ -17,6 +17,7 @@ use c975L\ConfigBundle\Management\AlertBuilder;
 use c975L\ConfigBundle\Management\ConfigAlertProvider;
 use c975L\ConfigBundle\Management\ConfigExportProvider;
 use c975L\ConfigBundle\Management\ConfigImportProvider;
+use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -77,6 +78,7 @@ class ConfigCrudController extends AbstractCrudController
         private readonly ContentExporter $contentExporter,
         private readonly ConfigExportProvider $configExportProvider,
         private readonly ConfigAlertProvider $configAlertProvider,
+        private readonly ConfigLabelResolver $configLabelResolver,
         private readonly ConfigRepository $configRepository,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly FontRegistry $fontRegistry,
@@ -168,17 +170,17 @@ class ConfigCrudController extends AbstractCrudController
         ];
     }
 
-    // Label uses a 'site_config' translation key derived from the slug (label.xxx), mirroring description's key format; trans() falls back to the raw key unchanged if not translated. formatValue() only runs on index/detail (EasyAdmin skips it for disabled form fields), so the edit page's disabled input needs the translated text injected via form data instead
+    // Label uses a 'site_config' translation key derived from the slug (label.xxx), mirroring description's key format, and falls back to the stored label when untranslated - see ConfigLabelResolver. formatValue() only runs on index/detail (EasyAdmin skips it for disabled form fields), so the edit page's disabled input needs the resolved text injected via form data instead
     private function labelField(bool $isEdit, ?Config $config): TextField
     {
         $field = TextField::new('label')
             ->setLabel(t('label.label', [], 'config'))
             ->setFormTypeOption('disabled', true)
-            ->formatValue(fn (string $label, Config $rowConfig): string => $this->translator->trans($rowConfig->getLabelTranslationKey(), [], 'site_config'));
+            ->formatValue(fn (string $label, Config $rowConfig): string => $this->configLabelResolver->resolve($rowConfig));
 
         if ($isEdit && null !== $config) {
             $field->setFormTypeOptions([
-                'data' => $this->translator->trans($config->getLabelTranslationKey(), [], 'site_config'),
+                'data' => $this->configLabelResolver->resolve($config),
             ]);
         }
 
@@ -517,12 +519,13 @@ class ConfigCrudController extends AbstractCrudController
     private function slugsMatchingTranslatedQuery(string $query): array
     {
         $needle = mb_strtolower($query);
-        $rows = $this->connection->fetchAllAssociative('SELECT `slug`, `description` FROM `site_config`');
+        // Label read along with the rest: the search has to match what the screen displays, which for an app's own config is the stored label rather than its untranslated key
+        $rows = $this->connection->fetchAllAssociative('SELECT `slug`, `label`, `description` FROM `site_config`');
 
         $matching = [];
         foreach ($rows as $row) {
             $slug = $row['slug'];
-            $label = $this->translator->trans((new Config())->setSlug($slug)->getLabelTranslationKey(), [], 'site_config');
+            $label = $this->configLabelResolver->resolve((new Config())->setSlug($slug)->setLabel((string) $row['label']));
             $description = $row['description'] ? $this->translator->trans($row['description'], [], 'site_config') : '';
 
             if (

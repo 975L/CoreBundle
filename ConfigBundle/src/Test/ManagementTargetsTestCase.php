@@ -110,10 +110,21 @@ abstract class ManagementTargetsTestCase extends TestCase
         $this->assertTargetsExist($this->collect()['linkRoutes'], $this->declaredRouteNames(), 'menu link');
     }
 
-    // A menu entry names a CRUD controller class, which EasyAdmin resolves to its index route
-    public function testEveryMenuEntryPointsToACrudController(): void
+    // A menu entry names a CRUD controller class, which EasyAdmin resolves to its index route on its own, or a plain controller whose action carries an #[AdminRoute] - the entry renders as a link to nowhere otherwise, the sidebar falling back to the dashboard's own url (see MenuProviderInterface::getMenus())
+    public function testEveryMenuEntryPointsToAResolvableController(): void
     {
-        $this->assertCrudControllers($this->collect()['menuControllers'], 'menu entry');
+        $unresolvable = [];
+
+        foreach ($this->collect()['menus'] as $menu) {
+            $controller = (string) ($menu['controller'] ?? '');
+            $action = $menu['action'] ?? 'index';
+
+            if (!is_subclass_of($controller, AbstractCrudController::class) && !$this->declaresAdminRoute($controller, $action)) {
+                $unresolvable[] = $controller . '::' . $action;
+            }
+        }
+
+        $this->assertSame([], array_values(array_unique($unresolvable)), sprintf('Each of these menu entries names an action EasyAdmin cannot resolve to a route, its class being neither a CRUD controller nor one carrying an #[AdminRoute] there: %s', implode(', ', $unresolvable)));
     }
 
     // A dashboard tile posts to its route (or opens it, for a GET one) - a renamed route only shows up as a 404 on click
@@ -157,11 +168,12 @@ abstract class ManagementTargetsTestCase extends TestCase
     // Walks each provider once, by the interfaces it implements - a bundle contributing only a menu simply leaves the other lists empty
     private function collect(): array
     {
-        $targets = ['menuControllers' => [], 'linkRoutes' => [], 'shortcutRoutes' => [], 'linkableRoutes' => []];
+        $targets = ['menus' => [], 'linkRoutes' => [], 'shortcutRoutes' => [], 'linkableRoutes' => []];
 
         foreach ($this->managementProviders() as $provider) {
             if ($provider instanceof MenuProviderInterface) {
-                $targets['menuControllers'] = [...$targets['menuControllers'], ...array_column($provider->getMenus(), 'controller')];
+                // The whole item rather than just its 'controller': an entry pointing at a plain #[AdminRoute] screen names the action to check it against (see testEveryMenuEntryPointsToAResolvableController)
+                $targets['menus'] = [...$targets['menus'], ...array_values($provider->getMenus())];
                 // A link carrying its own literal 'url' (the site's own address, a known deployment) names no route at all - see MenuProviderInterface::getLinks()
                 $targets['linkRoutes'] = [...$targets['linkRoutes'], ...array_column(array_filter($provider->getLinks(), static fn ($link) => !isset($link['url'])), 'name')];
             }
@@ -229,6 +241,20 @@ abstract class ManagementTargetsTestCase extends TestCase
         }
 
         return array_values(array_unique($names));
+    }
+
+    // Whether a plain (non-CRUD) controller declares the action a menu entry names: an #[AdminRoute] on the method itself, or the class-level one EasyAdmin turns into a route of its own when the controller is invokable
+    private function declaresAdminRoute(string $controller, string $action): bool
+    {
+        if (!class_exists($controller) || !method_exists($controller, $action)) {
+            return false;
+        }
+
+        if ([] !== (new \ReflectionMethod($controller, $action))->getAttributes(AdminRoute::class)) {
+            return true;
+        }
+
+        return '__invoke' === $action && [] !== (new \ReflectionClass($controller))->getAttributes(AdminRoute::class);
     }
 
     // The name a class-level route attribute contributes as a prefix, '' when it carries none (the usual case) - both attributes spell it as a public "name" property

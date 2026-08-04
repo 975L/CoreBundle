@@ -66,6 +66,16 @@
                 "en": "The content quality check states what a page is missing in plain words again, instead of showing the internal code of the sentence it should have displayed",
                 "fr": "Le contrôle de qualité du contenu indique de nouveau en clair ce qui manque à une page, au lieu d'afficher le code interne de la phrase qu'il aurait dû afficher",
                 "es": "El control de calidad del contenido indica de nuevo en claro lo que le falta a una página, en lugar de mostrar el código interno de la frase que debería haber mostrado"
+            },
+            {
+                "en": "The configuration screens and the dashboard alerts show the name written for each setting, instead of the technical code that stood in for it on a site providing its own settings",
+                "fr": "Les écrans de configuration et les alertes du tableau de bord affichent le nom écrit pour chaque réglage, au lieu du code technique qui le remplaçait sur un site fournissant ses propres réglages",
+                "es": "Las pantallas de configuración y las alertas del panel muestran el nombre escrito para cada ajuste, en lugar del código técnico que lo sustituía en un sitio que aporta sus propios ajustes"
+            },
+            {
+                "en": "A row of cards is spaced from the block above it like every other part of a page, instead of being stuck against it right under a colored band",
+                "fr": "Une rangée de cartes est espacée du bloc qui la précède comme toute autre partie d'une page, au lieu d'être collée contre lui juste sous une bande colorée",
+                "es": "Una fila de tarjetas queda separada del bloque anterior como cualquier otra parte de una página, en lugar de quedar pegada contra él justo debajo de una banda de color"
             }
         ]
     },

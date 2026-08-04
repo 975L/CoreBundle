@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Menu\MenuItemInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -45,7 +46,10 @@ class MenuBuilder
         foreach ($this->getGroupedMenus() as $section) {
             $essentialItems = [];
             foreach ($section['items'] as $menu) {
-                $item = MenuItem::linkTo($menu['controller'], new TranslatableMessage($menu['label'], [], $menu['translation_domain']), $menu['icon'])->setPermission($this->configService->get('site-role-admin'));
+                // Action set explicitly rather than left to EasyAdmin: it only defaults to "index" on its own for a CRUD controller, and a section is also where a plain #[AdminRoute] screen belongs (a read-only overview of what the CRUD below it lists, say). Naming it here makes the url resolvable for both, and matches the action OnboardingStepBuilder already generates its own urls with - the tour highlights a step by its href, so the two have to spell it the same way
+                $item = MenuItem::linkTo($menu['controller'], new TranslatableMessage($menu['label'], [], $menu['translation_domain']), $menu['icon'])
+                    ->setAction($menu['action'] ?? Action::INDEX)
+                    ->setPermission($this->configService->get('site-role-admin'));
 
                 if ('advanced' === self::tier($menu, $section)) {
                     $advancedItems[] = $item;

@@ -78,6 +78,40 @@ class OnboardingStepBuilderTest extends TestCase
         );
     }
 
+    // A step is highlighted by matching its url against the sidebar's own href (see assets/js/onboarding-tour.js), so an entry naming its action has to be read the same way here as in MenuBuilder
+    public function testGetStepsHonorsTheActionAMenuNames(): void
+    {
+        $adminUrlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->expects($this->once())->method('setAction')->with('show')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/overview');
+
+        $menuBuilder = $this->createMenuBuilder(
+            ['overview' => [
+                'controller' => 'OverviewController',
+                'label' => 'label.overview',
+                'translation_domain' => 'my_bundle',
+                'icon' => 'fas fa-list',
+                'action' => 'show',
+            ]],
+            [],
+        );
+
+        $builder = new OnboardingStepBuilder(
+            $menuBuilder,
+            $adminUrlGenerator,
+            $this->createStub(UrlGeneratorInterface::class),
+            $this->createTranslator(),
+            $this->createSecurity(),
+        );
+
+        $this->assertSame(
+            [['url' => '/management/overview', 'label' => 'label.overview', 'description' => '']],
+            $builder->getSteps(),
+        );
+    }
+
     public function testGetStepsBuildsAStepForADescribedMenu(): void
     {
         $adminUrlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);

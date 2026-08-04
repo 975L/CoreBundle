@@ -88,6 +88,20 @@ class SectionRhythmTest extends TestCase
         ));
     }
 
+    /*
+     * The row of cards Blocks.html.twig synthesizes around consecutive "card" blocks is a page-level block with
+     * no kind of its own for the reset to name, and its cards drop their margin inside it - so the rhythm reaches
+     * it through this rule alone, without which it sits flush against the block above.
+     */
+    public function testTheBareRowOfCardsOwnsAStep(): void
+    {
+        $this->assertMatchesRegularExpression(
+            $this->declarationPattern('.blocks>.cards', 'padding-top', [self::STEP]),
+            $this->normalize('styles.min.css'),
+            'A bare run of "card" blocks declares no step of its own: it sits flush against the block above it.'
+        );
+    }
+
     // A value written out is a value no theme can reach: the rhythm has to stay retunable from one token
     public function testTheStepIsNeverWrittenOutBesideTheToken(): void
     {
