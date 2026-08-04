@@ -11,22 +11,28 @@
 namespace c975L\UiBundle\Controller\Management;
 
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\ImageClassChoiceType;
 use c975L\UiBundle\Form\MediaUsagesType;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
-use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\File as FileConstraint;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -43,9 +49,11 @@ class MediaCrudController extends AbstractCrudController
     private const MAX_FILE_SIZE = '100M';
 
     public function __construct(
-        private readonly MediaUsageRegistry $mediaUsageRegistry,
         private readonly TranslatorInterface $translator,
         private readonly MediaDimensionsFiller $mediaDimensionsFiller,
+        private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly ConfigServiceInterface $configService,
+        private readonly Security $security,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
     ) {
@@ -54,6 +62,18 @@ class MediaCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Media::class;
+    }
+
+    // Hands the gallery template the edit url of each role-carrying row (see media_index.html.twig) - those are read-only here, so their thumbnail has to open the screen that does edit them, SiteGraphicCrudController
+    public function index(AdminContext $context): KeyValueStore | Response
+    {
+        $responseParameters = parent::index($context);
+
+        if ($responseParameters instanceof KeyValueStore) {
+            $responseParameters->set('site_graphic_urls', $this->siteGraphicUrls($responseParameters->get('entities')));
+        }
+
+        return $responseParameters;
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
@@ -96,14 +116,11 @@ class MediaCrudController extends AbstractCrudController
             ->addCssClass('btn btn-secondary');
 
         return $actions
-            // Detail isn't added to PAGE_INDEX by default - needed here as the fallback default action (entity.defaultActionUrl in media_index.html.twig) for role-set rows, since those hide Edit/Delete below and would otherwise have no action to link their gallery thumbnail to. Kept, unlike other CRUDs' redundant view page - it's the only click target a read-only role-set row has
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
             ->add(Crud::PAGE_NEW, $cancelAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
             ->setPermission(Action::INDEX, self::ROLE_NEEDED)
             ->setPermission(Action::EDIT, self::ROLE_NEEDED)
             ->setPermission(Action::DELETE, self::ROLE_NEEDED)
-            ->setPermission(Action::DETAIL, self::ROLE_NEEDED)
             // Site-wide graphics (role set) are only editable from SiteGraphicCrudController
             ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action->displayIf(static fn (Media $media): bool => null === $media->getRole()),
@@ -113,27 +130,22 @@ class MediaCrudController extends AbstractCrudController
                 $action->displayIf(static fn (Media $media): bool => null === $media->getRole()),
                 $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
             ))
-            ->update(Crud::PAGE_INDEX, Action::DETAIL, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
-                $action,
-                $this->translator->trans('action.detail', [], 'EasyAdminBundle'),
-            ))
             // Creating a Media with no Block (e.g. for a bundle showcase) is reserved to super admins - regular admins keep adding media the normal way, through a Block's own form
             ->setPermission(Action::NEW, 'ROLE_SUPER_ADMIN')
+            // Same reason as in SiteGraphicCrudController: detail adds no information beyond what edit already shows, and it doesn't even display the file itself (only forms do). Every gallery thumbnail now opens a form - Edit here, or SiteGraphicCrudController's own for a role-carrying row (see index())
+            ->disable(Action::DETAIL)
         ;
     }
 
     public function configureFields(string $pageName): iterable
     {
         return [
-            // Shown on Detail (role-set rows, whose Edit action is hidden below), Edit and New - the index is a flat thumbnail gallery (see media_index.html.twig), not a table of fields, so this stays off it either way. Detail uses formatValue()+templatePath (EasyAdmin's normal read-only rendering); New/Edit need setFormType() instead - formatValue()/templatePath are never applied to New/Edit forms, which otherwise fall back to rendering the raw "id" as an editable number input. On New, MediaUsagesType simply has nothing to show yet (no id).
+            // Forms only: the index is a flat thumbnail gallery (see media_index.html.twig), not a table of fields, and Detail is disabled above. setFormType() is what renders it - EasyAdmin's own formatValue()/templatePath pair is never applied to New/Edit forms, which otherwise fall back to rendering the raw "id" as an editable number input. On New, MediaUsagesType simply has nothing to show yet (no id).
             Field::new('id')
                 ->setLabel(t('label.used_in', [], 'ui'))
-                ->formatValue(fn ($value, Media $media): array => $this->mediaUsageRegistry
-                    ->getUsages([$media])[$media->getId()] ?? [])
-                ->setTemplatePath('@c975LUi/management/media_usages.html.twig')
                 ->setFormType(MediaUsagesType::class)
                 ->setRequired(false)
-                ->hideOnIndex(),
+                ->onlyOnForms(),
 
             Field::new('file')
                 ->setLabel(t('label.file', [], 'ui'))
@@ -208,5 +220,31 @@ class MediaCrudController extends AbstractCrudController
                 ->setLabel(t('label.rights_reserved', [], 'ui'))
                 ->hideOnIndex(),
         ];
+    }
+
+    // The url editing each role-carrying media (favicon, logo, error-image...) in SiteGraphicCrudController, keyed by media id - empty on a page holding only block medias, which keep their own Edit action here
+    private function siteGraphicUrls(EntityCollection $entities): array
+    {
+        $urls = [];
+
+        // The very permission SiteGraphicCrudController gates itself with: without it the link would only ever land on a 403, so the thumbnail is left with no url at all and stops being a link (see media_index.html.twig)
+        if (!$this->security->isGranted((string) $this->configService->get('site-role-editor'))) {
+            return $urls;
+        }
+
+        foreach ($entities as $entity) {
+            $media = $entity->getInstance();
+
+            if ($media instanceof Media && null !== $media->getRole()) {
+                $urls[$media->getId()] = $this->adminUrlGenerator
+                    ->unsetAll()
+                    ->setController(SiteGraphicCrudController::class)
+                    ->setAction(Action::EDIT)
+                    ->setEntityId($media->getId())
+                    ->generateUrl();
+            }
+        }
+
+        return $urls;
     }
 }

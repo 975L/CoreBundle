@@ -61,6 +61,11 @@
                 "en": "The subject of the email a form sends you is written in the site's language, instead of arriving in English above a message in yours",
                 "fr": "L'objet du courriel que vous envoie un formulaire est écrit dans la langue du site, au lieu d'arriver en anglais au-dessus d'un message dans la vôtre",
                 "es": "El asunto del correo que le envía un formulario está escrito en el idioma del sitio, en lugar de llegar en inglés encima de un mensaje en el suyo"
+            },
+            {
+                "en": "The content quality check states what a page is missing in plain words again, instead of showing the internal code of the sentence it should have displayed",
+                "fr": "Le contrôle de qualité du contenu indique de nouveau en clair ce qui manque à une page, au lieu d'afficher le code interne de la phrase qu'il aurait dû afficher",
+                "es": "El control de calidad del contenido indica de nuevo en claro lo que le falta a una página, en lugar de mostrar el código interno de la frase que debería haber mostrado"
             }
         ]
     },

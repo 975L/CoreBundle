@@ -114,6 +114,8 @@ php bin/console c975l:config:user-create
 
 The first copies every installed c975L bundle's `scaffold/` into the app — `App\Entity\User` and its repository, `App\Security\UserChecker`, the security/registration/reset-password controllers and their templates, `App\Scheduler\MaintenanceSchedule`, the `validators` catalog. A target already identical to the source is left untouched, so re-running it is a no-op; `--path=src/Scheduler` restricts a run to one path when propagating a single upgraded file across sites.
 
+Among the tests it installs, `tests/Deploy/DeployWorkflowTest.php` is the one looking outside PHP: it reads every `.github/workflows/*.yml` and resolves each `bin/console <command>` they call against the commands this site actually has — through the console's own resolution, so an abbreviation like `doctrine:migration:migrate` passes. A command a bundle renamed, or one written against a version `composer.lock` does not carry yet, then fails the suite instead of stopping a deployment halfway through. It also fails on any `vendor/` package installed as a symlink — a Composer `path` repository — which would have the whole suite answer for a working copy the deployment never sees.
+
 **A file you customized is never overwritten.** The command records the hash of everything it delivers in `.c975l-scaffold.json` — commit it, like `symfony.lock` — which is what lets a later run tell the two cases apart, indistinguishable by content alone:
 
 | The target is | What happens |
@@ -300,6 +302,14 @@ The bundle registers a management dashboard at `/management`. Navigate to **Conf
 Theme CSS variables (colors, fonts, light/dark mode, declared by a bundle like any other entry) sit under the `theme` group — reachable the same way, via **Config**'s "pick a group" screen, at the same `site-role-admin` permission as every other group (no dedicated page, no separate permission tier).
 
 Any entry with a `severity` and an empty `value` shows up as a colored alert (danger/warning/info) right on the `/management` home page, each linking directly to its edit form.
+
+### Rows per page
+
+Every list of the back-office — this bundle's, and every other c975L bundle's — shows **20 rows** and offers **20 · 50 · 100** as links under its paginator. EasyAdmin only knows a fixed page size (`Crud::setPaginatorPageSize()`), so the choice is read from a `pageSize` query parameter by `c975L\UiBundle\Management\PaginatorPageSize` and applied in `DashboardController::configureCrud()`, the single Crud config every CRUD controller inherits from. Nothing to wire in your own controllers: they get it for free, media library included (a gallery of thumbnails is exactly where 20 runs short).
+
+The value is validated against that list of three before it reaches a `LIMIT`, and a link goes back to page 1 (page 7 of a 20-row list is out of range once 100 are shown). Sorting and filtering are kept: EasyAdmin rebuilds each admin URL from the current query parameters, which carries the choice along on its own.
+
+To offer other sizes, override `@c975LUi/management/paginator.html.twig` in your app **and** the `PaginatorPageSize` service — the template only offers what the service accepts. A single CRUD controller wanting a different default keeps setting its own `->setPaginatorPageSize(...)`, which then wins over the admin's choice for that list.
 
 ### JS assets loaded on the dashboard
 

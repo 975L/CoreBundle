@@ -21,11 +21,14 @@ use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
 use c975L\UiBundle\Registry\ScriptAdminRegistry;
 use c975L\UiBundle\Registry\StylesheetManagementRegistry;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DashboardControllerTest extends TestCase
@@ -40,7 +43,7 @@ class DashboardControllerTest extends TestCase
         }
     }
 
-    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = ''): DashboardController
+    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = '', ?PaginatorPageSize $paginatorPageSize = null): DashboardController
     {
         $guidedProjectMountBuilder = $this->createStub(GuidedProjectMountBuilder::class);
         $guidedProjectMountBuilder->method('getHtml')->willReturn($guidedProjectMount);
@@ -73,6 +76,7 @@ class DashboardControllerTest extends TestCase
             $this->createStub(ScriptAdminRegistry::class),
             $stylesheetManagementRegistry,
             $this->createStub(FormThemeRegistry::class),
+            $paginatorPageSize ?? new PaginatorPageSize(new RequestStack()),
             $this->createStub(TranslatorInterface::class),
             $packages,
             $debug,
@@ -216,5 +220,32 @@ class DashboardControllerTest extends TestCase
         $controller = $this->createController(false, [], ['site-made-by-logo' => 'images/logo-975l.svg']);
 
         $this->assertNull($this->getMadeByLogoSrc($controller));
+    }
+
+    // Every CRUD of every c975L bundle inherits its page size from here - EasyAdmin's own default (20) applies as long as no admin picked another one
+    public function testConfigureCrudAppliesTheDefaultPageSize(): void
+    {
+        $crudDto = $this->createController(false, [])->configureCrud()->getAsDto();
+
+        $this->assertSame(PaginatorPageSize::DEFAULT_SIZE, $crudDto->getPaginator()->getPageSize());
+    }
+
+    // The size an admin clicked in the paginator, read from the url by PaginatorPageSize
+    public function testConfigureCrudAppliesThePageSizeAskedForInTheRequest(): void
+    {
+        $requestStack = new RequestStack();
+        $requestStack->push(new Request(['pageSize' => '100']));
+
+        $crudDto = $this->createController(false, [], [], '', new PaginatorPageSize($requestStack))->configureCrud()->getAsDto();
+
+        $this->assertSame(100, $crudDto->getPaginator()->getPageSize());
+    }
+
+    // The sizes are offered by the overridden paginator, which is what makes the choice reachable at all - and it has to reach every CRUD, hence its place here rather than in each controller
+    public function testConfigureCrudOverridesThePaginatorForEveryCrud(): void
+    {
+        $crudDto = $this->createController(false, [])->configureCrud()->getAsDto();
+
+        $this->assertSame('@c975LUi/management/paginator.html.twig', $crudDto->getOverriddenTemplates()['crud/paginator'] ?? null);
     }
 }

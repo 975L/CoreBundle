@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-04",
+        "description": [
+            {
+                "en": "Every dashboard list now lets you choose how many rows it shows, 20, 50 or 100, from the links under the pagination",
+                "fr": "Chaque liste du tableau de bord permet désormais de choisir le nombre de lignes affichées, 20, 50 ou 100, depuis les liens sous la pagination",
+                "es": "Cada lista del panel de control permite ahora elegir cuántas filas muestra, 20, 50 o 100, desde los enlaces bajo la paginación"
+            },
+            {
+                "en": "A thumbnail of the media library now opens the screen that actually edits it: a site-wide graphic (favicon, logo, sharing image) goes to its own form instead of a page showing neither the image nor a single action",
+                "fr": "Une vignette de la bibliothèque de médias ouvre désormais l'écran qui la modifie réellement : une image commune au site (favicon, logo, image de partage) mène à son propre formulaire, au lieu d'une page n'affichant ni l'image ni la moindre action",
+                "es": "Una miniatura de la biblioteca de medios abre ahora la pantalla que realmente la edita: una imagen común del sitio (favicon, logo, imagen de compartición) lleva a su propio formulario, en lugar de una página que no muestra ni la imagen ni acción alguna"
+            }
+        ]
+    },
+    {
         "date": "2026-08-03",
         "description": [
             {

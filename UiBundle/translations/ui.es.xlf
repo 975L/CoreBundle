@@ -1618,6 +1618,10 @@
                 <source>label.items</source>
                 <target>Elementos</target>
             </trans-unit>
+            <trans-unit id="alVSX7m">
+                <source>label.items_per_page</source>
+                <target>Elementos por página:</target>
+            </trans-unit>
             <trans-unit id="NdoELG0">
                 <source>label.kind</source>
                 <target>Tipo</target>

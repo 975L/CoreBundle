@@ -193,7 +193,7 @@ class ContentQualityAnalyzer
                 [] !== $details['brokenLinks'] => HealthCheckResult::STATUS_ERROR,
                 default => HealthCheckResult::STATUS_WARNING,
             },
-            'summary' => $issues ? implode(' · ', $issues) : $this->translator->trans('label.health_check_content_quality_ok', [], 'site'),
+            'summary' => $issues ? implode(' · ', $issues) : $this->translator->trans('label.health_check_content_quality_ok', [], 'config'),
             // hasDescription/hasH1 kept alongside imagesWithoutAlt/brokenLinks (already needed for the summary/status above) so PageHealthCheckAdviceBuilder can tell issues apart without re-parsing the translated summary text. The title/description verdicts are persisted already resolved ('short'/'long'/...) rather than as raw lengths alone, so the advice builder doesn't have to re-apply the thresholds - it only needs the length to state it back to the user
             'details' => $details,
             'editUrl' => $entry['editUrl'],
@@ -225,7 +225,7 @@ class ContentQualityAnalyzer
 
         // No status at all: either the analysis request itself failed (its message says why), or the existence HEAD never completed
         return null !== $entry['error']
-            ? HealthCheckErrorRow::build($this->translator, 'site', $entry['url'], $entry['label'], 'label.health_check_content_quality_call_failed', $entry['error'], $entry['editUrl'])
+            ? HealthCheckErrorRow::build($this->translator, 'config', $entry['url'], $entry['label'], 'label.health_check_content_quality_call_failed', $entry['error'], $entry['editUrl'])
             : $this->failedRow($entry, HealthCheckResult::STATUS_ERROR, 'label.health_check_url_unreachable', []);
     }
 
@@ -235,7 +235,7 @@ class ContentQualityAnalyzer
             'url' => $entry['url'],
             'label' => $entry['label'],
             'status' => $status,
-            'summary' => $this->translator->trans($translationId, $parameters, 'site'),
+            'summary' => $this->translator->trans($translationId, $parameters, 'config'),
             'details' => [],
             'editUrl' => $entry['editUrl'],
         ];
@@ -272,7 +272,7 @@ class ContentQualityAnalyzer
 
         return null === $redirect
             ? []
-            : [$this->translator->trans('label.health_check_content_quality_redirects', ['%count%' => $redirect['count'], '%url%' => $redirect['finalUrl']], 'site')];
+            : [$this->translator->trans('label.health_check_content_quality_redirects', ['%count%' => $redirect['count'], '%url%' => $redirect['finalUrl']], 'config')];
     }
 
     // The links of one page that the shared check found broken - internal and external are checked in the same pass (see checkBrokenLinks()) and only told apart here, by which of the analysis' two lists they came from
@@ -289,31 +289,31 @@ class ContentQualityAnalyzer
     {
         $issues = [];
         if ('missing' === $details['titleIssue']) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_no_title', [], 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_no_title', [], 'config');
         } elseif ('short' === $details['titleIssue']) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_title_too_short', ['%length%' => $details['titleLength']], 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_title_too_short', ['%length%' => $details['titleLength']], 'config');
         } elseif ('long' === $details['titleIssue']) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_title_too_long', ['%length%' => $details['titleLength']], 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_title_too_long', ['%length%' => $details['titleLength']], 'config');
         }
         // Named by the form's own label rather than "meta description": the clause is only useful if the user can tell which field to go and fill
         $descriptionField = ['%field%' => $this->translator->trans(self::DESCRIPTION_FIELD_LABEL, [], 'config')];
         if (!$details['hasDescription']) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_no_description', $descriptionField, 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_no_description', $descriptionField, 'config');
         } elseif ('short' === $details['descriptionIssue']) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_description_too_short', $descriptionField + ['%length%' => $details['descriptionLength']], 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_description_too_short', $descriptionField + ['%length%' => $details['descriptionLength']], 'config');
         } elseif ('long' === $details['descriptionIssue']) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_description_too_long', $descriptionField + ['%length%' => $details['descriptionLength']], 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_description_too_long', $descriptionField + ['%length%' => $details['descriptionLength']], 'config');
         }
         // Several <h1> are valid HTML and Google copes with them, so this is a warning like the rest: what it costs is a screen reader announcing two top-level subjects for one page (typically the layout's own page title plus a "hero" block left on its h1 level - see Page::$isTitleDisplayed)
         if (0 === $details['h1Count']) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_no_h1', [], 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_no_h1', [], 'config');
         } elseif ($details['h1Count'] > 1) {
-            $issues[] = $this->translator->trans('label.health_check_content_quality_several_h1', ['%count%' => $details['h1Count']], 'site');
+            $issues[] = $this->translator->trans('label.health_check_content_quality_several_h1', ['%count%' => $details['h1Count']], 'config');
         }
 
         foreach (['missingSocialTags' => 'missing_social_tags', 'imagesWithoutAlt' => 'images_without_alt', 'brokenLinks' => 'broken_links', 'brokenExternalLinks' => 'broken_external_links'] as $key => $translationId) {
             if ($details[$key]) {
-                $issues[] = $this->translator->trans('label.health_check_content_quality_' . $translationId, ['%count%' => \count($details[$key])], 'site');
+                $issues[] = $this->translator->trans('label.health_check_content_quality_' . $translationId, ['%count%' => \count($details[$key])], 'config');
             }
         }
 

@@ -10,30 +10,50 @@
 
 namespace c975L\UiBundle\Tests\Controller\Management;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Entity\Media;
-use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Service\ImageDimensionsReader;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MediaCrudControllerTest extends TestCase
 {
-    private function createController(string $projectDir = '/tmp'): MediaCrudController
+    private function createController(string $projectDir = '/tmp', bool $mayEditSiteGraphics = true): MediaCrudController
     {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->method('setAction')->willReturnSelf();
+        $adminUrlGenerator->method('setEntityId')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/site-graphic/edit');
+
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('ROLE_SITE_GRAPHIC_EDITOR');
+
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn($mayEditSiteGraphics);
+
         return new MediaCrudController(
-            $this->createStub(MediaUsageRegistry::class),
             $translator,
             new MediaDimensionsFiller(new ImageDimensionsReader(), $projectDir),
+            $adminUrlGenerator,
+            $configService,
+            $security,
             $projectDir
         );
     }
@@ -60,30 +80,77 @@ class MediaCrudControllerTest extends TestCase
     {
         $controller = $this->createController();
 
-        // A real EasyAdmin runtime pre-populates default actions (EDIT, DELETE...) before calling configureActions() - update() below assumes EDIT/DELETE already exist on PAGE_INDEX (DETAIL is added by the controller itself, not pre-populated here)
-        $actions = $controller->configureActions(
-            Actions::new()
-                ->add(Crud::PAGE_INDEX, Action::EDIT)
-                ->add(Crud::PAGE_INDEX, Action::DELETE)
-        );
-
-        $permissions = $actions->getAsDto(null)->getActionPermissions();
+        $permissions = $this->configureActions($controller)->getAsDto(null)->getActionPermissions();
         $this->assertSame('ROLE_SUPER_ADMIN', $permissions[Action::NEW]);
     }
 
-    // Lets the admin back out of a create/edit without saving - unlike the other CRUDs, Detail stays enabled here (see configureActions' own comment), only Cancel is new
+    // Lets the admin back out of a create/edit without saving
     public function testConfigureActionsAddsCancelOnNewAndEdit(): void
     {
-        $controller = $this->createController();
+        $actions = $this->configureActions($this->createController());
 
-        $actions = $controller->configureActions(
+        $this->assertNotNull($actions->getAsDto(Crud::PAGE_NEW)->getAction(Crud::PAGE_NEW, 'cancel'));
+        $this->assertNotNull($actions->getAsDto(Crud::PAGE_EDIT)->getAction(Crud::PAGE_EDIT, 'cancel'));
+    }
+
+    // Detail showed neither the file (only forms do) nor a single action, and every gallery thumbnail now opens a form instead - see siteGraphicUrls() for the role-carrying rows, whose Edit is hidden here
+    public function testConfigureActionsDisablesDetail(): void
+    {
+        $disabled = $this->configureActions($this->createController())->getAsDto(null)->getDisabledActions();
+
+        $this->assertContains(Action::DETAIL, $disabled);
+    }
+
+    // A real EasyAdmin runtime pre-populates the default actions before calling configureActions() - update() there assumes EDIT/DELETE already exist on PAGE_INDEX
+    private function configureActions(MediaCrudController $controller): Actions
+    {
+        return $controller->configureActions(
             Actions::new()
                 ->add(Crud::PAGE_INDEX, Action::EDIT)
                 ->add(Crud::PAGE_INDEX, Action::DELETE)
         );
+    }
 
-        $this->assertNotNull($actions->getAsDto(Crud::PAGE_NEW)->getAction(Crud::PAGE_NEW, 'cancel'));
-        $this->assertNotNull($actions->getAsDto(Crud::PAGE_EDIT)->getAction(Crud::PAGE_EDIT, 'cancel'));
+    private function mediaWithId(int $id, ?string $role = null): Media
+    {
+        $media = (new Media())->setRole($role);
+        (new \ReflectionProperty(Media::class, 'id'))->setValue($media, $id);
+
+        return $media;
+    }
+
+    // Reaches the map the gallery template reads to link a read-only site graphic to the screen that does edit it
+    private function siteGraphicUrls(MediaCrudController $controller, Media ...$medias): array
+    {
+        $entities = array_map(
+            static fn (Media $media): EntityDto => new EntityDto(Media::class, new ClassMetadata(Media::class), null, $media),
+            $medias
+        );
+
+        return (new \ReflectionMethod($controller, 'siteGraphicUrls'))->invoke($controller, new EntityCollection($entities));
+    }
+
+    // Site-wide graphics are read-only in the library (their Edit action is hidden), so their thumbnail must open SiteGraphicCrudController rather than fall back on EasyAdmin's next default row action
+    public function testSiteGraphicUrlsCoversTheRoleCarryingMediasOnly(): void
+    {
+        $urls = $this->siteGraphicUrls(
+            $this->createController(),
+            $this->mediaWithId(1, Media::ROLE_LOGO),
+            $this->mediaWithId(2)
+        );
+
+        $this->assertSame([1 => '/management/site-graphic/edit'], $urls);
+    }
+
+    // SiteGraphicCrudController gates itself with the "site-role-editor" config: an admin without it would only get a 403 out of the link, so no url is handed over at all and the thumbnail stops being a link (see media_index.html.twig)
+    public function testSiteGraphicUrlsAreWithheldFromAnAdminWhoMayNotEditThem(): void
+    {
+        $urls = $this->siteGraphicUrls(
+            $this->createController(mayEditSiteGraphics: false),
+            $this->mediaWithId(1, Media::ROLE_LOGO)
+        );
+
+        $this->assertSame([], $urls);
     }
 
     private function fileFieldImageUri(MediaCrudController $controller): \Closure

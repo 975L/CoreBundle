@@ -20,6 +20,7 @@ use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
 use c975L\UiBundle\Registry\ScriptAdminRegistry;
 use c975L\UiBundle\Registry\StylesheetManagementRegistry;
@@ -52,6 +53,7 @@ class DashboardController extends AbstractDashboardController
         private readonly ScriptAdminRegistry $scriptAdminRegistry,
         private readonly StylesheetManagementRegistry $stylesheetManagementRegistry,
         private readonly FormThemeRegistry $formThemeRegistry,
+        private readonly PaginatorPageSize $paginatorPageSize,
         private readonly TranslatorInterface $translator,
         private readonly Packages $packages,
         #[Autowire('%kernel.debug%')]
@@ -95,7 +97,11 @@ class DashboardController extends AbstractDashboardController
     // EasyAdmin renders every CRUD form with "{% form_theme form with ea.crud.formThemes only %}" (see vendor/easycorp/.../crud/edit.html.twig) - the "only" keyword means the app-wide twig.form_themes config is never consulted there, so bundle-contributed form themes (Trix editor, icon picker, "used in"...) have to be injected into the Crud config itself instead, here, the single place every CRUD controller's own configureCrud() inherits its default from (see FormThemeProviderInterface for the extension point bundles implement to reach this).
     public function configureCrud(): Crud
     {
-        $crud = Crud::new();
+        $crud = Crud::new()
+            // How many rows a list shows, an admin's own choice when they made one (see PaginatorPageSize) - EasyAdmin only knows a fixed size, set here for every CRUD at once, and the overridden paginator is where the sizes are offered
+            ->setPaginatorPageSize($this->paginatorPageSize->resolve())
+            ->overrideTemplate('crud/paginator', '@c975LUi/management/paginator.html.twig');
+
         foreach ($this->formThemeRegistry->all() as $formTheme) {
             $crud->addFormTheme($formTheme);
         }

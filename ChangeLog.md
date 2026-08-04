@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.2.1
+
+The deployment workflow answers to the same suite as the code
+
+### ConfigBundle
+
+- The scaffold ships `tests/Deploy/DeployWorkflowTest.php`, resolving every `bin/console` command its `.github/workflows/*.yml` call against the commands this site actually has - through the console's own resolution, so an abbreviation like `doctrine:migration:migrate` passes (04/08/2026)
+- A workflow command a bundle renamed, or one written against a version `composer.lock` does not carry yet, fails the suite instead of stopping a deployment halfway through, workers already restarted (04/08/2026)
+- The same test fails on any `vendor/` package installed as a symlink to a local working copy: what a suite proves about a working copy says nothing about the versions the deployment will install (04/08/2026)
+- The health check keys `label.health_check_*` are asked for in the `config` domain, the catalogue shipping them, instead of SiteBundle's `site` where the translator found nothing and the raw key was displayed (04/08/2026)
+- `TranslationDomainTest` reads every `trans()` and `HealthCheckErrorRow::build()` of `src/` and `scaffold/src/` and fails on a key asked from a domain other than the one it is shipped in (04/08/2026)
+
+### UiBundle
+
+- `PaginatorPageSize` reads a `pageSize` query parameter, whitelisted to 20, 50 or 100 rows, and `management/paginator.html.twig` offers the three as links under the paginator - wired once in `DashboardController::configureCrud()`, so every CRUD of every c975L bundle inherits it (04/08/2026)
+- A thumbnail of the media library always opens a form: a site-wide graphic (favicon, logo, og-image, error-image) now goes to `SiteGraphicCrudController`, the only screen editing it, instead of the detail page EasyAdmin fell back to once its Edit action was hidden - a page showing neither the image nor a single action (04/08/2026)
+- That link is only handed to an admin holding the `site-role-editor` permission, the one `SiteGraphicCrudController` gates itself with: without it the thumbnail is no longer a link at all, rather than one landing on a 403 (04/08/2026)
+- `MediaCrudController` disables Detail altogether, `media_usages.html.twig` (its only content) going with it - the same summary already ships as the edit form's own "used in" widget (04/08/2026)
+
 ## v1.2
 
 The three files a site hands to crawlers come from its own configs

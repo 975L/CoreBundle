@@ -1,0 +1,23 @@
+{#
+    Replaces EasyAdmin's own "crud/paginator" for every CRUD at once (wired in ConfigBundle's
+    DashboardController::configureCrud, the Crud config each controller inherits from) - the native paginator
+    is rendered untouched, the page sizes coming under it as plain links, EasyAdmin offering no such choice.
+
+    Included rather than extended: the native template renders a Twig component and leaves no block to hook into.
+    Sizes come from PageSizeExtension, so what is offered here is what PaginatorPageSize accepts server-side.
+    Back to page 1 on each link: page 7 of a 20-row list is out of range once 100 rows are shown per page.
+#}
+{{ include('@EasyAdmin/crud/paginator.html.twig') }}
+
+{% if paginator.numResults > page_sizes()|first %}
+    <div class="list-pagination-page-size text-center small text-muted">
+        {{ 'label.items_per_page'|trans({}, 'ui') }}
+        {% for size in page_sizes() %}
+            {%- if size == paginator.pageSize -%}
+                <strong class="mx-1" aria-current="true">{{ size }}</strong>
+            {%- else -%}
+                <a class="mx-1" href="{{ ea_url({'pageSize': size, 'page': 1}) }}">{{ size }}</a>
+            {%- endif -%}
+        {% endfor %}
+    </div>
+{% endif %}
