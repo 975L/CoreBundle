@@ -31,6 +31,10 @@ services:
         arguments:
             $sitemapProviders: !tagged_iterator c975l.sitemap_provider
 
+    c975L\ConfigBundle\Management\SeoFilesWriter:
+        arguments:
+            $sitemapProviders: !tagged_iterator c975l.sitemap_provider
+
     c975L\ConfigBundle\Management\StatusReportBuilder:
         arguments:
             $statusProviders: !tagged_iterator c975l.status_provider

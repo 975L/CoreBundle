@@ -140,7 +140,7 @@
             </trans-unit>
             <trans-unit id="gPqGH8J">
                 <source>label.accent_help</source>
-                <target>Un filet de couleur en haut du block. Chaque teinte est un token que ce site peut retoucher dans son theme.css.</target>
+                <target>La couleur du bandeau de titre du block. Chaque teinte est un token que ce site peut retoucher dans son theme.css.</target>
             </trans-unit>
             <trans-unit id="a0o36dG">
                 <source>label.accent_indigo</source>
@@ -152,7 +152,7 @@
             </trans-unit>
             <trans-unit id="UI62VsU">
                 <source>label.accent_none</source>
-                <target>Aucune (pas de filet)</target>
+                <target>Aucune (couleur du site)</target>
             </trans-unit>
             <trans-unit id="n69tBBq">
                 <source>label.accent_orange</source>
@@ -1349,6 +1349,14 @@
             <trans-unit id="BvYymoe">
                 <source>label.form_links_help</source>
                 <target>Affichés juste sous le bouton de validation, par exemple un lien vers la page de connexion sous un formulaire d'inscription. Utilisez un chemin de ce site (/pages/ma-page) ou une adresse complète.</target>
+            </trans-unit>
+            <trans-unit id="r44zjUR">
+                <source>label.form_message_sent</source>
+                <target>Votre message a bien été envoyé.</target>
+            </trans-unit>
+            <trans-unit id="3fOZAL.">
+                <source>label.form_new_message</source>
+                <target>Nouveau message via %form%</target>
             </trans-unit>
             <trans-unit id="PR6XC0B">
                 <source>label.form_picker_disabled_suffix</source>

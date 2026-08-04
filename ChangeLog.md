@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.2
+
+The three files a site hands to crawlers come from its own configs
+
+### ConfigBundle
+
+- `c975l:seo:files:create` writes `public/robots.txt`, `public/humans.txt` and `public/llms.txt`, from the new `seo` config group and from the urls every `SitemapProviderInterface` already declares - static files like the sitemaps, so they keep answering `200` during a maintenance where a controller would `503` (04/08/2026)
+- The "Create the SEO files" dashboard shortcut runs the same writer, `ROLE_SUPER_ADMIN` like the sitemaps one (04/08/2026)
+- `ConfigMaintenanceTaskProvider` schedules it nightly on the hours after the sitemaps, nothing to add to a site's own `MaintenanceSchedule` (04/08/2026)
+- Seven `restricted` configs behind them, `seo-robots-block-ai` being off by default: blocking the models that train on the web while publishing an `llms.txt` for them to read contradicts itself (04/08/2026)
+- The blocked crawlers are a config rather than a hardcoded list, that list ageing every few months (04/08/2026)
+- `SitemapProviderInterface::getUrls()` accepts an optional `title` and `description`, ignored by the sitemap and listed in `llms.txt` - an url with no title is left out, and a provider with no titled url contributes no section, so it never becomes the sitemap in Markdown (04/08/2026)
+- A file the site hand-wrote before this existed is copied to `existingFiles/public/` before being replaced, being told from a generated one by the marker each carries (04/08/2026)
+- `c975l:scaffold:install` adds the three to the app's `.gitignore`, they are rewritten from this environment's own configs on every deploy - a site that used to commit them untracks them once, see UPGRADE (04/08/2026)
+- `SeoFilesHealthCheckProvider` checks `humans.txt` too (missing or unrewritten for a month, the date it states having quietly started lying) and `llms.txt` when one is deployed, an absent one being a normal state that yields no row (04/08/2026)
+- Added `AiCrawlersHealthCheckProvider`, monthly and only on a site that blocks them: it reports the crawlers that appeared in the community list at `seo-robots-ai-crawlers-source` since this site last updated its own (04/08/2026)
+- `c975l:seo:crawlers:update` and its "Update the AI crawlers" dashboard tile merge them in, additively, never importing the answer engines the upstream list carries alongside the harvesters - it marks them with a free-text field no rule can sort reliably, so applying stays a `ROLE_SUPER_ADMIN` decision (04/08/2026)
+- Added the `textarea` config kind, for a value ending up verbatim in a `.txt` file where the `html` kind's rich editor would add markup (04/08/2026)
+- `TaggedInterfacePass` drops the two variables it never reads (04/08/2026)
+
+### UiBundle
+
+- `prependExtension()` declares the `ui_form` rate limiter itself, a site that never configured one having served every public Form unlimited (04/08/2026)
+- A site declaring its own `ui_form` still decides, its config being merged over the prepended default (04/08/2026)
+- `symfony/rate-limiter` moves to `require`, the prepended limiter being worth nothing without it (04/08/2026)
+- The accent field's help and its empty option no longer describe a rule across the block's top edge, the accent having become the header band - an unset accent leaves the header on the site's own `--primary` (04/08/2026)
+- An accented card is outlined in its own hue, the band's separator taking it too rather than cutting that outline in two - an unaccented card, and the `.card-header` the management accordion reuses outside any card, keep the neutral border (04/08/2026)
+- A card's `.card-data` tail is pinned to the bottom of its body, a row of cards carrying images and texts of unequal heights lining every button up on one line (04/08/2026)
+- That pinning is scoped to `.card-body:has(> .card-data)`, a body holding free content staying in the block flow where adjacent margins collapse (04/08/2026)
+- Added `CardTailAlignmentTest`, locking the four rules the chain needs in the compiled stylesheets (04/08/2026)
+- A form whose action emails the submission flashes "your message has been sent", the generic wording fitting neither a registration nor a password reset (04/08/2026)
+- `SendEmailFormAction`'s default subject is translated, an admin reading their inbox got an English subject over a French email (04/08/2026)
+- The assets' JS reads optional chaining and template literals rather than `&&` chains and concatenations (04/08/2026)
+- The two CSS cache warmers return from their `catch` rather than falling through it (04/08/2026)
+- The last French comment left in `src/` is in English (04/08/2026)
+
 ## v1.1.2
 
 The bundle's own words come from its own catalogues
@@ -12,6 +48,9 @@ The bundle's own words come from its own catalogues
 
 ### ConfigBundle
 
+- `c975l:scaffold:install` deletes a scaffold file its bundle has withdrawn, when this site never touched it - the hashes of every version ever delivered being declared in the bundle's own `scaffold/removed.json` (04/08/2026)
+- A withdrawn file this site customized is left exactly where it is and reported with the bundle that withdrew it, `--force` deleting it into `existingFiles/` (04/08/2026)
+- A withdrawn path some installed bundle still ships is never deleted, having moved between bundles rather than gone (04/08/2026)
 - A guided project step navigates to a same-origin url only, a value the back-office edits reaching `location.href` unchecked otherwise (03/08/2026)
 - `label.invalid_json`, `label.invalid_theme_color` and `label.slug_exists` move from `config` to the new `validators.{en,es,fr}.xlf`, the catalogue the validator reads (03/08/2026)
 - Added `ConstraintMessageCatalogueTest`, covering the bundle's own `src/` and the scaffold's (03/08/2026)

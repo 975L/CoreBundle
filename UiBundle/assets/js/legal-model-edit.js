@@ -26,7 +26,7 @@ export default class extends Controller {
         // The identifier the models tag their units with, which is also what the customization screen keys its
         // rows on - so it is all the "focus that one" the screen needs (see legal-model.js)
         this.element.querySelectorAll("[data-legal-id]").forEach((unit) => {
-            unit.dataset.blockEditUrl = url + separator + "focusUnit=" + encodeURIComponent(unit.dataset.legalId);
+            unit.dataset.blockEditUrl = `${url}${separator}focusUnit=${encodeURIComponent(unit.dataset.legalId)}`;
         });
     }
 }

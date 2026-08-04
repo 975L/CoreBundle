@@ -34,6 +34,7 @@ class ConfigMaintenanceTaskProviderTest extends TestCase
         $commands = array_map(static fn (MaintenanceTask $task): string => $task->command, $this->getTasks());
 
         $this->assertContains('c975l:sitemaps:create', $commands);
+        $this->assertContains('c975l:seo:files:create', $commands);
         $this->assertContains('c975l:config:backup', $commands);
         $this->assertContains('c975l:config:backup:digest', $commands);
         $this->assertContains('c975l:config:messenger-cleanup', $commands);

@@ -190,6 +190,26 @@
                 <source>flash.config_prune_nothing_deleted</source>
                 <target>No entry selected, nothing deleted</target>
             </trans-unit>
+            <trans-unit id="x_dT536">
+                <source>flash.config_seo_crawlers_error</source>
+                <target>Error while updating the AI crawler list: %error%</target>
+            </trans-unit>
+            <trans-unit id="ZyM4fI8">
+                <source>flash.config_seo_crawlers_up_to_date</source>
+                <target>The AI crawler list is already up to date</target>
+            </trans-unit>
+            <trans-unit id="HC3Qb_d">
+                <source>flash.config_seo_crawlers_updated</source>
+                <target>%count% AI crawler(s) added: %agents%. Create the SEO files for robots.txt to carry them</target>
+            </trans-unit>
+            <trans-unit id=".e2rVNq">
+                <source>flash.config_seo_files_created</source>
+                <target>SEO files created: %files%</target>
+            </trans-unit>
+            <trans-unit id="8ypfIm6">
+                <source>flash.config_seo_files_error</source>
+                <target>Error while creating the SEO files: %error%</target>
+            </trans-unit>
             <trans-unit id="VcrLnzm">
                 <source>flash.config_sitemaps_created</source>
                 <target>Sitemaps created successfully</target>
@@ -406,6 +426,14 @@
                 <source>label.config_prune_unregistered</source>
                 <target>The entries below are declared by a c975L bundle that is installed but absent from config/bundles.php. They are not offered for deletion: register the bundle rather than erase them.</target>
             </trans-unit>
+            <trans-unit id="MSMiPV5">
+                <source>label.config_seo_crawlers_update</source>
+                <target>Update the AI crawlers</target>
+            </trans-unit>
+            <trans-unit id="GjX9Lra">
+                <source>label.config_seo_files_create</source>
+                <target>Create the SEO files</target>
+            </trans-unit>
             <trans-unit id="W.zT_E8">
                 <source>label.config_sitemaps_create</source>
                 <target>Create sitemaps</target>
@@ -561,6 +589,10 @@
             <trans-unit id="NontQa3">
                 <source>label.group_security</source>
                 <target>Security</target>
+            </trans-unit>
+            <trans-unit id="RSMI6Iq">
+                <source>label.group_seo</source>
+                <target>SEO</target>
             </trans-unit>
             <trans-unit id="AqgvWw8">
                 <source>label.group_shop</source>
@@ -734,6 +766,18 @@
                 <source>label.health_check_advice_link</source>
                 <target>See full report</target>
             </trans-unit>
+            <trans-unit id="kGvYv9m">
+                <source>label.health_check_ai_crawlers_call_failed</source>
+                <target>The AI crawler list could not be read: %message%</target>
+            </trans-unit>
+            <trans-unit id="VcwbX2r">
+                <source>label.health_check_ai_crawlers_ok</source>
+                <target>The AI crawler list holds every crawler the community list declares</target>
+            </trans-unit>
+            <trans-unit id="wokiTJO">
+                <source>label.health_check_ai_crawlers_outdated</source>
+                <target>%count% AI crawler(s) appeared upstream and are not blocked here: %agents%… - run "c975l:seo:crawlers:update" or the dashboard shortcut</target>
+            </trans-unit>
             <trans-unit id="l7Bn1sZ">
                 <source>label.health_check_alert_errors</source>
                 <target>Health check: %count% result(s) in error</target>
@@ -902,6 +946,18 @@
                 <source>label.health_check_https_redirect_ok</source>
                 <target>http correctly redirects to https</target>
             </trans-unit>
+            <trans-unit id="fl3e0in">
+                <source>label.health_check_humans_missing</source>
+                <target>humans.txt is missing or empty</target>
+            </trans-unit>
+            <trans-unit id="Xqk9diO">
+                <source>label.health_check_humans_ok</source>
+                <target>humans.txt is reachable and up to date</target>
+            </trans-unit>
+            <trans-unit id="vScj8kA">
+                <source>label.health_check_humans_stale</source>
+                <target>humans.txt has not been rewritten since %date%, the date it states is no longer true</target>
+            </trans-unit>
             <trans-unit id="o3s6n4c">
                 <source>label.health_check_kind</source>
                 <target>Check</target>
@@ -909,6 +965,14 @@
             <trans-unit id="Pv.1XR6">
                 <source>label.health_check_last_checked_at</source>
                 <target>Last checked: %date%</target>
+            </trans-unit>
+            <trans-unit id="tIL_kGM">
+                <source>label.health_check_llms_empty</source>
+                <target>llms.txt lists no entry</target>
+            </trans-unit>
+            <trans-unit id="MduysYR">
+                <source>label.health_check_llms_ok</source>
+                <target>llms.txt is reachable and lists %count% entry(ies)</target>
             </trans-unit>
             <trans-unit id="YvTkRdQ">
                 <source>label.health_check_not_found_default_page</source>

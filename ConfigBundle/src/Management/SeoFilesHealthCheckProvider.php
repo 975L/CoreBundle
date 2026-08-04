@@ -42,10 +42,57 @@ class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
 
         $rows = [
             $this->checkRobots($siteUrl . '/robots.txt'),
-            $this->checkSitemap($siteUrl . '/sitemap-site.xml', 'sitemap-site.xml'),
+            $this->checkHumans($siteUrl . '/humans.txt'),
         ];
 
-        return array_merge($rows, $this->checkSitemapIndex($siteUrl . '/sitemap-index.xml'));
+        return array_merge(
+            $rows,
+            $this->checkLlms($siteUrl . '/llms.txt'),
+            [$this->checkSitemap($siteUrl . '/sitemap-site.xml', 'sitemap-site.xml')],
+            $this->checkSitemapIndex($siteUrl . '/sitemap-index.xml')
+        );
+    }
+
+    // humans.txt carries no SEO weight at all, and is checked for what its absence says rather than for itself: SeoFilesWriter writes it for any site, so a missing one means c975l:seo:files:create never ran on this environment - a warning rather than the error robots.txt gets, nothing being lost to a crawler meanwhile. Its "Last update" line is the date the file was written, so a stale file is one whose own date has quietly started lying
+    private function checkHumans(string $url): array
+    {
+        try {
+            $file = $this->seoFilesClient->fetch($url);
+        } catch (\Throwable $e) {
+            return $this->errorRow($url, 'humans.txt', 'label.health_check_seo_files_call_failed', $e->getMessage());
+        }
+
+        if ($file['statusCode'] >= 400 || '' === trim($file['content'])) {
+            return $this->row($url, 'humans.txt', HealthCheckResult::STATUS_WARNING, 'label.health_check_humans_missing');
+        }
+
+        $lastModified = $file['lastModified'] ?? null;
+        if (null !== $lastModified && $lastModified < new \DateTimeImmutable('-' . self::STALE_AFTER_DAYS . ' days')) {
+            return $this->row($url, 'humans.txt', HealthCheckResult::STATUS_WARNING, 'label.health_check_humans_stale', ['%date%' => $lastModified->format('d/m/Y')]);
+        }
+
+        return $this->row($url, 'humans.txt', HealthCheckResult::STATUS_OK, 'label.health_check_humans_ok');
+    }
+
+    // Optional like sitemap-index.xml, and for a reason of its own: SeoFilesWriter writes no llms.txt as long as no url declares a title and "seo-llms-summary" is empty, which is a normal state for a site with nothing to index. So an absent file yields no row at all rather than a warning nobody can act on - only a deployed one is reported, on the count of entries it lists, which is what tells a real index from the title alone a misconfigured template would leave
+    private function checkLlms(string $url): array
+    {
+        try {
+            $file = $this->seoFilesClient->fetch($url);
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        if ($file['statusCode'] >= 400) {
+            return [];
+        }
+
+        $count = preg_match_all('/^- \[/m', $file['content']);
+
+        return [0 === $count
+            ? $this->row($url, 'llms.txt', HealthCheckResult::STATUS_WARNING, 'label.health_check_llms_empty')
+            : $this->row($url, 'llms.txt', HealthCheckResult::STATUS_OK, 'label.health_check_llms_ok', ['%count%' => $count]),
+        ];
     }
 
     private function checkRobots(string $url): array

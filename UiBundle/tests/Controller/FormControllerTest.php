@@ -432,8 +432,8 @@ class FormControllerTest extends TestCase
 
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnCallback(
-            static fn (string $id, array $parameters = [], ?string $domain = null): string => 'ui' === $domain && 'label.form_submitted' === $id
-                ? 'Merci, votre envoi a bien été reçu.'
+            static fn (string $id, array $parameters = [], ?string $domain = null): string => 'ui' === $domain && 'label.form_message_sent' === $id
+                ? 'Votre message a bien été envoyé.'
                 : $id
         );
 
@@ -445,7 +445,7 @@ class FormControllerTest extends TestCase
         )->submit('contact', $request);
 
         $this->assertSame(
-            ['Merci, votre envoi a bien été reçu.'],
+            ['Votre message a bien été envoyé.'],
             $request->getSession()->getFlashBag()->get('success')
         );
     }

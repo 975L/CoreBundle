@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Service;
 
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 
-// Consumes an optional rate limiter: a null factory means no limiter configured, symfony/rate-limiter being a soft dependency
+// Consumes an optional rate limiter: a null factory means no limiter configured. c975LUiBundle prepends "ui_form" itself, so a null only reaches here when a site deliberately took that limiter away
 class RateLimiterGuard
 {
     public function isAccepted(?RateLimiterFactoryInterface $limiterFactory, string $key): bool

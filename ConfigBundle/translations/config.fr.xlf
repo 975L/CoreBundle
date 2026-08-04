@@ -190,6 +190,26 @@
                 <source>flash.config_prune_nothing_deleted</source>
                 <target>Aucune entrée sélectionnée, rien n'a été supprimé</target>
             </trans-unit>
+            <trans-unit id="x_dT536">
+                <source>flash.config_seo_crawlers_error</source>
+                <target>Erreur lors de la mise à jour de la liste des robots IA : %error%</target>
+            </trans-unit>
+            <trans-unit id="ZyM4fI8">
+                <source>flash.config_seo_crawlers_up_to_date</source>
+                <target>La liste des robots IA est déjà à jour</target>
+            </trans-unit>
+            <trans-unit id="HC3Qb_d">
+                <source>flash.config_seo_crawlers_updated</source>
+                <target>%count% robot(s) IA ajouté(s) : %agents%. Créez les fichiers SEO pour que robots.txt les porte</target>
+            </trans-unit>
+            <trans-unit id=".e2rVNq">
+                <source>flash.config_seo_files_created</source>
+                <target>Fichiers SEO créés : %files%</target>
+            </trans-unit>
+            <trans-unit id="8ypfIm6">
+                <source>flash.config_seo_files_error</source>
+                <target>Erreur lors de la création des fichiers SEO : %error%</target>
+            </trans-unit>
             <trans-unit id="VcrLnzm">
                 <source>flash.config_sitemaps_created</source>
                 <target>Sitemaps créées avec succès</target>
@@ -406,6 +426,14 @@
                 <source>label.config_prune_unregistered</source>
                 <target>Les entrées suivantes sont déclarées par un bundle c975L installé mais absent de config/bundles.php. Elles ne sont pas proposées à la suppression : enregistrez le bundle plutôt que de les effacer.</target>
             </trans-unit>
+            <trans-unit id="MSMiPV5">
+                <source>label.config_seo_crawlers_update</source>
+                <target>Mettre à jour les robots IA</target>
+            </trans-unit>
+            <trans-unit id="GjX9Lra">
+                <source>label.config_seo_files_create</source>
+                <target>Créer les fichiers SEO</target>
+            </trans-unit>
             <trans-unit id="W.zT_E8">
                 <source>label.config_sitemaps_create</source>
                 <target>Créer les sitemaps</target>
@@ -561,6 +589,10 @@
             <trans-unit id="NontQa3">
                 <source>label.group_security</source>
                 <target>Sécurité</target>
+            </trans-unit>
+            <trans-unit id="RSMI6Iq">
+                <source>label.group_seo</source>
+                <target>SEO</target>
             </trans-unit>
             <trans-unit id="AqgvWw8">
                 <source>label.group_shop</source>
@@ -734,6 +766,18 @@
                 <source>label.health_check_advice_link</source>
                 <target>Voir le rapport complet</target>
             </trans-unit>
+            <trans-unit id="kGvYv9m">
+                <source>label.health_check_ai_crawlers_call_failed</source>
+                <target>La liste des robots IA n'a pas pu être lue : %message%</target>
+            </trans-unit>
+            <trans-unit id="VcwbX2r">
+                <source>label.health_check_ai_crawlers_ok</source>
+                <target>La liste des robots IA contient tous ceux que déclare la liste communautaire</target>
+            </trans-unit>
+            <trans-unit id="wokiTJO">
+                <source>label.health_check_ai_crawlers_outdated</source>
+                <target>%count% robot(s) IA sont apparus en amont et ne sont pas bloqués ici : %agents%… - lancez « c975l:seo:crawlers:update » ou le raccourci du tableau de bord</target>
+            </trans-unit>
             <trans-unit id="l7Bn1sZ">
                 <source>label.health_check_alert_errors</source>
                 <target>Bilan de santé : %count% résultat(s) en erreur</target>
@@ -902,6 +946,18 @@
                 <source>label.health_check_https_redirect_ok</source>
                 <target>http redirige bien vers https</target>
             </trans-unit>
+            <trans-unit id="fl3e0in">
+                <source>label.health_check_humans_missing</source>
+                <target>humans.txt est absent ou vide</target>
+            </trans-unit>
+            <trans-unit id="Xqk9diO">
+                <source>label.health_check_humans_ok</source>
+                <target>humans.txt est accessible et à jour</target>
+            </trans-unit>
+            <trans-unit id="vScj8kA">
+                <source>label.health_check_humans_stale</source>
+                <target>humans.txt n'a pas été réécrit depuis le %date%, la date qu'il indique n'est plus vraie</target>
+            </trans-unit>
             <trans-unit id="o3s6n4c">
                 <source>label.health_check_kind</source>
                 <target>Vérification</target>
@@ -909,6 +965,14 @@
             <trans-unit id="Pv.1XR6">
                 <source>label.health_check_last_checked_at</source>
                 <target>Dernière vérification : %date%</target>
+            </trans-unit>
+            <trans-unit id="tIL_kGM">
+                <source>label.health_check_llms_empty</source>
+                <target>llms.txt ne liste aucune entrée</target>
+            </trans-unit>
+            <trans-unit id="MduysYR">
+                <source>label.health_check_llms_ok</source>
+                <target>llms.txt est accessible et liste %count% entrée(s)</target>
             </trans-unit>
             <trans-unit id="YvTkRdQ">
                 <source>label.health_check_not_found_default_page</source>

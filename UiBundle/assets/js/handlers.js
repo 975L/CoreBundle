@@ -30,7 +30,7 @@ export default {
         }
 
         const language = this.getLanguage();
-        const translations = this.translations[language] || this.translations["en"];
+        const translations = this.translations[language] || this.translations.en;
 
         if (!translations) {
             return key;

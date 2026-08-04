@@ -12,6 +12,8 @@ namespace c975L\ConfigBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Command\ExportTablesCommand;
 use c975L\ConfigBundle\Controller\Management\ConfigShortcutController;
+use c975L\ConfigBundle\Management\AiCrawlerListUpdater;
+use c975L\ConfigBundle\Management\SeoFilesWriter;
 use c975L\ConfigBundle\Management\SitemapWriter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ConfigSqlExporter;
@@ -36,6 +38,8 @@ class ConfigShortcutControllerTest extends TestCase
         ?ConfigSqlExporter $configSqlExporter = null,
         ?SyncAllExporter $syncAllExporter = null,
         ?SitemapWriter $sitemapWriter = null,
+        ?SeoFilesWriter $seoFilesWriter = null,
+        ?AiCrawlerListUpdater $aiCrawlerListUpdater = null,
         ?ExportTablesCommand $exportTablesCommand = null,
         ?FormRepository $formRepository = null,
         ?EntityManagerInterface $entityManager = null,
@@ -48,6 +52,8 @@ class ConfigShortcutControllerTest extends TestCase
             $configSqlExporter ?? $this->createStub(ConfigSqlExporter::class),
             $syncAllExporter ?? $this->createStub(SyncAllExporter::class),
             $sitemapWriter ?? $this->createStub(SitemapWriter::class),
+            $seoFilesWriter ?? $this->createStub(SeoFilesWriter::class),
+            $aiCrawlerListUpdater ?? $this->createStub(AiCrawlerListUpdater::class),
             $exportTablesCommand ?? $this->createStub(ExportTablesCommand::class),
             $formRepository ?? $this->createStub(FormRepository::class),
             $entityManager ?? $this->createStub(EntityManagerInterface::class),
@@ -264,6 +270,169 @@ class ConfigShortcutControllerTest extends TestCase
         ]));
 
         $controller->createSitemaps(new Request());
+    }
+
+    public function testCreateSeoFilesWritesThemAndAddsFlashWhenTokenIsValid(): void
+    {
+        $seoFilesWriter = $this->createMock(SeoFilesWriter::class);
+        $seoFilesWriter->expects($this->once())->method('write')->willReturn(['robots.txt', 'humans.txt']);
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), seoFilesWriter: $seoFilesWriter);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $response = $controller->createSeoFiles(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_seo_files_created'], $session->getFlashBag()->get('success'));
+        $this->assertSame('/management', $response->getTargetUrl());
+    }
+
+    public function testCreateSeoFilesDoesNothingWhenCsrfTokenIsInvalid(): void
+    {
+        $seoFilesWriter = $this->createMock(SeoFilesWriter::class);
+        $seoFilesWriter->expects($this->never())->method('write');
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), seoFilesWriter: $seoFilesWriter);
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(false),
+            'router' => $this->createRouter(),
+            'request_stack' => $this->createRequestStackWithSession()[0],
+        ]));
+
+        $controller->createSeoFiles(new Request([], ['_token' => 'invalid-token']));
+    }
+
+    // An unwritable public/ folder, or a site overriding one of the templates with a broken one, must be shown as an error flash and never as a 500
+    public function testCreateSeoFilesAddsErrorFlashWhenWritingFails(): void
+    {
+        $seoFilesWriter = $this->createStub(SeoFilesWriter::class);
+        $seoFilesWriter->method('write')->willThrowException(new IOException('Failed to write file'));
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), seoFilesWriter: $seoFilesWriter);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $response = $controller->createSeoFiles(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_seo_files_error'], $session->getFlashBag()->get('error'));
+        $this->assertSame([], $session->getFlashBag()->get('success'));
+        $this->assertSame('/management', $response->getTargetUrl());
+    }
+
+    // Writing files into public/ stays ROLE_SUPER_ADMIN, unlike the read-only export shortcuts
+    public function testCreateSeoFilesDeniesAccessWhenNotGranted(): void
+    {
+        $this->expectException(AccessDeniedException::class);
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class));
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(false),
+        ]));
+
+        $controller->createSeoFiles(new Request());
+    }
+
+    public function testUpdateSeoCrawlersAppliesWhatAppearedUpstreamAndAddsFlashWhenTokenIsValid(): void
+    {
+        $aiCrawlerListUpdater = $this->createMock(AiCrawlerListUpdater::class);
+        $aiCrawlerListUpdater->method('compare')->willReturn(['missing' => ['NewBot'], 'answerEngines' => [], 'source' => 'https://example.com/robots.json']);
+        $aiCrawlerListUpdater->expects($this->once())->method('apply')->with(['NewBot'])->willReturn(['GPTBot', 'NewBot']);
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), aiCrawlerListUpdater: $aiCrawlerListUpdater);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $response = $controller->updateSeoCrawlers(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_seo_crawlers_updated'], $session->getFlashBag()->get('success'));
+        $this->assertSame('/management', $response->getTargetUrl());
+    }
+
+    // Nothing new upstream must write nothing at all, rather than persist the very list that is already there
+    public function testUpdateSeoCrawlersWritesNothingWhenTheListIsUpToDate(): void
+    {
+        $aiCrawlerListUpdater = $this->createMock(AiCrawlerListUpdater::class);
+        $aiCrawlerListUpdater->method('compare')->willReturn(['missing' => [], 'answerEngines' => ['Claude-User'], 'source' => 'https://example.com/robots.json']);
+        $aiCrawlerListUpdater->expects($this->never())->method('apply');
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), aiCrawlerListUpdater: $aiCrawlerListUpdater);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $controller->updateSeoCrawlers(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_seo_crawlers_up_to_date'], $session->getFlashBag()->get('info'));
+    }
+
+    // A third party is called here: an unreachable list or a moved url must end up as a flash, never as a 500
+    public function testUpdateSeoCrawlersAddsErrorFlashWhenTheListCannotBeRead(): void
+    {
+        $aiCrawlerListUpdater = $this->createStub(AiCrawlerListUpdater::class);
+        $aiCrawlerListUpdater->method('compare')->willThrowException(new \RuntimeException('Connection refused'));
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), aiCrawlerListUpdater: $aiCrawlerListUpdater);
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $controller->updateSeoCrawlers(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.config_seo_crawlers_error'], $session->getFlashBag()->get('error'));
+        $this->assertSame([], $session->getFlashBag()->get('success'));
+    }
+
+    public function testUpdateSeoCrawlersDoesNothingWhenCsrfTokenIsInvalid(): void
+    {
+        $aiCrawlerListUpdater = $this->createMock(AiCrawlerListUpdater::class);
+        $aiCrawlerListUpdater->expects($this->never())->method('compare');
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class), aiCrawlerListUpdater: $aiCrawlerListUpdater);
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(false),
+            'router' => $this->createRouter(),
+            'request_stack' => $this->createRequestStackWithSession()[0],
+        ]));
+
+        $controller->updateSeoCrawlers(new Request([], ['_token' => 'invalid-token']));
+    }
+
+    // Editing what the site blocks stays ROLE_SUPER_ADMIN, like every other tile writing into public/
+    public function testUpdateSeoCrawlersDeniesAccessWhenNotGranted(): void
+    {
+        $this->expectException(AccessDeniedException::class);
+
+        $controller = $this->createController($this->createStub(ConfigServiceInterface::class));
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(false),
+        ]));
+
+        $controller->updateSeoCrawlers(new Request());
     }
 
     // Streamed back directly rather than written to var/export - moved here from SiteBundle alongside the command it runs

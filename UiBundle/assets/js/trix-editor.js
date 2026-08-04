@@ -111,7 +111,7 @@ function initToolbarAlignment(toolbar, editorElement) {
 function initTrixEditors() {
     patchTrixConfig();
 
-    document.querySelectorAll('textarea[data-trix]:not([data-trix-init])').forEach(function (textarea) {
+    document.querySelectorAll('textarea[data-trix]:not([data-trix-init])').forEach((textarea) => {
         if (!textarea.id) return;
         textarea.dataset.trixInit = '1';
         textarea.classList.add('ea-text-editor-content', 'd-none');

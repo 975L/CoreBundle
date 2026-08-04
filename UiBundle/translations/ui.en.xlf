@@ -140,7 +140,7 @@
             </trans-unit>
             <trans-unit id="gPqGH8J">
                 <source>label.accent_help</source>
-                <target>A colored rule across the top of the block. Each hue is a token this site can retune in its own theme.css.</target>
+                <target>The color of the block's header band. Each hue is a token this site can retune in its own theme.css.</target>
             </trans-unit>
             <trans-unit id="a0o36dG">
                 <source>label.accent_indigo</source>
@@ -152,7 +152,7 @@
             </trans-unit>
             <trans-unit id="UI62VsU">
                 <source>label.accent_none</source>
-                <target>None (no rule)</target>
+                <target>None (site color)</target>
             </trans-unit>
             <trans-unit id="n69tBBq">
                 <source>label.accent_orange</source>
@@ -1349,6 +1349,14 @@
             <trans-unit id="BvYymoe">
                 <source>label.form_links_help</source>
                 <target>Shown right under the submit button, e.g. a link to the sign-in page under a registration form. Use a path of this site (/pages/my-page) or a full address.</target>
+            </trans-unit>
+            <trans-unit id="r44zjUR">
+                <source>label.form_message_sent</source>
+                <target>Your message has been sent.</target>
+            </trans-unit>
+            <trans-unit id="3fOZAL.">
+                <source>label.form_new_message</source>
+                <target>New message via %form%</target>
             </trans-unit>
             <trans-unit id="PR6XC0B">
                 <source>label.form_picker_disabled_suffix</source>

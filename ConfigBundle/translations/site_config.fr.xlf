@@ -26,6 +26,38 @@
                 <source>description.email_to_name</source>
                 <target>Nom utilisé pour recevoir les notifications depuis le site.</target>
             </trans-unit>
+            <trans-unit id="FXZbjDI">
+                <source>description.seo_humans_from</source>
+                <target>Pays depuis lequel le site est administré, tel qu'affiché dans humans.txt, ex. France</target>
+            </trans-unit>
+            <trans-unit id="DA0nXQ4">
+                <source>description.seo_humans_thanks</source>
+                <target>Le bloc « THANKS » de humans.txt, un remerciement par ligne (frameworks, auteurs, contributeurs).</target>
+            </trans-unit>
+            <trans-unit id="aqkZyv.">
+                <source>description.seo_llms_summary</source>
+                <target>Résumé du site en une phrase, utilisé comme introduction citée de llms.txt. Laissé vide, et sauf si un bundle déclare des urls titrées, aucun llms.txt n'est écrit.</target>
+            </trans-unit>
+            <trans-unit id="IHEwehJ">
+                <source>description.seo_robots_ai_crawlers</source>
+                <target>Les robots bloqués quand le réglage ci-dessus est activé, sous forme de tableau JSON. Les moteurs de réponse qui citent les pages lues (Claude-User, OAI-SearchBot, PerplexityBot…) en sont volontairement absents : les bloquer ne coûte que de la visibilité.</target>
+            </trans-unit>
+            <trans-unit id="EUyn9gj">
+                <source>description.seo_robots_ai_crawlers_source</source>
+                <target>La liste communautaire à laquelle le bilan de santé mensuel compare la vôtre, et depuis laquelle le raccourci « Mettre à jour les robots IA » complète. Laissez vide pour tenir votre liste à la main : rien n'est alors téléchargé.</target>
+            </trans-unit>
+            <trans-unit id="lIc9kKR">
+                <source>description.seo_robots_block_ai</source>
+                <target>Bloque les robots qui moissonnent les pages pour entraîner des modèles. Désactivé par défaut : cela contredit la publication d'un llms.txt, fait justement pour être lu par ces modèles. Purement déclaratif de toute façon, rien ne l'impose.</target>
+            </trans-unit>
+            <trans-unit id="cJxfsLp">
+                <source>description.seo_robots_disallow</source>
+                <target>Chemins interdits dans robots.txt, sous forme de tableau JSON (ex. ["/*.pdf$"]). Vide, tout le site est explorable.</target>
+            </trans-unit>
+            <trans-unit id="PelrJJG">
+                <source>description.seo_robots_extra</source>
+                <target>Ajouté tel quel à la fin de robots.txt, pour ce que les réglages ci-dessus ne couvrent pas.</target>
+            </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
                 <target>L'auteur qui sera renseigné dans les métadonnées</target>
@@ -181,6 +213,38 @@
             <trans-unit id="Tbwp4sB">
                 <source>label.email_to_name</source>
                 <target>Nom de l'email (destinataire)</target>
+            </trans-unit>
+            <trans-unit id="5LRQEmv">
+                <source>label.seo_humans_from</source>
+                <target>humans.txt - pays</target>
+            </trans-unit>
+            <trans-unit id="KH8v7YP">
+                <source>label.seo_humans_thanks</source>
+                <target>humans.txt - remerciements</target>
+            </trans-unit>
+            <trans-unit id="5OA6wWh">
+                <source>label.seo_llms_summary</source>
+                <target>llms.txt - résumé</target>
+            </trans-unit>
+            <trans-unit id="3PDunrW">
+                <source>label.seo_robots_ai_crawlers</source>
+                <target>robots.txt - liste des robots IA</target>
+            </trans-unit>
+            <trans-unit id="SbuTNvm">
+                <source>label.seo_robots_ai_crawlers_source</source>
+                <target>robots.txt - source des robots IA</target>
+            </trans-unit>
+            <trans-unit id=".8YBsGQ">
+                <source>label.seo_robots_block_ai</source>
+                <target>robots.txt - bloquer les robots IA</target>
+            </trans-unit>
+            <trans-unit id="NGmd2Fg">
+                <source>label.seo_robots_disallow</source>
+                <target>robots.txt - chemins interdits</target>
+            </trans-unit>
+            <trans-unit id="JlFGaKa">
+                <source>label.seo_robots_extra</source>
+                <target>robots.txt - lignes additionnelles</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

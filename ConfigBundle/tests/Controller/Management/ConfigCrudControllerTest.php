@@ -940,6 +940,17 @@ class ConfigCrudControllerTest extends TestCase
         $this->assertSame($expected, $editField->getAsDto()->getFormTypeOptions()['data']);
     }
 
+    // Textarea kind is multi-line plain text: what it holds ends up verbatim in a .txt file (see SeoFilesWriter), where the tags the html kind's rich editor adds would be read as content
+    public function testConfigureFieldsUsesATextareaForTheTextareaKind(): void
+    {
+        $config = (new Config())->setSlug('seo-robots-extra')->setKind(Config::TYPE_TEXTAREA)->setValue("User-agent: BadBot\nDisallow: /");
+
+        $controller = $this->createController();
+        $this->setContextEntity($controller, $config);
+
+        $this->assertInstanceOf(TextareaField::class, $this->findField($controller->configureFields('edit'), 'value'));
+    }
+
     // An invalid/malformed json value is kept as-is rather than dropped, so the admin can still see and fix it
     public function testConfigureFieldsKeepsInvalidJsonValueUnchangedOnEditPage(): void
     {

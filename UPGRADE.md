@@ -1,5 +1,32 @@
 # UPGRADE
 
+## From `v1.1.2` to `v1.2`
+
+**`robots.txt`, `humans.txt` and `llms.txt` are generated files now.** `c975l:seo:files:create` writes the three of them into `public/` from the new `seo` config group (see [ConfigBundle's readme](ConfigBundle/README.md#robotstxt-humanstxt-and-llmstxt)). Three things to do once per site.
+
+**1. Carry what your `robots.txt` said into the configs.** The first run replaces the file, keeping a copy at `existingFiles/public/robots.txt.old` — a file this bundle wrote carries a marker, one it didn't is backed up before being overwritten. Your own `Disallow:` lines go into `seo-robots-disallow`, anything else into `seo-robots-extra`; the `Sitemap:` line is derived from `site-url` and needs no config at all. Same for `humans.txt`, whose `From:` and `THANKS` block become `seo-humans-from` and `seo-humans-thanks`.
+
+**2. Stop tracking them in git.** `c975l:scaffold:install` adds the three to the app's `.gitignore`, but a rule never untracks a file git already follows — they are rewritten from this environment's own configs on every deployment, so a committed copy is a merge conflict waiting to happen:
+
+```bash
+git rm --cached public/robots.txt public/humans.txt public/llms.txt
+```
+
+(`git rm --cached` on a path git doesn't track answers `did not match any files`, which is fine — it means there was nothing to untrack.)
+
+**3. Add the command to your deployment.** Right after the sitemaps, `robots.txt` only declaring the sitemap index once that run has written one:
+
+```diff
+ echo "------> Creation des sitemaps";
+ ${{ env.PHP_VERSION }} bin/console c975l:sitemaps:create --env=prod;
++echo "------> Creation des fichiers SEO (robots.txt, humans.txt, llms.txt)";
++${{ env.PHP_VERSION }} bin/console c975l:seo:files:create --env=prod;
+```
+
+Nothing else is required: the command is also scheduled nightly by `ConfigMaintenanceTaskProvider`, and a "Create the SEO files" tile sits on the dashboard. Until it has run at least once, the health check reports `robots.txt` as missing — which is exactly what it is.
+
+**`seo-robots-block-ai` ships off**, so a site upgrading blocks nothing it wasn't blocking before. Turning it on is what makes `seo-robots-ai-crawlers` matter, and from there the monthly `ai-crawlers` health check reports what appeared in the community list, with `c975l:seo:crawlers:update` (or its dashboard tile) to merge it in.
+
 ## From `c975l/config-bundle` and `c975l/ui-bundle` to `c975l/core-bundle`
 
 The two packages have been merged into a single one. **The bundles themselves have not changed**: same namespaces, same service ids, same template paths, same translation domains, same `bundles.php` entries.
@@ -253,6 +280,29 @@ The Config list's EasyAdmin index is no longer a single flat table listing every
 - If your app extended `ThemeCrudController` or linked to it directly (custom dashboard menu override, etc.), update accordingly - there is no replacement class, `ConfigCrudController` handles every group generically.
 
 ### UiBundle
+
+**This bundle now declares the `ui_form` rate limiter itself.** `FormController` takes it as `@?limiter.ui_form`, and a `Form` built in the back office has no dedicated service of its own to bind a named limiter to — so a site that never declared `ui_form` served **every public Form with no rate limiting at all**, registration and password reset included, and nothing said so. That default is prepended here from now on: `sliding_window`, 5 attempts per 10 minutes.
+
+**`symfony/rate-limiter` moves from `require-dev` to `require`** for the same reason: the prepended limiter is worth nothing without the component, and leaving it to each site is what made the protection optional in the first place. Composer pulls it in on update, nothing to install by hand.
+
+**Nothing to run.** A site declaring its own `ui_form` keeps deciding, its `config/packages/rate_limiter.yaml` being merged over the prepended default.
+
+**Check yours for a dead limiter**, though: sites predating the generic Form mechanism declared `registration` and `reset_password`, which the scaffold controllers consumed by name. Those controllers are gone — if your `rate_limiter.yaml` still lists those two and nothing else, they limit nothing, and your forms were running unprotected until this release. Delete them once the site is on this package:
+
+```diff
+ framework:
+     rate_limiter:
+-        registration:
+-            policy: sliding_window
+-            limit: 5
+-            interval: '10 minutes'
+-        reset_password:
+-            policy: sliding_window
+-            limit: 5
+-            interval: '10 minutes'
+```
+
+Do this **after** migrating, not before: on a site still running the old scaffold controllers, those two limiters are the ones actually in use.
 
 **The theme, the site graphics and the cookie banner moved here from SiteBundle.** All three are what a site cannot go live without, and none of them had anything to do with having pages: an app running Config + Ui plus a shop compiled no theme at all (so every `--c975l-*` token this bundle's CSS reads was missing), had no screen to upload a favicon from, and shipped no GDPR banner.
 

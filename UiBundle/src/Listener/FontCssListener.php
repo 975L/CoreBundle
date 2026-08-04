@@ -81,6 +81,7 @@ class FontCssListener implements CacheWarmerInterface
         try {
             $this->regenerate();
         } catch (DBALException) {
+            return [];
         }
 
         return [];

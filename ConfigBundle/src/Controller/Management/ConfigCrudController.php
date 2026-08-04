@@ -322,6 +322,10 @@ class ConfigCrudController extends AbstractCrudController
             Config::TYPE_HTML => TextEditorField::new('value')
                 ->setLabel(t('label.value', [], 'config'))
                 ->setRequired(false),
+            // Textarea kind is multi-line plain text, kept out of the rich editor above: what it holds ends up verbatim in a .txt file (see SeoFilesWriter), where the tags that editor adds would be read as content
+            Config::TYPE_TEXTAREA => TextareaField::new('value')
+                ->setLabel(t('label.value', [], 'config'))
+                ->setRequired(false),
             // Falls back to a plain TextField with no font declared, an empty <select> being worse than free text
             Config::TYPE_FONT => $this->buildFontField($rawValue),
             // Text kind is plain string (URLs, ids, emails...), a rich editor would wrap it in a <div>

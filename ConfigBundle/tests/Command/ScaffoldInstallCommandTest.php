@@ -38,7 +38,7 @@ class ScaffoldInstallCommandTest extends TestCase
     public function testExecuteReportsCopiedBackedUpAndSkippedCounts(): void
     {
         $scaffoldInstaller = $this->createStub(ScaffoldInstaller::class);
-        $scaffoldInstaller->method('install')->willReturn(['copied' => 3, 'backedUp' => 1, 'skipped' => 5, 'files' => [], 'diverged' => [], 'unmatched' => []]);
+        $scaffoldInstaller->method('install')->willReturn(['copied' => 3, 'backedUp' => 1, 'skipped' => 5, 'files' => [], 'diverged' => [], 'deleted' => [], 'obsolete' => [], 'unmatched' => []]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
 
         $statusCode = $tester->execute([]);
@@ -47,11 +47,26 @@ class ScaffoldInstallCommandTest extends TestCase
         $this->assertStringContainsString('3 file(s) copied, 1 backed up into existingFiles/, 5 already up to date.', $tester->getDisplay());
     }
 
+    // Only --force ever writes into existingFiles/, so a run that backed nothing up must not name the directory at all - a site that never forces anything would otherwise read "0 backed up into existingFiles/" for good
+    #[AllowMockObjectsWithoutExpectations]
+    public function testExecuteLeavesTheBackupDirectoryOutOfTheMessageWhenNothingWasBackedUp(): void
+    {
+        $scaffoldInstaller = $this->createStub(ScaffoldInstaller::class);
+        $scaffoldInstaller->method('install')->willReturn(['copied' => 3, 'backedUp' => 0, 'skipped' => 5, 'files' => [], 'diverged' => [], 'deleted' => [], 'obsolete' => [], 'unmatched' => []]);
+        $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
+
+        $tester->execute([]);
+
+        $display = $tester->getDisplay();
+        $this->assertStringContainsString('3 file(s) copied, 5 already up to date.', $display);
+        $this->assertStringNotContainsString('existingFiles/', $display);
+    }
+
     // themeImportReminder() non-null: the app.css @import still needs to be added by hand
     public function testExecuteDisplaysTheThemeImportReminderWhenPresent(): void
     {
         $scaffoldInstaller = $this->createConfiguredStub(ScaffoldInstaller::class, [
-            'install' => ['copied' => 1, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'diverged' => [], 'unmatched' => []],
+            'install' => ['copied' => 1, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'diverged' => [], 'deleted' => [], 'obsolete' => [], 'unmatched' => []],
             'themeImportReminder' => 'Add @import url("./themes/site.css"); to assets/styles/app.css.',
         ]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
@@ -69,7 +84,7 @@ class ScaffoldInstallCommandTest extends TestCase
             ->expects($this->once())
             ->method('install')
             ->with(['src/Scheduler', 'tests/Scheduler'], true, false)
-            ->willReturn(['copied' => 0, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'diverged' => [], 'unmatched' => []])
+            ->willReturn(['copied' => 0, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'diverged' => [], 'deleted' => [], 'obsolete' => [], 'unmatched' => []])
         ;
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
 
@@ -84,7 +99,7 @@ class ScaffoldInstallCommandTest extends TestCase
             ->expects($this->once())
             ->method('install')
             ->with([], false, true)
-            ->willReturn(['copied' => 1, 'backedUp' => 1, 'skipped' => 0, 'files' => [], 'diverged' => [], 'unmatched' => []])
+            ->willReturn(['copied' => 1, 'backedUp' => 1, 'skipped' => 0, 'files' => [], 'diverged' => [], 'deleted' => [], 'obsolete' => [], 'unmatched' => []])
         ;
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
 
@@ -102,6 +117,8 @@ class ScaffoldInstallCommandTest extends TestCase
             'skipped' => 0,
             'files' => [],
             'diverged' => ['templates/security/login.html.twig' => 'vendor/c975l/config-bundle/scaffold/templates/security/login.html.twig'],
+            'deleted' => [],
+            'obsolete' => [],
             'unmatched' => [],
         ]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
@@ -126,6 +143,8 @@ class ScaffoldInstallCommandTest extends TestCase
             'skipped' => 0,
             'files' => ['src/Scheduler/MaintenanceSchedule.php', 'tests/Scheduler/MaintenanceScheduleTest.php'],
             'diverged' => [],
+            'deleted' => [],
+            'obsolete' => [],
             'unmatched' => [],
         ]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
@@ -136,6 +155,59 @@ class ScaffoldInstallCommandTest extends TestCase
         $this->assertStringContainsString('src/Scheduler/MaintenanceSchedule.php', $display);
         $this->assertStringContainsString('tests/Scheduler/MaintenanceScheduleTest.php', $display);
         $this->assertStringContainsString('Nothing was written.', $display);
+    }
+
+    // A deletion is what nobody can undo by re-running the command, so it is named even on a real run - a count alone would leave the developer to find out from a git status
+    #[AllowMockObjectsWithoutExpectations]
+    public function testExecuteNamesEveryFileItDeleted(): void
+    {
+        $scaffoldInstaller = $this->createStub(ScaffoldInstaller::class);
+        $scaffoldInstaller->method('install')->willReturn([
+            'copied' => 0,
+            'backedUp' => 0,
+            'skipped' => 0,
+            'files' => [],
+            'diverged' => [],
+            'deleted' => ['src/Security/EmailVerifier.php', 'tests/Security/EmailVerifierTest.php'],
+            'obsolete' => [],
+            'unmatched' => [],
+        ]);
+        $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
+
+        $tester->execute([]);
+
+        $display = $tester->getDisplay();
+        $this->assertStringContainsString('src/Security/EmailVerifier.php', $display);
+        $this->assertStringContainsString('tests/Security/EmailVerifierTest.php', $display);
+        $this->assertStringContainsString('2 deleted', $display);
+    }
+
+    // A withdrawn file the site made its own is left where it is, and the bundle that withdrew it is what points at the UPGRADE.md saying what took its place
+    #[AllowMockObjectsWithoutExpectations]
+    public function testExecuteNamesTheWithdrawnFilesItLeftInPlaceWithTheBundleThatWithdrewThem(): void
+    {
+        $scaffoldInstaller = $this->createStub(ScaffoldInstaller::class);
+        $scaffoldInstaller->method('install')->willReturn([
+            'copied' => 0,
+            'backedUp' => 0,
+            'skipped' => 0,
+            'files' => [],
+            'diverged' => [],
+            'deleted' => [],
+            'obsolete' => ['src/Form/RegistrationFormType.php' => 'c975LSiteBundle'],
+            'unmatched' => [],
+        ]);
+        $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));
+
+        $statusCode = $tester->execute([]);
+
+        $display = $tester->getDisplay();
+        $this->assertSame(Command::SUCCESS, $statusCode);
+        $this->assertStringContainsString('src/Form/RegistrationFormType.php', $display);
+        $this->assertStringContainsString('c975LSiteBundle', $display);
+        $this->assertStringContainsString('UPGRADE.md', $display);
+        // Nothing was deleted, so the count must stay out of the closing message
+        $this->assertStringNotContainsString('0 deleted', $display);
     }
 
     // Zero counts and a green success are what a propagation scripted over a dozen sites would show on a typo'd path, so the run has to fail out loud instead
@@ -149,6 +221,8 @@ class ScaffoldInstallCommandTest extends TestCase
             'skipped' => 0,
             'files' => [],
             'diverged' => [],
+            'deleted' => [],
+            'obsolete' => [],
             'unmatched' => ['src/Sheduler'],
         ]);
         $tester = new CommandTester(new ScaffoldInstallCommand($scaffoldInstaller));

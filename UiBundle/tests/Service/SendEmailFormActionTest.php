@@ -20,6 +20,7 @@ use c975L\UiBundle\Service\EmailService;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use c975L\UiBundle\Service\SendEmailFormAction;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SendEmailFormActionTest extends TestCase
 {
@@ -32,7 +33,15 @@ class SendEmailFormActionTest extends TestCase
         $emailTemplateRepository ??= $this->createConfiguredStub(EmailTemplateRepository::class, ['findOneBy' => null]);
         $emailTemplateRenderer ??= $this->createStub(EmailTemplateRenderer::class);
 
-        return new SendEmailFormAction($emailService, $emailTemplateRepository, $emailTemplateRenderer);
+        // Mimics the "ui" catalogue's own sentence rather than echoing the key back, so an assertion on the subject covers the form name actually reaching the placeholder
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(
+            static fn (string $id, array $parameters = [], ?string $domain = null): string => 'label.form_new_message' === $id
+                ? strtr('New message via %form%', $parameters)
+                : $id
+        );
+
+        return new SendEmailFormAction($emailService, $emailTemplateRepository, $emailTemplateRenderer, $translator);
     }
 
     public function testImplementsDebugPreviewCapableInterface(): void
@@ -88,7 +97,7 @@ class SendEmailFormActionTest extends TestCase
         $result = $action->handle($form, ['email' => 'visitor@example.com']);
 
         $this->assertTrue($result);
-        $this->assertSame('New submission: newsletter', $captured->subject);
+        $this->assertSame('New message via newsletter', $captured->subject);
         $this->assertSame('@c975LUi/emails/form_submission.html.twig', $captured->template);
         $this->assertNull($captured->html);
         $this->assertSame(['Email' => 'visitor@example.com'], $captured->context['fields']);

@@ -52,7 +52,7 @@ class ScaffoldInstallerTest extends TestCase
     // The counts alone, the lists install() also returns being asserted on their own where they matter (Finder gives no guaranteed order)
     private function counts(array $result): array
     {
-        unset($result['files'], $result['unmatched'], $result['diverged']);
+        unset($result['files'], $result['unmatched'], $result['diverged'], $result['deleted'], $result['obsolete']);
 
         return $result;
     }
@@ -87,6 +87,31 @@ class ScaffoldInstallerTest extends TestCase
             }
             file_put_contents($target, $content);
         }
+    }
+
+    // Declares, on the bundle's side, the scaffold files it no longer ships, with the hashes of the versions it once delivered
+    private function addRemovedDeclaration(string $bundleName, array $removed): void
+    {
+        $target = $this->projectDir . '/vendor/c975l/' . $bundleName . '/scaffold/removed.json';
+        if (!is_dir(\dirname($target))) {
+            mkdir(\dirname($target), 0775, true);
+        }
+
+        file_put_contents($target, json_encode(array_map(
+            static fn (array $contents): array => array_map(static fn (string $content): string => hash('sha256', $content), $contents),
+            $removed
+        )));
+    }
+
+    // Writes a file the site is supposed to already have, scaffolded or written by itself
+    private function addProjectFile(string $relativePath, string $content): void
+    {
+        $target = $this->projectDir . '/' . $relativePath;
+        if (!is_dir(\dirname($target))) {
+            mkdir(\dirname($target), 0775, true);
+        }
+
+        file_put_contents($target, $content);
     }
 
     // The scaffolded class the reminder checks for before advising the import's removal
@@ -229,6 +254,19 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertStringContainsString('public/medias', $gitignore);
         foreach (Media::getSingletonRoles() as $role) {
             $this->assertStringContainsString('public/' . $role . '.*', $gitignore);
+        }
+    }
+
+    // Rewritten from this environment's own configs on every deployment (see SeoFilesWriter), so a committed copy is a merge conflict waiting to happen
+    public function testInstallGitignoresTheGeneratedSeoFiles(): void
+    {
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $installer->install();
+
+        $gitignore = file_get_contents($this->projectDir . '/.gitignore');
+        foreach (['public/robots.txt', 'public/humans.txt', 'public/llms.txt'] as $rule) {
+            $this->assertStringContainsString($rule, $gitignore);
         }
     }
 
@@ -410,6 +448,122 @@ class ScaffoldInstallerTest extends TestCase
 
         $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 1], $this->counts($result));
         $this->assertSame([], $result['unmatched']);
+    }
+
+    // A file the bundle withdrew and the site never touched has nothing left to say: it is deleted, which is what the manifest could never do on its own for anything withdrawn before it existed
+    public function testInstallDeletesAWithdrawnFileTheSiteNeverTouched(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'kernel']);
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
+        $this->addProjectFile('src/Security/EmailVerifier.php', 'as-delivered');
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
+        $this->assertSame([], $result['obsolete']);
+        $this->assertFileDoesNotExist($this->projectDir . '/src/Security/EmailVerifier.php');
+    }
+
+    // Any version the bundle ever delivered counts as untouched, a site being free to have stopped upgrading several versions ago
+    public function testInstallDeletesAWithdrawnFileMatchingAnOlderDeliveredVersion(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['src/Form/RegistrationFormType.php' => ['first-version', 'second-version']]);
+        $this->addProjectFile('src/Form/RegistrationFormType.php', 'first-version');
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $this->assertSame(['src/Form/RegistrationFormType.php'], $result['deleted']);
+        $this->assertFileDoesNotExist($this->projectDir . '/src/Form/RegistrationFormType.php');
+    }
+
+    // The manifest is the other witness, and the only one for a version the declaration doesn't list - the file's own record of what was last delivered here
+    public function testInstallDeletesAWithdrawnFileMatchingTheManifestAndForgetsItsEntry(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['some-other-version']]);
+        $this->addProjectFile('src/Security/EmailVerifier.php', 'what-this-site-got');
+        $this->recordAsDelivered('src/Security/EmailVerifier.php', 'what-this-site-got');
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
+        $manifest = json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true);
+        $this->assertArrayNotHasKey('src/Security/EmailVerifier.php', $manifest);
+    }
+
+    // The same stance as a file that merely changed: what the site wrote is never deleted behind its back, it is reported with the bundle that withdrew it
+    public function testInstallLeavesAWithdrawnFileTheSiteCustomizedInPlaceAndReportsIt(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
+        $this->addProjectFile('src/Security/EmailVerifier.php', 'my-own-verifier');
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $this->assertSame([], $result['deleted']);
+        $this->assertSame(['src/Security/EmailVerifier.php' => 'site-bundle'], $result['obsolete']);
+        $this->assertSame('my-own-verifier', file_get_contents($this->projectDir . '/src/Security/EmailVerifier.php'));
+    }
+
+    // --force deletes it too, and still never erases: the site's own version goes to existingFiles/, exactly as an overwrite does
+    public function testForceDeletesACustomizedWithdrawnFileIntoTheBackupDirectory(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
+        $this->addProjectFile('src/Security/EmailVerifier.php', 'my-own-verifier');
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], false, true);
+
+        $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
+        $this->assertSame([], $result['obsolete']);
+        $this->assertSame(1, $result['backedUp']);
+        $this->assertFileDoesNotExist($this->projectDir . '/src/Security/EmailVerifier.php');
+        $this->assertSame('my-own-verifier', file_get_contents($this->projectDir . '/existingFiles/src/Security/EmailVerifier.php.old'));
+    }
+
+    // A path one bundle withdrew while another still ships it was moved between bundles, not withdrawn - deleting it would take the file the same run has just delivered
+    public function testInstallKeepsAWithdrawnPathAnotherBundleStillShips(): void
+    {
+        $this->addScaffoldBundle('config-bundle', ['src/Security/UserChecker.php' => 'now-shipped-here']);
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/UserChecker.php' => ['now-shipped-here']]);
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $this->assertSame([], $result['deleted']);
+        $this->assertSame('now-shipped-here', file_get_contents($this->projectDir . '/src/Security/UserChecker.php'));
+    }
+
+    // A site that never had the file, or deleted it long ago, has nothing to be told about
+    public function testInstallReportsNothingForAWithdrawnFileTheProjectDoesNotHave(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+
+        $this->assertSame([], $result['deleted']);
+        $this->assertSame([], $result['obsolete']);
+    }
+
+    // Propagating one upgraded file must not delete anything on the way, a narrowed run being the safe way to touch a site
+    public function testInstallRestrictedToAPathDeletesNothingOutsideIt(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Scheduler/MaintenanceSchedule.php' => 'new-schedule']);
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
+        $this->addProjectFile('src/Security/EmailVerifier.php', 'as-delivered');
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
+
+        $this->assertSame([], $result['deleted']);
+        $this->assertFileExists($this->projectDir . '/src/Security/EmailVerifier.php');
+    }
+
+    // A dry run reports the deletion without performing it, which is what makes it worth running before the real one
+    public function testDryRunReportsTheDeletionWithoutPerformingIt(): void
+    {
+        $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
+        $this->addProjectFile('src/Security/EmailVerifier.php', 'as-delivered');
+
+        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], true);
+
+        $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
+        $this->assertSame('as-delivered', file_get_contents($this->projectDir . '/src/Security/EmailVerifier.php'));
     }
 
     // A dry run reports what would happen and writes nothing at all - not the copy, not the backup, not the .gitignore, not the manifest

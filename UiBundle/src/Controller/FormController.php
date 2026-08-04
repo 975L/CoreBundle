@@ -160,11 +160,14 @@ class FormController extends AbstractController
                     }
                 }
 
+                // A form that emails its submission (contact and the like) says so - "your message has been sent"; every other action keeps the generic wording, a registration or a password reset request being no message sent by the visitor
+                $successKey = 'send_email' === $action->getKey() ? 'label.form_message_sent' : 'label.form_submitted';
+
                 // Translated here, not in the template: the redirect-to-referer path lands on the site layout, which renders flashes as-is
                 $this->addFlashTo(
                     $request,
                     $success ? 'success' : 'danger',
-                    $this->translator->trans($success ? 'label.form_submitted' : 'label.form_submission_failed', [], 'ui')
+                    $this->translator->trans($success ? $successKey : 'label.form_submission_failed', [], 'ui')
                 );
             }
         }

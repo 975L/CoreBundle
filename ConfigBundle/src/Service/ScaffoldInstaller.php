@@ -27,6 +27,9 @@ class ScaffoldInstaller
     // Hash of every scaffold file as it was last delivered here, which is what tells a file the site customized from a file the scaffold itself moved on from - the two are indistinguishable by content alone. Versioned like symfony.lock: a site without it (or having lost it) is simply treated as having customized everything, which is the safe way round
     private const MANIFEST_FILE = '.c975l-scaffold.json';
 
+    // The scaffold files a bundle has withdrawn, mapped to the hashes of every version it ever delivered ({"src/Security/EmailVerifier.php": ["<sha256>", …]}). Read from the bundle rather than deduced from what the manifest holds and the scaffold no longer ships: an uninstalled bundle takes its whole scaffold directory with it, and its files are then no more "withdrawn" than the site's own work is. It also reaches the sites whose file predates the manifest, which is every site for anything withdrawn before it existed. Sits beside scaffold/{src,templates,…} rather than inside one of them, where the Finder would copy it into the project
+    private const REMOVED_FILE = 'scaffold/removed.json';
+
     public function __construct(
         private readonly BundleLocator $bundleLocator,
         #[Autowire('%kernel.project_dir%')]
@@ -34,7 +37,7 @@ class ScaffoldInstaller
     ) {
     }
 
-    // Copies scaffold/{src,templates,tests,translations,assets} from every installed c975L bundle into the project - a target already identical to the scaffold source is left untouched (no backup, no copy), so re-running this on an unmodified project is a no-op. A target that differs is decided by MANIFEST_FILE rather than overwritten on sight: still bit-for-bit what was last delivered here means the site never touched it and the scaffold moved on, so it is refreshed silently; anything else is the site's own work, is left exactly as it is, and comes back under 'diverged' for the caller to report. $force takes the old behaviour back for those - overwrite, after backing the file up into existingFiles/<same relative path>.old - which is what a site adopting a new scaffold wholesale wants, ideally narrowed by $paths. 'assets' stays outside all of it: once a target exists there it is the app's own editable file, whatever its content (see themeImportReminder()). $paths restricts the run to the relative paths given ('src/Scheduler', or a single file), $dryRun reports what would happen without writing anything. The returned 'unmatched' lists the given paths no scaffold file answered to, a run restricted to nothing at all being indistinguishable from an up-to-date site otherwise
+    // Copies scaffold/{src,templates,tests,translations,assets} from every installed c975L bundle into the project - a target already identical to the scaffold source is left untouched (no backup, no copy), so re-running this on an unmodified project is a no-op. A target that differs is decided by MANIFEST_FILE rather than overwritten on sight: still bit-for-bit what was last delivered here means the site never touched it and the scaffold moved on, so it is refreshed silently; anything else is the site's own work, is left exactly as it is, and comes back under 'diverged' for the caller to report. $force takes the old behaviour back for those - overwrite, after backing the file up into existingFiles/<same relative path>.old - which is what a site adopting a new scaffold wholesale wants, ideally narrowed by $paths. 'assets' stays outside all of it: once a target exists there it is the app's own editable file, whatever its content (see themeImportReminder()). The withdrawn files each bundle declares in REMOVED_FILE are deleted under the same rule, see remove(). $paths restricts the run to the relative paths given ('src/Scheduler', or a single file), $dryRun reports what would happen without writing anything. The returned 'unmatched' lists the given paths no scaffold file answered to, a run restricted to nothing at all being indistinguishable from an up-to-date site otherwise
     public function install(array $paths = [], bool $dryRun = false, bool $force = false): array
     {
         $copied = 0;
@@ -42,6 +45,7 @@ class ScaffoldInstaller
         $skipped = 0;
         $files = [];
         $diverged = [];
+        $delivered = [];
         $matchedPaths = [];
         $manifest = $this->readManifest();
 
@@ -56,6 +60,9 @@ class ScaffoldInstaller
                 foreach ($finder as $file) {
                     $relativePath = $dir . '/' . $file->getRelativePathname();
                     $target = $this->projectDir . '/' . $relativePath;
+
+                    // Recorded before the $paths filter and whatever this file's fate is: what remove() must not delete is what some bundle still ships, which a run narrowed to another path doesn't stop being true of
+                    $delivered[$relativePath] = true;
 
                     if ($paths) {
                         $matched = array_filter($paths, static fn (string $path): bool => self::matches($relativePath, $path));
@@ -113,6 +120,54 @@ class ScaffoldInstaller
             }
         }
 
+        $deleted = [];
+        $obsolete = [];
+
+        foreach ($this->bundleLocator->directories() as $bundle => $bundleDir) {
+            foreach ($this->readRemoved($bundleDir) as $relativePath => $hashes) {
+                // A path another bundle (or this one, from another directory) still ships was moved, not withdrawn - it has just been delivered above
+                if (isset($delivered[$relativePath])) {
+                    continue;
+                }
+
+                if ($paths) {
+                    $matched = array_filter($paths, static fn (string $path): bool => self::matches($relativePath, $path));
+                    if (!$matched) {
+                        continue;
+                    }
+
+                    $matchedPaths = array_merge($matchedPaths, $matched);
+                }
+
+                $target = $this->projectDir . '/' . $relativePath;
+                if (!is_file($target)) {
+                    unset($manifest[$relativePath]);
+                    continue;
+                }
+
+                // Either witness will do: the manifest says what was last delivered here, the declared hashes say what was ever delivered anywhere - and only the second one reaches a file withdrawn before the manifest existed, which the site would otherwise carry forever
+                $targetHash = hash_file('sha256', $target);
+                $pristine = \in_array($targetHash, (array) $hashes, true) || $targetHash === ($manifest[$relativePath] ?? null);
+
+                if (!$pristine && !$force) {
+                    $obsolete[$relativePath] = $bundle;
+                    continue;
+                }
+
+                if (!$dryRun) {
+                    // Same rule as an overwrite: what the site wrote is moved to existingFiles/ rather than lost, what it never touched is simply gone
+                    $pristine ? unlink($target) : $this->backup($relativePath, $target);
+                }
+
+                if (!$pristine) {
+                    ++$backedUp;
+                }
+
+                unset($manifest[$relativePath]);
+                $deleted[] = $relativePath;
+            }
+        }
+
         if (!$dryRun) {
             $this->writeManifest($manifest);
             $this->ensureGitignored();
@@ -124,8 +179,23 @@ class ScaffoldInstaller
             'skipped' => $skipped,
             'files' => $files,
             'diverged' => $diverged,
+            'deleted' => $deleted,
+            'obsolete' => $obsolete,
             'unmatched' => array_values(array_diff($paths, $matchedPaths)),
         ];
+    }
+
+    // The paths one bundle declares as withdrawn, each mapped to the hashes of the versions it delivered - a bundle shipping no such file simply withdraws nothing
+    private function readRemoved(string $bundleDir): array
+    {
+        $file = $bundleDir . '/' . self::REMOVED_FILE;
+        if (!is_file($file)) {
+            return [];
+        }
+
+        $removed = json_decode((string) file_get_contents($file), true);
+
+        return is_array($removed) ? $removed : [];
     }
 
     private function readManifest(): array
@@ -226,10 +296,10 @@ class ScaffoldInstaller
         }
     }
 
-    // What the back-office writes into the project at runtime, carried between environments by the export/import (see SiteGraphicExportProvider/SiteGraphicImportProvider), never by git: tracking any of it means the next deploy resetting the working tree wipes whatever was uploaded in production. Singleton graphics sit at the root of public/ under their own role name, with the extension the role's fixed spec imposes (see c975L\UiBundle\Namer\UiMediaNamer), hence the wildcard rather than a hardcoded list of filenames
+    // What the back-office writes into the project at runtime, carried between environments by the export/import (see SiteGraphicExportProvider/SiteGraphicImportProvider), never by git: tracking any of it means the next deploy resetting the working tree wipes whatever was uploaded in production. Singleton graphics sit at the root of public/ under their own role name, with the extension the role's fixed spec imposes (see c975L\UiBundle\Namer\UiMediaNamer), hence the wildcard rather than a hardcoded list of filenames. The three SEO files join them for the same reason - SeoFilesWriter rewrites them from this environment's own configs on every deployment, so a committed copy is a merge conflict waiting to happen. A rule added here doesn't untrack a file git already follows: a site that used to commit its robots.txt runs "git rm --cached public/robots.txt" once, see the readme
     private function gitignoreRules(): array
     {
-        $rules = ['existingFiles/', 'public/medias'];
+        $rules = ['existingFiles/', 'public/medias', 'public/robots.txt', 'public/humans.txt', 'public/llms.txt'];
         foreach (Media::getSingletonRoles() as $role) {
             $rules[] = 'public/' . $role . '.*';
         }

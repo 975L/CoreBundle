@@ -47,7 +47,7 @@ export default class extends Controller {
 
             // Adds image
             const image = document.createElement("img");
-            image.src = ICON_PATH + "eye.svg";
+            image.src = `${ICON_PATH}eye.svg`;
             image.width = 20;
             image.height = 20;
             image.alt = "";
@@ -61,7 +61,7 @@ export default class extends Controller {
                 if (passwordInput.type === "password") {
                     passwordInput.type = "text";
                     passwordInput.setAttribute("autocomplete", "off");
-                    image.src = ICON_PATH + "eye-slash.svg";
+                    image.src = `${ICON_PATH}eye-slash.svg`;
                 } else {
                     passwordInput.type = "password";
 
@@ -71,7 +71,7 @@ export default class extends Controller {
                         passwordInput.setAttribute("autocomplete", initialAutocomplete);
                     }
 
-                    image.src = ICON_PATH + "eye.svg";
+                    image.src = `${ICON_PATH}eye.svg`;
                 }
             });
         });
@@ -138,8 +138,8 @@ export default class extends Controller {
     report(input, isValid, message) {
         // After the ".has-toggle" wrapper, not inside it, which would push the eye icon down
         const anchor = input.closest(".has-toggle") || input;
-        const errorId = (input.id || input.name || "password") + "_error";
-        anchor.parentNode.querySelector(":scope > #" + CSS.escape(errorId))?.remove();
+        const errorId = `${input.id || input.name || "password"}_error`;
+        anchor.parentNode.querySelector(`:scope > #${CSS.escape(errorId)}`)?.remove();
         input.classList.toggle("error", !isValid);
         input.classList.toggle("success", isValid);
 

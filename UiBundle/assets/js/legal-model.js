@@ -36,7 +36,7 @@ export default class extends Controller {
     // client added of their own has one too, but sits outside the units collection, so it simply matches nothing
     focusUnit(unitId) {
         const idInput = [...this.element.querySelectorAll('input[name$="[id]"]')].find((el) => el.value === unitId);
-        const card = idInput && idInput.closest(".field-collection-item");
+        const card = idInput?.closest(".field-collection-item");
         if (!card) return;
 
         card.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -54,7 +54,7 @@ export default class extends Controller {
         const card = document.createElement("div");
         card.className = "card mb-3";
         // Assigned raw on purpose: Symfony's own data-prototype, server-rendered into the template, so sanitizing it would strip the form widgets it is made of
-        card.innerHTML = '<div class="card-body">' + holder.dataset.prototype.replace(/__name__/g, String(index)) + "</div>";
+        card.innerHTML = `<div class="card-body">${holder.dataset.prototype.replace(/__name__/g, String(index))}</div>`;
         card.querySelector(".card-body").appendChild(this.removeButton());
 
         holder.appendChild(card);
@@ -99,7 +99,7 @@ export default class extends Controller {
 
         // Trix keeps its own document: writing the textarea alone would be overwritten on the next keystroke
         const editor = item.querySelector("trix-editor");
-        if (editor && editor.editor) {
+        if (editor?.editor) {
             editor.editor.loadHTML(content);
         }
     }

@@ -72,6 +72,14 @@ class c975LUiBundle extends AbstractBundle
                     __DIR__ . '/../assets' => '@c975l/ui-bundle',
                 ],
             ],
+            // The limiter every generic Form shares, declared here rather than left to the consuming app: a Form built in the back office has no dedicated service of its own to bind a named limiter to, and FormController takes "@?limiter.ui_form" optionally, so a site that never declared it served its public forms - registration and password reset among them - with no limit at all, and nothing said so. An app declaring its own "ui_form" still decides, its config being merged over this one. Unguarded on purpose: symfony/rate-limiter is a hard dependency of this package, and an app that strips it anyway must fail on an unknown "rate_limiter" key rather than quietly lose the protection again
+            'rate_limiter' => [
+                'ui_form' => [
+                    'policy' => 'sliding_window',
+                    'limit' => 5,
+                    'interval' => '10 minutes',
+                ],
+            ],
         ]);
 
         // The admin form themes are NOT registered here: EasyAdmin renders every CRUD form with "... only", which ignores this config entirely (see FormThemeProviderInterface) - they are instead contributed to FormThemeRegistry via UiFormThemeProvider and picked up by ConfigBundle's DashboardController::configureCrud(). CaptchaType only ever appears in public forms, which are rendered by plain Twig, so the app-wide config is the right place for it (and what karser/karser-recaptcha3-bundle did for the widget this one replaces)

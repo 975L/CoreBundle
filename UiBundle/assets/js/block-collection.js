@@ -19,12 +19,12 @@ export default class extends Controller {
     }
 
     onItemAdded(event) {
-        const newElement = event.detail && event.detail.newElement;
+        const newElement = event.detail?.newElement;
         if (!newElement) return;
 
         // block-duplicate.js drives its own freshly-added row (kind + scroll position) itself, so it flags the collection to skip this scroll/focus while it does that.
         const collection = event.detail.collection;
-        if (collection && collection.dataset.uiSuppressAutofocus) return;
+        if (collection?.dataset.uiSuppressAutofocus) return;
 
         // Only for newly added block rows, not for a media entry added inside an existing block
         const kindRow = newElement.querySelector('[data-kind-row]');

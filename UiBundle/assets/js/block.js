@@ -12,7 +12,7 @@ export function loadBlockData(selectElement, kindUrl, kind, body) {
     const prefix   = selectElement.name.replace(/\[kind\]$/, '');
     const idPrefix = selectElement.id.replace(/_kind$/, '');
     const kindRow  = selectElement.closest('[data-kind-row]');
-    const compound = kindRow && kindRow.parentElement;
+    const compound = kindRow?.parentElement;
     if (!compound) return Promise.resolve();
 
     let container = compound.querySelector('.block-data-form');
@@ -31,12 +31,12 @@ export function loadBlockData(selectElement, kindUrl, kind, body) {
 
     const init = body ? { method: 'POST', body } : {};
 
-    return fetch(kindUrl + '?k=' + encodeURIComponent(kind), init)
+    return fetch(`${kindUrl}?k=${encodeURIComponent(kind)}`, init)
         .then(r => r.text())
         .then(html => {
             // Assigned raw on purpose: this is a Symfony-rendered form fragment coming from the bundle's own kind route, never a user-supplied string, and sanitizing it would strip the very inputs it exists to inject
             container.innerHTML = html
-                .replaceAll('_block_[', prefix + '[')
+                .replaceAll('_block_[', `${prefix}[`)
                 // Scoped to attribute-value/anchor starts (id="block_…", for="block_…", href="#block_…") rather than a blind replace, so it can't corrupt an unrelated class or text containing "block_".
                 .replace(/(["'#])block_/g, `$1${idPrefix}_`);
 

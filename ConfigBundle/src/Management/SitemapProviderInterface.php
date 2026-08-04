@@ -23,7 +23,9 @@ interface SitemapProviderInterface
     /**
      * Urls to declare, all four keys expected. 'priority' uses the same 0-10 scale as the admin's own page priority, SitemapWriter converts it to the 0.0-1.0 the protocol accepts. It also defaults a missing 'lastmod'/'changefreq'/'priority' and bounds an out of range 'priority', so an incomplete url degrades instead of breaking the whole sitemap. Return [] when there's nothing to declare - no file is written and nothing is added to the index.
      *
-     * @return list<array{loc: string, lastmod?: string, changefreq?: string, priority?: int}> 'loc' absolute, 'lastmod' as 'Y-m-d', 'priority' from 0 to 10
+     * 'title' and 'description' are optional and ignored by the sitemap itself: they are what SeoFilesWriter builds the site's llms.txt from, one section per provider. Supply them for the urls that belong in a curated index a language model reads (a book, a product, a page), leave them out for the rest - an url with no title contributes nothing there, and a provider whose urls have none contributes no section at all. Which is what keeps llms.txt from becoming the sitemap in Markdown: a gallery declaring two thousand photos has no business listing them one by one. The description is stripped of markup, flattened to a single line and truncated by the writer, so a page's own meta description can be passed as-is.
+     *
+     * @return list<array{loc: string, lastmod?: string, changefreq?: string, priority?: int, title?: string, description?: string}> 'loc' absolute, 'lastmod' as 'Y-m-d', 'priority' from 0 to 10
      */
     public function getUrls(): array;
 }

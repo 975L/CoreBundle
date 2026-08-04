@@ -15,7 +15,7 @@ document.addEventListener('change', event => {
     const wrapper = input.closest('.ea-vich-image');
     if (!wrapper) return;
 
-    const file = input.files && input.files[0];
+    const file = input.files?.[0];
     let preview = wrapper.querySelector('.ui-media-preview');
 
     if (!file) {

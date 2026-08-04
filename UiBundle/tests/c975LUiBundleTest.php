@@ -69,6 +69,35 @@ class c975LUiBundleTest extends TestCase
         $this->assertSame(['@c975l/ui-bundle'], array_values($paths));
     }
 
+    // FormController takes its limiter optionally, so a site that never declared one served registration and password reset unlimited - a default belongs here, where no site can forget it
+    public function testPrependExtensionRegistersTheGenericFormRateLimiter(): void
+    {
+        $container = new ContainerBuilder();
+
+        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $limiter = $container->getExtensionConfig('framework')[0]['rate_limiter']['ui_form'];
+
+        $this->assertSame('sliding_window', $limiter['policy']);
+        $this->assertSame(5, $limiter['limit']);
+        $this->assertSame('10 minutes', $limiter['interval']);
+    }
+
+    // The name is the contract with FormController's "@?limiter.ui_form" argument - a rename on either side silently restores the hole this default closes
+    public function testTheRateLimiterIsNamedAfterTheServiceFormControllerAsksFor(): void
+    {
+        $container = new ContainerBuilder();
+
+        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $this->assertSame(['ui_form'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
+        $this->assertStringContainsString(
+            '@?limiter.ui_form',
+            file_get_contents(__DIR__ . '/../config/services.yaml'),
+            'FormController no longer asks for limiter.ui_form, which is the name prepended here.'
+        );
+    }
+
     // Every entity of this bundle carrying an uploaded file needs its mapping declared here - Font's used to come from SiteBundle, which an app running Config + Ui plus a satellite bundle doesn't have, and an upload then died on "No mapping named site_font configured"
     public function testPrependExtensionRegistersAVichMappingForEveryUploadingEntity(): void
     {

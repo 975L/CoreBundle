@@ -427,5 +427,93 @@
         "group": "general",
         "severity": "info",
         "description": "description.site_first_online_date"
+    },
+    {
+        "label": "label.seo_robots_disallow",
+        "slug": "seo-robots-disallow",
+        "sensitive": false,
+        "restricted": true,
+        "value": "[]",
+        "kind": "json",
+        "group": "seo",
+        "severity": "warning",
+        "description": "description.seo_robots_disallow"
+    },
+    {
+        "label": "label.seo_robots_block_ai",
+        "slug": "seo-robots-block-ai",
+        "sensitive": false,
+        "restricted": true,
+        "value": "false",
+        "kind": "bool",
+        "group": "seo",
+        "severity": "warning",
+        "description": "description.seo_robots_block_ai"
+    },
+    {
+        "label": "label.seo_robots_ai_crawlers",
+        "slug": "seo-robots-ai-crawlers",
+        "sensitive": false,
+        "restricted": true,
+        "value": "[\"AI2Bot\", \"Amazonbot\", \"anthropic-ai\", \"Applebot-Extended\", \"Bytespider\", \"CCBot\", \"ClaudeBot\", \"cohere-ai\", \"Diffbot\", \"FacebookBot\", \"Google-Extended\", \"GPTBot\", \"ImagesiftBot\", \"meta-externalagent\", \"Omgilibot\", \"Timpibot\"]",
+        "kind": "json",
+        "group": "seo",
+        "severity": null,
+        "description": "description.seo_robots_ai_crawlers"
+    },
+    {
+        "label": "label.seo_robots_ai_crawlers_source",
+        "slug": "seo-robots-ai-crawlers-source",
+        "sensitive": false,
+        "restricted": true,
+        "value": "https://raw.githubusercontent.com/ai-robots-txt/ai.robots.txt/main/robots.json",
+        "kind": "text",
+        "group": "seo",
+        "severity": null,
+        "description": "description.seo_robots_ai_crawlers_source"
+    },
+    {
+        "label": "label.seo_robots_extra",
+        "slug": "seo-robots-extra",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "textarea",
+        "group": "seo",
+        "severity": null,
+        "description": "description.seo_robots_extra"
+    },
+    {
+        "label": "label.seo_humans_from",
+        "slug": "seo-humans-from",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "seo",
+        "severity": null,
+        "description": "description.seo_humans_from"
+    },
+    {
+        "label": "label.seo_humans_thanks",
+        "slug": "seo-humans-thanks",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "textarea",
+        "group": "seo",
+        "severity": null,
+        "description": "description.seo_humans_thanks"
+    },
+    {
+        "label": "label.seo_llms_summary",
+        "slug": "seo-llms-summary",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "textarea",
+        "group": "seo",
+        "severity": "info",
+        "description": "description.seo_llms_summary"
     }
 ]

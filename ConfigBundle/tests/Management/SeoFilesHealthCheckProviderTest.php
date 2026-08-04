@@ -28,6 +28,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
     private const BLOCKING_ROBOTS = "User-agent: *\nDisallow: /\n";
     private const PARTIAL_DISALLOW_ROBOTS = "User-agent: *\nDisallow: /admin/\n";
     private const SCOPED_DISALLOW_ROBOTS = "User-agent: SomeBot\nDisallow: /\n\nUser-agent: *\nDisallow:\n";
+    private const HUMANS = "# TEAM\n\tAdministrator: Someone\n";
+    private const LLMS = "# Example\n\n## Site\n\n- [About](https://example.com/about): Who we are\n- [Contact](https://example.com/contact)\n";
 
     // A real resolver over a stubbed config, so the trailing-slash normalisation the provider relies on is exercised rather than stubbed away
     private function createSiteUrlResolver(?string $siteUrl): SiteUrlResolver
@@ -38,8 +40,21 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         return new SiteUrlResolver($configService);
     }
 
+    // humans.txt and llms.txt answer for every case a test doesn't declare them in, so each one only states the file it is about: a fine humans.txt and no llms.txt at all, which is the state of a site with nothing to index
     private function createClient(array $responses): SeoFilesClient
     {
+        $declared = array_column($responses, 0);
+        $defaults = [
+            ['https://example.com/humans.txt', ['statusCode' => 200, 'content' => self::HUMANS]],
+            ['https://example.com/llms.txt', ['statusCode' => 404, 'content' => '']],
+        ];
+
+        foreach ($defaults as $default) {
+            if (!in_array($default[0], $declared, true)) {
+                $responses[] = $default;
+            }
+        }
+
         $client = $this->createStub(SeoFilesClient::class);
         $client->method('fetch')->willReturnMap($responses);
 
@@ -81,11 +96,11 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
         $results = $provider->runChecks();
 
-        $this->assertCount(2, $results);
+        $this->assertCount(3, $results);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[0]['status']);
         $this->assertSame('https://example.com/robots.txt', $results[0]['url']);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[1]['status']);
-        $this->assertSame('https://example.com/sitemap-site.xml', $results[1]['url']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
+        $this->assertSame('https://example.com/sitemap-site.xml', $results[2]['url']);
     }
 
     // A "site-url" saved with its trailing slash used to produce "https://example.com//robots.txt", which answers 404 and reports a perfectly deployed file as missing
@@ -179,7 +194,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
 
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[1]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[2]['status']);
     }
 
     public function testRunChecksStatusIsErrorWhenSitemapIsNotValidXml(): void
@@ -192,7 +207,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
 
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[1]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[2]['status']);
     }
 
     private function runSitemapCheck(string $content, ?\DateTimeImmutable $lastModified = null): array
@@ -205,7 +220,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
 
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
 
-        return $provider->runChecks()[1];
+        return $provider->runChecks()[2];
     }
 
     // When the sitemap file itself was last rewritten, the only thing telling the freshness checks apart
@@ -264,7 +279,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
 
         $results = $provider->runChecks();
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[0]['status']);
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[1]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
     }
 
     public function testRunChecksAddsAnIndexRowPlusOneRowPerChildSitemapWhenAllAreFine(): void
@@ -280,15 +295,15 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
         $results = $provider->runChecks();
 
-        $this->assertCount(5, $results);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
-        $this->assertSame('https://example.com/sitemap-index.xml', $results[2]['url']);
+        $this->assertCount(6, $results);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[3]['status']);
-        $this->assertSame('https://example.com/sitemap-page.xml', $results[3]['url']);
-        $this->assertSame('sitemap-page.xml', $results[3]['label']);
+        $this->assertSame('https://example.com/sitemap-index.xml', $results[3]['url']);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[4]['status']);
-        $this->assertSame('https://example.com/sitemap-book.xml', $results[4]['url']);
-        $this->assertSame('sitemap-book.xml', $results[4]['label']);
+        $this->assertSame('https://example.com/sitemap-page.xml', $results[4]['url']);
+        $this->assertSame('sitemap-page.xml', $results[4]['label']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[5]['status']);
+        $this->assertSame('https://example.com/sitemap-book.xml', $results[5]['url']);
+        $this->assertSame('sitemap-book.xml', $results[5]['label']);
     }
 
     public function testRunChecksDoesNotAddAnyRowWhenSitemapIndexIsMissing(): void
@@ -301,7 +316,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
 
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
 
-        $this->assertCount(2, $provider->runChecks());
+        $this->assertCount(3, $provider->runChecks());
     }
 
     public function testRunChecksStatusIsErrorWhenSitemapIndexIsNotValidXml(): void
@@ -315,8 +330,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
         $results = $provider->runChecks();
 
-        $this->assertCount(3, $results);
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
+        $this->assertCount(4, $results);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[3]['status']);
     }
 
     public function testRunChecksStatusIsWarningWhenSitemapIndexHasNoEntries(): void
@@ -330,8 +345,8 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
         $results = $provider->runChecks();
 
-        $this->assertCount(3, $results);
-        $this->assertSame(HealthCheckResult::STATUS_WARNING, $results[2]['status']);
+        $this->assertCount(4, $results);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $results[3]['status']);
     }
 
     public function testRunChecksOnlyFlagsTheOneChildSitemapThatIsUnreachable(): void
@@ -347,11 +362,11 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
         $results = $provider->runChecks();
 
-        $this->assertCount(5, $results);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[3]['status']);
-        $this->assertSame('https://example.com/sitemap-page.xml', $results[3]['url']);
-        $this->assertSame(HealthCheckResult::STATUS_OK, $results[4]['status']);
+        $this->assertCount(6, $results);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[3]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[4]['status']);
+        $this->assertSame('https://example.com/sitemap-page.xml', $results[4]['url']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[5]['status']);
     }
 
     public function testRunChecksStatusIsErrorWhenAChildSitemapIsNotValidXml(): void
@@ -367,6 +382,103 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
         $results = $provider->runChecks();
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[3]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[4]['status']);
+    }
+
+    private function runHumansCheck(int $statusCode, string $content, ?\DateTimeImmutable $lastModified = null): array
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS, 'lastModified' => null]],
+            ['https://example.com/humans.txt', ['statusCode' => $statusCode, 'content' => $content, 'lastModified' => $lastModified]],
+            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP, 'lastModified' => null]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '', 'lastModified' => null]],
+        ]);
+
+        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+
+        return $provider->runChecks()[1];
+    }
+
+    public function testRunChecksReportsHumansOnItsOwnRow(): void
+    {
+        $result = $this->runHumansCheck(200, self::HUMANS);
+
+        $this->assertSame('https://example.com/humans.txt', $result['url']);
+        $this->assertSame('humans.txt', $result['label']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $result['status']);
+    }
+
+    // SeoFilesWriter writes it for any site, so a missing one means c975l:seo:files:create never ran here - a warning, nothing being lost to a crawler meanwhile, unlike robots.txt
+    public function testRunChecksStatusIsWarningWhenHumansIsMissing(): void
+    {
+        $result = $this->runHumansCheck(404, '');
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $result['status']);
+        $this->assertSame('label.health_check_humans_missing', $result['summary']);
+    }
+
+    public function testRunChecksStatusIsWarningWhenHumansIsEmpty(): void
+    {
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $this->runHumansCheck(200, '   ')['status']);
+    }
+
+    // Its "Last update" line is the date the file was written: a file nothing has rewritten for months states a date that has quietly started lying
+    public function testRunChecksStatusIsWarningWhenHumansHasNotBeenRewrittenForLong(): void
+    {
+        $result = $this->runHumansCheck(200, self::HUMANS, $this->writtenDaysAgo(90));
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $result['status']);
+        $this->assertSame('label.health_check_humans_stale', $result['summary']);
+    }
+
+    public function testRunChecksStatusIsOkWhenHumansWasRewrittenRecently(): void
+    {
+        $this->assertSame(HealthCheckResult::STATUS_OK, $this->runHumansCheck(200, self::HUMANS, $this->writtenDaysAgo(2))['status']);
+    }
+
+    // No llms.txt at all is a normal state - the writer writes none as long as no url declares a title and "seo-llms-summary" is empty - so it yields no row rather than a warning nobody can act on
+    public function testRunChecksAddsNoLlmsRowWhenTheFileIsAbsent(): void
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
+        ]);
+
+        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+
+        $this->assertSame([], array_filter($provider->runChecks(), static fn (array $row): bool => 'llms.txt' === $row['label']));
+    }
+
+    // A deployed one is reported on what it lists, which is what tells a real index from the bare title a misconfigured template would leave
+    public function testRunChecksCountsTheEntriesOfADeployedLlms(): void
+    {
+        $result = $this->runLlmsCheck(self::LLMS);
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $result['status']);
+        $this->assertSame('label.health_check_llms_ok', $result['summary']);
+        $this->assertSame('llms.txt', $result['label']);
+    }
+
+    public function testRunChecksStatusIsWarningWhenLlmsListsNothing(): void
+    {
+        $result = $this->runLlmsCheck("# Example\n\n> A site about things.\n");
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $result['status']);
+        $this->assertSame('label.health_check_llms_empty', $result['summary']);
+    }
+
+    private function runLlmsCheck(string $content): array
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/llms.txt', ['statusCode' => 200, 'content' => $content]],
+            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
+        ]);
+
+        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+
+        return $provider->runChecks()[2];
     }
 }

@@ -77,6 +77,23 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
                 'category' => ShortcutProviderInterface::CATEGORY_SITE,
             ],
             [
+                'label' => $this->translator->trans('label.config_seo_files_create', [], 'config'),
+                'icon' => 'fas fa-robot',
+                'route' => ConfigShortcutController::SEO_FILES_CREATE_ROUTE,
+                'active' => false,
+                'role' => 'ROLE_SUPER_ADMIN',
+                'category' => ShortcutProviderInterface::CATEGORY_SITE,
+            ],
+            [
+                'label' => $this->translator->trans('label.config_seo_crawlers_update', [], 'config'),
+                'icon' => 'fas fa-user-secret',
+                'route' => ConfigShortcutController::SEO_CRAWLERS_UPDATE_ROUTE,
+                // Marked active when the site really blocks them, the list being read by nothing otherwise
+                'active' => (bool) $this->configService->get('seo-robots-block-ai'),
+                'role' => 'ROLE_SUPER_ADMIN',
+                'category' => ShortcutProviderInterface::CATEGORY_SITE,
+            ],
+            [
                 'label' => $this->translator->trans('label.export_tables', [], 'config'),
                 'icon' => 'fas fa-database',
                 'route' => ConfigShortcutController::EXPORT_TABLES_ROUTE,

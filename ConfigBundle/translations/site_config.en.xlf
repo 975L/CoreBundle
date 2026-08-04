@@ -26,6 +26,38 @@
                 <source>description.email_to_name</source>
                 <target>Name used to receive the notifications from the site.</target>
             </trans-unit>
+            <trans-unit id="FXZbjDI">
+                <source>description.seo_humans_from</source>
+                <target>Country the site is run from, as shown in humans.txt, e.g. France</target>
+            </trans-unit>
+            <trans-unit id="DA0nXQ4">
+                <source>description.seo_humans_thanks</source>
+                <target>The "THANKS" block of humans.txt, one credit per line (frameworks, authors, contributors).</target>
+            </trans-unit>
+            <trans-unit id="aqkZyv.">
+                <source>description.seo_llms_summary</source>
+                <target>One-sentence summary of the site, used as the quoted introduction of llms.txt. Left empty, and unless a bundle declares titled urls, no llms.txt is written at all.</target>
+            </trans-unit>
+            <trans-unit id="IHEwehJ">
+                <source>description.seo_robots_ai_crawlers</source>
+                <target>The crawlers blocked when the setting above is on, as a JSON array. Answer engines that cite the pages they read (Claude-User, OAI-SearchBot, PerplexityBot...) are deliberately absent: blocking them only costs visibility.</target>
+            </trans-unit>
+            <trans-unit id="EUyn9gj">
+                <source>description.seo_robots_ai_crawlers_source</source>
+                <target>The community list the monthly health check compares yours to, and the "Update the AI crawlers" shortcut adds from. Leave it empty to keep your list by hand: nothing is fetched then.</target>
+            </trans-unit>
+            <trans-unit id="lIc9kKR">
+                <source>description.seo_robots_block_ai</source>
+                <target>Blocks the crawlers harvesting pages to train models. Off by default: it contradicts publishing an llms.txt, which exists to be read by those very models. Advisory in any case, nothing enforces it.</target>
+            </trans-unit>
+            <trans-unit id="cJxfsLp">
+                <source>description.seo_robots_disallow</source>
+                <target>Paths robots.txt forbids, as a JSON array (e.g. ["/*.pdf$"]). Empty, the whole site is crawlable.</target>
+            </trans-unit>
+            <trans-unit id="PelrJJG">
+                <source>description.seo_robots_extra</source>
+                <target>Appended as-is at the end of robots.txt, for whatever the settings above don't cover.</target>
+            </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
                 <target>The author that will be set in the meta data</target>
@@ -181,6 +213,38 @@
             <trans-unit id="Tbwp4sB">
                 <source>label.email_to_name</source>
                 <target>Email (to) Name</target>
+            </trans-unit>
+            <trans-unit id="5LRQEmv">
+                <source>label.seo_humans_from</source>
+                <target>humans.txt - country</target>
+            </trans-unit>
+            <trans-unit id="KH8v7YP">
+                <source>label.seo_humans_thanks</source>
+                <target>humans.txt - thanks</target>
+            </trans-unit>
+            <trans-unit id="5OA6wWh">
+                <source>label.seo_llms_summary</source>
+                <target>llms.txt - summary</target>
+            </trans-unit>
+            <trans-unit id="3PDunrW">
+                <source>label.seo_robots_ai_crawlers</source>
+                <target>robots.txt - AI crawlers list</target>
+            </trans-unit>
+            <trans-unit id="SbuTNvm">
+                <source>label.seo_robots_ai_crawlers_source</source>
+                <target>robots.txt - AI crawlers source</target>
+            </trans-unit>
+            <trans-unit id=".8YBsGQ">
+                <source>label.seo_robots_block_ai</source>
+                <target>robots.txt - block AI crawlers</target>
+            </trans-unit>
+            <trans-unit id="NGmd2Fg">
+                <source>label.seo_robots_disallow</source>
+                <target>robots.txt - disallowed paths</target>
+            </trans-unit>
+            <trans-unit id="JlFGaKa">
+                <source>label.seo_robots_extra</source>
+                <target>robots.txt - additional lines</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

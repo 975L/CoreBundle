@@ -91,7 +91,7 @@ class VichPdfThumbnailListener
         $tmpPng = sys_get_temp_dir() . '/' . uniqid() . '.png';
 
         try {
-            // Convertit la 1ère page du PDF en PNG via Ghostscript
+            // Converts the PDF's first page to PNG through Ghostscript
             $cmd = sprintf(
                 'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r300 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s 2>/dev/null',
                 escapeshellarg($tmpPng),

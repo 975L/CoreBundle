@@ -28,7 +28,7 @@ export default class extends Controller {
     }
 
     onItemAdded(event) {
-        const newElement = event.detail && event.detail.newElement;
+        const newElement = event.detail?.newElement;
         if (newElement) this.addButtonFor(newElement);
     }
 
@@ -69,7 +69,7 @@ export default class extends Controller {
     duplicateBlock(sourceItem) {
         const field = sourceItem.closest('[data-ea-collection-field]');
         const kindSelect = sourceItem.querySelector('[data-kind-row] select');
-        const kind = kindSelect && kindSelect.value;
+        const kind = kindSelect?.value;
         if (!field || !kind) return;
 
         const addButton = this.ownAddButton(field);
@@ -196,7 +196,7 @@ export default class extends Controller {
                 const marker = '[data]';
                 const idx = el.name.indexOf(marker);
                 if (idx === -1) return;
-                this.appendField(params, 'data' + el.name.slice(idx + marker.length), el);
+                this.appendField(params, `data${el.name.slice(idx + marker.length)}`, el);
             });
 
         return params;
@@ -289,7 +289,7 @@ export default class extends Controller {
         const targetInput = targetMediaItem.querySelector('input[type="file"]');
         if (!sourceInput || !targetInput) return;
 
-        if (sourceInput.files && sourceInput.files.length) {
+        if (sourceInput.files?.length) {
             this.setFiles(targetInput, [...sourceInput.files]);
             return;
         }

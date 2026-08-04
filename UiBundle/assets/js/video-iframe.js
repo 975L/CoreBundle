@@ -33,7 +33,7 @@ export default class extends Controller {
             return;
         }
 
-        if (window.CookieConsent && window.CookieConsent.acceptedCategory("content")) {
+        if (window.CookieConsent?.acceptedCategory("content")) {
             this.scheduleIframe();
             return;
         }

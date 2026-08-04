@@ -36,7 +36,7 @@ class ScaffoldInstallCommand extends Command
         $this
             ->addOption('path', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Restrict the run to these relative paths (--path=src/Scheduler, repeatable), instead of the whole scaffold of every installed bundle')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'List what would be copied and backed up, write nothing')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Overwrite the files this site customized too, backing each one up into existingFiles/ first - narrow it with --path rather than adopting a whole scaffold blind')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Overwrite (or delete, for a withdrawn file) the ones this site customized too, backing each one up into existingFiles/ first - narrow it with --path rather than adopting a whole scaffold blind')
         ;
     }
 
@@ -44,8 +44,9 @@ class ScaffoldInstallCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $dryRun = (bool) $input->getOption('dry-run');
+        $force = (bool) $input->getOption('force');
 
-        $result = $this->scaffoldInstaller->install($input->getOption('path'), $dryRun, (bool) $input->getOption('force'));
+        $result = $this->scaffoldInstaller->install($input->getOption('path'), $dryRun, $force);
 
         // What would be overwritten is the whole point of the dry run, a count alone saying nothing about which files diverged
         if ($dryRun && $result['files']) {
@@ -64,12 +65,49 @@ class ScaffoldInstallCommand extends Command
             $io->newLine();
         }
 
+        // A deletion is the one thing here nobody can undo by re-running the command, so each file is named rather than counted - and named even outside a dry run, where the developer would otherwise learn what left the project from a git status. Under --force this list also holds the ones the site had customized, backed up rather than lost, and the message says where to find them back
+        if ($result['deleted']) {
+            $io->text(match (true) {
+                $dryRun && $force => 'The scaffold no longer ships these - they would be deleted, any this site customized being backed up into existingFiles/ first:',
+                $force => 'The scaffold no longer ships these - deleted, any this site customized having been backed up into existingFiles/:',
+                $dryRun => 'The scaffold no longer ships these, and this site never touched them - they would be deleted:',
+                default => 'The scaffold no longer ships these, and this site never touched them - deleted:',
+            });
+            $io->listing($result['deleted']);
+        }
+
+        // Same stance as 'diverged' for a file that merely changed: what the site wrote is left in place, the bundle that withdrew it being named so its UPGRADE.md says what replaced it
+        if ($result['obsolete']) {
+            $io->warning(sprintf('%d file(s) the scaffold no longer ships, left in place: this site customized them.', count($result['obsolete'])));
+            $io->listing(array_map(
+                static fn (string $file, string $bundle): string => $file . "\n  ← withdrawn by " . $bundle,
+                array_keys($result['obsolete']),
+                $result['obsolete']
+            ));
+            $io->text('See that bundle\'s UPGRADE.md for what replaces them, then delete them yourself, or re-run with --force (narrowed by --path=…) to have them deleted and find yours back in existingFiles/.');
+            $io->newLine();
+        }
+
+        // Nothing is ever backed up outside --force, a customized file being left alone rather than saved elsewhere: stating the count on every run advertises a directory most sites will never see, so the fragment travels with the number it describes. A count of its own rather than a share of the copies, backups coming from the deletions too
+        $backedUp = $result['backedUp'] > 0
+            ? sprintf(
+                $dryRun ? ', %d to back up into existingFiles/' : ', %d backed up into existingFiles/',
+                $result['backedUp']
+            )
+            : '';
+
+        // Withdrawn files are the exception rather than the rule too, and a site that has none must not read "0 deleted" for good
+        $deleted = $result['deleted']
+            ? sprintf($dryRun ? ', %d to delete' : ', %d deleted', count($result['deleted']))
+            : '';
+
         $message = sprintf(
             $dryRun
-                ? '%d file(s) to copy, of which %d to back up into existingFiles/, %d already up to date. Nothing was written.'
-                : '%d file(s) copied, %d backed up into existingFiles/, %d already up to date.',
+                ? '%d file(s) to copy%s%s, %d already up to date. Nothing was written.'
+                : '%d file(s) copied%s%s, %d already up to date.',
             $result['copied'],
-            $result['backedUp'],
+            $backedUp,
+            $deleted,
             $result['skipped']
         );
 

@@ -52,6 +52,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `c975l:config:messenger-cleanup`, purging failed Messenger messages past their retention and emailing a digest of the ones worth an admin's attention, with a dashboard screen to read, replay or delete them
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
+- `c975l:seo:files:create`, writing `robots.txt`, `humans.txt` and `llms.txt` from the `seo` configs and from the urls those same providers declare, with a monthly check reporting the AI crawlers that appeared in the community list
 - Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps, redirect chains, deployment, and the content quality of every url any bundle declares
 - A Turbo-safe CSP nonce generator, and the `site_copyright()` Twig function
@@ -123,6 +124,21 @@ The first copies every installed c975L bundle's `scaffold/` into the app — `Ap
 So upgrading a bundle brings the boilerplate along and hands you the short list of files whose upgrade only you can do — typically `templates/security/login.html.twig` once a site has given it a design. `--force` takes the new version anyway, backing yours up to `existingFiles/<same path>.old`; narrow it with `--path` rather than adopting a whole scaffold blind.
 
 A site predating the manifest has nothing to do: every file still identical to its source is recorded on the way past, and only what already differs is reported the first time.
+
+**A file a bundle stopped shipping is deleted under the same rule.** A bundle declares what it withdrew in `scaffold/removed.json`, mapping each path to the hashes of the versions it ever delivered:
+
+```json
+{
+    "src/Security/EmailVerifier.php": [
+        "47da689e3d0d30a280950d94a568a2beb152526715218641e988d1b8d37d27b4",
+        "b777580a54fc70dabf083370bb995e27310befee9f23db1faa0dd7845397c78b"
+    ]
+}
+```
+
+Matching one of them (or the manifest entry) means the site never touched the file: it is deleted and named in the output. Anything else is the site's own work, is left exactly where it is, and is reported with the bundle that withdrew it so its `UPGRADE.md` says what replaced it — `--force` deletes those too, the file going to `existingFiles/<same path>.old` first. `--dry-run` shows the list before anything happens, and a path some installed bundle still ships is never deleted: it moved between bundles rather than being withdrawn.
+
+Declaring it rather than deducing it from the manifest is what keeps `composer remove c975l/shop-bundle` from taking that bundle's scaffolded files with it — and what reaches a file withdrawn before the manifest existed, which no site has an entry for.
 
 The second creates an admin account (`--email`/`--password`, asked interactively when omitted) and seeds the `register`/`reset_password_request` Forms and their emails around it, so the account lands in a working login and password-reset flow. An email that already exists is reported and left alone.
 
@@ -419,7 +435,7 @@ Registration/reset-password-request reject bots at several layers, so a public f
 - **Honeypot + minimum submit delay** — an invisible rotating-name field (hidden inline, no CSS dependency), and a minimum delay between displaying the form and submitting it, tracked in session. Either one failing silently redirects back (same "form_submitted" flash as a real submission) without creating an account or sending any email, giving no signal back to the bot. The delay is the shared `site-form-delay` ConfigBundle key (seconds, default `3`) - one setting for every public form (contact, register, reset-password-request) instead of one per bundle.
 - **GDPR consent checkbox** - shown on both forms (unmapped `gdpr` field, using the bundle's own `text.gdpr` translation) when the shared `site-form-gdpr` ConfigBundle key (bool, default `true`) is enabled. The registration form also carries a `cgu` field (terms-of-use acceptance), enforced the same way.
 - **Duplicate email** - `RegisterFormAction` silently succeeds (same flash, no account created, no email sent) when the submitted email already has an account, same non-revealing stance `ResetPasswordRequestFormAction` already has for "no such account".
-- **Rate limiting by IP** — shared with every other generic Form (`limiter.ui_form`, optional), not a dedicated `registration`/`reset_password` limiter anymore:
+- **Rate limiting by IP** — shared with every other generic Form (`limiter.ui_form`), not a dedicated `registration`/`reset_password` limiter anymore. UiBundle prepends it itself (`sliding_window`, 5 attempts per 10 minutes), so there is nothing to add for it to apply; write this to decide otherwise:
 
 ```yaml
 # config/packages/rate_limiter.yaml
@@ -431,7 +447,7 @@ framework:
             interval: '10 minutes'
 ```
 
-Without this config, rate limiting is simply skipped (fails open) rather than erroring - see `c975L\UiBundle\Service\RateLimiterGuard`.
+Your own config is merged over the prepended one, so it is what applies. Should a site strip `symfony/rate-limiter` anyway, `c975L\UiBundle\Service\RateLimiterGuard` fails open rather than erroring.
 
 ### Login throttling
 
@@ -817,7 +833,47 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 Return `[]` when there's nothing to declare (a bundle installed but with nothing published yet): no file is written and nothing is added to the index — an indexed empty `urlset` is just a crawl error, and any file left by a previous run is removed so nothing stale keeps being served. Same when `site-url` isn't configured, since a sitemap only accepts absolute urls: no provider can build one, so no index is written either.
 
+Two more keys are accepted and ignored by the sitemap itself, `title` and `description`: they are what the site's `llms.txt` is built from, one section per provider — see [robots.txt, humans.txt and llms.txt](#robotstxt-humanstxt-and-llmstxt) below.
+
 Point Google Search Console at `sitemap-index.xml` only, never at the sub-sitemaps — installing or removing a bundle then changes what's crawled with nothing to update on Google's side. Both templates are overridable: `@c975LConfig/sitemaps/sitemap.xml.twig` (a sub-sitemap, gets `urls`) and `@c975LConfig/sitemaps/sitemap-index.xml.twig` (the index, gets `sitemaps`).
+
+## robots.txt, humans.txt and llms.txt
+
+`c975l:seo:files:create` writes the three of them into `public/`, from the `seo` config group and from the urls the sitemap providers already declare — the "Create the SEO files" dashboard shortcut runs the same `SeoFilesWriter`. Schedule it right after `c975l:sitemaps:create`: `robots.txt` only declares the sitemap index once that command has really written one, a `Sitemap:` line pointing at a 404 being a Search Console error.
+
+They are **generated static files, not routes**, for the same reason the sitemaps are: served by the web server, they keep answering `200` during a maintenance, where a controller-rendered `robots.txt` would `503` and stop the crawl of the whole site (see [Maintenance mode](#maintenance-mode)).
+
+| Config | What it holds |
+| --- | --- |
+| `seo-robots-disallow` | Paths `robots.txt` forbids, a JSON array (e.g. `["/*.pdf$"]`). Empty, the whole site is crawlable |
+| `seo-robots-block-ai` | Blocks the crawlers harvesting pages to train models. **Off by default** |
+| `seo-robots-ai-crawlers` | The list those are taken from, in config rather than in the template: it ages every few months, and a site updates it without waiting for a release |
+| `seo-robots-extra` | Appended as-is at the end of `robots.txt` |
+| `seo-humans-from` | The country in `humans.txt` |
+| `seo-humans-thanks` | Its `THANKS` block, one credit per line |
+| `seo-llms-summary` | The one-sentence summary quoted at the top of `llms.txt` |
+
+All seven are `restricted`, so they stay invisible below `ROLE_SUPER_ADMIN` (see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin)). The rest of `humans.txt` comes from configs the site already fills — `site-name`, `site-author` (falling back on `site-director`), `site-contact-email` — plus the kernel's default locale, and a `Last update` that is simply the day the file was written: the one date nobody has to remember to bump.
+
+`seo-robots-block-ai` is off by default on purpose: blocking the models that train on the web while publishing an `llms.txt` for those same models to read contradicts itself. Answer engines that fetch a page to answer a question and cite it back (`Claude-User`, `OAI-SearchBot`, `PerplexityBot`, `ChatGPT-User`…) are never in the blocked list either — blocking them only costs visibility. Either way `robots.txt` is advisory: it is honoured by the operators listed, nothing enforces it.
+
+**`llms.txt`** ([llmstxt.org](https://llmstxt.org)) is a curated Markdown index of the site, built from the optional `title`/`description` keys of `SitemapProviderInterface::getUrls()` — one `##` section per provider, named after its sitemap. A bundle opts in by filling those two keys for the urls that belong in such an index, and nothing else; an url with no title is skipped, and a provider whose urls have none contributes no section at all, which is what keeps this from becoming the sitemap in Markdown. With no section and no `seo-llms-summary`, no file is written and any file a previous run left is removed.
+
+> [!NOTE]
+> No major crawler officially consumes `llms.txt` today — Google has said publicly that it doesn't. It costs nothing and is well placed if the convention takes; don't count it as an SEO lever. `robots.txt` is the only one of the three with a real effect.
+
+A site that hand-wrote one of these files before this existed doesn't lose it: a file not carrying the generated marker is moved to `existingFiles/public/<name>.old` before the first run replaces it, so its content is still there to copy into the configs. The three templates are overridable, like the sitemaps' — `@c975LConfig/seo/robots.txt.twig`, `@c975LConfig/seo/humans.txt.twig` and `@c975LConfig/seo/llms.txt.twig`, the last one being where a site renames the section headings or changes the technology colophon.
+
+The three are added to the app's `.gitignore` by `c975l:scaffold:install`, being rewritten from this environment's own configs on every deployment. A site that used to commit them untracks them once with `git rm --cached public/robots.txt public/humans.txt public/llms.txt` — a `.gitignore` rule never untracks a file git already follows.
+
+### Keeping the AI crawler list current
+
+`seo-robots-ai-crawlers` is the one thing here that goes stale on its own: the community list gains a handful of names every few months while nothing in the site changes. So the `ai-crawlers` health check runs **monthly** against `seo-robots-ai-crawlers-source` ([ai.robots.txt](https://github.com/ai-robots-txt/ai.robots.txt) by default) and reports what appeared upstream that this site doesn't block — `c975l:seo:crawlers:update`, or the "Update the AI crawlers" dashboard tile, then merges it in. Clear the source config to keep the list by hand: nothing is fetched at all then.
+
+The merge is **additive** — a name this site added itself, or one upstream has since dropped, is never removed by an update it didn't ask for — and **never imports the answer engines** (`Claude-User`, `OAI-SearchBot`, `PerplexityBot`, `ChatGPT-User`, `Googlebot`…, see `AiCrawlerListUpdater::ANSWER_ENGINES`), which the upstream list carries alongside the harvesters. They are named in the command's own output rather than silently skipped, a site staying free to block one by hand.
+
+> [!WARNING]
+> Nothing here imports the upstream list unattended, and that is deliberate: it marks each crawler with a free-text `function` field — two dozen distinct wordings — so a new bot can't be sorted into "harvests to train" or "answers a question and cites you" by any rule that will keep working. Blocking a citation engine by mistake costs exactly the visibility this setup is trying to keep, which is why applying the diff stays a `ROLE_SUPER_ADMIN` decision and the health check only ever reports it.
 
 ## Contributing "What's new" entries from other bundles
 
@@ -1107,7 +1163,7 @@ The dashboard toggle generates that token when it closes the site and the entry 
 
 That page is served with **HTTP 503** and a `Retry-After` header, which is what search engines expect from a temporary outage — a `200` would get the maintenance page indexed in place of the real ones, a `404`/`410` would drop them from the index, and a `noindex` on a 503 risks the same. `Retry-After` is deliberately short (one hour, whatever the real length of the outage): it's only a hint, so a crawler coming back too early just meets another 503 and applies its own backoff, whereas too long a delay keeps it away after the site is back up. A `Cache-Control: no-store` keeps any proxy or CDN from serving the maintenance page once it's over.
 
-`robots.txt` and the sitemaps are static files under `public/`, served by the web server without going through the listener — they keep answering `200` during maintenance, which matters: a `robots.txt` answering 503 stops crawling on the whole site.
+`robots.txt`, `humans.txt`, `llms.txt` and the sitemaps are static files under `public/` (see [robots.txt, humans.txt and llms.txt](#robotstxt-humanstxt-and-llmstxt)), served by the web server without going through the listener — they keep answering `200` during maintenance, which matters: a `robots.txt` answering 503 stops crawling on the whole site.
 
 **Don't leave it on for more than a day or two.** Past that, search engines stop reading the 503 as temporary and start dropping the pages from their index. `MaintenanceAlertProvider` puts that on the dashboard: an `info` alert while the site is closed, turning to `danger` past two days, both dated from the moment the mode was switched on. For a closure that has to last, publishing a real home page answering `200` ("closed until…", contact details) keeps the site indexed where maintenance mode wouldn't.
 
@@ -1135,7 +1191,8 @@ This bundle's own providers:
 | --- | --- | --- |
 | `SslCertificateHealthCheckProvider` | `ssl-certificate` | TLS certificate expiry (warns at 30 days left, errors at 7) — one check for the whole site, the certificate being issued for the host. Recorded under the site root as `SiteUrlResolver::siteRoot()` spells it, so it shares a dashboard row with anything else checking that url. Skipped if `site-url` isn't `https://` |
 | `SecurityHeadersHealthCheckProvider` | `security-headers` | HSTS, CSP (or its `frame-ancestors` in place of X-Frame-Options), X-Content-Type-Options, Referrer-Policy, Permissions-Policy, wildcard CORS — reimplemented directly (securityheaders.com has no public API for automated use). Set once for the whole site, so only the site root is fetched |
-| `SeoFilesHealthCheckProvider` | `seo-files` | `robots.txt` and `sitemap-site.xml` reachable, well-formed, not empty, not stale, and `robots.txt` not accidentally blocking every crawler |
+| `SeoFilesHealthCheckProvider` | `seo-files` | `robots.txt`, `humans.txt` and `sitemap-site.xml` reachable, well-formed, not empty, not stale, `robots.txt` not accidentally blocking every crawler, and `llms.txt` listing something when it is deployed at all |
+| `AiCrawlersHealthCheckProvider` | `ai-crawlers` | Monthly, and only on a site blocking them: the AI crawlers that appeared in the community list since `seo-robots-ai-crawlers` was last updated |
 | `RedirectChainHealthCheckProvider` | `redirect-chains` | Chains and loops among your own `Redirect` rows, walked from the database alone (no HTTP call) |
 | `DeploymentHealthCheckProvider` | `deployment` | http→https redirect, and that an unknown url actually answers 404 |
 | `DeclaredUrlsHealthCheckProvider` | `urls-<bundle>` | The content-quality checks over the urls each bundle declares for its sitemap — one kind per bundle, each schedulable at its own cadence |

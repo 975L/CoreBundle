@@ -33,10 +33,12 @@ class PasswordControllerAssetsTest extends TestCase
         $this->assertNotEmpty($base, sprintf('"%s" declares no ICON_PATH, the test itself is broken.', self::CONTROLLER_JS));
         $this->assertSame('c975lui', $base[1], sprintf('"%s" still points at another bundle for its icons.', self::CONTROLLER_JS));
 
-        preg_match_all('/ICON_PATH\s*\+\s*["\']([^"\']+)["\']/', $script, $icons);
-        $this->assertNotEmpty($icons[1], sprintf('"%s" builds no icon path off ICON_PATH.', self::CONTROLLER_JS));
+        // Both halves are read whether the file name is interpolated into a template literal or concatenated, so a mix of the two leaves no icon unchecked
+        preg_match_all('/ICON_PATH(?:\}([^`]+)`|\s*\+\s*["\']([^"\']+)["\'])/', $script, $icons);
+        $names = array_filter(array_merge($icons[1], $icons[2]));
+        $this->assertNotEmpty($names, sprintf('"%s" builds no icon path off ICON_PATH.', self::CONTROLLER_JS));
 
-        foreach (array_unique($icons[1]) as $icon) {
+        foreach (array_unique($names) as $icon) {
             $path = \dirname(__DIR__, 2) . '/public/' . $base[2] . $icon;
             $this->assertFileExists($path, sprintf('"%s" points at "%s%s", which this bundle does not ship.', self::CONTROLLER_JS, $base[2], $icon));
         }

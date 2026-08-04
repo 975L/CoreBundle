@@ -25,6 +25,8 @@ class Config
 {
     public const TYPE_TEXT = 'text';
     public const TYPE_HTML = 'html';
+    // Multi-line plain text, for a value ending up in a file where markup would be wrong (the free-form parts of robots.txt/humans.txt/llms.txt) - TYPE_HTML's rich editor would wrap it in tags
+    public const TYPE_TEXTAREA = 'textarea';
     public const TYPE_BOOL = 'bool';
     public const TYPE_INT = 'int';
     public const TYPE_DATE = 'date';
@@ -37,6 +39,7 @@ class Config
     public const TYPES = [
         self::TYPE_TEXT,
         self::TYPE_HTML,
+        self::TYPE_TEXTAREA,
         self::TYPE_BOOL,
         self::TYPE_INT,
         self::TYPE_DATE,
@@ -58,6 +61,7 @@ class Config
     public const GROUP_THEME = 'theme';
     public const GROUP_AI = 'ai';
     public const GROUP_MESSENGER = 'messenger';
+    public const GROUP_SEO = 'seo';
 
     public const GROUPS = [
         self::GROUP_SYSTEM,
@@ -74,6 +78,7 @@ class Config
         self::GROUP_THEME,
         self::GROUP_AI,
         self::GROUP_MESSENGER,
+        self::GROUP_SEO,
     ];
 
     public const SEVERITY_DANGER = 'danger';

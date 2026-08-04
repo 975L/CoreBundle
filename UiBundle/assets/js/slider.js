@@ -273,7 +273,7 @@ export default class extends Controller {
 
     // Plays the <video> inside a slide, if any. Suppressed under prefers-reduced-motion unless explicit is true (user pressed the play/pause control themselves, which overrides it).
     playSlideVideo(slide, explicit = false) {
-        const video = slide && slide.querySelector("video");
+        const video = slide?.querySelector("video");
         if (video && (explicit || !this.reducedMotion)) {
             video.play().catch(() => {});
         }
@@ -281,7 +281,7 @@ export default class extends Controller {
 
     // Pauses the <video> inside a slide, if any
     pauseSlideVideo(slide) {
-        const video = slide && slide.querySelector("video");
+        const video = slide?.querySelector("video");
         if (video) {
             video.pause();
         }
@@ -507,7 +507,7 @@ export default class extends Controller {
         dots.forEach((dot, idx) => {
             if (idx === index - 1) {
                 dot.classList.add("current", "active");
-                dot.setAttribute("aria-label", dot.getAttribute("aria-label").replace(/\(.*?\)/, "") + " (current)");
+                dot.setAttribute("aria-label", `${dot.getAttribute("aria-label").replace(/\(.*?\)/, "")} (current)`);
             } else {
                 dot.classList.remove("current", "active");
                 dot.setAttribute("aria-label", dot.getAttribute("aria-label").replace(/\s*\(.*?\)/, ""));
@@ -564,7 +564,7 @@ export default class extends Controller {
         dots.forEach((dot, idx) => {
             if (idx === index - 1) {
                 dot.classList.add("current", "active");
-                dot.setAttribute("aria-label", dot.getAttribute("aria-label").replace(/\(.*?\)/, "") + " (current)");
+                dot.setAttribute("aria-label", `${dot.getAttribute("aria-label").replace(/\(.*?\)/, "")} (current)`);
             } else {
                 dot.classList.remove("current", "active");
                 dot.setAttribute("aria-label", dot.getAttribute("aria-label").replace(/\s*\(.*?\)/, ""));

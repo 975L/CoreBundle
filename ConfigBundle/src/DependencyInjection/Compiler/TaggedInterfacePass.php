@@ -24,7 +24,7 @@ class TaggedInterfacePass implements CompilerPassInterface
 
     public function process(ContainerBuilder $container): void
     {
-        foreach ($container->getDefinitions() as $id => $definition) {
+        foreach ($container->getDefinitions() as $definition) {
             $class = $definition->getClass();
             if (!$class) {
                 continue;
@@ -35,7 +35,7 @@ class TaggedInterfacePass implements CompilerPassInterface
                 if (is_subclass_of($class, $this->interface)) {
                     $definition->addTag($this->tag);
                 }
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 continue;
             }
         }

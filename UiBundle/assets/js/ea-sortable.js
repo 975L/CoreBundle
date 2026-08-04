@@ -170,7 +170,7 @@ export default class extends Controller {
     // Hides the (native EasyAdmin) delete button on a row carrying a checked ".ui-field-restricted" marker (see FormFieldType) - reorder stays available (the move handle is untouched), only removal is blocked. Purely a UX guard: the real enforcement is server-side, via the "restricted"/"type" fields both being disabled (see FormFieldType) and CollectionReconciler's caller skipping restricted entries on removal (see ContactFormCrudController).
     applyRestriction(item) {
         const marker = item.querySelector('.ui-field-restricted');
-        if (!marker || !marker.checked) return;
+        if (!marker?.checked) return;
 
         const deleteButton = item.querySelector('.field-collection-delete-button');
         if (deleteButton) deleteButton.style.display = 'none';
@@ -242,7 +242,7 @@ export default class extends Controller {
     }
 
     onItemAdded(e) {
-        const newElement = e.detail && e.detail.newElement;
+        const newElement = e.detail?.newElement;
         if (newElement) {
             this.addHandle(newElement);
             const field = newElement.closest('[data-ea-collection-field]');

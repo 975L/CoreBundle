@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Controller\Management\HealthCheckController;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Management\AiCrawlersHealthCheckProvider;
 use c975L\ConfigBundle\Management\AlertBuilder;
 use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\DatabaseLoadHealthCheckProvider;
@@ -158,9 +159,11 @@ class HealthCheckControllerTest extends TestCase
         $databaseLoadResult = (new HealthCheckResult())->setKind(DatabaseLoadHealthCheckProvider::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('12 tx/s')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         // Contributed by SiteBundle, and site-wide all the same: the uploaded svg files, not the pages serving them
         $svgFontsResult = (new HealthCheckResult())->setKind('svg-fonts')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('3 files')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        // The crawlers this site blocks against the community list: one row for the whole site, the robots.txt holding them being site-wide itself
+        $aiCrawlersResult = (new HealthCheckResult())->setKind(AiCrawlersHealthCheckProvider::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('up to date')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
 
         $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
-        $healthCheckResultRepository->method('findLatestPerUrlAndKind')->willReturn([$pagespeedResult, $securityHeadersResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult]);
+        $healthCheckResultRepository->method('findLatestPerUrlAndKind')->willReturn([$pagespeedResult, $securityHeadersResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult, $aiCrawlersResult]);
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())
@@ -170,8 +173,8 @@ class HealthCheckControllerTest extends TestCase
                 [
                     'results' => [$pagespeedResult],
                     'kinds' => ['pagespeed'],
-                    'siteResults' => [$securityHeadersResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult],
-                    'siteKinds' => ['security-headers', 'ssl-certificate', 'deployment', DatabaseLoadHealthCheckProvider::KIND, 'svg-fonts'],
+                    'siteResults' => [$securityHeadersResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult, $aiCrawlersResult],
+                    'siteKinds' => ['security-headers', 'ssl-certificate', 'deployment', DatabaseLoadHealthCheckProvider::KIND, 'svg-fonts', AiCrawlersHealthCheckProvider::KIND],
                     'alerts' => [],
                     'trendChart' => null,
                     'lastCheckedAt' => $pagespeedResult->getCheckedAt(),

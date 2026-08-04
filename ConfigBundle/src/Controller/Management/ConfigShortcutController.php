@@ -11,6 +11,8 @@
 namespace c975L\ConfigBundle\Controller\Management;
 
 use c975L\ConfigBundle\Command\ExportTablesCommand;
+use c975L\ConfigBundle\Management\AiCrawlerListUpdater;
+use c975L\ConfigBundle\Management\SeoFilesWriter;
 use c975L\ConfigBundle\Management\SitemapWriter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ConfigSqlExporter;
@@ -32,6 +34,8 @@ class ConfigShortcutController extends AbstractController
     public const EXPORT_SQL_ROUTE = 'management_config_export_sql_shortcut';
     public const EXPORT_SYNC_ALL_ROUTE = 'management_config_export_sync_all_shortcut';
     public const SITEMAPS_CREATE_ROUTE = 'management_config_sitemaps_create';
+    public const SEO_FILES_CREATE_ROUTE = 'management_config_seo_files_create';
+    public const SEO_CRAWLERS_UPDATE_ROUTE = 'management_config_seo_crawlers_update';
     public const EXPORT_TABLES_ROUTE = 'management_config_export_tables';
     public const REGISTRATION_ENABLED_TOGGLE_ROUTE = 'management_config_user_registration_enabled_toggle';
 
@@ -40,6 +44,8 @@ class ConfigShortcutController extends AbstractController
         private readonly ConfigSqlExporter $configSqlExporter,
         private readonly SyncAllExporter $syncAllExporter,
         private readonly SitemapWriter $sitemapWriter,
+        private readonly SeoFilesWriter $seoFilesWriter,
+        private readonly AiCrawlerListUpdater $aiCrawlerListUpdater,
         private readonly ExportTablesCommand $exportTablesCommand,
         private readonly FormRepository $formRepository,
         private readonly EntityManagerInterface $entityManager,
@@ -175,6 +181,58 @@ class ConfigShortcutController extends AbstractController
                 $this->addFlash('success', $this->translator->trans('flash.config_sitemaps_created', [], 'config'));
             } catch (IOExceptionInterface | \LogicException $e) {
                 $this->addFlash('error', $this->translator->trans('flash.config_sitemaps_error', ['%error%' => $e->getMessage()], 'config'));
+            }
+        }
+
+        return $this->redirectToRoute('management');
+    }
+
+    // Rewrites robots.txt/humans.txt/llms.txt, same job as the c975l:seo:files:create command - so a config just edited two screens away takes effect without waiting for the next scheduler run
+    #[AdminRoute(
+        path: '/config/seo-files-create',
+        name: 'config_seo_files_create',
+        options: ['methods' => ['POST']]
+    )]
+    public function createSeoFiles(Request $request): RedirectResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
+
+        if ($this->isCsrfTokenValid(self::SEO_FILES_CREATE_ROUTE, $request->request->get('_token'))) {
+            // An unwritable public/ folder or a template a site overrode with a broken one must be reported, not turned into a 500 nor hidden behind a success flash
+            try {
+                $files = $this->seoFilesWriter->write();
+                $this->addFlash('success', $this->translator->trans('flash.config_seo_files_created', ['%files%' => implode(', ', $files)], 'config'));
+            } catch (IOExceptionInterface | \Twig\Error\Error $e) {
+                $this->addFlash('error', $this->translator->trans('flash.config_seo_files_error', ['%error%' => $e->getMessage()], 'config'));
+            }
+        }
+
+        return $this->redirectToRoute('management');
+    }
+
+    // Adds the AI crawlers that appeared in the community list to the "seo-robots-ai-crawlers" config, same job as the c975l:seo:crawlers:update command - the answer engines it deliberately leaves out never reach this tile, they are the command's own printed report
+    #[AdminRoute(
+        path: '/config/seo-crawlers-update',
+        name: 'config_seo_crawlers_update',
+        options: ['methods' => ['POST']]
+    )]
+    public function updateSeoCrawlers(Request $request): RedirectResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
+
+        if ($this->isCsrfTokenValid(self::SEO_CRAWLERS_UPDATE_ROUTE, $request->request->get('_token'))) {
+            // A third party being called here, anything it answers has to end up as a flash rather than a 500: an unreachable list, a moved url, a json that stopped being one
+            try {
+                $comparison = $this->aiCrawlerListUpdater->compare();
+
+                if ([] === $comparison['missing']) {
+                    $this->addFlash('info', $this->translator->trans('flash.config_seo_crawlers_up_to_date', [], 'config'));
+                } else {
+                    $this->aiCrawlerListUpdater->apply($comparison['missing']);
+                    $this->addFlash('success', $this->translator->trans('flash.config_seo_crawlers_updated', ['%count%' => count($comparison['missing']), '%agents%' => implode(', ', $comparison['missing'])], 'config'));
+                }
+            } catch (\Throwable $e) {
+                $this->addFlash('error', $this->translator->trans('flash.config_seo_crawlers_error', ['%error%' => $e->getMessage()], 'config'));
             }
         }
 

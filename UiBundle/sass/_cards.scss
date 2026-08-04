@@ -21,7 +21,9 @@
 .card {
     margin: 1em auto;
     width: clamp(300px, 380px, 90vw);
-    border: 1px solid var(--input-border-color);
+    // The accented card is outlined in its own hue, so the header band reads as the top of one colored
+    // object rather than as a patch sitting inside a grey box. An unaccented card keeps the neutral border
+    border: 1px solid var(--card-accent, var(--input-border-color));
     border-radius: var(--radius-card);
     background-color: var(--card-background);
     display: flex;
@@ -32,8 +34,8 @@
 }
 
 // The twelve hues BlockAccentChoiceType offers. Each only points --card-accent at its own token (see
-// sass/_tokens.scss) and paints nothing itself: the header band below is what shows the accent, so a
-// thirteenth hue is one line and nothing else.
+// sass/_tokens.scss) and paints nothing itself: the header band and the card's outline below are what
+// show the accent, so a thirteenth hue is one line and nothing else.
 // A site retunes a hue from its own theme.css without the stored value - a color name, not a meaning -
 // ever changing with it.
 // Written out rather than looped over the twelve names: an interpolated var(--block-accent-#{$hue}) reads
@@ -101,7 +103,10 @@
 h2.card-header {
     background-color: var(--card-accent, var(--primary));
     color: var(--card-accent-color, var(--white));
-    border-bottom: 1px solid var(--input-border-color);
+    // Same hue as the band above it, so the separator disappears into it - a grey line under an accented
+    // band would cut the card's own outline in two. It stays visible on an unaccented card, where the band
+    // is --primary and the outline is the neutral border it has always been
+    border-bottom: 1px solid var(--card-accent, var(--input-border-color));
     padding: 0.5em 1em;
     margin: 0;
     width: 100%;
@@ -139,6 +144,20 @@ h2.card-header {
     flex: 1;
 }
 
+// A card's tail - the text and the button the "card"/"collection" adapters wrap in ".card-data" - is
+// pinned to the bottom of the body, so a row of cards holding images of unequal heights and texts of
+// unequal lengths still lines every button up on one line. ".cards" already stretches the cards
+// themselves to a common height; this is what stretches the *body* the pinning needs to have room in.
+// ":has()" keeps it to the bodies those two adapters build: a card whose body is free content stays in
+// plain block flow, where adjacent margins still collapse
+.card-body:has(> .card-data) {
+    display: flex;
+    flex-direction: column;
+}
+
+// Padding, not margin: "margin-top" is what does the pinning now, and the 1em separating the tail from
+// whatever precedes it has to survive on a card tall enough that there is no free space left to absorb
 .card-data {
-    margin-top: 1em;
+    margin-top: auto;
+    padding-top: 1em;
 }

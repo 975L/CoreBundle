@@ -1,5 +1,70 @@
 [
     {
+        "date": "2026-08-04",
+        "description": [
+            {
+                "en": "Your robots.txt, humans.txt and llms.txt are now written by the site itself, from the new \"SEO\" group of the configuration - the \"Create the SEO files\" shortcut on the dashboard rewrites the three of them whenever you have changed something",
+                "fr": "Vos fichiers robots.txt, humans.txt et llms.txt sont désormais écrits par le site lui-même, à partir du nouveau groupe « SEO » de la configuration - le raccourci « Créer les fichiers SEO » du tableau de bord réécrit les trois dès que vous avez changé quelque chose",
+                "es": "Sus archivos robots.txt, humans.txt y llms.txt ahora los escribe el propio sitio, a partir del nuevo grupo «SEO» de la configuración - el acceso directo «Crear los archivos SEO» del panel reescribe los tres en cuanto cambia algo"
+            },
+            {
+                "en": "llms.txt is the index a language model reads to know what your site holds: it lists your pages by title, with the summary each one already carries, and is not written at all as long as there is nothing to say",
+                "fr": "llms.txt est l'index que lit un modèle de langage pour savoir ce que contient votre site : il liste vos pages par leur titre, avec le résumé que chacune porte déjà, et n'est pas écrit du tout tant qu'il n'y a rien à dire",
+                "es": "llms.txt es el índice que lee un modelo de lenguaje para saber qué contiene su sitio: enumera sus páginas por su título, con el resumen que cada una ya lleva, y no se escribe en absoluto mientras no haya nada que decir"
+            },
+            {
+                "en": "The date of humans.txt is the day the file was written, so it stops being the one date nobody remembers to update",
+                "fr": "La date de humans.txt est le jour où le fichier a été écrit, elle cesse ainsi d'être la date que personne ne pense à mettre à jour",
+                "es": "La fecha de humans.txt es el día en que se escribió el archivo, por lo que deja de ser la fecha que nadie recuerda actualizar"
+            },
+            {
+                "en": "Blocking the robots that train AI models is offered but left off: it would contradict the llms.txt you publish for those very models, and the robots answering questions by citing your pages are never blocked",
+                "fr": "Le blocage des robots qui entraînent les modèles d'IA est proposé mais désactivé : il contredirait le llms.txt que vous publiez pour ces mêmes modèles, et les robots qui répondent aux questions en citant vos pages ne sont jamais bloqués",
+                "es": "El bloqueo de los robots que entrenan modelos de IA se ofrece pero está desactivado: contradiría el llms.txt que usted publica para esos mismos modelos, y los robots que responden preguntas citando sus páginas nunca se bloquean"
+            },
+            {
+                "en": "A robots.txt or humans.txt you had written by hand is kept: it is moved into existingFiles/public/ before the first run replaces it, so you can copy what it held into the configuration",
+                "fr": "Un robots.txt ou un humans.txt que vous aviez écrit à la main est conservé : il est déplacé dans existingFiles/public/ avant que le premier passage ne le remplace, vous pouvez donc recopier son contenu dans la configuration",
+                "es": "Un robots.txt o un humans.txt que usted había escrito a mano se conserva: se traslada a existingFiles/public/ antes de que la primera ejecución lo reemplace, así puede copiar su contenido en la configuración"
+            },
+            {
+                "en": "The monthly check now tells you when new AI crawlers have appeared in the community list and are not blocked on your site - the \"Update the AI crawlers\" shortcut adds them in one click, so there is nothing left to remember",
+                "fr": "Le bilan mensuel vous signale désormais les nouveaux robots IA apparus dans la liste communautaire et non bloqués sur votre site - le raccourci « Mettre à jour les robots IA » les ajoute en un clic, vous n'avez donc plus rien à retenir",
+                "es": "El chequeo mensual ahora le avisa de los nuevos robots de IA aparecidos en la lista comunitaria y no bloqueados en su sitio - el acceso directo «Actualizar los robots de IA» los añade con un clic, así que ya no hay nada que recordar"
+            },
+            {
+                "en": "That update only ever adds: a crawler you added yourself is never removed, and the engines that answer a question by citing your pages are never added, whatever the community list says about them",
+                "fr": "Cette mise à jour ne fait qu'ajouter : un robot que vous avez ajouté vous-même n'est jamais retiré, et les moteurs qui répondent à une question en citant vos pages ne sont jamais ajoutés, quoi qu'en dise la liste communautaire",
+                "es": "Esa actualización solo añade: un robot que usted mismo añadió nunca se elimina, y los motores que responden a una pregunta citando sus páginas nunca se añaden, diga lo que diga la lista comunitaria"
+            },
+            {
+                "en": "humans.txt and llms.txt are checked alongside robots.txt in the health check, so a deployment that skipped writing them says so instead of staying silent",
+                "fr": "humans.txt et llms.txt sont contrôlés à côté de robots.txt dans le bilan de santé, un déploiement qui a sauté leur écriture le dit donc au lieu de rester silencieux",
+                "es": "humans.txt y llms.txt se comprueban junto a robots.txt en el chequeo, así que un despliegue que se saltó su escritura lo dice en lugar de quedarse callado"
+            },
+            {
+                "en": "In a row of cards, the buttons all line up on the same line, whatever the height of the images and the length of the texts above them - there is nothing to adjust card by card",
+                "fr": "Dans une rangée de cartes, les boutons s'alignent tous sur la même ligne, quelles que soient la hauteur des images et la longueur des textes au-dessus - il n'y a rien à ajuster carte par carte",
+                "es": "En una fila de tarjetas, los botones se alinean todos en la misma línea, sean cuales sean la altura de las imágenes y la longitud de los textos que hay encima - no hay nada que ajustar tarjeta por tarjeta"
+            },
+            {
+                "en": "A card given an accent color is now outlined in that color as well, so it reads as one colored object rather than a colored band inside a grey box",
+                "fr": "Une carte à laquelle vous donnez une couleur d'accent est désormais aussi encadrée de cette couleur, elle se lit ainsi comme un seul objet coloré plutôt qu'un bandeau de couleur dans une boîte grise",
+                "es": "Una tarjeta a la que da un color de acento ahora también se enmarca en ese color, por lo que se lee como un solo objeto de color y no como una banda de color dentro de una caja gris"
+            },
+            {
+                "en": "A visitor sending you a message through a form is told \"your message has been sent\", the general wording being kept for a registration or a password reset",
+                "fr": "Un visiteur qui vous envoie un message par un formulaire lit « votre message a bien été envoyé », la formulation générale restant réservée à une inscription ou à une réinitialisation de mot de passe",
+                "es": "Un visitante que le envía un mensaje mediante un formulario lee «su mensaje ha sido enviado», y la formulación general queda reservada para un registro o un restablecimiento de contraseña"
+            },
+            {
+                "en": "The subject of the email a form sends you is written in the site's language, instead of arriving in English above a message in yours",
+                "fr": "L'objet du courriel que vous envoie un formulaire est écrit dans la langue du site, au lieu d'arriver en anglais au-dessus d'un message dans la vôtre",
+                "es": "El asunto del correo que le envía un formulario está escrito en el idioma del sitio, en lugar de llegar en inglés encima de un mensaje en el suyo"
+            }
+        ]
+    },
+    {
         "date": "2026-08-03",
         "description": [
             {

@@ -140,7 +140,7 @@
             </trans-unit>
             <trans-unit id="gPqGH8J">
                 <source>label.accent_help</source>
-                <target>Una línea de color en la parte superior del bloque. Cada tono es un token que este sitio puede ajustar en su theme.css.</target>
+                <target>El color de la banda de título del bloque. Cada tono es un token que este sitio puede ajustar en su theme.css.</target>
             </trans-unit>
             <trans-unit id="a0o36dG">
                 <source>label.accent_indigo</source>
@@ -152,7 +152,7 @@
             </trans-unit>
             <trans-unit id="UI62VsU">
                 <source>label.accent_none</source>
-                <target>Ninguno (sin línea)</target>
+                <target>Ninguno (color del sitio)</target>
             </trans-unit>
             <trans-unit id="n69tBBq">
                 <source>label.accent_orange</source>
@@ -1349,6 +1349,14 @@
             <trans-unit id="BvYymoe">
                 <source>label.form_links_help</source>
                 <target>Se muestran justo debajo del botón de envío, por ejemplo un enlace a la página de inicio de sesión debajo de un formulario de registro. Utilice una ruta de este sitio (/pages/mi-pagina) o una dirección completa.</target>
+            </trans-unit>
+            <trans-unit id="r44zjUR">
+                <source>label.form_message_sent</source>
+                <target>Tu mensaje ha sido enviado.</target>
+            </trans-unit>
+            <trans-unit id="3fOZAL.">
+                <source>label.form_new_message</source>
+                <target>Nuevo mensaje vía %form%</target>
             </trans-unit>
             <trans-unit id="PR6XC0B">
                 <source>label.form_picker_disabled_suffix</source>

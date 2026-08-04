@@ -90,7 +90,7 @@ export default class extends Controller {
     // A Trix field must go through its editor API, direct DOM changes not syncing back to it; null when neither element is found
     field() {
         const trixEditor = document.querySelector(`trix-editor[input="${this.textareaId}"]`);
-        if (trixEditor && trixEditor.editor) {
+        if (trixEditor?.editor) {
             return {
                 read: () => trixEditor.editor.getDocument().toString(),
                 write: (text) => trixEditor.editor.loadHTML(this.escapeHtml(text)),

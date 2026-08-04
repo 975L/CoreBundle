@@ -14,9 +14,10 @@ use c975L\UiBundle\Form\BlockAccentChoiceType;
 use PHPUnit\Framework\TestCase;
 
 /*
- * A card's accent colors its header band: each ".card--accent-<hue>" class only points --card-accent at
- * its own token, and ".card-header" is what paints it. A card with no header therefore shows no accent,
- * and an unaccented one stays on --primary, which is what every card stored before the field existed holds.
+ * A card's accent colors its header band and the card's own outline: each ".card--accent-<hue>" class only
+ * points --card-accent at its own token, and ".card"/".card-header" are what paint it. A card with no header
+ * therefore shows the accent on its outline alone, and an unaccented one stays on --primary and on the
+ * neutral border, which is what every card stored before the field existed holds.
  */
 class CardAccentTest extends TestCase
 {
@@ -66,7 +67,28 @@ class CardAccentTest extends TestCase
         );
     }
 
-    // Nothing paints the accent but the band: a rule across the top edge would show on a headerless card
+    // The outline and the band's own separator take the accent too, so an accented card reads as one colored
+    // object rather than a colored patch inside a grey box. Both keep the neutral border as their fallback,
+    // which is what an unaccented card - and the ".card-header" the management accordion reuses outside any
+    // card, where --card-accent is never set - has always shown
+    #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
+    public function testTheOutlineAndTheBandSeparatorTakeTheAccent(string $file): void
+    {
+        $css = $this->normalize($file);
+
+        $this->assertMatchesRegularExpression(
+            '/\.card\{[^}]*border:1pxsolidvar\(--card-accent,var\(--input-border-color\)\)/',
+            $css,
+            sprintf('"%s" leaves the card outlined in the neutral border, which cuts an accented header band out of a grey box.', $file)
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.card-header,h2\.card-header\{[^}]*border-bottom:1pxsolidvar\(--card-accent,var\(--input-border-color\)\)/',
+            $css,
+            sprintf('"%s" draws a grey line under the band, which cuts an accented card\'s outline in two.', $file)
+        );
+    }
+
+    // Nothing paints the accent but the band and the outline: a rule across the top edge would double up on the band
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testNoHueDrawsARuleOfItsOwn(string $file): void
     {

@@ -16,11 +16,11 @@ export default class extends Controller {
         // Each block row carries its own unmapped, hidden "id" field (see BlockType) - excluding "[medias]" keeps this from matching a media's own "id" field nested inside a block instead.
         const idInput = [...this.element.querySelectorAll('input[name$="[id]"]')]
             .find(el => el.value === blockId && !el.name.includes('[medias]'));
-        const item = idInput && idInput.closest('.field-collection-item');
+        const item = idInput?.closest('.field-collection-item');
         if (!item) return;
 
         const button = item.querySelector('.accordion-button');
-        if (button && button.classList.contains('collapsed')) button.click();
+        if (button?.classList.contains('collapsed')) button.click();
 
         item.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
