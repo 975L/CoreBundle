@@ -102,7 +102,7 @@ class FormControllerTest extends TestCase
 
         $rateLimiter = $rateLimiterGuard ?? $this->createStub(RateLimiterGuard::class);
         if (null === $rateLimiterGuard) {
-            $rateLimiter->method('isAccepted')->willReturn(true);
+            $rateLimiter->method('isAcceptedForIp')->willReturn(true);
         }
 
         $controller = new FormController(
@@ -337,7 +337,7 @@ class FormControllerTest extends TestCase
     public function testSubmitFlashesWarningWhenRateLimited(): void
     {
         $rateLimiterGuard = $this->createStub(RateLimiterGuard::class);
-        $rateLimiterGuard->method('isAccepted')->willReturn(false);
+        $rateLimiterGuard->method('isAcceptedForIp')->willReturn(false);
         $actionRegistry = $this->createMock(FormActionRegistry::class);
         $actionRegistry->expects($this->never())->method('get');
 
@@ -355,7 +355,7 @@ class FormControllerTest extends TestCase
     public function testSubmitSkipsRateLimitingWhenClientIpIsUnresolved(): void
     {
         $rateLimiterGuard = $this->createMock(RateLimiterGuard::class);
-        $rateLimiterGuard->expects($this->never())->method('isAccepted');
+        $rateLimiterGuard->expects($this->never())->method('isAcceptedForIp');
         $action = new class implements FormActionInterface {
             public function getKey(): string
             {

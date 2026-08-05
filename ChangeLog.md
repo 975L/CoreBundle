@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.2.4
+
+A form counts the caller behind an address, not the address itself
+
+### UiBundle
+
+- Added `RateLimiterGuard::isAcceptedForIp()`, counting an IPv6 caller by its /64 rather than by the single address it uses (05/08/2026)
+- A ceiling keyed on the address itself is walked straight through in IPv6, one more address out of one's own block opening a fresh bucket (05/08/2026)
+- An IPv4 address stays counted whole, being scarce enough to stand for whoever holds it (05/08/2026)
+- `FormController` reads it instead of `isAccepted()`, so the forms it serves are limited per caller (05/08/2026)
+- `VichImageResizeListener` no longer enlarges an upload narrower than the entity's own target width, capping it at the original (05/08/2026)
+- A `VichMultiSizeImageInterface` entity fed such a source served a stored "medium" bigger than its "highres", the two resolutions inverted (05/08/2026)
+- `RateLimiterGuardTest`, `FormControllerTest` and `VichImageResizeListenerTest` cover the new cases (05/08/2026)
+- Updated the readme's form protection section, and the UPGRADE notes (05/08/2026)
+
 ## v1.2.3
 
 A deployed site is asked what it hands to a stranger and to a crawler

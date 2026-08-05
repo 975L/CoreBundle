@@ -86,6 +86,31 @@ class VichImageResizeListenerTest extends TestCase
         $this->assertSame((string) (int) ($media->getImageWidth() * 800 / 1200), $media->getHeight());
     }
 
+    // Regression: an upload narrower than the entity's target width used to be enlarged to it, producing a softer and heavier file out of pixels that were never there - and, on a VichMultiSizeImageInterface entity, a stored "medium" bigger than the "highres" derivative, which has always capped itself at the original
+    public function testOnPostUploadNeverEnlargesAnUploadSmallerThanTheTargetWidth(): void
+    {
+        $pngPath = $this->projectDir . '/public/small.png';
+        imagepng(imagecreatetruecolor(300, 200), $pngPath);
+
+        $media = new Media();
+        $media->setFilename('small.png');
+        $media->setFile(new File($pngPath));
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichImageResizeListener($parameterBag, new ImageDimensionsReader(), new SvgRasterizer());
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $this->assertLessThan($media->getImageWidth(), 300, 'The uploaded file has to be narrower than the target width, or this test checks nothing.');
+        $this->assertSame('300', $media->getWidth());
+        $this->assertSame('200', $media->getHeight());
+
+        $dimensions = getimagesize($pngPath);
+        $this->assertSame(300, $dimensions[0]);
+        $this->assertSame(200, $dimensions[1]);
+    }
+
     // Regression: the stored file carries the role's own .ico extension whatever was uploaded (see UiMediaNamer), so deciding on the extension left every raster favicon unconverted - stored as the uploaded png under an .ico name, neither cropped to 48x48 nor wrapped as a real icon
     public function testOnPostUploadConvertsARasterUploadedForTheFaviconRole(): void
     {

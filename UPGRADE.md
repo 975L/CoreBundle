@@ -1,5 +1,28 @@
 # UPGRADE
 
+## From `v1.2.3` to `v1.2.4`
+
+**An upload is never enlarged any more.** `VichImageResizeListener` capped the highres derivative at the
+original's own width but not the entity's own stored file, so a source narrower than the target width was
+blown up to it — a softer, heavier file made of pixels that were never there. On a
+`VichMultiSizeImageInterface` entity (GalleryBundle's photos, typically), the effect was worse than
+cosmetic: a 800px original stored a 1024px "medium" next to a 800px "highres", the two resolutions
+inverted, and a viewer offering to zoom showed something smaller than what it zoomed from.
+
+Nothing to run, but **the fix only applies to what is uploaded from now on**: files already stored keep
+the size they were written at. To find out whether a site is affected, compare a stored image with its
+own source — or, for a gallery, a photo with its `-highres` sibling:
+
+```bash
+# From the app's public/ directory, on any photo of the gallery
+identify -format "%f %wx%h\n" medias/gallery/*/*/photo-*.webp | head
+```
+
+A "medium" wider than its `-highres` sibling means that photo was upscaled on upload. There is no
+regeneration command: the original is gone, and re-deriving from the stored file would upscale it a
+second time. Re-upload those photos from their originals if the high resolution matters; leave them
+otherwise, they are no worse than they were yesterday.
+
 ## From `v1.1.2` to `v1.2`
 
 **`robots.txt`, `humans.txt` and `llms.txt` are generated files now.** `c975l:seo:files:create` writes the three of them into `public/` from the new `seo` config group (see [ConfigBundle's readme](ConfigBundle/README.md#robotstxt-humanstxt-and-llmstxt)). Three things to do once per site.

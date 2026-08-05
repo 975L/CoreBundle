@@ -50,4 +50,52 @@ class RateLimiterGuardTest extends TestCase
         $this->assertTrue($guard->isAccepted($factory, 'visitor-a'));
         $this->assertTrue($guard->isAccepted($factory, 'visitor-b'));
     }
+
+    public function testIsAcceptedForIpTrueWhenNoLimiterFactoryConfigured(): void
+    {
+        $this->assertTrue((new RateLimiterGuard())->isAcceptedForIp(null, '203.0.113.7'));
+    }
+
+    // An IPv4 address stands for its holder, so it is counted whole - two of them are two callers
+    public function testIsAcceptedForIpCountsEachIpv4AddressOnItsOwn(): void
+    {
+        $guard = new RateLimiterGuard();
+        $factory = $this->limiterFactory(1);
+
+        $this->assertTrue($guard->isAcceptedForIp($factory, '203.0.113.7'));
+        $this->assertFalse($guard->isAcceptedForIp($factory, '203.0.113.7'));
+        $this->assertTrue($guard->isAcceptedForIp($factory, '203.0.113.8'));
+    }
+
+    // The whole point: one subscriber's block must not be as many fresh buckets as it holds addresses
+    public function testIsAcceptedForIpCountsAnIpv6BlockAsOneCaller(): void
+    {
+        $guard = new RateLimiterGuard();
+        $factory = $this->limiterFactory(1);
+
+        $this->assertTrue($guard->isAcceptedForIp($factory, '2a01:e0a:f28:34b0:e807:73b9:f102:b5d7'));
+        $this->assertFalse($guard->isAcceptedForIp($factory, '2a01:e0a:f28:34b0::1'));
+        $this->assertFalse($guard->isAcceptedForIp($factory, '2a01:e0a:f28:34b0:ffff:ffff:ffff:ffff'));
+    }
+
+    // Two blocks are two callers, or the cut would have gone too far and put strangers together
+    public function testIsAcceptedForIpKeepsTwoIpv6BlocksApart(): void
+    {
+        $guard = new RateLimiterGuard();
+        $factory = $this->limiterFactory(1);
+
+        $this->assertTrue($guard->isAcceptedForIp($factory, '2a01:e0a:f28:34b0::1'));
+        $this->assertTrue($guard->isAcceptedForIp($factory, '2a01:e0a:f28:34b1::1'));
+    }
+
+    // An IPv4-mapped address is the v4 it really is, not a /64 to cut - two of them stay two callers
+    public function testIsAcceptedForIpCountsAnIpv4MappedAddressAsIpv4(): void
+    {
+        $guard = new RateLimiterGuard();
+        $factory = $this->limiterFactory(1);
+
+        $this->assertTrue($guard->isAcceptedForIp($factory, '::ffff:203.0.113.7'));
+        $this->assertFalse($guard->isAcceptedForIp($factory, '::ffff:203.0.113.7'));
+        $this->assertTrue($guard->isAcceptedForIp($factory, '::ffff:203.0.113.8'));
+    }
 }

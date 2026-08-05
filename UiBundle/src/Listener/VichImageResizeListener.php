@@ -98,8 +98,9 @@ class VichImageResizeListener
             $this->processMultiSizeDerivatives($entity, $media, $absolutePath);
         }
 
-        $width = $entity->getImageWidth();
+        // Capped at the original's own width, exactly as the highres derivative caps itself: enlarging an image invents no detail, and a source smaller than the target used to be blown up into a softer and heavier file - one that a VichMultiSizeImageInterface entity then served as its "medium" while its "highres" stayed at the original's size, the two resolutions inverted
         $size = $media->getSize();
+        $width = min($entity->getImageWidth(), $size->getWidth());
         $height = (int) ($size->getHeight() * $width / $size->getWidth());
 
         $media

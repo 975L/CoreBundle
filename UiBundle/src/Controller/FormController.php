@@ -139,9 +139,11 @@ class FormController extends AbstractController
         }
 
         if (!$suspicious && $symfonyForm->isSubmitted() && $symfonyForm->isValid()) {
-            // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket
+            // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket.
+            // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any
+            // ceiling could count - see RateLimiterGuard::isAcceptedForIp()
             $clientIp = $request->getClientIp();
-            if (null !== $clientIp && !$this->rateLimiterGuard->isAccepted($this->formLimiterFactory, $clientIp)) {
+            if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->formLimiterFactory, $clientIp)) {
                 $this->addFlashTo($request, 'warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
             } else {
                 $action = $this->actionRegistry->get($uiForm->getAction());
