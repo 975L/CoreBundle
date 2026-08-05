@@ -35,6 +35,10 @@ jobs:
               run: composer update --no-interaction --no-progress
 
             # Les étapes ci-dessous appellent les scripts de composer.json plutôt que les commandes elles-mêmes : la liste des contrôles vit à un seul endroit, que `composer qa` et bin/ci.sh rejouent à l'identique en local. Elles restent séparées pour lire dans l'interface laquelle a échoué
+            # En premier, car c'est le contrôle le moins cher et il porte sur les dépendances que l'étape précédente vient de résoudre
+            - name: Avis de sécurité des dépendances
+              run: composer audit-deps
+
             - name: PSR-12
               run: composer cs
 

@@ -1,5 +1,46 @@
 # ChangeLog
 
+## v1.2.3
+
+A deployed site is asked what it hands to a stranger and to a crawler
+
+### The package
+
+- Added the `audit-deps` script, `composer audit --abandoned=report` over the resolved dependencies (05/08/2026)
+- It opens `composer qa` and the CI workflow, being the cheapest check and the one bearing on the dependencies just resolved (05/08/2026)
+- Updated the README's quality checks section (05/08/2026)
+
+### ConfigBundle
+
+- Added `SecurityMisconfigurationHealthCheckProvider` and its `security-misconfig` kind, reporting what a deployed site hands to an anonymous visitor (05/08/2026)
+- It probes `/_profiler` and `/_wdt/latest`, the `X-Debug-Token` header, `/.env`, `/composer.json`, `/composer.lock`, `/.git/config`, and the listings of `/vendor/` and `/var/` (05/08/2026)
+- A path is only reported as served when the response carries a string its real content holds, a site answering 200 to everything otherwise being reported as serving the lot (05/08/2026)
+- A session cookie missing `Secure`, `HttpOnly` or `SameSite` is a warning, `X-Powered-By` too, and a detailed `Server` banner is named without weighing on the status (05/08/2026)
+- Added `SecurityProbeClient`, fetching one url without ever following a redirect and keeping the first bytes of its body (05/08/2026)
+- The `security-misconfig` row shows in the Health check page's site-wide section (05/08/2026)
+- `ContentQualityClient` reads the canonical url a page declares and the indexing directives it carries, `googlebot`'s merged into `robots`' own (05/08/2026)
+- `ContentQualityAnalyzer` reports a canonical naming another url than the one checked, and a page declaring none at all (05/08/2026)
+- A `noindex` on a url the site declares to search engines is an error rather than a warning: no amount of content quality makes up for a page absent from the results (05/08/2026)
+- That check only runs on an entry the caller marks `indexable`, a page meant to stay out of the results carrying those directives on purpose (05/08/2026)
+- `DeclaredUrlsHealthCheckProvider` marks its own entries so, being the urls a bundle hands to search engines through its sitemap (05/08/2026)
+- `DeploymentHealthCheckProvider` checks that the site isn't served a second time under the other spelling of its host, `www` against the apex (05/08/2026)
+- A variant host redirecting within itself weighs the same as one not redirecting at all, only the host it lands on settling which of the two is the site (05/08/2026)
+- Nothing answering on the variant host is a pass, there being no page to deduplicate (05/08/2026)
+- `seo-robots-block-ai` ships on: the crawlers that harvest pages to train a model give a site nothing back, where the answer engines that read a page to cite it - the very readers `llms.txt` is written for - were never in the blocked list to begin with (05/08/2026)
+- The generated `robots.txt` names those answer engines in a comment under the blocked group, read from `AiCrawlerListUpdater::ANSWER_ENGINES` rather than fixed in the template, minus any a site added to its own blocked list by hand (05/08/2026)
+- They are named rather than given a `User-agent:` group of their own, which would take them out of the `User-agent: *` rules and so out of `seo-robots-disallow` (05/08/2026)
+- A config already in the database keeps its value, `c975l:config:load-all` never overwriting one: a site installed before this stays off until it is switched on, see UPGRADE (05/08/2026)
+- Added `seo-robots-private`, for a site meant to stay out of search engines: `robots.txt` holds nothing but a global `Disallow: /`, no `llms.txt` is written and no `Sitemap:` declared (05/08/2026)
+- Putting `/` in `seo-robots-disallow` could not say it, the `Allow: /` alongside winning the tie under RFC 9309 and leaving the site open (05/08/2026)
+- `SeoFilesHealthCheckProvider` reads it too: the global `Disallow: /` it reports as the worst misconfiguration there is turns `ok` on such a site, and what it warns about instead is a `robots.txt` still open, the command not having run since the config was set (05/08/2026)
+- `seo-robots-extra` is written inside the `User-agent: *` group instead of at the end of the file, a blank line closing no group under RFC 9309 (05/08/2026)
+- Written last, its lines bound to the AI crawlers already blocked rather than to everyone (05/08/2026)
+- A private site, declaring nothing besides its own rule, leaves those extra lines out (05/08/2026)
+- Added the `label.health_check_security_misconfig_*`, `label.health_check_host_variant_*`, `label.health_check_content_quality_noindex`/`_canonical_*` and `seo_robots_private` translations (05/08/2026)
+- Added the `SecurityMisconfigurationHealthCheckProviderTest` and `SecurityProbeClientTest` cases (05/08/2026)
+- `ContentQualityAnalyzerTest`, `ContentQualityClientTest`, `DeploymentHealthCheckProviderTest`, `DeclaredUrlsHealthCheckProviderTest`, `SeoFilesWriterTest` and `SeoFilesHealthCheckProviderTest` cover the new cases (05/08/2026)
+- Updated the readme's health check and SEO files sections, and the UPGRADE notes (05/08/2026)
+
 ## v1.2.2
 
 A config shows the label its own site wrote, not a translation key

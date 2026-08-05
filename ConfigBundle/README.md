@@ -871,17 +871,20 @@ They are **generated static files, not routes**, for the same reason the sitemap
 
 | Config | What it holds |
 | --- | --- |
+| `seo-robots-private` | Keeps the site out of search engines altogether. **Off by default** |
 | `seo-robots-disallow` | Paths `robots.txt` forbids, a JSON array (e.g. `["/*.pdf$"]`). Empty, the whole site is crawlable |
-| `seo-robots-block-ai` | Blocks the crawlers harvesting pages to train models. **Off by default** |
+| `seo-robots-block-ai` | Blocks the crawlers harvesting pages to train models. **On by default** |
 | `seo-robots-ai-crawlers` | The list those are taken from, in config rather than in the template: it ages every few months, and a site updates it without waiting for a release |
-| `seo-robots-extra` | Appended as-is at the end of `robots.txt` |
+| `seo-robots-extra` | Written as typed inside the `User-agent: *` group, a blank line closing no group in [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309#name-grouping-of-rules) — appended last, these lines would bind to the AI crawlers already blocked instead of to everyone. A private site, declaring nothing besides its own rule, leaves them out |
 | `seo-humans-from` | The country in `humans.txt` |
 | `seo-humans-thanks` | Its `THANKS` block, one credit per line |
 | `seo-llms-summary` | The one-sentence summary quoted at the top of `llms.txt` |
 
-All seven are `restricted`, so they stay invisible below `ROLE_SUPER_ADMIN` (see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin)). The rest of `humans.txt` comes from configs the site already fills — `site-name`, `site-author` (falling back on `site-director`), `site-contact-email` — plus the kernel's default locale, and a `Last update` that is simply the day the file was written: the one date nobody has to remember to bump.
+All eight are `restricted`, so they stay invisible below `ROLE_SUPER_ADMIN` (see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin)). The rest of `humans.txt` comes from configs the site already fills — `site-name`, `site-author` (falling back on `site-director`), `site-contact-email` — plus the kernel's default locale, and a `Last update` that is simply the day the file was written: the one date nobody has to remember to bump.
 
-`seo-robots-block-ai` is off by default on purpose: blocking the models that train on the web while publishing an `llms.txt` for those same models to read contradicts itself. Answer engines that fetch a page to answer a question and cite it back (`Claude-User`, `OAI-SearchBot`, `PerplexityBot`, `ChatGPT-User`…) are never in the blocked list either — blocking them only costs visibility. Either way `robots.txt` is advisory: it is honoured by the operators listed, nothing enforces it.
+`seo-robots-private` is the one setting that overrides all the others: a site that asked to stay out of search engines gets a `robots.txt` holding nothing but `User-agent: * / Disallow: /`, no `llms.txt` at all, and no `Sitemap:` line — paths, AI crawlers and a sitemap all describe a site meant to be indexed. It cannot be expressed by putting `/` in `seo-robots-disallow`: the file would then carry both `Allow: /` and `Disallow: /`, two rules of equal length, and [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309#name-the-allow-and-disallow-line) settles that tie in favour of the least restrictive one — the site would stay open. It also tells `SeoFilesHealthCheckProvider` that the global `Disallow: /` it reports as the worst misconfiguration there is was asked for, so the row turns `ok`; what it warns about on such a site is the opposite — a `robots.txt` still open, `c975l:seo:files:create` not having run since the config was set. None of this is a security measure: what must not be reached has to sit behind authentication, `robots.txt` being advisory and publicly readable.
+
+`seo-robots-block-ai` is on by default, and blocks harvesting without blocking reading. The two are different crawlers: the ones in `seo-robots-ai-crawlers` fetch pages in bulk to train a model, and give the site nothing back; the answer engines that fetch a page to answer a question and cite it back (`Claude-User`, `OAI-SearchBot`, `PerplexityBot`, `ChatGPT-User`…) are never in that list — blocking them only costs visibility, and they are also what reads the `llms.txt` this bundle writes. The generated `robots.txt` names them in a comment under the blocked group, so the file says what it allows and not only what it blocks; a site that adds one of them to the blocked list by hand sees it drop out of that comment rather than be claimed as allowed. They are named rather than given a `User-agent:` group of their own, which would take them out of the `User-agent: *` rules and so out of `seo-robots-disallow`. Either way `robots.txt` is advisory: it is honoured by the operators listed, nothing enforces it.
 
 **`llms.txt`** ([llmstxt.org](https://llmstxt.org)) is a curated Markdown index of the site, built from the optional `title`/`description` keys of `SitemapProviderInterface::getUrls()` — one `##` section per provider, named after its sitemap. A bundle opts in by filling those two keys for the urls that belong in such an index, and nothing else; an url with no title is skipped, and a provider whose urls have none contributes no section at all, which is what keeps this from becoming the sitemap in Markdown. With no section and no `seo-llms-summary`, no file is written and any file a previous run left is removed.
 
@@ -1209,7 +1212,7 @@ A url that changed needs a redirect whether it was a page's or a product's, and 
 
 ## Health check
 
-`/management/health-check` gives a technical health snapshot of the site — TLS certificate, security headers, `robots.txt`/sitemaps, redirect chains, deployment, and the content quality (title, meta description, `<h1>`, `alt` text, share tags, broken links) of every url any installed bundle declares — without needing Node/Lighthouse-CLI or any other JS tooling: everything runs server-side over plain HTTP calls. `c975l/site-bundle` adds six page-level providers on top (Lighthouse scores, W3C markup validation, mixed content), see its own README.
+`/management/health-check` gives a technical health snapshot of the site — TLS certificate, security headers, server misconfiguration, `robots.txt`/sitemaps, redirect chains, deployment, and the content quality (title, meta description, `<h1>`, `alt` text, share tags, canonical url, `noindex`, broken links) of every url any installed bundle declares — without needing Node/Lighthouse-CLI or any other JS tooling: everything runs server-side over plain HTTP calls. `c975l/site-bundle` adds six page-level providers on top (Lighthouse scores, W3C markup validation, mixed content), see its own README.
 
 This bundle's own providers:
 
@@ -1217,15 +1220,26 @@ This bundle's own providers:
 | --- | --- | --- |
 | `SslCertificateHealthCheckProvider` | `ssl-certificate` | TLS certificate expiry (warns at 30 days left, errors at 7) — one check for the whole site, the certificate being issued for the host. Recorded under the site root as `SiteUrlResolver::siteRoot()` spells it, so it shares a dashboard row with anything else checking that url. Skipped if `site-url` isn't `https://` |
 | `SecurityHeadersHealthCheckProvider` | `security-headers` | HSTS, CSP (or its `frame-ancestors` in place of X-Frame-Options), X-Content-Type-Options, Referrer-Policy, Permissions-Policy, wildcard CORS — reimplemented directly (securityheaders.com has no public API for automated use). Set once for the whole site, so only the site root is fetched |
+| `SecurityMisconfigurationHealthCheckProvider` | `security-misconfig` | What a deployed site hands to an anonymous visitor: `/_profiler` and `/_wdt` reachable, the profiler's `X-Debug-Token` left on the response, `/.env`, `/composer.json`, `/composer.lock` and `/.git/config` actually served, directory listings on `/vendor/` and `/var/`, a session cookie missing `Secure`/`HttpOnly`/`SameSite`, and the `X-Powered-By`/`Server` banners |
 | `SeoFilesHealthCheckProvider` | `seo-files` | `robots.txt`, `humans.txt` and `sitemap-site.xml` reachable, well-formed, not empty, not stale, `robots.txt` not accidentally blocking every crawler, and `llms.txt` listing something when it is deployed at all |
 | `AiCrawlersHealthCheckProvider` | `ai-crawlers` | Monthly, and only on a site blocking them: the AI crawlers that appeared in the community list since `seo-robots-ai-crawlers` was last updated |
 | `RedirectChainHealthCheckProvider` | `redirect-chains` | Chains and loops among your own `Redirect` rows, walked from the database alone (no HTTP call) |
-| `DeploymentHealthCheckProvider` | `deployment` | http→https redirect, and that an unknown url actually answers 404 |
+| `DeploymentHealthCheckProvider` | `deployment` | http→https redirect, that an unknown url actually answers 404, and that the site isn't served a second time under the other spelling of its host (`www` vs apex) |
 | `DeclaredUrlsHealthCheckProvider` | `urls-<bundle>` | The content-quality checks over the urls each bundle declares for its sitemap — one kind per bundle, each schedulable at its own cadence |
 | `DatabaseLoadHealthCheckProvider` | `database-load` | Table sizes and row counts against the host's own limits |
 | `BackupHealthCheckAdviceProvider` | — | Advice lines for the backup alerts |
 
+**Where the OWASP checks stop**: `security-headers` and `security-misconfig` cover what only the deployed site can answer for — misconfiguration, exposed debug tooling, missing cookie flags. A vulnerable dependency (OWASP A06) is *not* among them, on purpose: it is written in `composer.lock`, which the CI reads long before a deployment. Add it to your site's workflow rather than waiting for a health check run to say a site already in production ships a known CVE:
+
+```bash
+composer audit --locked --abandoned=report
+```
+
+`--locked` is what makes it answer for the versions actually deployed, and `--abandoned=report` keeps a transitive package someone stopped maintaining from failing a deployment over something no CVE covers. This bundle runs the same check on itself, as the first entry of its `composer qa`.
+
 `ContentQualityAnalyzer` is what does the content work behind `urls-<bundle>` **and** behind SiteBundle's own `content-quality`. It reports each offence with a link to the screen that fixes it whenever a `ContentOffenceLocatorInterface` recognizes the entry's source — SiteBundle registers one tracing a page's image or link back to the block holding it. Without any locator the offence is still reported, just unlinked.
+
+Two of its checks answer for whether the url is in the results at all, before any of the others answer for how it reads there. **The canonical url** the page declares for itself is compared to the url that was checked: naming another one hands the whole page over to it, which is what a `site-url` spelled `www` where the sitemap declares the apex does to every page at once. **A `noindex`** (in `robots` or `googlebot`, `none` included) is only ever reported on an entry the caller marks `'indexable' => true` — the urls a bundle hands to search engines through its own sitemap, as `DeclaredUrlsHealthCheckProvider` does. A caller listing every page it holds leaves the key out, a page meant to stay out of the results carrying those directives on purpose.
 
 **Reading the table**: the page lists one row per url *and* per kind, its rows grouped by url. The row opening each group carries that page's name and a heavier top border, separating one page from the next. Status is read off each row's own pill and nowhere else — a group used to be tinted with its worst status, which contradicted the pill sitting on that very row, and read as plain wrong once a sort had scattered a page's rows across the table.
 

@@ -18,7 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 // Keeps the "seo-robots-ai-crawlers" config in step with the community list at "seo-robots-ai-crawlers-source" (ai.robots.txt), which gains a handful of names every few months - a list nobody remembers to review is a robots.txt that quietly stops covering what it was written for. Never applies anything on its own: AiCrawlersHealthCheckProvider reports what appeared upstream, and the c975l:seo:crawlers:update command (or its dashboard tile) is what merges it in, because deciding what a site blocks is not a third party's call
 class AiCrawlerListUpdater
 {
-    // Never merged in, whatever the upstream list says about them: these fetch a page to answer someone's question and cite it back, so blocking them costs visibility and gains nothing - the very reason "seo-robots-block-ai" ships off. They are reported rather than silently dropped, since a site is free to add one by hand
+    // Never merged in, whatever the upstream list says about them: these fetch a page to answer someone's question and cite it back, so blocking them costs visibility and gains nothing - they are also what reads the llms.txt a site publishes, and keeping them out is what lets "seo-robots-block-ai" ship on. Named in the generated robots.txt by SeoFilesWriter, and reported rather than silently dropped by an update, since a site is free to add one by hand
     public const ANSWER_ENGINES = [
         'Applebot',
         'Bingbot',

@@ -429,6 +429,17 @@
         "description": "description.site_first_online_date"
     },
     {
+        "label": "label.seo_robots_private",
+        "slug": "seo-robots-private",
+        "sensitive": false,
+        "restricted": true,
+        "value": "false",
+        "kind": "bool",
+        "group": "seo",
+        "severity": null,
+        "description": "description.seo_robots_private"
+    },
+    {
         "label": "label.seo_robots_disallow",
         "slug": "seo-robots-disallow",
         "sensitive": false,
@@ -444,7 +455,7 @@
         "slug": "seo-robots-block-ai",
         "sensitive": false,
         "restricted": true,
-        "value": "false",
+        "value": "true",
         "kind": "bool",
         "group": "seo",
         "severity": "warning",

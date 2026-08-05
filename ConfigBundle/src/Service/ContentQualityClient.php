@@ -16,6 +16,9 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 // Parses a page's own rendered HTML (native DOMDocument/DOMXPath, no dependency) for the content-quality checks - title, meta description, H1, image alt text, Open Graph share tags, internal links (for ContentQualityHealthCheckProvider's broken-link pass). Reading the actual rendered markup rather than the block data that produced it works regardless of which block kinds/theme a page uses. Nothing is judged here (what makes a title too short, which share tags matter) - that's ContentQualityHealthCheckProvider's call, this only reports what the page holds
 class ContentQualityClient
 {
+    // The meta names carrying indexing directives. "googlebot" is read alongside the generic "robots" and merged into the same list: it overrides it for Google specifically, and a page is just as absent from the results either way
+    private const ROBOTS_META_NAMES = ['robots', 'googlebot'];
+
     // A missing alt attribute is always an error, but an explicitly empty one (alt="") is the *correct* way to mark a decorative image - it only counts when nothing marks it as such: no aria-hidden, no role="presentation"/"none", and no enclosing link/button already carrying its own accessible name (a share button's icon, a logo inside a labelled link). Flagging those would leave a page in warning forever, since there is nothing to fix
     private const DECORATIVE_IMAGE = '@aria-hidden="true" or @role="presentation" or @role="none" or ancestor::*[self::a or self::button][@aria-label or @aria-labelledby]';
 
@@ -41,7 +44,7 @@ class ContentQualityClient
         return $this->httpClient->request('GET', $url, ['timeout' => 30]);
     }
 
-    // Blocks until the given in-flight response completes and parses it - $url is the same one passed to request(), needed again here to resolve links against its own host. Returns ['title' => string, 'description' => string, 'hasDescription' => bool, 'hasH1' => bool, 'imagesWithoutAlt' => string[] (each offending img's src), 'socialTags' => array<string, string>, 'internalLinks' => string[] (deduped, absolute, same-host only), 'externalLinks' => string[] (same, other hosts), 'linkTexts' => array<string, string> (each link's anchor text)]
+    // Blocks until the given in-flight response completes and parses it - $url is the same one passed to request(), needed again here to resolve links against its own host. Returns ['title' => string, 'description' => string, 'hasDescription' => bool, 'hasH1' => bool, 'imagesWithoutAlt' => string[] (each offending img's src), 'socialTags' => array<string, string>, 'canonical' => string ('' when the page declares none), 'robots' => string[] (the indexing directives it carries), 'internalLinks' => string[] (deduped, absolute, same-host only), 'externalLinks' => string[] (same, other hosts), 'linkTexts' => array<string, string> (each link's anchor text)]
     public function read(ResponseInterface $response, string $url): array
     {
         $xpath = $this->buildXPath($response->getContent());
@@ -60,6 +63,9 @@ class ContentQualityClient
             'h1Count' => $xpath->query('//h1')->length,
             'imagesWithoutAlt' => $this->extractImagesWithoutAlt($xpath),
             'socialTags' => $this->extractSocialTags($xpath),
+            // The two things that decide whether this url is the one indexed at all - which url the page claims for itself, and whether it asks not to be listed. Whether either contradicts what the site declares elsewhere is ContentQualityAnalyzer's call
+            'canonical' => $this->extractCanonical($xpath, $url, $host),
+            'robots' => $this->extractRobotsDirectives($xpath),
             'internalLinks' => $internalLinks,
             'externalLinks' => $externalLinks,
             'linkTexts' => $linkTexts,
@@ -177,6 +183,40 @@ class ContentQualityClient
         }
 
         return $tags;
+    }
+
+    // The url the page declares as its own canonical, '' when it declares none. Resolved to an absolute url through the same absoluteLink() the links go through, since a canonical may legitimately be written relative ("/pages/home") and names the very same page as its absolute form. The rel attribute is matched case-insensitively and token by token, as HTML defines it - a link carrying "canonical alternate" is still the canonical one
+    private function extractCanonical(\DOMXPath $xpath, string $pageUrl, ?string $host): string
+    {
+        foreach ($this->elements($xpath, '//link[@rel][@href]') as $link) {
+            $tokens = preg_split('/\s+/', strtolower(trim($link->getAttribute('rel'))));
+            if (\in_array('canonical', $tokens, true)) {
+                return $this->absoluteLink(trim($link->getAttribute('href')), $pageUrl, $host) ?? '';
+            }
+        }
+
+        return '';
+    }
+
+    // Every indexing directive the page carries, lowercased and split ("noindex, follow" => ['noindex', 'follow']), deduped across the meta names that may declare them (see ROBOTS_META_NAMES). What the directives mean, and whether carrying them is a defect on this particular url, is the caller's call - a page meant to stay out of the results carries them perfectly legitimately
+    private function extractRobotsDirectives(\DOMXPath $xpath): array
+    {
+        $directives = [];
+
+        foreach ($this->elements($xpath, '//meta[@name][@content]') as $meta) {
+            if (!\in_array(strtolower(trim($meta->getAttribute('name'))), self::ROBOTS_META_NAMES, true)) {
+                continue;
+            }
+
+            foreach (explode(',', strtolower($meta->getAttribute('content'))) as $directive) {
+                $directive = trim($directive);
+                if ('' !== $directive) {
+                    $directives[$directive] = true;
+                }
+            }
+        }
+
+        return array_keys($directives);
     }
 
     // Split into same-host links (this site's own pages) and http(s) links to another host, both absolute and deduped - anchors, mailto:/tel:/javascript: and host-less relative hrefs ("contact.html", which nothing in this bundle produces) are dropped either way. The two are kept apart rather than merged because a dead link on your own site and a merchant that took its product page down are not the same problem, nor the same severity (see ContentQualityHealthCheckProvider::buildRow()). Each link's anchor text is kept alongside it ('texts'), so a broken link can be listed by what the visitor actually clicks on rather than by its url alone - first occurrence wins, the same url linked twice with two different labels only needs fixing once

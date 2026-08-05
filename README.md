@@ -58,13 +58,15 @@ Its history, on the other hand, is the package's: [ChangeLog.md](ChangeLog.md) a
 
 ## Quality checks
 
-The five checks the CI runs live in `composer.json` alone, as one list:
+The six checks the CI runs live in `composer.json` alone, as one list:
 
 ```bash
 composer qa
 ```
 
-`composer run -l` names what each one covers, and each is callable on its own (`composer cs`, `fixer`, `stan`, `stan-scaffold`, `test`). The workflow calls those same scripts, so a check is never declared twice.
+`composer run -l` names what each one covers, and each is callable on its own (`composer audit-deps`, `cs`, `fixer`, `stan`, `stan-scaffold`, `test`). The workflow calls those same scripts, so a check is never declared twice.
+
+`audit-deps` is `composer audit`: it matches the resolved dependencies against the Packagist security advisories, which is where a known CVE in a dependency gets caught — before the push, not once a site has deployed it. Abandoned packages are reported without failing the run.
 
 A development machine's `vendor/` symlinks the sibling repositories, which expose code no tag has published yet — code the CI never sees. `bin/ci.sh` replays `composer qa` on a copy of the repository whose dependencies are resolved from Packagist, uncommitted changes included:
 

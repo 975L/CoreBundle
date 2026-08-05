@@ -44,8 +44,8 @@ class DeclaredUrlsHealthCheckProvider implements HealthCheckProviderInterface, H
                 continue;
             }
 
-            // No admin screen behind a declared url, so no 'source' to trace an offence back to and no edit link: the label is the url's own path, which is what tells two rows of the same bundle apart on the dashboard
-            $entries[] = ['url' => $location, 'label' => $this->labelFromUrl($location), 'editUrl' => null, 'source' => null];
+            // No admin screen behind a declared url, so no 'source' to trace an offence back to and no edit link: the label is the url's own path, which is what tells two rows of the same bundle apart on the dashboard. Indexable by construction: these are the urls the bundle hands to search engines through its own sitemap, so one answering "noindex" is a contradiction the site states about itself (see ContentQualityAnalyzer)
+            $entries[] = ['url' => $location, 'label' => $this->labelFromUrl($location), 'editUrl' => null, 'source' => null, 'indexable' => true];
         }
 
         return $this->contentQualityAnalyzer->analyze($entries);

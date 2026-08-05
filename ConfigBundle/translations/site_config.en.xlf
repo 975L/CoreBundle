@@ -48,7 +48,7 @@
             </trans-unit>
             <trans-unit id="lIc9kKR">
                 <source>description.seo_robots_block_ai</source>
-                <target>Blocks the crawlers harvesting pages to train models. Off by default: it contradicts publishing an llms.txt, which exists to be read by those very models. Advisory in any case, nothing enforces it.</target>
+                <target>Blocks the crawlers harvesting pages to train models. On by default. Answer engines (Claude-User, OAI-SearchBot, PerplexityBot…) are never blocked: they read a page to answer a question and cite it back, and they are what reads the llms.txt. Advisory in any case, nothing enforces it.</target>
             </trans-unit>
             <trans-unit id="cJxfsLp">
                 <source>description.seo_robots_disallow</source>
@@ -56,7 +56,11 @@
             </trans-unit>
             <trans-unit id="PelrJJG">
                 <source>description.seo_robots_extra</source>
-                <target>Appended as-is at the end of robots.txt, for whatever the settings above don't cover.</target>
+                <target>Written as typed inside the "User-agent: *" group of robots.txt, for whatever the settings above don't cover. A private site declares nothing besides its own rule, so these lines are left out of it.</target>
+            </trans-unit>
+            <trans-unit id="dhRax_b">
+                <source>description.seo_robots_private</source>
+                <target>Keeps this site out of search engines: robots.txt then forbids all crawling, and no llms.txt is written. Advisory only - what must not be reached has to sit behind authentication, never behind this setting.</target>
             </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
@@ -245,6 +249,10 @@
             <trans-unit id="JlFGaKa">
                 <source>label.seo_robots_extra</source>
                 <target>robots.txt - additional lines</target>
+            </trans-unit>
+            <trans-unit id="xzbvGNq">
+                <source>label.seo_robots_private</source>
+                <target>robots.txt - keep the site out of search engines</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

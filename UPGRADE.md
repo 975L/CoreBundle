@@ -25,7 +25,16 @@ git rm --cached public/robots.txt public/humans.txt public/llms.txt
 
 Nothing else is required: the command is also scheduled nightly by `ConfigMaintenanceTaskProvider`, and a "Create the SEO files" tile sits on the dashboard. Until it has run at least once, the health check reports `robots.txt` as missing — which is exactly what it is.
 
-**`seo-robots-block-ai` ships off**, so a site upgrading blocks nothing it wasn't blocking before. Turning it on is what makes `seo-robots-ai-crawlers` matter, and from there the monthly `ai-crawlers` health check reports what appeared in the community list, with `c975l:seo:crawlers:update` (or its dashboard tile) to merge it in.
+**`seo-robots-block-ai` ships on**, and the generated `robots.txt` blocks the crawlers listed in `seo-robots-ai-crawlers` — never the answer engines, which keep reading the site and citing it back. A config already in the database keeps the value it holds, `c975l:config:load-all` never overwriting one: a site installed before this change stays off until it is switched on from the back-office, or with `c975l:config:set seo-robots-block-ai true`. From there the monthly `ai-crawlers` health check reports what appeared in the community list, with `c975l:seo:crawlers:update` (or its dashboard tile) to merge it in.
+
+A site that hand-wrote its `robots.txt` before `c975l:seo:files:create` existed gets it backed up to `existingFiles/public/robots.txt.old` on the first run, and the generated file starts from the configs alone — **the paths the old file forbade are not read out of it**. Copy them into `seo-robots-disallow` (e.g. `["/*.pdf$"]`) before or after that first run, or the site silently stops forbidding what it used to.
+
+**A site whose `robots.txt` closed everything** (`User-agent: * / Disallow: /` — a private site, an API, a staging environment) is the case to settle *before* the first run, not after: the generated file would otherwise open it to crawlers, and the nightly `ConfigMaintenanceTaskProvider` entry runs the command whether you do or not. Set `seo-robots-private` to `true` first, and the generated file closes the same way it used to.
+
+```bash
+php bin/console c975l:config:set seo-robots-private true --env=prod
+php bin/console c975l:seo:files:create --env=prod
+```
 
 ## From `c975l/config-bundle` and `c975l/ui-bundle` to `c975l/core-bundle`
 

@@ -34,6 +34,7 @@ class DeclaredUrlsHealthCheckProviderTest extends TestCase
         'internalLinks' => [],
         'externalLinks' => [],
         'linkTexts' => [],
+        'robots' => [],
     ];
 
     private function createSitemapProvider(string $name, array $urls): SitemapProviderInterface
@@ -66,7 +67,10 @@ class DeclaredUrlsHealthCheckProviderTest extends TestCase
         if (null !== $status && $status >= 400) {
             $client->method('read')->willThrowException(new \RuntimeException('HTTP ' . $status . ' returned for the analysis request'));
         } else {
-            $client->method('read')->willReturn($analysis ?? self::GOOD_ANALYSIS);
+            // Each url answering its own url as canonical, so a clean analysis stays clean whichever url the test declares
+            $client->method('read')->willReturnCallback(
+                static fn (ResponseInterface $response, string $url): array => ($analysis ?? self::GOOD_ANALYSIS) + ['canonical' => $url]
+            );
         }
 
         return $client;
@@ -156,6 +160,20 @@ class DeclaredUrlsHealthCheckProviderTest extends TestCase
         $this->assertSame(HealthCheckResult::STATUS_WARNING, $result['status']);
         $this->assertStringContainsString('label.health_check_content_quality_title_too_short', $result['summary']);
         $this->assertStringContainsString('label.health_check_content_quality_no_description', $result['summary']);
+    }
+
+    // A sitemap url is declared to search engines by construction, so the page answering "noindex" is a contradiction the bundle states about itself - the entries carry 'indexable', which is what turns that check on
+    public function testRunChecksReportsADeclaredUrlAnsweringNoindex(): void
+    {
+        $provider = new DeclaredUrlsHealthCheckProvider(
+            $this->createSitemapProvider('book', [$this->url('https://example.com/livre/mon-livre')]),
+            $this->createAnalyzer(['robots' => ['noindex', 'follow']] + self::GOOD_ANALYSIS),
+        );
+
+        $result = $provider->runChecks()[0];
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $result['status']);
+        $this->assertSame('label.health_check_content_quality_noindex', $result['summary']);
     }
 
     // Unlike a Page (which exists in database whether or not it's deployed), a declared url answering 404 is the declaring bundle's own defect - it's advertising a resource that isn't there, which is exactly what these checks exist to surface

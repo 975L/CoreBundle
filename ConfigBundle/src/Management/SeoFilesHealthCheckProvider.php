@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SeoFilesClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -25,6 +26,7 @@ class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
         private readonly SiteUrlResolver $siteUrlResolver,
         private readonly SeoFilesClient $seoFilesClient,
         private readonly TranslatorInterface $translator,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -107,7 +109,16 @@ class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
             return $this->row($url, 'robots.txt', HealthCheckResult::STATUS_ERROR, 'label.health_check_robots_missing');
         }
 
-        if ($this->blocksEverything($file['content'])) {
+        $blocksEverything = $this->blocksEverything($file['content']);
+
+        // On a site that declared itself out of search engines, closed is the state it asked for, and open is the one worth a row: a "seo-robots-private" set from the back-office only reaches the deployed file on the next c975l:seo:files:create, and until then the site is still being crawled
+        if ((bool) $this->configService->get('seo-robots-private')) {
+            return $blocksEverything
+                ? $this->row($url, 'robots.txt', HealthCheckResult::STATUS_OK, 'label.health_check_robots_private')
+                : $this->row($url, 'robots.txt', HealthCheckResult::STATUS_WARNING, 'label.health_check_robots_private_but_open');
+        }
+
+        if ($blocksEverything) {
             return $this->row($url, 'robots.txt', HealthCheckResult::STATUS_WARNING, 'label.health_check_robots_blocks_everything');
         }
 

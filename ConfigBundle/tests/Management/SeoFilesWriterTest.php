@@ -45,7 +45,8 @@ class SeoFilesWriterTest extends TestCase
             'site-director' => null,
             'site-contact-email' => 'contact@example.com',
             'seo-robots-disallow' => [],
-            'seo-robots-block-ai' => false,
+            'seo-robots-private' => false,
+            'seo-robots-block-ai' => true,
             'seo-robots-ai-crawlers' => ['GPTBot', 'CCBot'],
             'seo-robots-extra' => null,
             'seo-humans-from' => 'France',
@@ -121,24 +122,86 @@ class SeoFilesWriterTest extends TestCase
         $this->assertStringContainsString('Sitemap: https://example.com/sitemap-index.xml', $this->read('robots.txt'));
     }
 
-    // Blocking the crawlers that train models contradicts publishing an llms.txt for them to read, so it only happens when a site asks for it
-    public function testRobotsBlocksAiCrawlersOnlyWhenAskedTo(): void
+    // The crawlers that train models are blocked out of the box, and a site saying otherwise gets a robots.txt naming none of them
+    public function testRobotsBlocksAiCrawlersUnlessTheSiteSaysOtherwise(): void
     {
         $this->createWriter()->write();
+        $this->assertStringContainsString("User-agent: GPTBot\nUser-agent: CCBot\nDisallow: /", $this->read('robots.txt'));
+
+        $this->createWriter([], ['seo-robots-block-ai' => false])->write();
+
         $this->assertStringNotContainsString('GPTBot', $this->read('robots.txt'));
-
-        $this->createWriter([], ['seo-robots-block-ai' => true])->write();
-
-        $robots = $this->read('robots.txt');
-        $this->assertStringContainsString("User-agent: GPTBot\nUser-agent: CCBot\nDisallow: /", $robots);
     }
 
-    // Anything the settings don't cover, appended as typed
-    public function testRobotsAppendsTheExtraLines(): void
+    // A robots.txt that blocks has to say what it still allows: the answer engines read a page to cite it back, and are the very readers llms.txt is written for
+    public function testRobotsNamesTheAnswerEnginesItLetsThrough(): void
     {
-        $this->createWriter([], ['seo-robots-extra' => "User-agent: BadBot\nDisallow: /"])->write();
+        $this->createWriter()->write();
 
-        $this->assertStringContainsString("User-agent: BadBot\nDisallow: /", $this->read('robots.txt'));
+        $this->assertStringContainsString('#   Applebot, Bingbot, ChatGPT-User, Claude-SearchBot', $this->read('robots.txt'));
+    }
+
+    // Adding an answer engine to the blocked list is a site's own call, and the file must not claim to allow what the lines above it block
+    public function testRobotsDropsAnAnswerEngineTheSiteChoseToBlock(): void
+    {
+        $this->createWriter([], ['seo-robots-ai-crawlers' => ['GPTBot', 'perplexitybot']])->write();
+
+        $robots = $this->read('robots.txt');
+        $this->assertStringContainsString('User-agent: perplexitybot', $robots);
+        // The comment's last line, named in full: dropping PerplexityBot leaves twelve engines, so YouBot moves up into the place it held. Asserting its mere absence would prove nothing - unfiltered, it ends a batch(4) line and carries no comma
+        $this->assertStringContainsString('#   meta-externalfetcher, OAI-SearchBot, Perplexity-User, YouBot', $robots);
+        $this->assertStringContainsString('Perplexity-User', $robots);
+    }
+
+    // Nothing is blocked, so there is nothing to explain about what is allowed - the whole "User-agent: *" file already says it
+    public function testRobotsNamesNoAnswerEngineWhenItBlocksNothing(): void
+    {
+        $this->createWriter([], ['seo-robots-block-ai' => false])->write();
+
+        $this->assertStringNotContainsString('Left allowed on purpose', $this->read('robots.txt'));
+    }
+
+    // A site out of search engines closes with the one directive that says so, and nothing that describes a site meant to be indexed survives next to it - an "Allow: /" alongside would even reopen it, RFC 9309 settling a tie between two rules of equal length in favour of the least restrictive
+    public function testRobotsClosesEverythingOnAPrivateSite(): void
+    {
+        file_put_contents($this->projectDir . '/public/sitemap-index.xml', '<sitemapindex/>');
+        $this->createWriter([], ['seo-robots-private' => true, 'seo-robots-disallow' => ['/private/']])->write();
+
+        $robots = $this->read('robots.txt');
+        $this->assertStringContainsString("User-agent: *\nDisallow: /", $robots);
+        $this->assertStringNotContainsString('Allow:', $robots);
+        $this->assertStringNotContainsString('GPTBot', $robots);
+        $this->assertStringNotContainsString('/private/', $robots);
+        $this->assertStringNotContainsString('Sitemap:', $robots);
+    }
+
+    // Handing models a curated index of the pages the very same robots.txt forbids would be saying both at once, and humans.txt carries no SEO weight so it is written as always
+    public function testPrivateSiteGetsNoLlmsButKeepsItsHumans(): void
+    {
+        $provider = $this->createProvider('page', [['loc' => 'https://example.com/about', 'title' => 'About']]);
+
+        $written = $this->createWriter([$provider], ['seo-robots-private' => true, 'seo-llms-summary' => 'A summary'])->write();
+
+        $this->assertSame(['robots.txt', 'humans.txt'], $written);
+        $this->assertFileDoesNotExist($this->projectDir . '/public/llms.txt');
+    }
+
+    // A private site declares the one rule that closes it and nothing else, its extra lines included: they are written inside the "User-agent: *" group, and an "Allow:" typed there would reopen the very site the setting closed
+    public function testRobotsDropsTheExtraLinesOnAPrivateSite(): void
+    {
+        $this->createWriter([], ['seo-robots-private' => true, 'seo-robots-extra' => 'Allow: /'])->write();
+
+        $this->assertStringNotContainsString('Allow:', $this->read('robots.txt'));
+    }
+
+    // Anything the settings don't cover, written as typed - and inside the "User-agent: *" group rather than after the AI crawlers, a blank line closing no group in RFC 9309: appended last, a "Disallow:" typed here would bind to the crawlers already blocked instead of to everyone
+    public function testRobotsWritesTheExtraLinesInTheCatchAllGroup(): void
+    {
+        $this->createWriter([], ['seo-robots-extra' => 'Disallow: /search'])->write();
+
+        $robots = $this->read('robots.txt');
+        $this->assertStringContainsString("User-agent: *\nAllow: /\nDisallow: /search\n", $robots);
+        $this->assertLessThan(strpos($robots, 'GPTBot'), strpos($robots, 'Disallow: /search'));
     }
 
     // The one date nobody has to remember to bump, which is the whole point of generating this file
@@ -285,10 +348,15 @@ class SeoFilesWriterTest extends TestCase
     // A json config is free-form until an admin saves nonsense in it, and what lands here is parsed by crawlers
     public function testMalformedListsAreDroppedRatherThanWritten(): void
     {
-        $this->createWriter([], ['seo-robots-disallow' => ['/private/', '', ['nested'], 42]])->write();
+        $this->createWriter([], [
+            'seo-robots-disallow' => ['/private/', '', ['nested'], 42],
+            'seo-robots-ai-crawlers' => ['GPTBot', '', ['nested'], 42],
+        ])->write();
 
         $robots = $this->read('robots.txt');
         $this->assertStringContainsString('Disallow: /private/', $robots);
-        $this->assertSame(1, substr_count($robots, 'Disallow:'));
+        // Directives only, the commented lines naming what is allowed holding the same words: the path above and the one closing the AI crawler group, then the catch-all and GPTBot, nothing the dropped entries left behind
+        $this->assertSame(2, preg_match_all('/^Disallow:/m', $robots));
+        $this->assertSame(2, preg_match_all('/^User-agent:/m', $robots));
     }
 }

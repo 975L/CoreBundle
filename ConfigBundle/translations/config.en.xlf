@@ -822,6 +822,10 @@
                 <source>label.health_check_content_quality_call_failed</source>
                 <target>Content check failed: %message%</target>
             </trans-unit>
+            <trans-unit id="6_MkHsw">
+                <source>label.health_check_content_quality_canonical_mismatch</source>
+                <target>Declares %url% as its canonical url, not this one</target>
+            </trans-unit>
             <trans-unit id="LFH1s4O">
                 <source>label.health_check_content_quality_description_too_long</source>
                 <target>"%field%" too long (%length% characters)</target>
@@ -838,6 +842,10 @@
                 <source>label.health_check_content_quality_missing_social_tags</source>
                 <target>%count% missing share tag(s)</target>
             </trans-unit>
+            <trans-unit id="x9j9Nuk">
+                <source>label.health_check_content_quality_no_canonical</source>
+                <target>No canonical url declared</target>
+            </trans-unit>
             <trans-unit id="BJy8gU9">
                 <source>label.health_check_content_quality_no_description</source>
                 <target>"%field%" missing</target>
@@ -849,6 +857,10 @@
             <trans-unit id="n0fEOV8">
                 <source>label.health_check_content_quality_no_title</source>
                 <target>missing title</target>
+            </trans-unit>
+            <trans-unit id="TfhobhK">
+                <source>label.health_check_content_quality_noindex</source>
+                <target>Asks not to be indexed while the site declares this url</target>
             </trans-unit>
             <trans-unit id="VeQ3n7J">
                 <source>label.health_check_content_quality_ok</source>
@@ -898,6 +910,10 @@
                 <source>label.health_check_deployment_call_failed</source>
                 <target>Deployment check failed: %message%</target>
             </trans-unit>
+            <trans-unit id="bNb7_TO">
+                <source>label.health_check_deployment_host_variant</source>
+                <target>www host variant</target>
+            </trans-unit>
             <trans-unit id="O9kLgA7">
                 <source>label.health_check_deployment_https</source>
                 <target>https redirect</target>
@@ -933,6 +949,22 @@
             <trans-unit id="VRmd3ap">
                 <source>label.health_check_gauge_seo</source>
                 <target>SEO</target>
+            </trans-unit>
+            <trans-unit id="xg0h98_">
+                <source>label.health_check_host_variant_absent</source>
+                <target>No site served under %host%</target>
+            </trans-unit>
+            <trans-unit id="JNSu4hW">
+                <source>label.health_check_host_variant_duplicate</source>
+                <target>The site is also served under %host% (duplicate content)</target>
+            </trans-unit>
+            <trans-unit id="PBuleOE">
+                <source>label.health_check_host_variant_redirect_elsewhere</source>
+                <target>Redirects to %url%, not to the site's host</target>
+            </trans-unit>
+            <trans-unit id="wN8TX5L">
+                <source>label.health_check_host_variant_redirect_ok</source>
+                <target>Correctly redirects to the site</target>
             </trans-unit>
             <trans-unit id="5oHSgYP">
                 <source>label.health_check_https_redirect_insecure</source>
@@ -1014,6 +1046,14 @@
                 <source>label.health_check_robots_ok</source>
                 <target>robots.txt is reachable and does not block everything</target>
             </trans-unit>
+            <trans-unit id="jz.2UHS">
+                <source>label.health_check_robots_private</source>
+                <target>robots.txt forbids all crawling, as this private site asked</target>
+            </trans-unit>
+            <trans-unit id="0m4k5Lg">
+                <source>label.health_check_robots_private_but_open</source>
+                <target>This site is set as private, but its robots.txt still allows crawling - run c975l:seo:files:create again</target>
+            </trans-unit>
             <trans-unit id="q59PHEf">
                 <source>label.health_check_run_progress</source>
                 <target>Health check running: %done%/%total% check(s) done. This page updates itself.</target>
@@ -1037,6 +1077,42 @@
             <trans-unit id="JOx_E7E">
                 <source>label.health_check_security_headers_scope</source>
                 <target>these headers apply to the whole site, checked once via the homepage</target>
+            </trans-unit>
+            <trans-unit id="TbBDhdd">
+                <source>label.health_check_security_misconfig_call_failed</source>
+                <target>Configuration check failed: %message%</target>
+            </trans-unit>
+            <trans-unit id="xP16qIe">
+                <source>label.health_check_security_misconfig_cookie_flags</source>
+                <target>session cookie %name% without %flags%</target>
+            </trans-unit>
+            <trans-unit id="AuW4ZkS">
+                <source>label.health_check_security_misconfig_debug_exposed</source>
+                <target>debug tooling reachable: %paths%</target>
+            </trans-unit>
+            <trans-unit id="jKTkAqJ">
+                <source>label.health_check_security_misconfig_debug_token</source>
+                <target>X-Debug-Token header present: the profiler runs on the live site</target>
+            </trans-unit>
+            <trans-unit id="TrjGXkD">
+                <source>label.health_check_security_misconfig_directory_listing</source>
+                <target>directory listing enabled: %paths%</target>
+            </trans-unit>
+            <trans-unit id="iW2COvW">
+                <source>label.health_check_security_misconfig_files_served</source>
+                <target>files served publicly: %files%</target>
+            </trans-unit>
+            <trans-unit id="Mb4Obhv">
+                <source>label.health_check_security_misconfig_powered_by</source>
+                <target>X-Powered-By header exposed: %value%</target>
+            </trans-unit>
+            <trans-unit id="rkGrHIV">
+                <source>label.health_check_security_misconfig_scope</source>
+                <target>server configuration, checked once via the homepage</target>
+            </trans-unit>
+            <trans-unit id="xq4EuCv">
+                <source>label.health_check_security_misconfig_server_banner</source>
+                <target>detailed Server header: %value%</target>
             </trans-unit>
             <trans-unit id="Z5MQYLr">
                 <source>label.health_check_seo_files_call_failed</source>
@@ -1121,6 +1197,10 @@
             <trans-unit id="tVOszC6">
                 <source>label.health_check_summary_security_headers</source>
                 <target>%present%/%total% security headers present</target>
+            </trans-unit>
+            <trans-unit id="zRrhWvr">
+                <source>label.health_check_summary_security_misconfig</source>
+                <target>%paths% paths checked</target>
             </trans-unit>
             <trans-unit id="lF7WRuH">
                 <source>label.health_check_summary_ssl_certificate</source>

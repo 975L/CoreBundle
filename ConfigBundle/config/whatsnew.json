@@ -1,5 +1,40 @@
 [
     {
+        "date": "2026-08-05",
+        "description": [
+            {
+                "en": "The crawlers harvesting your pages to train models are now blocked out of the box - the \"robots.txt - block AI crawlers\" setting ships on, and a site already installed keeps its own value until you switch it on",
+                "fr": "Les robots qui moissonnent vos pages pour entraîner des modèles sont désormais bloqués d'origine - le réglage « robots.txt - bloquer les robots IA » est activé par défaut, et un site déjà installé garde sa propre valeur jusqu'à ce que vous l'activiez",
+                "es": "Los robots que recopilan sus páginas para entrenar modelos ahora se bloquean de origen - el ajuste «robots.txt - bloquear los robots de IA» viene activado, y un sitio ya instalado conserva su propio valor hasta que lo active"
+            },
+            {
+                "en": "A site that has no business in search engines - a private site, an API, a staging environment - now says so with the single \"robots.txt - keep the site out of search engines\" setting, and the dashboard stops reporting the closed robots.txt that follows as a mistake",
+                "fr": "Un site qui n'a rien à faire dans les moteurs de recherche - site privé, API, environnement de test - le dit désormais avec le seul réglage « robots.txt - site hors moteurs de recherche », et le tableau de bord cesse de signaler comme une erreur le robots.txt fermé qui en découle",
+                "es": "Un sitio que no tiene nada que hacer en los buscadores - un sitio privado, una API, un entorno de pruebas - ahora lo indica con el único ajuste «robots.txt - sitio fuera de los buscadores», y el panel deja de señalar como un error el robots.txt cerrado resultante"
+            },
+            {
+                "en": "The search engines and the answer engines that cite you back (Google, Bing, Claude-User, OAI-SearchBot, PerplexityBot...) keep their full access, and your robots.txt now names them: it says what it allows, not only what it blocks",
+                "fr": "Les moteurs de recherche et les moteurs de réponse qui vous citent (Google, Bing, Claude-User, OAI-SearchBot, PerplexityBot...) gardent leur accès complet, et votre robots.txt les nomme désormais : il dit ce qu'il autorise, pas seulement ce qu'il bloque",
+                "es": "Los buscadores y los motores de respuesta que le citan (Google, Bing, Claude-User, OAI-SearchBot, PerplexityBot...) conservan su acceso completo, y su robots.txt ahora los nombra: dice lo que permite, no solo lo que bloquea"
+            },
+            {
+                "en": "The health check now tells you what your site hands to a visitor who goes looking: development tools left reachable, files that should never be downloadable, folders listing their whole content, cookies missing their protections",
+                "fr": "Le contrôle de santé vous dit désormais ce que votre site livre à un visiteur qui va fouiller : outils de développement restés accessibles, fichiers qui ne devraient jamais être téléchargeables, dossiers affichant tout leur contenu, cookies sans leurs protections",
+                "es": "La comprobación de estado ahora le dice qué entrega su sitio a un visitante que va a husmear: herramientas de desarrollo aún accesibles, archivos que nunca deberían poder descargarse, carpetas que muestran todo su contenido, cookies sin sus protecciones"
+            },
+            {
+                "en": "It also reports a page that asks search engines to ignore it while your site lists it, and a page that points them to another address than its own - two mistakes nothing on the site shows, the page opening perfectly well",
+                "fr": "Il signale aussi une page qui demande aux moteurs de recherche de l'ignorer alors que votre site la déclare, et une page qui les renvoie vers une autre adresse que la sienne - deux erreurs que rien ne montre sur le site, la page s'ouvrant parfaitement",
+                "es": "También señala una página que pide a los buscadores que la ignoren mientras su sitio la declara, y una página que los remite a otra dirección que la suya - dos errores que nada muestra en el sitio, ya que la página se abre perfectamente"
+            },
+            {
+                "en": "And it warns you when your site answers under two addresses at once (with and without \"www\"), which has search engines count every page twice instead of adding up what it earned",
+                "fr": "Et il vous avertit lorsque votre site répond sous deux adresses à la fois (avec et sans « www »), ce qui fait compter chaque page en double par les moteurs de recherche au lieu d'additionner ce qu'elle a acquis",
+                "es": "Y le avisa cuando su sitio responde bajo dos direcciones a la vez (con y sin «www»), lo que hace que los buscadores cuenten cada página dos veces en lugar de sumar lo que ha ganado"
+            }
+        ]
+    },
+    {
         "date": "2026-08-04",
         "description": [
             {

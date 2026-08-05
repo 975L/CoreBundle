@@ -33,6 +33,9 @@ class ContentQualityAnalyzer
     // The form field holding that description (on a Page it feeds both <meta name="description"> and og:description, see SiteBundle's PageCrudController). Every summary clause and advice line about it names the field by the very label the form shows, rather than by "meta description" - the user has to find that field to act on the advice, and nothing in the back office calls it that. In the 'config' domain rather than SiteBundle's own, being read from both bundles now, and a site with no pages at all still has to render this summary. Public so PageHealthCheckAdviceBuilder words its own lines identically
     public const DESCRIPTION_FIELD_LABEL = 'label.summary_social_network';
 
+    // The directives that keep a url out of the results. "none" is the shorthand for "noindex, nofollow", and is honoured as such - a page carrying it is just as absent as one spelling it out
+    public const NOINDEX_DIRECTIVES = ['noindex', 'none'];
+
     // What a share preview actually needs to render on Facebook/LinkedIn/WhatsApp. og:url and og:type belong to the Open Graph protocol too, but nothing visible breaks without them, so they stay out rather than turning every page orange over a tag no one sees
     public const REQUIRED_SOCIAL_TAGS = ['og:title', 'og:description', 'og:image'];
 
@@ -44,7 +47,7 @@ class ContentQualityAnalyzer
     ) {
     }
 
-    // @param list<array{url: string, label: ?string, editUrl: ?string, source: ?object}> $entries - 'source' is what lets an offence be traced back to the screen holding it (see ContentOffenceLocatorInterface), so an entry without one still gets every check, just without those links
+    // @param list<array{url: string, label: ?string, editUrl: ?string, source: ?object, indexable?: bool}> $entries - 'source' is what lets an offence be traced back to the screen holding it (see ContentOffenceLocatorInterface), so an entry without one still gets every check, just without those links. 'indexable' says the caller declares this url to search engines (a sitemap url, see DeclaredUrlsHealthCheckProvider) and is what turns the noindex check on: absent, it stays off, since a caller listing every page it holds - ContentQualityHealthCheckProvider does - passes pages that are meant to carry a noindex, and reporting those would leave them orange forever with nothing to fix
     public function analyze(array $entries): array
     {
         $analyses = $this->analyzeUrls($entries);
@@ -187,10 +190,10 @@ class ContentQualityAnalyzer
         return [
             'url' => $entry['url'],
             'label' => $entry['label'],
-            // Only a dead link on this site's own pages is an error. A dead external one is a warning: it isn't yours to fix on your own schedule, and it's the check most exposed to a false positive (a host down for an hour, a filter this run didn't get past)
+            // Two things make a row an error rather than a warning. A dead link on this site's own pages - a dead external one stays a warning: it isn't yours to fix on your own schedule, and it's the check most exposed to a false positive (a host down for an hour, a filter this run didn't get past). And a url its own site declares to search engines while the page tells them to drop it: the page is simply not in the results, which no amount of content quality makes up for
             'status' => match (true) {
                 [] === $issues => HealthCheckResult::STATUS_OK,
-                [] !== $details['brokenLinks'] => HealthCheckResult::STATUS_ERROR,
+                $details['noindex'], [] !== $details['brokenLinks'] => HealthCheckResult::STATUS_ERROR,
                 default => HealthCheckResult::STATUS_WARNING,
             },
             'summary' => $issues ? implode(' · ', $issues) : $this->translator->trans('label.health_check_content_quality_ok', [], 'config'),
@@ -250,6 +253,10 @@ class ContentQualityAnalyzer
         $descriptionLength = mb_strlen($analysis['description'] ?? '');
 
         return [
+            // Both read off the page as served rather than off the data that produced it: the layout emitting them is exactly what a theme override replaces (see CanonicalUrlExtension), and the sitemap is written by a command that may not have run since
+            'noindex' => $this->declaresNoindex($entry, $analysis),
+            'canonicalIssue' => $this->canonicalIssue($entry, $analysis),
+            'canonical' => $analysis['canonical'] ?? '',
             'titleIssue' => $this->lengthIssue($titleLength, self::TITLE_MIN_LENGTH, self::TITLE_MAX_LENGTH),
             'titleLength' => $titleLength,
             'hasDescription' => $analysis['hasDescription'],
@@ -263,6 +270,34 @@ class ContentQualityAnalyzer
             // null when the url answered 200 directly, which is what a checked url is expected to do (see describeRedirect())
             'redirect' => $entry['redirect'],
         ];
+    }
+
+    // True when the page asks crawlers to drop a url its own site declares to them - the contradiction Search Console reports as "Excluded by 'noindex' tag", and one nothing else can see: the page answers 200 and reads perfectly well to anyone but a crawler. Only ever judged on an entry claiming to be indexable (see analyze()), a page meant to stay out of the results carrying these directives on purpose
+    private function declaresNoindex(array $entry, array $analysis): bool
+    {
+        return ($entry['indexable'] ?? false) && [] !== array_intersect(self::NOINDEX_DIRECTIVES, $analysis['robots'] ?? []);
+    }
+
+    // 'missing'/'mismatch', or null when the page declares as canonical the very url that was checked. A canonical naming another url hands the whole page over to it - Search Console then reports this one as a duplicate and indexes the other, which is what a "site-url" spelled www where the sitemap declares the apex does to every page at once. Judged against the url actually served rather than the one declared, a redirect being reported on its own line already: the content answering at the end of a hop belongs to the url it ended on, and comparing here too would report one defect twice
+    private function canonicalIssue(array $entry, array $analysis): ?string
+    {
+        $canonical = trim((string) ($analysis['canonical'] ?? ''));
+        if ('' === $canonical) {
+            return 'missing';
+        }
+
+        return $this->sameUrl($canonical, $entry['redirect']['finalUrl'] ?? $entry['url']) ? null : 'mismatch';
+    }
+
+    // True when two urls name the same page: scheme and host are case-insensitive by definition, and a trailing slash makes no page of its own here - the site root is declared without one by the sitemap (see PagePublicUrlResolver) and with one by canonical_url(), and both mean the home page
+    private function sameUrl(string $one, string $other): bool
+    {
+        return $this->normalizeUrl($one) === $this->normalizeUrl($other);
+    }
+
+    private function normalizeUrl(string $url): string
+    {
+        return preg_replace_callback('#^[a-z][a-z0-9+.-]*://[^/]+#i', static fn (array $matches): string => strtolower($matches[0]), rtrim(trim($url), '/'));
     }
 
     // Kept out of summarizeIssues() and listed first: a url that redirects is answered before any of its content is - and whatever that content is, it belongs to another url than the one declared here
@@ -288,6 +323,15 @@ class ContentQualityAnalyzer
     private function summarizeIssues(array $details): array
     {
         $issues = [];
+        // Listed before everything else: whether the page is in the results at all comes before how well it reads there - a title ten characters too long costs a few clicks, a noindex costs the url
+        if ($details['noindex']) {
+            $issues[] = $this->translator->trans('label.health_check_content_quality_noindex', [], 'config');
+        }
+        if ('missing' === $details['canonicalIssue']) {
+            $issues[] = $this->translator->trans('label.health_check_content_quality_no_canonical', [], 'config');
+        } elseif ('mismatch' === $details['canonicalIssue']) {
+            $issues[] = $this->translator->trans('label.health_check_content_quality_canonical_mismatch', ['%url%' => $details['canonical']], 'config');
+        }
         if ('missing' === $details['titleIssue']) {
             $issues[] = $this->translator->trans('label.health_check_content_quality_no_title', [], 'config');
         } elseif ('short' === $details['titleIssue']) {

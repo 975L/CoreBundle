@@ -16,7 +16,7 @@ use c975L\ConfigBundle\Service\DeploymentClient;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Two site-wide deployment checks nothing else covers, both silent when they break: that http:// actually redirects to https:// (a vhost/proxy setting no page-level check can see - the site itself answers perfectly well over https meanwhile), and that an unknown url answers a real 404 carrying the site's own error page (a soft 404 answering 200 has search engines index every typo as a page)
+// Three site-wide deployment checks nothing else covers, all silent when they break: that http:// actually redirects to https:// (a vhost/proxy setting no page-level check can see - the site itself answers perfectly well over https meanwhile), that an unknown url answers a real 404 carrying the site's own error page (a soft 404 answering 200 has search engines index every typo as a page), and that the site isn't served a second time under the other spelling of its host (www vs apex). All three are asked of urls nobody visits - which is precisely why nothing else reports them
 class DeploymentHealthCheckProvider implements HealthCheckProviderInterface
 {
     // Deliberately a fixed url rather than a random one: the same path is probed on every run, so it reads as this check in the access logs instead of as a rotating stream of unexplained 404s
@@ -50,7 +50,48 @@ class DeploymentHealthCheckProvider implements HealthCheckProviderInterface
 
         $rows[] = $this->checkNotFoundPage($siteUrl);
 
-        return $rows;
+        return array_merge($rows, $this->checkHostVariant($siteUrl));
+    }
+
+    // The same site served a second time under the other spelling of its host - "www.example.com" when "site-url" declares "example.com", and the reverse. Two hosts answering the same pages are two sites to a search engine: each page exists twice, and the links and the history it earned are split between the two instead of adding up. Nothing on the site shows it, since the host that has to be asked is the one nobody ever uses. A redirect settles it, whichever of the two is kept, as long as it lands on the host "site-url" declares
+    private function checkHostVariant(string $siteUrl): array
+    {
+        $host = parse_url($siteUrl, \PHP_URL_HOST);
+        if (!\is_string($host) || '' === $host) {
+            return [];
+        }
+
+        $variantHost = str_starts_with($host, 'www.') ? substr($host, 4) : 'www.' . $host;
+        $url = str_replace('://' . $host, '://' . $variantHost, $siteUrl) . '/';
+        $label = $this->translator->trans('label.health_check_deployment_host_variant', [], 'config');
+
+        try {
+            $response = $this->deploymentClient->fetchWithoutRedirect($url);
+        } catch (\Throwable) {
+            // The only check here whose failed call is a pass: no DNS record, no vhost, nothing answering means nothing to deduplicate, which is exactly what was asked
+            return [$this->row($url, $label, HealthCheckResult::STATUS_OK, 'label.health_check_host_variant_absent', ['%host%' => $variantHost])];
+        }
+
+        return [$this->judgeHostVariant($url, $label, $variantHost, $host, $response)];
+    }
+
+    private function judgeHostVariant(string $url, string $label, string $variantHost, string $host, array $response): array
+    {
+        $status = $response['statusCode'];
+
+        if ($status >= 300 && $status < 400) {
+            // A relative Location ("/") redirects within the variant host itself, leaving both hosts serving the site just as much as no redirect at all - only the host it lands on settles which of the two is the site
+            return parse_url((string) $response['location'], \PHP_URL_HOST) === $host
+                ? $this->row($url, $label, HealthCheckResult::STATUS_OK, 'label.health_check_host_variant_redirect_ok', ['%host%' => $variantHost])
+                : $this->row($url, $label, HealthCheckResult::STATUS_WARNING, 'label.health_check_host_variant_redirect_elsewhere', ['%url%' => (string) $response['location']], ['issue' => 'host-variant-redirect', 'location' => $response['location']]);
+        }
+
+        // Answering anything but content - a 404 from a catch-all vhost, a 500 - leaves no page duplicated, whatever else it says about the server
+        if ($status >= 400) {
+            return $this->row($url, $label, HealthCheckResult::STATUS_OK, 'label.health_check_host_variant_absent', ['%host%' => $variantHost]);
+        }
+
+        return $this->row($url, $label, HealthCheckResult::STATUS_ERROR, 'label.health_check_host_variant_duplicate', ['%host%' => $variantHost], ['issue' => 'host-variant', 'statusCode' => $status]);
     }
 
     private function checkHttpsRedirect(string $siteUrl): array

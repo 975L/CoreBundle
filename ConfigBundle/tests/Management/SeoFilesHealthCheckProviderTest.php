@@ -71,16 +71,27 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         return $translator;
     }
 
+    // Every test builds its provider here, so the "seo-robots-private" config it reads has a single place to be set
+    private function createProvider(SiteUrlResolver $siteUrlResolver, SeoFilesClient $client, bool $isPrivate = false): SeoFilesHealthCheckProvider
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(
+            static fn (string $key): mixed => 'seo-robots-private' === $key ? $isPrivate : null
+        );
+
+        return new SeoFilesHealthCheckProvider($siteUrlResolver, $client, $this->createTranslator(), $configService);
+    }
+
     public function testGetKindReturnsSeoFiles(): void
     {
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver(null), $this->createClient([]), $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver(null), $this->createClient([]));
 
         $this->assertSame('seo-files', $provider->getKind());
     }
 
     public function testRunChecksReturnsEmptyArrayWithoutASiteUrl(): void
     {
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver(null), $this->createClient([]), $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver(null), $this->createClient([]));
 
         $this->assertSame([], $provider->runChecks());
     }
@@ -93,7 +104,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
         $this->assertCount(3, $results);
@@ -112,7 +123,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com/'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com/'), $client);
         $results = $provider->runChecks();
 
         $this->assertSame('https://example.com/robots.txt', $results[0]['url']);
@@ -127,7 +138,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[0]['status']);
     }
@@ -140,7 +151,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[0]['status']);
     }
@@ -153,9 +164,39 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame(HealthCheckResult::STATUS_WARNING, $provider->runChecks()[0]['status']);
+    }
+
+    // The same file, on a site that asked to stay out of search engines: what is the worst misconfiguration there is anywhere else is the state this one wanted, and a monthly warning about it would train its reader to ignore the row
+    public function testRunChecksAcceptsABlockingRobotsOnAPrivateSite(): void
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::BLOCKING_ROBOTS]],
+            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
+        ]);
+
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client, true);
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $provider->runChecks()[0]['status']);
+    }
+
+    // Setting the config only reaches the deployed file on the next c975l:seo:files:create, and until then a site that believes itself private is still being crawled - the one thing worth a row here
+    public function testRunChecksWarnsWhenAPrivateSiteStillServesAnOpenRobots(): void
+    {
+        $client = $this->createClient([
+            ['https://example.com/robots.txt', ['statusCode' => 200, 'content' => self::OPEN_ROBOTS]],
+            ['https://example.com/sitemap-site.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
+            ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
+        ]);
+
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client, true);
+        $robots = $provider->runChecks()[0];
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $robots['status']);
+        $this->assertSame('label.health_check_robots_private_but_open', $robots['summary']);
     }
 
     public function testRunChecksDoesNotFlagAPartialDisallow(): void
@@ -166,7 +207,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame(HealthCheckResult::STATUS_OK, $provider->runChecks()[0]['status']);
     }
@@ -179,7 +220,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame(HealthCheckResult::STATUS_OK, $provider->runChecks()[0]['status']);
     }
@@ -192,7 +233,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[2]['status']);
     }
@@ -205,7 +246,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $provider->runChecks()[2]['status']);
     }
@@ -218,7 +259,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '', 'lastModified' => null]],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         return $provider->runChecks()[2];
     }
@@ -275,7 +316,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
         $client = $this->createStub(SeoFilesClient::class);
         $client->method('fetch')->willThrowException(new \RuntimeException('Connection refused'));
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $results = $provider->runChecks();
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[0]['status']);
@@ -292,7 +333,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-book.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
         $this->assertCount(6, $results);
@@ -314,7 +355,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertCount(3, $provider->runChecks());
     }
@@ -327,7 +368,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => '<html>Not Found</html>']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
         $this->assertCount(4, $results);
@@ -342,7 +383,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 200, 'content' => self::EMPTY_SITEMAP_INDEX]],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
         $this->assertCount(4, $results);
@@ -359,7 +400,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-book.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
         $this->assertCount(6, $results);
@@ -379,7 +420,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-book.xml', ['statusCode' => 200, 'content' => self::VALID_SITEMAP]],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
         $results = $provider->runChecks();
 
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[4]['status']);
@@ -394,7 +435,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '', 'lastModified' => null]],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         return $provider->runChecks()[1];
     }
@@ -445,7 +486,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         $this->assertSame([], array_filter($provider->runChecks(), static fn (array $row): bool => 'llms.txt' === $row['label']));
     }
@@ -477,7 +518,7 @@ class SeoFilesHealthCheckProviderTest extends TestCase
             ['https://example.com/sitemap-index.xml', ['statusCode' => 404, 'content' => '']],
         ]);
 
-        $provider = new SeoFilesHealthCheckProvider($this->createSiteUrlResolver('https://example.com'), $client, $this->createTranslator());
+        $provider = $this->createProvider($this->createSiteUrlResolver('https://example.com'), $client);
 
         return $provider->runChecks()[2];
     }

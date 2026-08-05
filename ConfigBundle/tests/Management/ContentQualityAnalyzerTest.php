@@ -31,11 +31,13 @@ class ContentQualityAnalyzerTest extends TestCase
         'internalLinks' => [],
         'externalLinks' => [],
         'linkTexts' => [],
+        'robots' => [],
     ];
 
-    private function entry(string $url, ?object $source = null): array
+    // 'indexable' is what turns the noindex check on, and is left out unless a test declares it - exactly like a caller listing every page it holds rather than the ones it declares to search engines
+    private function entry(string $url, ?object $source = null, bool $indexable = false): array
     {
-        return ['url' => $url, 'label' => $url, 'editUrl' => null, 'source' => $source];
+        return ['url' => $url, 'label' => $url, 'editUrl' => null, 'source' => $source] + ($indexable ? ['indexable' => true] : []);
     }
 
     // Each label rendered as its own translation id with the parameters substituted, so a test asserts on what the row really says
@@ -73,12 +75,18 @@ class ContentQualityAnalyzerTest extends TestCase
         );
     }
 
+    // read() answers the canonical of whichever url it was handed, so a clean analysis stays clean for every url a test declares - a page claiming another url as its canonical is what a test sets up on purpose
+    private function readsCleanly(array $analysis = self::GOOD_ANALYSIS): callable
+    {
+        return static fn (ResponseInterface $response, string $url): array => $analysis + ['canonical' => $url];
+    }
+
     // Every url answering the same clean analysis, with no link to check
     private function createHealthyClient(array $analysis = self::GOOD_ANALYSIS): ContentQualityClient
     {
         $client = $this->createStub(ContentQualityClient::class);
         $client->method('request')->willReturn($this->createResponse());
-        $client->method('read')->willReturn($analysis);
+        $client->method('read')->willReturnCallback($this->readsCleanly($analysis));
 
         return $client;
     }
@@ -108,7 +116,7 @@ class ContentQualityAnalyzerTest extends TestCase
         $client->method('request')->willReturnCallback(
             fn (string $url) => str_contains($url, 'two') ? throw new \RuntimeException('Connection refused') : $this->createResponse()
         );
-        $client->method('read')->willReturn(self::GOOD_ANALYSIS);
+        $client->method('read')->willReturnCallback($this->readsCleanly());
 
         $rows = $this->createAnalyzer($client)->analyze([
             $this->entry('https://example.com/one'),
@@ -179,12 +187,14 @@ class ContentQualityAnalyzerTest extends TestCase
     {
         $client = $this->createStub(ContentQualityClient::class);
         $client->method('request')->willReturn($this->createResponse(redirectCount: 1, finalUrl: 'https://example.com/final'));
-        $client->method('read')->willReturn(self::GOOD_ANALYSIS);
+        $client->method('read')->willReturnCallback($this->readsCleanly(['canonical' => 'https://example.com/final'] + self::GOOD_ANALYSIS));
 
         $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/old')]);
 
         $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[0]['status']);
+        // The hop alone: the content answering at the end of it belongs to the url it ended on, so its canonical is not a second defect
         $this->assertSame('label.health_check_content_quality_redirects', $rows[0]['summary']);
+        $this->assertNull($rows[0]['details']['canonicalIssue']);
         $this->assertSame(['count' => 1, 'finalUrl' => 'https://example.com/final'], $rows[0]['details']['redirect']);
     }
 
@@ -195,7 +205,7 @@ class ContentQualityAnalyzerTest extends TestCase
 
         $client = $this->createMock(ContentQualityClient::class);
         $client->method('request')->willReturn($this->createResponse());
-        $client->method('read')->willReturn($analysis);
+        $client->method('read')->willReturnCallback($this->readsCleanly($analysis));
         $client->expects($this->once())->method('requestLinkCheck')->willReturn($this->createResponse());
         $client->method('readLinkCheck')->willReturn(ContentQualityClient::LINK_OK);
 
@@ -212,9 +222,10 @@ class ContentQualityAnalyzerTest extends TestCase
     {
         $client = $this->createStub(ContentQualityClient::class);
         $client->method('request')->willReturn($this->createResponse());
-        $client->method('read')->willReturnOnConsecutiveCalls(
-            ['internalLinks' => ['https://example.com/dead'], 'linkTexts' => ['https://example.com/dead' => 'Nos tarifs']] + self::GOOD_ANALYSIS,
-            ['externalLinks' => ['https://elsewhere.example/dead']] + self::GOOD_ANALYSIS,
+        $client->method('read')->willReturnCallback(
+            fn (ResponseInterface $response, string $url): array => ['canonical' => $url] + (str_contains($url, 'one')
+                ? ['internalLinks' => ['https://example.com/dead'], 'linkTexts' => ['https://example.com/dead' => 'Nos tarifs']] + self::GOOD_ANALYSIS
+                : ['externalLinks' => ['https://elsewhere.example/dead']] + self::GOOD_ANALYSIS)
         );
         $client->method('requestLinkCheck')->willReturn($this->createResponse());
         $client->method('readLinkCheck')->willReturn(ContentQualityClient::LINK_BROKEN);
@@ -236,7 +247,7 @@ class ContentQualityAnalyzerTest extends TestCase
     {
         $client = $this->createMock(ContentQualityClient::class);
         $client->method('request')->willReturn($this->createResponse());
-        $client->method('read')->willReturn(['internalLinks' => ['https://example.com/maybe']] + self::GOOD_ANALYSIS);
+        $client->method('read')->willReturnCallback($this->readsCleanly(['internalLinks' => ['https://example.com/maybe']] + self::GOOD_ANALYSIS));
         $client->method('requestLinkCheck')->willReturn($this->createResponse());
         $client->expects($this->once())->method('requestLinkCheckFallback')->willReturn($this->createResponse());
         $client->method('readLinkCheck')->willReturnOnConsecutiveCalls(ContentQualityClient::LINK_UNKNOWN, ContentQualityClient::LINK_OK);
@@ -251,7 +262,7 @@ class ContentQualityAnalyzerTest extends TestCase
     {
         $client = $this->createStub(ContentQualityClient::class);
         $client->method('request')->willReturn($this->createResponse());
-        $client->method('read')->willReturn(['internalLinks' => ['https://example.com/maybe']] + self::GOOD_ANALYSIS);
+        $client->method('read')->willReturnCallback($this->readsCleanly(['internalLinks' => ['https://example.com/maybe']] + self::GOOD_ANALYSIS));
         $client->method('requestLinkCheck')->willReturn($this->createResponse());
         $client->method('requestLinkCheckFallback')->willReturn($this->createResponse());
         $client->method('readLinkCheck')->willReturn(ContentQualityClient::LINK_UNKNOWN);
@@ -355,6 +366,74 @@ class ContentQualityAnalyzerTest extends TestCase
         $this->assertSame('label.health_check_content_quality_several_h1', $several[0]['summary']);
         $this->assertSame(3, $several[0]['details']['h1Count']);
         $this->assertSame(HealthCheckResult::STATUS_WARNING, $several[0]['status']);
+    }
+
+    // A canonical naming another url hands the whole page over to it, and Search Console reports this one as a duplicate
+    public function testAnalyzeReportsAPageDeclaringAnotherUrlAsCanonical(): void
+    {
+        $client = $this->createHealthyClient(['canonical' => 'https://example.com/other'] + self::GOOD_ANALYSIS);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one')]);
+
+        $this->assertSame('mismatch', $rows[0]['details']['canonicalIssue']);
+        $this->assertSame('label.health_check_content_quality_canonical_mismatch', $rows[0]['summary']);
+        $this->assertSame('https://example.com/other', $rows[0]['details']['canonical']);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[0]['status']);
+    }
+
+    // What a theme overriding layout.html.twig without carrying canonical_url() over leaves behind
+    public function testAnalyzeReportsAPageDeclaringNoCanonicalAtAll(): void
+    {
+        $client = $this->createHealthyClient(['canonical' => ''] + self::GOOD_ANALYSIS);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one')]);
+
+        $this->assertSame('missing', $rows[0]['details']['canonicalIssue']);
+        $this->assertSame('label.health_check_content_quality_no_canonical', $rows[0]['summary']);
+    }
+
+    // The site root is declared without a trailing slash by the sitemap and with one by canonical_url(): both name the home page, and neither is a duplicate of the other
+    public function testAnalyzeAcceptsACanonicalDifferingOnlyByATrailingSlash(): void
+    {
+        $client = $this->createHealthyClient(['canonical' => 'https://EXAMPLE.com/'] + self::GOOD_ANALYSIS);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com')]);
+
+        $this->assertNull($rows[0]['details']['canonicalIssue']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $rows[0]['status']);
+    }
+
+    // A url its own site declares to search engines while the page tells them to drop it: the page is simply not in the results
+    public function testAnalyzeErrorsOnANoindexDeclaredUrl(): void
+    {
+        $client = $this->createHealthyClient(['robots' => ['noindex', 'follow']] + self::GOOD_ANALYSIS);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one', indexable: true)]);
+
+        $this->assertTrue($rows[0]['details']['noindex']);
+        $this->assertSame('label.health_check_content_quality_noindex', $rows[0]['summary']);
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $rows[0]['status']);
+    }
+
+    // "none" is the shorthand for "noindex, nofollow" and keeps the page out of the results just as much
+    public function testAnalyzeReadsNoneAsANoindex(): void
+    {
+        $client = $this->createHealthyClient(['robots' => ['none']] + self::GOOD_ANALYSIS);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one', indexable: true)]);
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $rows[0]['status']);
+    }
+
+    // A caller listing every page it holds passes pages that are meant to carry a noindex - reporting those would leave them red forever with nothing to fix
+    public function testAnalyzeIgnoresANoindexOnAUrlNothingDeclaresAsIndexable(): void
+    {
+        $client = $this->createHealthyClient(['robots' => ['noindex', 'follow']] + self::GOOD_ANALYSIS);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/account')]);
+
+        $this->assertFalse($rows[0]['details']['noindex']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $rows[0]['status']);
     }
 
     // Every clause of a page carrying several offences ends up in the one summary

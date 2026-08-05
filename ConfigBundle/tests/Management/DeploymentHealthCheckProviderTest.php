@@ -21,6 +21,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DeploymentHealthCheckProviderTest extends TestCase
 {
     private const PROBE_URL = 'https://example.com/c975l-health-check-404-probe';
+    private const VARIANT_URL = 'https://www.example.com/';
     private const SITE_PAGE = '<html><head><title>Introuvable</title></head><body>Example Site</body></html>';
     private const DEFAULT_ERROR_PAGE = '<html><head><title>An Error Occurred</title></head><body>Oops!</body></html>';
 
@@ -35,10 +36,13 @@ class DeploymentHealthCheckProviderTest extends TestCase
         return $configService;
     }
 
-    private function createClient(array $redirect, array $notFound): DeploymentClient
+    // The https redirect and the host variant both go through fetchWithoutRedirect - they are told apart by the host each one asks for
+    private function createClient(array $redirect, array $notFound, array $variant): DeploymentClient
     {
         $client = $this->createStub(DeploymentClient::class);
-        $client->method('fetchWithoutRedirect')->willReturn($redirect);
+        $client->method('fetchWithoutRedirect')->willReturnCallback(
+            static fn (string $url) => str_contains($url, 'www.') ? $variant : $redirect
+        );
         $client->method('fetch')->willReturn($notFound);
 
         return $client;
@@ -54,14 +58,18 @@ class DeploymentHealthCheckProviderTest extends TestCase
         return $translator;
     }
 
-    private function createProvider(?string $siteUrl, array $redirect = [], array $notFound = [], ?string $siteName = 'Example Site'): DeploymentHealthCheckProvider
+    private function createProvider(?string $siteUrl, array $redirect = [], array $notFound = [], ?string $siteName = 'Example Site', array $variant = []): DeploymentHealthCheckProvider
     {
         $configService = $this->createConfigService($siteUrl, $siteName);
 
         return new DeploymentHealthCheckProvider(
             $configService,
             new SiteUrlResolver($configService),
-            $this->createClient($redirect + ['statusCode' => 301, 'location' => 'https://example.com/'], $notFound + ['statusCode' => 404, 'content' => self::SITE_PAGE]),
+            $this->createClient(
+                $redirect + ['statusCode' => 301, 'location' => 'https://example.com/'],
+                $notFound + ['statusCode' => 404, 'content' => self::SITE_PAGE],
+                $variant + ['statusCode' => 301, 'location' => 'https://example.com/'],
+            ),
             $this->createTranslator(),
         );
     }
@@ -76,15 +84,17 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $this->assertSame([], $this->createProvider(null)->runChecks());
     }
 
-    public function testRunChecksReturnsOneRowEachWhenBothAreFine(): void
+    public function testRunChecksReturnsOneRowPerCheckWhenAllAreFine(): void
     {
         $results = $this->createProvider('https://example.com')->runChecks();
 
-        $this->assertCount(2, $results);
+        $this->assertCount(3, $results);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[0]['status']);
         $this->assertSame('http://example.com/', $results[0]['url']);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[1]['status']);
         $this->assertSame(self::PROBE_URL, $results[1]['url']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
+        $this->assertSame(self::VARIANT_URL, $results[2]['url']);
     }
 
     // A trailing slash on site-url must not produce a double-slashed probe url
@@ -95,13 +105,14 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $this->assertSame(self::PROBE_URL, $results[1]['url']);
     }
 
-    // Nothing to redirect to on a site not served over https - only the 404 row remains
+    // Nothing to redirect to on a site not served over https - the 404 and host variant rows remain, the latter asking the http host the site declares
     public function testRunChecksSkipsTheHttpsRedirectOnAnHttpSite(): void
     {
         $results = $this->createProvider('http://example.com')->runChecks();
 
-        $this->assertCount(1, $results);
+        $this->assertCount(2, $results);
         $this->assertSame('http://example.com/c975l-health-check-404-probe', $results[0]['url']);
+        $this->assertSame('http://www.example.com/', $results[1]['url']);
     }
 
     public function testRunChecksStatusIsErrorWhenHttpDoesNotRedirect(): void
@@ -163,6 +174,47 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[1]['status']);
     }
 
+    // Both hosts serving the site leaves a search engine with two sites carrying the same pages
+    public function testRunChecksStatusIsErrorWhenTheOtherHostServesTheSiteToo(): void
+    {
+        $results = $this->createProvider('https://example.com', variant: ['statusCode' => 200, 'location' => null])->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
+        $this->assertSame('host-variant', $results[2]['details']['issue']);
+        $this->assertSame(200, $results[2]['details']['statusCode']);
+    }
+
+    // A redirect that lands anywhere but on the site's own host settles nothing - a relative Location keeps the visitor on the variant host itself
+    public function testRunChecksStatusIsWarningWhenTheOtherHostRedirectsElsewhere(): void
+    {
+        $results = $this->createProvider('https://example.com', variant: ['statusCode' => 301, 'location' => '/'])->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $results[2]['status']);
+        $this->assertSame('host-variant-redirect', $results[2]['details']['issue']);
+    }
+
+    // A 404 from a catch-all vhost duplicates no page, whatever else it says about the server
+    public function testRunChecksAcceptsAnOtherHostServingNoContent(): void
+    {
+        $results = $this->createProvider('https://example.com', variant: ['statusCode' => 404, 'location' => null])->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
+    }
+
+    // The variant of a site declared with www is its apex, not a second www
+    public function testRunChecksProbesTheApexWhenTheSiteIsDeclaredWithWww(): void
+    {
+        $configService = $this->createConfigService('https://www.example.com');
+        $client = $this->createStub(DeploymentClient::class);
+        $client->method('fetchWithoutRedirect')->willReturn(['statusCode' => 301, 'location' => 'https://www.example.com/']);
+        $client->method('fetch')->willReturn(['statusCode' => 404, 'content' => self::SITE_PAGE]);
+
+        $results = (new DeploymentHealthCheckProvider($configService, new SiteUrlResolver($configService), $client, $this->createTranslator()))->runChecks();
+
+        $this->assertSame('https://example.com/', $results[2]['url']);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
+    }
+
     public function testRunChecksReturnsAnErrorRowWhenTheCallFails(): void
     {
         $client = $this->createStub(DeploymentClient::class);
@@ -176,5 +228,7 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[0]['status']);
         $this->assertSame(['error' => 'Connection refused'], $results[0]['details']);
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[1]['status']);
+        // The one check here whose failed call is a pass: nothing answering under the other host is nothing to deduplicate
+        $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
     }
 }

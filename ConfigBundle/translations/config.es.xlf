@@ -822,6 +822,10 @@
                 <source>label.health_check_content_quality_call_failed</source>
                 <target>Fallo en la comprobación de contenido: %message%</target>
             </trans-unit>
+            <trans-unit id="6_MkHsw">
+                <source>label.health_check_content_quality_canonical_mismatch</source>
+                <target>Declara %url% como url canónica, no esta</target>
+            </trans-unit>
             <trans-unit id="LFH1s4O">
                 <source>label.health_check_content_quality_description_too_long</source>
                 <target>«%field%» demasiado largo (%length% caracteres)</target>
@@ -838,6 +842,10 @@
                 <source>label.health_check_content_quality_missing_social_tags</source>
                 <target>%count% etiqueta(s) para compartir ausente(s)</target>
             </trans-unit>
+            <trans-unit id="x9j9Nuk">
+                <source>label.health_check_content_quality_no_canonical</source>
+                <target>Ninguna url canónica declarada</target>
+            </trans-unit>
             <trans-unit id="BJy8gU9">
                 <source>label.health_check_content_quality_no_description</source>
                 <target>falta «%field%»</target>
@@ -849,6 +857,10 @@
             <trans-unit id="n0fEOV8">
                 <source>label.health_check_content_quality_no_title</source>
                 <target>falta el título</target>
+            </trans-unit>
+            <trans-unit id="TfhobhK">
+                <source>label.health_check_content_quality_noindex</source>
+                <target>Pide no ser indexada aunque el sitio declara esta url</target>
             </trans-unit>
             <trans-unit id="VeQ3n7J">
                 <source>label.health_check_content_quality_ok</source>
@@ -898,6 +910,10 @@
                 <source>label.health_check_deployment_call_failed</source>
                 <target>Error en la verificación del despliegue: %message%</target>
             </trans-unit>
+            <trans-unit id="bNb7_TO">
+                <source>label.health_check_deployment_host_variant</source>
+                <target>Variante de host www</target>
+            </trans-unit>
             <trans-unit id="O9kLgA7">
                 <source>label.health_check_deployment_https</source>
                 <target>Redirección https</target>
@@ -933,6 +949,22 @@
             <trans-unit id="VRmd3ap">
                 <source>label.health_check_gauge_seo</source>
                 <target>SEO</target>
+            </trans-unit>
+            <trans-unit id="xg0h98_">
+                <source>label.health_check_host_variant_absent</source>
+                <target>Ningún sitio servido en %host%</target>
+            </trans-unit>
+            <trans-unit id="JNSu4hW">
+                <source>label.health_check_host_variant_duplicate</source>
+                <target>El sitio también se sirve en %host% (contenido duplicado)</target>
+            </trans-unit>
+            <trans-unit id="PBuleOE">
+                <source>label.health_check_host_variant_redirect_elsewhere</source>
+                <target>Redirige a %url%, no al host del sitio</target>
+            </trans-unit>
+            <trans-unit id="wN8TX5L">
+                <source>label.health_check_host_variant_redirect_ok</source>
+                <target>Redirige correctamente al sitio</target>
             </trans-unit>
             <trans-unit id="5oHSgYP">
                 <source>label.health_check_https_redirect_insecure</source>
@@ -1014,6 +1046,14 @@
                 <source>label.health_check_robots_ok</source>
                 <target>robots.txt es accesible y no bloquea todo</target>
             </trans-unit>
+            <trans-unit id="jz.2UHS">
+                <source>label.health_check_robots_private</source>
+                <target>robots.txt prohíbe todo rastreo, como pidió este sitio privado</target>
+            </trans-unit>
+            <trans-unit id="0m4k5Lg">
+                <source>label.health_check_robots_private_but_open</source>
+                <target>Este sitio está configurado como privado, pero su robots.txt aún permite el rastreo: vuelva a ejecutar c975l:seo:files:create</target>
+            </trans-unit>
             <trans-unit id="q59PHEf">
                 <source>label.health_check_run_progress</source>
                 <target>Chequeo de salud en curso: %done%/%total% comprobación(es) terminada(s). Esta página se actualiza sola.</target>
@@ -1037,6 +1077,42 @@
             <trans-unit id="JOx_E7E">
                 <source>label.health_check_security_headers_scope</source>
                 <target>estos encabezados se aplican a todo el sitio, comprobados una sola vez a través de la página de inicio</target>
+            </trans-unit>
+            <trans-unit id="TbBDhdd">
+                <source>label.health_check_security_misconfig_call_failed</source>
+                <target>Fallo al comprobar la configuración: %message%</target>
+            </trans-unit>
+            <trans-unit id="xP16qIe">
+                <source>label.health_check_security_misconfig_cookie_flags</source>
+                <target>cookie de sesión %name% sin %flags%</target>
+            </trans-unit>
+            <trans-unit id="AuW4ZkS">
+                <source>label.health_check_security_misconfig_debug_exposed</source>
+                <target>herramientas de depuración accesibles: %paths%</target>
+            </trans-unit>
+            <trans-unit id="jKTkAqJ">
+                <source>label.health_check_security_misconfig_debug_token</source>
+                <target>encabezado X-Debug-Token presente: el profiler se ejecuta en el sitio en línea</target>
+            </trans-unit>
+            <trans-unit id="TrjGXkD">
+                <source>label.health_check_security_misconfig_directory_listing</source>
+                <target>listado de directorios activo: %paths%</target>
+            </trans-unit>
+            <trans-unit id="iW2COvW">
+                <source>label.health_check_security_misconfig_files_served</source>
+                <target>archivos servidos públicamente: %files%</target>
+            </trans-unit>
+            <trans-unit id="Mb4Obhv">
+                <source>label.health_check_security_misconfig_powered_by</source>
+                <target>encabezado X-Powered-By expuesto: %value%</target>
+            </trans-unit>
+            <trans-unit id="rkGrHIV">
+                <source>label.health_check_security_misconfig_scope</source>
+                <target>configuración del servidor, comprobada una sola vez a través de la página de inicio</target>
+            </trans-unit>
+            <trans-unit id="xq4EuCv">
+                <source>label.health_check_security_misconfig_server_banner</source>
+                <target>encabezado Server detallado: %value%</target>
             </trans-unit>
             <trans-unit id="Z5MQYLr">
                 <source>label.health_check_seo_files_call_failed</source>
@@ -1121,6 +1197,10 @@
             <trans-unit id="tVOszC6">
                 <source>label.health_check_summary_security_headers</source>
                 <target>%present%/%total% encabezados de seguridad presentes</target>
+            </trans-unit>
+            <trans-unit id="zRrhWvr">
+                <source>label.health_check_summary_security_misconfig</source>
+                <target>%paths% rutas comprobadas</target>
             </trans-unit>
             <trans-unit id="lF7WRuH">
                 <source>label.health_check_summary_ssl_certificate</source>

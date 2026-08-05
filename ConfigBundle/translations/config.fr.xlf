@@ -822,6 +822,10 @@
                 <source>label.health_check_content_quality_call_failed</source>
                 <target>Échec de la vérification du contenu : %message%</target>
             </trans-unit>
+            <trans-unit id="6_MkHsw">
+                <source>label.health_check_content_quality_canonical_mismatch</source>
+                <target>Déclare %url% comme url canonique, pas celle-ci</target>
+            </trans-unit>
             <trans-unit id="LFH1s4O">
                 <source>label.health_check_content_quality_description_too_long</source>
                 <target>« %field% » trop long (%length% caractères)</target>
@@ -838,6 +842,10 @@
                 <source>label.health_check_content_quality_missing_social_tags</source>
                 <target>%count% balise(s) de partage manquante(s)</target>
             </trans-unit>
+            <trans-unit id="x9j9Nuk">
+                <source>label.health_check_content_quality_no_canonical</source>
+                <target>Aucune url canonique déclarée</target>
+            </trans-unit>
             <trans-unit id="BJy8gU9">
                 <source>label.health_check_content_quality_no_description</source>
                 <target>« %field% » manquant</target>
@@ -849,6 +857,10 @@
             <trans-unit id="n0fEOV8">
                 <source>label.health_check_content_quality_no_title</source>
                 <target>titre manquant</target>
+            </trans-unit>
+            <trans-unit id="TfhobhK">
+                <source>label.health_check_content_quality_noindex</source>
+                <target>Interdit l'indexation alors que le site déclare cette url</target>
             </trans-unit>
             <trans-unit id="VeQ3n7J">
                 <source>label.health_check_content_quality_ok</source>
@@ -898,6 +910,10 @@
                 <source>label.health_check_deployment_call_failed</source>
                 <target>Échec de la vérification du déploiement : %message%</target>
             </trans-unit>
+            <trans-unit id="bNb7_TO">
+                <source>label.health_check_deployment_host_variant</source>
+                <target>Variante d'hôte www</target>
+            </trans-unit>
             <trans-unit id="O9kLgA7">
                 <source>label.health_check_deployment_https</source>
                 <target>Redirection https</target>
@@ -933,6 +949,22 @@
             <trans-unit id="VRmd3ap">
                 <source>label.health_check_gauge_seo</source>
                 <target>SEO</target>
+            </trans-unit>
+            <trans-unit id="xg0h98_">
+                <source>label.health_check_host_variant_absent</source>
+                <target>Aucun site servi sous %host%</target>
+            </trans-unit>
+            <trans-unit id="JNSu4hW">
+                <source>label.health_check_host_variant_duplicate</source>
+                <target>Le site est aussi servi sous %host% (contenu dupliqué)</target>
+            </trans-unit>
+            <trans-unit id="PBuleOE">
+                <source>label.health_check_host_variant_redirect_elsewhere</source>
+                <target>Redirige vers %url%, pas vers l'hôte du site</target>
+            </trans-unit>
+            <trans-unit id="wN8TX5L">
+                <source>label.health_check_host_variant_redirect_ok</source>
+                <target>Redirige bien vers le site</target>
             </trans-unit>
             <trans-unit id="5oHSgYP">
                 <source>label.health_check_https_redirect_insecure</source>
@@ -1014,6 +1046,14 @@
                 <source>label.health_check_robots_ok</source>
                 <target>robots.txt est accessible et ne bloque pas tout</target>
             </trans-unit>
+            <trans-unit id="jz.2UHS">
+                <source>label.health_check_robots_private</source>
+                <target>robots.txt interdit toute exploration, comme ce site privé l'a demandé</target>
+            </trans-unit>
+            <trans-unit id="0m4k5Lg">
+                <source>label.health_check_robots_private_but_open</source>
+                <target>Ce site est réglé comme privé, mais son robots.txt laisse encore explorer - relancez c975l:seo:files:create</target>
+            </trans-unit>
             <trans-unit id="q59PHEf">
                 <source>label.health_check_run_progress</source>
                 <target>Bilan de santé en cours : %done%/%total% contrôle(s) terminé(s). Cette page se met à jour toute seule.</target>
@@ -1037,6 +1077,42 @@
             <trans-unit id="JOx_E7E">
                 <source>label.health_check_security_headers_scope</source>
                 <target>ces en-têtes s'appliquent à tout le site, vérifiées une seule fois via la page d'accueil</target>
+            </trans-unit>
+            <trans-unit id="TbBDhdd">
+                <source>label.health_check_security_misconfig_call_failed</source>
+                <target>Échec de la vérification de la configuration : %message%</target>
+            </trans-unit>
+            <trans-unit id="xP16qIe">
+                <source>label.health_check_security_misconfig_cookie_flags</source>
+                <target>cookie de session %name% sans %flags%</target>
+            </trans-unit>
+            <trans-unit id="AuW4ZkS">
+                <source>label.health_check_security_misconfig_debug_exposed</source>
+                <target>outillage de debug accessible : %paths%</target>
+            </trans-unit>
+            <trans-unit id="jKTkAqJ">
+                <source>label.health_check_security_misconfig_debug_token</source>
+                <target>en-tête X-Debug-Token présent : le profiler tourne sur le site en ligne</target>
+            </trans-unit>
+            <trans-unit id="TrjGXkD">
+                <source>label.health_check_security_misconfig_directory_listing</source>
+                <target>listing de répertoire actif : %paths%</target>
+            </trans-unit>
+            <trans-unit id="iW2COvW">
+                <source>label.health_check_security_misconfig_files_served</source>
+                <target>fichiers servis publiquement : %files%</target>
+            </trans-unit>
+            <trans-unit id="Mb4Obhv">
+                <source>label.health_check_security_misconfig_powered_by</source>
+                <target>en-tête X-Powered-By exposé : %value%</target>
+            </trans-unit>
+            <trans-unit id="rkGrHIV">
+                <source>label.health_check_security_misconfig_scope</source>
+                <target>configuration du serveur, vérifiée une seule fois via la page d'accueil</target>
+            </trans-unit>
+            <trans-unit id="xq4EuCv">
+                <source>label.health_check_security_misconfig_server_banner</source>
+                <target>en-tête Server détaillé : %value%</target>
             </trans-unit>
             <trans-unit id="Z5MQYLr">
                 <source>label.health_check_seo_files_call_failed</source>
@@ -1121,6 +1197,10 @@
             <trans-unit id="tVOszC6">
                 <source>label.health_check_summary_security_headers</source>
                 <target>%present%/%total% en-têtes de sécurité présents</target>
+            </trans-unit>
+            <trans-unit id="zRrhWvr">
+                <source>label.health_check_summary_security_misconfig</source>
+                <target>%paths% chemins vérifiés</target>
             </trans-unit>
             <trans-unit id="lF7WRuH">
                 <source>label.health_check_summary_ssl_certificate</source>

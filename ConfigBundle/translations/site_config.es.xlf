@@ -48,7 +48,7 @@
             </trans-unit>
             <trans-unit id="lIc9kKR">
                 <source>description.seo_robots_block_ai</source>
-                <target>Bloquea los robots que recopilan páginas para entrenar modelos. Desactivado por defecto: contradice la publicación de un llms.txt, hecho precisamente para que esos modelos lo lean. En todo caso es solo declarativo, nada lo impone.</target>
+                <target>Bloquea los robots que recopilan páginas para entrenar modelos. Activado por defecto. Los motores de respuesta (Claude-User, OAI-SearchBot, PerplexityBot…) nunca se bloquean: leen una página para responder a una pregunta citándola, y son los que leen el llms.txt. En todo caso es solo declarativo, nada lo impone.</target>
             </trans-unit>
             <trans-unit id="cJxfsLp">
                 <source>description.seo_robots_disallow</source>
@@ -56,7 +56,11 @@
             </trans-unit>
             <trans-unit id="PelrJJG">
                 <source>description.seo_robots_extra</source>
-                <target>Se añade tal cual al final de robots.txt, para lo que los ajustes anteriores no cubren.</target>
+                <target>Se escribe tal cual dentro del grupo «User-agent: *» de robots.txt, para lo que los ajustes anteriores no cubren. Un sitio privado no declara nada más que su propia regla, por lo que estas líneas no se escriben.</target>
+            </trans-unit>
+            <trans-unit id="dhRax_b">
+                <source>description.seo_robots_private</source>
+                <target>Mantiene este sitio fuera de los buscadores: robots.txt prohíbe entonces todo rastreo y no se escribe ningún llms.txt. Solo declarativo: lo que no debe alcanzarse tiene que estar tras una autenticación, nunca tras este ajuste.</target>
             </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
@@ -245,6 +249,10 @@
             <trans-unit id="JlFGaKa">
                 <source>label.seo_robots_extra</source>
                 <target>robots.txt - líneas adicionales</target>
+            </trans-unit>
+            <trans-unit id="xzbvGNq">
+                <source>label.seo_robots_private</source>
+                <target>robots.txt - sitio fuera de los buscadores</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

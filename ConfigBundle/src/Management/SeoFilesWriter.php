@@ -88,13 +88,24 @@ class SeoFilesWriter
 
     private function robotsContext(): array
     {
+        $aiCrawlers = $this->stringList($this->configService->get('seo-robots-ai-crawlers'));
+
         return [
+            // Everything below describes a site meant to be indexed, and the template drops the lot rather than mixing a "Disallow: /" into it: a robots.txt holding both that and an "Allow: /" leaves the site open, RFC 9309 settling a tie between two rules of equal length in favour of the least restrictive one
+            'private' => $this->isPrivate(),
             'disallow' => $this->stringList($this->configService->get('seo-robots-disallow')),
             'blockAi' => (bool) $this->configService->get('seo-robots-block-ai'),
-            'aiCrawlers' => $this->stringList($this->configService->get('seo-robots-ai-crawlers')),
+            'aiCrawlers' => $aiCrawlers,
+            'answerEngines' => $this->answerEnginesLeftAllowed($aiCrawlers),
             'extra' => $this->text($this->configService->get('seo-robots-extra')),
             'sitemap' => $this->sitemapIndexUrl(),
         ];
+    }
+
+    // The answer engines the file really lets through, named in it so a robots.txt says what it allows and not only what it blocks. Read from AiCrawlerListUpdater's own list, which is what keeps them out of the blocked one, minus any name a site added there by hand - claiming to allow a crawler the very same file blocks would be a lie, and adding one is explicitly a site's right
+    private function answerEnginesLeftAllowed(array $aiCrawlers): array
+    {
+        return array_values(array_udiff(AiCrawlerListUpdater::ANSWER_ENGINES, $aiCrawlers, 'strcasecmp'));
     }
 
     private function humansContext(): array
@@ -115,6 +126,11 @@ class SeoFilesWriter
     // @return ?array null when there is neither a summary nor a single section to declare
     private function llmsContext(): ?array
     {
+        // An index of pages published for models to read is the opposite of what a site staying out of search engines asked for, and handing one over while robots.txt forbids everything would be saying both at once
+        if ($this->isPrivate()) {
+            return null;
+        }
+
         $sections = $this->llmsSections();
         $summary = $this->text($this->configService->get('seo-llms-summary'));
 
@@ -174,14 +190,24 @@ class SeoFilesWriter
         return ucfirst(str_replace('-', ' ', $name));
     }
 
-    // Only declared when the index is really deployed: a "Sitemap:" line pointing at a 404 is a Search Console error, and c975l:sitemaps:create writes no index at all until a provider has urls to declare
+    // Only declared when the index is really deployed: a "Sitemap:" line pointing at a 404 is a Search Console error, and c975l:sitemaps:create writes no index at all until a provider has urls to declare. Never on a private site, where handing crawlers the list of everything the same file just forbade would only invite them in - the index itself is left written, being what the site's own tooling reads
     private function sitemapIndexUrl(): ?string
     {
+        if ($this->isPrivate()) {
+            return null;
+        }
+
         $siteUrl = rtrim((string) $this->configService->get('site-url'), '/');
 
         return '' !== $siteUrl && is_file($this->publicFolder . '/sitemap-index.xml')
             ? $siteUrl . '/sitemap-index.xml'
             : null;
+    }
+
+    // Whether this site declared itself out of search engines - read in three places, and by SeoFilesHealthCheckProvider too, which is what keeps the "Disallow: /" it would otherwise report as the worst misconfiguration there is from being reported as one here
+    private function isPrivate(): bool
+    {
+        return (bool) $this->configService->get('seo-robots-private');
     }
 
     // Language of the site as a name rather than the "fr" the kernel holds, guarded since ext-intl is not required by this bundle

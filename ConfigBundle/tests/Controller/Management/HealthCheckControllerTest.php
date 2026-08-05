@@ -152,6 +152,8 @@ class HealthCheckControllerTest extends TestCase
     {
         $pagespeedResult = (new HealthCheckResult())->setKind('pagespeed')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         $securityHeadersResult = (new HealthCheckResult())->setKind('security-headers')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('6/6')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        // What the deployed site hands to an anonymous visitor (debug tooling, sensitive files, cookie flags): the server's own configuration, so one row for the whole site
+        $securityMisconfigResult = (new HealthCheckResult())->setKind('security-misconfig')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('9 paths checked')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         $sslCertificateResult = (new HealthCheckResult())->setKind('ssl-certificate')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('89 days left')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         // Checked once for the whole site (http/https redirection, 404 page), not once per page
         $deploymentResult = (new HealthCheckResult())->setKind('deployment')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('4/4')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
@@ -163,7 +165,7 @@ class HealthCheckControllerTest extends TestCase
         $aiCrawlersResult = (new HealthCheckResult())->setKind(AiCrawlersHealthCheckProvider::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('up to date')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
 
         $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
-        $healthCheckResultRepository->method('findLatestPerUrlAndKind')->willReturn([$pagespeedResult, $securityHeadersResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult, $aiCrawlersResult]);
+        $healthCheckResultRepository->method('findLatestPerUrlAndKind')->willReturn([$pagespeedResult, $securityHeadersResult, $securityMisconfigResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult, $aiCrawlersResult]);
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())
@@ -173,8 +175,8 @@ class HealthCheckControllerTest extends TestCase
                 [
                     'results' => [$pagespeedResult],
                     'kinds' => ['pagespeed'],
-                    'siteResults' => [$securityHeadersResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult, $aiCrawlersResult],
-                    'siteKinds' => ['security-headers', 'ssl-certificate', 'deployment', DatabaseLoadHealthCheckProvider::KIND, 'svg-fonts', AiCrawlersHealthCheckProvider::KIND],
+                    'siteResults' => [$securityHeadersResult, $securityMisconfigResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult, $aiCrawlersResult],
+                    'siteKinds' => ['security-headers', 'security-misconfig', 'ssl-certificate', 'deployment', DatabaseLoadHealthCheckProvider::KIND, 'svg-fonts', AiCrawlersHealthCheckProvider::KIND],
                     'alerts' => [],
                     'trendChart' => null,
                     'lastCheckedAt' => $pagespeedResult->getCheckedAt(),

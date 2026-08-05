@@ -89,6 +89,65 @@ class ContentQualityClientTest extends TestCase
         $this->assertSame('', $client->analyze('https://example.com/pages/home/')['title']);
     }
 
+    public function testAnalyzeReadsTheCanonicalUrl(): void
+    {
+        $html = '<html><head><link rel="canonical" href="https://example.com/pages/home"></head><body><h1>T</h1></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame('https://example.com/pages/home', $client->analyze('https://example.com/pages/home/')['canonical']);
+    }
+
+    // A canonical may legitimately be written relative, and names the very same page as its absolute form
+    public function testAnalyzeResolvesARelativeCanonicalAgainstThePageItself(): void
+    {
+        $html = '<html><head><link rel="CANONICAL" href="/pages/home"></head><body><h1>T</h1></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame('https://example.com/pages/home', $client->analyze('https://example.com/pages/home/')['canonical']);
+    }
+
+    // The rel attribute holds a list of tokens, so "canonical alternate" is still the canonical link
+    public function testAnalyzeReadsACanonicalDeclaredAmongSeveralRelTokens(): void
+    {
+        $html = '<html><head><link rel="alternate canonical" href="https://example.com/one"></head><body><h1>T</h1></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame('https://example.com/one', $client->analyze('https://example.com/one')['canonical']);
+    }
+
+    public function testAnalyzeReturnsAnEmptyCanonicalWhenThePageDeclaresNone(): void
+    {
+        $html = '<html><head><link rel="stylesheet" href="/styles.css"></head><body><h1>T</h1></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame('', $client->analyze('https://example.com/one')['canonical']);
+    }
+
+    public function testAnalyzeSplitsTheRobotsDirectives(): void
+    {
+        $html = '<html><head><meta name="robots" content="NOINDEX, follow"></head><body><h1>T</h1></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame(['noindex', 'follow'], $client->analyze('https://example.com/one')['robots']);
+    }
+
+    // Googlebot's own meta overrides the generic one for Google, and keeps the page out of the results just the same
+    public function testAnalyzeMergesTheGooglebotDirectivesWithTheGenericOnes(): void
+    {
+        $html = '<html><head><meta name="robots" content="index, follow"><meta name="googlebot" content="noindex"></head><body><h1>T</h1></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame(['index', 'follow', 'noindex'], $client->analyze('https://example.com/one')['robots']);
+    }
+
+    public function testAnalyzeReturnsNoRobotsDirectiveWhenThePageCarriesNone(): void
+    {
+        $html = '<html><head><meta name="viewport" content="width=device-width"></head><body><h1>T</h1></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame([], $client->analyze('https://example.com/one')['robots']);
+    }
+
     // The setting is process-wide: left on, it silences the parse errors every other libxml reader of the process relies on - UiBundle's own SVG rasterizer included, which then accepts a malformed file instead of refusing it
     public function testAnalyzeRestoresLibxmlInternalErrors(): void
     {
