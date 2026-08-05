@@ -21,6 +21,9 @@ class TemplateDomainCatalogueTest extends TestCase
     // The two the bundle ships. Anything else - "site" above all - belongs to the app, which owes this bundle nothing
     private const OWN_DOMAINS = ['ui', 'validators'];
 
+    // Domains of the packages composer.json requires: their catalogue is installed wherever this bundle is, so a template overriding one of their blocks may keep their wording
+    private const REQUIRED_DOMAINS = ['EasyAdminBundle'];
+
     // The bundle translates in its own domains only: a component rendered on a site that never declared the key shows its raw name instead of a sentence
     public function testNoTemplateTranslatesInAnotherPackagesDomain(): void
     {
@@ -32,8 +35,8 @@ class TemplateDomainCatalogueTest extends TestCase
             foreach (array_merge($explicit[1], $default[1]) as $domain) {
                 $this->assertContains(
                     $domain,
-                    self::OWN_DOMAINS,
-                    sprintf('"%s" translates in the "%s" domain, which this bundle does not ship.', $this->relative($file), $domain)
+                    array_merge(self::OWN_DOMAINS, self::REQUIRED_DOMAINS),
+                    sprintf('"%s" translates in the "%s" domain, which neither this bundle nor its dependencies ship.', $this->relative($file), $domain)
                 );
             }
         }
@@ -60,17 +63,24 @@ class TemplateDomainCatalogueTest extends TestCase
         return array_map(static fn (string $locale): array => [$locale], self::LOCALES);
     }
 
-    // Collects the literal keys the templates translate, each mapped to the first file asking for it. A key
-    // built from a variable ("'label.' ~ kind"|trans) has no literal to read and is left to the runtime
+    // Collects the literal keys the templates ask this bundle's own catalogue for, each mapped to the first file asking for it. A key
+    // built from a variable ("'label.' ~ kind"|trans) has no literal to read and is left to the runtime, and one named with a
+    // dependency's domain is that dependency's to ship
     private function templateKeys(): array
     {
         $keys = [];
 
         foreach ($this->twigFiles() as $file) {
-            preg_match_all('/[\'"]([a-z][a-zA-Z0-9_]*\.[a-zA-Z0-9_.]+)[\'"]\s*\|\s*trans/', (string) file_get_contents($file), $matches);
+            preg_match_all('/[\'"]([a-z][a-zA-Z0-9_]*\.[a-zA-Z0-9_.]+)[\'"]\s*\|\s*trans(?:\(\s*(?:\{[^}]*\}|\[[^\]]*\])?\s*(?:,\s*[\'"]([a-zA-Z]+)[\'"])?)?/', (string) file_get_contents($file), $matches, PREG_SET_ORDER);
 
-            foreach ($matches[1] as $key) {
-                $keys[$key] ??= $this->relative($file);
+            foreach ($matches as $match) {
+                $domain = $match[2] ?? '';
+
+                if ('' !== $domain && 'ui' !== $domain) {
+                    continue;
+                }
+
+                $keys[$match[1]] ??= $this->relative($file);
             }
         }
 

@@ -29,7 +29,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
-- **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections)
+- **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections) · [confirming a title change that rewrites a slug](#confirming-a-title-change-that-rewrites-a-slug)
 - **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
 
@@ -87,7 +87,7 @@ php bin/console doctrine:migrations:migrate
 
 ### Register Stimulus controllers
 
-`controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
+`controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, `title-confirm`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
 
 Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `imageCompare`, `password`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
 
@@ -229,6 +229,25 @@ Drag-and-drop reordering is handled automatically by the `eaSortable` Stimulus c
 **Requirement:** each collection item must contain a hidden `position` field whose `name` ends with `[position]`. The script detects it automatically.
 
 Expose a hidden `position` field in your collection entry type and order the collection by position on the entity side — the grip handle and drag behaviour are added automatically.
+
+---
+
+## Confirming a title change that rewrites a slug
+
+A record whose slug is built from its title has its public url changed by any rename. The `title-confirm` controller, registered by `@c975l/ui-bundle/controllers-admin.js`, asks the admin to confirm before the title field accepts a single keystroke, through EasyAdmin's own action-confirmation modal.
+
+Mount it on the title field of your CRUD controller, with the message to show:
+
+```php
+TextField::new('title')
+    ->setFormTypeOption('attr', Crud::PAGE_NEW === $pageName ? [] : [
+        'data-controller' => 'title-confirm',
+        'data-action' => 'focus->title-confirm#confirm click->title-confirm#confirm',
+        'data-title-confirm-message-value' => $this->translator->trans('confirm.title_change', [], 'your_domain'),
+    ]),
+```
+
+Leave the "new" page out, as above: the modal it reuses is only rendered on the edit/index/detail pages, and a record being created has no slug to preserve yet.
 
 ---
 
@@ -1295,6 +1314,8 @@ The index shows one button per graphic still missing: each opens the upload form
 The site's colors, fonts and light/dark mode are admin-editable config keys of the `theme` group, declared here because the `--c975l-*` custom properties they compile to are the ones this bundle's own CSS reads: `theme-color-primary`, `theme-color-secondary`, their two `-dark-mode` counterparts, `theme-color-background`, `theme-color-text`, `theme-font-family-title`/`-body`/`-accent` and `theme-mode` (`auto`/`light`/`dark`).
 
 `Listener\ThemeVariablesCssListener` compiles them into `public/bundles/build/site-theme.css` on every change — a Doctrine listener on the `Config` entity, and a `CacheWarmerInterface` too, so a fresh file exists after a deploy even without an admin re-saving anything. The mapping is mechanical (`theme-color-primary` → `--c975l-color-primary`), so a new key needs no lookup table; a bare custom font name gets a generic fallback appended (`sans-serif`/`monospace`) in case the `@font-face` fails to load.
+
+What it compiles is every config whose **slug** starts with `theme-`, whatever its group (`ConfigRepository::findBySlugPrefix()`) — `theme-mode` excepted, being a choice rather than a CSS value. A satellite bundle declaring colors of its own therefore keeps them in its own back-office group next to its other settings, rather than scattering them into the site's `theme` screen: `c975l/gallery-bundle` ships its ten `theme-color-gallery-*` in its `gallery` group, and each of its tokens reads the compiled `--c975l-color-gallery-*` with the bundle's own default as fallback. ConfigBundle's `theme-color-*` validation (a plausible CSS color, so a value cannot break out of its declaration) keys on the same prefix, group-independent too.
 
 `Service\ThemeVariablesStylesheetProvider` contributes that file at **priority `0`**: after every bundle's compiled defaults (tagged 100) and before an app's own `assets/styles/themes/*.css` (auto-tagged at -100). That is what makes the admin's values win over the bundles and lose to a token the site took back.
 

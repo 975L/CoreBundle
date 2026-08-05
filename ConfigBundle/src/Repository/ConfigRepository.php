@@ -59,6 +59,17 @@ class ConfigRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // Returns every config whose slug starts with the given prefix, whatever the group it is displayed in - what UiBundle's ThemeVariablesCssListener compiles into site-theme.css from the "theme-" ones, a satellite bundle being free to declare its own colors in its own group
+    public function findBySlugPrefix(string $prefix): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.slug LIKE :prefix')
+            ->setParameter('prefix', $prefix . '%')
+            ->orderBy('c.label', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     // Config count per group, respecting the same "sensitive"/"restricted" visibility rules as ConfigCrudController's own index query - backs its intermediate "pick a group" screen. Reads live DISTINCT group values rather than the fixed Config::GROUPS enum, so a group only present in data (e.g. a bundle's configs.json using a value not yet added to that enum) still shows up
     public function countsByGroup(bool $isSensitive, bool $includeRestricted): array
     {

@@ -1,5 +1,27 @@
 # ChangeLog
 
+## v1.2.5
+
+A bundle keeps its own theme colors in its own group
+
+### ConfigBundle
+
+- Added `ConfigRepository::findBySlugPrefix()`, returning every config whose slug starts with the given prefix (05/08/2026)
+- `Config::validateThemeColorValue()` checks any `theme-color-*` config, whatever its group (05/08/2026)
+- `Config::validateThemeColorValue()` refuses a hex typed without its `#`, which CSS drops silently (05/08/2026)
+- `ConfigTest` covers a `theme-color-*` declared outside the theme group, and a hex missing its `#` (05/08/2026)
+
+### UiBundle
+
+- A blocks collection's add button reads "Ajouter un UiBlock" instead of EasyAdmin's "Ajouter un nouvel élément" (05/08/2026)
+- Added the `action.add_block` translation (05/08/2026)
+- Added `assets/js/title-confirm.js`, moved in from SiteBundle and registered in `controllers-admin.js` (05/08/2026)
+- Added `TitleConfirmControllerRegistrationTest` (05/08/2026)
+- Documented the title-change confirmation in the readme (05/08/2026)
+- `ThemeVariablesCssListener` compiles on the `theme-` slug prefix instead of the theme group (05/08/2026)
+- A satellite bundle can therefore declare its colors in its own back-office group (05/08/2026)
+- `ThemeVariablesCssListenerTest` covers a `theme-` slug carried by another group (05/08/2026)
+
 ## v1.2.4
 
 A form counts the caller behind an address, not the address itself

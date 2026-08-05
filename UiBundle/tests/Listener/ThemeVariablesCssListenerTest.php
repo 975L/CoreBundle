@@ -69,7 +69,7 @@ class ThemeVariablesCssListenerTest extends TestCase
     private function createListener(array $themeConfigs): ThemeVariablesCssListener
     {
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findByGroup')->willReturn($themeConfigs);
+        $repository->method('findBySlugPrefix')->willReturn($themeConfigs);
 
         return new ThemeVariablesCssListener(
             $repository,
@@ -97,6 +97,22 @@ class ThemeVariablesCssListenerTest extends TestCase
         $this->flush($listener);
 
         $this->assertFileDoesNotExist($this->cssPath);
+    }
+
+    // A satellite bundle keeps its own colors in its own back-office group: what marks a config as a CSS value is its "theme-" slug, so another group compiles all the same
+    public function testAThemeSlugIsCompiledWhateverItsGroup(): void
+    {
+        $listener = $this->createListener([
+            $this->config('theme-color-gallery-frame', '#123456', 'gallery'),
+        ]);
+
+        $listener->postUpdate(new PostUpdateEventArgs(
+            $this->config('theme-color-gallery-frame', '#123456', 'gallery'),
+            $this->createStub(EntityManagerInterface::class),
+        ));
+        $this->flush($listener);
+
+        $this->assertStringContainsString('--c975l-color-gallery-frame: #123456;', file_get_contents($this->cssPath));
     }
 
     public function testPostPersistIgnoresNonConfigEntities(): void
@@ -305,7 +321,7 @@ class ThemeVariablesCssListenerTest extends TestCase
     public function testWarmUpSurvivesAMissingTable(): void
     {
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findByGroup')->willThrowException(
+        $repository->method('findBySlugPrefix')->willThrowException(
             new TableNotFoundException($this->createStub(DriverException::class), null)
         );
         $listener = new ThemeVariablesCssListener(
@@ -322,7 +338,7 @@ class ThemeVariablesCssListenerTest extends TestCase
     public function testRegenerateRecompilesTheConcatenatedStylesheet(): void
     {
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findByGroup')->willReturn([$this->config('theme-color-primary', '#ff0000')]);
+        $repository->method('findBySlugPrefix')->willReturn([$this->config('theme-color-primary', '#ff0000')]);
 
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
@@ -339,7 +355,7 @@ class ThemeVariablesCssListenerTest extends TestCase
     public function testTheWholeThemeGroupSavedAtOnceRecompilesOnlyOnce(): void
     {
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findByGroup')->willReturn([$this->config('theme-color-primary', '#ff0000')]);
+        $repository->method('findBySlugPrefix')->willReturn([$this->config('theme-color-primary', '#ff0000')]);
 
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');
@@ -358,7 +374,7 @@ class ThemeVariablesCssListenerTest extends TestCase
     public function testTheStaleFlagIsResetAfterTheFlush(): void
     {
         $repository = $this->createStub(ConfigRepository::class);
-        $repository->method('findByGroup')->willReturn([$this->config('theme-color-primary', '#ff0000')]);
+        $repository->method('findBySlugPrefix')->willReturn([$this->config('theme-color-primary', '#ff0000')]);
 
         $stylesheetCacheWarmer = $this->createMock(StylesheetCacheWarmer::class);
         $stylesheetCacheWarmer->expects($this->once())->method('compileAll');

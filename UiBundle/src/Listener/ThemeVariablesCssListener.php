@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
-// Regenerates the compiled theme CSS whenever a "theme" Config is flushed, site_config being the single source of truth
+// Regenerates the compiled theme CSS whenever a "theme-" Config is flushed, site_config being the single source of truth
 // Also a CacheWarmer: rows restored from a backup fire no Doctrine event of their own
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postUpdate)]
@@ -34,6 +34,9 @@ use Symfony\Contracts\Cache\CacheInterface;
 #[AsDoctrineListener(event: Events::postFlush)]
 class ThemeVariablesCssListener implements CacheWarmerInterface
 {
+    // What marks a config as a CSS value, wherever it is displayed: the slug, not the group - a satellite bundle declaring colors of its own (c975l/gallery-bundle's "theme-color-gallery-*") keeps them in its own back-office group rather than in SiteBundle's
+    private const CSS_SLUG_PREFIX = 'theme-';
+
     // Theme configs that are never a CSS value, so must stay out of the compiled :root block
     private const EXCLUDED_SLUGS = ['theme-mode'];
 
@@ -100,7 +103,7 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
 
     private function markIfThemeConfig(object $entity): void
     {
-        if ($entity instanceof Config && Config::GROUP_THEME === $entity->getGroup()) {
+        if ($entity instanceof Config && str_starts_with($entity->getSlug(), self::CSS_SLUG_PREFIX)) {
             $this->stale = true;
         }
     }
@@ -112,7 +115,7 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         $this->cache->delete(FontPreloadExtension::CACHE_KEY);
 
         $lines = [];
-        foreach ($this->configRepository->findByGroup(Config::GROUP_THEME) as $config) {
+        foreach ($this->configRepository->findBySlugPrefix(self::CSS_SLUG_PREFIX) as $config) {
             $line = $this->variableLine($config);
             if (null !== $line) {
                 $lines[] = $line;
@@ -125,16 +128,16 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         $this->stylesheetCacheWarmer->compileAll();
     }
 
-    // One config row as its ":root" custom property declaration, or null when the row isn't one - mechanical mapping, e.g. "theme-color-primary" -> "--c975l-color-primary": no lookup table to maintain when a new theme variable is added to SiteBundle/config/configs.json. The "theme-" prefix is what marks a config as a CSS value, so anything else in the group is skipped rather than compiled into a variable no stylesheet reads - that's also what keeps a slug this bundle no longer ships (a row left behind in site_config, nothing prunes them) out of the file
+    // One config row as its ":root" custom property declaration, or null when the row isn't one - mechanical mapping, e.g. "theme-color-primary" -> "--c975l-color-primary": no lookup table to maintain when a new theme variable is added to a bundle's configs.json. Restates the prefix the query already filtered on, an excluded slug and an empty value being skipped here too
     private function variableLine(Config $config): ?string
     {
         $slug = $config->getSlug();
         $value = $config->getValue();
-        if (null === $value || '' === $value || !str_starts_with($slug, 'theme-') || in_array($slug, self::EXCLUDED_SLUGS, true)) {
+        if (null === $value || '' === $value || !str_starts_with($slug, self::CSS_SLUG_PREFIX) || in_array($slug, self::EXCLUDED_SLUGS, true)) {
             return null;
         }
 
-        return sprintf('    --c975l-%s: %s;', substr($slug, strlen('theme-')), $this->withFontFallback($slug, $value));
+        return sprintf('    --c975l-%s: %s;', substr($slug, strlen(self::CSS_SLUG_PREFIX)), $this->withFontFallback($slug, $value));
     }
 
     // A bare font name gets its generic fallback appended; a value already holding a comma is left alone

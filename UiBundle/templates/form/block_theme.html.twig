@@ -26,3 +26,38 @@
 {% block empty_collection %}
 <div class="empty collection-empty"></div>
 {% endblock %}
+
+{# Mirrors EasyAdmin's own collection_widget for its add button alone: "Ajouter un nouvel élément" reads the same for every collection, so on a screen listing something else under the blocks (a gallery category's medias, say) it is what gets clicked meaning to add that something else - a collection of blocks names what it really adds, every other collection keeps EasyAdmin's wording #}
+{% block collection_widget %}
+    {# "ea_vars" is set on every form view, but its field only on a real EasyAdmin field - a collection nested inside a BlockType (a hero's images...) carries none, and keeps the default wording #}
+    {% set ea_field = form.vars.ea_vars.field|default(null) %}
+    {% set is_block_collection = ea_field and 'c975L\\UiBundle\\Form\\BlockType' == ea_field.customOptions.get('entryType') %}
+
+    {# the "is iterable" check is needed because if an object implements __toString() and
+               returns an empty string, "is empty" returns true even if it's not a collection #}
+    {% set isEmptyCollection = value is null or (value is iterable and value is empty) %}
+    {% set is_array_field = 'EasyCorp\\Bundle\\EasyAdminBundle\\Field\\ArrayField' == form.vars.ea_vars.field.fieldFqcn|default(false) %}
+
+    <div class="ea-form-collection-items">
+        {% if isEmptyCollection %}
+            {{ block('empty_collection') }}
+        {% elseif is_array_field %}
+            {{ block('form_widget') }}
+        {% else %}
+            <div class="accordion">
+                {{ block('form_widget') }}
+            </div>
+        {% endif %}
+    </div>
+
+    {% if isEmptyCollection or form.vars.prototype is defined %}
+        {% set attr = attr|merge({'data-empty-collection': block('empty_collection')}) %}
+    {% endif %}
+
+    {% if allow_add|default(false) and not disabled %}
+        <button type="button" class="btn btn-link field-collection-add-button">
+            <twig:ea:Icon name="internal:plus" class="pr-1" />
+            {{ is_block_collection ? 'action.add_block'|trans({}, 'ui') : 'action.add_new_item'|trans({}, 'EasyAdminBundle') }}
+        </button>
+    {% endif %}
+{% endblock collection_widget %}

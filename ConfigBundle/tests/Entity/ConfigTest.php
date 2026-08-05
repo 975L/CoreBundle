@@ -157,12 +157,38 @@ class ConfigTest extends TestCase
         $config->validateThemeColorValue($context);
     }
 
-    public function testValidateThemeColorValueAddsNoViolationWhenGroupIsNotTheme(): void
+    // A satellite bundle declares its colors in its own group (c975l/gallery-bundle's "gallery"), and they reach the very same compiled :root: the slug is what is checked, the group deciding nothing but the screen the config shows on
+    public function testValidateThemeColorValueAddsViolationWhateverTheGroup(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_GENERAL)->setSlug('theme-color-primary')->setValue('red; background: url(evil.css)');
+        $config = (new Config())->setGroup(Config::GROUP_GENERAL)->setSlug('theme-color-gallery-frame')->setValue('red; background: url(evil.css)');
+
+        $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $violationBuilder->expects($this->once())->method('atPath')->with('value')->willReturnSelf();
+        $violationBuilder->expects($this->once())->method('addViolation');
 
         $context = $this->createMock(ExecutionContextInterface::class);
-        $context->expects($this->never())->method('buildViolation');
+        $context->expects($this->once())
+            ->method('buildViolation')
+            ->with('label.invalid_theme_color')
+            ->willReturn($violationBuilder);
+
+        $config->validateThemeColorValue($context);
+    }
+
+    // A hex typed without its "#" is made of valid characters, so the pattern alone let it through: CSS then dropped the whole declaration and the property fell back to its initial value, which reads as a color rather than as a mistake
+    public function testValidateThemeColorValueAddsViolationForAHexWithoutItsHash(): void
+    {
+        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('ff0000');
+
+        $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $violationBuilder->expects($this->once())->method('atPath')->with('value')->willReturnSelf();
+        $violationBuilder->expects($this->once())->method('addViolation');
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->once())
+            ->method('buildViolation')
+            ->with('label.invalid_theme_color')
+            ->willReturn($violationBuilder);
 
         $config->validateThemeColorValue($context);
     }

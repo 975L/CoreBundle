@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="ui.en.xlf">
         <body>
+            <trans-unit id="bLlXNL2">
+                <source>action.add_block</source>
+                <target>Ajouter un UiBlock</target>
+            </trans-unit>
             <trans-unit id="DYrEVzQ">
                 <source>action.export_selection</source>
                 <target>Exporter la sélection</target>
