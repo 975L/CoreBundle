@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\DependencyInjection\Compiler\DeclaredUrlsHealthCheckPass;
 use c975L\ConfigBundle\DependencyInjection\Compiler\TaggedInterfacePass;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
+use c975L\ConfigBundle\Management\BackupPathProviderInterface;
 use c975L\ConfigBundle\Management\ContentOffenceLocatorInterface;
 use c975L\ConfigBundle\Management\DashboardWidgetProviderInterface;
 use c975L\ConfigBundle\Management\DevProfilePathProviderInterface;
@@ -82,6 +83,7 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(ContentOffenceLocatorInterface::class, 'c975l.content_offence_locator'));
         $container->addCompilerPass(new TaggedInterfacePass(StatusProviderInterface::class, 'c975l.status_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(MaintenanceTaskProviderInterface::class, 'c975l.maintenance_task_provider'));
+        $container->addCompilerPass(new TaggedInterfacePass(BackupPathProviderInterface::class, 'c975l.backup_path_provider'));
         // Only ever has anything to collect in dev, every implementation being marked #[When('dev')] - the pass itself stays registered in every environment, it simply tags nothing in prod
         $container->addCompilerPass(new TaggedInterfacePass(DevProfilePathProviderInterface::class, 'c975l.dev_profile_path_provider'));
 

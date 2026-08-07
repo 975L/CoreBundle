@@ -82,10 +82,6 @@
                 <source>description.site_backup_db_user</source>
                 <target>Utilisateur MySQL pour les sauvegardes</target>
             </trans-unit>
-            <trans-unit id="ZL..tYO">
-                <source>description.site_backup_full_interval_months</source>
-                <target>Nombre de mois calendaires entre deux sauvegardes complètes des fichiers (des sauvegardes partielles, fichiers modifiés uniquement, ont lieu entre-temps)</target>
-            </trans-unit>
             <trans-unit id="3_4rjYZ">
                 <source>description.site_backup_mailto</source>
                 <target>Adresse email pour les rapports de sauvegarde et erreurs</target>
@@ -93,6 +89,18 @@
             <trans-unit id="XmN1LNH">
                 <source>description.site_backup_max_age_hours</source>
                 <target>Au-delà de ce délai sans sauvegarde enregistrée, le tableau de bord alerte. C'est le seul signal qu'une sauvegarde qui ne tourne plus du tout puisse produire</target>
+            </trans-unit>
+            <trans-unit id="UO9CA09">
+                <source>description.site_backup_offsite_keep_days</source>
+                <target>Nombre de jours pendant lesquels la copie hors site conserve les fichiers écrasés ou supprimés (dossiers deleted/). 0 ne purge rien, ce que gèrent déjà les destinations qui prennent leurs propres snapshots</target>
+            </trans-unit>
+            <trans-unit id="L8.ybZ0">
+                <source>description.site_backup_offsite_max_age_hours</source>
+                <target>Au-delà de ce délai sans copie sortie du serveur, le tableau de bord alerte. Une sauvegarde qui n'a jamais quitté la machine ne protège de rien</target>
+            </trans-unit>
+            <trans-unit id="l7P49Wf">
+                <source>description.site_backup_offsite_target</source>
+                <target>Destination rclone de la copie hors site, sous la forme « remote:chemin » (ex. storagebox:975l.com). Les identifiants restent dans la configuration de rclone, jamais ici. Vide, rien n'est envoyé : c'est le mode où une machine extérieure vient chercher les sauvegardes</target>
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>
@@ -274,10 +282,6 @@
                 <source>label.site_backup_db_user</source>
                 <target>Utilisateur de la base de données de sauvegarde</target>
             </trans-unit>
-            <trans-unit id="NhbXiCq">
-                <source>label.site_backup_full_interval_months</source>
-                <target>Intervalle sauvegarde complète (mois)</target>
-            </trans-unit>
             <trans-unit id="GvaXwxi">
                 <source>label.site_backup_mailto</source>
                 <target>Email de sauvegarde</target>
@@ -285,6 +289,18 @@
             <trans-unit id="FYYWZW9">
                 <source>label.site_backup_max_age_hours</source>
                 <target>Âge maximal d'une sauvegarde (heures)</target>
+            </trans-unit>
+            <trans-unit id="4kcZCM6">
+                <source>label.site_backup_offsite_keep_days</source>
+                <target>Rétention hors site des fichiers supprimés (jours)</target>
+            </trans-unit>
+            <trans-unit id="sHuVy7V">
+                <source>label.site_backup_offsite_max_age_hours</source>
+                <target>Âge maximal de la copie hors site (heures)</target>
+            </trans-unit>
+            <trans-unit id="E_T27LV">
+                <source>label.site_backup_offsite_target</source>
+                <target>Destination hors site (rclone)</target>
             </trans-unit>
             <trans-unit id="k4fofqT">
                 <source>label.site_backup_retention_days</source>

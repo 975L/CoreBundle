@@ -22,8 +22,12 @@ class ConfigMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(3-5) * * *', 'c975l:seo:files:create'),
             // Failed messenger rows past their retention, nightly, once the backups have had their window
             new MaintenanceTask('# #(2-4) * * *', 'c975l:config:messenger-cleanup'),
-            // Backup: every 6 hours (DB dumped table by table; files complete on the first run and every site-backup-full-interval-months after that, modified-since-last-run in between)
+            // Backup: every 6 hours (DB dumped table by table, plus the files declared in "archive" mode), the archives being sent offsite in the same run
             new MaintenanceTask('# */6 * * *', 'c975l:config:backup'),
+            // The mirrored folders, nightly and on their own: uploads are written once and weigh far more than
+            // everything else here, so they don't belong on the 6-hourly cadence. Seed the first run by hand -
+            // it transfers the whole lot, and the scheduler has a single worker to block
+            new MaintenanceTask('# #(1-3) * * *', 'c975l:config:backup:offsite'),
             // Digest of the week's backups, on its own entry rather than as --report on a backup run: a summary riding on a backup only exists if that run reaches its last line, and no mail at all is what nobody notices
             new MaintenanceTask('# #(2-5) * * 1', 'c975l:config:backup:digest'),
             // Health check: a cadence, never a list of kinds - every provider declares its own with AsHealthCheck (weekly unless it says otherwise), so these two already account for whatever bundles the site installs later

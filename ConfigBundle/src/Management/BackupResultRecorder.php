@@ -93,6 +93,7 @@ class BackupResultRecorder
             '%tables%' => $outcome['tables']['dumped'],
             '%sql%' => $this->formatBytes($outcome['sqlBytes']),
             '%files%' => $this->filesSummary($outcome),
+            '%offsite%' => $this->offsiteSummary($outcome),
             '%duration%' => $this->formatDuration($outcome['durationSeconds']),
         ], 'config');
 
@@ -111,11 +112,32 @@ class BackupResultRecorder
 
     private function filesSummary(array $outcome): string
     {
-        return match ($outcome['foldersMode']) {
-            'complete' => $this->translator->trans('label.health_check_backup_files_complete', ['%size%' => $this->formatBytes($outcome['foldersBytes'])], 'config'),
-            'partial' => $this->translator->trans('label.health_check_backup_files_partial', ['%count%' => $outcome['foldersFiles'], '%size%' => $this->formatBytes($outcome['foldersBytes'])], 'config'),
-            default => $this->translator->trans('label.health_check_backup_files_none', [], 'config'),
+        return $outcome['filesCount'] > 0
+            ? $this->translator->trans('label.health_check_backup_files', ['%count%' => $outcome['filesCount'], '%size%' => $this->formatBytes($outcome['filesBytes'])], 'config')
+            : $this->translator->trans('label.health_check_backup_files_none', [], 'config');
+    }
+
+    // The half of the row that used to be missing entirely. A dump that ran, was verified and never left the machine
+    // is a dump the fire takes with the server, and "backup ok" said exactly the same thing either way
+    private function offsiteSummary(array $outcome): string
+    {
+        $offsite = $outcome['offsite'];
+
+        $summary = match ($offsite['status']) {
+            'ok' => $this->translator->trans('label.health_check_backup_offsite_ok', ['%hours%' => (int) $offsite['hours']], 'config'),
+            'stale' => $this->translator->trans('label.health_check_backup_offsite_stale', ['%hours%' => (int) $offsite['hours']], 'config'),
+            default => $this->translator->trans('label.health_check_backup_offsite_never', [], 'config'),
         };
+
+        // What the mirrored folders weigh at the destination, so the volume kept out of the archives is a number on the row rather than an omission nobody sees
+        if (!empty($offsite['mirrorFiles'])) {
+            $summary .= ', ' . $this->translator->trans('label.health_check_backup_offsite_mirror', [
+                '%count%' => $offsite['mirrorFiles'],
+                '%size%' => $this->formatBytes((int) $offsite['mirrorBytes']),
+            ], 'config');
+        }
+
+        return $summary;
     }
 
     private function formatBytes(int $bytes): string

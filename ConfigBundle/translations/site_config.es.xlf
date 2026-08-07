@@ -82,10 +82,6 @@
                 <source>description.site_backup_db_user</source>
                 <target>Usuario MySQL para las copias de seguridad</target>
             </trans-unit>
-            <trans-unit id="ZL..tYO">
-                <source>description.site_backup_full_interval_months</source>
-                <target>Número de meses naturales entre dos copias de seguridad completas de archivos (entre medias se realizan copias parciales, solo con los archivos modificados)</target>
-            </trans-unit>
             <trans-unit id="3_4rjYZ">
                 <source>description.site_backup_mailto</source>
                 <target>Correo para los informes de copia de seguridad y errores</target>
@@ -93,6 +89,18 @@
             <trans-unit id="XmN1LNH">
                 <source>description.site_backup_max_age_hours</source>
                 <target>Pasado este plazo sin ninguna copia registrada, el panel muestra una alerta. Es la única señal que puede dar una copia que ha dejado de ejecutarse</target>
+            </trans-unit>
+            <trans-unit id="UO9CA09">
+                <source>description.site_backup_offsite_keep_days</source>
+                <target>Número de días que la copia externa conserva los archivos sobrescritos o eliminados (carpetas deleted/). 0 no purga nada, que es lo que ya hacen los destinos con sus propias instantáneas</target>
+            </trans-unit>
+            <trans-unit id="L8.ybZ0">
+                <source>description.site_backup_offsite_max_age_hours</source>
+                <target>Pasado este plazo sin que salga ninguna copia del servidor, el panel alerta. Una copia de seguridad que nunca salió de la máquina no protege de nada</target>
+            </trans-unit>
+            <trans-unit id="l7P49Wf">
+                <source>description.site_backup_offsite_target</source>
+                <target>Destino rclone de la copia externa, con el formato «remote:ruta» (p. ej. storagebox:975l.com). Las credenciales permanecen en la configuración de rclone, nunca aquí. Vacío, no se envía nada: es el modo en que una máquina externa viene a recoger las copias</target>
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>
@@ -274,10 +282,6 @@
                 <source>label.site_backup_db_user</source>
                 <target>Usuario de la base de datos de copia de seguridad</target>
             </trans-unit>
-            <trans-unit id="NhbXiCq">
-                <source>label.site_backup_full_interval_months</source>
-                <target>Intervalo copia completa (meses)</target>
-            </trans-unit>
             <trans-unit id="GvaXwxi">
                 <source>label.site_backup_mailto</source>
                 <target>Correo de copia de seguridad</target>
@@ -285,6 +289,18 @@
             <trans-unit id="FYYWZW9">
                 <source>label.site_backup_max_age_hours</source>
                 <target>Antigüedad máxima de la copia (horas)</target>
+            </trans-unit>
+            <trans-unit id="4kcZCM6">
+                <source>label.site_backup_offsite_keep_days</source>
+                <target>Retención externa de archivos eliminados (días)</target>
+            </trans-unit>
+            <trans-unit id="sHuVy7V">
+                <source>label.site_backup_offsite_max_age_hours</source>
+                <target>Edad máxima de la copia externa (horas)</target>
+            </trans-unit>
+            <trans-unit id="E_T27LV">
+                <source>label.site_backup_offsite_target</source>
+                <target>Destino externo (rclone)</target>
             </trans-unit>
             <trans-unit id="k4fofqT">
                 <source>label.site_backup_retention_days</source>

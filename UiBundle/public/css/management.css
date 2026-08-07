@@ -184,6 +184,12 @@
   background-color: rgba(13, 110, 253, 0.06);
 }
 
+@media (pointer: coarse) {
+  .ui-sort-handle {
+    padding-block: 0.5rem !important;
+    padding-inline: 0.75rem !important;
+  }
+}
 .form-group.field-collection .accordion-body > .row > div,
 .form-group.field-collection .accordion-item .form-widget {
   min-inline-size: 0;

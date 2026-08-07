@@ -2067,8 +2067,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 .portfolio-grid__project-img img {
   display: block;
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
+  padding: 16px;
   object-fit: contain;
   background: var(--card-background);
   transition: transform 0.4s ease;

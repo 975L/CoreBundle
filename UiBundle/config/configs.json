@@ -306,5 +306,38 @@
         "group": "analytics",
         "severity": null,
         "description": "description.site_enable_cookie_consent"
+    },
+    {
+        "label": "label.watermark_position",
+        "slug": "ui-watermark-position",
+        "sensitive": false,
+        "restricted": false,
+        "value": "bottom-right",
+        "kind": "text",
+        "group": "general",
+        "severity": null,
+        "description": "description.watermark_position"
+    },
+    {
+        "label": "label.watermark_width",
+        "slug": "ui-watermark-width",
+        "sensitive": false,
+        "restricted": false,
+        "value": "13.75",
+        "kind": "text",
+        "group": "general",
+        "severity": null,
+        "description": "description.watermark_width"
+    },
+    {
+        "label": "label.watermark_margin",
+        "slug": "ui-watermark-margin",
+        "sensitive": false,
+        "restricted": false,
+        "value": "0.42",
+        "kind": "text",
+        "group": "general",
+        "severity": null,
+        "description": "description.watermark_margin"
     }
 ]

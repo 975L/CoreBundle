@@ -36,8 +36,21 @@ class ConfigMaintenanceTaskProviderTest extends TestCase
         $this->assertContains('c975l:sitemaps:create', $commands);
         $this->assertContains('c975l:seo:files:create', $commands);
         $this->assertContains('c975l:config:backup', $commands);
+        $this->assertContains('c975l:config:backup:offsite', $commands);
         $this->assertContains('c975l:config:backup:digest', $commands);
         $this->assertContains('c975l:config:messenger-cleanup', $commands);
+    }
+
+    // The mirrored uploads are written once and weigh far more than everything else scheduled here, so they run nightly rather than riding the backup's own 6-hourly cadence
+    public function testTheOffsiteMirrorRunsNightlyRatherThanEverySixHours(): void
+    {
+        $expressions = [];
+        foreach ($this->getTasks() as $task) {
+            $expressions[$task->command] = $task->expression;
+        }
+
+        $this->assertStringContainsString('*/6', $expressions['c975l:config:backup']);
+        $this->assertStringNotContainsString('*/6', $expressions['c975l:config:backup:offsite']);
     }
 
     // A cadence, never a list of kinds: every provider declares its own with AsHealthCheck, so these two account for whatever bundles the site installs later

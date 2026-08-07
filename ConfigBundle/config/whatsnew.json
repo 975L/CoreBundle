@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-07",
+        "description": [
+            {
+                "en": "Your backup now says whether it actually left the server, and the dashboard warns you when nothing has left for too long - a copy sitting on the same machine as the site protects against nothing",
+                "fr": "Votre sauvegarde indique désormais si elle est réellement sortie du serveur, et le tableau de bord vous alerte quand plus rien n'en sort depuis trop longtemps - une copie posée sur la machine du site ne protège de rien",
+                "es": "Su copia de seguridad ahora indica si realmente ha salido del servidor, y el panel le avisa cuando nada ha salido desde hace demasiado tiempo - una copia guardada en la misma máquina del sitio no protege de nada"
+            },
+            {
+                "en": "Your photos and uploaded files are now copied offsite as they are, instead of being rolled into a monthly archive that took an hour to build and could only be restored whole",
+                "fr": "Vos photos et vos fichiers envoyés sont désormais copiés hors site tels quels, au lieu d'être empaquetés dans une archive mensuelle qui demandait une heure et ne se restaurait qu'en entier",
+                "es": "Sus fotos y archivos subidos ahora se copian fuera del sitio tal cual, en lugar de empaquetarse en un archivo mensual que tardaba una hora y solo podía restaurarse por completo"
+            },
+            {
+                "en": "The backup report now names what left the machine and what the offsite copy holds, not only what was archived on the server",
+                "fr": "Le rapport de sauvegarde nomme désormais ce qui est sorti de la machine et ce que contient la copie hors site, et plus seulement ce qui a été archivé sur le serveur",
+                "es": "El informe de copia de seguridad nombra ahora lo que ha salido de la máquina y lo que contiene la copia externa, y no solo lo que se archivó en el servidor"
+            }
+        ]
+    },
+    {
         "date": "2026-08-05",
         "description": [
             {

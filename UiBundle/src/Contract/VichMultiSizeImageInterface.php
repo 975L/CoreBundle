@@ -11,12 +11,12 @@
 namespace c975L\UiBundle\Contract;
 
 /**
- * Opts an uploaded image into two extra derivatives generated alongside the entity's own stored file (see VichImageResizeListener::processMultiSizeDerivatives): a square outbound-cropped thumbnail for grid displays, and a proportionally-resized highres version for zoom. getImageWidth() (from VichImageResizableInterface) still governs the entity's own stored ("medium") file.
+ * Opts an uploaded image into two extra derivatives generated alongside the entity's own stored file (see VichImageResizeListener::processMultiSizeDerivatives): a thumbnail for grid displays and a proportionally-resized highres version for zoom, both holding the whole image. getImageWidth() (from VichImageResizableInterface) still governs the entity's own stored ("medium") file.
  */
 interface VichMultiSizeImageInterface extends VichImageResizableInterface
 {
     /**
-     * @return int the side in pixels of the square "-thumb.webp" derivative, outbound-cropped so it always fills the square
+     * @return int the longest side in pixels of the "-thumb.webp" derivative, which keeps the image's own proportions - a square tile is then a "object-fit: cover" away, where a file cropped square could never give the cut pixels back
      */
     public function getThumbnailSize(): int;
 

@@ -11,8 +11,13 @@
 namespace c975L\ConfigBundle\Tests\Command;
 
 use c975L\ConfigBundle\Command\BackupCommand;
+use c975L\ConfigBundle\Management\BackupPath;
+use c975L\ConfigBundle\Management\BackupPathCollector;
+use c975L\ConfigBundle\Management\BackupPathProviderInterface;
 use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\BackupRetentionPurger;
+use c975L\ConfigBundle\Management\OffsiteState;
+use c975L\ConfigBundle\Management\OffsiteSynchronizer;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Service\EmailService;
@@ -29,6 +34,7 @@ class BackupCommandTest extends TestCase
     private string $projectDir;
     private array $callOrder;
     private array $recorded;
+    private array $declaredPaths;
 
     protected function setUp(): void
     {
@@ -36,6 +42,7 @@ class BackupCommandTest extends TestCase
         mkdir($this->projectDir . '/public', 0775, true);
         $this->callOrder = [];
         $this->recorded = [];
+        $this->declaredPaths = [];
     }
 
     protected function tearDown(): void
@@ -64,6 +71,9 @@ class BackupCommandTest extends TestCase
             'site-url' => 'https://example.com',
             'site-backup-mailto' => 'admin@example.com',
             'site-backup-retention-days' => '15',
+            // Left unconfigured on purpose: no test may reach out to a real remote, and an install that has an outside machine pull is configured exactly like this
+            'site-backup-offsite-target' => '',
+            'site-backup-offsite-max-age-hours' => '30',
             'email-from' => 'noreply@example.com',
         ], $overrides);
         $service = $this->createStub(ConfigServiceInterface::class);
@@ -84,15 +94,37 @@ class BackupCommandTest extends TestCase
         return $recorder;
     }
 
+    // The bundles' declarations, as the compiler pass would have collected them
+    private function createPathCollector(): BackupPathCollector
+    {
+        $provider = new class ($this->declaredPaths) implements BackupPathProviderInterface {
+            public function __construct(private readonly array $paths)
+            {
+            }
+
+            public function getBackupPaths(): array
+            {
+                return $this->paths;
+            }
+        };
+
+        return new BackupPathCollector([$provider], $this->createParameterBag());
+    }
+
     private function createCommand(?EmailService $emailService = null, ?Connection $connection = null, array $configOverrides = []): BackupCommand
     {
+        $configService = $this->createConfigService($configOverrides);
+
         return new BackupCommand(
             $this->createParameterBag(),
-            $this->createConfigService($configOverrides),
+            $configService,
             $emailService ?? $this->createStub(EmailService::class),
             $connection ?? $this->createStub(Connection::class),
             new BackupRetentionPurger(new Filesystem()),
             $this->createResultRecorder(),
+            $this->createPathCollector(),
+            new OffsiteSynchronizer($configService, $this->createParameterBag()),
+            new OffsiteState(),
         );
     }
 
@@ -134,49 +166,107 @@ class BackupCommandTest extends TestCase
         $this->assertContains('c975l:site:backup', $this->createCommand()->getAliases());
     }
 
-    // The very first run has no BackupFullDateTimeFile marker yet, so the file backup goes complete
-    public function testBackupFoldersGoesCompleteOnFirstRun(): void
+    // Only what a bundle declared is archived - not a root walked whole. public/ and private/ used to be tarred
+    // entirely, which made this command's business to know where every other bundle stores things
+    public function testOnlyTheDeclaredArchivePathsAreTarred(): void
     {
-        $this->assertStringContainsString('COMPLETE Folders backup', $this->runAndCaptureReport());
+        file_put_contents($this->projectDir . '/.env.local', 'APP_SECRET=secret');
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+        file_put_contents($this->projectDir . '/public/medias/photo.jpg', 'photo');
+        $this->declaredPaths = [
+            new BackupPath('.env.local', BackupPath::MODE_ARCHIVE),
+            new BackupPath('public/medias', BackupPath::MODE_MIRROR),
+        ];
+
+        $this->runAndCaptureReport();
+
+        $archives = glob($this->projectDir . '/var/backup/*/*/*/FILES_-_*.tar.bz2');
+        $this->assertCount(1, $archives);
+
+        $process = new Process(['tar', '--list', '--file', $archives[0]]);
+        $process->run();
+
+        // The mirrored folder is nowhere in it: nine gigabytes of JPEG have nothing to gain from bzip2 and everything to lose to a one-hour timeout
+        $this->assertSame(['./.env.local'], array_values(array_filter(explode("\n", $process->getOutput()))));
     }
 
-    // Once site-backup-full-interval-months calendar months have passed since the last complete run, the next run goes complete again instead of staying partial
-    public function testBackupFoldersGoesCompleteAgainAfterFullIntervalElapsed(): void
+    // Handed absolute paths, tar stores home/…/.env.local, and an extraction lands it in a home/ folder of its own instead of overwriting the file it was meant to replace
+    public function testTheArchiveStoresPathsRelativeToTheProject(): void
     {
-        mkdir($this->projectDir . '/var', 0775, true);
-        touch($this->projectDir . '/var/BackupDateTimeFile', time() - 3600);
-        // 2 months back guarantees at least 1 whole calendar month elapsed regardless of today's day-of-month
-        touch($this->projectDir . '/var/BackupFullDateTimeFile', strtotime('-2 months'));
+        file_put_contents($this->projectDir . '/.env.local', 'APP_SECRET=secret');
+        $this->declaredPaths = [new BackupPath('.env.local', BackupPath::MODE_ARCHIVE)];
 
-        $this->assertStringContainsString('COMPLETE Folders backup', $this->runAndCaptureReport());
+        $this->assertStringNotContainsString($this->projectDir, $this->runAndCaptureReport());
     }
 
-    // Within site-backup-full-interval-months of the last complete run, the file backup stays partial
-    public function testBackupFoldersStaysPartialWithinFullInterval(): void
+    // An install declaring nothing to archive must not be told its backup failed over it
+    public function testNoDeclaredFileIsReportedAndNotAnError(): void
     {
-        mkdir($this->projectDir . '/var', 0775, true);
-        touch($this->projectDir . '/var/BackupDateTimeFile', time() - 3600);
-        touch($this->projectDir . '/var/BackupFullDateTimeFile', time() - 3600);
+        $report = $this->runAndCaptureReport();
 
-        $this->assertStringNotContainsString('COMPLETE Folders backup', $this->runAndCaptureReport());
+        $this->assertStringContainsString('NO declared file to save', $report);
+        $this->assertStringNotContainsString('Files tar failed', $report);
     }
 
-    // private/ holds what the site deliberately keeps out of the document root (ShopBundle's invoices and the like) - a folder no web server exposes is also a folder no earlier version of this command saved
-    public function testPrivateFolderIsBackedUpAlongsidePublic(): void
+    // Whoever copies this server offsite reads the manifest instead of knowing the layout, so a bundle installed tomorrow brings its folders along without a line changed on the machine doing the copying
+    public function testTheManifestPublishesWhatIsMirroredRatherThanArchived(): void
     {
-        mkdir($this->projectDir . '/private', 0775, true);
-        file_put_contents($this->projectDir . '/private/invoice.pdf', 'invoice');
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+        $this->declaredPaths = [new BackupPath('public/medias', BackupPath::MODE_MIRROR)];
+
+        $this->runAndCaptureReport();
+
+        $manifest = json_decode((string) file_get_contents($this->projectDir . '/var/backup/manifest.json'), true);
+
+        $this->assertSame(['public/medias'], $manifest['mirror']);
+        $this->assertSame('var/backup', $manifest['archives']);
+        $this->assertSame(15, $manifest['retentionDays']);
+    }
+
+    // A dump that ran, was verified and never left the machine is a dump the fire takes with the server, and "backup ok" used to say exactly the same thing either way
+    public function testABackupThatNeverLeftTheServerIsWarnedAbout(): void
+    {
+        $report = $this->runAndCaptureReport();
+
+        $this->assertStringContainsString('Offsite: never', $report);
+        $this->assertContains('Nothing has ever left this server: no offsite copy is recorded.', $this->recorded['warnings']);
+    }
+
+    // An install whose backups are pulled by an outside machine says so with --ack, and must not then be reported as never backed up offsite
+    public function testAnAcknowledgedOffsiteCopyCountsAsHavingLeft(): void
+    {
+        (new OffsiteState())->recordSuccess($this->projectDir, ['what' => 'pulled']);
 
         $report = $this->runAndCaptureReport();
 
-        $this->assertStringContainsString('COMPLETE Folders backup (public)', $report);
-        $this->assertStringContainsString('COMPLETE Folders backup (private)', $report);
+        $this->assertStringContainsString('Offsite: ok', $report);
+        $this->assertSame('ok', $this->recorded['offsite']['status']);
     }
 
-    // An install without a private/ folder must not see it reported, nor fail over it
-    public function testAMissingPrivateFolderIsSimplySkipped(): void
+    // Past site-backup-offsite-max-age-hours, a copy that stopped leaving is what the dashboard has to show - the archives themselves being written all along, and looking perfectly healthy
+    public function testAnOffsiteCopyPastItsMaxAgeIsWarnedAbout(): void
     {
-        $this->assertStringNotContainsString('(private)', $this->runAndCaptureReport());
+        (new OffsiteState())->recordSuccess($this->projectDir, []);
+        $state = json_decode((string) file_get_contents($this->projectDir . '/' . OffsiteState::FILE), true);
+        $state['at'] = (new \DateTimeImmutable('-40 hours'))->format(\DateTimeInterface::ATOM);
+        file_put_contents($this->projectDir . '/' . OffsiteState::FILE, json_encode($state));
+
+        $this->runAndCaptureReport();
+
+        $this->assertSame('stale', $this->recorded['offsite']['status']);
+    }
+
+    // The field emptied at the back-office comes back as a 0, and a 0 used to switch the staleness check off entirely - a copy that stopped leaving a month ago still reporting "ok"
+    public function testAnEmptiedMaxAgeFallsBackInsteadOfSilencingTheAlert(): void
+    {
+        (new OffsiteState())->recordSuccess($this->projectDir, []);
+        $state = json_decode((string) file_get_contents($this->projectDir . '/' . OffsiteState::FILE), true);
+        $state['at'] = (new \DateTimeImmutable('-40 hours'))->format(\DateTimeInterface::ATOM);
+        file_put_contents($this->projectDir . '/' . OffsiteState::FILE, json_encode($state));
+
+        $this->runAndCaptureReport(['site-backup-offsite-max-age-hours' => '0']);
+
+        $this->assertSame('stale', $this->recorded['offsite']['status']);
     }
 
     // Every run leaves a trace now, not only the weekly one carrying --report
@@ -187,6 +277,8 @@ class BackupCommandTest extends TestCase
         $this->assertSame('https://example.com', $this->recorded['url']);
         $this->assertArrayHasKey('tables', $this->recorded);
         $this->assertArrayHasKey('retention', $this->recorded);
+        $this->assertArrayHasKey('offsite', $this->recorded);
+        $this->assertArrayHasKey('mirrorPaths', $this->recorded);
         $this->assertNotEmpty($this->recorded['errors']);
     }
 
@@ -240,58 +332,6 @@ class BackupCommandTest extends TestCase
 
         $this->assertDirectoryDoesNotExist($old);
         $this->assertStringContainsString('Retention (15 days): 1 run(s) deleted', $report);
-    }
-
-    // Handed absolute paths, tar stored home/…/public/medias/photo.jpg, so a partial extracted over a restored complete archive landed in public/home/…/ instead of overwriting the stale files it was meant to replace
-    public function testThePartialArchiveStoresPathsRelativeToTheBackedUpRoot(): void
-    {
-        mkdir($this->projectDir . '/var', 0775, true);
-        touch($this->projectDir . '/var/BackupDateTimeFile', time() - 3600);
-        touch($this->projectDir . '/var/BackupFullDateTimeFile', time() - 3600);
-        mkdir($this->projectDir . '/public/medias', 0775, true);
-        file_put_contents($this->projectDir . '/public/medias/photo.jpg', 'photo');
-
-        $report = $this->runAndCaptureReport();
-
-        $this->assertStringContainsString('PARTIAL Folders backup (public)', $report);
-        $this->assertStringNotContainsString($this->projectDir, $report);
-
-        $archives = glob($this->projectDir . '/var/backup/*/*/*/WEBSITE_-_*_-_Partial.tar.bz2');
-        $this->assertCount(1, $archives);
-
-        $process = new Process(['tar', '--list', '--file', $archives[0]]);
-        $process->run();
-
-        $this->assertSame(['./medias/photo.jpg'], array_values(array_filter(explode("\n", $process->getOutput()))));
-    }
-
-    // A marker moved past files no archive holds is how a failed run loses them silently: the next partial one only looks at what changed after it, so nothing sees them again until the next complete backup
-    public function testAFailedFoldersArchiveLeavesTheMarkersWhereTheyAre(): void
-    {
-        if (function_exists('posix_geteuid') && 0 === posix_geteuid()) {
-            $this->markTestSkipped('Running as root, a read-only folder would not stop tar from writing there.');
-        }
-
-        $markerTime = time() - 3600;
-        mkdir($this->projectDir . '/var', 0775, true);
-        touch($this->projectDir . '/var/BackupDateTimeFile', $markerTime);
-        touch($this->projectDir . '/var/BackupFullDateTimeFile', $markerTime);
-        file_put_contents($this->projectDir . '/public/index.html', 'home');
-
-        // Read-only destination, so tar can't create the archive there
-        $day = sprintf('%s/var/backup/%s', $this->projectDir, (new \DateTimeImmutable())->format('Y/Y-m/Y-m-d'));
-        mkdir($day, 0775, true);
-        chmod($day, 0555);
-
-        $report = $this->runAndCaptureReport();
-
-        // The run's own cleanup deletes the folder, empty as it stayed - restored only if it is still there, so tearDown can remove the tree
-        if (is_dir($day)) {
-            chmod($day, 0775);
-        }
-
-        $this->assertStringContainsString('Partial folders tar failed', $report);
-        $this->assertSame($markerTime, filemtime($this->projectDir . '/var/BackupDateTimeFile'));
     }
 
     // An install without site-url gets its failure report all the same, the domain only ever labelling the subject

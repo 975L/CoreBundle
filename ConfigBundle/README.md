@@ -804,6 +804,8 @@ class ImportmapProvider implements ImportmapProviderInterface
 
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
 
+`entrypoint` is optional, and belongs only on a file loaded as a `<script type="module">` of its own. Leave it out for a module another bundle imports **by name** — UiBundle's `@c975l/ui-bundle/pointer-sort.js` is the case in point. Such a module still needs its entry: a bare specifier the importmap doesn't resolve doesn't merely fail on its own, it takes down the whole module that imported it, and every Stimulus controller that module was going to register with it.
+
 Entries contributed this way aren't written to `importmap.php` on their own — nothing hooks into Composer from inside a bundle. Wire the collecting command into each consuming app's `composer.json`, in the same `auto-scripts` block that already runs `importmap:install`:
 
 ```json
@@ -1314,23 +1316,97 @@ Rows are skipped rather than failed when the site runs on another platform, when
 
 ## Backup
 
-`c975l:config:backup` dumps the database table by table and archives the site's own files, replacing the shell scripts this used to need. It lives here rather than in `c975l/site-bundle`, where it started: backing up is what every install needs whichever satellite bundles it happens to have, and none of ShopBundle, GalleryBundle, BookBundle or CrowdfundingBundle depends on SiteBundle — a shop-only or gallery-only install used to have no backup at all. The former name `c975l:site:backup` is kept as an alias, so schedulers and crontabs already deployed keep working.
+`c975l:config:backup` dumps the database table by table and archives what no rebuild can bring back, replacing the shell scripts this used to need. It lives here rather than in `c975l/site-bundle`, where it started: backing up is what every install needs whichever satellite bundles it happens to have, and none of ShopBundle, GalleryBundle, BookBundle or CrowdfundingBundle depends on SiteBundle — a shop-only or gallery-only install used to have no backup at all. The former name `c975l:site:backup` is kept as an alias, so schedulers and crontabs already deployed keep working.
 
 ```bash
-php bin/console c975l:config:backup                  # dump + archive, silent unless something fails
+php bin/console c975l:config:backup                  # dump + archive + send offsite, silent unless something fails
 php bin/console c975l:config:backup --report         # same, plus a summary email of that run
+php bin/console c975l:config:backup:offsite          # mirror the declared upload folders offsite
+php bin/console c975l:config:backup:offsite --ack    # transfer nothing, record that an outside machine pulled
 php bin/console c975l:config:backup:digest           # no backup: emails a digest of the last 7 days
 php bin/console c975l:config:backup:digest --days=30 # any other window
 php bin/console c975l:config:backup:digest --dry-run # print the digest, send nothing
 ```
 
-Everything is configured through the `backup` config group (all `restricted`, see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin)): `site-backup-database`, `site-backup-db-host`/`-db-user`/`-db-password`, `site-backup-mailto`, `site-backup-full-interval-months`, `site-backup-retention-days` and `site-backup-max-age-hours`. The emails also read `email-from` — declared here rather than in SiteBundle, an install having backups to report whichever satellite bundles it happens to have — and fall back to `site-backup-mailto` when it's empty, rather than failing to send at all.
+Everything is configured through the `backup` config group (all `restricted`, see [Restricting configs to ROLE_SUPER_ADMIN](#restricting-configs-to-role_super_admin)): `site-backup-database`, `site-backup-db-host`/`-db-user`/`-db-password`, `site-backup-mailto`, `site-backup-retention-days`, `site-backup-max-age-hours`, and the three offsite entries covered [below](#the-offsite-copy). The emails also read `email-from` — declared here rather than in SiteBundle, an install having backups to report whichever satellite bundles it happens to have — and fall back to `site-backup-mailto` when it's empty, rather than failing to send at all.
 
-**What is archived**: the database, one `.sql` file per table (so a single table can be restored on its own) compressed into one archive; then `public/` and `private/` — the latter being where a bundle keeps what the document root must never expose, ShopBundle's invoices being the typical case. Each root gets its own archive, both in the same mode on the same run, so a restore never has to pair a complete archive with a partial one. Files go complete on the first run and every `site-backup-full-interval-months` calendar months, modified-since-last-run in between. `config/backup_exclude.cnf`, if present, adds your own `tar --exclude-from` patterns.
+### What is backed up, and what deliberately isn't
+
+Three kinds of state, three treatments — and the third is the one that decides the shape of everything else.
+
+| State | Treatment |
+| --- | --- |
+| Code, templates, asset sources | **Nothing.** It's in git and comes back with a clone plus `composer install` |
+| Configuration, content | Covered by the database dump, `site_config` included |
+| Files neither in git nor in the database | Declared through `BackupPathProviderInterface`, in one of two modes |
+
+A `BackupPath` is declared in `archive` mode or in `mirror` mode:
+
+- **`archive`** — small, and wanted with a history: it goes into the dated `FILES_-_…tar.bz2` of every run. `.env.local` is the case that matters. It's git-ignored *and* outside the database, so a server restored with every photo and no `APP_SECRET` doesn't start — the discovery nobody wants to make on the day of the incident.
+- **`mirror`** — large and written once: uploads. Never tarred, never compressed, never dated. It is copied as-is by `c975l:config:backup:offsite`, because a photo doesn't need a version history, it needs a copy.
+
+That second mode replaces what this command used to do: roll `public/` and `private/` whole into a monthly `tar.bz2`. On a media-heavy site that meant compressing nine gigabytes of JPEG for about one percent of gain, an hour of CPU against a one-hour timeout, and a copy of it all kept for the whole retention window — to produce an archive whose only use was to be extracted whole. It also made this bundle's business to know where every *other* bundle stores things, so a site with an unusual layout was backed up wrongly rather than differently.
+
+ConfigBundle declares `.env.local` and nothing else — declaring `public/medias` from here would cover every other bundle's uploads, which is the habit this interface exists to break. Each bundle declares its own: UiBundle its `medias/site` and `medias/fonts` folders *and* the site-wide graphics (`favicon.ico`, `apple-touch-icon.png`, `og-image`, `logo`, the two watermarks), which `UiMediaNamer` deliberately writes at the root of `public/` under the role's own name — so no folder declaration ever reaches them, and the list is read off `Media`'s own roles rather than written out by hand. A path that isn't on disk is skipped rather than failing the run, and a folder already covered by a declared ancestor is dropped rather than mirrored twice:
+
+```php
+namespace c975L\ShopBundle\Management;
+
+use c975L\ConfigBundle\Management\BackupPath;
+use c975L\ConfigBundle\Management\BackupPathProviderInterface;
+
+class ShopBackupPathProvider implements BackupPathProviderInterface
+{
+    public function getBackupPaths(): array
+    {
+        return [new BackupPath('private/invoices', BackupPath::MODE_MIRROR)];
+    }
+}
+```
+
+Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered — the compiler pass does the rest, and nothing has to be listed anywhere else.
+
+The c975L convention puts a bundle's uploads under `public/medias/<bundle>/`, and whatever the document root must never serve under `private/medias/<bundle>/` — the same substructure on both roots. Declare both: a path that isn't on disk is skipped, so a bundle can declare its private folder before it ever writes one, and the declaration is already in place the day it does. What must *not* be declared is anything derived — a folder of generated copies is rebuilt, not restored.
+
+Each run also writes `var/backup/manifest.json`, naming the archives folder, the mirrored paths and the local retention window. Whoever copies this server offsite reads that file instead of knowing the layout, so a bundle installed tomorrow brings its folders along without a line changed on the machine doing the copying.
 
 **Verifying rather than assuming**: every archive is read back and checked (`bzip2 --test`) before being counted, its size recorded, and the number of tables actually dumped compared against `INFORMATION_SCHEMA`. A table is reported only once its dump exists, with its size — a table listed in the report used to prove nothing about it having been saved. Anything discarded as empty is named in the report instead of vanishing silently.
 
 **Retention on the server**: each run purges the dated `var/backup/YYYY/YYYY-MM/YYYY-MM-DD` folders older than `site-backup-retention-days` (15 by default, `0` keeping every archive). Whoever copies the archives offsite should keep a *longer* window than this one — otherwise the next copy downloads again what it has just purged locally. The point is that production always holds a rolling set of restorable archives: deleting them as soon as they were copied off left a gap where the only surviving copy was the offsite one.
+
+### The offsite copy
+
+A backup that never leaves the machine it protects is not a backup. Until now nothing here said whether anything had left, and "backup ok" read exactly the same either way. Two models are supported, and the bundle is deliberately agnostic between them.
+
+**Push** — the site sends, through [rclone](https://rclone.org). Set `site-backup-offsite-target` to a remote as rclone spells it, `storagebox:975l.com`. Archives go to `<target>/backup` on every run; the mirrored folders go to `<target>/files/<path>` on the nightly `c975l:config:backup:offsite`.
+
+**Pull** — an outside machine fetches the backups over SSH/SFTP and calls `c975l:config:backup:offsite --ack` afterwards. Leave `site-backup-offsite-target` empty: nothing is sent, no task fails, and the dashboard still knows the files left. This is the safer of the two — a server holding no credentials to its own backup is a server that can't destroy it — at the cost of a machine to keep.
+
+**Where rclone's own configuration is read from**: `rclone.conf` at the root of the project if the install has one, rclone's default `~/.config/rclone/rclone.conf` otherwise. Prefer the first. Left to itself rclone resolves `HOME`, which works in an interactive SSH session and often doesn't under a task scheduler — it then starts with no remote configured and reports the target as unknown, a failure that reads exactly like "rclone doesn't work on this host". The root rather than `var/`: `var/` is a runtime scratch folder nobody writes to by hand, and the backup scripts that skip it would skip this file too — the one file whose loss stops the backups from leaving. The path is fixed in code, so no back-office entry can aim rclone at a file of someone else's choosing, and `c975l:scaffold:install` adds it to `.gitignore`.
+
+```bash
+rclone --config rclone.conf config create storagebox sftp \
+    host=uXXXXXX.your-storagebox.de user=uXXXXXX port=22 \
+    pass="$(rclone obscure 'the-sub-account-password')"
+```
+
+**Where the binary is looked up**: the `PATH` first, then the project's `bin/rclone`. A managed host with no rclone of its own usually gets a static binary dropped in the account's own `~/bin`, which an interactive SSH session finds and a task scheduler doesn't — so a scheduled command that reports `rclone was not found` while the same command works over SSH is a `PATH`, not an install. Either give the scheduled entry its own (`PATH=$HOME/bin:$PATH php bin/console …`) or put the binary in the project's `bin/`.
+
+What the bundle never holds, in either model, is a **credential**. `site-backup-offsite-target` names a remote and nothing more; the secrets live in rclone's own configuration, outside the application and outside the database. The binary's location isn't configurable either — it's looked up in the `PATH` and in the project's `bin/`. A free-form command path read from a back-office entry is an arbitrary code execution offered to any admin account that gets compromised, and the target itself is validated against `remote:path` before it ever reaches a `Process`.
+
+| Config | Default | What it does |
+| --- | --- | --- |
+| `site-backup-offsite-target` | *(empty)* | The rclone remote. Empty means "an outside machine pulls" |
+| `site-backup-offsite-max-age-hours` | 30 | Past this without anything leaving, the run warns and the dashboard alerts |
+| `site-backup-offsite-keep-days` | 15 | How long the destination keeps overwritten and deleted files |
+
+**Not destructively.** The mirror runs `rclone sync`, so a destination that has drifted comes back in line — but `--backup-dir` moves what would be overwritten or deleted into a dated `deleted/` folder instead of losing it, and `--max-delete` aborts the run outright past 100 deletions. The failure that actually happens is not exotic: a gallery emptied by mistake, or a hacked site, faithfully reproduced onto the backup within hours. Aborting costs a night's mirroring and a look from a human, which is the cheaper of the two.
+
+**Versioning is the destination's job, not this bundle's.** Where the destination takes its own snapshots, use them: on a Hetzner Storage Box they sit in a read-only ZFS directory that the server couldn't touch even if its credentials leaked — which no purge run from the server can claim. `site-backup-offsite-keep-days` is the portable fallback for destinations that offer nothing of the sort.
+
+**The first run transfers everything.** On a media-heavy site that's hours, and the Symfony Scheduler has a single worker to block. Seed it once by hand from an SSH session; every run after that carries only the files added since, which is the whole point of mirroring content that never changes.
+
+Verification follows the same rule as the archives: `rclone size` reads the destination back rather than trusting an exit code, and what it counts is what the dashboard row reports — so the volume kept out of the archives is a number on the row, not an omission nobody sees.
 
 ### Seeing that it actually ran
 
@@ -1341,6 +1417,7 @@ Every run — not only the one carrying `--report` — records a `HealthCheckRes
 | Situation | Severity |
 | --- | --- |
 | No backup recorded for longer than `site-backup-max-age-hours` (30 by default) | danger |
+| Nothing has left the server for longer than `site-backup-offsite-max-age-hours`, or ever | warning |
 | The last run failed | danger |
 | The last run has warnings, or its SQL archive lost more than half its size since the previous run | warning |
 | Backup configured but never run | warning |
@@ -1361,7 +1438,7 @@ The dashboard covers the site you happen to be looking at. `c975l:config:backup:
 Site example.com - last 7 days (since 22/07/2026 03:07)
 
 28 run(s): 28 ok, 0 warning(s), 0 error(s)
-Last run on 29/07/2026 06:07: 42 tables · SQL 18.4 MB · Files: partial 12 (3.1 MB) · 1 min 44 s
+Last run on 29/07/2026 06:07: 42 tables · SQL 18.4 MB · Files: 1 file(s), 2.1 KB · Offsite: 3h ago, mirror 48210 file(s), 8.4 GB · 12 s
 SQL archive over the period: 17.9 MB -> 18.4 MB
 Retention (15 days): 15 run(s) kept on the server, oldest 2026-07-14
 ```
@@ -1384,10 +1461,11 @@ The stretch *before* the first run of the window is deliberately not counted: a 
 
 ```php
 ->add($this->spreader->spread('# */6 * * *', new RunCommandMessage('c975l:config:backup')))
+->add($this->spreader->spread('# #(1-3) * * *', new RunCommandMessage('c975l:config:backup:offsite')))
 ->add($this->spreader->spread('# #(2-5) * * 1', new RunCommandMessage('c975l:config:backup:digest')))
 ```
 
-Keep `site-backup-max-age-hours` comfortably above the interval you pick, so an ordinary late run doesn't alert. The digest is scheduled on its own line rather than as `c975l:config:backup --report` on the Monday run, so the week's summary doesn't depend on that particular run getting through.
+Keep `site-backup-max-age-hours` comfortably above the interval you pick, so an ordinary late run doesn't alert. The digest is scheduled on its own line rather than as `c975l:config:backup --report` on the Monday run, so the week's summary doesn't depend on that particular run getting through. The mirror runs nightly and on its own: uploads weigh far more than everything else here and are written once, so they have no business on the 6-hourly cadence.
 
 The `#` are placeholders `ScheduleSpreader` draws from this install's own identity, so that two sites sharing a server don't dump their databases at the same minute — see below. Writing `'7 */6 * * *'` with a plain `RecurringMessage::cron()` still works, and is what to do when a command has to run at a fixed time.
 

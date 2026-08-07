@@ -790,17 +790,29 @@
                 <source>label.health_check_backup_errors</source>
                 <target>%count% error(es)</target>
             </trans-unit>
-            <trans-unit id="48lP9PI">
-                <source>label.health_check_backup_files_complete</source>
-                <target>completa, %size%</target>
+            <trans-unit id="1GEr4iL">
+                <source>label.health_check_backup_files</source>
+                <target>%count% archivo(s), %size%</target>
             </trans-unit>
             <trans-unit id="AiD6SaT">
                 <source>label.health_check_backup_files_none</source>
-                <target>ningún archivo modificado</target>
+                <target>ningún archivo declarado</target>
             </trans-unit>
-            <trans-unit id="LNWUNwV">
-                <source>label.health_check_backup_files_partial</source>
-                <target>parcial, %count% archivo(s), %size%</target>
+            <trans-unit id="LE6ftQV">
+                <source>label.health_check_backup_offsite_mirror</source>
+                <target>espejo %count% archivo(s), %size%</target>
+            </trans-unit>
+            <trans-unit id="tBiMFnJ">
+                <source>label.health_check_backup_offsite_never</source>
+                <target>nunca salió del servidor</target>
+            </trans-unit>
+            <trans-unit id="xJAtaAJ">
+                <source>label.health_check_backup_offsite_ok</source>
+                <target>hace %hours% h</target>
+            </trans-unit>
+            <trans-unit id="Mn0TSHT">
+                <source>label.health_check_backup_offsite_stale</source>
+                <target>hace %hours% h, plazo superado</target>
             </trans-unit>
             <trans-unit id="uVOosIa">
                 <source>label.health_check_backup_sql_shrank</source>
@@ -1192,7 +1204,7 @@
             </trans-unit>
             <trans-unit id="0RxuWX_">
                 <source>label.health_check_summary_backup</source>
-                <target>%tables% tablas · SQL %sql% · Archivos: %files% · %duration%</target>
+                <target>%tables% tablas · SQL %sql% · Archivos: %files% · Fuera del servidor: %offsite% · %duration%</target>
             </trans-unit>
             <trans-unit id="tVOszC6">
                 <source>label.health_check_summary_security_headers</source>

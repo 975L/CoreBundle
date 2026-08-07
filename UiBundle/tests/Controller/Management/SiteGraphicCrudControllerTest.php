@@ -138,7 +138,13 @@ class SiteGraphicCrudControllerTest extends TestCase
         $choices = $role->getAsDto()->getCustomOption(ChoiceField::OPTION_CHOICES);
 
         $this->assertSame(
-            [Media::ROLE_APPLE_TOUCH_ICON, Media::ROLE_OG_IMAGE, Media::ROLE_ERROR_IMAGE],
+            [
+                Media::ROLE_APPLE_TOUCH_ICON,
+                Media::ROLE_OG_IMAGE,
+                Media::ROLE_WATERMARK_ON_LIGHT,
+                Media::ROLE_WATERMARK_ON_DARK,
+                Media::ROLE_ERROR_IMAGE,
+            ],
             array_keys($choices)
         );
     }
@@ -209,13 +215,13 @@ class SiteGraphicCrudControllerTest extends TestCase
 
     // --- missingRoles -------------------------------------------------------------------------------------
 
-    // Nothing uploaded yet: the four singleton graphics each get their button, error-image being repeatable and never "missing"
+    // Nothing uploaded yet: every singleton graphic gets its button, error-image being repeatable and never "missing". The two watermark signatures are in there like the rest - a plain "create" shortcut, not a warning, and the dashboard alert keeps its own shorter list (see SiteGraphicAlertProvider) so an unsigned site is never nagged about them
     public function testMissingRolesListsEverySingletonGraphicNotUploadedYet(): void
     {
         $missing = $this->missingRoles($this->createController());
 
         $this->assertSame(
-            ['label.favicon', 'label.apple_touch_icon', 'label.og_image', 'label.logo'],
+            ['label.favicon', 'label.apple_touch_icon', 'label.og_image', 'label.logo', 'label.watermark_on_light', 'label.watermark_on_dark'],
             array_column($missing, 'label')
         );
         $this->assertSame('/management/site-graphic/new', $missing[0]['url']);
@@ -229,6 +235,8 @@ class SiteGraphicCrudControllerTest extends TestCase
             Media::ROLE_APPLE_TOUCH_ICON,
             Media::ROLE_OG_IMAGE,
             Media::ROLE_LOGO,
+            Media::ROLE_WATERMARK_ON_LIGHT,
+            Media::ROLE_WATERMARK_ON_DARK,
         ]);
 
         $this->assertSame([], $this->missingRoles($controller));

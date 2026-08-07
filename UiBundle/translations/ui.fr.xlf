@@ -2246,6 +2246,14 @@
                 <source>label.warning</source>
                 <target>Avertissement</target>
             </trans-unit>
+            <trans-unit id="D.zbPdn">
+                <source>label.watermark_on_dark</source>
+                <target>Filigrane pour fond sombre</target>
+            </trans-unit>
+            <trans-unit id="HFNdp5O">
+                <source>label.watermark_on_light</source>
+                <target>Filigrane pour fond clair</target>
+            </trans-unit>
             <trans-unit id="rJFIqnF">
                 <source>label.website</source>
                 <target>Site web</target>

@@ -22,6 +22,10 @@ class ImportmapProvider implements ImportmapProviderInterface
                 'path' => 'assets/controllers-admin.js',
                 'entrypoint' => true,
             ],
+            // No entrypoint: nothing loads this one as a <script> of its own, it is imported by name from another bundle's admin controller (see readme, "Reusing the gesture elsewhere"). Declared all the same because a bare specifier with no importmap entry doesn't just fail to resolve - it takes the whole importing module down with it, and every controller that module was going to register with it
+            '@c975l/ui-bundle/pointer-sort.js' => [
+                'path' => 'assets/js/pointer-sort.js',
+            ],
         ];
     }
 

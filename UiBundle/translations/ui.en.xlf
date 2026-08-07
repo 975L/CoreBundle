@@ -2246,6 +2246,14 @@
                 <source>label.warning</source>
                 <target>Warning</target>
             </trans-unit>
+            <trans-unit id="D.zbPdn">
+                <source>label.watermark_on_dark</source>
+                <target>Watermark for dark background</target>
+            </trans-unit>
+            <trans-unit id="HFNdp5O">
+                <source>label.watermark_on_light</source>
+                <target>Watermark for light background</target>
+            </trans-unit>
             <trans-unit id="rJFIqnF">
                 <source>label.website</source>
                 <target>Website</target>

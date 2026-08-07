@@ -121,15 +121,37 @@
         "description": "description.site_backup_mailto"
     },
     {
-        "label": "label.site_backup_full_interval_months",
-        "slug": "site-backup-full-interval-months",
+        "label": "label.site_backup_offsite_target",
+        "slug": "site-backup-offsite-target",
         "sensitive": false,
         "restricted": true,
-        "value": "1",
+        "value": "",
+        "kind": "text",
+        "group": "backup",
+        "severity": null,
+        "description": "description.site_backup_offsite_target"
+    },
+    {
+        "label": "label.site_backup_offsite_max_age_hours",
+        "slug": "site-backup-offsite-max-age-hours",
+        "sensitive": false,
+        "restricted": true,
+        "value": "30",
         "kind": "int",
         "group": "backup",
         "severity": null,
-        "description": "description.site_backup_full_interval_months"
+        "description": "description.site_backup_offsite_max_age_hours"
+    },
+    {
+        "label": "label.site_backup_offsite_keep_days",
+        "slug": "site-backup-offsite-keep-days",
+        "sensitive": false,
+        "restricted": true,
+        "value": "15",
+        "kind": "int",
+        "group": "backup",
+        "severity": null,
+        "description": "description.site_backup_offsite_keep_days"
     },
     {
         "label": "label.site_backup_retention_days",

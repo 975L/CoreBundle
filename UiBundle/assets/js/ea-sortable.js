@@ -7,6 +7,7 @@
  */
 import { Controller } from "@hotwired/stimulus";
 import { addToolbarButton } from "./block-toolbar.js";
+import { addSortGesture } from "./pointer-sort.js";
 
 // Mounted automatically on <body> by controllers-admin.js — no layout override needed.
 
@@ -20,8 +21,7 @@ const UI_MOVE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 
 export default class extends Controller {
     connect() {
-        // Shared, not a per-field closure, so another field's dragover recognizes a drag started elsewhere
-        this.dragging = null;
+        // Where the row was picked up, read back at the drop: by then it already sits wherever it was dragged to
         this.dragOriginField = null;
         this.dragOriginContainer = null;
         this.dragOriginNextSibling = null;
@@ -40,74 +40,80 @@ export default class extends Controller {
         if (field.dataset.uiSortable || !this.isSortable(field)) return;
         field.dataset.uiSortable = '1';
 
-        const container = this.itemsContainer(field);
-        if (!container) return;
+        if (!this.itemsContainer(field)) return;
 
         field.querySelectorAll('.field-collection-item').forEach(item => {
             this.addHandle(item);
             this.applyRestriction(item);
         });
+    }
 
-        container.addEventListener('dragstart', e => {
-            const item = e.target.closest('.field-collection-item');
-            if (!item) { e.preventDefault(); return; }
-            if (item.closest('[data-ea-collection-field]') !== field) return;
+    // Called by pointer-sort.js the moment a gesture turns into a real drag
+    onDragStart(item) {
+        this.dragOriginField = item.closest('[data-ea-collection-field]');
+        this.dragOriginContainer = item.parentElement;
+        this.dragOriginNextSibling = item.nextElementSibling;
 
-            this.dragging = item;
-            this.dragOriginField = field;
-            this.dragOriginContainer = item.parentElement;
-            this.dragOriginNextSibling = item.nextElementSibling;
-            requestAnimationFrame(() => {
-                item.classList.add('ui-dragging');
-                item.style.opacity = '0.4';
-                item.style.boxShadow = '0 0 0 2px var(--bs-primary,#0d6efd)';
-            });
+        item.style.opacity = '0.4';
+        item.style.boxShadow = '0 0 0 2px var(--bs-primary,#0d6efd)';
 
-            if (this.isBlockCollectionField(field)) this.highlightDropTargets(field);
-        });
+        if (this.isBlockCollectionField(this.dragOriginField)) this.highlightDropTargets(this.dragOriginField);
+    }
 
-        container.addEventListener('dragend', () => {
-            if (!this.dragging) return;
-            const item = this.dragging;
-            const originField = this.dragOriginField;
-            const originContainer = this.dragOriginContainer;
-            const originNextSibling = this.dragOriginNextSibling;
+    // What "dragover" used to give for free. The pointer belongs to the gesture for its whole duration, so nothing under it receives an event of its own any more and the field being flown over has to be hit-tested instead.
+    onDragMove(item, x, y) {
+        const under = document.elementFromPoint(x, y);
+        if (!under) return;
 
-            item.classList.remove('ui-dragging');
-            item.style.opacity = '';
-            item.style.boxShadow = '';
-            item.removeAttribute('draggable');
+        // The innermost field wins, the way the old handler stopped the event from bubbling: a "slots" field sits inside "blocks", and the outer one would pull the row straight back out
+        const field = under.closest('[data-ea-collection-field]');
+        if (!field || !this.acceptsDrop(field)) return;
 
-            const finalField = item.closest('[data-ea-collection-field]');
-            if (finalField === originField) {
-                this.updatePositions(finalField);
-            } else {
-                this.moveAcrossFields(item, finalField, originContainer, originNextSibling);
-            }
+        const container = this.itemsContainer(field);
+        if (!container) return;
 
-            this.dragging = null;
-            this.dragOriginField = null;
-            this.dragOriginContainer = null;
-            this.dragOriginNextSibling = null;
-            this.clearDropTargetHighlights();
-        });
+        const after = this.dragAfter(field, y);
+        if (!after) container.appendChild(item);
+        else after.parentElement.insertBefore(item, after);
+    }
 
-        container.addEventListener('dragover', e => {
-            if (!this.dragging) return;
+    onDragDrop(item) {
+        this.clearDragStyle(item);
 
-            // Cross-field moves are only offered between two Block-collection fields; every other sortable stays single-field
-            const sameField = field === this.dragOriginField;
-            if (!sameField && !(this.isBlockCollectionField(field) && this.isBlockCollectionField(this.dragOriginField))) {
-                return;
-            }
+        const finalField = item.closest('[data-ea-collection-field]');
+        if (finalField === this.dragOriginField) {
+            this.updatePositions(finalField);
+        } else {
+            this.moveAcrossFields(item, finalField, this.dragOriginContainer, this.dragOriginNextSibling);
+        }
 
-            // Only the innermost field may act: a "slots" field is nested inside "blocks", so bubbling would reparent the row straight back out
-            e.stopPropagation();
-            e.preventDefault();
-            const after = this.dragAfter(field, e.clientY);
-            if (!after) container.appendChild(this.dragging);
-            else after.parentElement.insertBefore(this.dragging, after);
-        });
+        this.clearDrag();
+    }
+
+    // The browser took the gesture back (a system gesture, a context menu): the row goes back where it was picked up rather than staying wherever the pointer happened to have pushed it
+    onDragCancel(item) {
+        this.clearDragStyle(item);
+        this.revertToOrigin(item, this.dragOriginContainer, this.dragOriginNextSibling);
+        this.clearDrag();
+    }
+
+    // Cross-field moves are only offered between two Block-collection fields; every other sortable stays single-field
+    acceptsDrop(field) {
+        if (field === this.dragOriginField) return true;
+
+        return this.isBlockCollectionField(field) && this.isBlockCollectionField(this.dragOriginField);
+    }
+
+    clearDragStyle(item) {
+        item.style.opacity = '';
+        item.style.boxShadow = '';
+    }
+
+    clearDrag() {
+        this.dragOriginField = null;
+        this.dragOriginContainer = null;
+        this.dragOriginNextSibling = null;
+        this.clearDropTargetHighlights();
     }
 
     isSortable(field) {
@@ -151,19 +157,21 @@ export default class extends Controller {
         btn.classList.add('ui-sort-handle');
         btn.style.cursor = 'grab';
 
-        const startDrag = () => item.setAttribute('draggable', 'true');
-        const endDrag = () => item.removeAttribute('draggable');
-        btn.addEventListener('mousedown', startDrag);
-        btn.addEventListener('mouseup', endDrag);
+        const gesture = {
+            item,
+            onStart: dragged => this.onDragStart(dragged),
+            onMove: (dragged, x, y) => this.onDragMove(dragged, x, y),
+            onDrop: dragged => this.onDragDrop(dragged),
+            onCancel: dragged => this.onDragCancel(dragged),
+        };
+        addSortGesture(btn, gesture);
 
-        // Extended to the whole header bar so grabbing isn't limited to this small icon. Only the toolbar itself (duplicate, delete, this handle) is excluded - EasyAdmin's own title/toggle button covers most of the bar's width, and it must stay draggable too, it just keeps toggling normally on a plain click since only an actual drag gesture (pointer movement) hijacks it instead of a click.
+        // Extended to the whole header bar so grabbing isn't limited to this small icon. Only the toolbar itself (duplicate, delete, this handle) is excluded - EasyAdmin's own title/toggle button covers most of the bar's width, and it must stay grabbable too, it just keeps toggling normally on a plain click since only an actual drag gesture (pointer movement) hijacks it instead of a click.
+        // The mouse alone, though: offering the whole bar to a finger takes "touch-action: none" over all of it, and the page would stop scrolling from everywhere a block header sits. At the finger the handle above is the one grab point, which is why it gets a bigger hit area there (see sass/management/_block-collection.scss).
         const header = item.querySelector('.accordion-header');
         if (header) {
             header.style.cursor = 'grab';
-            header.addEventListener('mousedown', e => {
-                if (!e.target.closest('.ui-row-toolbar')) startDrag();
-            });
-            header.addEventListener('mouseup', endDrag);
+            addSortGesture(header, { ...gesture, touch: false, ignore: '.ui-row-toolbar' });
         }
     }
 

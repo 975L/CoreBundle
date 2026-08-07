@@ -1,5 +1,72 @@
 # ChangeLog
 
+## v1.3
+
+A backup leaves the server, and a photo comes out signed
+
+### ConfigBundle
+
+- Added `BackupPathProviderInterface` and `BackupPath`, each bundle declaring its own irreplaceable files in `archive` or `mirror` mode (07/08/2026)
+- Added `BackupPathCollector`, deduplicating the declarations and skipping what isn't on disk (07/08/2026)
+- A declared folder already covered by another declaration's ancestor is dropped (07/08/2026)
+- `ConfigBackupPathProvider` declares `.env.local` alone, `public/medias` and `private/medias` belonging to the bundles that write there (07/08/2026)
+- `c975l:config:backup` no longer archives `public/` and `private/` whole, only the declared `archive` paths (07/08/2026) [BC-Break]
+- Removed the complete/partial folder modes, their two marker files and the `site-backup-full-interval-months` config (07/08/2026) [BC-Break]
+- `c975l:config:backup` now writes `var/backup/manifest.json`, naming the archives folder and the mirrored paths (07/08/2026)
+- Added `c975l:config:backup:offsite`, mirroring the declared folders through rclone, and `--ack` for installs whose backups are pulled (07/08/2026)
+- Added `OffsiteSynchronizer`, holding no credential and validating `site-backup-offsite-target` against `remote:path` before any `Process` (07/08/2026)
+- `OffsiteSynchronizer` reads `rclone.conf` at the root of the project when the install has one, rather than depending on the `HOME` a task scheduler may not provide (07/08/2026)
+- `c975l:scaffold:install` git-ignores `/rclone.conf`, the offsite credential never being committed (07/08/2026)
+- Added `OffsiteState`, only a successful transfer moving the clock forward (07/08/2026)
+- `OffsiteState::recordSuccess()` merges over the previous state instead of replacing it, the archives push no longer dropping what the mirror counted (07/08/2026)
+- A success only clears the failure its own stream raised, `recordFailure()` taking the stream it names (07/08/2026)
+- An emptied `site-backup-offsite-max-age-hours` falls back to 30 hours instead of switching the staleness alert off (07/08/2026)
+- Added the `site-backup-offsite-target`, `site-backup-offsite-max-age-hours` and `site-backup-offsite-keep-days` configs (07/08/2026)
+- The `backup` health check row now carries whether anything left the server, and what the mirror holds (07/08/2026)
+- A backup that never left the server, or left too long ago, is now a warning on the run and an alert on the dashboard (07/08/2026)
+- Scheduled `c975l:config:backup:offsite` nightly, `c975l:config:backup` keeping its 6-hourly slot (07/08/2026)
+- Dropping the partial archive removes the file list it passed as command-line arguments, which broke past a few tens of thousands of files (07/08/2026)
+- README rewrites the backup section around the three kinds of state and the two offsite models (07/08/2026)
+
+### UiBundle
+
+- Added `UiBackupPathProvider`, declaring `medias/site`, `medias/fonts` and the site-wide graphics `UiMediaNamer` writes at the root of `public/` (07/08/2026)
+- `UiBackupPathProvider` reads its singleton graphics off `Media`'s own roles, covering the watermarks and the extensions a role can be stored under (07/08/2026)
+- `MediaUploadType` validates a declared media type against the aliases its files are guessed as, a real `.wav` no longer being rejected by an `audio/wav` kind (07/08/2026)
+- `VichImageResizeListener` generates the `-thumb.webp` derivative inset instead of outbound-cropped (07/08/2026) [BC-Break]
+- UPGRADE describes the thumbnails no longer being cropped square, and what a grid counting on it has to do (07/08/2026)
+- `VichMultiSizeImageInterface::getThumbnailSize()` now caps the thumbnail's longest side, not a square's side (07/08/2026)
+- `VichImageResizeListenerTest` covers the multi-size derivatives, until now untested (07/08/2026)
+- README describes `VichMultiSizeImageInterface` and its three sizes (07/08/2026)
+- Added `Contract\VichOriginalKeepableInterface`, copying the untouched upload aside before the resize (07/08/2026)
+- The kept original's extension comes from the file's own mime, against an allow-list (07/08/2026)
+- README describes `VichOriginalKeepableInterface` (07/08/2026)
+- Added `Contract\VichWatermarkableInterface` and `Service\ImageWatermarker`, stamping a site-wide signature into a corner of an upload (07/08/2026)
+- The signature is picked between a dark and a light version on the luminance of the very corner it lands in (07/08/2026)
+- Added the `watermark-on-light` and `watermark-on-dark` media roles, uploaded from the site graphics screen (07/08/2026)
+- Neither watermark role raises a dashboard alert when missing, a site signing nothing being a finished site (07/08/2026)
+- Added the `ui-watermark-position`, `ui-watermark-width` and `ui-watermark-margin` configs (07/08/2026)
+- The signature is stamped once on the highres derivative, every smaller size being cut from it (07/08/2026)
+- `ImageWatermarker` keeps the two logos for the whole request, a batch no longer reloading them per photo (07/08/2026)
+- `VichImageResizeListener` applies an upload's EXIF orientation before measuring anything off it (07/08/2026)
+- `VichImageResizeListener` derives every size from one resampling instead of three, halving the time a photo costs (07/08/2026)
+- `VichImageResizeListener` re-arms `set_time_limit()` per file, a batch no longer sharing one request budget (07/08/2026)
+- composer suggests `ext-exif`, without which a photo shot upright is stored on its side (07/08/2026)
+- README describes the watermark, its two roles and its three configs (07/08/2026)
+- Added `assets/js/pointer-sort.js`, the drag gesture behind the sortable, on Pointer Events instead of HTML5 drag and drop (07/08/2026)
+- `ea-sortable.js` runs on it, so blocks and medias reorder at the finger (07/08/2026)
+- At the finger a row is picked up by its move handle alone, the header bar staying a mouse-only grab zone (07/08/2026)
+- The move handle gets a wider hit area on a coarse pointer (07/08/2026)
+- The page scrolls itself when a drag comes within 60px of the top or bottom of the viewport (07/08/2026)
+- Declared `@c975l/ui-bundle/pointer-sort.js` in the importmap, for a bundle sorting something that isn't a collection field (07/08/2026)
+- Added `assets/js/mobile-file-accept.js`, dropping the `accept` attribute on touch devices (07/08/2026)
+- An editor on Android reaches Drive and kDrive from an upload input instead of the photo gallery alone (07/08/2026)
+- `MediaUploadType` enforces a kind's `media_types` server-side, which is what allows that attribute to be dropped (07/08/2026)
+- `.portfolio-grid__project-img img` pads a contained screenshot off the card's edges (07/08/2026)
+- Added `cancelAnimationFrame` to the eslint globals (07/08/2026)
+- `ImageWatermarkerTest`, `PointerSortTest` and `MobileFileAcceptTest` cover the new files (07/08/2026)
+- README describes the touch drag, its reuse from another bundle and the mobile file picker (07/08/2026)
+
 ## v1.2.5
 
 A bundle keeps its own theme colors in its own group

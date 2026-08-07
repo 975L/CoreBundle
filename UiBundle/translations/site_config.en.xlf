@@ -126,6 +126,18 @@
                 <source>description.url_cookies_policy</source>
                 <target>Cookies policy page URL, e.g. https://example.com/pages/cookies</target>
             </trans-unit>
+            <trans-unit id="PGY._V8">
+                <source>description.watermark_margin</source>
+                <target>Gap between the watermark and the image edges, as a percentage of the image width.</target>
+            </trans-unit>
+            <trans-unit id="3jlzMWx">
+                <source>description.watermark_position</source>
+                <target>Corner the watermark is stamped in on photos: top-left, top-right, bottom-right or bottom-left.</target>
+            </trans-unit>
+            <trans-unit id="_yJHDs0">
+                <source>description.watermark_width</source>
+                <target>Watermark width, as a percentage of the image width (13.75 reproduces a 330px signature on a 2400px image).</target>
+            </trans-unit>
             <trans-unit id="gypr9AJ">
                 <source>label.ai_assistant_dashboard_enabled</source>
                 <target>Dashboard AI assistant</target>
@@ -281,6 +293,18 @@
             <trans-unit id="vSe2.fp">
                 <source>label.url_cookies_policy</source>
                 <target>URL Cookies Policy</target>
+            </trans-unit>
+            <trans-unit id="2uenlW5">
+                <source>label.watermark_margin</source>
+                <target>Watermark - Margin (%)</target>
+            </trans-unit>
+            <trans-unit id="tGPfaYH">
+                <source>label.watermark_position</source>
+                <target>Watermark - Corner</target>
+            </trans-unit>
+            <trans-unit id="cdc16bY">
+                <source>label.watermark_width</source>
+                <target>Watermark - Width (%)</target>
             </trans-unit>
         </body>
     </file>

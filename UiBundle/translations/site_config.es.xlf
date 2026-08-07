@@ -126,6 +126,18 @@
                 <source>description.url_cookies_policy</source>
                 <target>URL de la política de cookies, ej. https://example.com/pages/cookies</target>
             </trans-unit>
+            <trans-unit id="PGY._V8">
+                <source>description.watermark_margin</source>
+                <target>Separación entre la marca de agua y los bordes de la imagen, en porcentaje del ancho de la imagen.</target>
+            </trans-unit>
+            <trans-unit id="3jlzMWx">
+                <source>description.watermark_position</source>
+                <target>Esquina donde se estampa la marca de agua en las fotos: top-left, top-right, bottom-right o bottom-left.</target>
+            </trans-unit>
+            <trans-unit id="_yJHDs0">
+                <source>description.watermark_width</source>
+                <target>Ancho de la marca de agua, en porcentaje del ancho de la imagen (13.75 reproduce una firma de 330 px en una imagen de 2400 px).</target>
+            </trans-unit>
             <trans-unit id="gypr9AJ">
                 <source>label.ai_assistant_dashboard_enabled</source>
                 <target>Asistente IA del panel</target>
@@ -281,6 +293,18 @@
             <trans-unit id="vSe2.fp">
                 <source>label.url_cookies_policy</source>
                 <target>URL de la política de cookies</target>
+            </trans-unit>
+            <trans-unit id="2uenlW5">
+                <source>label.watermark_margin</source>
+                <target>Marca de agua - Margen (%)</target>
+            </trans-unit>
+            <trans-unit id="tGPfaYH">
+                <source>label.watermark_position</source>
+                <target>Marca de agua - Esquina</target>
+            </trans-unit>
+            <trans-unit id="cdc16bY">
+                <source>label.watermark_width</source>
+                <target>Marca de agua - Ancho (%)</target>
             </trans-unit>
         </body>
     </file>

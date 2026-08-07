@@ -34,6 +34,10 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     public const ROLE_OG_IMAGE = 'og-image';
     public const ROLE_LOGO = 'logo';
 
+    // The two signatures stamped into a corner of an uploaded photo, named after the background they are meant to be read against: a dark logo for a light corner, a light one for a dark corner. Which of the two a given photo gets is decided on that corner's own luminance (see ImageWatermarker), so a site wanting a watermark at all uploads both - one alone is used for every photo, readable or not
+    public const ROLE_WATERMARK_ON_LIGHT = 'watermark-on-light';
+    public const ROLE_WATERMARK_ON_DARK = 'watermark-on-dark';
+
     // Site-wide but repeatable role: several rows share it (e.g. a pool of images picked at random), each gets its own filename
     public const ROLE_ERROR_IMAGE = 'error-image';
 
@@ -42,6 +46,8 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
         self::ROLE_APPLE_TOUCH_ICON,
         self::ROLE_OG_IMAGE,
         self::ROLE_LOGO,
+        self::ROLE_WATERMARK_ON_LIGHT,
+        self::ROLE_WATERMARK_ON_DARK,
     ];
 
     // Roles needing a fixed target size/format regardless of the uploaded file (see UiMediaNamer/VichImageResizeListener). Favicon stays .ico (48x48 is the historical browser/OS expectation), apple-touch-icon stays .png (iOS ignores other formats)
@@ -442,6 +448,12 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     public static function getSingletonRoles(): array
     {
         return self::SINGLETON_ROLES;
+    }
+
+    // Same list read without a row in hand, for whoever needs a role's stored extension rather than an instance's - UiBackupPathProvider names the files to back up before any of them is loaded
+    public static function getFixedIconSpecs(): array
+    {
+        return self::FIXED_ICON_SPECS;
     }
 
     public function getVichMediaPath(): string

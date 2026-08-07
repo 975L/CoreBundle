@@ -1,5 +1,60 @@
 # UPGRADE
 
+## From `v1.2.5` to `v1.3`
+
+**The backup no longer archives `public/` and `private/` whole.** It archives the database and the files
+each bundle *declares*, and mirrors the rest instead of tarring it. Rolling nine gigabytes of JPEG into a
+monthly `tar.bz2` bought about one percent of compression for an hour of CPU against a one-hour timeout,
+and produced an archive whose only use was to be extracted whole. Four things to do per site.
+
+**1. Nothing to install.** `site-backup-offsite-target`, `site-backup-offsite-max-age-hours` and
+`site-backup-offsite-keep-days` arrive on their own with `configs.json`; `site-backup-full-interval-months`
+is gone and its row can be deleted. `var/BackupDateTimeFile` and `var/BackupFullDateTimeFile` are no longer
+read and can go with it. The scheduled `c975l:config:backup` keeps its name, its alias and its slot.
+
+**2. Declare your uploads.** ConfigBundle declares `.env.local`, UiBundle its `medias/site` and `medias/fonts`
+folders plus the site-wide graphics at the root of `public/`. Every other folder — a gallery, a shop's
+downloadable files, anything of your own on either `public/medias/<bundle>/` or `private/medias/<bundle>/` —
+needs a `BackupPathProviderInterface`, in the bundle that owns it or in the app
+(see [the readme](ConfigBundle/README.md#what-is-backed-up-and-what-deliberately-isnt)). Check what the
+first run publishes:
+
+```bash
+php bin/console c975l:config:backup && cat var/backup/manifest.json
+```
+
+An upload folder missing from `mirror` is an upload folder nothing is saving.
+
+**3. Choose how the files leave the server.** Set `site-backup-offsite-target` to an rclone remote to push,
+or leave it empty and have your existing offsite process call `c975l:config:backup:offsite --ack` when it's
+done pulling. Do one or the other: until either happens, every run warns that nothing has ever left the
+machine, which is exactly what it should say.
+
+**4. Seed the first mirror by hand.** It transfers everything and takes as long as that takes, and the
+Scheduler has a single worker to block:
+
+```bash
+php bin/console c975l:config:backup:offsite
+```
+
+**If you restore from the archives with scripts of your own, they need changing.** No
+`WEBSITE_-_…_-_Complete.tar.bz2` or `…_-_Partial.tar.bz2` is produced any more. The database archives are
+untouched; the files split in two — a small dated `FILES_-_…tar.bz2` holding the `archive` paths, and the
+mirror, which is restored by copying it back rather than by extracting a complete archive and replaying
+every partial over it in order. The archives already on disk stay readable by whatever reads them today.
+
+**Thumbnails are no longer cropped square.** `-thumb.webp` is now generated inset — the whole image, its
+longest side capped at `getThumbnailSize()` — instead of outbound-cropped to a square. A portrait no longer
+loses its top and bottom to the crop, but a grid that relied on every thumbnail coming out the same square
+now gets mixed shapes: the files already on disk stay square, the ones generated from now on don't. If a
+template sized its tiles off the file itself, size the tile in CSS instead and let the image fill it:
+
+```css
+.thumbnail { aspect-ratio: 1; object-fit: cover; }
+```
+
+Nothing regenerates the thumbnails already written; re-uploading a media rewrites its own.
+
 ## From `v1.2.3` to `v1.2.4`
 
 **An upload is never enlarged any more.** `VichImageResizeListener` capped the highres derivative at the

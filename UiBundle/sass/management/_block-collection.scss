@@ -20,6 +20,14 @@
     background-color: rgba(13, 110, 253, 0.06);
 }
 
+// At the finger, the move handle is the only place a row can be picked up from (ea-sortable.js keeps the rest of the header to the mouse, a touchable header being a header the page can no longer be scrolled from), and the bare icon is well under a comfortable touch target. "!important" because the padding it widens is an inline one, written by block-toolbar.js to line every row action up with EasyAdmin's own delete button.
+@media (pointer: coarse) {
+    .ui-sort-handle {
+        padding-block: .5rem !important;
+        padding-inline: .75rem !important;
+    }
+}
+
 // EasyAdmin lays out every field of a collection entry as flex items (the column wrapper of its own form_row, then a 20% label + a "flex: 1" .form-widget), and a flex item defaults to "min-width: auto" - it can never shrink below its content. The block kind picker is a <select> whose intrinsic width is that of its longest option label ("Colonnes flexibles (Titre de section...)"), so each nesting level of blocks-in-blocks renders wider than the box holding it and the deepest one spills out of the panel. Letting those items shrink to 0 is what keeps a nested block inside its parent.
 .form-group.field-collection .accordion-body > .row > div,
 .form-group.field-collection .accordion-item .form-widget {

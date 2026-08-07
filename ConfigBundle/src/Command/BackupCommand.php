@@ -10,9 +10,13 @@
 
 namespace c975L\ConfigBundle\Command;
 
+use c975L\ConfigBundle\Management\BackupPath;
+use c975L\ConfigBundle\Management\BackupPathCollector;
 use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\BackupRetentionPurger;
 use c975L\ConfigBundle\Management\ByteFormatter;
+use c975L\ConfigBundle\Management\OffsiteState;
+use c975L\ConfigBundle\Management\OffsiteSynchronizer;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Service\EmailService;
@@ -25,18 +29,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\Process;
 
 /**
- * Console command to back up the database and user files, replacing BackupServer.sh.
+ * Console command to back up what no git clone and no rebuild can bring back.
  *
  * Usage:
- *   php bin/console c975l:config:backup           # DB dumped table by table (always); files: complete on the
- *                                                  # first run and every site-backup-full-interval-months
- *                                                  # calendar months after that (default 1), modified-since-last-run
- *                                                  # only in between
+ *   php bin/console c975l:config:backup           # database table by table, plus the files declared
+ *                                                  # in "archive" mode, then both sent offsite
  *   php bin/console c975l:config:backup --report  # also send a summary email after backup
+ *
+ * What it does *not* archive is as deliberate as what it does. The code is in git and comes back with a
+ * clone; the configuration is in the database and comes back with the dump; the uploaded files are written
+ * once and never change, so they are mirrored by c975l:config:backup:offsite rather than tarred. This
+ * command used to roll public/ and private/ whole into a monthly tar.bz2, which meant compressing nine
+ * gigabytes of JPEG for about one percent of gain, an hour of CPU against a one-hour timeout, and a copy of
+ * it all kept for the retention window - to produce an archive whose only use was to be extracted whole.
  *
  * Lives in ConfigBundle rather than in SiteBundle, where it started: backing up the database and the
  * user files is not a concern of the pages/menus/blocks domain, it's what every install needs whichever
@@ -52,31 +60,13 @@ use Symfony\Component\Process\Process;
  */
 #[AsCommand(
     name: 'c975l:config:backup',
-    description: 'Backs up the database and user files',
+    description: 'Backs up the database and the declared files',
     aliases: ['c975l:site:backup']
 )]
 class BackupCommand extends Command
 {
-    private const DEFAULT_FULL_INTERVAL_MONTHS = 1;
     private const DEFAULT_RETENTION_DAYS = 15;
-
-    // Backed-up roots, each getting its own archive: public/ for what the site serves, private/ for what it
-    // deliberately keeps out of the document root (ShopBundle's invoices and the like) - a folder no web server
-    // ever exposes is also a folder no earlier version of this command ever saved
-    private const FOLDER_ROOTS = [
-        'WEBSITE' => 'public',
-        'PRIVATE' => 'private',
-    ];
-
-    // Files/dirs excluded from every folders backup (framework assets, not user data)
-    private const STANDARD_EXCLUDES = [
-        'assets',
-        'bundles',
-        'humans.txt',
-        'index.php',
-        'prepend.inc.php',
-        'robots.txt',
-    ];
+    private const DEFAULT_OFFSITE_MAX_AGE_HOURS = 30;
 
     private string $projectDir;
     private string $credentialsFile; // path to the runtime-generated temp file
@@ -92,9 +82,10 @@ class BackupCommand extends Command
     private array $archives = [];
     private array $tables = ['expected' => 0, 'dumped' => 0, 'missing' => []];
     private int $sqlBytes = 0;
-    private string $foldersMode = 'none';
-    private int $foldersBytes = 0;
-    private int $foldersFiles = 0;
+    private int $filesBytes = 0;
+    private int $filesCount = 0;
+    private array $mirrorPaths = [];
+    private array $offsite = ['status' => 'none', 'hours' => null, 'target' => ''];
     private int $durationSeconds = 0;
     private array $retention = [];
 
@@ -105,6 +96,9 @@ class BackupCommand extends Command
         private readonly Connection $connection,
         private readonly BackupRetentionPurger $retentionPurger,
         private readonly BackupResultRecorder $resultRecorder,
+        private readonly BackupPathCollector $pathCollector,
+        private readonly OffsiteSynchronizer $offsiteSynchronizer,
+        private readonly OffsiteState $offsiteState,
     ) {
         parent::__construct();
     }
@@ -147,9 +141,11 @@ class BackupCommand extends Command
         $this->credentialsFile = $this->createTempCredentialsFile();
         try {
             $this->backupMySql();
-            $this->backupFolders();
+            $this->backupFiles();
+            $this->writeManifest();
             $this->cleanup();
             $this->purgeOldBackups();
+            $this->sendArchivesOffsite();
         } finally {
             unlink($this->credentialsFile);
         }
@@ -332,172 +328,135 @@ class BackupCommand extends Command
         return $bytes;
     }
 
-    private function backupFolders(): void
+    // The files declared in "archive" mode: small, neither in git nor in the database, and dated on every run so
+    // their history is kept. .env.local is the case that matters - a restored server with every photo and no
+    // APP_SECRET does not start, and that is the discovery nobody wants to make on the day of the incident
+    private function backupFiles(): void
     {
-        $dateTimeFile = $this->projectDir . '/var/BackupDateTimeFile';
-        $fullDateTimeFile = $this->projectDir . '/var/BackupFullDateTimeFile';
+        $this->report .= sprintf("\nFiles backup for \"%s\": %s\n", $this->subjectLabel(), $this->startedAt->format('Y-m-d H:i:s'));
 
-        $this->report .= sprintf("\nFolders backup for \"%s\": %s\n", $this->siteDomain, $this->startedAt->format('Y-m-d H:i:s'));
-
-        // Complete on the first run, or once the configured number of calendar months has passed
-        // Never below one month: a zero would turn every 6-hourly run into a complete public/ + private/ archive, which is the one value the entry must not be allowed to take whatever wrote it
-        $fullIntervalMonths = max(1, (int) ($this->configService->get('site-backup-full-interval-months') ?: self::DEFAULT_FULL_INTERVAL_MONTHS));
-        $doFull = !file_exists($dateTimeFile)
-            || !file_exists($fullDateTimeFile)
-            || $this->monthsElapsedSince($fullDateTimeFile) >= $fullIntervalMonths;
-
-        $errorsBefore = \count($this->errors);
-
-        // One decision, one marker pair, one archive per root: public/ and private/ are backed up in the same
-        // mode on the same run, so a restore never has to pair a complete archive with a partial one
-        foreach (self::FOLDER_ROOTS as $prefix => $relativePath) {
-            $folder = $this->projectDir . '/' . $relativePath;
-            if (!is_dir($folder)) {
-                continue;
-            }
-
-            $doFull
-                ? $this->backupFoldersComplete($prefix, $folder)
-                : $this->backupFoldersPartial($prefix, $folder, (int) filemtime($dateTimeFile));
-        }
-
-        // A marker moved past files no archive holds is how a failed run loses them silently: the next partial
-        // one only looks at what changed after the marker, so nothing sees them again until the next complete
-        // backup, up to a month later. Left where it is, the next run simply covers the same ground again
-        if (\count($this->errors) > $errorsBefore) {
-            return;
-        }
-
-        // Record start time so the next partial backup only captures newer files
-        touch($dateTimeFile, $this->startedAt->getTimestamp());
-        if ($doFull) {
-            touch($fullDateTimeFile, $this->startedAt->getTimestamp());
-        }
-    }
-
-    // Everything under the root, minus the framework's own assets, the generated sitemaps and whatever config/backup_exclude.cnf adds
-    private function backupFoldersComplete(string $prefix, string $folder): void
-    {
-        $this->foldersMode = 'complete';
-        $this->report .= sprintf("COMPLETE Folders backup (%s)\n", basename($folder));
-        $excludeFile = $this->projectDir . '/config/backup_exclude.cnf';
-
-        // -C changes into $folder so archive paths are relative (./medias/..., etc.)
-        $args = ['nice', 'tar', '--bzip2', '--create', '-C', $folder];
-        foreach (self::STANDARD_EXCLUDES as $pattern) {
-            $args[] = '--exclude=' . $pattern;
-        }
-        $args[] = '--exclude=sitemap-*';
-        if (file_exists($excludeFile)) {
-            $args[] = '--exclude-from=' . $excludeFile;
-        }
-        $archive = $this->foldersArchiveName($prefix, 'Complete');
-        $args[] = '--file';
-        $args[] = $archive;
-        $args[] = '.';
-
-        $this->runFoldersTar($args, 'Complete folders tar failed: ', $archive);
-    }
-
-    // Only the files changed since the last run, each listed in the report so a restore knows what the archive holds
-    private function backupFoldersPartial(string $prefix, string $folder, int $lastBackupTime): void
-    {
-        $modifiedFiles = $this->findModifiedFiles($folder, $lastBackupTime);
-        if (empty($modifiedFiles)) {
-            $this->report .= sprintf("NO FILE to save (%s)\n", basename($folder));
+        $paths = $this->pathCollector->getPaths(BackupPath::MODE_ARCHIVE);
+        if (empty($paths)) {
+            $this->report .= "NO declared file to save\n";
 
             return;
         }
 
-        // Only downgraded to partial when nothing has gone complete on this run: with several roots, the mode
-        // reported is the strongest one, so "complete" never gets overwritten by a root that had nothing to add
-        if ('complete' !== $this->foldersMode) {
-            $this->foldersMode = 'partial';
-        }
-        $this->foldersFiles += \count($modifiedFiles);
-
-        $this->report .= sprintf("PARTIAL Folders backup (%s)\n", basename($folder));
-        foreach ($modifiedFiles as $file) {
-            $this->report .= $file . "\n";
+        foreach ($paths as $path) {
+            $this->report .= sprintf("- %s\n", $path);
+            $this->filesCount += $this->countFiles($this->projectDir . '/' . $path);
         }
 
-        // Same -C as the complete archive, the members already being relative to the root: handed absolute paths,
-        // tar stored them as home/…/public/medias/x.jpg, so extracting a partial over a restored complete one
-        // dropped the newer files into public/home/…/ instead of overwriting the stale ones they were to replace
-        $archive = $this->foldersArchiveName($prefix, 'Partial');
-        $this->runFoldersTar(
-            array_merge(
-                ['nice', 'tar', '--bzip2', '--create', '-C', $folder, '--file', $archive],
-                array_map(static fn (string $file) => './' . $file, $modifiedFiles)
-            ),
-            'Partial folders tar failed: ',
-            $archive
-        );
-    }
-
-    // Files modified since the last run, minus the same top-level folders the complete backup excludes, each
-    // relative to the root - which is what the archive stores and what the report has to name for a restore
-    private function findModifiedFiles(string $folder, int $lastBackupTime): array
-    {
-        $excludedTopLevel = array_flip(self::STANDARD_EXCLUDES);
-
-        $finder = (new Finder())
-            ->files()
-            ->in($folder)
-            ->filter(function (SplFileInfo $f) use ($excludedTopLevel) {
-                $topLevel = strtok($f->getRelativePathname(), '/');
-
-                return !isset($excludedTopLevel[$topLevel]) && !str_starts_with($topLevel, 'sitemap-');
-            })
-            ->filter(fn (SplFileInfo $f) => $f->getMTime() > $lastBackupTime);
-
-        return array_map(
-            static fn (SplFileInfo $f) => $f->getRelativePathname(),
-            iterator_to_array($finder, false)
-        );
-    }
-
-    // Both variants share the site/date naming, the prefix telling the backed-up root apart and the suffix the mode
-    private function foldersArchiveName(string $prefix, string $suffix): string
-    {
-        return sprintf(
-            '%s/%s_-_%s_-_%s_-_%s.tar.bz2',
+        // -C changes into the project so archive members are relative ('./.env.local'), which is where a restore
+        // has to put them back. Handed absolute paths, tar stores home/…/.env.local and an extraction lands it
+        // in a home/ folder of its own instead of overwriting the file it was meant to replace
+        $archive = sprintf(
+            '%s/FILES_-_%s_-_%s.tar.bz2',
             $this->finalFolder,
-            $prefix,
-            $this->siteDomain,
-            $this->startedAt->format('Y-m-d_-_H-i'),
-            $suffix
+            $this->subjectLabel(),
+            $this->startedAt->format('Y-m-d_-_H-i')
         );
-    }
 
-    // 1h timeout, as the folders backup has always used - a complete archive of a media-heavy site takes a while
-    private function runFoldersTar(array $args, string $errorPrefix, string $archive): void
-    {
-        $process = new Process($args);
-        $process->setTimeout(3600);
+        $process = new Process(array_merge(
+            ['nice', 'tar', '--bzip2', '--create', '-C', $this->projectDir, '--file', $archive],
+            array_map(static fn (string $path) => './' . $path, $paths)
+        ));
+        $process->setTimeout(1800);
         $process->run();
 
         if (!$process->isSuccessful()) {
-            $this->errors[] = $errorPrefix . $process->getErrorOutput();
+            $this->errors[] = 'Files tar failed: ' . $process->getErrorOutput();
 
             return;
         }
 
-        $this->foldersBytes += $this->verifyArchive($archive);
+        $this->filesBytes = $this->verifyArchive($archive);
     }
 
-    // Whole calendar months since $markerFile's mtime, day-of-month aware rather than a fixed day count
-    private function monthsElapsedSince(string $markerFile): int
+    // What is mirrored rather than archived, published for whoever copies this server offsite - a puller that
+    // reads it stops having to know the site's layout, and a bundle installed tomorrow brings its own folders
+    // along without a single line changed on the machine that does the copying
+    private function writeManifest(): void
     {
-        $from = (new \DateTimeImmutable())->setTimestamp(filemtime($markerFile));
-        $to = $this->startedAt;
+        $this->mirrorPaths = $this->pathCollector->getPaths(BackupPath::MODE_MIRROR);
 
-        $months = ((int) $to->format('Y') - (int) $from->format('Y')) * 12 + ((int) $to->format('n') - (int) $from->format('n'));
-        if ((int) $to->format('j') < (int) $from->format('j')) {
-            --$months;
+        file_put_contents($this->backupFolder . '/manifest.json', json_encode([
+            'site' => $this->subjectLabel(),
+            'generatedAt' => $this->startedAt->format(\DateTimeInterface::ATOM),
+            // Relative to the project directory, as everything else here is
+            'archives' => 'var/backup',
+            'mirror' => $this->mirrorPaths,
+            // So whoever pulls knows to keep a longer window than the server does, rather than re-downloading what it has just purged here
+            'retentionDays' => $this->retentionDays(),
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        $this->report .= empty($this->mirrorPaths)
+            ? "\nNo folder declared for mirroring\n"
+            : sprintf("\nMirrored, not archived (see c975l:config:backup:offsite): %s\n", implode(', ', $this->mirrorPaths));
+    }
+
+    // The archives, copied rather than synced: they are added to here and purged on the local retention window,
+    // and a sync would carry that purge over to the offsite copy - which is exactly the history it exists to keep
+    // longer. An install that has an outside machine pull instead leaves the target empty and says so with --ack
+    private function sendArchivesOffsite(): void
+    {
+        $this->offsite['target'] = $this->offsiteSynchronizer->getTarget();
+
+        if ($this->offsiteSynchronizer->isConfigured()) {
+            $result = $this->offsiteSynchronizer->copy($this->backupFolder, 'backup');
+
+            if ($result['ok']) {
+                $this->offsiteState->recordSuccess($this->projectDir, ['what' => 'archives', 'target' => $this->offsite['target']]);
+                $this->report .= sprintf("\nArchives sent to %s/backup\n", $this->offsite['target']);
+            } else {
+                $this->errors[] = 'Sending the archives offsite failed: ' . $result['error'];
+                $this->offsiteState->recordFailure($this->projectDir, $result['error'], 'archives');
+            }
         }
 
-        return $months;
+        // Read back whichever wrote it, this run or the machine that pulls: a backup that ran perfectly and never
+        // left the server is not a backup, and until now nothing in the report or on the dashboard said so
+        $hours = $this->offsiteState->hoursSince($this->projectDir);
+        $maxAge = $this->offsiteMaxAgeHours();
+        $state = $this->offsiteState->read($this->projectDir) ?? [];
+
+        // What the last mirror run counted at the destination, so the row says how much is held offsite rather than
+        // leaving the mirrored folders as a silent hole - the whole point of declaring them instead of excluding them
+        $this->offsite['mirrorFiles'] = $state['files'] ?? null;
+        $this->offsite['mirrorBytes'] = $state['bytes'] ?? null;
+        $this->offsite['hours'] = $hours;
+        $this->offsite['status'] = null === $hours ? 'never' : ($hours > $maxAge ? 'stale' : 'ok');
+
+        if ('never' === $this->offsite['status']) {
+            $this->warnings[] = 'Nothing has ever left this server: no offsite copy is recorded.';
+        } elseif ('stale' === $this->offsite['status']) {
+            $this->warnings[] = sprintf('The last offsite copy is %d hours old, past the %d configured.', (int) $hours, $maxAge);
+        }
+
+        $this->report .= sprintf(
+            "Offsite: %s%s\n",
+            $this->offsite['status'],
+            null === $hours ? '' : sprintf(' (%d hours ago)', (int) $hours)
+        );
+    }
+
+    private function countFiles(string $path): int
+    {
+        if (is_file($path)) {
+            return 1;
+        }
+
+        $count = 0;
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
+        );
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                ++$count;
+            }
+        }
+
+        return $count;
     }
 
     private function cleanup(): void
@@ -526,11 +485,26 @@ class BackupCommand extends Command
     }
 
     // Keeps the server's own rolling window of archives, whoever copies them offsite being expected to keep a longer one
+    // Only a missing row falls back to the default. The entry is declared "int", so the field emptied at the back-office comes back as a 0 like a typed one, and both mean "keep every archive": `?: DEFAULT` read them as unset instead and purged at 15 days, BackupRetentionPurger's own "keep everything" guard never being reached
+    private function retentionDays(): int
+    {
+        $configured = $this->configService->get('site-backup-retention-days');
+
+        return null === $configured ? self::DEFAULT_RETENTION_DAYS : (int) $configured;
+    }
+
+    // How old the last offsite copy may get before the row goes stale
+    // Unlike retentionDays(), a 0 here falls back too: the field emptied at the back-office comes back as a 0 for an "int" entry, and 0 hours names no window at all - it used to read as "never stale", so a mirror that stopped leaving a month ago still reported ok
+    private function offsiteMaxAgeHours(): int
+    {
+        $configured = (int) $this->configService->get('site-backup-offsite-max-age-hours');
+
+        return $configured > 0 ? $configured : self::DEFAULT_OFFSITE_MAX_AGE_HOURS;
+    }
+
     private function purgeOldBackups(): void
     {
-        // Only a missing row falls back to the default. The entry is declared "int", so the field emptied at the back-office comes back as a 0 like a typed one, and both mean "keep every archive": `?: DEFAULT` read them as unset instead and purged at 15 days, BackupRetentionPurger's own "keep everything" guard never being reached
-        $configured = $this->configService->get('site-backup-retention-days');
-        $days = null === $configured ? self::DEFAULT_RETENTION_DAYS : (int) $configured;
+        $days = $this->retentionDays();
         $this->retention = array_merge(['days' => $days], $this->retentionPurger->purge($this->backupFolder, $days));
 
         $this->report .= sprintf(
@@ -562,9 +536,10 @@ class BackupCommand extends Command
             'database' => $this->database,
             'tables' => $this->tables,
             'sqlBytes' => $this->sqlBytes,
-            'foldersMode' => $this->foldersMode,
-            'foldersBytes' => $this->foldersBytes,
-            'foldersFiles' => $this->foldersFiles,
+            'filesBytes' => $this->filesBytes,
+            'filesCount' => $this->filesCount,
+            'mirrorPaths' => $this->mirrorPaths,
+            'offsite' => $this->offsite,
             'archives' => $this->archives,
             'durationSeconds' => $this->durationSeconds,
             'retention' => $this->retention,
@@ -622,7 +597,7 @@ class BackupCommand extends Command
         ));
     }
 
-    // The domain only ever labels the subject, so an install without site-url falls back to the database name rather than getting no failure report at all
+    // The domain only ever labels the subject and the archives, so an install without site-url falls back to the database name rather than getting no failure report at all
     private function subjectLabel(): string
     {
         return '' !== $this->siteDomain ? $this->siteDomain : $this->database;

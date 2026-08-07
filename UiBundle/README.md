@@ -38,10 +38,11 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Dynamic block system with per-kind forms and templates
 - Media uploads per block via VichUploader (auto-configured)
 - Multi-file upload for kinds that opt in (`slider`, `article` out of the box) - select several files at once instead of adding them one by one
-- Drag-and-drop position ordering for blocks and media
+- Drag-and-drop position ordering for blocks and media, at the mouse and at the finger
 - One-click duplication of a block or a media row in EasyAdmin, including its files
 - Live preview of a newly picked image in EasyAdmin, before saving
-- Site-wide media roles (favicon, apple-touch-icon, og-image, logo, error-image pool) with their own admin screen, retrievable anywhere via `site_media()`
+- Site-wide media roles (favicon, apple-touch-icon, og-image, logo, the two watermark signatures, error-image pool) with their own admin screen, retrievable anywhere via `site_media()`
+- Watermarking on upload for entities that opt in, the dark or light signature picked on the luminance of the very corner it lands in
 - Admin-editable theme (colors, fonts, light/dark mode) compiled to CSS custom properties, and inlinable into emails
 - GDPR cookie banner (`vanilla-cookieconsent` v3, self-hosted), carrying its own enabled/disabled guard
 - A minimal page layout with the theme, the site graphics, the share tags and the banner, for an app running without SiteBundle
@@ -49,7 +50,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - AJAX kind-switcher in EasyAdmin
 - Extensible: register your own block kinds via a service tag
 - Automatic CSS injection: bundles declare their stylesheets via a service tag, rendered by `bundle_stylesheets()` in Twig
-- Reusable drag-and-drop sortable script for any EasyAdmin `CollectionField`
+- Reusable drag-and-drop sortable script for any EasyAdmin `CollectionField`, plus the touch-capable drag gesture behind it (`assets/js/pointer-sort.js`) on its own, for a bundle sorting something that isn't a collection field
 - Font-family provider contract (`FontProviderInterface`/`FontRegistry`) plus a generic `FontChoiceType` select, reused by ConfigBundle's font-kind config fields
 - Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private downloads (`PrivateFileResponseFactory`)
 - Shared plumbing every satellite bundle needs without needing SiteBundle: unique slugs, block edit URLs, sortable row attributes, generated-stylesheet writing, Vich upload options, block cache invalidation, block export/import
@@ -230,6 +231,48 @@ Drag-and-drop reordering is handled automatically by the `eaSortable` Stimulus c
 
 Expose a hidden `position` field in your collection entry type and order the collection by position on the entity side — the grip handle and drag behaviour are added automatically.
 
+### At the finger
+
+Reordering works the same on a touch screen. It runs on Pointer Events, not on the native HTML5 drag and drop it used to: no touch browser can be counted on to emit `dragstart` at all, and the `draggable` attribute that was armed on `mousedown` was never even set in time — a touch emits its emulated mouse events only once the gesture is already over.
+
+Two things differ from the mouse, both deliberate:
+
+- **A row is picked up by its move handle**, not by anywhere on its header bar. Making the whole bar a drag zone at the finger takes `touch-action: none` over all of it, and the back-office would stop scrolling from everywhere a row header sits; the header stays a grab zone for the mouse alone. The handle is given a wider hit area on a coarse pointer in exchange (`sass/management/_block-collection.scss`).
+- **The page scrolls itself** when the pointer comes within 60px of the top or bottom of the viewport — the browser did that on its own during a native drag, and a collection taller than the screen would otherwise only be sortable as far as the screen shows.
+
+### Reusing the gesture elsewhere
+
+`assets/js/pointer-sort.js` is the gesture layer on its own, and knows nothing about EasyAdmin: it exports **`addSortGesture(zone, options)`**, which arms `zone` as a place a drag can start from and hands the caller back four hooks. Where a dragged element should land, and what to do once it has, stay entirely with the caller — the shapes differ too much between a vertical list of rows, a wrapping grid of thumbnails and a table for a single answer to fit all three.
+
+| Option | Role |
+| --- | --- |
+| `item` | The element to drag — an element, or a function receiving the `pointerdown` event and returning one |
+| `touch` | `false` restricts the zone to the mouse (see above). Otherwise the zone gets `touch-action: none` |
+| `ignore` | Selector a `pointerdown` inside of never starts a drag from |
+| `onStart(item)` | The gesture just became a drag — the pointer travelled past 5px. A shorter one is a click, and none of these four hooks ever fires for it |
+| `onMove(item, x, y)` | The pointer moved, in viewport coordinates. The dragged element is out of hit-testing for the whole gesture, so `document.elementFromPoint(x, y)` answers with what is *under* it |
+| `onDrop(item)` | Released |
+| `onCancel(item)` | The browser took the gesture back (a system gesture, a context menu) — put the element back where it was picked up |
+
+A wrapping grid of thumbnails, from its own Stimulus controller:
+
+```js
+import { addSortGesture } from '@c975l/ui-bundle/pointer-sort.js';
+
+this.itemTargets.forEach(tile => addSortGesture(tile, {
+    item: tile,
+    onMove: (dragged, x, y) => {
+        const over = document.elementFromPoint(x, y)?.closest('[data-media-id]');
+        if (over && over !== dragged) over.before(dragged);
+    },
+    onDrop: () => this.save(),
+}));
+```
+
+The `@c975l/ui-bundle/…` specifier is reachable from any bundle requiring `c975l/core-bundle` — the importmap entry is contributed automatically, same as the two controller entrypoints above. This is one of the few things worth importing across bundles rather than copying: a hand-rolled drag is where the touch support, the edge scrolling and the click suppression get quietly left out.
+
+The module adds `.ui-dragging` to the dragged element and swallows the click a drag would otherwise leave behind; everything else — the highlight, the drop styling, the persistence — is the caller's. `assets/js/ea-sortable.js` is the worked example, cross-collection moves included.
+
 ---
 
 ## Confirming a title change that rewrites a slug
@@ -362,6 +405,8 @@ Dragging an already-saved Block onto a *different* Block-collection field (anoth
 - Both fields (the drag's origin and destination) must carry `row_attr`'s `data-block-collection: '1'` marker for the cross-field drop to be offered at all - every other sortable collection in this bundle (medias, form fields, email blocks...) is untouched. `BlockType::addSlotsSubForm()` already marks a container's own `slots` field this way (only once the container itself has an id - a not-yet-saved container can't be a move destination yet).
 - Your own `HasBlocksInterface` owner's top-level `blocks` field needs the same marker plus `data-block-owner-type`/`data-block-owner-id` (a short type string of your choosing, e.g. `"page"`) and a `BlockOwnerResolverInterface` implementation resolving that type back to your entity - see `c975L\SiteBundle\Management\SiteBlockOwnerResolver`/`Controller\Management\PageCrudController`'s own "blocks" field for a full example, auto-discovered the same way as `MediaUsageProviderInterface` (no tag needed, see `BlockOwnerResolverPass`).
 - The move itself never crosses two different owners (a Page's blocks can only move within that same Page) - `BlockMoveController` re-verifies ownership server-side regardless of what the client sends.
+
+The same move works at the finger, from the row's move handle (see [At the finger](#at-the-finger)). The outline every eligible destination gets while a block is held matters more there than at the mouse: an empty `slots` field has no size of its own to aim at, and a finger covers what it is aiming for.
 
 ---
 
@@ -550,6 +595,10 @@ A few contexts are **exclusive** (`BlockRegistry::EXCLUSIVE_CONTEXTS`, currently
 `media_required: true` rejects saving a block of that kind when it has no attached media at all (enforced by `RequiredMediaValidator` on the `Block` entity itself, not by the form) — use it for a kind whose media isn't optional decoration but the whole point of the block (e.g. `banner_title`'s background image). Defaults to `false`; only meaningful alongside `media_types`.
 
 `media_multi_upload: true` adds a "select several files at once" input next to the usual one-file-per-row media collection, for a kind where editors routinely add many files at a time (e.g. `slider`, `article`) instead of clicking "Add" repeatedly. Each selected file becomes its own media entry, appended after the existing ones. Defaults to `false`; only meaningful alongside `media_types`.
+
+`media_types` is enforced on **both** sides: it fills the upload input's `accept` attribute (a hint to the file dialog, nothing more) *and* a `File` constraint on the media's own file field (`MediaUploadType`), which is what actually turns a wrong-typed upload down — the multi-file input goes through the same constraint, its files being spliced into the media collection before mapping. The declared wildcards (`image/*`) are passed through as written; Symfony's `File` constraint matches them the same way the browser does.
+
+That server-side check is what allows `assets/js/mobile-file-accept.js` (loaded by the admin controllers barrel) to **drop the `accept` attribute on touch devices**. Chrome on Android hands an input accepting nothing but image/video types to the system photo picker, which shows the phone's gallery and nothing else — no "Files", no Drive, no third-party storage provider (kDrive, Nextcloud…), so an editor on a phone simply cannot reach a file stored anywhere but their photos. Without the attribute, the same tap opens the document picker, where every provider installed on the phone appears. A mouse pointer is left alone, so a desktop admin keeps their images-only file dialog, and a list mixing in any other type (`application/pdf`, fonts…) is left alone too — those already open the document picker.
 
 **Un-registering a kind** is safe: a `Block` row outlives the tag that declared it, and `render_block()` skips a kind that is no longer registered rather than letting the registry throw. Dropping the tag - or uninstalling the bundle that declared it - blanks those blocks out of the pages holding them instead of taking the pages down with them. The rows themselves are left alone, so re-adding the tag brings them back.
 
@@ -1259,6 +1308,58 @@ Implement `Contract\VichMediaNamableInterface::getVichMediaPath(): string` on th
 
 For a **private** download (e.g. a paid file in a shop) instead of a public one, also implement `Contract\VichPrivateFileInterface` (see [PDF thumbnails](#pdf-thumbnails) above) and use `Service\PrivateFileResponseFactory::createDownloadResponse(string $absoluteFilePath, string $downloadFilename): ?BinaryFileResponse` from your own controller to build the attachment response (`null` if the file is missing) - it only builds the response, access control (checking the current user actually purchased/owns the file) stays your controller's job.
 
+### Three sizes of one image
+
+An entity showing the same image in a grid, on a page and in a zoom implements `Contract\VichMultiSizeImageInterface` (which extends `VichImageResizableInterface`), declaring three widths and nothing else:
+
+| Method | File | Purpose |
+| --- | --- | --- |
+| `getImageWidth()` | the entity's own stored file | what a page displays - the upload is downscaled to it in place |
+| `getThumbnailSize()` | `-thumb.webp`, next to it | grids |
+| `getHighresWidth()` | `-highres.webp`, next to it | zoom |
+
+`Listener\VichImageResizeListener` generates the two siblings on `vich_uploader.post_upload`, both from the untouched original rather than from the already-downscaled stored file, and neither is ever upscaled past it. The entity reads their names back from its own stored filename (`preg_replace` on the extension - see GalleryBundle's `GalleryMedia::getThumbnailFilename()`); nothing is stored in the database for them, and `MediaFileRemoveListener` knows nothing about them either, so removing them is the consuming bundle's own business (see GalleryBundle's `GalleryMediaDerivativeCleanupListener`).
+
+**The thumbnail keeps the image's proportions**, `getThumbnailSize()` capping its longest side: it is only square for a square original. A grid wanting square tiles gets them with `object-fit: cover` over a square box, which is a display decision that stays reversible - a file cropped square here could never give the cut pixels back.
+
+### Keeping the untouched upload
+
+`processImage()` overwrites the uploaded file **in place** with its own downscaled webp conversion, so the original only exists between Vich moving it into place and that overwrite. An entity that wants it kept implements `Contract\VichOriginalKeepableInterface`:
+
+| Method | Purpose |
+| --- | --- |
+| `getOriginalDirectory(): ?string` | directory relative to the project root (e.g. `"private"`), `null` to keep nothing - decided per entity, so an upload screen is free to offer the choice |
+| `setOriginalFilename(?string $filename): void` | called back with the path written to, relative to that directory |
+
+Unlike `VichPrivateFileInterface`, which *moves* the stored file out of `public/` and leaves nothing behind, this **copies**: the served derivatives stay where they are, the original joins them under a root of the entity's choosing, with the same base name and the same directory structure.
+
+The extension is the one part of that path not derived from internal values. The stored file's own is forced to `webp` by `UiMediaNamer`, so it cannot be reused, and the only other source - the name the browser sent - is client input that would land on disk as a path. It is therefore decided on the **mime type read off the file's own bytes**, against an allow-list (`jpg`, `png`, `gif`, `webp`, `tif`); a type off that list is not kept at all rather than copied under a guessed extension.
+
+Nothing serves or removes the copy: like the `-thumb`/`-highres` siblings, it is a plain file Vich knows nothing about, so the consuming bundle owns its lifecycle (see GalleryBundle's `GalleryMediaDerivativeCleanupListener`). And it weighs what the camera wrote — an entity keeping originals in a backed-up root is one whose backup grows by the full upload size, which is worth deciding on rather than defaulting to.
+
+### Signing a photo
+
+An entity whose uploads should carry the site's signature implements `Contract\VichWatermarkableInterface` (which extends `VichImageResizableInterface`), answering two questions and nothing more:
+
+| Method | Purpose |
+| --- | --- |
+| `wantsWatermark(): bool` | `false` leaves every derivative untouched — a screenshot or a press photo is nobody's to sign, so this is decided per row rather than per entity class |
+| `getWatermarkPosition(): ?string` | one of `POSITION_TOP_LEFT`/`TOP_RIGHT`/`BOTTOM_RIGHT`/`BOTTOM_LEFT`, or `null` to take the corner set site-wide |
+
+The signature itself is a site graphic, not an entity's business: it is uploaded once for the whole site, under **two** roles — `Media::ROLE_WATERMARK_ON_LIGHT` and `Media::ROLE_WATERMARK_ON_DARK`, named after the background they are meant to be read against. `Service\ImageWatermarker` measures the average luminance of the very corner the logo is about to occupy and picks the one that will still be visible there: a dark signature disappears into a night sky and a white one into a snowfield, and a gallery holds both shots. A site that uploaded only one of the two gets it on every photo.
+
+Three configs of the `general` group govern the rest, all three expressed as a percentage of the image's own width, so a 600px thumbnail and a 2048px export carry the same signature at the same relative size:
+
+| Config | Default | Purpose |
+| --- | --- | --- |
+| `ui-watermark-position` | `bottom-right` | the corner, for any entity not naming its own |
+| `ui-watermark-width` | `13.75` | the logo's width (13.75% reproduces a 330px signature on a 2400px image) |
+| `ui-watermark-margin` | `0.42` | the gap to the two edges its corner touches — `0` lays it flush |
+
+The stamping happens **once per upload**, on the highres derivative, every smaller size then being cut from that already-signed image (see [Three sizes of one image](#three-sizes-of-one-image)): no size can end up carrying a different signature than its siblings, and a logo laid twice over the same pixels is impossible by construction. An entity with no derivatives of its own is stamped on its stored file instead. Nothing is ever stamped on the kept original (see [Keeping the untouched upload](#keeping-the-untouched-upload)), which stays re-processable.
+
+**A photo is straightened before any of this.** GD decodes a jpeg exactly as stored and ignores the EXIF orientation tag entirely, so a photo shot upright comes out lying on its side — and its watermark stamped in a corner nobody asked for. `VichImageResizeListener` applies that tag itself, once, before measuring anything: everything the pipeline writes is webp, a format it saves without EXIF at all, so no downstream reader can rotate it a second time. `ext-exif` is a suggestion, not a requirement — without it, files are stored as GD read them.
+
 ---
 
 ## Site-wide media (favicon, logo, og-image)
@@ -1272,6 +1373,8 @@ Media::ROLE_FAVICON;          // 'favicon'
 Media::ROLE_APPLE_TOUCH_ICON; // 'apple-touch-icon'
 Media::ROLE_OG_IMAGE;         // 'og-image'
 Media::ROLE_LOGO;             // 'logo'
+Media::ROLE_WATERMARK_ON_LIGHT; // 'watermark-on-light'
+Media::ROLE_WATERMARK_ON_DARK;  // 'watermark-on-dark'
 ```
 
 `role` is unique per value, so there is at most one `Media` for each. Create/replace one the same way as any other `Media` (e.g. from your own app's settings form or a fixture), setting `setRole(Media::ROLE_FAVICON)` — `UiMediaNamer` then stores it under a fixed, predictable filename at the root of `public/` instead of the usual per-block path.
@@ -1299,9 +1402,9 @@ Retrieve it anywhere in Twig with the `site_media()` function, which returns `nu
 
 ## Site graphics
 
-The favicon, Apple touch icon, logo, default Open Graph image and error-image pool are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
+The favicon, Apple touch icon, logo, default Open Graph image, the two watermark signatures and the error-image pool are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
 
-The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, linking to the same pre-filled form. The buttons disappear once the four singleton graphics exist — `error-image` is a pool, added through the plain "new" action.
+The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, for the four a site can't do without — the two watermark signatures are offered as buttons but never nagged about, a site signing nothing being a perfectly finished site. The buttons disappear once the six singleton graphics exist — `error-image` is a pool, added through the plain "new" action.
 
 `SiteGraphicExportProvider`/`SiteGraphicImportProvider` plug them into ConfigBundle's **Export sync (everything)** shortcut and **Import content** screen: a singleton role matches by its own role on import, while the repeatable `error-image` pool is replaced wholesale (no natural key of its own to match against). `SiteGraphicMediaUsageProvider` is what makes the Media library say "this one is the favicon".
 
@@ -1608,6 +1711,8 @@ A set of small, dependency-free helpers every c975L bundle attaching blocks or u
 | `Service\BuildFileWriter::write($projectDir, $filename, $contents)` | The one way a listener drops a generated stylesheet into `public/bundles/build/`. Written to a temp file then `rename()`d, so a request reading it mid-rewrite never gets half a stylesheet |
 | `Form\VichImageOptions::default($maxSize, $required)` | The five Vich image-upload options (`allow_delete`, `download_uri`, `asset_helper`, the `File` size constraint…), for both an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` |
 | `Listener\AbstractBlockCacheInvalidationListener` | The Doctrine lifecycle wiring of a listener reacting to one block kind changing - `postPersist`/`postUpdate`/`preRemove` all delegate to the subclass's `invalidate()`, which only has to say which kind it filters on and which cache tag it drops |
+
+One of them is JavaScript rather than PHP: **`assets/js/pointer-sort.js`**' `addSortGesture()` is the drag gesture the block sortable runs on, mouse and finger alike, with no idea what it is dragging - see [Reusing the gesture elsewhere](#reusing-the-gesture-elsewhere). Reach for it rather than re-hand-rolling a drag in your own bundle: a grid of thumbnails or a table of rows only has to answer where the dragged element should land, which is the part that genuinely differs.
 
 ### Exporting and importing blocks
 

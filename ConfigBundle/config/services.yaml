@@ -43,6 +43,10 @@ services:
         arguments:
             $maintenanceTaskProviders: !tagged_iterator c975l.maintenance_task_provider
 
+    c975L\ConfigBundle\Management\BackupPathCollector:
+        arguments:
+            $backupPathProviders: !tagged_iterator c975l.backup_path_provider
+
     c975L\ConfigBundle\Management\ImportDispatcher:
         arguments:
             $importProviders: !tagged_iterator c975l.import_provider

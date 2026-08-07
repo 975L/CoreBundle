@@ -23,6 +23,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File as FileConstraint;
 use Vich\UploaderBundle\Form\Type\VichFileType;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
@@ -383,6 +384,61 @@ class MediaUploadTypeTest extends TestCase
                 "the \"$context\" context has no width/height field to protect"
             );
         }
+    }
+
+    // "accept" is a file-dialog hint that never reaches the server, and mobile-file-accept.js drops it entirely on touch devices (an images-only list makes Android open its gallery-only photo picker) - so the kind's media types have to be enforced here, on the placeholder field as well as on the one PRE_SET_DATA replaces it with. The wildcards are passed through as written: Symfony's File constraint matches "image/*" against a mimetype's own discrete part.
+    public function testFileFieldConstrainsTheMimeTypeToTheKindsMediaTypes(): void
+    {
+        foreach ([$this->buildFileOptions('image/*,video/*'), $this->buildFileOptionsForEntry('image/*,video/*', null, new Media())] as $options) {
+            $constraints = $options['constraints'] ?? [];
+
+            $this->assertCount(1, $constraints);
+            $this->assertInstanceOf(FileConstraint::class, $constraints[0]);
+            $this->assertSame(['image/*', 'video/*'], $constraints[0]->mimeTypes);
+        }
+    }
+
+    // An explicit list ("video/mp4,video/webm,video/ogg,image/*", the "video" kind) is trimmed the same way it is for the accept attribute, so a tag written with spaces doesn't produce a mimetype nothing can ever match
+    public function testFileFieldTrimsTheDeclaredMediaTypes(): void
+    {
+        $constraints = $this->buildFileOptions('video/mp4, image/*')['constraints'];
+
+        $this->assertSame(['video/mp4', 'image/*'], $constraints[0]->mimeTypes);
+    }
+
+    // The constraint matches the type guessed from the file's own bytes, and a real .wav is guessed "audio/x-wav": the "audio" kind declaring "audio/wav" rejected every .wav upload it was written to accept
+    public function testFileFieldAcceptsTheGuessedAliasesOfADeclaredMediaType(): void
+    {
+        $mimeTypes = $this->buildFileOptions('audio/mpeg,audio/ogg,audio/wav')['constraints'][0]->mimeTypes;
+
+        $this->assertContains('audio/wav', $mimeTypes);
+        $this->assertContains('audio/x-wav', $mimeTypes);
+        $this->assertContains('application/ogg', $mimeTypes);
+        $this->assertSame($mimeTypes, array_values(array_unique($mimeTypes)));
+    }
+
+    // A kind declaring no media type at all constrains nothing rather than constraining everything away
+    public function testFileFieldCarriesNoConstraintWhenNoMediaTypeIsDeclared(): void
+    {
+        $this->assertSame([], $this->buildFileOptions(null)['constraints']);
+        $this->assertSame([], $this->buildFileOptionsForEntry(null, null, new Media())['constraints']);
+    }
+
+    // Same capture as buildFileOptionsForEntry(), but on the placeholder field buildForm() adds directly - the one a brand new row renders with until PRE_SET_DATA runs
+    private function buildFileOptions(?string $accept): array
+    {
+        $added = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$added, $builder) {
+            $added[$name] = $options;
+
+            return $builder;
+        });
+        $builder->method('addEventListener')->willReturnSelf();
+
+        $this->createType()->buildForm($builder, ['accept' => $accept, 'context' => null]);
+
+        return $added['file'];
     }
 
     public function testConfigureOptionsDefaultsToMediaDataClassAndNullAcceptContext(): void

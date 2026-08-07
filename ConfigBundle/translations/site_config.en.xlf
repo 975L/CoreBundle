@@ -82,10 +82,6 @@
                 <source>description.site_backup_db_user</source>
                 <target>MySQL user for backups</target>
             </trans-unit>
-            <trans-unit id="ZL..tYO">
-                <source>description.site_backup_full_interval_months</source>
-                <target>Number of calendar months between two complete file backups (partial, modified-files-only backups run in between)</target>
-            </trans-unit>
             <trans-unit id="3_4rjYZ">
                 <source>description.site_backup_mailto</source>
                 <target>Email address for backup reports and errors</target>
@@ -93,6 +89,18 @@
             <trans-unit id="XmN1LNH">
                 <source>description.site_backup_max_age_hours</source>
                 <target>Past this long without a recorded backup, the dashboard raises an alert. It is the only signal a backup that stopped running altogether can produce</target>
+            </trans-unit>
+            <trans-unit id="UO9CA09">
+                <source>description.site_backup_offsite_keep_days</source>
+                <target>How many days the offsite copy keeps overwritten or deleted files (deleted/ folders). 0 purges nothing, which is what destinations taking their own snapshots already handle</target>
+            </trans-unit>
+            <trans-unit id="L8.ybZ0">
+                <source>description.site_backup_offsite_max_age_hours</source>
+                <target>Past this long without a copy leaving the server, the dashboard alerts. A backup that never left the machine protects nothing</target>
+            </trans-unit>
+            <trans-unit id="l7P49Wf">
+                <source>description.site_backup_offsite_target</source>
+                <target>rclone destination of the offsite copy, as "remote:path" (eg. storagebox:975l.com). Credentials stay in rclone's own configuration, never here. Left empty, nothing is sent: that's the mode where an outside machine comes and pulls the backups</target>
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>
@@ -274,10 +282,6 @@
                 <source>label.site_backup_db_user</source>
                 <target>Backup DB User</target>
             </trans-unit>
-            <trans-unit id="NhbXiCq">
-                <source>label.site_backup_full_interval_months</source>
-                <target>Backup Full Interval (months)</target>
-            </trans-unit>
             <trans-unit id="GvaXwxi">
                 <source>label.site_backup_mailto</source>
                 <target>Backup Mailto</target>
@@ -285,6 +289,18 @@
             <trans-unit id="FYYWZW9">
                 <source>label.site_backup_max_age_hours</source>
                 <target>Backup Maximum Age (hours)</target>
+            </trans-unit>
+            <trans-unit id="4kcZCM6">
+                <source>label.site_backup_offsite_keep_days</source>
+                <target>Offsite deleted-files retention (days)</target>
+            </trans-unit>
+            <trans-unit id="sHuVy7V">
+                <source>label.site_backup_offsite_max_age_hours</source>
+                <target>Offsite copy maximum age (hours)</target>
+            </trans-unit>
+            <trans-unit id="E_T27LV">
+                <source>label.site_backup_offsite_target</source>
+                <target>Offsite target (rclone)</target>
             </trans-unit>
             <trans-unit id="k4fofqT">
                 <source>label.site_backup_retention_days</source>

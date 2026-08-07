@@ -270,6 +270,16 @@ class ScaffoldInstallerTest extends TestCase
         }
     }
 
+    // It holds the credential to the offsite copy, so it is never committed - and it is anchored to the root, the one place OffsiteSynchronizer reads it from
+    public function testInstallGitignoresTheRcloneConfiguration(): void
+    {
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $installer->install();
+
+        $this->assertStringContainsString('/rclone.conf', file_get_contents($this->projectDir . '/.gitignore'));
+    }
+
     // A rule already present (however the site spelled it) is not appended a second time
     public function testInstallDoesNotDuplicateAlreadyPresentRules(): void
     {

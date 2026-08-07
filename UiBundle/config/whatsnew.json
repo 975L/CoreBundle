@@ -1,5 +1,50 @@
 [
     {
+        "date": "2026-08-07",
+        "description": [
+            {
+                "en": "Your photos can now be signed automatically when uploaded: add your two signatures to the site graphics, one for light backgrounds and one for dark, and each photo receives the one that stays readable in the corner it lands in",
+                "fr": "Vos photos peuvent désormais être signées automatiquement à l'envoi : ajoutez vos deux signatures aux images du site, une pour les fonds clairs et une pour les fonds sombres, et chaque photo reçoit celle qui reste lisible dans le coin où elle se pose",
+                "es": "Sus fotos ahora pueden firmarse automáticamente al subirlas: añada sus dos firmas a las imágenes del sitio, una para fondos claros y otra para fondos oscuros, y cada foto recibe la que sigue siendo legible en la esquina donde se coloca"
+            },
+            {
+                "en": "The corner, the width and the margin of that signature are yours to set for the whole site, from the settings",
+                "fr": "Le coin, la largeur et la marge de cette signature se règlent pour tout le site, depuis les réglages",
+                "es": "La esquina, el ancho y el margen de esa firma se ajustan para todo el sitio, desde los ajustes"
+            },
+            {
+                "en": "A photo taken upright is no longer displayed lying on its side: the orientation your camera recorded is applied when the file is uploaded",
+                "fr": "Une photo prise à la verticale ne s'affiche plus couchée sur le côté : l'orientation enregistrée par votre appareil est appliquée à l'envoi du fichier",
+                "es": "Una foto tomada en vertical ya no se muestra tumbada de lado: la orientación registrada por su cámara se aplica al subir el archivo"
+            },
+            {
+                "en": "Reordering blocks and medias by dragging now works on a phone and a tablet: hold a row by its move handle and slide it, the page scrolling on its own as you reach the top or the bottom of the screen",
+                "fr": "Le réordonnancement des blocs et des médias par glisser-déposer fonctionne désormais sur téléphone et sur tablette : maintenez une ligne par sa poignée de déplacement et faites-la glisser, la page défilant d'elle-même lorsque vous atteignez le haut ou le bas de l'écran",
+                "es": "Reordenar bloques y medios arrastrándolos ahora funciona en teléfono y en tableta: mantenga una fila por su asa de desplazamiento y deslícela, la página se desplaza sola cuando llega arriba o abajo de la pantalla"
+            },
+            {
+                "en": "On an Android phone, an upload button now opens the document picker: you can take a file from Drive, kDrive or any storage app installed, and not only from the photo gallery",
+                "fr": "Sur un téléphone Android, un bouton d'envoi ouvre désormais le sélecteur de documents : vous pouvez prendre un fichier dans Drive, kDrive ou toute application de stockage installée, et plus seulement dans la galerie photo",
+                "es": "En un teléfono Android, un botón de subida abre ahora el selector de documentos: puede tomar un archivo de Drive, kDrive o cualquier aplicación de almacenamiento instalada, y no solo de la galería de fotos"
+            },
+            {
+                "en": "Thumbnails now show the whole image instead of a square crop, so a portrait no longer loses its top and its bottom",
+                "fr": "Les vignettes montrent désormais l'image entière au lieu d'un recadrage carré : un portrait ne perd plus son haut et son bas",
+                "es": "Las miniaturas muestran ahora la imagen completa en lugar de un recorte cuadrado: un retrato ya no pierde su parte superior ni la inferior"
+            },
+            {
+                "en": "Sending a batch of photos no longer stops halfway: each one is processed on its own time budget, and about twice as fast as before",
+                "fr": "L'envoi d'un lot de photos ne s'interrompt plus en cours de route : chacune est traitée sur son propre temps imparti, et environ deux fois plus vite qu'avant",
+                "es": "El envío de un lote de fotos ya no se interrumpe a medio camino: cada una se procesa con su propio tiempo asignado, y unas dos veces más rápido que antes"
+            },
+            {
+                "en": "An audio file is no longer refused for the wrong type when it has the right one - a .wav in particular",
+                "fr": "Un fichier audio n'est plus refusé pour un mauvais type alors qu'il a le bon - un .wav notamment",
+                "es": "Un archivo de audio ya no se rechaza por un tipo incorrecto cuando tiene el correcto - un .wav en particular"
+            }
+        ]
+    },
+    {
         "date": "2026-08-04",
         "description": [
             {

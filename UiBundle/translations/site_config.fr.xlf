@@ -126,6 +126,18 @@
                 <source>description.url_cookies_policy</source>
                 <target>URL de la politique de cookies, ex. https://example.com/pages/cookies</target>
             </trans-unit>
+            <trans-unit id="PGY._V8">
+                <source>description.watermark_margin</source>
+                <target>Écart entre le filigrane et les bords de l'image, en pourcentage de la largeur de l'image.</target>
+            </trans-unit>
+            <trans-unit id="3jlzMWx">
+                <source>description.watermark_position</source>
+                <target>Coin où le filigrane est apposé sur les photos : top-left, top-right, bottom-right ou bottom-left.</target>
+            </trans-unit>
+            <trans-unit id="_yJHDs0">
+                <source>description.watermark_width</source>
+                <target>Largeur du filigrane, en pourcentage de la largeur de l'image (13.75 reproduit une signature de 330 px sur une image de 2400 px).</target>
+            </trans-unit>
             <trans-unit id="gypr9AJ">
                 <source>label.ai_assistant_dashboard_enabled</source>
                 <target>Assistant IA du tableau de bord</target>
@@ -281,6 +293,18 @@
             <trans-unit id="vSe2.fp">
                 <source>label.url_cookies_policy</source>
                 <target>URL de la politique de cookies</target>
+            </trans-unit>
+            <trans-unit id="2uenlW5">
+                <source>label.watermark_margin</source>
+                <target>Filigrane - Marge (%)</target>
+            </trans-unit>
+            <trans-unit id="tGPfaYH">
+                <source>label.watermark_position</source>
+                <target>Filigrane - Coin</target>
+            </trans-unit>
+            <trans-unit id="cdc16bY">
+                <source>label.watermark_width</source>
+                <target>Filigrane - Largeur (%)</target>
             </trans-unit>
         </body>
     </file>
