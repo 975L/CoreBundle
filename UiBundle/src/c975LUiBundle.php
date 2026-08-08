@@ -33,6 +33,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\StylesheetRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\WhatsNewProviderPass;
 use c975L\UiBundle\Namer\UiMediaNamer;
 use c975L\UiBundle\Storage\NestedFileSystemStorage;
+use c975L\UiBundle\Video\VideoPlatform;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
@@ -125,6 +126,11 @@ class c975LUiBundle extends AbstractBundle
     public function loadExtension(array $config, ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder): void
     {
         $containerConfigurator->import('../config/services.yaml');
+
+        // Every origin the declared video platforms need framed, for a site to build its Content-Security-Policy from the registry rather than from a list copied out of a README - one entry of nelmio_security's frame-src (and of its child-src fallback), so declaring a new platform never leaves a site with an empty frame in production and none in development
+        // A space-separated string rather than the array it is built from: a CSP directive is exactly that, and a parameter holding an array can only be a whole config node, never one item of a yaml sequence next to the site's own origins - which is the only way this is ever used. PHP callers read VideoPlatform::allCspOrigins() directly
+        // A parameter rather than a prepended nelmio_security config: the app owns its policy, and a bundle silently widening someone's frame-src is exactly what a security header exists to prevent
+        $containerBuilder->setParameter('c975l_ui.video.embed_origins', implode(' ', VideoPlatform::allCspOrigins()));
 
         // symfony/maker-bundle is dev-only in a consuming app - only wire MakeBlockCommand as a service when it's actually installed, instead of requiring it unconditionally
         if (class_exists(\Symfony\Bundle\MakerBundle\Maker\AbstractMaker::class)) {

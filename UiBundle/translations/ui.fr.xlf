@@ -122,6 +122,10 @@
                 <source>flash.legal_model_customized</source>
                 <target>Personnalisation enregistrée.</target>
             </trans-unit>
+            <trans-unit id="pYFXZHg">
+                <source>flash.stylesheet_compiled</source>
+                <target>Feuilles de style recompilées</target>
+            </trans-unit>
             <trans-unit id="QQjuExD">
                 <source>label.accent</source>
                 <target>Couleur d'accent</target>
@@ -2126,6 +2130,10 @@
                 <source>label.style</source>
                 <target>Style</target>
             </trans-unit>
+            <trans-unit id="KAQBCm3">
+                <source>label.stylesheet_compile</source>
+                <target>Recompiler les feuilles de style</target>
+            </trans-unit>
             <trans-unit id="Vttl6XU">
                 <source>label.subtitle</source>
                 <target>Sous-titre</target>
@@ -2212,7 +2220,7 @@
             </trans-unit>
             <trans-unit id="wBwi8fo">
                 <source>label.video_iframe_consent_required</source>
-                <target>Ce contenu provient d'un site tiers (YouTube ou similaire) et nécessite votre consentement pour être affiché.</target>
+                <target>Ce contenu est hébergé par un site tiers, qui peut déposer des traceurs : il nécessite votre consentement pour être affiché.</target>
             </trans-unit>
             <trans-unit id="cXYQ_gN">
                 <source>label.video_media_help</source>

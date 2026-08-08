@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-08",
+        "description": [
+            {
+                "en": "A menu item in your navbar or your footer can now point at one particular section of a bundle - a single gallery category, say - and not only at a whole page: the choice list offers them one by one, under their own name",
+                "fr": "Un élément de menu de votre barre de navigation ou de votre pied de page peut désormais pointer vers une section précise - une catégorie de galerie, par exemple - et plus seulement vers une page entière : la liste de choix les propose une à une, sous leur propre nom",
+                "es": "Un elemento de menú de su barra de navegación o de su pie de página ahora puede apuntar a una sección concreta - una categoría de galería, por ejemplo - y no solo a una página entera: la lista de opciones las ofrece una a una, con su propio nombre"
+            },
+            {
+                "en": "On your offsite copy, the folder holding the previous version of a file replaced or removed by mistake is now called \"previous\" instead of \"deleted\" - it holds both, and it is the one to open the day a photo disappears",
+                "fr": "Sur votre copie hors site, le dossier qui conserve la version précédente d'un fichier remplacé ou supprimé par erreur s'appelle désormais « previous » et non plus « deleted » : il contient les deux, et c'est celui à ouvrir le jour où une photo disparaît",
+                "es": "En su copia externa, la carpeta que conserva la versión anterior de un archivo reemplazado o borrado por error ahora se llama «previous» en lugar de «deleted»: contiene ambas cosas, y es la que hay que abrir el día en que desaparece una foto"
+            },
+            {
+                "en": "The backup report no longer warns about that folder on a site whose files have never changed, where there was simply nothing to clean up",
+                "fr": "Le rapport de sauvegarde ne signale plus ce dossier sur un site dont les fichiers n'ont jamais changé, où il n'y avait tout simplement rien à nettoyer",
+                "es": "El informe de copia de seguridad ya no avisa sobre esa carpeta en un sitio cuyos archivos nunca han cambiado, donde sencillamente no había nada que limpiar"
+            }
+        ]
+    },
+    {
         "date": "2026-08-07",
         "description": [
             {

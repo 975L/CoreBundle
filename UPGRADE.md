@@ -1,5 +1,91 @@
 # UPGRADE
 
+## From `v1.3` to `v1.4`
+
+### The offsite `deleted/` folder is now called `previous/`
+
+`c975l:config:backup:offsite` moves what a mirror would have overwritten or removed into a dated folder at the
+destination, and that folder was named after the rclone mechanism filling it rather than after what it holds.
+`deleted/` reads as a bin containing only what was removed — a file merely overwritten is in there too — and it
+is the folder someone opens on the day a gallery got emptied, so it now says what it is:
+
+```text
+<target>/previous/2026-08-05/public/medias/…
+```
+
+Nothing to do on a destination that has never had a mirror overwrite anything (the folder is created on the first
+one, and its absence is not an error). Where it exists, **rename it once** — left as it is, `deleted/` stops being
+written to and stops being purged, so it stays offsite untouched until someone removes it by hand:
+
+```bash
+rclone --config rclone.conf moveto <target>/deleted <target>/previous
+```
+
+`site-backup-offsite-keep-days` is unchanged and now purges `previous/`.
+
+### `privacy_embed_url` covers every declared platform, not YouTube alone
+
+The filter (and the `video_iframe` block's "Use no-cookie version" checkbox behind it) rewrote YouTube
+URLs and left everything else untouched. It now reads `Video\VideoPlatform`, UiBundle's registry, so
+**Vimeo and Dailymotion are rewritten too** — to their own canonical embed URL, Vimeo's carrying its
+`dnt=1` do-not-track flag. A URL belonging to no declared platform is still left exactly as it was.
+
+Two consequences on stored blocks:
+
+- A `video_iframe` block whose `src` is a Vimeo or Dailymotion URL **is rewritten the next time it is
+  saved** with the checkbox on (`BlockVideoNoCookieListener`). Nothing rewrites the ones already stored —
+  they go on rendering from the URL they hold.
+- **Player parameters on an already-formed embed URL are dropped** by the rewrite (`?autoplay=1`,
+  `?start=30`), only the id being read back. This was already true of the `/watch?t=42s` URLs the filter
+  was written for. A block relying on such a parameter has to carry it through the block's own form
+  instead — or keep its checkbox off, which leaves the URL untouched.
+  Two parameters are the exception, being what makes the player play at all rather than an option:
+  YouTube's `list` (a playlist, whose video id is the literal `videoseries`) and Vimeo's `h` (the access
+  token of an unlisted video). Both are kept through the rewrite.
+
+Adding a platform is now a case in `VideoPlatform`, and the origins its player needs framed are exposed
+as a parameter for a site's CSP:
+
+```yaml
+# config/packages/nelmio_security.yaml
+nelmio_security:
+    csp:
+        enforce:
+            frame-src: ['self', '%c975l_ui.video.embed_origins%']
+            # The level 1 fallback, for browsers that don't know frame-src
+            child-src: ['self', '%c975l_ui.video.embed_origins%']
+```
+
+### A linkable route entry can stand for one row rather than for a screen
+
+`LinkableRouteProviderInterface` returned route names only, so a route taking a parameter
+(`/galerie/{category}`) could not be offered as a menu target at all. An entry may now key itself on one
+row of the contributing bundle's own data and name what to build its url with — GalleryBundle lists each
+of its categories that way:
+
+```php
+$routes['gallery_category.' . $category->getId()] = [
+    'label' => (string) $category->getTitle(),
+    // The row's own title, no key to translate
+    'translation_domain' => false,
+    // Optional, and shown by the back office's target select alone
+    'picker_label' => 'Galerie - ' . $category->getTitle(),
+    'route' => 'gallery_category',
+    'params' => ['category' => (string) $category->getSlug()],
+];
+```
+
+**Existing providers keep working as they are**: a key that is a parameter-less route name, with a label
+and its domain, is still the common case, and `LinkableRouteRegistry` fills the two new keys in itself.
+
+Two things to know if you read the registry yourself rather than through SiteBundle's menus:
+
+- `get()`/`all()` hand back **normalized** entries — `route`, `params` and `translation_domain` are always
+  there. Code translating `$entry['label']` on its own should call `label()` instead, which handles a
+  literal label too, or `pickerLabel()` where it is building a list to choose a target from.
+- Providers are walked on the **first read** rather than in the constructor, so one listing rows queries
+  the database only on the pages that actually read the registry.
+
 ## From `v1.2.5` to `v1.3`
 
 **The backup no longer archives `public/` and `private/` whole.** It archives the database and the files

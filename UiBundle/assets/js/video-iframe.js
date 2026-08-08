@@ -11,6 +11,12 @@ import { createNoncedStyleElement } from "./nonced-style-element.js";
 // c975l/site-bundle registers its own banner as "cookie-consent", but the Stimulus identifier is a free choice for whoever provides the banner - both the dasherized and the camelCase spelling are matched here so the contract can't silently break on a casing difference. A missed match is not a harmless no-op: connect() would conclude the page has no banner at all and render the iframe straight away, pulling ~1 MB of YouTube before any consent has been given.
 const CONSENT_BANNER_SELECTOR = '[data-controller~="cookie-consent"], [data-controller~="cookieConsent"]';
 
+// What a platform's player needs to work once it is framed. Not autoplay on purpose: a returning visitor who already accepted gets the iframe injected on scroll, and a src carrying the platform's own autoplay parameter would then start playing at them unasked
+const ALLOW = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+
+// A nested browsing context takes its initial referrer policy from the framing element, so leaving this off hands the player whatever the embedding page declares - a site sending no referrer at all has its videos refused by the platforms' media servers, which check the domain they are being played on
+const REFERRER_POLICY = "strict-origin-when-cross-origin";
+
 // Only injects the iframe once the figure is about to enter the viewport - the player is ~1 MB of third-party JavaScript, which otherwise dominates the whole page's transfer weight for a visitor who never scrolls down to it. `iframe.loading = "lazy"` is not enough on its own: the browser only honours it for an iframe far enough down the page, and the element still belongs to the initial load when it is inserted on connect(). 200px of margin so the player is ready by the time it is actually scrolled into view.
 const ROOT_MARGIN = "200px";
 
@@ -110,6 +116,8 @@ export default class extends Controller {
         iframe.src = this.srcValue;
         iframe.title = this.titleValue || "Video player";
         iframe.frameBorder = "0";
+        iframe.allow = ALLOW;
+        iframe.referrerPolicy = REFERRER_POLICY;
         iframe.allowFullscreen = true;
         iframe.loading = "lazy";
         this.element.replaceChildren(iframe);

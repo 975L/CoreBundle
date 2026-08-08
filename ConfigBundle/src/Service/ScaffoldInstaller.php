@@ -299,7 +299,7 @@ class ScaffoldInstaller
     // What the back-office writes into the project at runtime, carried between environments by the export/import (see SiteGraphicExportProvider/SiteGraphicImportProvider), never by git: tracking any of it means the next deploy resetting the working tree wipes whatever was uploaded in production. Singleton graphics sit at the root of public/ under their own role name, with the extension the role's fixed spec imposes (see c975L\UiBundle\Namer\UiMediaNamer), hence the wildcard rather than a hardcoded list of filenames. The three SEO files join them for the same reason - SeoFilesWriter rewrites them from this environment's own configs on every deployment, so a committed copy is a merge conflict waiting to happen. A rule added here doesn't untrack a file git already follows: a site that used to commit its robots.txt runs "git rm --cached public/robots.txt" once, see the readme. rclone.conf joins them for a different reason - it is written by an operator rather than by the back-office, but it holds the credential to the offsite copy and is anchored to the root so a vendored one elsewhere isn't caught by accident (see c975L\ConfigBundle\Management\OffsiteSynchronizer)
     private function gitignoreRules(): array
     {
-        $rules = ['existingFiles/', 'public/medias', 'public/robots.txt', 'public/humans.txt', 'public/llms.txt', '/rclone.conf'];
+        $rules = ['existingFiles/', 'public/medias', 'private/medias', 'public/robots.txt', 'public/humans.txt', 'public/llms.txt', '/rclone.conf'];
         foreach (Media::getSingletonRoles() as $role) {
             $rules[] = 'public/' . $role . '.*';
         }

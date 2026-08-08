@@ -252,6 +252,7 @@ class ScaffoldInstallerTest extends TestCase
 
         $gitignore = file_get_contents($this->projectDir . '/.gitignore');
         $this->assertStringContainsString('public/medias', $gitignore);
+        $this->assertStringContainsString('private/medias', $gitignore);
         foreach (Media::getSingletonRoles() as $role) {
             $this->assertStringContainsString('public/' . $role . '.*', $gitignore);
         }

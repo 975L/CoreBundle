@@ -60,6 +60,25 @@ class VideoIframeConsentSelectorTest extends TestCase
         $this->assertMatchesRegularExpression('/if \(!this\.srcValue\) \{\s*return;/', $script, sprintf('"%s" renders its iframe whatever the src value, and an empty one loads the page inside itself.', self::CONTROLLER_JS));
     }
 
+    // The two attributes a player needs to actually play once framed - dropped once already when this controller took over from the hand-written <iframe> tags, which cost the platforms' media servers the domain they check before serving a file
+    public function testTheFramedPlayerIsGivenWhatItNeedsToPlay(): void
+    {
+        $script = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('iframe.allow = ALLOW;', $script);
+        $this->assertStringContainsString('iframe.referrerPolicy = REFERRER_POLICY;', $script);
+        $this->assertStringContainsString('const REFERRER_POLICY = "strict-origin-when-cross-origin";', $script);
+    }
+
+    // Autoplay is granted by the framing page, not asked for by the src alone: leaving it out of the list is what keeps a player from starting on its own at a returning visitor who merely scrolls past it
+    public function testTheFramedPlayerIsNotAllowedToAutoplay(): void
+    {
+        preg_match('/const ALLOW = "([^"]+)";/', $this->read(self::CONTROLLER_JS), $matches);
+        $this->assertNotEmpty($matches, sprintf('No ALLOW constant found in "%s".', self::CONTROLLER_JS));
+
+        $this->assertStringNotContainsString('autoplay', $matches[1]);
+    }
+
     // "const CONSENT_BANNER_SELECTOR = '...';" -> "..."
     private function consentSelector(): string
     {

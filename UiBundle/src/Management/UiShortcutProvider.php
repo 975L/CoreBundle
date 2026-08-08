@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Management\ShortcutProviderInterface;
 use c975L\UiBundle\Controller\Management\BlockShortcutController;
+use c975L\UiBundle\Controller\Management\StylesheetShortcutController;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UiShortcutProvider implements ShortcutProviderInterface
@@ -28,6 +29,14 @@ class UiShortcutProvider implements ShortcutProviderInterface
                 'label' => $this->translator->trans('label.block_clear_cache', [], 'ui'),
                 'icon' => 'fas fa-broom',
                 'route' => BlockShortcutController::CLEAR_CACHE_ROUTE,
+                'active' => false,
+                'role' => 'ROLE_SUPER_ADMIN',
+                'category' => ShortcutProviderInterface::CATEGORY_MAINTENANCE,
+            ],
+            [
+                'label' => $this->translator->trans('label.stylesheet_compile', [], 'ui'),
+                'icon' => 'fas fa-paint-roller',
+                'route' => StylesheetShortcutController::COMPILE_ROUTE,
                 'active' => false,
                 'role' => 'ROLE_SUPER_ADMIN',
                 'category' => ShortcutProviderInterface::CATEGORY_MAINTENANCE,

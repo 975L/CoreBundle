@@ -244,6 +244,43 @@ class VichImageResizeListenerTest extends TestCase
         $this->assertDirectoryDoesNotExist($this->projectDir . '/private');
     }
 
+    // --- files that are not images -------------------------------------------------------------------------
+
+    // This listener fires once per Vich field, and its branches answer for the entity as a whole - so a second file next to the image (a gallery media and its self-hosted video) used to be copied aside as an "original", measured, and handed to a resizer that cannot read it
+    public function testOnPostUploadLeavesAFileThatIsNotAnImageAlone(): void
+    {
+        $storedPath = $this->projectDir . '/public/medias/gallery/kalaan/skate-a1b2c3.mp4';
+        mkdir(\dirname($storedPath), 0777, true);
+        // An ftyp box is what a video container starts with, and what fileinfo reads it as a video by
+        file_put_contents($storedPath, "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom" . str_repeat("\x00", 64));
+
+        $media = new OriginalKeepableImageStub($storedPath, 'medias/gallery/kalaan/skate-a1b2c3.mp4', 'private');
+        $sizeBefore = filesize($storedPath);
+
+        $this->createListener()->onPostUpload(new Event($media, $this->createMapping()));
+
+        // Not copied aside as an original, not moved, not rewritten
+        $this->assertNull($media->originalFilename);
+        $this->assertDirectoryDoesNotExist($this->projectDir . '/private');
+        $this->assertFileExists($storedPath);
+        $this->assertSame($sizeBefore, filesize($storedPath));
+    }
+
+    // The guard reads the file's own bytes, and an SVG is an image among them - it has a whole branch of the pipeline of its own (see rasterizeInPlace) that a name-based guard would have cut off
+    public function testOnPostUploadStillTreatsAnSvgAsAnImage(): void
+    {
+        $storedPath = $this->projectDir . '/public/logo.svg';
+        file_put_contents($storedPath, '<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150"></svg>');
+
+        $media = new OriginalKeepableImageStub($storedPath, 'logo.svg', 'private');
+
+        $this->createListener()->onPostUpload(new Event($media, $this->createMapping()));
+
+        // Reaching the pipeline is what is asserted: the original is not kept because svg is off the allow-list (see the test above), not because the guard turned it away
+        $this->assertFileExists($storedPath);
+        $this->assertNull($media->originalFilename);
+    }
+
     // --- exif orientation ----------------------------------------------------------------------------------
 
     // GD decodes a jpeg's pixels as stored and ignores the orientation the camera recorded next to them, so a photo shot upright used to be served on its side - and every size recorded off it described the wrong one of its two dimensions

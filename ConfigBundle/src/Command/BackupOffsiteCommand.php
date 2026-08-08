@@ -59,6 +59,12 @@ class BackupOffsiteCommand extends Command
 
     private const DEFAULT_KEEP_DAYS = 15;
 
+    // Where --backup-dir puts what a sync would otherwise have overwritten or lost, one folder per day. Named for
+    // what an operator comes looking for - the previous version of a file - rather than for the rclone mechanism
+    // that fills it: "deleted/" reads as a bin holding only what was removed, when a file merely overwritten is in
+    // there too, and this is the folder someone opens on the day a gallery got emptied
+    private const PREVIOUS_FOLDER = 'previous';
+
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
         private readonly ConfigServiceInterface $configService,
@@ -112,7 +118,7 @@ class BackupOffsiteCommand extends Command
             $result = $this->offsiteSynchronizer->sync(
                 $projectDir . '/' . $path,
                 'files/' . $path,
-                sprintf('deleted/%s/%s', $dated, $path),
+                sprintf('%s/%s/%s', self::PREVIOUS_FOLDER, $dated, $path),
                 self::MAX_DELETE
             );
 
@@ -128,7 +134,7 @@ class BackupOffsiteCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->purgeDeletedFolders($io);
+        $this->purgePreviousFolders($io);
         $this->offsiteState->recordSuccess($projectDir, array_merge(
             ['what' => 'mirror', 'target' => $this->offsiteSynchronizer->getTarget(), 'paths' => $paths],
             $this->verify($io)
@@ -157,7 +163,7 @@ class BackupOffsiteCommand extends Command
     // The dated folders --backup-dir fills with what was overwritten or deleted. Where the destination takes its own
     // snapshots this is belt and braces - and the snapshots are the better half of it: on a Storage Box they sit in a
     // read-only ZFS directory this server couldn't touch even if its credentials leaked, which no purge run from here can claim
-    private function purgeDeletedFolders(SymfonyStyle $io): void
+    private function purgePreviousFolders(SymfonyStyle $io): void
     {
         $configured = $this->configService->get('site-backup-offsite-keep-days');
         $days = null === $configured ? self::DEFAULT_KEEP_DAYS : (int) $configured;
@@ -166,9 +172,9 @@ class BackupOffsiteCommand extends Command
             return;
         }
 
-        $result = $this->offsiteSynchronizer->purgeBackupDirs('deleted', $days);
+        $result = $this->offsiteSynchronizer->purgeBackupDirs(self::PREVIOUS_FOLDER, $days);
         if (!$result['ok']) {
-            $io->warning(sprintf('Purging the offsite deleted/ folders failed: %s', $result['error']));
+            $io->warning(sprintf('Purging the offsite %s/ folders failed: %s', self::PREVIOUS_FOLDER, $result['error']));
         }
     }
 }

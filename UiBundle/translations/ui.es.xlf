@@ -122,6 +122,10 @@
                 <source>flash.legal_model_customized</source>
                 <target>Personalización guardada.</target>
             </trans-unit>
+            <trans-unit id="pYFXZHg">
+                <source>flash.stylesheet_compiled</source>
+                <target>Hojas de estilo recompiladas</target>
+            </trans-unit>
             <trans-unit id="QQjuExD">
                 <source>label.accent</source>
                 <target>Color de acento</target>
@@ -2126,6 +2130,10 @@
                 <source>label.style</source>
                 <target>Estilo</target>
             </trans-unit>
+            <trans-unit id="KAQBCm3">
+                <source>label.stylesheet_compile</source>
+                <target>Recompilar las hojas de estilo</target>
+            </trans-unit>
             <trans-unit id="Vttl6XU">
                 <source>label.subtitle</source>
                 <target>Subtítulo</target>
@@ -2212,7 +2220,7 @@
             </trans-unit>
             <trans-unit id="wBwi8fo">
                 <source>label.video_iframe_consent_required</source>
-                <target>Este contenido proviene de un sitio de terceros (YouTube o similar) y requiere su consentimiento para mostrarse.</target>
+                <target>Este contenido está alojado en un sitio de terceros, que puede instalar rastreadores: requiere su consentimiento para mostrarse.</target>
             </trans-unit>
             <trans-unit id="cXYQ_gN">
                 <source>label.video_media_help</source>

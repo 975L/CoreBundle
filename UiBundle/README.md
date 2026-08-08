@@ -1261,10 +1261,15 @@ The `video` and `audio` kinds carry no file path and no format field of their ow
 
 ### Video:Iframe: consent-gated third-party embeds
 
-`<twig:c975LUi:Video:Iframe>` (the `video_iframe` block) can rewrite a YouTube URL to
-`youtube-nocookie.com` (opt-in per block, via its "Use no-cookie version" checkbox), and defers
-creating the real `<iframe>` client-side until cookie consent is given — the block's own HTML
-never changes with consent state, so it stays cacheable.
+`<twig:c975LUi:Video:Iframe>` (the `video_iframe` block) can rewrite a pasted URL to its platform's
+privacy-first embed URL (opt-in per block, via its "Use no-cookie version" checkbox — see
+[Video platforms](#video-platforms) for what that means per platform), and defers creating the real
+`<iframe>` client-side until cookie consent is given — the block's own HTML never changes with consent
+state, so it stays cacheable.
+
+Its `caption` prop (`true` by default) turns the figure's own heading and legend off, for a page that
+lays out its own around it — the `title` still reaches the iframe, which is where a screen reader looks
+for the player's name.
 
 It has **no composer dependency on any consent-banner bundle**. Instead it reacts to an optional,
 documented contract, checked at connect time:
@@ -1279,6 +1284,53 @@ documented contract, checked at connect time:
 This bundle's own `<twig:c975LUi:Cookie:Consent />` (see [Cookie banner](#cookie-banner)) is a
 ready-made provider of that contract — but any consuming app's own banner satisfying it works just
 as well.
+
+---
+
+## Video platforms
+
+`Video\VideoPlatform` is the one place the ecosystem knows a video platform from — which URLs belong to
+it, how its embed URL is built, what shape its player is, and which origin a Content-Security-Policy has
+to allow for it. Adding a platform is **adding a case**: nothing else here, and nothing at all in the
+bundles reading it (`c975l/gallery-bundle` stores a case's value as its media type).
+
+| Platform | Embed URL | Shape |
+| --- | --- | --- |
+| `youtube` | `www.youtube-nocookie.com/embed/{id}` | 16 / 9 |
+| `tiktok` | `www.tiktok.com/embed/v2/{id}` | 9 / 16 |
+| `vimeo` | `player.vimeo.com/video/{id}?dnt=1` | 16 / 9 |
+| `dailymotion` | `www.dailymotion.com/embed/video/{id}` | 16 / 9 |
+
+`VideoPlatform::resolve($url)` reads a platform and an id off **whatever an editor actually pasted** — the
+address bar of the page they were watching (`/watch?v=`, `/@user/video/`), a share link (`youtu.be`,
+`dai.ly`), or an embed URL already. It returns `null` for anything it can't identify, which is what keeps
+a platform nobody declared from being framed on the strength of a pattern that happened to match: callers
+either leave such an URL untouched (the `privacy_embed_url` filter) or store it as pasted
+(`c975l/gallery-bundle`'s `embed` type).
+
+What it produces is always the **privacy-first** URL — `youtube-nocookie.com` rather than `youtube.com`,
+Vimeo's `dnt=1`. Neither replaces consent: both are third-party frames all the same, which is what
+`Video:Iframe` above gates.
+
+Player parameters on an already-formed embed URL (`?autoplay=1`, `?start=30`) do not survive the rewrite,
+only the id being read back. An embed's options belong to the block's own form rather than to an URL
+pasted into it.
+
+**The CSP origins come from here too**, as a container parameter, so a site's policy follows the registry
+instead of a list copied out of this README:
+
+```yaml
+# config/packages/nelmio_security.yaml
+nelmio_security:
+    csp:
+        enforce:
+            frame-src: ['self', '%c975l_ui.video.embed_origins%']
+            # The level 1 fallback, for browsers that don't know frame-src
+            child-src: ['self', '%c975l_ui.video.embed_origins%']
+```
+
+A bundle widening someone's `frame-src` on their behalf is exactly what a security header exists to
+prevent — hence a parameter the app opts into, not a prepended config.
 
 ---
 
@@ -1538,6 +1590,8 @@ UiBundle provides a mechanism for bundles to declare their stylesheets automatic
 3. The `bundle_stylesheets()` Twig function returns the resolved list of URLs, ready for use in a layout template.
 
 In `kernel.debug`, `bundle_stylesheets()` returns each bundle's stylesheet separately, for instant reload on every CSS edit. Outside debug (prod), it instead returns a single URL pointing to `public/bundles/build/site.css`, a concatenation of every registered local stylesheet built by `StylesheetCacheWarmer` (auto-registered, runs on `bin/console cache:warmup` / on first request after a cache clear - like any optional Symfony cache warmer). CDN stylesheets (absolute URLs) are excluded from that file and keep being linked on their own in both cases.
+
+A **"Recompile stylesheets"** dashboard tile (`ROLE_SUPER_ADMIN`, Maintenance) rebuilds that file on demand. Saving a `theme-` config already rebuilds it, but an edit to a site's own `assets/styles/themes/*.css` is a file change no entity event reports — without the tile it would only reach the compiled sheet at the next `cache:warmup`, which on a managed host with no console never comes.
 
 ### Where the form layer lives
 

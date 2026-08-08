@@ -97,9 +97,17 @@ class OffsiteSynchronizer
     // Deletes the dated backup-dir folders past the retention window, the destination's own snapshots being the better answer where it has them: on a Storage Box they live in a read-only ZFS directory this server could not touch even if its credentials leaked, which is not something a purge run from here can claim
     public function purgeBackupDirs(string $remoteSubPath, int $keepDays, int $timeout = 600): array
     {
-        return $this->run([
+        $result = $this->run([
             'delete', '--rmdirs', '--min-age', sprintf('%dd', $keepDays), $this->remote($remoteSubPath),
         ], $timeout);
+
+        // A destination where nothing has ever been overwritten or deleted has no previous/ folder at all, which rclone
+        // reports as an error. There is nothing to purge, and it is not a failure: left as one it warns on the very
+        // first run, then every night for as long as the site's files don't change - a permanent warning being how a
+        // real one goes unnoticed
+        return !$result['ok'] && str_contains((string) $result['error'], 'directory not found')
+            ? ['ok' => true, 'error' => null, 'output' => '']
+            : $result;
     }
 
     private function remote(string $subPath): string
@@ -109,8 +117,9 @@ class OffsiteSynchronizer
         return '' === $subPath ? $this->getTarget() : $this->getTarget() . '/' . $subPath;
     }
 
-    // Modest concurrency and no buffering on purpose: rclone is written in Go and will happily take hundreds of megabytes, which a managed host capping memory per process kills without a word
-    private function run(array $arguments, int $timeout): array
+    // Modest concurrency and no buffering on purpose: rclone is written in Go and will happily take hundreds of megabytes, which a managed host capping memory per process kills without a word.
+    // Protected rather than private so the tests can check how rclone's own output is read back without a binary to run - the whole point being what this class makes of an exit code and a message
+    protected function run(array $arguments, int $timeout): array
     {
         $reason = $this->getUnavailabilityReason();
         if (null !== $reason) {

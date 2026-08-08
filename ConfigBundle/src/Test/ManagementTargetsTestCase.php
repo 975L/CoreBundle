@@ -139,6 +139,26 @@ abstract class ManagementTargetsTestCase extends TestCase
         $this->assertTargetsExist($this->collect()['linkableRoutes'], $this->declaredRouteNames(), 'linkable route');
     }
 
+    // A key is what a menu item stores ("route:KEY"), so a bare row id is ambiguous the moment another bundle has a row of the same number - the item picked for one would render the other's target (see LinkableRouteProviderInterface)
+    public function testEveryLinkableRouteKeyCarriesALiteralOfItsOwn(): void
+    {
+        $numeric = [];
+
+        foreach ($this->managementProviders() as $provider) {
+            if (!$provider instanceof LinkableRouteProviderInterface) {
+                continue;
+            }
+
+            foreach (array_keys($provider->getLinkableRoutes()) as $key) {
+                if (is_numeric($key)) {
+                    $numeric[] = $provider::class . ': ' . $key;
+                }
+            }
+        }
+
+        $this->assertSame([], $numeric, sprintf('Each of these entries is keyed on a bare number, where a key standing for a row of your own data carries a literal in front of its id ("gallery_category." . $id): %s', implode(', ', $numeric)));
+    }
+
     // Essential actions and guided steps hold an already-generated url, so their targets are the ones the recorders captured while the providers ran
     public function testEveryGeneratedUrlPointsToADeclaredRoute(): void
     {
@@ -183,7 +203,10 @@ abstract class ManagementTargetsTestCase extends TestCase
             }
 
             if ($provider instanceof LinkableRouteProviderInterface) {
-                $targets['linkableRoutes'] = [...$targets['linkableRoutes'], ...array_keys($provider->getLinkableRoutes())];
+                // The entry's own 'route' when it names one - an entry standing for a database row keys itself on that row rather than on a route name (see LinkableRouteProviderInterface)
+                foreach ($provider->getLinkableRoutes() as $key => $entry) {
+                    $targets['linkableRoutes'][] = $entry['route'] ?? $key;
+                }
             }
 
             // Nothing to read back from these two: their urls are already generated, and the recorders above captured what they were built from

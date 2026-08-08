@@ -13,12 +13,13 @@
     text-decoration: none;
 }
 
-// A4-ish ratio, top-anchored so the page's title stays in frame instead of a centered crop
+// A4-ish box, kept fixed so every row of a multi-document block stays aligned. "contain" rather than "cover":
+// a portrait A4 fills it either way (1:1.414 is the box's own ratio), but a landscape document would be
+// cropped down to a vertical strip of its left edge by "cover" - letterboxed, its first page stays readable
 .document-download__thumb {
     width: 64px;
     height: 90px;
-    object-fit: cover;
-    object-position: top;
+    object-fit: contain;
     border-radius: calc(var(--radius-card) / 2);
     flex-shrink: 0;
 }

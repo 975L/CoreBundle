@@ -71,12 +71,16 @@ class VichImageResizeListener
         // Each upload gets the request's own budget over again, instead of a batch of twenty sharing a single one: the work below is bounded per file - around two seconds for a 24-megapixel photo, kept there by deriving every size from one resampling (see processMultiSizeDerivatives) - where a batch is bounded only by how many files an admin picked. Vich fires this once per entity, which is exactly the unit of work to re-arm the clock on
         $this->renewTimeLimit();
 
+        // This listener fires once per Vich field, not once per entity, and the two branches below answer for the entity as a whole - so an entity carrying a second file next to its image (a gallery media and its self-hosted video, say) would have that file kept aside, measured, and handed to a resizer that cannot read it
+        // The file's own bytes decide, not the name: the stored extension is forced (see UiMediaNamer), and an SVG bound for an icon role is an image here too, which is what lets it go on through rasterizeInPlace() below
+        $isImage = $this->isImage($absolutePath);
+
         // Before anything below touches the file: processImage() overwrites it in place with its own downscaled webp conversion, and rasterizeInPlace() does the same to an SVG, so this is the one moment the upload still exists as it was sent
-        if ($entity instanceof VichOriginalKeepableInterface) {
+        if ($isImage && $entity instanceof VichOriginalKeepableInterface) {
             $this->keepOriginal($entity, $filename, $absolutePath);
         }
 
-        if ($entity instanceof VichImageResizableInterface) {
+        if ($isImage && $entity instanceof VichImageResizableInterface) {
             $spec = $entity instanceof Media ? $entity->getFixedIconSpec() : null;
 
             // An icon role uploaded as SVG is rasterized in place first, and goes on through the very same pipeline as any raster upload. The stored file carries the role's own extension by then (see UiMediaNamer), whatever was uploaded, so only its content can tell - which is exactly what rasterizeInPlace() looks at, leaving the file untouched for everything that is not an SVG it can handle
@@ -118,6 +122,15 @@ class VichImageResizeListener
     }
 
     // Reads the type off the file's magic bytes (see READABLE_IMAGE_TYPES) - the error suppression covers everything getimagesize() can't measure at all, from a real .ico to the pdf/video/audio a Media can just as well hold
+    // Whether the image pipeline has any business with this file at all - read off the file's own content, an upload's declared type being client input and the stored name carrying a forced extension
+    // Broader than isReadable() below, and asked earlier: this one covers every image, including the SVG no rasterizer may end up handling and the .ico an import re-feeds, both of which belong to the pipeline even though GD cannot decode them
+    private function isImage(string $absolutePath): bool
+    {
+        $mimeType = (new File($absolutePath))->getMimeType();
+
+        return null !== $mimeType && str_starts_with($mimeType, 'image/');
+    }
+
     private function isReadable(string $absolutePath): bool
     {
         $size = @getimagesize($absolutePath);

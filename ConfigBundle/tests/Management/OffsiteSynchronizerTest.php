@@ -114,4 +114,75 @@ class OffsiteSynchronizerTest extends TestCase
 
         $this->assertNull($this->createSynchronizer('storagebox:975l.com')->getConfigFile());
     }
+
+    // The first run of every install: nothing has been overwritten yet, so there is no previous/ folder to purge and
+    // rclone says so as an error. Reported as a failure it warns that first night and then every night a site's files
+    // don't change, which is how the warning that matters goes unread
+    public function testAMissingPreviousFolderIsNothingToPurgeRatherThanAFailure(): void
+    {
+        $result = $this->createSynchronizerReturning(
+            ['ok' => false, 'error' => 'ERROR : error listing: directory not found', 'output' => '']
+        )->purgeBackupDirs('previous', 15);
+
+        $this->assertTrue($result['ok']);
+        $this->assertNull($result['error']);
+    }
+
+    // The tolerance is that one message and nothing more: credentials rclone won't take, or a destination out of
+    // space, are exactly what the run must still report
+    public function testAnyOtherPurgeFailureIsStillReported(): void
+    {
+        $result = $this->createSynchronizerReturning(
+            ['ok' => false, 'error' => 'ERROR : couldn\'t connect SSH: unable to authenticate', 'output' => '']
+        )->purgeBackupDirs('previous', 15);
+
+        $this->assertFalse($result['ok']);
+        $this->assertStringContainsString('unable to authenticate', $result['error']);
+    }
+
+    // What rclone is asked, checked once here: the purge is aimed at the dated folders under the target and bounded by
+    // the retention window, a --min-age dropped along the way deleting the whole history instead of its oldest part
+    public function testThePurgeIsBoundedByTheRetentionWindow(): void
+    {
+        $captured = new \ArrayObject();
+        $this->createSynchronizerReturning(['ok' => true, 'error' => null, 'output' => ''], $captured)
+            ->purgeBackupDirs('previous', 15);
+
+        $this->assertSame(
+            ['delete', '--rmdirs', '--min-age', '15d', 'storagebox:975l.com/previous'],
+            $captured['arguments'],
+        );
+    }
+
+    // Overriding the run rather than putting a fake binary on the PATH: what is under test is what this class makes of
+    // an exit code and a message, and a host that happens to have a real rclone would otherwise answer instead
+    private function createSynchronizerReturning(array $result, ?\ArrayObject $captured = null): OffsiteSynchronizer
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(
+            static fn (string $key) => 'site-backup-offsite-target' === $key ? 'storagebox:975l.com' : null
+        );
+
+        $bag = $this->createStub(ParameterBagInterface::class);
+        $bag->method('get')->willReturn($this->projectDir);
+
+        return new class ($configService, $bag, $result, $captured ?? new \ArrayObject()) extends OffsiteSynchronizer {
+            public function __construct(
+                ConfigServiceInterface $configService,
+                ParameterBagInterface $parameterBag,
+                private readonly array $result,
+                private readonly \ArrayObject $captured,
+            ) {
+                parent::__construct($configService, $parameterBag);
+            }
+
+            protected function run(array $arguments, int $timeout): array
+            {
+                $this->captured['arguments'] = $arguments;
+                $this->captured['timeout'] = $timeout;
+
+                return $this->result;
+            }
+        };
+    }
 }

@@ -12,10 +12,12 @@ namespace c975L\UiBundle\Tests;
 
 use c975L\UiBundle\c975LUiBundle;
 use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
+use c975L\UiBundle\Video\VideoPlatform;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 class c975LUiBundleTest extends TestCase
 {
@@ -151,6 +153,28 @@ class c975LUiBundleTest extends TestCase
         );
 
         $this->assertContains(PlaceholderMediaProviderPass::class, $passes);
+    }
+
+    // A site builds its frame-src from this parameter rather than from a list copied out of the README, so declaring a platform never leaves it framed in development and blocked in production (see Video\VideoPlatform)
+    public function testLoadExtensionExposesTheVideoEmbedOriginsAsAParameter(): void
+    {
+        $container = new ContainerBuilder();
+
+        (new c975LUiBundle())->loadExtension([], $this->containerConfigurator($container), $container);
+
+        $origins = $container->getParameter('c975l_ui.video.embed_origins');
+
+        // A space-separated string, which is what a CSP directive is: an array could only be a whole config node, never one item of a sequence next to the site's own origins
+        $this->assertSame(implode(' ', VideoPlatform::allCspOrigins()), $origins);
+        $this->assertStringContainsString('https://www.youtube-nocookie.com', (string) $origins);
+    }
+
+    // A real configurator over a stubbed loader: ContainerConfigurator::import() is final, so it cannot be stubbed away, and the service definitions it would pull in are not what this test reads
+    private function containerConfigurator(ContainerBuilder $container): ContainerConfigurator
+    {
+        $instanceof = [];
+
+        return new ContainerConfigurator($container, $this->createStub(PhpFileLoader::class), $instanceof, __DIR__, 'services.php');
     }
 
     // A bare extension, just enough for hasExtension() to answer true

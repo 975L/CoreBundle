@@ -1,5 +1,40 @@
 [
     {
+        "date": "2026-08-08",
+        "description": [
+            {
+                "en": "A Vimeo or a Dailymotion address pasted into a video block is now turned into its privacy-respecting version, as a YouTube one already was - paste the address of the page you were watching, whichever site it comes from",
+                "fr": "Une adresse Vimeo ou Dailymotion collée dans un bloc vidéo est désormais transformée en sa version respectueuse de la vie privée, comme l'était déjà une adresse YouTube : collez l'adresse de la page que vous regardiez, quel que soit le site",
+                "es": "Una dirección de Vimeo o de Dailymotion pegada en un bloque de vídeo se convierte ahora en su versión respetuosa con la privacidad, como ya ocurría con una de YouTube: pegue la dirección de la página que estaba viendo, sea cual sea el sitio"
+            },
+            {
+                "en": "A video that stayed black or refused to play once accepted now plays again: the player is given back what it needs to serve the file on your site",
+                "fr": "Une vidéo qui restait noire ou refusait de démarrer une fois acceptée fonctionne de nouveau : le lecteur retrouve ce dont il a besoin pour diffuser le fichier sur votre site",
+                "es": "Un vídeo que se quedaba en negro o se negaba a reproducirse una vez aceptado vuelve a funcionar: el reproductor recupera lo que necesita para servir el archivo en su sitio"
+            },
+            {
+                "en": "Duplicating a block no longer loses its content when it holds a checkbox or a date: the copy comes back filled in exactly like the original",
+                "fr": "La duplication d'un bloc ne perd plus son contenu lorsqu'il contient une case à cocher ou une date : la copie revient remplie à l'identique de l'original",
+                "es": "Duplicar un bloque ya no pierde su contenido cuando incluye una casilla o una fecha: la copia vuelve rellenada igual que el original"
+            },
+            {
+                "en": "A new \"Recompile stylesheets\" tile on the dashboard applies an edit made to your site's own theme files without waiting for anything else",
+                "fr": "Une nouvelle tuile « Recompiler les feuilles de style » sur le tableau de bord applique une modification apportée aux fichiers de thème de votre site sans rien attendre d'autre",
+                "es": "Una nueva casilla «Recompilar las hojas de estilo» en el panel aplica una modificación hecha en los archivos de tema de su sitio sin esperar nada más"
+            },
+            {
+                "en": "Sending a file that is not an image - a video, a sound - next to the image of a same item no longer goes wrong: only the image is resized",
+                "fr": "L'envoi d'un fichier qui n'est pas une image - une vidéo, un son - à côté de l'image d'un même élément ne se passe plus mal : seule l'image est redimensionnée",
+                "es": "Subir un archivo que no es una imagen - un vídeo, un sonido - junto a la imagen de un mismo elemento ya no falla: solo se redimensiona la imagen"
+            },
+            {
+                "en": "The thumbnail of a document laid out in width now shows its whole first page, instead of a narrow strip of its left edge",
+                "fr": "La vignette d'un document mis en page à l'italienne montre désormais sa première page entière, au lieu d'une bande étroite de son bord gauche",
+                "es": "La miniatura de un documento apaisado muestra ahora su primera página entera, en lugar de una franja estrecha de su borde izquierdo"
+            }
+        ]
+    },
+    {
         "date": "2026-08-07",
         "description": [
             {

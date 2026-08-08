@@ -1,7 +1,9 @@
-{# <twig:c975LUi:Video:Iframe src="your-url" [title="optional title"] [description="optional description"] [class="your-css-classes"] [width="auto"] [height="auto"]/> #}
+{# <twig:c975LUi:Video:Iframe src="your-url" [title="optional title"] [description="optional description"] [caption="false"] [class="your-css-classes"] [width="auto"] [height="auto"]/> #}
 {# The real <iframe> is created client-side behind cookie consent, so this markup stays cacheable #}
+{# "caption" only hides the heading and the legend, never the title itself: that one goes on naming the player to a screen reader, which is the one place it is not optional. For a page laying out its own heading around this component - a gallery's media page, say - where a second one would read as a duplicate #}
+{% set caption = caption is defined ? caption|to_bool : true %}
 <figure class="video-iframe-figure">
-    {% if title is defined and title %}<h3 class="video-iframe-title">{{ title }}</h3>{% endif %}
+    {% if caption and title is defined and title %}<h3 class="video-iframe-title">{{ title }}</h3>{% endif %}
     {# "videoiframe-*", not "video-iframe-*": Stimulus doesn't dasherize the identifier, only the value name #}
     <div class="img img-responsive {{ class|default([])|join(' ') }} video-iframe-consent"
          data-controller="videoIframe"
@@ -16,5 +18,5 @@
             </button>
         </div>
     </div>
-    {% if description is defined and description %}<figcaption class="video-iframe-description text">{{ description|raw }}</figcaption>{% endif %}
+    {% if caption and description is defined and description %}<figcaption class="video-iframe-description text">{{ description|raw }}</figcaption>{% endif %}
 </figure>

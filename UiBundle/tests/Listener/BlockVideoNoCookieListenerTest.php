@@ -76,13 +76,24 @@ class BlockVideoNoCookieListenerTest extends TestCase
         $this->assertSame('https://www.youtube-nocookie.com/embed/abc123', $block->getData()['src']);
     }
 
-    public function testPrePersistLeavesNonYoutubeSrcUntouchedEvenWhenChecked(): void
+    // Every declared platform is rewritten to its own canonical embed url now, not YouTube alone - Vimeo's being the one carrying its do-not-track flag (see VideoPlatform)
+    public function testPrePersistRewritesEveryDeclaredPlatformWhenChecked(): void
     {
-        $block = $this->videoIframeBlock(['src' => 'https://player.vimeo.com/video/123456', 'noCookie' => true]);
+        $block = $this->videoIframeBlock(['src' => 'https://vimeo.com/123456', 'noCookie' => true]);
 
         (new BlockVideoNoCookieListener(new VideoExtension()))->prePersist($this->createPersistArgs($block));
 
-        $this->assertSame('https://player.vimeo.com/video/123456', $block->getData()['src']);
+        $this->assertSame('https://player.vimeo.com/video/123456?dnt=1', $block->getData()['src']);
+    }
+
+    // A url belonging to no declared platform - a self-hosted player, an instance of one's own - is left exactly as it was, the checkbox having nothing to offer it
+    public function testPrePersistLeavesAnUnknownSrcUntouchedEvenWhenChecked(): void
+    {
+        $block = $this->videoIframeBlock(['src' => 'https://975l.com/player/123456', 'noCookie' => true]);
+
+        (new BlockVideoNoCookieListener(new VideoExtension()))->prePersist($this->createPersistArgs($block));
+
+        $this->assertSame('https://975l.com/player/123456', $block->getData()['src']);
     }
 
     public function testPreUpdateIgnoresEntitiesThatAreNotBlock(): void

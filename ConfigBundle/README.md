@@ -35,7 +35,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 
 - Key-value config entries stored in the database (`site_config` table)
 - EasyAdmin CRUD interface to manage values
-- `c975l:config:set` to fill values from the command line or a JSON file, for provisioning, deployment and tests
+- `c975l:config:set` to fill values from the command line or a JSON file, for provisioning, deployment and tests, and `c975l:config:get` to read them back
 - "Obsolete configs" dashboard page and `c975l:config:prune` to delete entries no `configs*.json` declares anymore
 - Export button (SQL/CSV/JSON/Sync-zip) for production deployment, reusable from any bundle's CRUD controller
 - Zip-based content import/export for syncing nested bundle content across environments, extensible via `ImportProviderInterface`/`ExportProviderInterface`
@@ -275,6 +275,24 @@ The command is meant to be re-run: an empty value is always skipped (an incomple
 
 Entries are never created here: an unknown slug is reported and the command exits non-zero, so a typo doesn't pass silently. `--ignore-unknown` turns that failure into a skip, for a file shared by several sites where a slug belongs to a bundle this one doesn't install. Sensitive entries are encrypted with `C975L_VAULT_KEY` exactly as the back-office does, are masked in the output so no secret lands in a CI log, and are refused rather than stored in plain text when no key is defined.
 
+## Reading values from the command line
+
+`c975l:config:get` reads back what `c975l:config:set` writes — checking on a server what a setting actually holds, without a browser and without hand-writing SQL against a table whose name is easy to get wrong (it is `site_config`, and the column is `slug`):
+
+```bash
+php bin/console c975l:config:get site-name                  # one entry
+php bin/console c975l:config:get 'site-backup-offsite*'     # every entry of a family
+```
+
+The trailing `*` matches any end of slug (a `%` is accepted too, being the wildcard a hand-written query would have used) — quote it, or the shell expands it against the files of the current directory before the command ever sees it. Values come from the database, not from `ConfigService`, whose cache is exactly what a diagnostic is meant to see past.
+
+| Option | Effect |
+| --- | --- |
+| `--show-sensitive` | Decrypts sensitive values with `C975L_VAULT_KEY` instead of masking them |
+| `--raw` | Prints the values alone, one per line, without table nor decoration |
+
+`--raw` is what feeds a shell variable, `SITE=$(php bin/console c975l:config:get site-name --raw)`. An unknown slug, or a prefix matching nothing, exits non-zero, so a typo in a script doesn't read as an empty value.
+
 ## Encrypting sensitive values
 
 Sensitive config values can be encrypted at rest (AES-256-CBC) using a `C975L_VAULT_KEY` defined in `.env.local`. Generate a key:
@@ -472,6 +490,8 @@ security:
             login_throttling:
                 max_attempts: 5
 ```
+
+`LoginRequestSubscriber` sits in front of that, needing no configuration: a POST to the `app_login` route carrying no usable `_username` is sent straight back to the form. Scanners post to `/login` with none of the expected fields, and Symfony's `FormLoginAuthenticator` answers that with a `BadRequestHttpException` — a legitimate 400, but one the kernel logs at `ERROR` level, so a few bots a night are enough to bury the real errors of a production log. Nothing is let through: such a request could never authenticate anyone, it just gets the redirect a failed login would have gotten anyway. A site whose login route is named otherwise than `app_login` (the scaffold's own name) simply never sees the subscriber act.
 
 ### Back-office access control
 
@@ -770,6 +790,29 @@ class LinkableRouteProvider implements LinkableRouteProviderInterface
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
 
 Routes are checked live: if the contributing bundle is later removed (or its provider stops returning that route), any menu item pointing to it simply disappears from the rendered menu instead of producing a broken link.
+
+### One entry per row
+
+A route taking a parameter (`/galerie/{category}`) is not a single target but one per row of your own data. Such an entry keys itself on that row's **id** rather than on a route name, names the `route` to generate with the `params` to fill it, and carries the row's own title as a literal label — `translation_domain` at `false`, nothing to translate:
+
+```php
+$gallery = $this->translator->trans('label.gallery', [], 'gallery');
+
+foreach ($this->categoryRepository->findAllOrdered() as $category) {
+    $routes['gallery_category.' . $category->getId()] = [
+        'label' => (string) $category->getTitle(),
+        'translation_domain' => false,
+        // Shown by the back office's target select alone
+        'picker_label' => $gallery . ' - ' . $category->getTitle(),
+        'route' => 'gallery_category',
+        'params' => ['category' => (string) $category->getSlug()],
+    ];
+}
+```
+
+`picker_label` is optional and already translated. The select holds these entries among every page of the site, where a bare "Paysages" says nothing of what it is, while the rendered navbar item has to read the row's own title — hence the two. An entry without one is shown under its `label` in both places.
+
+Keying on the id is what makes a renamed row keep its menu items: the slug and the title are both read again at each render, and the url is generated, never stored. Providers are only walked when the registry is actually read, so listing rows this way costs a query on the pages that render such a link, none on the others.
 
 ## Contributing importmap entries from other bundles
 
@@ -1398,9 +1441,25 @@ What the bundle never holds, in either model, is a **credential**. `site-backup-
 | --- | --- | --- |
 | `site-backup-offsite-target` | *(empty)* | The rclone remote. Empty means "an outside machine pulls" |
 | `site-backup-offsite-max-age-hours` | 30 | Past this without anything leaving, the run warns and the dashboard alerts |
-| `site-backup-offsite-keep-days` | 15 | How long the destination keeps overwritten and deleted files |
+| `site-backup-offsite-keep-days` | 15 | How long the destination keeps the previous version of an overwritten or deleted file |
 
-**Not destructively.** The mirror runs `rclone sync`, so a destination that has drifted comes back in line — but `--backup-dir` moves what would be overwritten or deleted into a dated `deleted/` folder instead of losing it, and `--max-delete` aborts the run outright past 100 deletions. The failure that actually happens is not exotic: a gallery emptied by mistake, or a hacked site, faithfully reproduced onto the backup within hours. Aborting costs a night's mirroring and a look from a human, which is the cheaper of the two.
+**Not destructively.** The mirror runs `rclone sync`, so a destination that has drifted comes back in line — but `--backup-dir` moves what would be overwritten or deleted into a dated `previous/` folder instead of losing it, and `--max-delete` aborts the run outright past 100 deletions. The failure that actually happens is not exotic: a gallery emptied by mistake, or a hacked site, faithfully reproduced onto the backup within hours. Aborting costs a night's mirroring and a look from a human, which is the cheaper of the two.
+
+**What that leaves at the destination**, one folder per site and nothing to know beyond it:
+
+```text
+<target>/
+├── backup/                        the dated archives, copied by c975l:config:backup
+│   ├── MYSQL_-_…_-_12-58_-_Tables.sql.tar.bz2
+│   ├── FILES_-_…_-_12-58.tar.bz2
+│   └── manifest.json
+├── files/                         the mirrored folders, as they are right now
+│   └── public/medias/…
+└── previous/2026-08-05/           what that day's mirror overwrote or removed
+    └── public/medias/…
+```
+
+The database has one file per run and keeps its own history in their names, so the last four hours and last week are both there. The mirrored folders have no dated copies on purpose — a version history of nine gigabytes of JPEG costs nine gigabytes a day — and `previous/<date>/` holds what changed instead, which is the question actually asked on the day it matters: *where is the file that was there yesterday*.
 
 **Versioning is the destination's job, not this bundle's.** Where the destination takes its own snapshots, use them: on a Hetzner Storage Box they sit in a read-only ZFS directory that the server couldn't touch even if its credentials leaked — which no purge run from the server can claim. `site-backup-offsite-keep-days` is the portable fallback for destinations that offer nothing of the sort.
 

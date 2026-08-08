@@ -38,7 +38,7 @@ class BackupOffsiteCommandTest extends TestCase
         (new Filesystem())->remove($this->projectDir);
     }
 
-    private function createCommand(string $target = '', array $paths = []): BackupOffsiteCommand
+    private function createCommand(string $target = '', array $paths = [], ?\ArrayObject $calls = null): BackupOffsiteCommand
     {
         $bag = $this->createStub(ParameterBagInterface::class);
         $bag->method('get')->willReturn($this->projectDir);
@@ -63,9 +63,36 @@ class BackupOffsiteCommandTest extends TestCase
             $bag,
             $configService,
             new BackupPathCollector([$provider], $bag),
-            new OffsiteSynchronizer($configService, $bag),
+            null === $calls
+                ? new OffsiteSynchronizer($configService, $bag)
+                : $this->createRecordingSynchronizer($configService, $bag, $calls),
             new OffsiteState(),
         );
+    }
+
+    // Records what rclone would have been asked instead of asking it: what is under test is the arguments this command
+    // builds, and a host that happens to have a real rclone would otherwise try to reach a Storage Box
+    private function createRecordingSynchronizer(
+        ConfigServiceInterface $configService,
+        ParameterBagInterface $parameterBag,
+        \ArrayObject $calls,
+    ): OffsiteSynchronizer {
+        return new class ($configService, $parameterBag, $calls) extends OffsiteSynchronizer {
+            public function __construct(
+                ConfigServiceInterface $configService,
+                ParameterBagInterface $parameterBag,
+                private readonly \ArrayObject $calls,
+            ) {
+                parent::__construct($configService, $parameterBag);
+            }
+
+            protected function run(array $arguments, int $timeout): array
+            {
+                $this->calls->append(implode(' ', $arguments));
+
+                return ['ok' => true, 'error' => null, 'output' => '{"count":1,"bytes":2}'];
+            }
+        };
     }
 
     // The pull model: an outside machine fetches the backups, then says so - without it, a site that is properly backed up would be reported as never having sent anything anywhere
@@ -112,5 +139,32 @@ class BackupOffsiteCommandTest extends TestCase
         // The console wraps its warning block, so only the head of the message is matched here
         $this->assertStringContainsString('is not a valid', $tester->getDisplay());
         $this->assertNull((new OffsiteState())->read($this->projectDir));
+    }
+
+    // The folder --backup-dir fills and the folder the purge empties have to be the same one. Renaming one and leaving
+    // the other aims the purge at a folder that doesn't exist: the previous versions then pile up offsite for good,
+    // while every run goes on reporting success - which is why the name is asserted here rather than read twice
+    public function testTheBackupDirAndThePurgeNameTheSameFolder(): void
+    {
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+        $calls = new \ArrayObject();
+
+        $tester = new CommandTester($this->createCommand(
+            'storagebox:975l.com',
+            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
+            $calls
+        ));
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertContains(
+            sprintf(
+                'sync %s/public/medias storagebox:975l.com/files/public/medias --backup-dir storagebox:975l.com/previous/%s/public/medias --max-delete 100',
+                $this->projectDir,
+                (new \DateTimeImmutable())->format('Y-m-d'),
+            ),
+            (array) $calls,
+        );
+        $this->assertContains('delete --rmdirs --min-age 15d storagebox:975l.com/previous', (array) $calls);
     }
 }

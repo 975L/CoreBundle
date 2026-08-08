@@ -719,8 +719,7 @@ label[for=contact_form_username],
 .document-download__thumb {
   width: 64px;
   height: 90px;
-  object-fit: cover;
-  object-position: top;
+  object-fit: contain;
   border-radius: calc(var(--radius-card) / 2);
   flex-shrink: 0;
 }

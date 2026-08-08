@@ -13,7 +13,9 @@ services:
         # autowiring one fails on its first scalar constructor argument
         # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same
         # stylesheet analysis over their own sheets, never instantiated by the application itself
-        exclude: '../src/{DependencyInjection,Entity,Maker,Model,Testing}'
+        # Video/ excluded: an enum and the value object it builds, read statically by whoever needs them -
+        # autowiring ResolvedVideo fails on the enum the container refuses to instantiate
+        exclude: '../src/{DependencyInjection,Entity,Maker,Model,Testing,Video}'
 
     c975L\UiBundle\Service\StylesheetProvider:
         tags:

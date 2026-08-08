@@ -13,13 +13,19 @@ namespace c975L\UiBundle\Tests\Controller;
 use c975L\UiBundle\Controller\BlockFormController;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Tests\Controller\Management\ControllerContainerTestTrait;
+use c975L\UiBundle\Tests\Fixtures\DummyCheckboxBlockType;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Validator\Validation;
 use Twig\Environment;
 
 class BlockFormControllerTest extends TestCase
@@ -66,26 +72,37 @@ class BlockFormControllerTest extends TestCase
         return $formFactory;
     }
 
-    // Same as createFormFactory(), but records the data createNamedBuilder() is handed, so what a duplication's posted values pre-fill the sub-form with can be asserted
-    private function createFormFactoryCapturingInitialData(mixed &$initialData): FormFactoryInterface
+    // Same as createFormFactory(), but records what the form is submitted with (and whether missing fields are cleared), so what a duplication's posted values pre-fill the sub-form with can be asserted
+    private function createFormFactoryCapturingSubmittedData(mixed &$submitted, ?bool &$clearMissing = null): FormFactoryInterface
     {
         $builder = $this->createStub(FormBuilderInterface::class);
         $builder->method('add')->willReturn($builder);
 
         $form = $this->createStub(FormInterface::class);
         $form->method('createView')->willReturn(new FormView());
+        $form->method('submit')->willReturnCallback(
+            function (string | array | null $data, bool $clear = true) use (&$submitted, &$clearMissing, $form) {
+                $submitted = $data;
+                $clearMissing = $clear;
+
+                return $form;
+            }
+        );
         $builder->method('getForm')->willReturn($form);
 
         $formFactory = $this->createStub(FormFactoryInterface::class);
-        $formFactory->method('createNamedBuilder')->willReturnCallback(
-            function (string $name, string $type, mixed $data = null) use (&$initialData, $builder) {
-                $initialData = $data;
-
-                return $builder;
-            }
-        );
+        $formFactory->method('createNamedBuilder')->willReturn($builder);
 
         return $formFactory;
+    }
+
+    // A real factory (rather than the stubs above) so the posted values actually go through the fields' transformers - the only way to catch a type mismatch between what is posted and what a field expects
+    private function createRealFormFactory(): FormFactoryInterface
+    {
+        return Forms::createFormFactoryBuilder()
+            ->addExtension(new ValidatorExtension(Validation::createValidator()))
+            ->addExtension(new CsrfExtension($this->createStub(CsrfTokenManagerInterface::class)))
+            ->getFormFactory();
     }
 
     private function createContainerWithTwig(): \Symfony\Component\DependencyInjection\Container
@@ -231,15 +248,34 @@ class BlockFormControllerTest extends TestCase
         $registry->method('has')->willReturn(true);
         $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
         $registry->method('hasMediaTypes')->willReturn(false);
-        $initialData = null;
-        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingInitialData($initialData));
+        $submitted = null;
+        $clearMissing = null;
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted, $clearMissing));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(Request::create('/ui/block/data-form?k=slider', 'POST', [
             'data' => ['duration' => '5', 'ratio' => '16-9'],
         ]));
 
-        $this->assertSame(['data' => ['duration' => '5', 'ratio' => '16-9']], $initialData);
+        $this->assertSame(['data' => ['duration' => '5', 'ratio' => '16-9']], $submitted);
+        // The fields the payload doesn't carry ("medias", "slots", the dropped "id") must keep the defaults the kind-specific type's PRE_SET_DATA gave them
+        $this->assertFalse($clearMissing);
+    }
+
+    // Nothing is submitted when the kind is simply picked from the select (a plain GET) - the sub-form is then just an empty one
+    public function testDataFormDoesNotSubmitAnythingWithoutPostedValues(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
+        $registry->method('hasMediaTypes')->willReturn(false);
+        $submitted = 'not submitted';
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted));
+        $controller->setContainer($this->createContainerWithTwig());
+
+        $controller->dataForm(new Request(['k' => 'slider']));
+
+        $this->assertSame('not submitted', $submitted);
     }
 
     // An id identifies the source block and it alone, whether auto-generated (SliderType/ImageCompareType) or an anchor typed by the editor (CardType/ReadmoreType) - carrying it over would leave two elements sharing an id in the page
@@ -249,14 +285,56 @@ class BlockFormControllerTest extends TestCase
         $registry->method('has')->willReturn(true);
         $registry->method('getFormClass')->willReturn(\Symfony\Component\Form\Extension\Core\Type\FormType::class);
         $registry->method('hasMediaTypes')->willReturn(false);
-        $initialData = null;
-        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingInitialData($initialData));
+        $submitted = null;
+        $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted));
         $controller->setContainer($this->createContainerWithTwig());
 
         $controller->dataForm(Request::create('/ui/block/data-form?k=slider', 'POST', [
             'data' => ['id' => 'slider-f49f0e20', 'duration' => '5'],
         ]));
 
-        $this->assertSame(['data' => ['duration' => '5']], $initialData);
+        $this->assertSame(['data' => ['duration' => '5']], $submitted);
+    }
+
+    // Regression: what block-duplicate.js posts is raw request strings, so a checked checkbox arrives as "1". Handed to the form as initial data it blew up in BooleanToStringTransformer::transform() ("Unable to transform value for property path "[primary]": Expected a Boolean.", HTTP 500 in place of the duplicated block's sub-form) - it has to be submitted instead
+    public function testDataFormAcceptsACheckedCheckboxPostedAsAString(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getFormClass')->willReturn(DummyCheckboxBlockType::class);
+        $registry->method('hasMediaTypes')->willReturn(false);
+        $controller = new BlockFormController($registry, $this->createRealFormFactory());
+        $controller->setContainer($this->createContainerWithTwig());
+
+        $response = $controller->dataForm(Request::create('/ui/block/data-form?k=menu_link', 'POST', [
+            'data' => ['label' => 'Contact', 'primary' => '1'],
+        ]));
+
+        $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+    }
+
+    // The copy must come back with the very values of the block it was duplicated from, the checked box included
+    public function testDataFormRendersThePostedValuesBackIntoTheSubForm(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getFormClass')->willReturn(DummyCheckboxBlockType::class);
+        $registry->method('hasMediaTypes')->willReturn(false);
+        $view = null;
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturnCallback(function (string $name, array $context = []) use (&$view) {
+            $view = $context['form'];
+
+            return '<form></form>';
+        });
+        $controller = new BlockFormController($registry, $this->createRealFormFactory());
+        $controller->setContainer($this->createContainer(['twig' => $twig]));
+
+        $controller->dataForm(Request::create('/ui/block/data-form?k=menu_link', 'POST', [
+            'data' => ['label' => 'Contact', 'primary' => '1'],
+        ]));
+
+        $this->assertSame('Contact', $view['data']['label']->vars['value']);
+        $this->assertTrue($view['data']['primary']->vars['checked']);
     }
 }

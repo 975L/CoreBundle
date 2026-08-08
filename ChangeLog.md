@@ -1,5 +1,56 @@
 # ChangeLog
 
+## v1.4
+
+A video platform is declared once for the whole ecosystem
+
+### ConfigBundle
+
+- A linkable route entry can name the `route` to generate and the `params` to fill it with, its key standing for one row of the contributing bundle's own data (08/08/2026)
+- `translation_domain` accepts `false`, for an entry labelled with that row's own title (08/08/2026)
+- Added `LinkableRouteRegistry::label()`, read by the target picker, the rendered menu item and `SiteCreateCommand` alike (08/08/2026)
+- An entry can carry a `picker_label`, shown by the target select alone, where the rendered menu item keeps its `label` (08/08/2026)
+- Added `LinkableRouteRegistry::pickerLabel()`, falling back to `label()` (08/08/2026)
+- `LinkableRouteRegistry` normalizes every entry it hands back and only walks its providers when actually read (08/08/2026) [BC-Break]
+- `ManagementTargetsTestCase` checks an entry's declared `route` rather than its key (08/08/2026)
+- `ManagementTargetsTestCase` refuses a linkable route key that is a bare number, a row's id alone being ambiguous between two bundles (08/08/2026)
+- `LinkableRouteRegistry` merges its providers by hand, a key surviving as the provider wrote it (08/08/2026)
+- README documents contributing one entry per row (08/08/2026)
+- Added `c975l:config:get`, reading back what `c975l:config:set` writes, from the database rather than from the cache (08/08/2026)
+- The command takes a slug, or a prefix ending with `*` (a `%` is accepted too) (08/08/2026)
+- `--show-sensitive` decrypts a secret, `--raw` prints the values alone to feed a shell variable (08/08/2026)
+- An unknown slug, or a prefix matching nothing, exits non-zero, so a typo in a script doesn't read as an empty value (08/08/2026)
+- `--raw` exits non-zero on an entry it would have to mask, instead of feeding the mask to a shell variable (08/08/2026)
+- README documents reading values from the command line, naming the `site_config` table and its `slug` column (08/08/2026)
+- The offsite `deleted/` folder is now `previous/`, naming what an operator looks for rather than the rclone mechanism filling it (08/08/2026) [BC-Break]
+- Purging the offsite `previous/` folders no longer warns when the destination has none yet (08/08/2026)
+- `OffsiteSynchronizer::run()` is protected, so the tests read back rclone's own output without a binary to run (08/08/2026)
+- Added `LoginRequestSubscriber`, redirecting a login post carrying no usable username instead of letting it log an error (08/08/2026)
+- README documents that subscriber next to the login throttling (08/08/2026)
+- `c975l:scaffold:install` git-ignores `private/medias`, alongside `public/medias` (08/08/2026)
+- `ConfigGetCommandTest`, `LoginRequestSubscriberTest` cover the new files, `ManagementTargetsTestCaseTest` the row-keyed entry (08/08/2026)
+
+### UiBundle
+
+- Added `Video\VideoPlatform`, the registry declaring a platform's urls, embed url, shape and CSP origin (08/08/2026)
+- Added `Video\ResolvedVideo`, what a pasted url turns out to be (08/08/2026)
+- Vimeo and Dailymotion join YouTube and TikTok as declared platforms (08/08/2026)
+- `Twig\VideoExtension` reads the registry, so `privacy_embed_url` covers every declared platform (08/08/2026) [BC-Break]
+- `privacy_embed_url` resolves an url to its platform's canonical embed url, player parameters not surviving (08/08/2026) [BC-Break]
+- A YouTube playlist's `list` and an unlisted Vimeo's `h` do survive, being what makes the player play at all (08/08/2026)
+- Added the `c975l_ui.video.embed_origins` parameter, for a site to build its CSP from the registry (08/08/2026)
+- `Video:Iframe` gained a `caption` prop, hiding the figure's heading without losing the iframe's name (08/08/2026)
+- `VichImageResizeListener` leaves a file that is not an image alone, an entity carrying a second Vich field no longer having it resized (08/08/2026)
+- `Video:Video` gained the same `caption` prop as `Video:Iframe` (08/08/2026)
+- The consent placeholder no longer names YouTube, every declared platform being behind it (08/08/2026)
+- The framed player is given back its `allow` and `referrerpolicy` attributes, a platform's media server refusing a file to a player that cannot name the site it plays on (08/08/2026)
+- Added `StylesheetShortcutController`, a dashboard tile recompiling the stylesheets an edit to the site's own theme files leaves stale (08/08/2026)
+- `BlockFormController` submits a duplicated block's values instead of passing them as initial data, a non-string field no longer breaking the copy (08/08/2026)
+- The duplication preview form is built without CSRF nor validation, a freshly copied field no longer coming back decorated with violations (08/08/2026)
+- `.document-download__thumb` contains its thumbnail instead of covering the box, a landscape document no longer being cropped to a strip of its left edge (08/08/2026)
+- README documents the registry, what it resolves, the CSP parameter, the caption prop and the recompile tile (08/08/2026)
+- `VideoPlatformTest`, `StylesheetShortcutControllerTest`, `VideoIframeCaptionTest`, `VideoCaptionTest` and `DocumentDownloadThumbTest` cover the new files (08/08/2026)
+
 ## v1.3
 
 A backup leaves the server, and a photo comes out signed

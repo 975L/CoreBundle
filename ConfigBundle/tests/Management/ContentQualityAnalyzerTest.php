@@ -113,9 +113,13 @@ class ContentQualityAnalyzerTest extends TestCase
     public function testAnalyzeKeepsTheDeclaredOrderWhenAUrlInTheMiddleFails(): void
     {
         $client = $this->createStub(ContentQualityClient::class);
-        $client->method('request')->willReturnCallback(
-            fn (string $url) => str_contains($url, 'two') ? throw new \RuntimeException('Connection refused') : $this->createResponse()
-        );
+        $client->method('request')->willReturnCallback(function (string $url) {
+            if (str_contains($url, 'two')) {
+                throw new \RuntimeException('Connection refused');
+            }
+
+            return $this->createResponse();
+        });
         $client->method('read')->willReturnCallback($this->readsCleanly());
 
         $rows = $this->createAnalyzer($client)->analyze([

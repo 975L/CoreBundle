@@ -39,16 +39,21 @@ class BlockFormController extends AbstractController
         }
 
         // Duplicating a block (see block-duplicate.js) posts its current "data" field values here, so the sub-form comes back pre-filled instead of empty. Deliberately NOT extended to "medias": MediaUploadType has `data_class: Media`, and Symfony's form component requires a form's view data to be an actual instance of that class (or null) when one is set - passing it a plain array throws ("the form's view data is expected to be an instance of Media, but is an array"). That only works for "data" because kind-specific form types (SliderType etc.) have `data_class: null`. Media duplication is instead handled entirely client-side.
-        $initialData = null;
+        $submittedData = null;
         if ($request->isMethod('POST') && $request->request->has('data')) {
             $data = $request->request->all('data');
             // An "id" identifies THIS block and this one only - whether auto-generated (SliderType/ImageCompareType) or an anchor typed by the editor (CardType/ReadmoreType) - so it is never carried over to the copy, which would put two elements with the same id in the page (an html validation error, and a Stimulus controller targeting the wrong section). Dropped here rather than in block-duplicate.js so it holds for every caller, and so the kind-specific type's own PRE_SET_DATA regenerates one
             unset($data['id']);
-            $initialData = ['data' => $data];
+            $submittedData = ['data' => $data];
         }
 
+        // This form is only ever rendered, never persisted from here: CSRF would add a root-level "invalid token" error to the duplication submit() below (no token is posted, and none is needed for a read-only preview), and validation would decorate the freshly-duplicated fields with violations (constraints, plus the "extra fields" one for any posted key the type doesn't declare) before the editor even touched them - they are reported for real when the whole EasyAdmin form is submitted
         $builder = $this->formFactory
-            ->createNamedBuilder('_block_', FormType::class, $initialData, ['translation_domain' => 'ui'])
+            ->createNamedBuilder('_block_', FormType::class, null, [
+                'translation_domain' => 'ui',
+                'csrf_protection' => false,
+                'validation_groups' => false,
+            ])
             ->add('data', $this->registry->getFormClass($kind), ['label' => false]);
 
         if ($this->registry->hasMediaTypes($kind)) {
@@ -90,8 +95,15 @@ class BlockFormController extends AbstractController
             ]);
         }
 
+        $form = $builder->getForm();
+
+        // Submitted rather than passed as the builder's initial data: what block-duplicate.js posts is raw request strings, while initial data is model data and goes through each field's transformers the other way round - a checked CheckboxType would get the string "1" where BooleanToStringTransformer::transform() demands a real bool ("Unable to transform value for property path "[primary]": Expected a Boolean."), and the same mismatch waits for every non-string field (dates, times...). Submitting instead reverse-transforms those strings exactly as a normal form post does. `clearMissing: false` so the fields the payload doesn't carry (the "id" dropped above, "medias"/"slots") keep the defaults the kind-specific type's own PRE_SET_DATA just gave them, instead of being wiped
+        if (null !== $submittedData) {
+            $form->submit($submittedData, false);
+        }
+
         return $this->render('@c975LUi/form/block.html.twig', [
-            'form' => $builder->getForm()->createView(),
+            'form' => $form->createView(),
         ]);
     }
 }

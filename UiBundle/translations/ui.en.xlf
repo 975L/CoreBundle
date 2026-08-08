@@ -122,6 +122,10 @@
                 <source>flash.legal_model_customized</source>
                 <target>Customization saved.</target>
             </trans-unit>
+            <trans-unit id="pYFXZHg">
+                <source>flash.stylesheet_compiled</source>
+                <target>Stylesheets recompiled</target>
+            </trans-unit>
             <trans-unit id="QQjuExD">
                 <source>label.accent</source>
                 <target>Accent color</target>
@@ -2126,6 +2130,10 @@
                 <source>label.style</source>
                 <target>Style</target>
             </trans-unit>
+            <trans-unit id="KAQBCm3">
+                <source>label.stylesheet_compile</source>
+                <target>Recompile stylesheets</target>
+            </trans-unit>
             <trans-unit id="Vttl6XU">
                 <source>label.subtitle</source>
                 <target>Subtitle</target>
@@ -2212,7 +2220,7 @@
             </trans-unit>
             <trans-unit id="wBwi8fo">
                 <source>label.video_iframe_consent_required</source>
-                <target>This content comes from a third-party site (YouTube or similar) and requires your consent to be displayed.</target>
+                <target>This content is hosted by a third-party site, which may set trackers: it requires your consent to be displayed.</target>
             </trans-unit>
             <trans-unit id="cXYQ_gN">
                 <source>label.video_media_help</source>
