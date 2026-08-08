@@ -1,27 +1,61 @@
 /* DOCUMENT DOWNLOAD */
+// Cards sit side by side and wrap, rather than stacking as full-width bars
+.document-downloads {
+    display: flex;
+    flex-wrap: wrap;
+    // Stretched, not top-aligned: cards take the height of the tallest title, which lines every badge up on one row
+    align-items: stretch;
+    justify-content: center;
+    gap: 20px;
+    // The rhythm's rule, at this block's own scale: the room above belongs to the block, nothing is declared
+    // below it - a bottom margin would be added to the next block's top one and part that pair by two
+    margin-top: 1em;
+    margin-bottom: 0;
+}
+
+// Reads as a button without being one: a narrow fixed column, thumbnail then title then format
 .document-download {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin: 0.5em 0;
-    padding: 0.75em 1em;
+    gap: 10px;
+    width: 160px;
+    padding: 12px;
     border: 1px solid var(--input-border-color);
     border-radius: var(--radius-card);
     background-color: var(--card-background);
     color: inherit;
+    text-align: center;
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+// The whole card lights up, not just whichever part the pointer landed on - and the underline
+// SiteBundle's global "a:hover" would otherwise add is taken back off
+.document-download:hover,
+.document-download:focus-visible {
+    border-color: var(--primary);
+    // A glow, not a drop shadow: no offset, so it spreads evenly all around, and in the theme's own hue -
+    // an offset black shadow would sink into a dark flat instead of lifting the card off it
+    box-shadow: 0 0 16px 2px color-mix(in srgb, var(--primary) 35%, transparent);
+    color: inherit;
     text-decoration: none;
 }
 
-// A4-ish box, kept fixed so every row of a multi-document block stays aligned. "contain" rather than "cover":
+// The badge follows the card, so hovering the title darkens it too - ".badge:hover" alone only fires over the badge itself
+.document-download:hover .badge {
+    background-color: var(--button-background-primary-dark);
+}
+
+// A4-ish box, its ratio fixed so every card of a multi-document block stays aligned. "contain" rather than "cover":
 // a portrait A4 fills it either way (1:1.414 is the box's own ratio), but a landscape document would be
 // cropped down to a vertical strip of its left edge by "cover" - letterboxed, its first page stays readable
 .document-download__thumb {
-    width: 64px;
-    height: 90px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1/1.414;
     object-fit: contain;
     border-radius: calc(var(--radius-card) / 2);
-    flex-shrink: 0;
 }
 
 .document-download__thumb--empty {
@@ -30,10 +64,5 @@
 
 .document-download__label {
     flex-grow: 1;
-}
-
-.document-download__ext {
-    color: var(--primary);
-    font-size: 0.85em;
-    white-space: nowrap;
+    line-height: 1.3;
 }

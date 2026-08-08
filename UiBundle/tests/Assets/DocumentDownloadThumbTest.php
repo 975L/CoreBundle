@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// The thumbnail box is A4-shaped and fixed, so every row of a multi-document block stays aligned - which only works as long as a document that is not A4 is letterboxed rather than cropped to fill it
+// The thumbnail box is A4-shaped, so every card of a multi-document block stays aligned - which only works as long as a document that is not A4 is letterboxed rather than cropped to fill it
 class DocumentDownloadThumbTest extends TestCase
 {
     /**
@@ -36,14 +36,16 @@ class DocumentDownloadThumbTest extends TestCase
         $this->assertStringNotContainsString('object-fit:cover', $rule);
     }
 
-    // The box itself: dropped, every row of a multi-document block takes the height of its own thumbnail
+    // The box itself: the card sets the width, the ratio sets the height - dropped, every card of a multi-document block takes the height of its own thumbnail
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
-    public function testTheBoxKeepsItsFixedSize(string $file): void
+    public function testTheBoxKeepsItsA4Ratio(string $file): void
     {
         $rule = $this->rule($file);
 
-        $this->assertStringContainsString('width:64px', $rule);
-        $this->assertStringContainsString('height:90px', $rule);
+        $this->assertStringContainsString('width:100%', $rule);
+        $this->assertStringContainsString('aspect-ratio:1/1.414', $rule);
+        // An img's height attribute is a presentational hint outweighing an aspect-ratio declared with no height
+        $this->assertStringContainsString('height:auto', $rule);
     }
 
     // The ".document-download__thumb" declarations, whitespace out so the same assertions read both the expanded and the minified sheet

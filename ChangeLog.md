@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.4.3
+
+An url the sitemaps declare is checked against robots.txt
+
+### ConfigBundle
+
+- Added `RobotsTxtMatcher`, deciding whether a `robots.txt` allows a path, longest matching rule first (08/08/2026)
+- Added `SitemapRobotsHealthCheckProvider`, cross-checking every url the sitemap providers declare against the deployed `robots.txt` (08/08/2026)
+- An url declared to search engines and forbidden to them by `robots.txt` is now reported, where `seo-files` only ever caught the blanket `Disallow: /` (08/08/2026)
+- An url a sitemap provider declares on another host is left out of the cross-check (08/08/2026)
+- The cross-check is read as `Googlebot`, not as the wildcard group alone (08/08/2026)
+- The `sitemap-robots` rows are shown in the "Site" section (08/08/2026)
+- Added `HostResolver`, telling a hostname that exists from one that doesn't, over both `A` and `AAAA` records (08/08/2026)
+- Added `SslCertificateClient::fetchSubjectNames()`, reading the hostnames a certificate covers (08/08/2026)
+- `DeploymentHealthCheckProvider` no longer reads a host variant that resolves and refuses the connection as one serving nothing (08/08/2026)
+- The row names what the variant's certificate does cover, wildcards included (08/08/2026)
+- A refusal a certificate covering the variant leaves unexplained is reported as such (08/08/2026)
+- Added the `label.health_check_host_variant_certificate`, `label.health_check_host_variant_unreachable` and the four `label.health_check_sitemap_robots_*` translations (08/08/2026)
+- README documents the two ways a site keeps crawlers out without meaning to (08/08/2026)
+- Added the `RobotsTxtMatcherTest`, `SitemapRobotsHealthCheckProviderTest` and `HostResolverTest` cases (08/08/2026)
+- `DeploymentHealthCheckProviderTest` covers a variant that resolves and refuses, with and without a certificate naming it (08/08/2026)
+- `SslCertificateClientTest` covers the names read off a certificate, its alternative names included (08/08/2026)
+
+### UiBundle
+
+- `--hero-media-grid-padding` now defaults to `5%` instead of `27%`, a mark no longer sitting lost in the middle of its own tile (08/08/2026)
+- The token is documented as the room a bare glyph needs (08/08/2026)
+- `HeroMediaGridTileTest` locks the new default (08/08/2026)
+- A downloadable document is shown as a card in a wrapping row, rather than as a full-width bar (08/08/2026)
+- The thumbnail takes the card's own width and keeps its A4 ratio, rather than a fixed box (08/08/2026)
+- The format is carried by a `badge`, darkened by a hover anywhere on the card (08/08/2026)
+- A card lights up whole on hover and keeps the underline `a:hover` would add off (08/08/2026)
+- `.btn` is drawn in the body font instead of the title one (08/08/2026)
+- `.section-btn` states that same font rather than inheriting whatever the section wraps it in (08/08/2026)
+- Added the `DocumentDownloadCardTest` and `ButtonFontFamilyTest` cases, `DocumentDownloadThumbTest` covers the ratio (08/08/2026)
+
 ## v1.4.2.1
 
 - Updated Readme

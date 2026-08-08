@@ -17,6 +17,8 @@ class SslCertificateClientTest extends TestCase
 {
     private ?string $certificatePath = null;
 
+    private ?string $opensslConfigPath = null;
+
     /** @var resource|null */
     private $serverProcess;
 
@@ -28,6 +30,9 @@ class SslCertificateClientTest extends TestCase
         }
         if (null !== $this->certificatePath) {
             @unlink($this->certificatePath);
+        }
+        if (null !== $this->opensslConfigPath) {
+            @unlink($this->opensslConfigPath);
         }
     }
 
@@ -48,13 +53,44 @@ class SslCertificateClientTest extends TestCase
         (new SslCertificateClient())->fetchExpiry('127.0.0.1', 1);
     }
 
-    // Spawns a background TLS server on a short-lived self-signed certificate for the client to reach
-    // @return array{0: int, 1: \DateTimeImmutable}
-    private function startTlsServer(int $validDays): array
+    // The common name alone, on a certificate naming no alternative name at all
+    public function testFetchSubjectNamesReadsTheCommonName(): void
     {
+        [$port] = $this->startTlsServer(10);
+
+        $names = (new SslCertificateClient())->fetchSubjectNames('127.0.0.1', $port);
+
+        $this->assertSame(['127.0.0.1'], $names);
+    }
+
+    // What a browser actually compares the address against, and what tells an apex-only certificate from one covering its www alias too
+    public function testFetchSubjectNamesReadsEveryDnsAlternativeName(): void
+    {
+        [$port] = $this->startTlsServer(10, ['DNS:127.0.0.1', 'DNS:Example.com', 'DNS:*.example.com', 'IP:127.0.0.1']);
+
+        $names = (new SslCertificateClient())->fetchSubjectNames('127.0.0.1', $port);
+
+        // Lowercased, deduplicated against the common name, and carrying no entry naming something other than a host
+        $this->assertSame(['127.0.0.1', 'example.com', '*.example.com'], $names);
+    }
+
+    public function testFetchSubjectNamesThrowsWhenTheConnectionFails(): void
+    {
+        $this->expectException(\RuntimeException::class);
+
+        (new SslCertificateClient())->fetchSubjectNames('127.0.0.1', 1);
+    }
+
+    // Spawns a background TLS server on a short-lived self-signed certificate for the client to reach
+    // @param list<string> $subjectAltNames
+    // @return array{0: int, 1: \DateTimeImmutable}
+    private function startTlsServer(int $validDays, array $subjectAltNames = []): array
+    {
+        $options = ['digest_alg' => 'sha256'] + $this->alternativeNamesOptions($subjectAltNames);
+
         $privateKey = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => \OPENSSL_KEYTYPE_RSA]);
-        $csr = openssl_csr_new(['commonName' => '127.0.0.1'], $privateKey, ['digest_alg' => 'sha256']);
-        $certificate = openssl_csr_sign($csr, null, $privateKey, $validDays, ['digest_alg' => 'sha256']);
+        $csr = openssl_csr_new(['commonName' => '127.0.0.1'], $privateKey, $options);
+        $certificate = openssl_csr_sign($csr, null, $privateKey, $validDays, $options);
 
         openssl_x509_export($certificate, $certificatePem);
         openssl_pkey_export($privateKey, $keyPem);
@@ -89,5 +125,23 @@ class SslCertificateClientTest extends TestCase
         }
 
         return [$port, $expiresAt];
+    }
+
+    // Alternative names can only be signed into a certificate through an openssl config file, so one is written for the run when a test asks for them, and none at all otherwise
+    // @param list<string> $subjectAltNames
+    // @return array<string, string>
+    private function alternativeNamesOptions(array $subjectAltNames): array
+    {
+        if ([] === $subjectAltNames) {
+            return [];
+        }
+
+        $this->opensslConfigPath = tempnam(sys_get_temp_dir(), 'ssl-cert-test-cnf-');
+        file_put_contents($this->opensslConfigPath, sprintf(
+            "[ req ]\ndistinguished_name = req_dn\n\n[ req_dn ]\n\n[ v3_ext ]\nsubjectAltName = %s\n",
+            implode(', ', $subjectAltNames),
+        ));
+
+        return ['config' => $this->opensslConfigPath, 'x509_extensions' => 'v3_ext'];
     }
 }

@@ -966,6 +966,10 @@
                 <source>label.health_check_host_variant_absent</source>
                 <target>No site served under %host%</target>
             </trans-unit>
+            <trans-unit id="KoyEqkv">
+                <source>label.health_check_host_variant_certificate</source>
+                <target>The certificate served by %host% doesn't cover that host (it covers: %names%): crawlers can't read its robots.txt and stop crawling this host</target>
+            </trans-unit>
             <trans-unit id="JNSu4hW">
                 <source>label.health_check_host_variant_duplicate</source>
                 <target>The site is also served under %host% (duplicate content)</target>
@@ -977,6 +981,10 @@
             <trans-unit id="wN8TX5L">
                 <source>label.health_check_host_variant_redirect_ok</source>
                 <target>Correctly redirects to the site</target>
+            </trans-unit>
+            <trans-unit id="kJiCHgw">
+                <source>label.health_check_host_variant_unreachable</source>
+                <target>%host% resolves but refuses the connection (%message%): a crawler reads no robots.txt there and stops crawling this host</target>
             </trans-unit>
             <trans-unit id="5oHSgYP">
                 <source>label.health_check_https_redirect_insecure</source>
@@ -1165,6 +1173,22 @@
             <trans-unit id="fbeNKQY">
                 <source>label.health_check_sitemap_ok_urls</source>
                 <target>%file% is reachable and declares %count% url(s)</target>
+            </trans-unit>
+            <trans-unit id="kzd9.11">
+                <source>label.health_check_sitemap_robots_blocked</source>
+                <target>This url is declared in a sitemap and blocked by robots.txt</target>
+            </trans-unit>
+            <trans-unit id="4fDSqHE">
+                <source>label.health_check_sitemap_robots_call_failed</source>
+                <target>Unable to read robots.txt to cross-check it against the sitemaps: %message%</target>
+            </trans-unit>
+            <trans-unit id="Mh2OreH">
+                <source>label.health_check_sitemap_robots_summary_blocked</source>
+                <target>%blocked% of the %count% url(s) declared in the sitemaps are blocked by robots.txt</target>
+            </trans-unit>
+            <trans-unit id="71T3VTU">
+                <source>label.health_check_sitemap_robots_summary_ok</source>
+                <target>None of the %count% url(s) declared in the sitemaps is blocked by robots.txt</target>
             </trans-unit>
             <trans-unit id="f06Aer8">
                 <source>label.health_check_sitemap_stale</source>

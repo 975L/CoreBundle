@@ -3,6 +3,26 @@
         "date": "2026-08-08",
         "description": [
             {
+                "en": "The health check now catches two silent ways a site stops showing up in search results: a page your sitemap hands to search engines while your robots.txt forbids it, and the “www” spelling of your address refusing connections because its certificate doesn't cover it - search engines then read that as being told to stay away from the whole site",
+                "fr": "Le contrôle de santé détecte désormais deux façons silencieuses de disparaître des résultats de recherche : une page que votre sitemap donne aux moteurs de recherche alors que votre robots.txt l'interdit, et la version « www » de votre adresse qui refuse les connexions parce que son certificat ne la couvre pas - les moteurs y lisent alors l'ordre de laisser tout le site tranquille",
+                "es": "El control de estado detecta ahora dos formas silenciosas de desaparecer de los resultados de búsqueda: una página que su sitemap entrega a los motores de búsqueda mientras su robots.txt la prohíbe, y la versión «www» de su dirección que rechaza las conexiones porque su certificado no la cubre - los motores leen eso como la orden de dejar todo el sitio en paz"
+            },
+            {
+                "en": "The documents a page offers for download are now shown as cards side by side, each with the cover of its first page, instead of full-width bars stacked one under the other",
+                "fr": "Les documents qu'une page propose au téléchargement s'affichent désormais en cartes côte à côte, chacune avec l'aperçu de sa première page, au lieu de bandes pleine largeur empilées les unes sous les autres",
+                "es": "Los documentos que una página ofrece para descargar se muestran ahora como tarjetas una al lado de la otra, cada una con la vista previa de su primera página, en lugar de franjas a todo el ancho apiladas una debajo de otra"
+            },
+            {
+                "en": "The logos and photos a page's banner shows as a grid now fill their tile, instead of sitting small and lost in the middle of it",
+                "fr": "Les logos et les photos qu'une bannière de page affiche en grille remplissent désormais leur case, au lieu d'y être perdus au milieu",
+                "es": "Los logotipos y las fotos que una cabecera de página muestra en cuadrícula ahora llenan su casilla, en lugar de quedar perdidos en el centro"
+            },
+            {
+                "en": "Every button on your site is now written in the same font as the text around it, whichever kind of section it sits in",
+                "fr": "Tous les boutons de votre site s'écrivent désormais dans la même police que le texte qui les entoure, quelle que soit la section où ils se trouvent",
+                "es": "Todos los botones de su sitio se escriben ahora con la misma tipografía que el texto que los rodea, sea cual sea la sección en la que estén"
+            },
+            {
                 "en": "A menu item in your navbar or your footer can now point at one particular section of a bundle - a single gallery category, say - and not only at a whole page: the choice list offers them one by one, under their own name",
                 "fr": "Un élément de menu de votre barre de navigation ou de votre pied de page peut désormais pointer vers une section précise - une catégorie de galerie, par exemple - et plus seulement vers une page entière : la liste de choix les propose une à une, sous leur propre nom",
                 "es": "Un elemento de menú de su barra de navegación o de su pie de página ahora puede apuntar a una sección concreta - una categoría de galería, por ejemplo - y no solo a una página entera: la lista de opciones las ofrece una a una, con su propio nombre"

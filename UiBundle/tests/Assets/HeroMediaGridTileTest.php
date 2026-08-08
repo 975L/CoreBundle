@@ -40,12 +40,12 @@ class HeroMediaGridTileTest extends TestCase
         );
     }
 
-    // The one measure of this grid a site routinely has to redo, a logo carrying its own margin needing far less of it than a bare glyph
+    // The one measure of this grid a site routinely has to redo, a bare glyph needing room drawn around it that a logo or a photo does not
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testTheInsetOfAMarkIsATokenOfItsOwn(string $file): void
     {
         $this->assertMatchesRegularExpression(
-            '/\.hero__media--gridimg\{[^}]*padding:var\(--hero-media-grid-padding,27%\)/',
+            '/\.hero__media--gridimg\{[^}]*padding:var\(--hero-media-grid-padding,5%\)/',
             $this->normalize($file),
             sprintf('"%s" hardcodes the inset of a mark inside its tile, which a site cannot then retune.', $file)
         );

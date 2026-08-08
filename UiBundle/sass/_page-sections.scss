@@ -140,6 +140,8 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 /* Buttons for this block family only - kept out of sass/_buttons.scss's .btn/.btn-* on purpose */
 .section-btn {
     display: inline-block;
+    // Stated rather than inherited, to match .btn whatever the section wraps it in
+    font-family: var(--font-family-body);
     font-weight: 600;
     font-size: 16px;
     border-radius: var(--radius-btn);
@@ -434,9 +436,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     // Mandatory next to the aspect-ratio above, same as .hero__media img: the img's height attribute is
     // a presentational hint that would otherwise beat it (ImageAspectRatioHeightTest)
     height: auto;
-    // Inset of the mark inside its tile. A logo already carrying its own margin needs far less than a
-    // bare glyph does, hence the token: it is the one measure of this grid a site routinely has to redo
-    padding: var(--hero-media-grid-padding, 27%);
+    // Inset of the mark inside its tile, kept narrow: a logo already carries a margin of its own inside
+    // its viewBox, and a photo has none to spare at all - just enough to keep the mark off the border.
+    // A token, for a bare glyph needing more room drawn around it - the one measure of this grid a site redoes
+    padding: var(--hero-media-grid-padding, 5%);
     box-sizing: border-box;
     object-fit: contain;
     border: 1px solid var(--section-border, var(--border-color));

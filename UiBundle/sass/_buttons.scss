@@ -8,7 +8,8 @@
     margin: 1em auto;
     text-decoration: none;
     color: var(--button-color);
-    font-family: var(--font-family-title);
+    // Body font, so .btn and .section-btn read the same
+    font-family: var(--font-family-body);
     cursor: pointer;
     touch-action: manipulation;
 }

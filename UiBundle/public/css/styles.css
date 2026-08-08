@@ -374,7 +374,7 @@ blockquote.pull-right .small::after {
   margin: 1em auto;
   text-decoration: none;
   color: var(--button-color);
-  font-family: var(--font-family-title);
+  font-family: var(--font-family-body);
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -702,26 +702,50 @@ label[for=contact_form_username],
 }
 
 /* DOCUMENT DOWNLOAD */
+.document-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 1em;
+  margin-bottom: 0;
+}
+
 .document-download {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 0.5em 0;
-  padding: 0.75em 1em;
+  gap: 10px;
+  width: 160px;
+  padding: 12px;
   border: 1px solid var(--input-border-color);
   border-radius: var(--radius-card);
   background-color: var(--card-background);
   color: inherit;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.document-download:hover,
+.document-download:focus-visible {
+  border-color: var(--primary);
+  box-shadow: 0 0 16px 2px color-mix(in srgb, var(--primary) 35%, transparent);
+  color: inherit;
   text-decoration: none;
 }
 
+.document-download:hover .badge {
+  background-color: var(--button-background-primary-dark);
+}
+
 .document-download__thumb {
-  width: 64px;
-  height: 90px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1/1.414;
   object-fit: contain;
   border-radius: calc(var(--radius-card) / 2);
-  flex-shrink: 0;
 }
 
 .document-download__thumb--empty {
@@ -730,12 +754,7 @@ label[for=contact_form_username],
 
 .document-download__label {
   flex-grow: 1;
-}
-
-.document-download__ext {
-  color: var(--primary);
-  font-size: 0.85em;
-  white-space: nowrap;
+  line-height: 1.3;
 }
 
 /* FORMS */
@@ -1262,6 +1281,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 /* Buttons for this block family only - kept out of sass/_buttons.scss's .btn/.btn-* on purpose */
 .section-btn {
   display: inline-block;
+  font-family: var(--font-family-body);
   font-weight: 600;
   font-size: 16px;
   border-radius: var(--radius-btn);
@@ -1750,7 +1770,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .hero__media--grid img {
   aspect-ratio: 1;
   height: auto;
-  padding: var(--hero-media-grid-padding, 27%);
+  padding: var(--hero-media-grid-padding, 5%);
   box-sizing: border-box;
   object-fit: contain;
   border: 1px solid var(--section-border, var(--border-color));

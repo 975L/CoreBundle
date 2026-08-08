@@ -54,9 +54,9 @@
     /* --hero-title-line-height: 1.03; */
     /* --hero-sub-size: 19px; */
     /* --hero-sub-max-width: 480px; */
-    /* Inset of each mark inside its tile, on a hero laying its medias out as a grid. Logos that already
-       carry their own margin need much less of it than bare glyphs do */
-    /* --hero-media-grid-padding: 27%; */
+    /* Inset of each mark inside its tile, on a hero laying its medias out as a grid. Kept narrow:
+       a logo carries a margin of its own inside its viewBox, a photo has none. Raise it for bare glyphs */
+    /* --hero-media-grid-padding: 5%; */
     /* The opaque plate each mark is read against, so its own colors never mix into the hero background -
        repaint it for marks drawn for a dark ground */
     /* --hero-media-grid-background: #fff; */

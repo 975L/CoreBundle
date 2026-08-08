@@ -13,7 +13,9 @@ namespace c975L\ConfigBundle\Management;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\DeploymentClient;
+use c975L\ConfigBundle\Service\HostResolver;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
+use c975L\ConfigBundle\Service\SslCertificateClient;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Three site-wide deployment checks nothing else covers, all silent when they break: that http:// actually redirects to https:// (a vhost/proxy setting no page-level check can see - the site itself answers perfectly well over https meanwhile), that an unknown url answers a real 404 carrying the site's own error page (a soft 404 answering 200 has search engines index every typo as a page), and that the site isn't served a second time under the other spelling of its host (www vs apex). All three are asked of urls nobody visits - which is precisely why nothing else reports them
@@ -27,6 +29,8 @@ class DeploymentHealthCheckProvider implements HealthCheckProviderInterface
         private readonly SiteUrlResolver $siteUrlResolver,
         private readonly DeploymentClient $deploymentClient,
         private readonly TranslatorInterface $translator,
+        private readonly HostResolver $hostResolver,
+        private readonly SslCertificateClient $sslCertificateClient,
     ) {
     }
 
@@ -67,12 +71,53 @@ class DeploymentHealthCheckProvider implements HealthCheckProviderInterface
 
         try {
             $response = $this->deploymentClient->fetchWithoutRedirect($url);
-        } catch (\Throwable) {
-            // The only check here whose failed call is a pass: no DNS record, no vhost, nothing answering means nothing to deduplicate, which is exactly what was asked
-            return [$this->row($url, $label, HealthCheckResult::STATUS_OK, 'label.health_check_host_variant_absent', ['%host%' => $variantHost])];
+        } catch (\Throwable $e) {
+            return [$this->judgeUnreachableVariant($url, $label, $variantHost, $e)];
         }
 
         return [$this->judgeHostVariant($url, $label, $variantHost, $host, $response)];
+    }
+
+    // A call that never completed says two opposite things, and used to be read as only one of them. Nothing resolving means nothing is served under that spelling, which is the pass this check looks for - but a host that does resolve and still refuses the connection is the worst of the three cases, and was being reported as that same pass. A crawler asking it for robots.txt gets no answer either, and an unreadable robots.txt is not taken as "allowed": Googlebot treats it as a blanket refusal and leaves the whole host alone, which Search Console then reports as "Blocked by robots.txt" on urls the site never blocked anywhere
+    private function judgeUnreachableVariant(string $url, string $label, string $variantHost, \Throwable $exception): array
+    {
+        if (!$this->hostResolver->resolves($variantHost)) {
+            return $this->row($url, $label, HealthCheckResult::STATUS_OK, 'label.health_check_host_variant_absent', ['%host%' => $variantHost]);
+        }
+
+        // Naming what the certificate does cover is what turns "the connection failed" into the one action to take - reissuing it for both spellings of the host. A certificate that covers this host fine leaves the refusal unexplained, and saying so plainly beats blaming the wrong thing
+        $names = $this->certificateNames($variantHost);
+
+        return [] !== $names && !$this->certificateCovers($names, $variantHost)
+            ? $this->row($url, $label, HealthCheckResult::STATUS_ERROR, 'label.health_check_host_variant_certificate', ['%host%' => $variantHost, '%names%' => implode(', ', $names)], ['issue' => 'host-variant-certificate', 'certificateNames' => $names])
+            : $this->row($url, $label, HealthCheckResult::STATUS_ERROR, 'label.health_check_host_variant_unreachable', ['%host%' => $variantHost, '%message%' => $exception->getMessage()], ['issue' => 'host-variant-unreachable', 'error' => $exception->getMessage()]);
+    }
+
+    // The hostnames the certificate this variant presents is valid for, or none at all when it presents nothing readable - the check is already reporting a failure either way, so an unreadable certificate only costs the explanation, never the row
+    // @return list<string>
+    private function certificateNames(string $host): array
+    {
+        try {
+            return $this->sslCertificateClient->fetchSubjectNames($host);
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    // Whether any name on the certificate covers this host, wildcards included - "*.example.com" covers "www.example.com" but never the apex itself, which is the asymmetry that leaves a "www" alias uncovered by a certificate issued for the apex alone (Let's Encrypt issues exactly what it was asked for, and adding the alias to the hosting panel doesn't reissue it)
+    // @param list<string> $names
+    private function certificateCovers(array $names, string $host): bool
+    {
+        $host = strtolower($host);
+        $parent = str_contains($host, '.') ? substr($host, strpos($host, '.') + 1) : null;
+
+        foreach ($names as $name) {
+            if ($name === $host || (null !== $parent && str_starts_with($name, '*.') && substr($name, 2) === $parent)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function judgeHostVariant(string $url, string $label, string $variantHost, string $host, array $response): array

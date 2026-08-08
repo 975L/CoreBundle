@@ -14,7 +14,9 @@ use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\DeploymentHealthCheckProvider;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\DeploymentClient;
+use c975L\ConfigBundle\Service\HostResolver;
 use c975L\ConfigBundle\Service\SiteUrlResolver;
+use c975L\ConfigBundle\Service\SslCertificateClient;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -58,6 +60,30 @@ class DeploymentHealthCheckProviderTest extends TestCase
         return $translator;
     }
 
+    // Nothing resolving is the default, so every test about a variant that answers states only what it answers - a host that does resolve while refusing the connection is a case of its own, declared by the tests below
+    private function createHostResolver(bool $resolves = false): HostResolver
+    {
+        $hostResolver = $this->createStub(HostResolver::class);
+        $hostResolver->method('resolves')->willReturn($resolves);
+
+        return $hostResolver;
+    }
+
+    // No readable certificate by default: only a test about a certificate has one to declare, and the provider treats an unreadable one as an unexplained refusal rather than as a certificate defect
+    private function createSslCertificateClient(?array $names = null): SslCertificateClient
+    {
+        $client = $this->createStub(SslCertificateClient::class);
+        if (null === $names) {
+            $client->method('fetchSubjectNames')->willThrowException(new \RuntimeException('TLS connection failed'));
+
+            return $client;
+        }
+
+        $client->method('fetchSubjectNames')->willReturn($names);
+
+        return $client;
+    }
+
     private function createProvider(?string $siteUrl, array $redirect = [], array $notFound = [], ?string $siteName = 'Example Site', array $variant = []): DeploymentHealthCheckProvider
     {
         $configService = $this->createConfigService($siteUrl, $siteName);
@@ -71,6 +97,34 @@ class DeploymentHealthCheckProviderTest extends TestCase
                 $variant + ['statusCode' => 301, 'location' => 'https://example.com/'],
             ),
             $this->createTranslator(),
+            $this->createHostResolver(),
+            $this->createSslCertificateClient(),
+        );
+    }
+
+    // The provider a variant that resolves is judged by: the http call fails the way a refused TLS handshake makes it fail, and what the certificate says decides which failure it is
+    private function createProviderWithUnreachableVariant(?array $certificateNames): DeploymentHealthCheckProvider
+    {
+        $configService = $this->createConfigService('https://example.com');
+        $client = $this->createStub(DeploymentClient::class);
+        $client->method('fetchWithoutRedirect')->willReturnCallback(
+            static function (string $url) {
+                if (str_contains($url, 'www.')) {
+                    throw new \RuntimeException('SSL: certificate verify failed');
+                }
+
+                return ['statusCode' => 301, 'location' => 'https://example.com/'];
+            }
+        );
+        $client->method('fetch')->willReturn(['statusCode' => 404, 'content' => self::SITE_PAGE]);
+
+        return new DeploymentHealthCheckProvider(
+            $configService,
+            new SiteUrlResolver($configService),
+            $client,
+            $this->createTranslator(),
+            $this->createHostResolver(true),
+            $this->createSslCertificateClient($certificateNames),
         );
     }
 
@@ -209,7 +263,7 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $client->method('fetchWithoutRedirect')->willReturn(['statusCode' => 301, 'location' => 'https://www.example.com/']);
         $client->method('fetch')->willReturn(['statusCode' => 404, 'content' => self::SITE_PAGE]);
 
-        $results = (new DeploymentHealthCheckProvider($configService, new SiteUrlResolver($configService), $client, $this->createTranslator()))->runChecks();
+        $results = (new DeploymentHealthCheckProvider($configService, new SiteUrlResolver($configService), $client, $this->createTranslator(), $this->createHostResolver(), $this->createSslCertificateClient()))->runChecks();
 
         $this->assertSame('https://example.com/', $results[2]['url']);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
@@ -222,13 +276,52 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $client->method('fetch')->willThrowException(new \RuntimeException('Connection refused'));
 
         $configService = $this->createConfigService('https://example.com');
-        $provider = new DeploymentHealthCheckProvider($configService, new SiteUrlResolver($configService), $client, $this->createTranslator());
+        $provider = new DeploymentHealthCheckProvider($configService, new SiteUrlResolver($configService), $client, $this->createTranslator(), $this->createHostResolver(), $this->createSslCertificateClient());
         $results = $provider->runChecks();
 
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[0]['status']);
         $this->assertSame(['error' => 'Connection refused'], $results[0]['details']);
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[1]['status']);
-        // The one check here whose failed call is a pass: nothing answering under the other host is nothing to deduplicate
+        // The one check here whose failed call is a pass, and only because nothing resolves under the other host: there is no second site to deduplicate
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);
+    }
+
+    // The case that used to be reported as a pass: the variant resolves, so something is served there, and the connection is refused anyway. A crawler gets no robots.txt out of it and treats that as a refusal to crawl the whole host
+    public function testRunChecksStatusIsErrorWhenAResolvingVariantRefusesTheConnection(): void
+    {
+        $results = $this->createProviderWithUnreachableVariant(['example.com'])->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
+        $this->assertSame('host-variant-certificate', $results[2]['details']['issue']);
+        $this->assertSame(['example.com'], $results[2]['details']['certificateNames']);
+    }
+
+    // The shape a shared host answers with when the alias was never added to the certificate: the hosting provider's own, naming the site nowhere. Every name is kept, since naming what the certificate does cover is what turns a failed connection into "reissue it for both spellings of the host"
+    public function testRunChecksReportsEveryCertificateNameWhenTheyAllExcludeTheVariant(): void
+    {
+        $results = $this->createProviderWithUnreachableVariant(['preview.infomaniak.website', '*.infomaniak.site'])->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
+        $this->assertSame('host-variant-certificate', $results[2]['details']['issue']);
+        $this->assertSame(['preview.infomaniak.website', '*.infomaniak.site'], $results[2]['details']['certificateNames']);
+    }
+
+    // A wildcard covering the variant leaves the refusal unexplained, and blaming the certificate would send the fix in the wrong direction
+    public function testRunChecksDoesNotBlameACertificateCoveringTheVariantThroughAWildcard(): void
+    {
+        $results = $this->createProviderWithUnreachableVariant(['example.com', '*.example.com'])->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
+        $this->assertSame('host-variant-unreachable', $results[2]['details']['issue']);
+    }
+
+    // An unreadable certificate costs the explanation, never the row
+    public function testRunChecksStatusIsErrorWhenAResolvingVariantPresentsNoReadableCertificate(): void
+    {
+        $results = $this->createProviderWithUnreachableVariant(null)->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $results[2]['status']);
+        $this->assertSame('host-variant-unreachable', $results[2]['details']['issue']);
+        $this->assertSame('SSL: certificate verify failed', $results[2]['details']['error']);
     }
 }
