@@ -16,6 +16,8 @@ class StylesheetRegistry
 {
     private const APP_ASSETS_PREFIX = 'assets/';
 
+    private const GENERATED_PREFIX = 'bundles/build/';
+
     /** @var BundleStylesheetProviderInterface[] */
     private array $providers = [];
 
@@ -49,6 +51,12 @@ class StylesheetRegistry
     public static function isAppAsset(string $path): bool
     {
         return str_starts_with($path, self::APP_ASSETS_PREFIX);
+    }
+
+    // Whether it is one of the sheets written at runtime under public/bundles/build/ - the theme variables and the uploaded @font-face rules compiled from the back-office, plus the concatenated site.css itself. None of them goes through an asset manifest, so callers version them by their own mtime rather than by a hash. Same reason isExternal()/isAppAsset() live here: what a registered path means stays defined once
+    public static function isGenerated(string $path): bool
+    {
+        return str_starts_with($path, self::GENERATED_PREFIX);
     }
 
     // The AssetMapper logical path of an app asset, i.e. what asset() resolves in dev - its root being the assets/ directory itself, the prefix registered paths carry is not part of it

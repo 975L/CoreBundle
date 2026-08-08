@@ -103,6 +103,70 @@ class StylesheetExtensionTest extends TestCase
         $this->assertSame(['https://example.com/assets/styles/themes/ui-abc123.css'], $extension->getBundleStylesheets());
     }
 
+    // A sheet generated under public/bundles/build/ carries no AssetMapper hash, so nothing but its own mtime can bust the browser's copy: without it, a theme color or font changed in the back-office keeps showing the previous value until a hard reload
+    public function testGetBundleStylesheetsAppendsMtimeToAGeneratedSheetInDebug(): void
+    {
+        $this->createCompiledSiteCss();
+        file_put_contents($this->projectDir . '/public/bundles/build/site-theme.css', ':root {}');
+        $mtime = filemtime($this->projectDir . '/public/bundles/build/site-theme.css');
+
+        $registry = $this->createStub(StylesheetRegistry::class);
+        $registry->method('all')->willReturn(['bundles/build/site-theme.css']);
+
+        $packages = $this->createMock(Packages::class);
+        $packages->expects($this->once())->method('getUrl')->with('bundles/build/site-theme.css')->willReturn('/bundles/build/site-theme.css');
+
+        $extension = new StylesheetExtension(
+            $registry,
+            $packages,
+            $this->createRequestStack(Request::create('https://example.com/')),
+            true,
+            $this->projectDir
+        );
+
+        $this->assertSame(["https://example.com/bundles/build/site-theme.css?v={$mtime}"], $extension->getBundleStylesheets());
+    }
+
+    // A bundle's own sheet is versioned by AssetMapper already, so it must not pick up a second, mtime-based token
+    public function testGetBundleStylesheetsLeavesANonGeneratedSheetUnversionedInDebug(): void
+    {
+        $registry = $this->createStub(StylesheetRegistry::class);
+        $registry->method('all')->willReturn(['bundles/c975lui/css/styles.min.css']);
+
+        $packages = $this->createStub(Packages::class);
+        $packages->method('getUrl')->willReturn('/assets/bundles/c975lui/css/styles.min-abc123.css');
+
+        $extension = new StylesheetExtension(
+            $registry,
+            $packages,
+            $this->createRequestStack(Request::create('https://example.com/')),
+            true,
+            $this->projectDir
+        );
+
+        $this->assertSame(['https://example.com/assets/bundles/c975lui/css/styles.min-abc123.css'], $extension->getBundleStylesheets());
+    }
+
+    // A generated sheet that doesn't exist yet (a fresh install, before the first back-office save) is linked as-is rather than with a "?v=" carrying filemtime()'s false
+    public function testGetBundleStylesheetsLinksAMissingGeneratedSheetWithoutCacheBustingParamInDebug(): void
+    {
+        $registry = $this->createStub(StylesheetRegistry::class);
+        $registry->method('all')->willReturn(['bundles/build/site-theme.css']);
+
+        $packages = $this->createStub(Packages::class);
+        $packages->method('getUrl')->willReturn('/bundles/build/site-theme.css');
+
+        $extension = new StylesheetExtension(
+            $registry,
+            $packages,
+            $this->createRequestStack(Request::create('https://example.com/')),
+            true,
+            $this->projectDir
+        );
+
+        $this->assertSame(['https://example.com/bundles/build/site-theme.css'], $extension->getBundleStylesheets());
+    }
+
     // Absolute URLs (CDN resources) are passed through untouched, never run through Packages::getUrl()
     public function testGetBundleStylesheetsKeepsAbsoluteHttpUrlUnchangedInDebug(): void
     {

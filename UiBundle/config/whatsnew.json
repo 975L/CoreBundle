@@ -31,6 +31,11 @@
                 "en": "The thumbnail of a document laid out in width now shows its whole first page, instead of a narrow strip of its left edge",
                 "fr": "La vignette d'un document mis en page à l'italienne montre désormais sa première page entière, au lieu d'une bande étroite de son bord gauche",
                 "es": "La miniatura de un documento apaisado muestra ahora su primera página entera, en lugar de una franja estrecha de su borde izquierdo"
+            },
+            {
+                "en": "A color or a font changed in the settings now shows on the site straight away, instead of keeping its previous value until you reload the page from scratch",
+                "fr": "Une couleur ou une police modifiée dans les réglages s'affiche désormais tout de suite sur le site, au lieu de garder sa valeur précédente jusqu'à un rechargement complet de la page",
+                "es": "Un color o una tipografía modificados en los ajustes se muestran ahora enseguida en el sitio, en lugar de conservar su valor anterior hasta recargar la página por completo"
             }
         ]
     },

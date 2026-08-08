@@ -1591,6 +1591,8 @@ UiBundle provides a mechanism for bundles to declare their stylesheets automatic
 
 In `kernel.debug`, `bundle_stylesheets()` returns each bundle's stylesheet separately, for instant reload on every CSS edit. Outside debug (prod), it instead returns a single URL pointing to `public/bundles/build/site.css`, a concatenation of every registered local stylesheet built by `StylesheetCacheWarmer` (auto-registered, runs on `bin/console cache:warmup` / on first request after a cache clear - like any optional Symfony cache warmer). CDN stylesheets (absolute URLs) are excluded from that file and keep being linked on their own in both cases.
 
+A sheet generated under `public/bundles/build/` — the compiled theme variables, the uploaded `@font-face` rules, and `site.css` itself — goes through no asset manifest, so it is linked with its own mtime as a `?v=` query param. Without it, a color or a font changed in the back-office keeps showing its previous value until a hard reload, that directory being served `immutable` for a year by the sites' `.htaccess`.
+
 A **"Recompile stylesheets"** dashboard tile (`ROLE_SUPER_ADMIN`, Maintenance) rebuilds that file on demand. Saving a `theme-` config already rebuilds it, but an edit to a site's own `assets/styles/themes/*.css` is a file change no entity event reports — without the tile it would only reach the compiled sheet at the next `cache:warmup`, which on a managed host with no console never comes.
 
 ### Where the form layer lives

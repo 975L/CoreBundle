@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.4.2
+
+A generated stylesheet is versioned by its own mtime
+
+### UiBundle
+
+- Added `StylesheetRegistry::isGenerated()`, telling a sheet written under `bundles/build/` from one an asset manifest versions (08/08/2026)
+- `StylesheetExtension` appends a generated sheet's mtime as a cache-busting param, a theme color or font edited in the back-office no longer waiting for a hard reload (08/08/2026)
+- A generated sheet not written yet is linked without a `?v=` param, rather than with `filemtime()`'s false (08/08/2026)
+- `StylesheetExtension::resolve()` holds the per-path resolution the `array_map()` callback carried (08/08/2026)
+- README documents versioning a generated sheet by its mtime (08/08/2026)
+- `StylesheetRegistryTest`, `StylesheetExtensionTest` cover the generated path (08/08/2026)
+
 ## v1.4.1
 
 An importmap entry is checked against what AssetMapper can serve

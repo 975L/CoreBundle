@@ -55,16 +55,26 @@ class StylesheetExtension extends AbstractExtension
             ];
         }
 
-        return array_map(
-            // An app's own sheet under assets/ is served by AssetMapper, whose root is that directory: the prefix the registered path carries is not part of its logical path
-            fn (string $path) => StylesheetRegistry::isExternal($path)
-                ? $path
-                : $baseUrl . $this->packages->getUrl(StylesheetRegistry::logicalPath($path)),
-            $this->registry->all()
-        );
+        return array_map(fn (string $path) => $this->resolve($path, $baseUrl), $this->registry->all());
     }
 
-    // bundles/build/site.css is generated at cache-warmup time (see StylesheetCacheWarmer), outside any asset-manifest build step - Packages::getUrl() has no way to know its content changed on a later warmup/deploy, so its own versioning can't be relied on for this specific path. Appending the compiled file's own mtime as a query param busts caches independently of that.
+    // Turns a registered stylesheet path into the URL linked in the page
+    private function resolve(string $path, string $baseUrl): string
+    {
+        if (StylesheetRegistry::isExternal($path)) {
+            return $path;
+        }
+
+        // An app's own sheet under assets/ is served by AssetMapper, whose root is that directory: the prefix the registered path carries is not part of its logical path
+        $url = $baseUrl . $this->packages->getUrl(StylesheetRegistry::logicalPath($path));
+
+        // A generated sheet carries no AssetMapper hash, so its own mtime is the only thing that can bust the browser's copy - without it, a theme color or font changed in the back-office keeps showing the previous value until a hard reload, the stale file leaving --c975l-color-primary/--c975l-font-family-title undefined and every rule falling back to the shipped default
+        $mtime = StylesheetRegistry::isGenerated($path) ? @filemtime($this->projectDir . '/public/' . $path) : false;
+
+        return false !== $mtime ? $this->addCacheBustingParam($url, $mtime) : $url;
+    }
+
+    // A stylesheet under bundles/build/ is generated outside any asset-manifest build step (see StylesheetCacheWarmer and ThemeVariablesCssListener) - Packages::getUrl() has no way to know its content changed on a later warmup, deploy or back-office edit, so its own versioning can't be relied on for those paths. Appending the file's own mtime as a query param busts caches independently of that.
     private function addCacheBustingParam(string $url, int $mtime): string
     {
         $separator = str_contains($url, '?') ? '&' : '?';
