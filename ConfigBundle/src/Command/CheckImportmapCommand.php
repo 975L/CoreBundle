@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Command;
 
 use c975L\ConfigBundle\Management\ImportmapRegistry;
 use c975L\ConfigBundle\Service\ImportmapSpecifierLocator;
+use Symfony\Component\AssetMapper\AssetMapperRepository;
 use Symfony\Component\AssetMapper\ImportMap\ImportMapConfigReader;
 use Symfony\Component\AssetMapper\ImportMap\ImportMapEntries;
 use Symfony\Component\AssetMapper\ImportMap\ImportMapEntry;
@@ -34,6 +35,8 @@ class CheckImportmapCommand extends Command
         private readonly ImportmapSpecifierLocator $specifierLocator,
         #[Autowire(service: 'asset_mapper.importmap.config_reader')]
         private readonly ImportMapConfigReader $configReader,
+        #[Autowire(service: 'asset_mapper.repository')]
+        private readonly AssetMapperRepository $assetMapperRepository,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
     ) {
@@ -63,9 +66,9 @@ class CheckImportmapCommand extends Command
                 continue;
             }
 
-            // An entry already there but pointing at a file that no longer exists, the provider having moved with its bundle - which is what merging ConfigBundle and UiBundle into c975l/core-bundle did to every path under vendor/. The registry resolves the declaring bundle's real directory, so it is the authority here; the guard on file_exists keeps a deliberate override in place as long as it still resolves
+            // An entry already there but pointing where AssetMapper can't serve from, the provider having moved with its bundle - which is what merging ConfigBundle and UiBundle into c975l/core-bundle did to every path under vendor/. The registry resolves the declaring bundle's real directory, so it is the authority here; the guard on isServable keeps a deliberate override in place as long as it still resolves
             $current = $entries->get($importName);
-            if ($current->path !== $data['path'] && !$this->exists($current->path)) {
+            if ($current->path !== $data['path'] && !$this->isServable($current->path)) {
                 $entries->add($entry);
                 $repaired[] = sprintf('%s: %s → %s', $importName, $current->path, $data['path']);
             }
@@ -95,14 +98,14 @@ class CheckImportmapCommand extends Command
         return Command::SUCCESS;
     }
 
-    // Reports a local entry whose file is gone and that no provider claims, so nothing above could repair it. AssetMapper only raises it when a page actually renders that entrypoint - a 500 on the front end for what is a one-line fix in importmap.php. Remote packages are skipped: their path lives under assets/vendor/ and is restored by "importmap:install", not by this command
+    // Reports a local entry AssetMapper can't serve and that no provider claims, so nothing above could repair it. AssetMapper only raises it when a page actually renders that entrypoint - a 500 on the front end for what is a one-line fix in importmap.php. Remote packages are skipped: their path lives under assets/vendor/ and is restored by "importmap:install", not by this command
     private function warnOnDeadPaths(ImportMapEntries $entries, SymfonyStyle $io): void
     {
         $known = $this->importmapRegistry->all();
         $dead = [];
 
         foreach ($entries as $entry) {
-            if ($entry->isRemotePackage() || isset($known[$entry->importName]) || $this->exists($entry->path)) {
+            if ($entry->isRemotePackage() || isset($known[$entry->importName]) || $this->isServable($entry->path)) {
                 continue;
             }
 
@@ -111,16 +114,17 @@ class CheckImportmapCommand extends Command
 
         if ($dead) {
             $io->warning(sprintf(
-                "Declared in importmap.php but missing from disk: %s.\nAny page loading one of them answers 500. Fix the path, or drop the entry if what it pointed at is gone.",
+                "Declared in importmap.php but out of AssetMapper's reach - gone from disk, or sitting outside the mapped paths: %s.\nAny page loading one of them answers 500. Fix the path, or drop the entry if what it pointed at is gone.",
                 implode(', ', $dead)
             ));
         }
     }
 
-    // The reader is the authority on what an importmap "path" means: relative to importmap.php's own directory when it starts with a ".", already a filesystem path otherwise. Spelled out here by hand, an absolute path lost its leading slash and was looked for under the project root, so an override pointing at a file really there was reported missing and repointed
-    private function exists(string $path): bool
+    // Whether AssetMapper can actually serve that path, which "the file is there" doesn't answer: a file outside the mapped paths exists all the same and still brings the page down. That is a working copy's normal state, a c975L bundle symlinked into vendor/ for development resolving to its own repository - an entry written then keeps pointing there once Composer puts the real package back, and the file it names is still on disk. Includes the is_file check (see AssetMapperRepository), and resolves symlinks on both sides, so the same entry passes while the symlink is up and is repaired the moment it goes
+    private function isServable(string $path): bool
     {
-        return is_file($this->configReader->convertPathToFilesystemPath($path));
+        // The reader is the authority on what an importmap "path" means: relative to importmap.php's own directory when it starts with a ".", already a filesystem path otherwise. Spelled out here by hand, an absolute path lost its leading slash and was looked for under the project root, so an override pointing at a file really there was reported missing and repointed
+        return null !== $this->assetMapperRepository->findLogicalPath($this->configReader->convertPathToFilesystemPath($path));
     }
 
     // A c975L bundle's own JS may import a third-party package by bare specifier (e.g. ConfigBundle's controllers-admin.js importing "@symfony/ux-chartjs" for the health check chart). That entry is normally written by the package's own Flex recipe, which doesn't always run - and when it's missing the browser can't resolve the specifier, so the whole module fails and every Stimulus controller it registers is lost, back-office drag-and-drop included. Never an entrypoint: these are imported by another module, not loaded on their own

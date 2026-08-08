@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Management\ImportmapRegistry;
 use c975L\ConfigBundle\Service\BundleLocator;
 use c975L\ConfigBundle\Service\ImportmapSpecifierLocator;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\AssetMapper\AssetMapperRepository;
 use Symfony\Component\AssetMapper\ImportMap\ImportMapConfigReader;
 use Symfony\Component\AssetMapper\ImportMap\RemotePackageStorage;
 use Symfony\Component\Console\Command\Command;
@@ -61,6 +62,18 @@ class CheckImportmapCommandTest extends TestCase
         return new BundleLocator($metadata);
     }
 
+    // The directories a Symfony application maps: its own assets/, plus the assets/ of every installed package, a bundle being free to sit a directory deeper (c975l/core-bundle). Anything else on disk is unreachable for AssetMapper, which is the whole point of what the command checks. Not in debug mode: a fabricated project doesn't have them all, and a missing one is to be skipped rather than raised
+    private function assetMapperRepository(): AssetMapperRepository
+    {
+        $paths = [$this->projectDir . '/assets' => ''];
+
+        foreach (array_merge(glob($this->projectDir . '/vendor/*/*/assets') ?: [], glob($this->projectDir . '/vendor/*/*/*/assets') ?: []) as $directory) {
+            $paths[$directory] = '';
+        }
+
+        return new AssetMapperRepository($paths, $this->projectDir, [], true, false);
+    }
+
     private function createTester(array $providers): CommandTester
     {
         $configReader = new ImportMapConfigReader($this->importmapFile, new RemotePackageStorage(sys_get_temp_dir()));
@@ -69,6 +82,7 @@ class CheckImportmapCommandTest extends TestCase
             new ImportmapRegistry($providers, new BundleLocator([]), $this->projectDir),
             new ImportmapSpecifierLocator($this->bundleLocator(), $this->projectDir),
             $configReader,
+            $this->assetMapperRepository(),
             $this->projectDir,
         ));
     }
@@ -101,15 +115,15 @@ class CheckImportmapCommandTest extends TestCase
         $this->assertTrue($written['@c975l/config-bundle/controllers-admin.js']['entrypoint']);
     }
 
-    // An override is a deliberate choice as long as what it points at is really there, so the provider's own path never wins over it
+    // An override is a deliberate choice as long as what it points at is really servable, so the provider's own path never wins over it
     public function testExecuteNeverTouchesAnOverrideThatStillResolves(): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/a-custom-override-path.js', '');
+        (new Filesystem())->dumpFile($this->projectDir . '/assets/a-custom-override-path.js', '');
         (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
-                '@c975l/config-bundle/controllers-admin.js' => ['path' => './a-custom-override-path.js', 'entrypoint' => false],
+                '@c975l/config-bundle/controllers-admin.js' => ['path' => './assets/a-custom-override-path.js', 'entrypoint' => false],
             ];
 
             PHP);
@@ -124,7 +138,7 @@ class CheckImportmapCommandTest extends TestCase
         $this->assertStringContainsString('already up to date', $tester->getDisplay());
 
         $written = require $this->importmapFile;
-        $this->assertSame('./a-custom-override-path.js', $written['@c975l/config-bundle/controllers-admin.js']['path']);
+        $this->assertSame('./assets/a-custom-override-path.js', $written['@c975l/config-bundle/controllers-admin.js']['path']);
     }
 
     // What merging ConfigBundle and UiBundle into c975l/core-bundle did to every path under vendor/: the entry is there, its file is not, and only the provider knows where the bundle went
@@ -156,7 +170,7 @@ class CheckImportmapCommandTest extends TestCase
     // An override may be written as a plain filesystem path, which the importmap reads as-is rather than relative to the project root - spelled out by hand, its leading slash was stripped and the file was looked for under that root instead
     public function testExecuteNeverTouchesAnOverrideWrittenAsAnAbsolutePath(): void
     {
-        $override = $this->projectDir . '/shared/a-custom-override-path.js';
+        $override = $this->projectDir . '/assets/shared/a-custom-override-path.js';
         (new Filesystem())->dumpFile($override, '');
         (new Filesystem())->dumpFile($this->importmapFile, <<<PHP
             <?php
@@ -174,7 +188,7 @@ class CheckImportmapCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertStringContainsString('already up to date', $tester->getDisplay());
-        $this->assertStringNotContainsString('missing from disk', $tester->getDisplay());
+        $this->assertStringNotContainsString("out of AssetMapper's reach", $tester->getDisplay());
 
         $written = require $this->importmapFile;
         $this->assertSame($override, $written['@c975l/config-bundle/controllers-admin.js']['path']);
@@ -183,12 +197,12 @@ class CheckImportmapCommandTest extends TestCase
     // Same for a path climbing out of a subdirectory: only the reader's own resolution reads it the way AssetMapper will
     public function testExecuteNeverTouchesAnOverrideReachingUpADirectory(): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/a-custom-override-path.js', '');
+        (new Filesystem())->dumpFile($this->projectDir . '/assets/a-custom-override-path.js', '');
         (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
-                '@c975l/config-bundle/controllers-admin.js' => ['path' => './assets/../a-custom-override-path.js', 'entrypoint' => false],
+                '@c975l/config-bundle/controllers-admin.js' => ['path' => './assets/js/../a-custom-override-path.js', 'entrypoint' => false],
             ];
 
             PHP);
@@ -200,7 +214,57 @@ class CheckImportmapCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertStringContainsString('already up to date', $tester->getDisplay());
-        $this->assertStringNotContainsString('missing from disk', $tester->getDisplay());
+        $this->assertStringNotContainsString("out of AssetMapper's reach", $tester->getDisplay());
+    }
+
+    // The working copy's own trap: a c975L bundle symlinked into vendor/ for development resolves to its repository, and the path written then keeps pointing there once Composer puts the real package back. The file is still on disk, so "does it exist" saw nothing wrong, and the entry brought every page loading it down until it was fixed by hand
+    public function testExecuteRepointsAnEntryPointingOutsideTheMappedPaths(): void
+    {
+        (new Filesystem())->dumpFile($this->projectDir . '/vendor/c975l/core-bundle/UiBundle/assets/js/pointer-sort.js', '');
+
+        // Stands for the bundle's own repository, where the symlink used to lead: a real file, mapped by nothing
+        (new Filesystem())->dumpFile($this->projectDir . '/dev-checkout/UiBundle/assets/js/pointer-sort.js', '');
+        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+            <?php
+
+            return [
+                '@c975l/ui-bundle/pointer-sort.js' => ['path' => './dev-checkout/UiBundle/assets/js/pointer-sort.js'],
+            ];
+
+            PHP);
+
+        $provider = $this->createProvider([
+            '@c975l/ui-bundle/pointer-sort.js' => ['path' => './vendor/c975l/core-bundle/UiBundle/assets/js/pointer-sort.js'],
+        ]);
+        $tester = $this->createTester([$provider]);
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertStringContainsString('1 entry(ies) repointed', $tester->getDisplay());
+
+        $written = require $this->importmapFile;
+        $this->assertSame('./vendor/c975l/core-bundle/UiBundle/assets/js/pointer-sort.js', $written['@c975l/ui-bundle/pointer-sort.js']['path']);
+    }
+
+    // Same path, but claimed by no provider: nothing can repair it, so it is at least reported rather than left to surface as a 500
+    public function testExecuteWarnsAboutAPathOutsideTheMappedPathsNoProviderClaims(): void
+    {
+        (new Filesystem())->dumpFile($this->projectDir . '/dev-checkout/some-asset.js', '');
+        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+            <?php
+
+            return [
+                'app' => ['path' => './dev-checkout/some-asset.js', 'entrypoint' => true],
+            ];
+
+            PHP);
+
+        $tester = $this->createTester([]);
+        $tester->execute([]);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertStringContainsString("out of AssetMapper's reach", $tester->getDisplay());
+        $this->assertStringContainsString('./dev-checkout/some-asset.js', $tester->getDisplay());
     }
 
     // A dead path no provider claims can't be repaired, only reported - it answers 500 on the first page rendering it, and nothing else says so
@@ -219,7 +283,7 @@ class CheckImportmapCommandTest extends TestCase
         $tester->execute([]);
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
-        $this->assertStringContainsString('missing from disk', $tester->getDisplay());
+        $this->assertStringContainsString("out of AssetMapper's reach", $tester->getDisplay());
         $this->assertStringContainsString('./assets/gone.js', $tester->getDisplay());
     }
 

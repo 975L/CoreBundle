@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.4.1
+
+An importmap entry is checked against what AssetMapper can serve
+
+### ConfigBundle
+
+- `c975l:config:check-importmap` judges a path by what AssetMapper can serve, rather than by the file being on disk (08/08/2026)
+- An entry left pointing at a bundle's development checkout is repointed once Composer puts the real package back (08/08/2026)
+- The warning names a path out of AssetMapper's reach, gone from disk or outside the mapped paths alike (08/08/2026)
+- README documents what makes a customized path survive (08/08/2026)
+- `CheckImportmapCommandTest` covers an entry sitting outside the mapped paths (08/08/2026)
+
 ## v1.4
 
 A video platform is declared once for the whole ecosystem
