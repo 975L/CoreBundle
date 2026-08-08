@@ -1,5 +1,9 @@
 # ChangeLog
 
+## v1.4.2.1
+
+- Updated Readme
+
 ## v1.4.2
 
 A generated stylesheet is versioned by its own mtime

@@ -1413,6 +1413,22 @@ The c975L convention puts a bundle's uploads under `public/medias/<bundle>/`, an
 
 Each run also writes `var/backup/manifest.json`, naming the archives folder, the mirrored paths and the local retention window. Whoever copies this server offsite reads that file instead of knowing the layout, so a bundle installed tomorrow brings its folders along without a line changed on the machine doing the copying.
 
+```json
+{
+    "site": "example.com",
+    "generatedAt": "2026-08-07T06:07:03+02:00",
+    "archives": "var/backup",
+    "mirror": [
+        "public/medias/site",
+        "public/medias/fonts",
+        "private/invoices"
+    ],
+    "retentionDays": 15
+}
+```
+
+Every path is relative to the project directory, as everything else here is. `site` is the site's domain, falling back to the database name on an install that declares none. `retentionDays` is there so the puller knows how long the server keeps its own archives, and can keep a longer window rather than downloading again what production has just purged.
+
 **Verifying rather than assuming**: every archive is read back and checked (`bzip2 --test`) before being counted, its size recorded, and the number of tables actually dumped compared against `INFORMATION_SCHEMA`. A table is reported only once its dump exists, with its size — a table listed in the report used to prove nothing about it having been saved. Anything discarded as empty is named in the report instead of vanishing silently.
 
 **Retention on the server**: each run purges the dated `var/backup/YYYY/YYYY-MM/YYYY-MM-DD` folders older than `site-backup-retention-days` (15 by default, `0` keeping every archive). Whoever copies the archives offsite should keep a *longer* window than this one — otherwise the next copy downloads again what it has just purged locally. The point is that production always holds a rolling set of restorable archives: deleting them as soon as they were copied off left a gap where the only surviving copy was the offsite one.
@@ -1423,7 +1439,28 @@ A backup that never leaves the machine it protects is not a backup. Until now no
 
 **Push** — the site sends, through [rclone](https://rclone.org). Set `site-backup-offsite-target` to a remote as rclone spells it, `storagebox:975l.com`. Archives go to `<target>/backup` on every run; the mirrored folders go to `<target>/files/<path>` on the nightly `c975l:config:backup:offsite`.
 
-**Pull** — an outside machine fetches the backups over SSH/SFTP and calls `c975l:config:backup:offsite --ack` afterwards. Leave `site-backup-offsite-target` empty: nothing is sent, no task fails, and the dashboard still knows the files left. This is the safer of the two — a server holding no credentials to its own backup is a server that can't destroy it — at the cost of a machine to keep.
+**Pull** — an outside machine fetches the backups over SSH/SFTP and calls `c975l:config:backup:offsite --ack` afterwards. Leave `site-backup-offsite-target` empty: nothing is sent, no task fails, and the dashboard still knows the files left. This is the safer of the two — a server holding no credentials to its own backup is a server that can't destroy it — at the cost of a machine to keep. What that machine runs, nothing of it living on the site:
+
+```bash
+#!/bin/sh
+SITE=site@example.com
+ROOT=/home/site/example.com
+HERE=/srv/backups/example.com
+
+# The dated archives, kept here for longer than the site's own retention window
+rsync -a "$SITE:$ROOT/var/backup/" "$HERE/archives/"
+
+# The mirrored folders, read off the manifest rather than written out here: a bundle
+# installed tomorrow brings its own along without this script changing
+ssh "$SITE" "cat $ROOT/var/backup/manifest.json" | jq -r '.mirror[]' | while read -r path; do
+    rsync -a "$SITE:$ROOT/$path/" "$HERE/files/$path/"
+done
+
+# Without this the dashboard reports a site that never backs up offsite
+ssh "$SITE" "php $ROOT/bin/console c975l:config:backup:offsite --ack"
+```
+
+Run it after the site's own backup rather than at the same hour, and give the account pulling read-only access: the whole point of this model is that neither machine can destroy what the other holds.
 
 **Where rclone's own configuration is read from**: `rclone.conf` at the root of the project if the install has one, rclone's default `~/.config/rclone/rclone.conf` otherwise. Prefer the first. Left to itself rclone resolves `HOME`, which works in an interactive SSH session and often doesn't under a task scheduler — it then starts with no remote configured and reports the target as unknown, a failure that reads exactly like "rclone doesn't work on this host". The root rather than `var/`: `var/` is a runtime scratch folder nobody writes to by hand, and the backup scripts that skip it would skip this file too — the one file whose loss stops the backups from leaving. The path is fixed in code, so no back-office entry can aim rclone at a file of someone else's choosing, and `c975l:scaffold:install` adds it to `.gitignore`.
 
@@ -1486,6 +1523,30 @@ The first line is the one no report email can ever cover: an email only exists w
 The size-drop check compares against the previous run rather than a fixed threshold: what a healthy archive weighs is entirely site-specific, and a dump holding half of last week's is the failure mode no per-table error ever reports — every table having dumped "successfully" into a truncated result.
 
 None of this proves a *restore* works. Only restoring does, and that stays a manual exercise worth doing on the offsite copy once in a while.
+
+### Restoring
+
+No command does this — a restore is deliberate, and a `c975l:config:restore` on a live site is a foot-gun nobody needs. The four sources come back in the order they depend on each other:
+
+```bash
+# 1. The code, which was never backed up because it never had to be
+git clone git@github.com:you/example.com.git && cd example.com && composer install
+
+# 2. The database, into an empty schema
+mysql -e 'CREATE DATABASE example'
+tar -xjf MYSQL_-_example_-_2026-08-07_-_12-58_-_Tables.sql.tar.bz2
+cat example_-_*.sql | mysql example
+
+# 3. What is neither in git nor in the database - .env.local first among them
+tar -xjf FILES_-_example.com_-_2026-08-07_-_12-58.tar.bz2 -C /path/to/example.com
+
+# 4. The uploads, from wherever they were mirrored
+rclone copy storagebox:975l.com/files/public/medias public/medias
+```
+
+Three things about step 2. The archive holds **one `.sql` file per table**, not a single dump, which is what lets a run report each table's size and lets a single table be restored on its own. Each file disables foreign key checks around itself, so `cat *.sql` in alphabetical order is safe and no dependency ordering has to be worked out. And the dumps carry `CREATE TABLE` without `DROP TABLE` — restoring over a schema that still has its tables fails rather than half-overwriting them, hence the empty database.
+
+Step 4 is a copy, not a sync: `rclone copy` never deletes at the destination, so a restore run against a folder that has already been partly repopulated adds to it instead of emptying it. Restore into a scratch database and a scratch folder when the point is to *test* the backup — which is the exercise the previous section says is the only proof, and it takes fifteen minutes.
 
 ### The weekly digest
 
