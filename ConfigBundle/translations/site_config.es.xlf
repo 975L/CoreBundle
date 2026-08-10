@@ -184,11 +184,7 @@
             </trans-unit>
             <trans-unit id="vejaRcq">
                 <source>description.site_status_key</source>
-                <target>Clave compartida enviada con el informe de estado, que debe definirse también en el destinatario</target>
-            </trans-unit>
-            <trans-unit id="Irrx453">
-                <source>description.site_status_url</source>
-                <target>URL a la que se envía el informe de estado del sitio (dejar vacío para no enviar nada)</target>
+                <target>Clave compartida que una consola debe presentar para leer el informe de estado de este sitio - al menos 32 caracteres, p. ej. «openssl rand -hex 32» (vacía, o más corta, no responde a nadie)</target>
             </trans-unit>
             <trans-unit id="nInyIwr">
                 <source>description.site_url</source>
@@ -385,10 +381,6 @@
             <trans-unit id="WEtCUat">
                 <source>label.site_status_key</source>
                 <target>Clave del informe de estado</target>
-            </trans-unit>
-            <trans-unit id="SvUFbR.">
-                <source>label.site_status_url</source>
-                <target>URL del informe de estado</target>
             </trans-unit>
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>

@@ -65,13 +65,18 @@ class MaintenanceListener
         return $response;
     }
 
-    // Everything that keeps working while the site is down: the admin's own way back in, Symfony's dev tools, an already-authenticated admin, and the maintenance token
+    // Everything that keeps working while the site is down: the admin's own way back in, the status report, Symfony's dev tools, an already-authenticated admin, and the maintenance token
     private function isExempt(Request $request): bool
     {
         $path = $request->getPathInfo();
 
         // /management and /login stay reachable so an admin can always log in and lift maintenance
         if (str_starts_with($path, '/management') || str_starts_with($path, '/login')) {
+            return true;
+        }
+
+        // The status report is what a console reads to know a site is mid-upgrade - serving it the HTML maintenance page hides exactly the moment it is most worth reading. Read-only, and already closed to anyone without the key
+        if (str_starts_with($path, '/status/report')) {
             return true;
         }
 

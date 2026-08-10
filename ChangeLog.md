@@ -1,5 +1,29 @@
 # ChangeLog
 
+## v1.5.0
+
+A console now asks a site what it runs, instead of waiting to be told
+
+### ConfigBundle
+
+- Added `StatusController`, serving the status report at `/status/report` to whoever presents the site's key (10/08/2026)
+- A key missing, wrong, or not configured at all is answered 404, none of the three saying which (10/08/2026)
+- The answer carries `Cache-Control: private, no-store`, its body depending on a header (10/08/2026)
+- Removed `c975l:status:send`, nothing leaving a site on its own anymore (10/08/2026) [BC-Break]
+- Removed the `site-status-url` config entry (10/08/2026) [BC-Break]
+- Added `c975l:status:dump`, printing the report the route serves, needing no key and no network (10/08/2026)
+- `site-status-key` now authenticates an incoming reader rather than signing an outgoing report (10/08/2026)
+- A `site-status-key` shorter than 32 characters is treated as no key at all (10/08/2026)
+- A refused status report request is logged as a warning, with the caller's IP and the reason (10/08/2026)
+- `/status/report` stays reachable while the site is in maintenance mode (10/08/2026)
+- Added `psr/log` to the required packages (10/08/2026)
+- Updated the `description.site_status_key` translations (10/08/2026)
+- Removed the two `site_status_url` translations (10/08/2026)
+- README documents the route, its key, and the `config/routes.yaml` import it needs (10/08/2026)
+- UPGRADE.md documents the move from a sent report to a read one (10/08/2026)
+- Added the `StatusControllerTest` and `StatusDumpCommandTest` cases, replacing `StatusSendCommandTest` (10/08/2026)
+- `MaintenanceListenerTest` covers the status report staying reachable during maintenance (10/08/2026)
+
 ## v1.4.3
 
 An url the sitemaps declare is checked against robots.txt

@@ -17,7 +17,7 @@ use Composer\InstalledVersions;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Kernel;
 
-// Builds the report the c975l:status:send command dumps or sends: what this site runs, and what its health checks last found. Read-only and side-effect free, so it can be dumped as often as wanted. Everything it collects is already known to the site - it aggregates, it never checks anything itself (see HealthCheckProviderInterface for that)
+// Builds the report the /status/report route serves and the c975l:status:dump command prints: what this site runs, and what its health checks last found. Read-only and side-effect free, so it can be asked for as often as wanted - which is what lets a console ask rather than wait to be told. Everything it collects is already known to the site - it aggregates, it never checks anything itself (see HealthCheckProviderInterface for that)
 class StatusReportBuilder
 {
     // Bumped whenever the payload's shape changes in a way a receiver has to care about, so a console can keep reading older sites while they are being updated

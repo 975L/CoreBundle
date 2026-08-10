@@ -1,5 +1,65 @@
 # UPGRADE
 
+## From `v1.4` to `v1.5`
+
+### The status report is now read from the site, not sent by it
+
+`c975l:status:send` **is gone**, and so is the `site-status-url` config entry it read. A site no longer posts
+its report anywhere: it serves it at `/status/report`, to a caller presenting the site's key in the
+`X-Status-Key` header, and answers 404 to everyone else — including when no key is configured, which stays the
+default and means "answer nobody".
+
+Sending could only ever say what was true when the site last spoke, and could never say the site was down: a
+receiver had to infer that from a silence, which takes days to become certain and reads as current data in the
+meantime. Asked instead, the answer is true at the moment it is read, and no answer at all is itself an answer.
+
+On each site:
+
+```bash
+composer update c975l/core-bundle
+php bin/console c975l:config:load-all
+php bin/console c975l:config:prune --force   # drops the now-undeclared site-status-url
+```
+
+Then **remove any scheduled entry or crontab line calling `c975l:status:send`** — it no longer exists, so it
+would fail on every run.
+
+Then **import ConfigBundle's controllers**, if the app does not already:
+
+```yaml
+# config/routes.yaml
+c975l_config:
+    resource: "@c975LConfigBundle/src/Controller/"
+    type: attribute
+```
+
+An app that did not import them — it was pointless until now, the bundle having no attribute-routed controller,
+everything under `Controller/Management/` being routed by EasyAdmin's dashboard — gets a 404 on
+`/status/report` until this import is there, and that 404 is indistinguishable from the one a wrong key gets.
+
+An app whose `access_control` protects more than `^/management` — a back office with a catch-all `^/` rule, say
+— has to let the new route through, or its callers meet a login redirect, which says as much about the url
+existing as a 404 would not:
+
+```yaml
+- { path: ^/status/report$, roles: PUBLIC_ACCESS }
+```
+
+`site-status-key` is unchanged and keeps its value; only its role moves, from signing what left the site to
+authenticating who may read it. A site that had no key set stays closed, as before. It now has to be **at least
+32 characters** — read online rather than merely presented in an outgoing report, a short key is guessable, so
+anything shorter is treated as no key at all and the site answers nobody.
+
+On the receiving side, whatever collected the reports has to **fetch them** instead of exposing an endpoint:
+
+```bash
+curl -H 'X-Status-Key: <that site's key>' https://example.com/status/report
+```
+
+The payload is unchanged, `version` included — a collector already reading it needs no other change.
+
+`php bin/console c975l:status:dump` replaces `c975l:status:send --dump`: same JSON, no key and no network needed.
+
 ## From `v1.3` to `v1.4`
 
 ### The offsite `deleted/` folder is now called `previous/`

@@ -121,6 +121,17 @@ class MaintenanceListenerTest extends TestCase
         $this->assertSame(503, $event->getResponse()->getStatusCode());
     }
 
+    // A console reads the report precisely to know a site is mid-upgrade: serving it the HTML maintenance page hides the very moment it is most worth reading
+    public function testStatusReportStaysReachableDuringMaintenance(): void
+    {
+        $listener = $this->createListener($this->createConfigService(['site-maintenance' => true]));
+        $event = $this->createRequestEvent('/status/report');
+
+        $listener->onKernelRequest($event);
+
+        $this->assertFalse($event->hasResponse());
+    }
+
     public function testDevToolRoutesStayReachableDuringMaintenance(): void
     {
         $listener = $this->createListener($this->createConfigService(['site-maintenance' => true]));

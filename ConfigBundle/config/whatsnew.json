@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-08-10",
+        "description": [
+            {
+                "en": "A dashboard watching several sites no longer waits for each of them to report in: it asks them at the moment you look at it. It can no longer show you week-old information as if it were current, and a site that has stopped answering shows up straight away instead of two days later",
+                "fr": "Un tableau de bord qui surveille plusieurs sites n'attend plus que chacun lui envoie de ses nouvelles : il les leur demande au moment où vous le regardez. Il ne peut donc plus vous présenter comme actuelle une information vieille d'une semaine, et un site qui ne répond plus se voit immédiatement au lieu de deux jours plus tard",
+                "es": "Un panel que vigila varios sitios ya no espera a que cada uno le dé noticias: se las pide en el momento en que usted lo mira. Por tanto ya no puede presentarle como actual una información de hace una semana, y un sitio que ha dejado de responder se ve de inmediato en lugar de dos días después"
+            }
+        ]
+    },
+    {
         "date": "2026-08-08",
         "description": [
             {

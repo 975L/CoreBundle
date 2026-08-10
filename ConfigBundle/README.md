@@ -28,7 +28,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - **Config entries** — [declare](#defining-config-entries-for-your-bundle) · [load](#loading-config-entries-into-the-database) · [prune](#pruning-entries-no-longer-declared) · [set from the CLI](#setting-values-from-the-command-line) · [encrypt](#encrypting-sensitive-values) · [read in PHP/Twig](#reading-config-values)
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
 - **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled)
-- **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--telling-another-system-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows)
+- **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows)
 - **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
 
 ## Features
@@ -56,7 +56,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps and the two cross-checked, redirect chains, deployment, and the content quality of every url any bundle declares
 - A Turbo-safe CSP nonce generator, and the `site_copyright()` Twig function
-- `c975l:status:send`, reporting what a site runs (versions, installed bundles, health check summary) to a url of your choosing — off unless configured, extensible via `StatusProviderInterface`
+- `/status/report`, serving what a site runs (versions, installed bundles, health check summary) to whoever presents its key — answers nobody unless configured, extensible via `StatusProviderInterface`, dumped locally by `c975l:status:dump`
 - Scheduled maintenance tasks declared by each bundle (`MaintenanceTaskProviderInterface`) rather than listed by the app, and spread over each install's own minutes (`ScheduleSpreader`) so sites sharing a server don't all run them at once
 - `c975l:dev-profile:run`, a dev-only command listing what the Symfony dev toolbar would flag on every page (n+1 queries, deprecations, missing translations...), extensible via `DevProfilePathProviderInterface`
 - The ecosystem's account layer: `User` CRUD, registration, email confirmation and password reset, on forms and emails seeded once and editable from the back-office afterwards
@@ -1806,30 +1806,44 @@ Each line needs a `text`, and may carry a `url` (rendered as a link next to the 
 
 `HealthCheckAdviceBuilder::build()` merges every registered provider's advice; two providers with something to say about the same result have their lines appended, neither overwrites the other. It's shared by the dashboard "Health check" page and any CRUD's own "Health check" tab (both render through the same `health_check/_table.html.twig`), so advice reads identically everywhere.
 
-## Status report — telling another system what this site runs
+## Status report — letting another system read what this site runs
 
-A site knows its own PHP and Symfony versions, the packages it was installed with, and what its last health check run found. `php bin/console c975l:status:send` gathers all of it into one JSON report and posts it wherever you want — a dashboard of your own, an automation tool, anything that accepts a POST.
+A site knows its own PHP and Symfony versions, the packages it was installed with, and what its last health check run found. The `/status/report` route serves all of it as one JSON report, to whoever presents this site's key.
 
-It is meant for whoever maintains **several** sites: one report per site, collected in one place, turns "which of my sites is still on an unsupported PHP" into a query instead of a spreadsheet you update by hand.
+It is meant for whoever maintains **several** sites: one console asking each of them, in one place, turns "which of my sites is still on an unsupported PHP" into a query instead of a spreadsheet you update by hand.
 
-**Nothing is sent until you configure a destination.** Installing this bundle never makes a site talk to a third party: with `site-status-url` empty, the command says so and exits successfully — which is also why a scheduled entry on a site that opted out doesn't report an error every week.
-
-```bash
-# See exactly what would leave the site - needs no url, no key, no network
-php bin/console c975l:status:send --dump
-
-# Send it
-php bin/console c975l:status:send
-```
-
-Two config entries drive it, both under the `system` group:
+**The site answers nobody until you set a key.** Installing this bundle never makes a site talk to a third party: with `site-status-key` empty there is nothing to compare a caller against, and every request gets a 404 — the same answer a wrong key gets, so a scanner finding the url learns nothing from it either way.
 
 | Config | Role |
 |---|---|
-| `site-status-url` | Where to POST the report. Empty (the default) sends nothing. |
-| `site-status-key` | Shared key, sent in the `X-Status-Key` header. Stored as a sensitive value. |
+| `site-status-key` | Shared key a caller must present in the `X-Status-Key` header. Stored as a sensitive value. At least 32 characters, e.g. `openssl rand -hex 32` — below that, and empty (the default), the site answers nobody. |
 
-The key travels in a **header**, never in the query string — an url ends up in the receiver's access log and in the `Referer` of anything it serves, a header does not. Use a different key per site, so one compromised site can't speak for the others. A url set without a key is refused rather than sent unauthenticated.
+The key is read online, not merely presented in an outgoing report: a short one is guessable against a route that says nothing but 200 or 404. Rather than accept a weak key, anything under 32 characters is treated as **no key at all**, so a site configured with `abc` answers nobody instead of answering whoever tries a dictionary. Refusals are logged as warnings with the caller's IP, which is what a `fail2ban` jail or a supervision rule can act on.
+
+This route is declared by attribute, so the app has to import the bundle's controllers — an app that has never had a routed controller from ConfigBundle gets a 404 until it does:
+
+```yaml
+# config/routes.yaml
+c975l_config:
+    resource: "@c975LConfigBundle/src/Controller/"
+    type: attribute
+```
+
+An app whose `access_control` covers more than `^/management` — a catch-all `^/` rule, say — also has to let the route through with `- { path: ^/status/report$, roles: PUBLIC_ACCESS }`, or its callers meet a login redirect, which says the url exists where a 404 would not.
+
+```bash
+# Read it as a console would
+curl -H 'X-Status-Key: <the key>' https://example.com/status/report
+
+# See exactly what a console would be served - needs no key and no network
+php bin/console c975l:status:dump
+```
+
+The key travels in a **header**, never in the query string — an url ends up in the access log and in the `Referer` of anything the site serves, a header does not. Use a different key per site, so one compromised key only ever exposes one site's report. The answer carries `Cache-Control: private, no-store`: its body depends on a header, and a shared cache holding it would serve one caller's report to the next.
+
+The route stays answerable while the site is in [maintenance mode](#maintenance-mode): a console reads it precisely to know a site is mid-upgrade, and serving it the HTML maintenance page would hide the very moment it is most worth reading.
+
+**Asked, rather than sent.** A site that pushes its report can only say what was true when it last spoke, and cannot say it is down — the receiver has to infer that from a silence, which takes days to become certain and reads as stale data in the meantime. Asked instead, the answer is true at the moment it is read, no answer at all is itself an answer, and there is no cron to set up on each site nor any schedule to keep in sync.
 
 What the report holds:
 
@@ -1884,7 +1898,7 @@ class MyStatusProvider implements StatusProviderInterface
 }
 ```
 
-A provider that throws doesn't cost the whole report — its section carries the error message instead. A site that goes silent reads as a much worse problem than one section that failed, so the report always leaves.
+A provider that throws doesn't cost the whole report — its section carries the error message instead. A site that answers nothing reads as a much worse problem than one section that failed, so the report is always served.
 
 ## Dev profile — automating what the dev toolbar shows
 

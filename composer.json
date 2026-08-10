@@ -30,6 +30,7 @@
         "egulias/email-validator": "^4.0",
         "imagine/imagine": "^1.5",
         "nelmio/security-bundle": "^3.9",
+        "psr/log": "^3.0",
         "sensiolabs/minify-bundle": "^1.2",
         "symfony/asset-mapper": "^8.0",
         "symfony/clock": "^8.0",

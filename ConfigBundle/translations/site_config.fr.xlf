@@ -184,11 +184,7 @@
             </trans-unit>
             <trans-unit id="vejaRcq">
                 <source>description.site_status_key</source>
-                <target>Clé partagée envoyée avec le rapport de statut, à définir aussi chez le destinataire</target>
-            </trans-unit>
-            <trans-unit id="Irrx453">
-                <source>description.site_status_url</source>
-                <target>URL où envoyer le rapport de statut du site (laisser vide pour ne rien envoyer)</target>
+                <target>Clé partagée qu'une console doit présenter pour lire le rapport de statut de ce site - au moins 32 caractères, par ex. « openssl rand -hex 32 » (vide, ou plus courte, ne répond à personne)</target>
             </trans-unit>
             <trans-unit id="nInyIwr">
                 <source>description.site_url</source>
@@ -385,10 +381,6 @@
             <trans-unit id="WEtCUat">
                 <source>label.site_status_key</source>
                 <target>Clé du rapport de statut</target>
-            </trans-unit>
-            <trans-unit id="SvUFbR.">
-                <source>label.site_status_url</source>
-                <target>URL du rapport de statut</target>
             </trans-unit>
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>
