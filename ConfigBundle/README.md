@@ -119,7 +119,7 @@ Among the tests it installs, `tests/Deploy/DeployWorkflowTest.php` is the one lo
 **A file you customized is never overwritten.** The command records the hash of everything it delivers in `.c975l-scaffold.json` — commit it, like `symfony.lock` — which is what lets a later run tell the two cases apart, indistinguishable by content alone:
 
 | The target is | What happens |
-|---|---|
+| --- | --- |
 | still bit-for-bit what was delivered | only the scaffold moved on: refreshed silently, no backup needed for a file the bundle can reproduce |
 | anything else | your own work: left exactly as it is, and named in the output next to the scaffold source to compare it against |
 
@@ -240,6 +240,8 @@ The application file is loaded exactly like a bundle's one, so an app needing a 
 New entries (new `slug`) are inserted with their `value` from the JSON. For entries that already exist, only the metadata fixed by the bundle author — `label`, `kind`, `choices`, `group`, `severity`, `description`, `restricted`, `sensitive` — is re-synced from the JSON on every run; the `value` carries production state and is never overwritten, so editing a `configs.json` file (e.g. moving a config to a new group, fixing a typo in a label) and re-running `load-all` is enough to propagate the change, without risking an admin-set value.
 
 `sensitive` is the one flag whose change also touches the value, because the two can't be separated: an entry that becomes sensitive gets its value encrypted, one that stops being sensitive gets it decrypted. Without that, dropping `"sensitive": true` from a declaration would leave a `C975L:…` string sitting in what is now a plain-text setting. When the conversion can't be done — no `C975L_VAULT_KEY`, or a value encrypted with a different one — the flag is left as it was rather than storing something unusable, and the next run picks it up once the key is in place.
+
+A file that can't be loaded — an unparsable JSON, a database refusing the insert — is reported with a `✗` and the run carries on to the next one, so one broken bundle doesn't hide what the others would have said. The command then exits with a failure code, one unloaded file being enough: it runs unattended in deployment scripts, where that single line would otherwise scroll by and the batch carry on with the entries that file declares missing from the site.
 
 `site-role-admin` is the one entry read before it can exist: every `/management` permission derives from it, so a database missing that row — a fresh install where `load-all` hasn't run yet, an entry deleted by mistake — would deny the dashboard to everyone, including whoever would fix it. `ConfigService::loadAll()` therefore falls back on its declared default, `ROLE_ADMIN`, as long as the row is absent.
 
@@ -1829,7 +1831,7 @@ It is meant for whoever maintains **several** sites: one console asking each of 
 **The site answers nobody until you set a key.** Installing this bundle never makes a site talk to a third party: with `site-status-key` empty there is nothing to compare a caller against, and every request gets a 404 — the same answer a wrong key gets, so a scanner finding the url learns nothing from it either way.
 
 | Config | Role |
-|---|---|
+| --- | --- |
 | `site-status-key` | Shared key a caller must present in the `X-Status-Key` header. Stored as a sensitive value. At least 32 characters, e.g. `openssl rand -hex 32` — below that, and empty (the default), the site answers nobody. |
 
 The key is read online, not merely presented in an outgoing report: a short one is guessable against a route that says nothing but 200 or 404. Rather than accept a weak key, anything under 32 characters is treated as **no key at all**, so a site configured with `abc` answers nobody instead of answering whoever tries a dictionary. Refusals are logged as warnings with the caller's IP, which is what a `fail2ban` jail or a supervision rule can act on.

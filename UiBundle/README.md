@@ -492,7 +492,7 @@ The `hero`, `feature_bar` and `text_section` kinds carry an optional **Backgroun
 Each variant redefines a handful of custom properties, and every section rule reads them with its own neutral value as the fallback:
 
 | Property | Read by | Neutral fallback |
-|---|---|---|
+| --- | --- | --- |
 | `--section-background` | the section's own background | its usual one (page background, `--surface-alt`…) |
 | `--section-text` | titles, `<b>` figures, the blanket color of everything inside a flat | `--text` |
 | `--section-text-soft` | subtitles, legends, muted copy | `--label-color` |
@@ -1697,6 +1697,8 @@ A **"Recompile stylesheets"** dashboard tile (`ROLE_SUPER_ADMIN`, Maintenance) r
 `sass/_forms.scss` styles the bare form controls (`input`, `select`, `textarea`, `label`, the submit button, radio/checkbox rows) and belongs here rather than in SiteBundle: eight c975L bundles require `c975l/ui-bundle` and none requires `c975l/site-bundle`, so UiBundle is the only floor a form rendered by ShopBundle, BookBundle or PaymentBundle can count on — and UiBundle renders forms of its own (the `Form`/`FormField` builder, `components/Form/Form.html.twig`, the block and captcha form themes).
 
 Its `--input-*`, `--form-*`, `--label-*` and `--required-color` tokens are still declared by SiteBundle's `sass/_variables.scss`, the admin-editable theme contract — see [Token defaults](#token-defaults) for how they resolve without it. Override the width every form is laid out on with `--form-width` (defaults to `min(70vw, 1000px)`).
+
+A label reads `--form-label-color`, defaulting to `--black` so it follows the page into dark mode on its own — set that token rather than `--black` for a design whose labels alone read differently, `--black` also carrying `.lead` and SiteBundle's `--navbar-text` default. A focused field keeps `--form-input-color`, the ink it has at rest: focus is marked by the border and the ring, not by a change of text color.
 
 A field turns green or red as soon as it has been judged, replacing the blue focus ring. Two sources, one look: the browser's own constraint validation (`required`, `pattern`, `type="email"`, `minlength`…) through `:user-valid` / `:user-invalid`, and the `.success` / `.error` classes the `password` controller writes for the checks HTML cannot express. `:user-*` rather than `:valid` / `:invalid` on purpose — the latter match from page load and would paint an untouched form red before the visitor typed anything. Green is restricted to fields actually declaring a constraint: `:user-valid` matches any touched field, and turning a free-text input green says nothing. Retune both through `--input-valid-border-color` / `--input-invalid-border-color` (and their `-shadow-` pair), which default to the site's success/danger button colors.
 

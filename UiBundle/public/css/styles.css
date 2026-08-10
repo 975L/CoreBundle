@@ -53,6 +53,7 @@
     --font-family-title: var(--c975l-font-family-title, sans-serif);
     --font-title-weight: normal;
     --form-input-color: #555;
+    --form-label-color: var(--black);
     --form-width: min(70vw, 1000px);
     --frame-background: var(--background);
     --input-background: transparent;
@@ -900,7 +901,7 @@ label {
   margin-bottom: 5px;
   font-weight: 700;
   font-size: 0.9rem;
-  color: var(--black);
+  color: var(--form-label-color);
 }
 
 label.required::after {
@@ -981,7 +982,7 @@ textarea:focus {
   border: 1px solid var(--input-focus-border-color);
   border-bottom: 2px solid var(--input-focus-border-color);
   box-shadow: 0 0 10px 2px var(--input-focus-shadow-color);
-  color: var(--black);
+  color: var(--form-input-color);
 }
 
 .control-label {

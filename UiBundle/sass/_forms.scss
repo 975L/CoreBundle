@@ -45,7 +45,10 @@ label {
     margin-bottom: 5px;
     font-weight: 700;
     font-size: 0.9rem;
-    color: var(--black);
+    // Its own token rather than --black directly, which it defaults to: a label reads as the page's own
+    // ink and follows it into dark mode either way, but retuning it no longer means retuning --black -
+    // a variable .lead and SiteBundle's --navbar-text default read too
+    color: var(--form-label-color);
 }
 
 label.required::after {
@@ -128,7 +131,10 @@ textarea:focus {
     border: 1px solid var(--input-focus-border-color);
     border-bottom: 2px solid var(--input-focus-border-color);
     box-shadow: 0 0 10px 2px var(--input-focus-shadow-color);
-    color: var(--black);
+    // The field's own ink, the same as at rest: focus is marked by the border and the ring, not by a
+    // change of text color. It used to read --black here, which dark mode hid (the two tokens hold the
+    // same value there) but which swapped the ink under any site retuning --form-input-color alone
+    color: var(--form-input-color);
 }
 
 .control-label {

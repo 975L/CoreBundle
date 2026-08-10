@@ -46,6 +46,7 @@ class ConfigLoadAllCommand extends Command
         }
 
         $hasSensitiveValues = false;
+        $failed = 0;
 
         foreach ($files as $file) {
             $bundle = $this->declarationLocator->describe($file);
@@ -57,6 +58,7 @@ class ConfigLoadAllCommand extends Command
                 $this->configService->loadDefaultConfig($file);
                 $io->text('  ✓ ' . $bundle);
             } catch (\Throwable $e) {
+                ++$failed;
                 $io->warning('  ✗ ' . $bundle . ': ' . $e->getMessage());
             }
         }
@@ -68,6 +70,13 @@ class ConfigLoadAllCommand extends Command
                 'Generate a key with: php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"',
                 'Add it to your .env.local as C975L_VAULT_KEY, then run: php bin/console c975l:config:encrypt-sensitive',
             ]);
+        }
+
+        // A file left unloaded means its bundle's new entries are simply missing from the site, and the command is run unattended by deployment scripts: without a failing exit code the '✗' above scrolls by among hundreds of lines and the batch carries on as if all was well
+        if ($failed > 0) {
+            $io->error(sprintf('%d config file(s) processed, %d could not be loaded.', count($files), $failed));
+
+            return Command::FAILURE;
         }
 
         $io->success(sprintf('%d config file(s) processed.', count($files)));

@@ -26,7 +26,7 @@ Three entries become `choice` in this release, all of them settings whose wrong 
 silently by whatever read them:
 
 | Config | Values | What a typo used to do |
-|---|---|---|
+| --- | --- | --- |
 | `theme-mode` | `auto`, `light`, `dark` | read as `auto`, the site staying on the visitor's own preference |
 | `ui-watermark-position` | `top-left`, `top-right`, `bottom-right`, `bottom-left` | read as `bottom-right` |
 | `ui-ai-assistant-rephrase-provider` | `anthropic`, `openai`, `euria` | the AI assistant answering nothing at all |
@@ -430,7 +430,7 @@ In this ecosystem that means `c975l/site-bundle`, `c975l/gallery-bundle` and `c9
 **Redirects, the site-wide health checks and the content-quality machinery moved here from SiteBundle.** None of them needed a Page: a url that changed needs a redirect whether it was a page's or a product's, a TLS certificate belongs to the host, and a shop's own urls deserve the same content checks a page gets. Namespace for namespace:
 
 | Was, in SiteBundle | Now |
-|---|---|
+| --- | --- |
 | `Entity\Redirect`, `Repository\RedirectRepository` | `c975L\ConfigBundle\*` (table `site_redirect` unchanged) |
 | `EventSubscriber\RedirectSubscriber` | `c975L\ConfigBundle\EventSubscriber\RedirectSubscriber` |
 | `Controller\Management\RedirectCrudController` | `c975L\ConfigBundle\Controller\Management\RedirectCrudController` |
@@ -477,7 +477,7 @@ Three new contracts come with it:
 **The account layer moved here from SiteBundle.** Every satellite bundle (Shop, Book, Gallery, Crowdfunding, Payment, Social) requires this bundle and UiBundle, none requires SiteBundle — yet all of them relate their entities to `Contract\UserInterface`, whose only implementation, back-office and registration flow lived in SiteBundle. An app running Config + Ui + a satellite bundle therefore had accounts it could neither create nor manage. What moved, namespace for namespace:
 
 | Was | Is now |
-|---|---|
+| --- | --- |
 | `c975L\SiteBundle\Controller\Management\UserCrudController` | `c975L\ConfigBundle\Controller\Management\UserCrudController` |
 | `c975L\SiteBundle\Security\Voter\UserManagementVoter` | `c975L\ConfigBundle\Security\Voter\UserManagementVoter` |
 | `c975L\SiteBundle\Service\UserRegistrar` | `c975L\ConfigBundle\Service\UserRegistrar` |
@@ -524,7 +524,7 @@ Both return `false` without sending when the named template has been renamed or 
 **The failed-Messenger screen, the table export and their two shortcuts moved here.** `MessengerFailedMessageService`, `MessengerAlertProvider`, `MessengerFailedController`, `SingleEnvelopeReceiver`, `MessengerCleanupCommand` and `ExportTablesCommand` are `c975L\ConfigBundle\*` now — cross-cutting infrastructure any bundle queueing a message needs, not site content. Three renames follow:
 
 | Was | Is now |
-|---|---|
+| --- | --- |
 | `c975l:site:messenger-cleanup` | `c975l:config:messenger-cleanup` |
 | `c975l:site:export-tables` | `c975l:config:export-tables` |
 | `management_site_messenger_failed*` routes | `management_config_messenger_failed*` |
@@ -645,7 +645,7 @@ Do this **after** migrating, not before: on a site still running the old scaffol
 **The theme, the site graphics and the cookie banner moved here from SiteBundle.** All three are what a site cannot go live without, and none of them had anything to do with having pages: an app running Config + Ui plus a shop compiled no theme at all (so every `--c975l-*` token this bundle's CSS reads was missing), had no screen to upload a favicon from, and shipped no GDPR banner.
 
 | Was, in SiteBundle | Now |
-|---|---|
+| --- | --- |
 | `Listener\ThemeVariablesCssListener` | `c975L\UiBundle\Listener\ThemeVariablesCssListener` |
 | `Twig\ThemeVariablesExtension` (`theme_variables_css()`) | `c975L\UiBundle\Twig\ThemeVariablesExtension` |
 | the ten `theme-*` configs | declared here |
@@ -687,7 +687,7 @@ $emailService->send(new EmailSendRequest(
 **Nine shared pieces moved out of SiteBundle.** None of them had anything to do with the notion of a site, and several were being hand-duplicated by bundles that require this one and not SiteBundle. What lands here:
 
 | Was in SiteBundle | Is now |
-|---|---|
+| --- | --- |
 | `Form\VichImageOptions` | `c975L\UiBundle\Form\VichImageOptions` |
 | `Controller\Management\Trait\UniqueSlugTrait` | `c975L\UiBundle\Service\UniqueSlug` (static) |
 | `Controller\Management\Trait\BlockMoveRowAttrTrait` | `c975L\UiBundle\Service\BlockMoveRowAttrBuilder` (service) |

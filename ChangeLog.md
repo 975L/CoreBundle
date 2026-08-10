@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.6.1
+
+A config file left unloaded now fails the run
+
+### ConfigBundle
+
+- `c975l:config:load-all` exits with a failure code when a config file could not be loaded (10/08/2026)
+- Every file is still attempted, the failure being reported once at the end with how many are missing (10/08/2026)
+- `ConfigLoadAllCommandTest` now covers the failing exit code, all files failing and one among several (10/08/2026)
+- README documents what an unloaded file does to the run (10/08/2026)
+
+### UiBundle
+
+- Added `--form-label-color`, the ink of a form label, defaulting to `--black` (10/08/2026)
+- A focused field keeps `--form-input-color` instead of switching to `--black` (10/08/2026)
+- The scaffolded `ui.css` offers the new token (10/08/2026)
+- Added `FormInkTest`, locking both inks to their own token in the compiled stylesheets (10/08/2026)
+- README documents the label token and the focus ink (10/08/2026)
+
 ## v1.6.0
 
 Three new block kinds, and a hero opening on a video

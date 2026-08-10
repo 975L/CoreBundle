@@ -195,6 +195,10 @@
     /* Measure every form is laid out on */
     /* --form-width: min(70vw, 1000px); */
     /* --form-input-color: #555; */
+    /* Ink of a form label. Defaults to --black, so it follows the page into dark mode on its own -
+       set it here rather than --black for a design whose labels alone read differently, --black
+       also carrying .lead and the --navbar-text default */
+    /* --form-label-color: var(--black); */
     /* --input-border-color: #4d4d4d; */
     /* --input-border-bottom-color: #bfbfbf; */
     /* --input-shadow-color: #4d4d4d; */

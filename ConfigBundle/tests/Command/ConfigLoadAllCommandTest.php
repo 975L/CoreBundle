@@ -117,9 +117,11 @@ class ConfigLoadAllCommandTest extends TestCase
         $this->assertStringContainsString('2 config file(s) processed', $tester->getDisplay());
     }
 
-    public function testExecuteWarnsButContinuesWhenABundleFailsToLoad(): void
+    // Every file is still attempted, so one broken bundle doesn't hide what the others would have said, but the run is reported as failed: deployment scripts read the exit code, not the display
+    public function testExecuteWarnsAboutEachBundleFailingToLoadAndFails(): void
     {
         $this->createBundleConfigFile('config-bundle', [['slug' => 'site-name']]);
+        $this->createBundleConfigFile('ui-bundle', [['slug' => 'site-role-admin']]);
 
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('loadDefaultConfig')->willThrowException(new \RuntimeException('boom'));
@@ -127,8 +129,31 @@ class ConfigLoadAllCommandTest extends TestCase
         $tester = $this->createTester($configService, new VaultEncryptor(null));
         $tester->execute([]);
 
-        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
         $this->assertStringContainsString('config-bundle: boom', $tester->getDisplay());
+        $this->assertStringContainsString('ui-bundle: boom', $tester->getDisplay());
+        $this->assertStringContainsString('2 config file(s) processed, 2 could not be loaded', $tester->getDisplay());
+    }
+
+    // A single failure among several files is enough to fail the run: the entries that file declares are missing from the site all the same
+    public function testExecuteFailsWhenOnlyOneBundleAmongSeveralFailsToLoad(): void
+    {
+        $this->createBundleConfigFile('config-bundle', [['slug' => 'site-name']]);
+        $this->createBundleConfigFile('ui-bundle', [['slug' => 'site-role-admin']]);
+
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('loadDefaultConfig')->willReturnCallback(function (string $file): void {
+            if (str_contains($file, 'ui-bundle')) {
+                throw new \RuntimeException('boom');
+            }
+        });
+
+        $tester = $this->createTester($configService, new VaultEncryptor(null));
+        $tester->execute([]);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertStringContainsString('✓ config-bundle', $tester->getDisplay());
+        $this->assertStringContainsString('2 config file(s) processed, 1 could not be loaded', $tester->getDisplay());
     }
 
     public function testExecuteWarnsAboutMissingVaultKeyWhenSensitiveValuesArePresent(): void
