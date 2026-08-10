@@ -142,6 +142,44 @@ class ConfigImportProviderTest extends TestCase
         $this->assertSame('exported-secret', $existing->getValue());
     }
 
+    // A restore losing what an entry accepts would leave the select empty, and the form with nothing to pick
+    public function testImportCarriesTheChoicesOfAChoiceEntry(): void
+    {
+        $existing = (new Config())->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_TEXT)->setValue('auto');
+
+        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing));
+
+        $provider->import([[
+            'slug' => 'theme-mode',
+            'label' => 'Theme mode',
+            'isSensitive' => false,
+            'value' => 'dark',
+            'kind' => Config::TYPE_CHOICE,
+            'choices' => ['auto', 'light', 'dark'],
+        ]]);
+
+        $this->assertSame(Config::TYPE_CHOICE, $existing->getKind());
+        $this->assertSame(['auto', 'light', 'dark'], $existing->getChoices());
+    }
+
+    // An export made before choices existed carries none: left empty rather than guessed, the next c975l:config:load-all filling it back from the declaring bundle
+    public function testImportLeavesChoicesEmptyWhenTheExportCarriesNone(): void
+    {
+        $existing = (new Config())->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark']);
+
+        $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing));
+
+        $provider->import([[
+            'slug' => 'theme-mode',
+            'label' => 'Theme mode',
+            'isSensitive' => false,
+            'value' => 'dark',
+            'kind' => Config::TYPE_CHOICE,
+        ]]);
+
+        $this->assertNull($existing->getChoices());
+    }
+
     public function testImportCreatesAMissingSensitiveConfigWithItsExportedValue(): void
     {
         $persisted = [];

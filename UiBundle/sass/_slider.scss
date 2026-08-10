@@ -136,6 +136,8 @@
     object-position: center;
 }
 
+// Centered on purpose, as the caption bar below it: what is stated here is the family, which would otherwise
+// fall to the theme's blanket "*" rule and read in the body font where every other block title reads the title one
 .slider-title {
     position: absolute;
     top: 0;
@@ -145,7 +147,8 @@
     background: rgba(0, 0, 0, 0.7);
     color: #fff;
     padding: 8px 10px;
-    font-size: 16px;
+    font-family: var(--font-family-title);
+    font-size: calc(16px * var(--font-size-title-scale, 1));
     font-weight: bold;
     text-align: center;
     border-radius: 15px 15px 0 0;
@@ -160,7 +163,7 @@
     background: rgba(0, 0, 0, 0.7);
     color: #fff;
     padding: 8px 10px;
-    font-size: 14px;
+    font-size: 0.875em;
     text-align: center;
     border-radius: 0 0 15px 15px;
 }
@@ -191,7 +194,7 @@
     background: var(--button-background-primary-light);
     color: #fff;
     padding: 4px;
-    font-size: 12px;
+    font-size: 0.75em;
     font-style: italic;
     text-align: center;
 }

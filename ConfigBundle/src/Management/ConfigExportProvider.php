@@ -36,6 +36,8 @@ class ConfigExportProvider implements ExportProviderInterface
             'isRestricted' => (bool) $row['is_restricted'],
             'value' => $row['value'],
             'kind' => $row['kind'],
+            // Stored as a json string, exported as the list itself so the payload stays readable and re-importable as-is
+            'choices' => null !== $row['choices'] ? json_decode((string) $row['choices'], true) : null,
             'group' => $row['group'],
             'description' => $row['description'],
             'severity' => $row['severity'],
@@ -47,7 +49,7 @@ class ConfigExportProvider implements ExportProviderInterface
     // Same rows used by exportCsv/exportJson (raw table dump) - restricted configs (backup DB credentials, payment API keys...) are excluded below ROLE_SUPER_ADMIN, same restriction as the CRUD itself; is_restricted is nullable, legacy rows must NOT be treated as restricted
     public function fetchRows(): array
     {
-        $sql = 'SELECT `label`, `slug`, `is_sensitive`, `is_restricted`, `value`, `kind`, `group`, `description`, `severity`, `creation`, `modification` FROM `site_config`';
+        $sql = 'SELECT `label`, `slug`, `is_sensitive`, `is_restricted`, `value`, `kind`, `choices`, `group`, `description`, `severity`, `creation`, `modification` FROM `site_config`';
         if (!$this->security->isGranted('ROLE_SUPER_ADMIN')) {
             $sql .= ' WHERE `is_restricted` IS NULL OR `is_restricted` = 0';
         }

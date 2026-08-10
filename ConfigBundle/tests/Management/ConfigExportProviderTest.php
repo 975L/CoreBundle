@@ -52,6 +52,7 @@ class ConfigExportProviderTest extends TestCase
             'is_restricted' => null,
             'value' => 'My Site',
             'kind' => 'text',
+            'choices' => null,
             'group' => 'general',
             'description' => 'description.site_name',
             'severity' => 0,
@@ -67,10 +68,32 @@ class ConfigExportProviderTest extends TestCase
             'isRestricted' => false,
             'value' => 'My Site',
             'kind' => 'text',
+            'choices' => null,
             'group' => 'general',
             'description' => 'description.site_name',
             'severity' => 0,
         ]], $data['items']);
+    }
+
+    // A choice entry travels with the list it accepts, decoded out of the json column so the payload stays readable and re-importable as-is
+    public function testExportAllDecodesTheDeclaredChoicesOfAChoiceEntry(): void
+    {
+        $connection = $this->createConnection([[
+            'slug' => 'theme-mode',
+            'label' => 'Theme mode',
+            'is_sensitive' => false,
+            'is_restricted' => null,
+            'value' => 'dark',
+            'kind' => 'choice',
+            'choices' => '["auto","light","dark"]',
+            'group' => 'theme',
+            'description' => 'description.theme_mode',
+            'severity' => null,
+        ]]);
+
+        $data = $this->createProvider($connection)->exportAll();
+
+        $this->assertSame(['auto', 'light', 'dark'], $data['items'][0]['choices']);
     }
 
     public function testFetchRowsExcludesRestrictedConfigsForNonSuperAdmin(): void

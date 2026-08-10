@@ -254,7 +254,37 @@ class BlockMoveControllerTest extends TestCase
         ]));
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertSame('kind_not_allowed_in_target', json_decode($response->getContent(), true)['error']);
+
+        // The one refusal an editor can act on, hence the only one carrying a message for the modal to show (the translator stub echoes the key back)
+        $payload = json_decode($response->getContent(), true);
+        $this->assertSame('kind_not_allowed_in_target', $payload['error']);
+        $this->assertSame('flash.block_move_kind_not_allowed', $payload['message']);
+    }
+
+    // A technical refusal has nothing an editor could do about it, so it stays a plain "the move failed"
+    public function testDoesNotExplainATechnicalRefusal(): void
+    {
+        $block = new Block();
+        $target = new Block();
+        $target->setKind('card');
+        $owner = new HasBlocksTraitStub();
+        $owner->addBlock($block);
+        $owner->addBlock($target);
+
+        $blockRepository = $this->createStub(BlockRepository::class);
+        $blockRepository->method('find')->willReturnMap([[1, $block], [2, $target]]);
+        $ownerRegistry = $this->createStub(BlockOwnerRegistry::class);
+        $ownerRegistry->method('find')->willReturn($owner);
+
+        $blockRegistry = $this->createStub(BlockRegistry::class);
+        $blockRegistry->method('isContainer')->willReturn(false);
+
+        $controller = $this->createController($blockRepository, $ownerRegistry, $blockRegistry);
+        $response = $controller->move($this->requestWith([
+            'blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'targetBlockId' => '2',
+        ]));
+
+        $this->assertArrayNotHasKey('message', json_decode($response->getContent(), true));
     }
 
     public function testMovesIntoAValidContainerTarget(): void

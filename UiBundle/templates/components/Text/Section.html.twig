@@ -4,7 +4,9 @@
 {% set tag = (title or eyebrow) ? 'section' : 'div' %}
 {# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
 {% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
-<{{ tag }} class="text-section{{ background }}"{% if slug|default('') %} id="{{ slug }}"{% endif %}>
+{# Matched too, and only "secondary" writes a class: "normal" is the block's own default, which is also what every section stored before the field existed renders as #}
+{% set tone = tone|default('') == 'secondary' ? ' text-section--secondary' : '' %}
+<{{ tag }} class="text-section{{ background }}{{ tone }}"{% if slug|default('') %} id="{{ slug }}"{% endif %}>
     <div class="section-wrap">
         {# With no title the eyebrow becomes the <h2>, keeping its eyebrow look #}
         {% if title %}

@@ -14,7 +14,7 @@ use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-// Imports a "site_config" content export (see ConfigCrudController::exportContent/ContentExporter) - matches by slug, same rule as ConfigSqlExporter: a non-sensitive row is fully upserted (label/value/kind/group/description/severity synced), a sensitive row already holding a value is left untouched (its production value is never overwritten by a dev export), an empty or missing one taking the export's
+// Imports a "site_config" content export (see ConfigCrudController::exportContent/ContentExporter) - matches by slug, same rule as ConfigSqlExporter: a non-sensitive row is fully upserted (label/value/kind/choices/group/description/severity synced), a sensitive row already holding a value is left untouched (its production value is never overwritten by a dev export), an empty or missing one taking the export's
 class ConfigImportProvider implements ImportProviderInterface
 {
     public const KIND = 'site_config';
@@ -79,6 +79,8 @@ class ConfigImportProvider implements ImportProviderInterface
             ->setIsRestricted((bool) ($item['isRestricted'] ?? false))
             ->setValue($item['value'] ?? null)
             ->setKind($item['kind'])
+            // Missing from an export made before choices existed: left empty rather than guessed, the next c975l:config:load-all filling it back from the declaring bundle
+            ->setChoices($item['choices'] ?? null)
             ->setGroup($item['group'] ?? null)
             ->setDescription($item['description'] ?? null)
             ->setSeverity($item['severity'] ?? null)

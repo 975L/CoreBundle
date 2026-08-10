@@ -92,6 +92,20 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'buttonLabel' => '',
                 ],
             ],
+            // Its two images - front face then back face - are auto-attached by BlockFixtureMediaAttacher (two, its kind declaring media_multi_upload), so the fixture only carries the text of each face
+            'flip_card' => [
+                '' => [
+                    'id' => '',
+                    'title' => 'Titre du recto',
+                    'level' => 'h3',
+                    'content' => '<p>Ce que la carte montre en premier, en une phrase.</p>',
+                    'backTitle' => 'Titre du verso',
+                    'backContent' => '<p>Ce que la carte révèle une fois retournée, en deux ou trois lignes.</p>',
+                    // Not "free": the showcase renders one card on its own, where a shape held open shows what the field does
+                    'ratio' => '3-2',
+                    'class' => [],
+                ],
+            ],
             // Unlike most fixtures, this renders a real sub-request looking up a Form named "contact" in DB (see FormController::fragment()) - throws if it doesn't exist, acceptable here since the block showcase only ever runs on a site that has seeded its default pages with "c975l:site:pages:import-defaults", which creates that form
             'form' => [
                 '' => [
@@ -215,9 +229,24 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'statValue' => '00',
                     'statLabel' => 'le chiffre que ce hero met en avant',
                 ],
+                // A whole other look rather than one more media: an attached video fills the section by itself and drops everything the default variant lays out beside the text, so both are shown side by side in the gallery. The video is attached by BlockFixtureMediaAttacher, which reads this variant's name; "hasBackgroundImage" is left out on purpose, the video not needing it
+                'video' => [
+                    'badge' => 'Exemple de badge · texte court',
+                    'title' => 'Un titre de hero sur <em>une vidéo de fond.</em>',
+                    'subtitle' => 'La vidéo remplit toute la section, muette et en boucle, et le texte se lit par-dessus.',
+                    'primaryLabel' => 'Bouton principal',
+                    'primaryUrl' => 'https://example.com/contact',
+                    'secondaryLabel' => 'Bouton secondaire',
+                    'secondaryUrl' => 'https://example.com/realisations',
+                    'statValue' => '00',
+                    'statLabel' => 'le chiffre que ce hero met en avant',
+                ],
             ],
             'feature_bar' => [
                 '' => [
+                    // Both optional on this kind, shown here because a band typed without them is the plainer look
+                    'eyebrow' => 'Surtitre de la bande',
+                    'title' => 'Le titre de la bande, sur une ligne.',
                     'items' => [
                         ['title' => 'Premier point', 'text' => 'une précision en une ligne'],
                         ['title' => 'Deuxième point', 'text' => 'une précision en une ligne'],

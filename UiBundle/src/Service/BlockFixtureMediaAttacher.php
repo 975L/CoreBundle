@@ -60,8 +60,11 @@ class BlockFixtureMediaAttacher
                 }
             }
 
-            // Skipped for "freeflow", already busy demonstrating its own layout with more images, see imageCount()
-            if ('freeflow' !== $variant && !$videoAttached && str_starts_with($mediaType, 'video/')) {
+            // Skipped for "freeflow", already busy demonstrating its own layout with more images, see imageCount().
+            // For "hero" a video is not one more media but a whole other look - it fills the section by itself and
+            // drops everything laid out beside the text - so it belongs to that kind's own "video" variant alone,
+            // the default one going on showing the ordinary hero (see BlockFixtureProvider)
+            if ('freeflow' !== $variant && ('hero' !== $kind || 'video' === $variant) && !$videoAttached && str_starts_with($mediaType, 'video/')) {
                 $video = $this->placeholderVideo();
                 if (null !== $video) {
                     $block->addMedia($video);
@@ -98,6 +101,11 @@ class BlockFixtureMediaAttacher
 
         if ('image_compare' === $kind) {
             return 2;
+        }
+
+        // The video covers the whole section, so the only image that ever shows is the still painted under it
+        if ('hero' === $kind && 'video' === $variant) {
+            return 1;
         }
 
         if ('article' === $kind) {

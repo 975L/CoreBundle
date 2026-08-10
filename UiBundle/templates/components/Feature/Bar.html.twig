@@ -1,13 +1,20 @@
-{# Static usage: <twig:c975LUi:Feature:Bar items="{{ [{title: '...', text: '...'}] }}" [background=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Feature:Bar items="{{ [{title: '...', text: '...'}] }}" [eyebrow=""] [title=""] [background=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/FeatureBar.html.twig #}
 {# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
 {% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
-{# A <div>: this band never carries a heading, and a headingless <section> is invalid HTML #}
-<div class="feature-bar{{ background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# Both head fields are optional, and a headingless <section> is invalid HTML, hence the <div> fallback #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="feature-bar{{ background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    {% if eyebrow|default('') or title|default('') %}
+        {# The head alone takes the wrap: the grid spans the band edge to edge, its items carrying their own padding #}
+        <div class="section-wrap">
+            {{ include('@c975LUi/components/Section/_head.html.twig') }}
+        </div>
+    {% endif %}
     {# data-count so the row takes as many columns as it has entries instead of trailing empty ones #}
     <div class="feature-bar__grid" data-count="{{ items|length }}">
         {% for item in items %}
             <div class="feature-bar__item"><b>{{ item.title }}</b>{{ item.text }}</div>
         {% endfor %}
     </div>
-</div>
+</{{ tag }}>

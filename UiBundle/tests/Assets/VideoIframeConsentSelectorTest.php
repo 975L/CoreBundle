@@ -79,6 +79,37 @@ class VideoIframeConsentSelectorTest extends TestCase
         $this->assertStringNotContainsString('autoplay', $matches[1]);
     }
 
+    // A poster is what the click-to-play gate is made of: without one there is nothing to look at but an empty box, so the player goes on loading on approach. Calling scheduleIframe() from anywhere but that one branch puts a grid of six players back on the initial scroll
+    public function testAPosterHoldsThePlayerBackUntilItIsClicked(): void
+    {
+        $script = $this->read(self::CONTROLLER_JS);
+
+        $this->assertMatchesRegularExpression('/if \(!this\.hasPlayTarget\) \{\s*this\.scheduleIframe\(\);\s*return;/', $script);
+        $this->assertSame(1, substr_count($script, 'this.scheduleIframe();'), sprintf('"%s" schedules its iframe outside the no-poster branch, which loads the player a poster is there to hold back.', self::CONTROLLER_JS));
+        $this->assertStringContainsString('this.playTarget.hidden = false;', $script);
+    }
+
+    // Consent comes first on a poster too: a bare play button would make accepting third-party cookies look like pressing play, so the prompt is only taken off screen once the answer is in
+    public function testTheConsentPromptIsOnlyHiddenOnceConsentIsSettled(): void
+    {
+        $script = $this->read(self::CONTROLLER_JS);
+
+        $this->assertMatchesRegularExpression('/onConsentSettled\(\) \{.*this\.consentTarget\.hidden = true;/s', $script);
+    }
+
+    // The listeners are off while the poster waits for its click, so the consent that revealed the button may have been withdrawn since - checking the current answer is what keeps a withdrawn consent from framing a player anyway
+    public function testAClickOnThePosterIsCheckedAgainstTheCurrentConsent(): void
+    {
+        $script = $this->read(self::CONTROLLER_JS);
+
+        $this->assertMatchesRegularExpression(
+            '/play\(\) \{\s*if \(window\.CookieConsent && !window\.CookieConsent\.acceptedCategory\("content"\)\)/',
+            $script,
+            sprintf('"%s" frames the player on click without re-reading the consent it was revealed by.', self::CONTROLLER_JS)
+        );
+        $this->assertMatchesRegularExpression('/play\(\) \{.*this\.consentTarget\.hidden = false;.*this\.listen\(\);/s', $script);
+    }
+
     // "const CONSENT_BANNER_SELECTOR = '...';" -> "..."
     private function consentSelector(): string
     {

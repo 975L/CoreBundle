@@ -50,12 +50,14 @@ class HeroTypeTest extends TestCase
         }
     }
 
-    // Only the title is required: a hero with no call to action is a legitimate composition
-    public function testOnlyTheTitleIsRequired(): void
+    // Nothing is required: a hero with no call to action is a legitimate composition, and so is one saying
+    // nothing at all over a background video whose own footage carries the title (see Hero.html.twig, which
+    // then prints no heading rather than an empty one)
+    public function testNoFieldIsRequired(): void
     {
         $added = $this->buildAddedFields();
 
-        $this->assertArrayNotHasKey('required', $added['title']);
+        $this->assertFalse($added['title']['required']);
         $this->assertFalse($added['badge']['required']);
         $this->assertFalse($added['subtitle']['required']);
         $this->assertFalse($added['hasBackgroundImage']['required']);

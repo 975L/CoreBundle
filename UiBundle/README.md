@@ -90,7 +90,7 @@ php bin/console doctrine:migrations:migrate
 
 `controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, `title-confirm`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
 
-Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `imageCompare`, `password`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
+Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `heroVideo`, `imageCompare`, `password`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
 
 The `confetti` controller loads its `canvas-confetti` library from the copy vendored in this bundle (`public/js/confetti.browser.min.js`) rather than from a CDN. Point it elsewhere with `data-confetti-script-value="/your/own/path.js"` on the same element.
 
@@ -240,6 +240,10 @@ Two things differ from the mouse, both deliberate:
 - **A row is picked up by its move handle**, not by anywhere on its header bar. Making the whole bar a drag zone at the finger takes `touch-action: none` over all of it, and the back-office would stop scrolling from everywhere a row header sits; the header stays a grab zone for the mouse alone. The handle is given a wider hit area on a coarse pointer in exchange (`sass/management/_block-collection.scss`).
 - **The page scrolls itself** when the pointer comes within 60px of the top or bottom of the viewport — the browser did that on its own during a native drag, and a collection taller than the screen would otherwise only be sortable as far as the screen shows.
 
+### When a drop is refused
+
+Dragging a saved block into a container is persisted server-side (`BlockMoveController`, the form would otherwise re-create the block and lose its media), so a drop can be refused: a kind that container doesn't take, a target belonging to another entity. The row goes back where it was picked up and the reason is shown in a Bootstrap modal (`assets/js/admin-modal.js`, exporting **`showAdminMessage(title, message, closeLabel)`** for any admin script needing to say something), not in a native `alert()`. The refusal an editor can act on — the moved kind isn't allowed in that container — carries its own translated message; anything else stays a plain "the move failed". EasyAdmin's own `#modal-action-confirmation` is deliberately not borrowed for this: its button keeps whatever handler the last opened action attached to it, so a click meant to dismiss a message could run a delete.
+
 ### Reusing the gesture elsewhere
 
 `assets/js/pointer-sort.js` is the gesture layer on its own, and knows nothing about EasyAdmin: it exports **`addSortGesture(zone, options)`**, which arms `zone` as a place a drag can start from and hands the caller back four hooks. Where a dragged element should land, and what to do once it has, stay entirely with the caller — the shapes differ too much between a vertical list of rows, a wrapping grid of thumbnails and a table for a single answer to fit all three.
@@ -304,6 +308,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `article` | Elements | `ArticleType` | `blocks/Article.html.twig` |
 | `audio` | Media | `AudioType` | `blocks/Audio.html.twig` |
 | `banner_title` | Media | `BannerTitleType` | `blocks/BannerTitle.html.twig` |
+| `block_group` | Page sections | `BlockGroupType` | `blocks/BlockGroup.html.twig` |
 | `button` | Elements | `ButtonType` | `blocks/Button.html.twig` |
 | `card` | Elements | `CardType` | `blocks/Card.html.twig` |
 | `collection` | Page sections | `CollectionType` | `blocks/Collection.html.twig` |
@@ -312,6 +317,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `document_download` | Elements | `DocumentDownloadType` | `blocks/DocumentDownload.html.twig` |
 | `expertise_banner` | Page sections | `ExpertiseBannerType` | `blocks/ExpertiseBanner.html.twig` |
 | `feature_bar` | Page sections | `FeatureBarType` | `blocks/FeatureBar.html.twig` |
+| `flip_card` | Elements | `FlipCardType` | `blocks/FlipCard.html.twig` |
 | `form` | Forms | `FormPickerType` | `components/Form/FormBlock.html.twig` |
 | `hero` | Page sections | `HeroType` | `blocks/Hero.html.twig` |
 | `image` | Media | `ImageType` | `blocks/Image.html.twig` |
@@ -329,6 +335,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `text_readmore` | Text | `ReadmoreType` | `blocks/TextReadmore.html.twig` |
 | `text_section` | Text | `TextSectionType` | `blocks/TextSection.html.twig` |
 | `video` | Media | `VideoType` | `blocks/Video.html.twig` |
+| `video_grid` | Page sections | `VideoGridType` | `blocks/VideoGrid.html.twig` |
 | `video_iframe` | Media | `VideoIframeType` | `blocks/VideoIframe.html.twig` |
 
 > **Maintenance note:** update this table whenever a kind is added, renamed, or removed in `config/services.yaml`.
@@ -351,6 +358,27 @@ The panel lays its fields out on an `auto-fit` grid rather than in one label/val
 
 Dropped straight on a page, the block has no `.section-wrap` around it to hold it on the page measure, so `sass/_contact-details.scss` gives it one of its own: it takes the room it is given and stops at `--section-wrap-max-width` / `--body-max-width` (`1440px`), gutters included, which lines its fields up with any section above or below it. Those gutters are **margins**, not the padding `.section-wrap` uses - the panel paints a border and a background, which have to stay inside them - and the measure is read through a `calc()` taking them off it. Inside a `flex_column` or a `section_cards` slot none of it applies: the panel is not a child of `.blocks` there, and goes on filling its cell. `SectionWrapMeasureTest` locks the rule.
 
+### The two-sided card (`flip_card`)
+
+Same box as a `card`, with a second face behind it: a title, an image and a rich-text content, each optional, on the front *and* on the back. Both images come from the block's own medias, ordered - the first is the front's, the second the back's (`media_multi_upload`, so an editor picks both in one go). One **Title level** covers both faces: they are the same card seen from two sides, and heading them at two different depths would read as two unrelated sections to anything walking the page outline. There is no url/button pair on either face on purpose - both contents are Trix editors, which already write links.
+
+A face is a real `.card`, so the accent band, the body padding and the tail alignment all come from `sass/_cards.scss`, and the twelve accents work here through the very same `card--accent-*` classes (they only point `--card-accent` at a token and paint nothing themselves - see [Card accents](#card-accents)). `sass/_flip-card.scss` only describes the box holding the two faces. A `flip_card` also joins the same auto-wrapped `.cards` row as a plain `card` when several of either are placed consecutively in the page flow, and drops into a `section_cards` slot like any other kind.
+
+**Ratio** offers the very list a `slider` does (`SliderType::RATIO_CHOICES`, reused rather than restated - the same reuse `c975L/SiteBundle`'s `ArticlesSliderType` already makes of it), and a ratio here is a **floor under the card's shape, not a crop**: each `.flip-card-ratio-*` class only names its own `--flip-card-ratio`, which an empty cell-mate of the two faces reads to hold the row open. A face holding more than that shape simply grows past it, so a row of cards lines up on one shape without a long content ever being clipped or pushed behind a scrollbar. **Libre** declares no class at all, and the card keeps the height of its tallest face. That is also why `--flip-card-ratio` is not in the scaffolded theme: it is set per variant, like `--card-accent`, and one value in `:root` would give every flip card on the site one shape.
+
+Hovered, the card sways five degrees to say it can be turned - `rotateY5deg`, the very keyframes `.animation.rotate-y5deg` runs (`sass/_animations.scss`, compiled into `animations.css`, which `StylesheetProvider` loads before this sheet). It runs under the pointer only, never on its own, and stays off a card already turned: those keyframes write the whole `transform`, and would drop the back face back to the front at every cycle.
+
+Four things make the fold usable by more than a mouse, all locked by `FlipCardAccessibilityTest`:
+
+- **The fold is an enhancement.** The stylesheet stacks the two faces in one grid cell only under `.flip-card--js`, added by `assets/js/flip-card.js` on connect. A page whose JS never ran shows both faces in normal flow, one under the other - everything the block holds stays readable, rather than a back face hidden behind a rotation nothing can undo. The buttons that would turn nothing stay `hidden` until the controller unhides them.
+- **The face turned away is `inert`.** `backface-visibility` hides it from the eye and from nothing else: its buttons and links stay in the tab order and in the accessibility tree without that.
+- **Focus follows the face that just came up.** Turning the card makes the focused button inert, so a keyboard user would otherwise be dropped back to the top of the document. Landing on the revealed face's own toggle also reads its label out - "Voir le recto" / "Voir le verso" say which side is up between them, which is why the block carries no `aria-expanded`/`aria-pressed` state for a screen reader to reconcile with a rotation it cannot see. Each toggle's `aria-label` repeats that visible label before naming the card, WCAG's *Label in Name* asking that the accessible name contain the visible one rather than replace it.
+- **The turn is dropped under `prefers-reduced-motion`.** The faces still swap, they just stop spinning to get there.
+
+Grid, not absolute positioning, for the stack: both faces share one cell, so the card is as tall as its tallest face whatever an editor typed in either, where the fixed height absolute positioning needs would clip the longer one.
+
+---
+
 ### The lead-in paragraph (`text_hook`)
 
 `text_hook` holds one rich-text field and exists for a reason the editor itself creates: Trix writes no class, so a paragraph meant to read as an introduction - larger, looser, over a shorter measure - cannot be produced from inside a `text_section`'s content. The kind *is* that class. Being a block of its own, it drops anywhere a paragraph would go: under a `hero`, at the top of a `flex_column`, between two sections.
@@ -365,6 +393,8 @@ Every one of those tokens is read with the bundle's own value as its fallback an
 
 Note that this only touches how an article renders. `c975L/SiteBundle`'s `articles_slider` reads that very same stored hook as a plain `striptags`'d excerpt, and keeps the slider's own text style.
 
+The paragraph *answering* a hook is the other half of the same problem, and it is a `text_section`'s **Presentation** field (`tone`, `TextSectionType::TONES`): **normal** is body copy, what a section carrying the page on its own is read at, writes no class and is what every section stored before the field existed renders as; **secondary** writes `.text-section--secondary` - a step above body copy, so it still reads as a paragraph rather than as a caption, in a quieter color. It is for a section standing beside a louder one: the companion paragraph in the column next to a `text_hook`, a note beside the text it belongs to. Its three values are tokens read with a fallback, like the hook's own (`--text-section-secondary-size`, `--text-section-secondary-line-height`, `--text-section-secondary-color`, the last one following `--section-text` before `--label-color` so it inverts along with a colored flat). `TextSectionToneTest` locks the form, the adapter, the component and the stylesheet to the one value that writes a class.
+
 ---
 
 ## Container kinds (blocks made of other blocks)
@@ -373,6 +403,7 @@ Note that this only touches how an article renders. `c975L/SiteBundle`'s `articl
 
 - Each of `flex_columns`' own slots is a `flex_column`, and nothing else: that context is **exclusive** (`BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT`, see "Registering a block kind" below), the column being what carries the width option - a bare block used as a slot has nowhere to store it. A column's own slots (added the same way, via its own "+ Add a slot" button) are then any pickable kind, stacked vertically inside that one column - e.g. two `document_download` cards one above the other, next to a `text_section` paragraph in the other column.
 - Each column picks how wide it sits in the row (`columnWidth`), in **twelfths** - the same scale Bootstrap's grid made everyone fluent in, 12 dividing by 2, 3, 4 and 6. Leaving it empty keeps the column sharing the row evenly, exactly as before the field existed. Each unit hands back the share of the row's gutter (`--flex-columns-gap`) it doesn't need, so any set of units adding up to 12 fills the row exactly. Widths only apply from 861px up - below that every column spans the full width whatever was picked. A row whose units don't total 12 still renders, it just doesn't close: under 12 leaves the remainder empty on the right, over 12 sends the column that no longer fits onto its own line (`flex-wrap`), never overflowing the page. Nothing forbids it - the editor sees it immediately, and a row deliberately left short (a single 8-unit column) is a legitimate layout.
+- The row picks how its columns sit against each other vertically (`verticalAlign`, `FlexColumnsType::VERTICAL_ALIGNMENTS`): **top** hangs them from the row's own top, which is what a row of parallel items wants and what every row stored before the field existed goes on rendering as - it writes no class at all; **middle** and **bottom** write `.flex-columns--middle`/`--bottom` (`sass/_page-sections.scss`). Middle is for a row saying one thing between its columns - a lead and the paragraph answering it - where two unequal heights read as one statement rather than as two items.
 - A slot saved before that restriction existed holds a kind the picker no longer lists. It is put back in that one slot's own choices, carrying a help text telling the editor to move it into a `flex_column` - without it `ChoiceType` would render the select unselected and reject the value on submit, locking them out of a page they can still see.
 - Nesting is bounded to exactly this: a `flex_columns` slot can't be another `flex_columns`, and a `flex_column` slot can't be another `flex_column` (or a `flex_columns`) - see `BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT`/`SLOT_CONTEXT`/`NESTED_SLOT_CONTEXT` and `getSlotContext()` below.
 - Not cacheable itself (`cacheable: false`, same for `flex_column`): each leaf slot still caches independently through its own `render_block()` call (see "Block render cache" below) - only the wrapper(s) are re-rendered every time, which is cheap.
@@ -381,7 +412,9 @@ Note that this only touches how an article renders. `c975L/SiteBundle`'s `articl
 
 `section_cards` is a second, simpler container built the exact same way: eyebrow/title/anchor + slots, no `contexts`/`slot_context` override, so unlike a `flex_columns` row its slots stay open to every pickable kind (the shared `BlockRegistry::SLOT_CONTEXT`). Its slots are meant to be `card` blocks - each keeping its own full schema (image, link, button...) - but the difference from just using `flex_columns` for that isn't enforcement, it's rendering: `section_cards` wraps its slots in `.cards` (`sass/_cards.scss`), the same fixed-width flex row bare consecutive `card` blocks already get in the page flow (see `Blocks.html.twig`), instead of `flex_columns`' own generic flexible-width `.flex-columns__col` layout. Use it whenever a design calls for that exact "row of cards" look but with a section eyebrow/title/anchor around it, which bare consecutive `card` blocks can't have on their own.
 
-Upgrading to a UiBundle version that introduces `flex_columns`/`flex_column`/`section_cards` (or your own container kind) adds a new `parent_block_id` column to `site_block` - re-run "Run migrations" above after `composer update`.
+`block_group` is the third one, and the one with no chrome at all: no eyebrow, no title, no anchor, nothing but a `.blocks-group` flex wrapper around its slots, laid out as a row (the default) or as a stack, aligned centered/left/right/spread. Same open `BlockRegistry::SLOT_CONTEXT` as `section_cards`, so it takes every pickable kind and no other container. Use it wherever the surrounding markup is itself a flex row and a set of blocks has to break out of it onto a line of its own. **Not in a menu, though**, which is what it was first reached for: a menu's own kinds (SiteBundle's `menu_link`) only opt into the slot context of the container built for them (`menu_group`, same form and same template as this one), so a `block_group` picked in a menu would be a group whose every drop is refused. A container is therefore only offered in the `menu` context if it declared that context itself - the same opt-in rule that already applies inside another container's slots. Every non-container kind stays offered there, a footer taking any of them on purpose.
+
+Upgrading to a UiBundle version that introduces `flex_columns`/`flex_column`/`section_cards`/`block_group` (or your own container kind) adds a new `parent_block_id` column to `site_block` - re-run "Run migrations" above after `composer update`.
 
 ### Why a container's slots can't vanish any more
 
@@ -412,13 +445,13 @@ The same move works at the finger, from the row's move handle (see [At the finge
 
 ## Anchors (in-page navigation)
 
-Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `flex_columns`, `section_cards`, `expertise_banner`, `process_steps`, `portfolio_grid`, `cta_band`, `collection`) has an optional **Anchor** field, letting an editor build a one-page nav (a `menu_link` block - see `c975L/SiteBundle`'s README - pointing straight at a section of the same page).
+Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `flex_columns`, `section_cards`, `expertise_banner`, `process_steps`, `portfolio_grid`, `video_grid`, `cta_band`, `collection`) has an optional **Anchor** field, letting an editor build a one-page nav (a `menu_link` block - see `c975L/SiteBundle`'s README - pointing straight at a section of the same page).
 
 - Typing an anchor (e.g. `Services`) slugifies it (`services`). Leaving it empty falls back to slugifying the block's own title.
 - The final HTML `id` rendered on the section is always `{slug}-{block.id}` (e.g. `services-42`) - the trailing block id is added at render time, not stored, so two blocks of the same kind on the same page (or the same title reused elsewhere) never collide.
 - In `SiteBundle`'s Menu admin, a `menu_link` block's target select lists every page's anchored sections alongside its pages/routes (`Home → Services`), decoded by `MenuExtension::getMenuLinkUrl()` into `/home#services-42`.
 - That list is built by `c975L\UiBundle\Service\BlockAnchorCollector` (`fragment => label`), which walks a container's nested slots too (a `text_section` inside a `flex_columns` is listed just like a top-level one) and knows the two id conventions in use: an `anchor` renders as `{slug}-{block.id}`, an auto-derived `slug` (`text_section`, `article`) renders as the slug itself. `MenuExtension` labels a saved anchored target through the very same collector, so picker and menu never disagree.
-- Every `url`-style field on `button`, `card`, `cta_band`, `hero` and `portfolio_grid` (e.g. `primaryUrl`, `ctaUrl`, `linkUrl`) is a plain `TextType`, not Symfony's `UrlType` — so an editor can point one straight at an in-page anchor (`#services-42`) or a relative path, not just an absolute URL.
+- Every `url`-style field on `button`, `card`, `cta_band`, `hero`, `portfolio_grid` and `video_grid` (e.g. `primaryUrl`, `ctaUrl`, `linkUrl`) is a plain `TextType`, not Symfony's `UrlType` — so an editor can point one straight at an in-page anchor (`#services-42`) or a relative path, not just an absolute URL.
 
 Implemented by `c975L\UiBundle\Service\BlockAnchorSlugger` (the slug logic) and `c975L\UiBundle\Form\Block\HasAnchorFieldTrait` (the reusable field + `FormEvents::SUBMIT` listener). To add the same anchor field to a new "section" kind, in any bundle (own or third-party) that requires `c975l/ui-bundle`:
 
@@ -469,19 +502,31 @@ Each variant redefines a handful of custom properties, and every section rule re
 
 A flat bleeds full-viewport-width past `--body-max-width`, else it paints a centered stripe between a full-width navbar and footer. That breakout is itself three tokens, each read with its own value as the fallback: `--section-flat-offset` (`50%`), `--section-flat-width` (`100vw`) and `--section-flat-margin-x` (`-50vw`) - `.hero--has-bg` reads the same three. A design framing its whole page inside `--body-max-width` (navbar and footer included, see SiteBundle's `--navbar-width`/`--footer-width`) sets them to `auto`/`auto`/`0` in its `theme.css`, and the flats paint their own box like any other section.
 
+The block layer carries **two typographic scales**, and the font a rule is set in is what decides between them. A title (`--font-family-title`) and an eyebrow (`--font-family-accent`) are sized in `px`: they are the design's own marks, and a site opening up its body copy must not drag them along. Everything set in the body font — a `feature_bar` item's text, a `cta_band`'s paragraph, an `expertise_banner`'s text, a step's or a project card's text, a `hero`'s stat label, a `section_btn`'s label — is sized in `em`, so it follows `c975l/site-bundle`'s `--font-size-body` and one value retunes the reading of the whole page at once. A size read through a token of its own (`--hero-sub-size`, `--hero-title-size`, `--text-hook-size`, `--text-section-secondary-size`) is outside both: the length inside it is the bundle's default and the theme's own call.
+
+The design's marks keep their own lengths, but not their own size: each is multiplied by the factor of its family, `--font-size-title-scale` or `--font-size-eyebrow-scale`, both `1` by default. A factor rather than one shared size, because those lengths are a **hierarchy** — a 66px hero title, a 42px section title, a 24px `feature_bar` item title, a 19px project card title — and one value for all of them would flatten it, where a factor moves the whole family at once and leaves every proportion inside it where the design put it. What they answer is a typeface, not a layout: a face with a small x-height reads small at the size a wider one reads right, so a site swapping its title or accent family retunes one line instead of overriding a dozen rules. SiteBundle's own `h1`-`h6` and `.lead` read the title factor too. `BlockTextScaleTest` locks all three ways — a body-font rule may not pin itself in px, a title or an eyebrow may not drift into em, and neither may drop the factor of its family.
+
 The **vertical rhythm** is one token, `--section-space` (`clamp(48px, 8vw, 84px)`), plus `--section-space-tight` (`clamp(24px, 4vw, 48px)`) for `text_section`, which commonly opens a page right under its own `<h1>`. The rule behind it is worth stating, because every defect it replaced came from breaking it: **a section-level block declares its step on its top edge and nothing on its bottom one**, so any two blocks are parted by exactly one step whichever pair they are. Two consequences follow. A block padding its bottom too — `hero` and `cta_band` did — parts its pair by *two*, and the page's spacing stops being uniform; only a **flat** may pad its bottom edge, because it paints down to that edge and its content would otherwise sit right on the color. And `feature_bar` carries its step as a `margin-block-start` rather than a padding: the band paints its own background between its own hairlines, so a padding would part *those* from its items instead of parting the band from the block above it — which is also why it is the one kind left out of the margin reset. `SectionRhythmTest` locks all of it: every kind the reset names owns a step, none but a flat pads its bottom, and the value is never written out beside the token.
 
 One page-level block is named by no kind: the `.cards` row `Blocks.html.twig` synthesizes around consecutive `card` blocks (`.blocks > .cards`). Its cards drop their own `margin` inside the row, so without a step of its own it sat flush against the block above it — plainly so under a colored flat, whose background ran straight into the first card, and it carries the same `--section-space` on its top edge as every other page-level block. Inside a `section_cards` container the row is not a child of `.blocks`, and the section around it owns the step instead.
 
 One leak is closed alongside, a block handing the page a margin the rhythm never declared: `.flex-columns__col > :last-child` drops the theme's own bottom margin off whatever element a column ends on — a slot rendering a bare `<p>`, as the `image` kind does, would otherwise push the section below it that much lower. In the same spirit `section_cards`, `section_features` and `flex_columns` render **no row at all** rather than an empty one when they have no slot, so the heading's own bottom margin doesn't hang in the void under them.
 
-The measure every section is laid out on is two tokens read the same way: `--section-wrap-max-width` and `--section-wrap-gutter` (`clamp(20px, 5vw, 64px)`). The first falls back to the page's own frame — `--body-max-width`, declared at `1440px` by SiteBundle and restated as the same `1440px` here for UiBundle used on its own: one measure for the whole page, a section capped narrower than the body it sits in being inset inside its own page. The same chain is read by `.section-wrap`, by the bare `.blocks > .cards` row and by a flat `.feature-bar`'s grid, neither of the last two having a wrap of its own, so the three follow the same measure whatever it is set to. The gutter is read by the first two only: an uncolored `.feature-bar` has no wrap either and spans that measure edge to edge, the flat rule just putting a colored one back on the very same geometry after its full-bleed.
+The measure every section is laid out on is two tokens read the same way: `--section-wrap-max-width` and `--section-wrap-gutter` (`clamp(20px, 5vw, 64px)`). The first falls back to the page's own frame — `--body-max-width`, declared at `1440px` by SiteBundle and restated as the same `1440px` here for UiBundle used on its own: one measure for the whole page, a section capped narrower than the body it sits in being inset inside its own page. The same chain is read by `.section-wrap`, by the bare `.blocks > .cards` row and by a flat `.feature-bar`'s grid, neither of the last two having a wrap of its own, so the three follow the same measure whatever it is set to. The gutter is read by the first two only: an uncolored `.feature-bar`'s grid has no wrap either and spans that measure edge to edge, the flat rule just putting a colored one back on the very same geometry after its full-bleed. Its optional head is the exception, and takes a `.section-wrap` of its own: a title spanning the band edge to edge would read as a stray line, where the items are cells of a divided row and carry their own padding.
 
 So a section with no background set renders exactly as it did before the option existed - that's what `SectionBackgroundTest` locks. Only the three backgrounds themselves are tokens (`--section-bg-muted`, `--section-bg-primary`, `--section-bg-dark`, declared in SiteBundle's `sass/_variables.scss` and restated in a site's own `theme.css`); every tone a variant derives is mixed back into whichever color is set there, so retuning one line retunes the whole variant.
 
 Note the blanket `.section--bg-primary *` rule: SiteBundle's `sass/_typography.scss` writes `color` on **every** element rather than letting it inherit, so a flat has to repaint its descendants instead of just setting its own color. The per-kind rules come later in the file and refine it on equal specificity.
 
 That same `*` rule is why `sass/_rich-text.scss` exists: it puts `color: inherit` back on the inline formatting tags a rich text editor produces (`<b>`, `<strong>`, `<i>`, `<em>`, `<u>`, `<s>`, `<del>`, `<ins>`, `<sub>`, `<sup>`, `<small>`, `<span>`), so bolding a word inside a white hero title no longer turns it black. `<a>` is deliberately left out - a link keeps its own color. `RichTextInheritColorTest` locks those rules in the compiled stylesheets.
+
+The same bundle's `h1`-`h6` rule centers **every** heading and paints it `--primary`, which is why every block title states its own **family, color and alignment** rather than inheriting them. Left to the theme, a section's `<h2>` comes out centered inside whatever box holds it — invisible where the head shrinks to fit its text (`portfolio_grid`'s flex head), plain to see in the 640px `.section-head`, where the title floated to the middle while the eyebrow right above it stayed left. So `.section-eyebrow`, `.section-title`, `.expertise-banner__title`, `.section-step__title`, `.portfolio-grid__project-title`, the `video`/`video_iframe`/`audio` caption titles and the card's `.card-header` band all declare `text-align: start`, and the ones that only inherited the title font (`.banner-title-text`, `.slider-title`, the two above) now read `--font-family-title` themselves.
+
+The two lines of a head are not flush with each other though: the eyebrow holds the section's edge and the title starts one step in, `--section-head-indent` (`32px`), so the pair reads as a staircase rather than as one block of text. It is a `padding-inline-start`, not a margin: the title keeps the head's measure, and the second line of a wrapped title lands on the same step as the first — which the accidental centering it replaces never did, the offset there moving with the length of the title. Set the token to `0` to line the two up again.
+
+A kind meaning to be **centered** — `hero`, `cta_band`, `banner_title` — says so on its own container instead (`.hero .section-wrap`, `.cta-band__inner`, `.banner-title-overlay`), which is what its title then inherits: the alignment belongs to the block, not to the theme's heading rule. `SectionHeadAlignmentTest` locks all three halves — the titles laid out flush, the containers that center, and the family every title reads.
+
+A **legal model**'s own `<h2>`/`<h3>` are the same defect one floor down: the document's copy is capped at the reading measure and centered in the page, while the headings spanned the full width and were centered by the theme — so a title floated above a column whose left edge it never met. They now declare `text-align: start`, and the measure itself is carried by `.legal`, the document's own wrapper, rather than restated on every heading and every block inside it (`ReadingMeasureTest` locks it there). That placement is not tidiness: `ch` is read against the font of the very element the `max-width` is written on, so a heading set in `--font-family-title` at `2rem` read a `75ch` nearly twice as wide as its body copy did, fell back to `90vw`, and — laid out flush left since — started a good 300px to the left of the text it introduces. One box set in the body font, one column for the whole document. Only their **color** is deliberately left to the theme: a legal document is body prose, and its headings read like the site's other prose headings rather than like a block title.
 
 To offer the same field on another section kind, `use HasBackgroundFieldTrait` and call `addBackgroundField($builder)` from `buildForm()`:
 
@@ -1087,7 +1132,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Cta:Band>` | Centered call-to-action panel (title/text/button) |
 | `<twig:c975LUi:Expertise:Banner>` | Dark panel with text and a list of tags |
 | `<twig:c975LUi:Feature:Bar>` | Row of short arguments (title + caption) |
-| `<twig:c975LUi:Hero:Hero>` | Header banner with title, subtitle, optional CTA buttons and image |
+| `<twig:c975LUi:Hero:Hero>` | Header banner with title, subtitle, optional CTA buttons and image or background video |
 | `<twig:c975LUi:Image:Icon>` | Small icon image |
 | `<twig:c975LUi:Image:Image>` | Responsive image |
 | `<twig:c975LUi:Image:Link>` | Image wrapped in a link |
@@ -1285,6 +1330,46 @@ This bundle's own `<twig:c975LUi:Cookie:Consent />` (see [Cookie banner](#cookie
 ready-made provider of that contract — but any consuming app's own banner satisfying it works just
 as well.
 
+#### Posters, and why they are imported rather than hotlinked
+
+A `video_iframe` takes one optional media, the player's **poster**. `youtube-nocookie.com` serves no
+image at all (only the embed player), so a still can only come from `i.ytimg.com` — and while that host
+sets no cookie, requesting it from a visitor's browser still hands the platform their IP and referrer.
+So the still is **copied server-side into the site's own files, once**, and served from there: nothing to
+open in the CSP's `img-src`, no third-party request before consent, and nothing about the poster to
+consent to.
+
+That copy is an explicit editor action, never a silent one. `VideoIframeType`'s **"Import thumbnail"**
+checkbox is a one-shot: `VideoPosterImporter` clears it as soon as the import is done (successful or
+not), so an imported still can be replaced by hand afterwards, and a still that changed on the platform
+is refreshed by ticking the box again. A flag re-fetching on every save would silently undo that manual
+replacement instead.
+
+`VideoPlatform::posterUrls($id)` is where a platform's stills live, best first — `maxresdefault`
+(1280×720, missing on plenty of videos) then `hqdefault` (480×360, always there but letterboxed around
+16:9 content). The importer takes the first that answers, and the bars are cropped off by the tile's own
+`object-fit: cover` rather than server-side. **YouTube only:** TikTok, Vimeo and Dailymotion hand their
+stills out through an API call, so they return no candidate rather than a guessed one.
+
+A poster also changes *when* the player loads. Without one, the iframe is injected as the figure nears
+the viewport, as before. With one, it waits for a **click** on the poster — each player is ~1 MB of
+third-party JavaScript, and a grid of six would otherwise pull all six as they scroll past. Consent
+still comes first: while it is undecided the consent prompt is what sits over the poster, never a bare
+play button, so accepting third-party cookies can't be mistaken for pressing play.
+
+### Video grid (`video_grid`)
+
+A section head — eyebrow, title, and an optional "see it all elsewhere" link beside it (a channel, a
+playlist) — over a 1→2→3 column grid, sharing `portfolio_grid`'s own head and grid rules
+(`sass/_page-sections.scss`).
+
+It is a **container**: each cell holds a whole nested block, `video_iframe` or `video` being what it is
+for, and renders it exactly as it would render bare in the page. That is the point of the design — a
+grid of platform players has to carry the entire consent dance (no-cookie rewrite, banner contract,
+click-to-play, poster import), all of which `video_iframe` already carries alone. A media collection of
+its own would have been a second implementation of the one thing on the page that must not be got wrong.
+Like `section_cards` it declares no `slot_context`, so any kind can fill a cell.
+
 ---
 
 ## Video platforms
@@ -1468,7 +1553,7 @@ The index shows one button per graphic still missing: each opens the upload form
 
 The site's colors, fonts and light/dark mode are admin-editable config keys of the `theme` group, declared here because the `--c975l-*` custom properties they compile to are the ones this bundle's own CSS reads: `theme-color-primary`, `theme-color-secondary`, their two `-dark-mode` counterparts, `theme-color-background`, `theme-color-text`, `theme-font-family-title`/`-body`/`-accent` and `theme-mode` (`auto`/`light`/`dark`).
 
-`Listener\ThemeVariablesCssListener` compiles them into `public/bundles/build/site-theme.css` on every change — a Doctrine listener on the `Config` entity, and a `CacheWarmerInterface` too, so a fresh file exists after a deploy even without an admin re-saving anything. The mapping is mechanical (`theme-color-primary` → `--c975l-color-primary`), so a new key needs no lookup table; a bare custom font name gets a generic fallback appended (`sans-serif`/`monospace`) in case the `@font-face` fails to load.
+`Listener\ThemeVariablesCssListener` compiles them into `public/bundles/build/site-theme.css` on every change — a Doctrine listener on the `Config` entity, and a `CacheWarmerInterface` too, so a fresh file exists after a deploy even without an admin re-saving anything. The mapping is mechanical (`theme-color-primary` → `--c975l-color-primary`), so a new key needs no lookup table; a bare custom font name is quoted and gets a generic fallback appended (`"Cormorant Garamond latin 400", serif`) in case the `@font-face` fails to load, a value already holding a comma being a full stack the admin wrote and left alone. The quoting is what makes an uploaded family usable at all: unquoted, a name carrying a digit is not a valid `<custom-ident>` sequence, so every `font-family` reading that token is invalid at computed-value time and the text silently falls back to the browser's default.
 
 What it compiles is every config whose **slug** starts with `theme-`, whatever its group (`ConfigRepository::findBySlugPrefix()`) — `theme-mode` excepted, being a choice rather than a CSS value. A satellite bundle declaring colors of its own therefore keeps them in its own back-office group next to its other settings, rather than scattering them into the site's `theme` screen: `c975l/gallery-bundle` ships its ten `theme-color-gallery-*` in its `gallery` group, and each of its tokens reads the compiled `--c975l-color-gallery-*` with the bundle's own default as fallback. ConfigBundle's `theme-color-*` validation (a plausible CSS color, so a value cannot break out of its declaration) keys on the same prefix, group-independent too.
 
@@ -1511,6 +1596,16 @@ Both live in `sass/_page-sections.scss`. `BlockType::HERO_MEDIA_MAX` caps a hero
 
 A `hero` block's "Show image as a full-width background" toggle (`HeroType::$hasBackgroundImage`) instead shows the first attached image full-bleed behind the centered text, dropping the side-by-side layout and slideshow - see `.hero--has-bg` in `sass/_page-sections.scss`. That backdrop is a real `<img class="hero__bg">` rather than a CSS `background-image`: a background needs a `style` attribute, which a CSP nonce never covers (nonces only ever apply to `<style>`/`<link>` *elements*).
 
+A `hero` also takes a **video** (`video/mp4`, `video/webm`, `video/ogg` - the same three formats as the `video` kind, the ones every browser's `<video>` can play). It is told apart from the images by its mimetype in `blocks/Hero.html.twig`, exactly as `blocks/Video.html.twig` tells a player's file from its cover, and it needs no toggle of its own: a video only ever makes sense filling the section, so it turns the background mode on by itself and drops the side-by-side layout whatever `hasBackgroundImage` says. It plays `autoplay muted loop playsinline`, with no `controls` - muting is not an option offered to the editor, a background printing no controls giving a viewer no way to turn sound off, and no browser autoplaying an unmuted video anyway.
+
+The `<video>` carries **no `autoplay` attribute**: playing it is `assets/js/hero-video.js`' call (the `heroVideo` Stimulus controller, lazily registered like every other one in `assets/controllers.js`). An attribute is honored before any script runs and nothing can take it back afterwards, where the controller reads `matchMedia("(prefers-reduced-motion: reduce)")` first and follows it for as long as it is connected - a preference turned on mid-visit pauses the video where it stands. It **pauses**, never hides: a background video has no visible pause control (WCAG 2.2.2), and a frozen frame goes on filling the section where `display: none` would bare the dark overlay under it. Same outcome with no JavaScript at all, which is the point of leaving `autoplay` out: the section keeps the video's own first frame, a still picture the title reads over exactly as it does over a background image.
+
+An image uploaded **beside** the video is that same `<img class="hero__bg">` any other hero gets, printed right before the video and covered by it once it plays - both absolutely placed under the one `.hero__bg` rule, so the later one in the DOM wins. It is worth uploading: it is the section's LCP element, painted at once while megabytes of video download, and what is left if the video never loads at all. `HeroVideoBackgroundTest`, `HeroVideoMotionTest` and `HeroMediaTypesTest` lock the three halves of this - markup, controller, and the kind's accepted formats.
+
+A background video also gets **room of its own**: `object-fit: cover` crops the shot to whatever height the section ends up with, and a hero holding a short title - or none at all - is only as tall as its own paddings, which leaves a strip of video rather than a picture. `.hero--has-bg:has(.hero__bg--video)` therefore sets `min-height: var(--hero-video-min-height, 70vh)` and centers the text in it, the section becoming the column its `.section-wrap` is the single item of. The rule is deliberately scoped to the video: a background image reads fine at any height, and every hero already carrying one goes on rendering exactly as it did. The token is declared nowhere, like the rest of the hero's, so a design opening on a taller or shorter shot sets it in its own `theme.css` (it is offered, commented out, in the scaffolded `ui.css`).
+
+The block showcase shows both looks side by side: `BlockFixtureProvider` gives `hero` a `video` variant next to its default one, and `BlockFixtureMediaAttacher` reads that variant's name to attach the placeholder video (plus one single image as its still) to it alone - the same way `slider` shows its default and `freeflow` layouts together.
+
 A hero's typographic scale is retunable without touching its rules, through five custom properties each read with the bundle's own value as its fallback: `--hero-title-size` (`clamp(40px, 6vw, 66px)`), `--hero-title-letter-spacing` (`-0.01em`), `--hero-title-line-height` (`1.03`), `--hero-sub-size` (`19px`) and `--hero-sub-max-width` (`480px`). They are declared nowhere, so a site setting none of them renders exactly as before - a design wanting a bigger, tighter hero sets them in its own `theme.css` instead of restating `.hero__title`/`.hero__sub`.
 
 A hero's two call-to-action buttons are both optional, the primary one as much as the secondary: a button is only rendered when it holds **both** its label and its url (a label alone would print a box linking to the current page, a url alone an empty clickable box), and the row itself disappears when neither is set, rather than leaving its margins behind under the title.
@@ -1519,10 +1614,12 @@ A `hero` block's "Heading level of the title" field (`HeroType::$titleLevel`) pi
 
 ### Headings and the `<section>` element
 
-Every section-level kind whose title is optional (`section_cards`, `flex_columns`, `section_features`, `portfolio_grid`, `collection`, `text_section`) follows the same two rules, both of them what the W3C validator asks for:
+Every section-level kind whose title is optional (`section_cards`, `flex_columns`, `section_features`, `portfolio_grid`, `collection`, `text_section`, `feature_bar`) follows the same two rules, both of them what the W3C validator asks for:
 
 - with an eyebrow but no title, the eyebrow *is* the section's heading and renders as `<h2 class="section-eyebrow">` instead of `<p>` — it keeps its exact eyebrow look, and the slots' own `<h3>` no longer skip a level down from the page's `<h1>`;
-- with neither, the wrapper renders as a `<div>` instead of a headingless `<section>` (same rule already applied to `feature_bar` and the `form` block).
+- with neither, the wrapper renders as a `<div>` instead of a headingless `<section>` (same rule already applied to the `form` block).
+
+`feature_bar` is the one whose head is *usually* absent: a reassurance band commonly stands on its items alone, and the `<div>` is what it renders as then. Typing an eyebrow or a title turns it into a `<section>` — which is also why it zeroes its own bottom margin, SiteBundle's page-wide `section { margin: 1em auto }` reaching it only in that shape and hanging a step under it the rhythm never declared.
 
 `text_section` derives its in-page anchor from that same heading: from the title, or from the eyebrow when there is no title (`TextSectionType`), so moving a heading from one field to the other doesn't silently drop the anchor other pages may link to.
 

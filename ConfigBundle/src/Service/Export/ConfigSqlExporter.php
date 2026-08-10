@@ -35,7 +35,7 @@ class ConfigSqlExporter
     // An empty sensitive row keeps its INSERT IGNORE, an upsert wiping the secret filled on the target
     public function export(bool $withSensitiveValues = false): Response
     {
-        $sql = 'SELECT `label`, `slug`, `is_sensitive`, `is_restricted`, `value`, `kind`, `group`, `description`, `severity`, `creation`, `modification` '
+        $sql = 'SELECT `label`, `slug`, `is_sensitive`, `is_restricted`, `value`, `kind`, `choices`, `group`, `description`, `severity`, `creation`, `modification` '
             . 'FROM `site_config`';
         if (!$this->security->isGranted('ROLE_SUPER_ADMIN')) {
             $sql .= ' WHERE `is_restricted` IS NULL OR `is_restricted` = 0';

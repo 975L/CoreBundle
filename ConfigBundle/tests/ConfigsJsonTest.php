@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Tests;
 
+use c975L\ConfigBundle\Entity\Config;
 use PHPUnit\Framework\TestCase;
 
 // Guards config/configs.json, the list ConfigBundle seeds the backoffice from - an entry whose label/description has no translation shows up there as a raw "label.some_key" string
@@ -64,6 +65,24 @@ class ConfigsJsonTest extends TestCase
         foreach ($this->loadConfigs() as $config) {
             foreach (['label', 'slug', 'sensitive', 'restricted', 'value', 'kind', 'group', 'severity', 'description'] as $key) {
                 $this->assertArrayHasKey($key, $config, sprintf('Config "%s" misses the "%s" key', $config['slug'] ?? '?', $key));
+            }
+        }
+    }
+
+    // A "choice" entry is only worth its kind if it says what it accepts, and if its own default is part of it - the select is built from that list alone (see ConfigCrudController::buildChoiceField)
+    public function testChoiceEntriesDeclareTheValuesTheyAccept(): void
+    {
+        foreach ($this->loadConfigs() as $config) {
+            if (Config::TYPE_CHOICE !== $config['kind']) {
+                continue;
+            }
+
+            $slug = $config['slug'];
+            $this->assertArrayHasKey('choices', $config, sprintf('Config "%s" is a choice but declares no choices', $slug));
+            $this->assertNotSame([], $config['choices'], sprintf('Config "%s" declares an empty choices list', $slug));
+
+            if (null !== $config['value']) {
+                $this->assertContains($config['value'], $config['choices'], sprintf('Default value of "%s" is not one of its choices', $slug));
             }
         }
     }

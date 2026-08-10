@@ -56,7 +56,10 @@ class ScaffoldThemeTest extends TestCase
     // --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange,
     // yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A
     // site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule -
-    // see the "Card accents" section of the README
+    // see the "Card accents" section of the README.
+    // --flip-card-ratio is the same shape one step further: only the eight .flip-card-ratio-* classes set it,
+    // one per shape an editor picks per card, and a card left on "free" declares none at all - a value in
+    // :root would give every flip card on the site one shape, which is the field's whole point undone
     private const PER_VARIANT = [
         '--section-background',
         '--section-text',
@@ -67,6 +70,7 @@ class ScaffoldThemeTest extends TestCase
         '--card-accent',
         '--card-accent-color',
         '--card-accent-invert',
+        '--flip-card-ratio',
     ];
 
     // SiteBundle restates these three in its own unlayered :root, which beats this bundle's @layer

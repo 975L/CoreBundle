@@ -44,7 +44,7 @@ class ConfigSqlExporterTest extends TestCase
         $connection->expects($this->once())
             ->method('fetchAllAssociative')
             ->with(
-                'SELECT `label`, `slug`, `is_sensitive`, `is_restricted`, `value`, `kind`, `group`, `description`, `severity`, `creation`, `modification` '
+                'SELECT `label`, `slug`, `is_sensitive`, `is_restricted`, `value`, `kind`, `choices`, `group`, `description`, `severity`, `creation`, `modification` '
                 . 'FROM `site_config` ORDER BY `slug`'
             )
             ->willReturn([]);

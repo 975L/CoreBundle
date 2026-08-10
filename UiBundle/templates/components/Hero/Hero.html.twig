@@ -1,35 +1,52 @@
-{# Static usage: <twig:c975LUi:Hero:Hero title="..." [primaryLabel=""] [primaryUrl=""] [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [mediaLayout="slideshow"] [hasBackgroundImage=false] [background=""] [level="h1"]/> #}
+{# Static usage: <twig:c975LUi:Hero:Hero title="..." [primaryLabel=""] [primaryUrl=""] [badge=""] [subtitle=""] [secondaryLabel=""] [secondaryUrl=""] [statValue=""] [statLabel=""] [src=""] [alt=""] [width=""] [height=""] [id=""] [medias=[]] [mediaLayout="slideshow"] [hasBackgroundImage=false] [videoSrc=""] [videoType=""] [background=""] [level="h1"]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Hero.html.twig #}
 {% set medias = medias|default([]) %}
-{% set hasBackgroundImage = hasBackgroundImage|default(false)|to_bool %}
+{% set videoSrc = videoSrc|default('') %}
+{# A video is never laid out beside the text - it only makes sense filling the section - so it turns the background mode on by itself, whatever the checkbox says #}
+{% set hasBackgroundImage = videoSrc or hasBackgroundImage|default(false)|to_bool %}
 {# "h2" when the page template already prints its own <h1> #}
 {% set level = level|default('h1') %}
-{# Background mode uses a single static image, the slideshow only making sense next to the text #}
+{# Background mode uses a single static image, the slideshow only making sense next to the text. Beside a video that image is its still, painted while the file downloads #}
 {% set bgSrc = hasBackgroundImage ? (medias|length ? vich_uploader_asset(medias|first) : src) : '' %}
+{# Either of them fills the section, so both take it out of the flow and off the flat backgrounds #}
+{% set hasBg = bgSrc or videoSrc %}
 {# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
-{% set background = not bgSrc and background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
-<section class="hero{{ bgSrc ? ' hero--has-bg' : background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{% set background = not hasBg and background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<section class="hero{{ hasBg ? ' hero--has-bg' : background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     {% if bgSrc %}
-        {# A real <img>: a CSS background-image needs a style attribute no CSP nonce covers #}
+        {# A real <img>: a CSS background-image needs a style attribute no CSP nonce covers. Under a video it is the same background, painted at once as the page's LCP element while megabytes of video download, and left alone if the video never loads #}
         <img class="hero__bg" src="{{ bgSrc }}" alt="" aria-hidden="true" fetchpriority="high">
     {% endif %}
+    {% if videoSrc %}
+        {# No "autoplay" attribute: playing is the controller's call (assets/js/hero-video.js), so a browser asking for reduced motion - or running no script at all - is left on the video's own first frame rather than on motion nobody asked for. Muted is not an option offered to the editor either: the background prints no controls, so a viewer given sound could not turn it off. After the still on purpose, both being absolutely placed: the later one covers the other #}
+        <video class="hero__bg hero__bg--video" data-controller="heroVideo" muted loop playsinline preload="auto" aria-hidden="true">
+            {# Only when it holds something: a browser reads type="" as a format it does not support and skips the source altogether, where no attribute at all has it sniff the file and play it #}
+            <source src="{{ videoSrc }}"{% if videoType|default('') %} type="{{ videoType }}"{% endif %}>
+        </video>
+    {% endif %}
     <div class="section-wrap">
-        <div class="hero__text">
-            {% if badge %}<span class="hero__badge">{{ badge }}</span>{% endif %}
-            <{{ level }} class="hero__title">{{ title|trix_inline }}</{{ level }}>
-            {% if subtitle %}<div class="hero__sub">{{ subtitle|raw }}</div>{% endif %}
-            {# Both label and url required: either alone prints a broken button, and the row hides when neither is set #}
-            {% set hasPrimary = primaryLabel|default('') and primaryUrl|default('') %}
-            {% set hasSecondary = secondaryLabel|default('') and secondaryUrl|default('') %}
-            {% if hasPrimary or hasSecondary %}
-                <div class="hero__cta">
-                    {% if hasPrimary %}<a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>{% endif %}
-                    {% if hasSecondary %}<a class="section-btn section-btn--ghost" href="{{ secondaryUrl }}">{{ secondaryLabel }}</a>{% endif %}
-                </div>
-            {% endif %}
-            {% if bgSrc and statValue %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
-        </div>
-        {% if not bgSrc %}
+        {# Both label and url required: either alone prints a broken button, and the row hides when neither is set #}
+        {% set hasPrimary = primaryLabel|default('') and primaryUrl|default('') %}
+        {% set hasSecondary = secondaryLabel|default('') and secondaryUrl|default('') %}
+        {# Read off the text the field holds, not off its markup: Trix stores a cleared editor as an empty <div>, which is truthy #}
+        {# A hero saying nothing of its own is a real composition, not an unfinished one - a background video whose own footage already carries the title, which is the case .hero--has-bg:has(.hero__bg--video) is sized for. Printed all the same, the heading would take the page's <h1> away from whatever does title it, and leave a screen reader announcing a heading with nothing to read #}
+        {% set hasTitle = title|default('')|trix_inline|striptags|trim is not empty %}
+        {% set hasStat = hasBg and statValue|default('') %}
+        {% if badge|default('') or hasTitle or subtitle|default('') or hasPrimary or hasSecondary or hasStat %}
+            <div class="hero__text">
+                {% if badge|default('') %}<span class="hero__badge">{{ badge }}</span>{% endif %}
+                {% if hasTitle %}<{{ level }} class="hero__title">{{ title|trix_inline }}</{{ level }}>{% endif %}
+                {% if subtitle|default('') %}<div class="hero__sub">{{ subtitle|raw }}</div>{% endif %}
+                {% if hasPrimary or hasSecondary %}
+                    <div class="hero__cta">
+                        {% if hasPrimary %}<a class="section-btn section-btn--primary" href="{{ primaryUrl }}">{{ primaryLabel }}</a>{% endif %}
+                        {% if hasSecondary %}<a class="section-btn section-btn--ghost" href="{{ secondaryUrl }}">{{ secondaryLabel }}</a>{% endif %}
+                    </div>
+                {% endif %}
+                {% if hasStat %}<div class="hero__stat"><b>{{ statValue }}</b><span>{{ statLabel }}</span></div>{% endif %}
+            </div>
+        {% endif %}
+        {% if not hasBg %}
             {% if medias|length > 1 %}
                 {# Matched, not interpolated, same as "background" above; anything else means the crossfade, which is what every hero stored before this field existed asks for #}
                 {% set isGrid = mediaLayout|default('') == 'grid' %}

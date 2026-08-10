@@ -15,6 +15,8 @@ const LAZY_CONTROLLERS = {
     // Kebab-case identifier on purpose - Stimulus derives value attribute names from the identifier as registered, so a camelCase one silently breaks every "data-cookie-consent-*-value" binding
     'cookie-consent': () => import('./js/cookie-consent.js'),
     confetti: () => import('./js/confetti.js'),
+    flipCard: () => import('./js/flip-card.js'),
+    heroVideo: () => import('./js/hero-video.js'),
     imageCompare: () => import('./js/image-compare.js'),
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
     password: () => import('./js/password.js'),

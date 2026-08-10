@@ -48,6 +48,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -631,6 +632,7 @@ class ConfigCrudControllerTest extends TestCase
             'is_restricted' => 0,
             'value' => 'My Site',
             'kind' => 'text',
+            'choices' => null,
             'group' => 'general',
             'description' => null,
             'severity' => null,
@@ -645,6 +647,7 @@ class ConfigCrudControllerTest extends TestCase
             'isRestricted' => false,
             'value' => 'My Site',
             'kind' => 'text',
+            'choices' => null,
             'group' => 'general',
             'description' => null,
             'severity' => null,
@@ -1035,6 +1038,50 @@ class ConfigCrudControllerTest extends TestCase
             ['Old Font' => 'Old Font', 'Georgia' => 'Georgia', 'Roboto' => 'Roboto', 'serif' => 'serif', 'sans-serif' => 'sans-serif', 'monospace' => 'monospace'],
             $valueField->getAsDto()->getFormTypeOptions()['choices'],
         );
+    }
+
+    // Choice kind renders a select over the values the entry itself declares, so the admin never has to guess them
+    public function testConfigureFieldsRendersChoiceFieldForChoiceKind(): void
+    {
+        $config = (new Config())->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('dark');
+
+        $controller = $this->createController();
+        $this->setContextEntity($controller, $config);
+
+        $valueField = $this->findField($controller->configureFields('edit'), 'value');
+
+        $this->assertInstanceOf(ChoiceField::class, $valueField);
+        $this->assertSame(
+            ['auto' => 'auto', 'light' => 'light', 'dark' => 'dark'],
+            $valueField->getAsDto()->getCustomOption(ChoiceField::OPTION_CHOICES),
+        );
+    }
+
+    // A value stored before the entry became a choice (or since dropped from the list) keeps its form openable - validation is what tells the admin to replace it, an unopenable form would not
+    public function testConfigureFieldsKeepsAnUndeclaredChoiceValueSelectable(): void
+    {
+        $config = (new Config())->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('Dark');
+
+        $controller = $this->createController();
+        $this->setContextEntity($controller, $config);
+
+        $valueField = $this->findField($controller->configureFields('edit'), 'value');
+
+        $this->assertSame(
+            ['Dark' => 'Dark', 'auto' => 'auto', 'light' => 'light', 'dark' => 'dark'],
+            $valueField->getAsDto()->getCustomOption(ChoiceField::OPTION_CHOICES),
+        );
+    }
+
+    // An entry whose kind is ahead of the last c975l:config:load-all run has no declared choice yet: free text beats an empty select
+    public function testConfigureFieldsFallsBackToTextFieldForAChoiceKindDeclaringNoChoice(): void
+    {
+        $config = (new Config())->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setValue('auto');
+
+        $controller = $this->createController();
+        $this->setContextEntity($controller, $config);
+
+        $this->assertInstanceOf(TextField::class, $this->findField($controller->configureFields('edit'), 'value'));
     }
 
     // --- prettyJson (private) ---------------------------------------------------------------------------

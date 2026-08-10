@@ -6,6 +6,7 @@
  * with this source code in the file LICENSE.
  */
 import { Controller } from "@hotwired/stimulus";
+import { showAdminMessage } from "./admin-modal.js";
 import { addToolbarButton } from "./block-toolbar.js";
 import { addSortGesture } from "./pointer-sort.js";
 
@@ -205,7 +206,7 @@ export default class extends Controller {
     }
 
     // Persisted server-side rather than renamed in the form: a resubmit would delete the Block and recreate it empty, losing its media
-    moveAcrossFields(item, finalField, originContainer, originNextSibling) {
+    async moveAcrossFields(item, finalField, originContainer, originNextSibling) {
         const root = finalField.closest('[data-block-owner-type]');
         const blockIdInput = item.querySelector('[name$="[id]"]');
         const blockId = blockIdInput ? blockIdInput.value : '';
@@ -223,22 +224,38 @@ export default class extends Controller {
             targetBlockId: finalField.dataset.blockContainerId || '',
         });
 
-        fetch(root.dataset.blockMoveUrl, {
-            method: 'POST',
-            headers: { 'X-CSRF-Token': root.dataset.blockMoveCsrfToken || '' },
-            body,
-        }).then(response => {
+        try {
+            const response = await fetch(root.dataset.blockMoveUrl, {
+                method: 'POST',
+                headers: { 'X-CSRF-Token': root.dataset.blockMoveCsrfToken || '' },
+                body,
+            });
+
             if (response.ok) {
                 // Reloaded: the rest of the form was built against the pre-move indices and would misalign
                 window.location.reload();
-            } else {
-                this.revertToOrigin(item, originContainer, originNextSibling);
-                window.alert(root.dataset.blockMoveFailedLabel || '');
+                return;
             }
-        }).catch(() => {
+
             this.revertToOrigin(item, originContainer, originNextSibling);
-            window.alert(root.dataset.blockMoveFailedLabel || '');
-        });
+            this.showFailure(root, await this.refusalReason(response));
+        } catch {
+            this.revertToOrigin(item, originContainer, originNextSibling);
+            this.showFailure(root);
+        }
+    }
+
+    // What the server answered it refused the move for, when it is something the editor can act on (see BlockMoveController); nothing for a technical failure, which only ever reads as noise next to "the move failed"
+    async refusalReason(response) {
+        try {
+            return (await response.json())?.message || '';
+        } catch {
+            return '';
+        }
+    }
+
+    showFailure(root, reason = '') {
+        showAdminMessage(root.dataset.blockMoveFailedLabel || '', reason, root.dataset.blockMoveCloseLabel || 'OK');
     }
 
     revertToOrigin(item, originContainer, originNextSibling) {

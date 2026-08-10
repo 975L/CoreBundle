@@ -1,3 +1,3 @@
 {# Adapter for the dynamic Block system — maps Block data to the Text:Section component #}
 {% set media = block.media|first %}
-<twig:c975LUi:Text:Section eyebrow="{{ eyebrow|default('') }}" title="{{ title }}" slug="{{ slug }}" content="{{ content }}" src="{{ media ? vich_uploader_asset(media) : '' }}" alt="{{ media ? media.alt : '' }}" background="{{ background|default('') }}"/>
+<twig:c975LUi:Text:Section eyebrow="{{ eyebrow|default('') }}" title="{{ title }}" slug="{{ slug }}" content="{{ content }}" src="{{ media ? vich_uploader_asset(media) : '' }}" alt="{{ media ? media.alt : '' }}" background="{{ background|default('') }}" tone="{{ tone|default('') }}"/>

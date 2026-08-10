@@ -140,7 +140,8 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
         return sprintf('    --c975l-%s: %s;', substr($slug, strlen(self::CSS_SLUG_PREFIX)), $this->withFontFallback($slug, $value));
     }
 
-    // A bare font name gets its generic fallback appended; a value already holding a comma is left alone
+    // A bare font name is quoted and gets its generic fallback appended; a value already holding a comma is a full stack the admin wrote, left alone
+    // The quoting is what makes an uploaded family usable at all: unquoted, a name carrying a digit ("Cormorant Garamond latin 400") is not a valid <custom-ident> sequence, so every "font-family: var(--c975l-font-family-body)" it reaches is invalid at computed-value time and the text silently falls back to the browser's default
     private function withFontFallback(string $slug, string $value): string
     {
         $fallback = self::FONT_FALLBACKS[$slug] ?? null;
@@ -148,6 +149,12 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
             return $value;
         }
 
-        return $value . ', ' . $fallback;
+        // An admin who quoted the name himself is normalised back to a bare one before it is quoted here, or "Roboto" typed with its quotes would be declared as "\"Roboto\"" - a family matching nothing, so the very fallback this quoting exists to avoid
+        $value = trim($value);
+        if (strlen($value) >= 2 && $value[0] === $value[strlen($value) - 1] && in_array($value[0], ['"', "'"], true)) {
+            $value = substr($value, 1, -1);
+        }
+
+        return sprintf('"%s", %s', str_replace(['\\', '"'], ['\\\\', '\\"'], $value), $fallback);
     }
 }

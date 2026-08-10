@@ -94,22 +94,34 @@ class SectionMarginResetTest extends TestCase
         }
     }
 
-    // Its own vertical rhythm is a deliberate opt-out of the reset, which is how the slider keeps its --slider-margin-block
+    // Its own vertical rhythm is a deliberate opt-out of the reset, which is how the slider keeps its
+    // --slider-margin-block, and how .feature-bar keeps the margin its step is made of. Both edges have to be
+    // settled: SiteBundle's shorthand writes them both, so a kind stating one only still takes "1em" on the other
     private function setsItsOwnBlockMargin(StylesheetCascade $cascade, string $class): bool
     {
+        $edges = [];
+
         foreach ($cascade->rules() as $rule) {
             if (!in_array('.' . $class, $rule['selectors'], true)) {
                 continue;
             }
 
-            foreach (['margin', 'margin-block', 'margin-top', 'margin-bottom'] as $property) {
+            foreach (['margin', 'margin-block'] as $property) {
                 if (isset($rule['declarations'][$property])) {
                     return true;
                 }
             }
+
+            foreach (['top' => ['margin-top', 'margin-block-start'], 'bottom' => ['margin-bottom', 'margin-block-end']] as $edge => $properties) {
+                foreach ($properties as $property) {
+                    if (isset($rule['declarations'][$property])) {
+                        $edges[$edge] = true;
+                    }
+                }
+            }
         }
 
-        return false;
+        return 2 === count($edges);
     }
 
     // The whole compiled rule, selector and declarations, normalized so the same assertions hold on both sheets

@@ -29,6 +29,8 @@ class ConfigService implements ConfigServiceInterface
         'description' => null,
         'severity' => null,
         'restricted' => false,
+        // Only a "choice" kind entry declares one, see Config::TYPE_CHOICE
+        'choices' => null,
     ];
 
     private ?array $configs = null;
@@ -152,7 +154,7 @@ class ConfigService implements ConfigServiceInterface
         $this->invalidateCache();
     }
 
-    // Label/kind/group/description/severity/isRestricted/isSensitive are metadata fixed by the bundle author (not user data), so they're kept in sync even on existing configs; only the value carries production state and is never overwritten here - except when the sensitive flag itself changes, see syncSensitive()
+    // Label/kind/choices/group/description/severity/isRestricted/isSensitive are metadata fixed by the bundle author (not user data), so they're kept in sync even on existing configs; only the value carries production state and is never overwritten here - except when the sensitive flag itself changes, see syncSensitive()
     private function syncMetadata(Config $config, array $configData): void
     {
         $metadata = $this->declaredMetadata($configData);
@@ -164,6 +166,7 @@ class ConfigService implements ConfigServiceInterface
 
         $config->setLabel($metadata['label']);
         $config->setKind($metadata['kind']);
+        $config->setChoices($metadata['choices']);
         $config->setGroup($metadata['group']);
         $config->setDescription($metadata['description']);
         $config->setSeverity($metadata['severity']);
@@ -189,6 +192,8 @@ class ConfigService implements ConfigServiceInterface
     {
         return $config->getLabel() !== $metadata['label']
             || $config->getKind() !== $metadata['kind']
+            // Normalized the same way setChoices() does, otherwise a declaration listing no choice would differ from the null it is stored as, and rewrite the row on every single run
+            || $config->getChoices() !== ([] === $metadata['choices'] ? null : $metadata['choices'])
             || $config->getGroup() !== $metadata['group']
             || $config->getDescription() !== $metadata['description']
             || $config->getSeverity() !== $metadata['severity']
@@ -255,6 +260,7 @@ class ConfigService implements ConfigServiceInterface
         $config->setIsSensitive($isSensitive);
         $config->setIsRestricted($metadata['restricted']);
         $config->setKind($metadata['kind']);
+        $config->setChoices($metadata['choices']);
         $config->setGroup($metadata['group']);
         $config->setDescription($metadata['description']);
         $config->setSeverity($metadata['severity']);

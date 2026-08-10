@@ -23,8 +23,8 @@ class DevProfileAnalyzer
     public const MAX_QUERIES = 30;
     public const MAX_QUERIES_ERROR = 60;
 
-    // Two identical queries can legitimately happen (a shared fragment rendered twice); a dozen never can - that's an n+1
-    public const MAX_DUPLICATE_QUERIES = 2;
+    // Repeats are grouped by sql text with the parameters left out - that grouping is what makes a real n+1 (the same query re-run per row, each with its own id) visible at all, but it also makes a block-composed page repeat a shape by construction: every sibling block of a same kind reads its own data with the same sql and its own parameters. So the tolerance is set at what a page's composition can explain (deliberately high for the same reason as MAX_TEMPLATES below), and the error level at a count no composition ever reaches - past it, something is iterating over rows
+    public const MAX_DUPLICATE_QUERIES = 6;
     public const MAX_DUPLICATE_QUERIES_ERROR = 9;
 
     // Doctrine opens one transaction per flush(), and a request has no reason to flush more than once - past that, something is flushing inside a loop, or a listener is flushing on its own. Counted apart from the queries because it costs the page nothing a developer would ever notice, and the database server a transaction to isolate whatever the page's own timings say
@@ -110,7 +110,7 @@ class DevProfileAnalyzer
             'level' => $duplicates > self::MAX_DUPLICATE_QUERIES_ERROR ? self::LEVEL_ERROR : self::LEVEL_WARNING,
             'area' => 'Doctrine',
             'message' => sprintf(
-                '%d identical queries repeated (n+1)%s',
+                '%d repeats of a same SQL (n+1)%s',
                 $duplicates,
                 null !== $worst ? sprintf(', including %d times: %s', $worst['count'], $this->excerpt($worst['sql'])) : ''
             ),

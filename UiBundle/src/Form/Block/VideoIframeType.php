@@ -32,6 +32,14 @@ class VideoIframeType extends AbstractType
                 'label' => 'label.video_no_cookie',
                 'required' => false,
             ])
+            // A one-shot action rather than a stored preference (see VideoPosterImporter, which clears it once done): the still is copied to this site's own files, so the editor keeps the last word on it and a still that changed on the platform is re-imported by ticking the box again
+            // Always offered rather than only for a src already known to be a YouTube one: the box has to be tickable while the url is being pasted for the first time, and it is a no-op for any platform serving no guessable still
+            ->add('importPoster', CheckboxType::class, [
+                'label' => 'label.video_import_poster',
+                'help' => 'label.video_import_poster_help',
+                'required' => false,
+                'label_attr' => ['class' => 'checkbox-switch'],
+            ])
             ->add('title', TextType::class, [
                 'label' => 'label.title',
                 'required' => false,

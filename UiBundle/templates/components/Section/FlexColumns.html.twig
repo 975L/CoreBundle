@@ -6,7 +6,9 @@
         {{ include('@c975LUi/components/Section/_head.html.twig') }}
         {# No row at all rather than an empty one: the head's own bottom margin would otherwise hang below it #}
         {% if slots|length %}
-            <div class="flex-columns">
+            {# Matched against the two that write a class, not interpolated: the value comes from stored block data. "top" is the row's own default and writes none, which is also what every row stored before the field existed renders as #}
+            {% set alignment = verticalAlign|default('') in ['middle', 'bottom'] ? ' flex-columns--' ~ verticalAlign : '' %}
+            <div class="flex-columns{{ alignment }}">
                 {# Matched against the known twelfths, not interpolated: the width comes from stored block data #}
                 {% for slot in slots %}
                     {% set width = slot.data.columnWidth|default('') in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'] ? ' flex-columns__col--' ~ slot.data.columnWidth : '' %}

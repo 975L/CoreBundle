@@ -1,0 +1,7 @@
+{# No chrome of its own, only a flex wrapper: "slots" is the nested-Block relation, so it is read straight off "block" #}
+{# Both values come from stored block data, so each is matched against the modifiers the stylesheet carries rather than interpolated - "row" and "center" are the group's own defaults and write no class, which is also what every group stored before either field existed renders as #}
+{% set directionClass = direction|default('row') == 'column' ? ' blocks-group--column' : '' %}
+{% set justifyClass = justify|default('center') in ['start', 'end', 'between'] ? ' blocks-group--' ~ justify : '' %}
+<div class="blocks-group{{ directionClass }}{{ justifyClass }}">
+    {% for slot in block.slots %}{{ render_block(slot) }}{% endfor %}
+</div>

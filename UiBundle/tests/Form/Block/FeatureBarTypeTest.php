@@ -15,6 +15,7 @@ use c975L\UiBundle\Form\Block\FeatureItemType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -41,6 +42,26 @@ class FeatureBarTypeTest extends TestCase
         $this->assertTrue($added['items']['options']['allow_add']);
         $this->assertTrue($added['items']['options']['allow_delete']);
         $this->assertArrayHasKey('anchor', $added);
+    }
+
+    // A reassurance band commonly stands on its items alone, so neither head field may be required
+    public function testBuildFormAddsAnOptionalEyebrowAndTitle(): void
+    {
+        $added = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$added, $builder) {
+            $added[$name] = ['type' => $type, 'options' => $options];
+
+            return $builder;
+        });
+
+        (new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+
+        foreach (['eyebrow', 'title'] as $field) {
+            $this->assertArrayHasKey($field, $added);
+            $this->assertSame(TextType::class, $added[$field]['type']);
+            $this->assertFalse($added[$field]['options']['required']);
+        }
     }
 
     // The cap is a layout limit, locked here rather than left to whoever edits the grid rules

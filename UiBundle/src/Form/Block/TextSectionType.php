@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Form\Block;
 use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,6 +24,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class TextSectionType extends AbstractType
 {
     use HasBackgroundFieldTrait;
+
+    // Matches the ".text-section--{tone}" modifier styled in sass/_page-sections.scss; "normal" is the block's own
+    // default and writes no class, so every section stored before this field existed goes on rendering as it did
+    public const TONES = ['normal', 'secondary'];
 
     public function __construct(
         private readonly BlockAnchorSlugger $anchorSlugger,
@@ -46,6 +51,19 @@ class TextSectionType extends AbstractType
             ])
             ->add('content', TrixEditorType::class, [
                 'label' => 'label.content',
+            ])
+            // Body copy is what a section standing on its own is read at. Beside a louder one - the companion
+            // paragraph of a "text_hook" in the column next to it, a note beside the text it belongs to - the same
+            // size reads as a caption dropped in the corner, hence a step above body copy and a quieter color
+            ->add('tone', ChoiceType::class, [
+                'label' => 'label.text_tone',
+                'help' => 'label.text_tone_help',
+                'choices' => array_combine(
+                    array_map(static fn (string $tone): string => 'label.text_tone_' . $tone, self::TONES),
+                    self::TONES
+                ),
+                // No placeholder, same as every other stored-choice field: an unset value has to keep meaning "normal"
+                'placeholder' => false,
             ]);
 
         $this->addBackgroundField($builder);

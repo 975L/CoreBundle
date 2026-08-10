@@ -18,7 +18,9 @@ class ReadingMeasureTest extends TestCase
 {
     private const MEASURE = 'max-width: var(--reading-max-width, min(75ch, 90vw))';
 
-    private const MEASURED_RULES = ['.slider', '.slider-single', '.image-compare', '.readmore'];
+    // ".legal" carries it for the whole document, headings included: "ch" is read against the font of the element
+    // the max-width is written on, so a heading stating its own would read a measure its body copy never does
+    private const MEASURED_RULES = ['.slider', '.slider-single', '.image-compare', '.readmore', '.legal'];
 
     /**
      * @return array<string, array{string}>
@@ -51,7 +53,7 @@ class ReadingMeasureTest extends TestCase
     {
         $css = $this->normalize($file);
 
-        foreach (['--section-head-max-width', '--hero-media-max-width', '--hero-text-max-width', '--cta-band-text-max-width', '--alert-max-width'] as $token) {
+        foreach (['--section-head-max-width', '--section-head-indent', '--hero-media-max-width', '--hero-text-max-width', '--cta-band-text-max-width', '--alert-max-width'] as $token) {
             $this->assertStringContainsString(
                 sprintf('var(%s,', $token),
                 $css,

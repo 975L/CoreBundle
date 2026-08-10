@@ -15,6 +15,16 @@ $page-section-bp-lg: 1025px;
 $section-space: clamp(48px, 8vw, 84px);
 $section-space-tight: clamp(24px, 4vw, 48px);
 
+// Three typographic scales live in this file, and which one a rule belongs to is decided by the font it is set in.
+// Everything set in the body font - an item's text, a band's paragraph, a caption, a button's label - is sized in
+// em, so it follows SiteBundle's --font-size-body and one value retunes the reading of the whole page. A title
+// (--font-family-title) and an eyebrow (--font-family-accent) are the design's own marks and must not be dragged
+// along by that value, so they keep their own lengths - each multiplied by --font-size-title-scale, resp.
+// --font-size-eyebrow-scale, both 1 by default. A factor rather than one shared size: these lengths are a
+// hierarchy, from a 66px hero title down to a 19px card title, and one value for all of them would flatten it -
+// where a factor moves the whole family at once and leaves every proportion inside it where the design put it.
+// A face with a small x-height reads small at the size a wider one reads right, which is what these two answer
+// BlockTextScaleTest locks the three-way split
 // One measure for the whole page: --body-max-width, declared by SiteBundle, restated for UiBundle alone
 .section-wrap {
     // Restated for UiBundle alone, else the gutters add to the measure instead of fitting inside it
@@ -26,24 +36,34 @@ $section-space-tight: clamp(24px, 4vw, 48px);
 }
 
 // font-weight pinned: with no title the eyebrow becomes the section's <h2> and would come out bold
+// text-align stated for the same reason: SiteBundle centers every h1-h6, and a head is laid out flush left
+// against its section - the ones meaning to center say so on their own container (.hero, .cta-band__inner)
 .section-eyebrow {
     font-family: var(--font-family-accent);
     font-weight: 400;
-    font-size: 12.5px;
+    font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
     letter-spacing: .14em;
     text-transform: uppercase;
     color: var(--primary);
     margin: 0 0 14px;
+    text-align: start;
 }
 
 .section-title {
     font-family: var(--font-family-title);
     font-weight: 500;
     letter-spacing: -0.01em;
-    font-size: clamp(30px, 4.4vw, 42px);
+    font-size: calc(clamp(30px, 4.4vw, 42px) * var(--font-size-title-scale, 1));
     line-height: 1.1;
     margin: 0 0 48px;
     color: var(--text);
+    // Same as the eyebrow above: inherited, an <h2> comes out centered inside a head wider than its own text -
+    // invisible where that head shrinks to fit (portfolio_grid), plain to see in the 640px .section-head
+    text-align: start;
+    // The staircase the eyebrow and its title read as: the eyebrow holds the section's edge, the title starts
+    // one step in. A padding, not a margin: the box keeps the head's measure and the second line of a wrapped
+    // title lands on the same step as the first. Set --section-head-indent to 0 to line the two up again
+    padding-inline-start: var(--section-head-indent, 32px);
 }
 
 .section-head {
@@ -55,8 +75,9 @@ $section-space-tight: clamp(24px, 4vw, 48px);
 // the vertical room it sets for itself, leaving it flush against the block above and below
 // Vertical only: the shorthand's "0" would also drop the horizontal "auto" a centered section reads,
 // and beat the negative margins the colored flats and .hero--has-bg break out of the measure with
-// .feature-bar is left out: it renders as a <div>, which SiteBundle's rule never reached, and it is the one
-// kind whose step has to be a margin (see its own rule further down) - the reset would strip it
+// .feature-bar is left out: it is the one kind whose step has to be a margin (see its own rule further down),
+// which this reset would strip - it zeroes its own bottom margin instead, SiteBundle's rule reaching it as
+// soon as a head is typed on it and it renders as a <section> rather than a <div>
 main :is(.blocks, .block-animation, .block-editable) > :is(
     .hero,
     .text-section,
@@ -65,6 +86,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     .expertise-banner,
     .process-steps,
     .portfolio-grid,
+    .video-grid,
     .collection-grid,
     .cta-band,
     .flex-columns-section
@@ -80,6 +102,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 .expertise-banner,
 .process-steps,
 .portfolio-grid,
+.video-grid,
 .collection-grid,
 .flex-columns-section,
 .cta-band {
@@ -89,6 +112,17 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 // Lighter than the sections above: text_section commonly opens a page, right under its own <h1>
 .text-section {
     padding-top: var(--section-space-tight, #{$section-space-tight});
+}
+
+// A section standing beside a louder one - the companion paragraph of a "text_hook" in the column next to it -
+// rather than carrying the page on its own. A step above body copy, so it still reads as a paragraph and not as
+// a caption, and quieter, so it does not compete with what it answers to. Every value overridable and none read
+// without a fallback, same as .text-hook's own scale; --section-text first, so a secondary section inside a
+// colored flat follows that flat's inverted text rather than the page's own quiet grey
+.text-section--secondary {
+    font-size: var(--text-section-secondary-size, clamp(17px, 1.5vw, 21px));
+    line-height: var(--text-section-secondary-line-height, 1.7);
+    color: var(--text-section-secondary-color, var(--section-text, var(--label-color)));
 }
 
 // A bare run of "card" blocks is a page-level row too (Blocks.html.twig wraps it itself), and the one that
@@ -112,6 +146,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 .flex-columns__col > .expertise-banner,
 .flex-columns__col > .process-steps,
 .flex-columns__col > .portfolio-grid,
+.flex-columns__col > .video-grid,
 .flex-columns__col > .collection-grid,
 .flex-columns__col > .flex-columns-section,
 .flex-columns__col > .cta-band,
@@ -125,8 +160,9 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 // A container left with nothing to lay out renders no row at all (see Section/Cards.html.twig and its two
-// siblings), which makes the head the last thing in the wrap - and its title's own bottom margin trailing space
-.section-wrap > .section-head:last-child .section-title {
+// siblings), which makes the head the last thing in the wrap - and its own bottom margin trailing space.
+// The head's last line, whichever it is: the title, or the eyebrow when it is the one standing as the <h2>
+.section-wrap > .section-head:last-child > :last-child {
     margin-bottom: 0;
 }
 
@@ -143,7 +179,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     // Stated rather than inherited, to match .btn whatever the section wraps it in
     font-family: var(--font-family-body);
     font-weight: 600;
-    font-size: 16px;
+    font-size: 1em;
     border-radius: var(--radius-btn);
     text-align: center;
     text-decoration: none;
@@ -303,7 +339,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     align-items: center;
     gap: 8px;
     font-family: var(--font-family-accent);
-    font-size: 12.5px;
+    font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
     letter-spacing: .12em;
     text-transform: uppercase;
     color: var(--section-text, var(--primary));
@@ -318,7 +354,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     font-family: var(--font-family-title);
     font-weight: 500;
     letter-spacing: var(--hero-title-letter-spacing, -0.01em);
-    font-size: var(--hero-title-size, clamp(40px, 6vw, 66px));
+    font-size: calc(var(--hero-title-size, clamp(40px, 6vw, 66px)) * var(--font-size-title-scale, 1));
     line-height: var(--hero-title-line-height, 1.03);
     margin: 0 0 24px;
     color: var(--section-text, var(--text));
@@ -339,7 +375,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 .hero__sub {
-    font-size: var(--hero-sub-size, 19px);
+    font-size: var(--hero-sub-size, 1.1875em);
     color: var(--section-text-soft, var(--label-color));
     max-width: var(--hero-sub-max-width, 480px);
     margin: 0 0 34px;
@@ -478,13 +514,13 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 .hero__stat b {
     font-family: var(--font-family-title);
-    font-size: 34px;
+    font-size: calc(34px * var(--font-size-title-scale, 1));
     font-weight: 600;
     color: var(--primary);
 }
 
 .hero__stat span {
-    font-size: 13px;
+    font-size: 0.8125em;
     line-height: 1.3;
     color: var(--label-color);
 }
@@ -503,7 +539,20 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     --section-overlay: rgba(255, 255, 255, .15);
 }
 
-// A real <img>: a background-image needs a style attribute no CSP nonce covers
+// A background video is a shot, not a texture: cropped to the height of whatever text the section holds, a hero
+// with a short title - or none at all - leaves a strip of it rather than a picture. Room of its own is the fix,
+// and the text is then centered in it, the section becoming the column its .section-wrap is the one item of.
+// A token declared nowhere, so a design opening on a taller or shorter shot retunes it from its own theme.css
+// rather than restating the rule. Left to the video alone: a background image reads fine at any height, and
+// every hero already carrying one must go on rendering exactly as it did
+.hero.hero--has-bg:has(.hero__bg--video) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: var(--hero-video-min-height, 70vh);
+}
+
+// A real <img> (or <video>): a background-image needs a style attribute no CSP nonce covers
 .hero.hero--has-bg .hero__bg {
     position: absolute;
     inset: 0;
@@ -554,6 +603,9 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 // Left out of the margin reset above for exactly that reason
 .feature-bar {
     margin-block-start: var(--section-space, #{$section-space});
+    // The band renders as a <section> as soon as a head is typed, and SiteBundle's page-wide
+    // "section { margin: 1em auto }" would then hang a bottom margin under it that no other kind carries
+    margin-block-end: 0;
     background: var(--section-background, var(--surface-alt));
     border-top: 1px solid var(--section-border, var(--border-color));
     border-bottom: 1px solid var(--section-border, var(--border-color));
@@ -574,6 +626,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     margin: 0 auto;
 }
 
+// The optional head, when one is typed: inside the band so it shares its flat, padded off the top hairline and
+// off the row below. The gap is the wrap's own padding, the head being the last thing in it and its title's
+// bottom margin therefore already zeroed further up; 24px, the head introducing a band a few lines tall
+.feature-bar > .section-wrap {
+    padding-top: var(--section-space-tight, #{$section-space-tight});
+    padding-bottom: 24px;
+}
+
 .feature-bar__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -588,7 +648,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding: 24px 26px;
     border-right: 0;
     border-bottom: 1px solid var(--section-border, var(--border-color));
-    font-size: 14px;
+    font-size: 0.875em;
     text-align: center;
     color: var(--section-text-soft, var(--label-color));
 }
@@ -599,7 +659,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     color: var(--section-text, var(--text));
     font-family: var(--font-family-title);
     font-weight: var(--font-title-weight);
-    font-size: 24px;
+    font-size: calc(24px * var(--font-size-title-scale, 1));
     margin-bottom: 3px;
 }
 
@@ -627,6 +687,16 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--flex-columns-gap);
+}
+
+// Set against each other rather than hanging from the top of the row: two columns saying one thing between them -
+// a lead and the paragraph answering it - read as one statement, where the default suits a row of parallel items
+.flex-columns--middle {
+    align-items: center;
+}
+
+.flex-columns--bottom {
+    align-items: flex-end;
 }
 
 .flex-columns__col {
@@ -664,14 +734,15 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     font-family: var(--font-family-title);
     font-weight: 500;
     letter-spacing: -0.01em;
-    font-size: clamp(28px, 3.8vw, 38px);
+    font-size: calc(clamp(28px, 3.8vw, 38px) * var(--font-size-title-scale, 1));
     line-height: 1.12;
     margin: 0 0 16px;
     color: var(--button-color);
+    text-align: start;
 }
 
 .expertise-banner__text {
-    font-size: 16px;
+    font-size: 1em;
     color: var(--text-on-inverse);
     margin: 0;
 }
@@ -692,7 +763,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     border-radius: var(--radius-btn);
     padding: 11px 20px;
     font-family: var(--font-family-accent);
-    font-size: 14px;
+    font-size: calc(14px * var(--font-size-eyebrow-scale, 1));
     color: var(--text-on-inverse);
 }
 
@@ -714,27 +785,33 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 .section-step__num {
     font-family: var(--font-family-title);
-    font-size: 15px;
+    font-size: calc(15px * var(--font-size-title-scale, 1));
     color: var(--primary);
     margin-bottom: 8px;
 }
 
 .section-step__title {
+    font-family: var(--font-family-title);
     font-weight: 600;
-    font-size: 20px;
+    font-size: calc(20px * var(--font-size-title-scale, 1));
     margin: 0 0 8px;
     color: var(--text);
+    text-align: start;
 }
 
 .section-step__text {
-    font-size: 14.5px;
+    font-size: 0.90625em;
     color: var(--label-color);
     margin: 0;
     line-height: 1.55;
 }
 
-/* ---- portfolio_grid ---- */
-.portfolio-grid__head {
+/* ---- portfolio_grid / video_grid ---- */
+// The head and the grid are the same pair for both kinds - a section title with a "see it all elsewhere" link
+// beside it, over a one-to-three column grid. What differs is only what a cell holds: a project card of its own
+// making for one, a whole nested block (a player and its consent) for the other
+.portfolio-grid__head,
+.video-grid__head {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -743,18 +820,29 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     flex-wrap: wrap;
 }
 
-.portfolio-grid__head .section-eyebrow {
+.portfolio-grid__head .section-eyebrow,
+.video-grid__head .section-eyebrow {
     margin-bottom: 8px;
 }
 
-.portfolio-grid__head .section-title {
+.portfolio-grid__head .section-title,
+.video-grid__head .section-title {
     margin: 0;
 }
 
-.portfolio-grid__grid {
+.portfolio-grid__grid,
+.video-grid__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
+}
+
+// A slot renders the block it is, untouched - the cell only has to stop the player from keeping its own
+// standalone max-width (see sass/_iframe.scss), which would leave it narrower than the cell it sits in
+.video-grid__item iframe {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
 }
 
 .portfolio-grid__project {
@@ -801,14 +889,16 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 .portfolio-grid__project-title {
+    font-family: var(--font-family-title);
     font-weight: 600;
-    font-size: 19px;
+    font-size: calc(19px * var(--font-size-title-scale, 1));
     margin: 0 0 5px;
     color: var(--text);
+    text-align: start;
 }
 
 .portfolio-grid__project-text {
-    font-size: 14px;
+    font-size: 0.875em;
     color: var(--label-color);
     margin: 0;
     line-height: 1.5;
@@ -840,14 +930,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     font-family: var(--font-family-title);
     font-weight: 500;
     letter-spacing: -0.01em;
-    font-size: clamp(32px, 5vw, 46px);
+    font-size: calc(clamp(32px, 5vw, 46px) * var(--font-size-title-scale, 1));
     line-height: 1.1;
     margin: 0 0 18px;
     color: var(--button-color);
 }
 
 .cta-band__text {
-    font-size: 18px;
+    font-size: 1.125em;
     color: color-mix(in srgb, var(--button-color) 80%, transparent);
     max-width: var(--cta-band-text-max-width, 560px);
     margin: 0 auto 32px;
@@ -899,7 +989,8 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
     .section-features,
     .section-steps,
-    .portfolio-grid__grid {
+    .portfolio-grid__grid,
+    .video-grid__grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
@@ -975,7 +1066,8 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     }
 
     .section-features,
-    .portfolio-grid__grid {
+    .portfolio-grid__grid,
+    .video-grid__grid {
         grid-template-columns: repeat(3, 1fr);
     }
 

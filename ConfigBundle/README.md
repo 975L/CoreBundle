@@ -181,8 +181,22 @@ Create a `config/configs.json` file in your bundle. Each entry will be inserted 
 ]
 ```
 
-Supported `kind` values: `text`, `html`, `int`, `bool`, `date`, `json`, `font`.
+Supported `kind` values: `text`, `html`, `int`, `bool`, `date`, `json`, `font`, `choice`.
 `text` is edited as a plain textarea (URLs, ids, emails...); `html` is for rare configs needing rich content and is edited with EasyAdmin's own rich text editor (same widget as UiBundle blocks).
+`choice` is for a value the code reads back against a fixed list — a theme mode, a watermark corner, an API provider. The accepted values go in a `choices` key on the entry, and the admin picks one from a `<select>` instead of typing it:
+
+```json
+{
+    "label": "label.theme_mode",
+    "slug": "theme-mode",
+    "value": "auto",
+    "kind": "choice",
+    "choices": ["auto", "light", "dark"],
+    "group": "theme"
+}
+```
+
+The values are offered as-is, untranslated: they are what gets stored, and what the code comparing them expects. A value off the list is rejected on save (and by `c975l:config:set`) rather than stored — every consumer of such a setting falls back on a default for anything it doesn't recognize, so a typo would otherwise be invisible until someone wondered why the setting did nothing. A value stored **before** the entry became a `choice`, or since dropped from the list, stays selectable in the form so the entry can still be opened and fixed. Declaring `kind: "choice"` without `choices` falls back to a plain text field, an empty `<select>` being worse than free text.
 `font` renders a `<select>` (UiBundle's `FontChoiceType`/`FontRegistry`) combining `Config::GENERIC_FONT_FAMILIES` (`serif`, `sans-serif`, `monospace`, always offered) with whatever custom font-family names a registered `FontProviderInterface` knows about (e.g. SiteBundle's `FontService`, parsed from a CSS file's `@font-face` declarations) — falls back to only the 3 generics when no provider is registered. A value no longer offered by either source (e.g. removed from `@font-face`) is kept selectable instead of being silently dropped on the next save.
 For `json`, `value` is the raw JSON-encoded string (e.g. `"[\"ROLE_ADMIN\",\"ROLE_EDITOR\"]"`); `ConfigService::get()` returns it already decoded into a PHP array (`[]` if empty/invalid).
 Set `sensitive: true` for any entry that holds secrets (API keys, passwords, etc.) — the value is encrypted at rest and masked in the admin list.
@@ -223,7 +237,7 @@ php bin/console c975l:config:load-all
 
 The application file is loaded exactly like a bundle's one, so an app needing a setting no bundle declares (its own API keys, feature flags...) just drops a `config/configs.json` at its root and gets it in the dashboard, with no command of its own to write.
 
-New entries (new `slug`) are inserted with their `value` from the JSON. For entries that already exist, only the metadata fixed by the bundle author — `label`, `kind`, `group`, `severity`, `description`, `restricted`, `sensitive` — is re-synced from the JSON on every run; the `value` carries production state and is never overwritten, so editing a `configs.json` file (e.g. moving a config to a new group, fixing a typo in a label) and re-running `load-all` is enough to propagate the change, without risking an admin-set value.
+New entries (new `slug`) are inserted with their `value` from the JSON. For entries that already exist, only the metadata fixed by the bundle author — `label`, `kind`, `choices`, `group`, `severity`, `description`, `restricted`, `sensitive` — is re-synced from the JSON on every run; the `value` carries production state and is never overwritten, so editing a `configs.json` file (e.g. moving a config to a new group, fixing a typo in a label) and re-running `load-all` is enough to propagate the change, without risking an admin-set value.
 
 `sensitive` is the one flag whose change also touches the value, because the two can't be separated: an entry that becomes sensitive gets its value encrypted, one that stops being sensitive gets it decrypted. Without that, dropping `"sensitive": true` from a declaration would leave a `C975L:…` string sitting in what is now a plain-text setting. When the conversion can't be done — no `C975L_VAULT_KEY`, or a value encrypted with a different one — the flag is left as it was rather than storing something unusable, and the next run picks it up once the key is in place.
 
@@ -263,7 +277,7 @@ php bin/console c975l:config:set --file=values.json
 }
 ```
 
-Booleans, numbers and arrays are converted to the string stored in database, and each value is checked against its entry `kind` (`bool` only accepts `true`/`false`, `int` an integer, `json` valid JSON, `date` a parsable date).
+Booleans, numbers and arrays are converted to the string stored in database, and each value is checked against its entry `kind` (`bool` only accepts `true`/`false`, `int` an integer, `json` valid JSON, `date` a parsable date, `choice` one of the values the entry declares).
 
 | Option | Effect |
 | --- | --- |
@@ -1921,7 +1935,7 @@ Sample output:
 ```text
 / — Accueil
   HTTP 200 · 47 requêtes (31.2 ms) · 3 transactions · 68 templates (44.1 ms) · 2 dépréciations · cache 12/40 · 240 ms · 14.2 Mo
-  ERREUR Doctrine       31 requêtes identiques répétées (n+1), dont 32 fois : SELECT t0.id FROM site_block t0 WHERE t0.page_id = ?
+  ERREUR Doctrine       31 repeats of a same SQL (n+1), including 32 times: SELECT t0.id FROM site_block t0 WHERE t0.page_id = ?
   ALERTE Dépréciations  2 dépréciation(s) : Since symfony/framework-bundle 7.3: ...
 ```
 
@@ -1944,7 +1958,7 @@ The command exits non-zero as soon as one page has an **error**-level offence, s
 
 | Area | Read from | Reported when |
 | --- | --- | --- |
-| Doctrine | `db` collector | more than `MAX_QUERIES` (30) queries — error past 60 — or more than `MAX_DUPLICATE_QUERIES` (2) identical queries repeated, error past 9. The worst offender's SQL is quoted |
+| Doctrine | `db` collector | more than `MAX_QUERIES` (30) queries — error past 60 — or more than `MAX_DUPLICATE_QUERIES` (6) repeats of a same SQL, error past 9. The worst offender's SQL is quoted. Repeats are grouped by SQL text with the parameters left out, which is what makes a real n+1 visible at all, but also what makes a block-composed page repeat a shape by construction: every sibling block of a same kind reads its own data with the same SQL and its own parameters. Hence a tolerance set at what a page's composition can explain, and an error level at a count no composition reaches |
 | Doctrine (transactions) | `db` collector | more than `MAX_TRANSACTIONS` (1) transactions opened — error past 5 — or any transaction that wrote nothing at all (warning). Doctrine opens one per `flush()`, so past one something is flushing inside a loop, or a listener is flushing on its own. Counted apart from the queries, and taken back out of the duplicate count: five identical `"START TRANSACTION"` are five flushes, not an n+1 |
 | Deprecations | `logger` collector | any deprecation (warning) — the cheapest way to see what a Symfony major bump will require |
 | Logs | `logger` collector | any error-level log written while rendering |
@@ -2068,7 +2082,16 @@ class MyService
 
 {# Read from Symfony container parameters #}
 {{ configParam('kernel.environment') }}
+
+{# What a footer credit shows: none, logo, name or logo-name #}
+{{ credits_mode('display-made-by') }}
 ```
+
+`credits_mode()` is how `display-made-by` and `display-hosted-by` are read — never `config()` directly. Both
+entries were a `bool` before `v1.6`, and a value is never rewritten by `c975l:config:load-all`: a site still
+holding `"true"` gets `logo` back (all a credit could show then) and `"false"` gets `none`, where `config()`
+would hand over the string `"false"`, truthy in Twig. It always answers one of the four modes, so a template
+only has to ask whether the mode holds `logo`, `name`, or both.
 
 ---
 

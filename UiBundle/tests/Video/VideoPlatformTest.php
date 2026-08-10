@@ -192,4 +192,40 @@ class VideoPlatformTest extends TestCase
     {
         $this->assertSame(['youtube', 'tiktok', 'vimeo', 'dailymotion'], VideoPlatform::values());
     }
+
+    // Best first: "maxresdefault" is the only 16:9 still big enough for a grid tile, and is missing on plenty of videos
+    public function testPosterUrlsAreOrderedBestFirstForYoutube(): void
+    {
+        $this->assertSame([
+            'https://i.ytimg.com/vi/lXqKJvMxEdo/maxresdefault.jpg',
+            'https://i.ytimg.com/vi/lXqKJvMxEdo/hqdefault.jpg',
+        ], VideoPlatform::Youtube->posterUrls('lXqKJvMxEdo'));
+    }
+
+    // No guessable address means no candidate rather than a guessed one: these three hand their stills out through an API call
+    public function testPosterUrlsAreEmptyForPlatformsServingNoGuessableStill(): void
+    {
+        $this->assertSame([], VideoPlatform::Tiktok->posterUrls('1234567890'));
+        $this->assertSame([], VideoPlatform::Vimeo->posterUrls('123456'));
+        $this->assertSame([], VideoPlatform::Dailymotion->posterUrls('x8abcde'));
+    }
+
+    // An id reaches the url encoded, same as in embedUrl() - it comes from a pasted url and is matched loosely on purpose
+    public function testPosterUrlsEncodeTheId(): void
+    {
+        $this->assertSame([
+            'https://i.ytimg.com/vi/a%2Fb/maxresdefault.jpg',
+            'https://i.ytimg.com/vi/a%2Fb/hqdefault.jpg',
+        ], VideoPlatform::Youtube->posterUrls('a/b'));
+    }
+
+    // Hotlinking a still would be the very third-party request the consent placeholder exists to hold back, so the host has to be the cookieless static one it is imported from server-side
+    public function testPosterUrlsUseTheCookielessStaticHost(): void
+    {
+        foreach (VideoPlatform::cases() as $platform) {
+            foreach ($platform->posterUrls('some-id') as $url) {
+                $this->assertStringStartsWith('https://i.ytimg.com/', $url);
+            }
+        }
+    }
 }

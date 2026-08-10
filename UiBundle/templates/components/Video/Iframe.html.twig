@@ -1,7 +1,8 @@
-{# <twig:c975LUi:Video:Iframe src="your-url" [title="optional title"] [description="optional description"] [caption="false"] [class="your-css-classes"] [width="auto"] [height="auto"]/> #}
+{# <twig:c975LUi:Video:Iframe src="your-url" [title="optional title"] [description="optional description"] [poster="optional image url"] [caption="false"] [class="your-css-classes"] [width="auto"] [height="auto"]/> #}
 {# The real <iframe> is created client-side behind cookie consent, so this markup stays cacheable #}
 {# "caption" only hides the heading and the legend, never the title itself: that one goes on naming the player to a screen reader, which is the one place it is not optional. For a page laying out its own heading around this component - a gallery's media page, say - where a second one would read as a duplicate #}
 {% set caption = caption is defined ? caption|to_bool : true %}
+{% set poster = poster|default('') %}
 <figure class="video-iframe-figure">
     {% if caption and title is defined and title %}<h3 class="video-iframe-title">{{ title }}</h3>{% endif %}
     {# "videoiframe-*", not "video-iframe-*": Stimulus doesn't dasherize the identifier, only the value name #}
@@ -11,11 +12,23 @@
          data-videoiframe-title-value="{{ title|default('') }}"
          data-videoiframe-width-value="{{ width|default('') }}"
          data-videoiframe-height-value="{{ height|default('') }}">
-        <div data-videoiframe-target="placeholder" class="video-iframe-placeholder">
-            <p>{{ 'label.video_iframe_consent_required'|trans({}, 'ui') }}</p>
-            <button type="button" class="btn btn-primary" data-action="videoIframe#accept">
-                {{ 'label.video_iframe_accept'|trans({}, 'ui') }}
-            </button>
+        <div data-videoiframe-target="placeholder" class="video-iframe-placeholder{{ poster ? ' video-iframe-placeholder--poster' : '' }}">
+            {# A poster is a local file (see VideoPosterImporter), never the platform's own address: hotlinking it would be the very third-party request this placeholder exists to hold back #}
+            {# Decorative: the title beside it already names the video, and a screen reader gains nothing from "thumbnail of ..." #}
+            {% if poster %}<img class="video-iframe-poster" src="{{ poster }}" alt="" aria-hidden="true" loading="lazy">{% endif %}
+            {# Consent still to be given: the prompt is what the visitor sees, poster or not - a bare play button would make accepting third-party cookies look like pressing play #}
+            <div data-videoiframe-target="consent" class="video-iframe-prompt">
+                <p>{{ 'label.video_iframe_consent_required'|trans({}, 'ui') }}</p>
+                <button type="button" class="btn btn-primary" data-action="videoIframe#accept">
+                    {{ 'label.video_iframe_accept'|trans({}, 'ui') }}
+                </button>
+            </div>
+            {# Shown by the controller once consent is settled, and only when there is a poster to show it over - see video-iframe.js #}
+            {% if poster %}
+                <button type="button" class="video-iframe-play" data-videoiframe-target="play" data-action="videoIframe#play" hidden>
+                    <span class="sr-only">{{ 'label.video_iframe_play'|trans({}, 'ui') }}</span>
+                </button>
+            {% endif %}
         </div>
     </div>
     {% if caption and description is defined and description %}<figcaption class="video-iframe-description text">{{ description|raw }}</figcaption>{% endif %}

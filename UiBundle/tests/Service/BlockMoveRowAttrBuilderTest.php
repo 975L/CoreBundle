@@ -32,7 +32,8 @@ class BlockMoveRowAttrBuilderTest extends TestCase
             'data-block-owner-id' => 42,
             'data-block-move-url' => '/management/ui/block/move',
             'data-block-move-csrf-token' => 'a-token',
-            'data-block-move-failed-label' => 'Move failed',
+            'data-block-move-failed-label' => 'flash.block_move_failed',
+            'data-block-move-close-label' => 'action.close',
         ], $attributes);
     }
 
@@ -68,7 +69,8 @@ class BlockMoveRowAttrBuilderTest extends TestCase
         $csrfTokenManager->method('getToken')->willReturn(new CsrfToken(BlockMoveRowAttrBuilder::ROUTE, 'a-token'));
 
         $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturn('Move failed');
+        // Echoes the key back, the two labels only differing by the key each is translated from
+        $translator->method('trans')->willReturnArgument(0);
 
         return new BlockMoveRowAttrBuilder($urlGenerator, $csrfTokenManager, $translator);
     }

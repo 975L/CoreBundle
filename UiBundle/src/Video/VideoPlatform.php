@@ -38,6 +38,21 @@ enum VideoPlatform: string
         return $url . (str_contains($url, '?') ? '&' : '?') . http_build_query($carriedParams);
     }
 
+    // The stills this platform serves for a video id, best first - whoever imports one takes the first that answers (see VideoPosterImporter)
+    // Only YouTube has an address a poster can be built from at all: TikTok, Vimeo and Dailymotion hand theirs out through an API call, which no url scheme can stand in for, so they resolve to no candidate rather than to a guessed one - same rule as urlPatterns(), where an undeclared platform is left alone instead of being pattern-matched
+    // i.ytimg.com rather than img.youtube.com: the same bytes without the redirect, and neither host sets a cookie - which is what makes importing one a plain file copy rather than a privacy decision
+    // "maxresdefault" (1280x720) is missing on plenty of videos, "hqdefault" (480x360) is always there but letterboxed for 16:9 content. No crop here: the bars fall outside an "object-fit: cover" tile, and cropping a still nobody has looked at yet would be guessing which bars are padding and which are the shot
+    public function posterUrls(string $id): array
+    {
+        return match ($this) {
+            self::Youtube => [
+                sprintf('https://i.ytimg.com/vi/%s/maxresdefault.jpg', rawurlencode($id)),
+                sprintf('https://i.ytimg.com/vi/%s/hqdefault.jpg', rawurlencode($id)),
+            ],
+            default => [],
+        };
+    }
+
     // The few query parameters a player cannot play without, kept from the pasted url alongside the id: an unlisted Vimeo video is only reachable with its "h" access token, and a YouTube playlist is nothing but its "list" (the id being the literal "videoseries")
     // A whitelist rather than the whole query string, so playback options and tracking parameters ("autoplay", "start", campaign tags) stay out of what gets stored (see UPGRADE.md)
     public function carriedParams(string $url): array

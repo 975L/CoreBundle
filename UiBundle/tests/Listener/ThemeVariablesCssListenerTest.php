@@ -145,7 +145,7 @@ class ThemeVariablesCssListenerTest extends TestCase
         $this->assertStringContainsString('--c975l-font-family-title: "Georgia", serif;', $css);
     }
 
-    // A bare font name gets its generic fallback appended, so the browser has somewhere to go
+    // A bare font name is quoted and gets its generic fallback appended, so the browser has somewhere to go
     public function testRegenerateAppendsGenericFallbackToABareCustomFontName(): void
     {
         $listener = $this->createListener([
@@ -160,8 +160,59 @@ class ThemeVariablesCssListenerTest extends TestCase
         $this->flush($listener);
 
         $css = file_get_contents($this->cssPath);
-        $this->assertStringContainsString('--c975l-font-family-title: Roboto, sans-serif;', $css);
-        $this->assertStringContainsString('--c975l-font-family-accent: Fira Code, monospace;', $css);
+        $this->assertStringContainsString('--c975l-font-family-title: "Roboto", sans-serif;', $css);
+        $this->assertStringContainsString('--c975l-font-family-accent: "Fira Code", monospace;', $css);
+    }
+
+    // An uploaded family whose name carries a digit is only valid CSS once quoted - unquoted, "400" is a number token, not a <custom-ident>, and every font-family reading the variable is dropped
+    public function testRegenerateQuotesAFontNameHoldingADigit(): void
+    {
+        $listener = $this->createListener([
+            $this->config('theme-font-family-body', 'cormorant garamond latin 400'),
+        ]);
+
+        $listener->postPersist(new PostPersistEventArgs(
+            $this->config('theme-font-family-body', 'cormorant garamond latin 400'),
+            $this->createStub(EntityManagerInterface::class),
+        ));
+        $this->flush($listener);
+
+        $css = file_get_contents($this->cssPath);
+        $this->assertStringContainsString('--c975l-font-family-body: "cormorant garamond latin 400", sans-serif;', $css);
+    }
+
+    // An admin who typed the quotes himself gets the same declaration as one who typed the bare name - requoted as it stands, "Roboto" would be declared as "\"Roboto\"", a family matching nothing
+    public function testRegenerateDoesNotRequoteAnAlreadyQuotedFontName(): void
+    {
+        $listener = $this->createListener([
+            $this->config('theme-font-family-body', '"Roboto"'),
+        ]);
+
+        $listener->postPersist(new PostPersistEventArgs(
+            $this->config('theme-font-family-body', '"Roboto"'),
+            $this->createStub(EntityManagerInterface::class),
+        ));
+        $this->flush($listener);
+
+        $css = file_get_contents($this->cssPath);
+        $this->assertStringContainsString('--c975l-font-family-body: "Roboto", sans-serif;', $css);
+    }
+
+    // Same for the single quotes a CSS-aware admin may reach for
+    public function testRegenerateDoesNotRequoteASingleQuotedFontName(): void
+    {
+        $listener = $this->createListener([
+            $this->config('theme-font-family-body', "'Open Sans'"),
+        ]);
+
+        $listener->postPersist(new PostPersistEventArgs(
+            $this->config('theme-font-family-body', "'Open Sans'"),
+            $this->createStub(EntityManagerInterface::class),
+        ));
+        $this->flush($listener);
+
+        $css = file_get_contents($this->cssPath);
+        $this->assertStringContainsString('--c975l-font-family-body: "Open Sans", sans-serif;', $css);
     }
 
     // A value already picked as one of Config::GENERIC_FONT_FAMILIES never needs a fallback suffix appended to itself

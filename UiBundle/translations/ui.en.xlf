@@ -6,6 +6,10 @@
                 <source>action.add_block</source>
                 <target>Add a UiBlock</target>
             </trans-unit>
+            <trans-unit id="PO_UHtX">
+                <source>action.close</source>
+                <target>Close</target>
+            </trans-unit>
             <trans-unit id="DYrEVzQ">
                 <source>action.export_selection</source>
                 <target>Export selection</target>
@@ -97,6 +101,10 @@
             <trans-unit id="nUlFj1t">
                 <source>flash.block_move_failed</source>
                 <target>Failed to move the block</target>
+            </trans-unit>
+            <trans-unit id="_g8gZAH">
+                <source>flash.block_move_kind_not_allowed</source>
+                <target>This kind of block is not accepted in that container</target>
             </trans-unit>
             <trans-unit id="7AVJlDV">
                 <source>flash.block_moved</source>
@@ -462,6 +470,14 @@
                 <source>label.autoplay</source>
                 <target>Autoplay</target>
             </trans-unit>
+            <trans-unit id="p1nqHGY">
+                <source>label.back_content</source>
+                <target>Back content</target>
+            </trans-unit>
+            <trans-unit id="6x7U92I">
+                <source>label.back_title</source>
+                <target>Back title</target>
+            </trans-unit>
             <trans-unit id="1GXuSep">
                 <source>label.back_to_list</source>
                 <target>Back to list</target>
@@ -505,6 +521,14 @@
             <trans-unit id="mrR4xZH">
                 <source>label.block_banner_title_description</source>
                 <target>Full-width title over a background image</target>
+            </trans-unit>
+            <trans-unit id="swIuhWM">
+                <source>label.block_block_group</source>
+                <target>Blocks group</target>
+            </trans-unit>
+            <trans-unit id="ZpjJH1Q">
+                <source>label.block_block_group_description</source>
+                <target>Groups several blocks on one line (or stacked), with no styling of its own</target>
             </trans-unit>
             <trans-unit id="lWfyux5">
                 <source>label.block_button</source>
@@ -589,6 +613,14 @@
             <trans-unit id="ywC8FXr">
                 <source>label.block_flex_columns_description</source>
                 <target>Section title followed by flexible columns, each one an existing block of your choice</target>
+            </trans-unit>
+            <trans-unit id="UyORTUO">
+                <source>label.block_flip_card</source>
+                <target>Flip card</target>
+            </trans-unit>
+            <trans-unit id="seLk9VU">
+                <source>label.block_flip_card_description</source>
+                <target>Two-sided card turned by a button, with an optional title, image and content on each side</target>
             </trans-unit>
             <trans-unit id="VW1LdXQ">
                 <source>label.block_form</source>
@@ -725,6 +757,14 @@
             <trans-unit id="iXzS_mG">
                 <source>label.block_video_description</source>
                 <target>Embedded video player from a file</target>
+            </trans-unit>
+            <trans-unit id="_aCd97h">
+                <source>label.block_video_grid</source>
+                <target>Video grid</target>
+            </trans-unit>
+            <trans-unit id="jE1IU6W">
+                <source>label.block_video_grid_description</source>
+                <target>Section title followed by a grid of full Video blocks (player, consent, thumbnail)</target>
             </trans-unit>
             <trans-unit id="UbocQXH">
                 <source>label.block_video_iframe</source>
@@ -1238,6 +1278,22 @@
                 <source>label.file_name_help</source>
                 <target>Used to name the stored file. Also used as the download card's title when several files are attached.</target>
             </trans-unit>
+            <trans-unit id="ZpKkgFn">
+                <source>label.flip_card_media_help</source>
+                <target>The first image is the front face's, the second the back face's</target>
+            </trans-unit>
+            <trans-unit id="yXrP7UX">
+                <source>label.flip_card_ratio_help</source>
+                <target>Free lets the card take the height of its content; a ratio gives it at least that shape</target>
+            </trans-unit>
+            <trans-unit id="wn8fWxj">
+                <source>label.flip_card_show_back</source>
+                <target>Show the back</target>
+            </trans-unit>
+            <trans-unit id="XdbcfW9">
+                <source>label.flip_card_show_front</source>
+                <target>Show the front</target>
+            </trans-unit>
             <trans-unit id="ZbTNTSZ">
                 <source>label.font</source>
                 <target>Font</target>
@@ -1390,6 +1446,14 @@
                 <source>label.friday</source>
                 <target>Friday</target>
             </trans-unit>
+            <trans-unit id="b_5dtcO">
+                <source>label.front_content</source>
+                <target>Front content</target>
+            </trans-unit>
+            <trans-unit id="9ZnYKKB">
+                <source>label.front_title</source>
+                <target>Front title</target>
+            </trans-unit>
             <trans-unit id="3NDFv4Q">
                 <source>label.gallery_showcase_collection</source>
                 <target>Collection</target>
@@ -1413,6 +1477,42 @@
             <trans-unit id="ZgxEnHs">
                 <source>label.gallery_showcase_section_cards_description</source>
                 <target>A row of full cards under a section title, with its own anchor.</target>
+            </trans-unit>
+            <trans-unit id="b_WLGhv">
+                <source>label.group_direction</source>
+                <target>Layout</target>
+            </trans-unit>
+            <trans-unit id="UQJthTW">
+                <source>label.group_direction_column</source>
+                <target>Stacked</target>
+            </trans-unit>
+            <trans-unit id="wWjexhr">
+                <source>label.group_direction_help</source>
+                <target>In a row, the blocks of the group follow each other; stacked, they sit one below the other</target>
+            </trans-unit>
+            <trans-unit id="iWDT2G2">
+                <source>label.group_direction_row</source>
+                <target>Row</target>
+            </trans-unit>
+            <trans-unit id="q8T4r7k">
+                <source>label.group_justify</source>
+                <target>Horizontal alignment</target>
+            </trans-unit>
+            <trans-unit id="bDdHGtR">
+                <source>label.group_justify_between</source>
+                <target>Spread out</target>
+            </trans-unit>
+            <trans-unit id="CELQcnz">
+                <source>label.group_justify_center</source>
+                <target>Centered</target>
+            </trans-unit>
+            <trans-unit id="8O0vXbZ">
+                <source>label.group_justify_end</source>
+                <target>Right</target>
+            </trans-unit>
+            <trans-unit id="xzL.v6f">
+                <source>label.group_justify_start</source>
+                <target>Left</target>
             </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
@@ -1524,7 +1624,11 @@
             </trans-unit>
             <trans-unit id="KPqN5C4">
                 <source>label.hero_background_image_help</source>
-                <target>Uses the first uploaded image as a full-width background behind the text instead of showing it beside it.</target>
+                <target>Uses the first uploaded image as a full-width background behind the text instead of showing it beside it. An uploaded video always fills the background, whether this box is ticked or not.</target>
+            </trans-unit>
+            <trans-unit id="UzEune3">
+                <source>label.hero_media_help</source>
+                <target>Upload images, or a video (MP4, WebM or OGG) which then fills the section's background, muted and looping. It stays frozen on its first frame for a visitor asking for reduced motion. Upload an image alongside it and it shows while the video downloads.</target>
             </trans-unit>
             <trans-unit id="CYanl3o">
                 <source>label.hero_media_layout</source>
@@ -1541,6 +1645,10 @@
             <trans-unit id="qQIbICK">
                 <source>label.hero_media_layout_slideshow</source>
                 <target>Slideshow</target>
+            </trans-unit>
+            <trans-unit id="Vqyb8PD">
+                <source>label.hero_title_help</source>
+                <target>Optional: a hero opening on a background video whose own footage already carries the title prints no heading at all, rather than an empty one.</target>
             </trans-unit>
             <trans-unit id="7uubg0.">
                 <source>label.hero_title_level</source>
@@ -2166,6 +2274,22 @@
                 <source>label.text</source>
                 <target>Text</target>
             </trans-unit>
+            <trans-unit id="B1Hz9o9">
+                <source>label.text_tone</source>
+                <target>Presentation</target>
+            </trans-unit>
+            <trans-unit id="CEQYbZY">
+                <source>label.text_tone_help</source>
+                <target>"Secondary" for a text placed beside a louder one - the paragraph answering a hook in the column next to it: a step above body copy, in a quieter color.</target>
+            </trans-unit>
+            <trans-unit id="AsnOWPQ">
+                <source>label.text_tone_normal</source>
+                <target>Normal</target>
+            </trans-unit>
+            <trans-unit id="KdrbMcM">
+                <source>label.text_tone_secondary</source>
+                <target>Secondary</target>
+            </trans-unit>
             <trans-unit id="ZkFsxeA">
                 <source>label.thursday</source>
                 <target>Thursday</target>
@@ -2206,6 +2330,26 @@
                 <source>label.variant_portfolio</source>
                 <target>Portfolio grid</target>
             </trans-unit>
+            <trans-unit id="M3Bgg9j">
+                <source>label.vertical_align</source>
+                <target>Vertical alignment</target>
+            </trans-unit>
+            <trans-unit id="eBE_c7V">
+                <source>label.vertical_align_bottom</source>
+                <target>Bottom</target>
+            </trans-unit>
+            <trans-unit id="be23utf">
+                <source>label.vertical_align_help</source>
+                <target>How columns of unequal height sit against each other. "Middle" for two columns saying one thing between them, "Top" for a row of parallel items.</target>
+            </trans-unit>
+            <trans-unit id="TWDYt51">
+                <source>label.vertical_align_middle</source>
+                <target>Middle</target>
+            </trans-unit>
+            <trans-unit id="VuUmCMC">
+                <source>label.vertical_align_top</source>
+                <target>Top (default)</target>
+            </trans-unit>
             <trans-unit id="pt4FACS">
                 <source>label.video_file</source>
                 <target>Video file</target>
@@ -2221,6 +2365,22 @@
             <trans-unit id="wBwi8fo">
                 <source>label.video_iframe_consent_required</source>
                 <target>This content is hosted by a third-party site, which may set trackers: it requires your consent to be displayed.</target>
+            </trans-unit>
+            <trans-unit id="DwBDqui">
+                <source>label.video_iframe_media_help</source>
+                <target>The player's thumbnail. Leave empty and tick "Import thumbnail" to fetch it from the platform.</target>
+            </trans-unit>
+            <trans-unit id="iFl9soO">
+                <source>label.video_iframe_play</source>
+                <target>Play the video</target>
+            </trans-unit>
+            <trans-unit id="6wyDG8X">
+                <source>label.video_import_poster</source>
+                <target>Import thumbnail</target>
+            </trans-unit>
+            <trans-unit id="3fSeLho">
+                <source>label.video_import_poster_help</source>
+                <target>Copies the platform's thumbnail (YouTube only) into this site's own files, once, on save. Tick again to refresh it.</target>
             </trans-unit>
             <trans-unit id="cXYQ_gN">
                 <source>label.video_media_help</source>

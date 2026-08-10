@@ -176,6 +176,27 @@ services:
               pickable: true
               cacheable: true
 
+    # Two faces of one card, turned by a button (see assets/js/flip-card.js). Its medias are ordered like
+    # image_compare's: the first is the front face's image, the second the back's - hence multi upload, an
+    # editor picking both in one go
+    ui.block.flip_card:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: flip_card
+              label: "label.block_flip_card"
+              description: "label.block_flip_card_description"
+              form: c975L\UiBundle\Form\Block\FlipCardType
+              template: '@c975LUi/blocks/FlipCard.html.twig'
+              category: 'label.category_elements'
+              media_types: 'image/*'
+              media_multi_upload: true
+              media_help: 'label.flip_card_media_help'
+              # Right under "card" (100), the kind an editor reaching for this one just looked at
+              priority: 99
+              pickable: true
+              cacheable: true
+
     ui.block.image:
         class: stdClass
         tags:
@@ -307,6 +328,9 @@ services:
               form: c975L\UiBundle\Form\Block\VideoIframeType
               template: '@c975LUi/blocks/VideoIframe.html.twig'
               category: 'label.category_media'
+              # The single media is the player's poster - either imported from the platform by ticking the block's own "importPoster" (see VideoPosterImporter) or uploaded here by hand. Its presence is also what turns the player into click-to-play (see assets/js/video-iframe.js)
+              media_types: 'image/*'
+              media_help: 'label.video_iframe_media_help'
               priority: 60
               pickable: true
               cacheable: true
@@ -322,7 +346,9 @@ services:
               form: c975L\UiBundle\Form\Block\HeroType
               template: '@c975LUi/blocks/Hero.html.twig'
               category: 'label.category_sections'
-              media_types: 'image/*'
+              # Same three video formats as the "video" kind - the ones every browser's <video> can play - beside the images. A video is always painted behind the section, an image beside the text or behind it, told apart by mimetype in blocks/Hero.html.twig
+              media_types: 'image/*,video/mp4,video/webm,video/ogg'
+              media_help: 'label.hero_media_help'
               media_multi_upload: true
               priority: 100
               pickable: true
@@ -402,6 +428,25 @@ services:
               contexts: 'flex_columns_slot'
               slot_context: 'flex_slot_nested'
 
+    # The one container with no chrome of its own: a bare row (or stack) around blocks that would otherwise
+    # sit side by side at the top level, e.g. a footer menu's social links on their own line above its links.
+    # No slot_context of its own, so its slots take BlockRegistry::SLOT_CONTEXT, where containers are excluded -
+    # a group can't hold another group, which is the depth guard a chromeless wrapper would otherwise miss.
+    ui.block.block_group:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: block_group
+              label: "label.block_block_group"
+              description: "label.block_block_group_description"
+              form: c975L\UiBundle\Form\Block\BlockGroupType
+              template: '@c975LUi/blocks/BlockGroup.html.twig'
+              category: 'label.category_sections'
+              priority: 73
+              pickable: true
+              cacheable: false
+              container: true
+
     # A stack of full "card" blocks (or any other kind) with a section-level eyebrow/title/anchor - same
     # container mechanism as flex_columns above, but its slots render inside ".cards" (see
     # components/Section/Cards.html.twig), the same fixed-width flex row used when "card" blocks are placed
@@ -465,6 +510,28 @@ services:
               priority: 55
               pickable: true
               cacheable: true
+
+    # A grid of whole blocks under a section head, same container mechanism as flex_columns/section_cards above,
+    # and like section_cards it declares no slot_context: any kind can fill a cell, "video_iframe" and "video"
+    # being what it is for. Slots rather than a media collection of its own precisely so a grid of platform
+    # players inherits the consent dance (nocookie rewrite, banner contract, click-to-play, poster import) from
+    # the block that already carries it, instead of implementing it a second time
+    ui.block.video_grid:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: video_grid
+              label: "label.block_video_grid"
+              description: "label.block_video_grid_description"
+              form: c975L\UiBundle\Form\Block\VideoGridType
+              template: '@c975LUi/blocks/VideoGrid.html.twig'
+              category: 'label.category_sections'
+              priority: 56
+              pickable: true
+              # Same as the other containers (flex_columns, section_cards): what it renders is its slots, each with
+              # its own cacheability, so the row itself is not cached over them
+              cacheable: false
+              container: true
 
     # Not cacheable: its items come from another bundle's own entity (see CollectionSourceProviderInterface),
     # which BlockCacheInvalidationListener has no way to invalidate on - see BlockCacheTagProviderInterface

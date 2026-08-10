@@ -274,6 +274,26 @@ class MediaUploadTypeTest extends TestCase
         $this->assertSame('label.video_file_or_poster', $this->buildFileOptionsForEntry($accept, 'video', new Media())['label']);
     }
 
+    // A "video_iframe" block's single media is only ever the player's poster - imported from the platform or uploaded by hand, and no more a captioned figure than a "video" block's cover is
+    public function testBuildFormForVideoIframeContextAddsNoImageMetadataAtAll(): void
+    {
+        $added = $this->buildFieldNames('image/*', 'video_iframe');
+
+        foreach (['cssClasses', 'alt', 'label', 'width', 'height', 'above', 'credits', 'rightsReserved'] as $field) {
+            $this->assertArrayNotHasKey($field, $added, "\"$field\" should not be added for the \"video_iframe\" context");
+        }
+    }
+
+    // No video file of its own to be told apart from - the platform holds it - so the one row is named for what it is, filled or not
+    public function testVideoIframeContextNamesItsSingleUploadAfterThePlayersPoster(): void
+    {
+        $image = new Media();
+        $image->setMimeType('image/webp');
+
+        $this->assertSame('label.video_poster', $this->buildFileOptionsForEntry('image/*', 'video_iframe', $image)['label']);
+        $this->assertSame('label.video_poster', $this->buildFileOptionsForEntry('image/*', 'video_iframe', new Media())['label']);
+    }
+
     // Every other kind keeps its uploads unlabelled - a row among rows of the same nature is self-explanatory
     public function testOtherContextsKeepTheirUploadsUnlabelled(): void
     {
@@ -374,7 +394,7 @@ class MediaUploadTypeTest extends TestCase
 
         $this->assertArrayHasKey(FormEvents::POST_SUBMIT, $this->captureListeners($builder, 'image/*', null));
 
-        foreach (['card', 'slider', 'banner_title', 'portfolio_grid', 'video'] as $context) {
+        foreach (['card', 'slider', 'banner_title', 'portfolio_grid', 'video', 'video_iframe'] as $context) {
             $builder = $this->createStub(FormBuilderInterface::class);
             $builder->method('add')->willReturnSelf();
 

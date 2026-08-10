@@ -11,11 +11,29 @@
     display: contents;
 }
 
-// The measure a legal document's body copy is laid out on, matching what SiteBundle gives .text and
-// .site-article - a document rendered on a site holding no page management at all still reads correctly
-.legal div {
+// The measure a legal document is laid out on, matching what SiteBundle gives .text and .site-article - a
+// document rendered on a site holding no page management at all still reads correctly. Carried by the
+// document itself rather than by each heading and each block inside it: "ch" is read against the font of the
+// very element the max-width is written on, so a heading set in the title font at 2rem read a 75ch far wider
+// than its body copy did, fell back to 90vw, and - laid out flush left since - started a good 300px to the
+// left of the text it introduces. Written once here on a box set in the body font, one column holds the lot
+.legal {
     max-width: var(--reading-max-width, min(75ch, 90vw));
-    margin: 1em auto;
+    margin-inline: auto;
+}
+
+// A document's headings sit on the very measure their own body copy is laid out on below: left to the theme
+// they are centered by its own h1-h6 rule, so a title floats above a column whose left edge it never meets.
+// Family stated for the same reason every block title states it (see sass/_page-sections.scss); the color is
+// left to the theme, a legal document being body prose and reading with whatever the site gives its other headings
+.legal h2,
+.legal h3 {
+    font-family: var(--font-family-title);
+    text-align: start;
+}
+
+.legal div {
+    margin-block: 1em;
     // Reserves room above the anchor target so a fixed/sticky header doesn't cover it after an in-page jump
     scroll-margin-top: var(--scroll-offset, 80px);
     text-align: justify;

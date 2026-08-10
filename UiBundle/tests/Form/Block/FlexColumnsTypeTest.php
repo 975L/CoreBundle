@@ -43,6 +43,20 @@ class FlexColumnsTypeTest extends TestCase
         }
     }
 
+    // Two columns saying one thing between them are set against each other's middle, where the default suits a
+    // row of parallel items; "top" carries no placeholder, an unset value having to keep meaning exactly that
+    public function testVerticalAlignOffersTheThreeAlignmentsWithoutAPlaceholder(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertArrayHasKey('verticalAlign', $added);
+        $this->assertSame(
+            ['label.vertical_align_top' => 'top', 'label.vertical_align_middle' => 'middle', 'label.vertical_align_bottom' => 'bottom'],
+            $added['verticalAlign']['options']['choices']
+        );
+        $this->assertFalse($added['verticalAlign']['options']['placeholder']);
+    }
+
     // "slots" is the Block relation added by addSlotsSubForm(), not plain data on this form
     public function testBuildFormDoesNotAddASlotsField(): void
     {

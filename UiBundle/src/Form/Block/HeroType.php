@@ -38,8 +38,11 @@ class HeroType extends AbstractType
                 'required' => false,
             ])
             // TrixEditorType (not a plain TextType) so an editor can emphasize a word (<em>) the same way the reference design highlights it in red - see blocks/Hero.html.twig / _hero__title em
+            // Optional: a hero opening on a background video whose own footage carries the title has nothing left to say over it, and the component prints no heading at all rather than an empty one
             ->add('title', TrixEditorType::class, [
                 'label' => 'label.title',
+                'help' => 'label.hero_title_help',
+                'required' => false,
             ])
             // h2 for a hero sitting under a page template that already prints its own h1
             ->add('titleLevel', ChoiceType::class, [

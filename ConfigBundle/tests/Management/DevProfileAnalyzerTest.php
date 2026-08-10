@@ -113,7 +113,7 @@ class DevProfileAnalyzerTest extends TestCase
 
         $this->assertCount(1, $issues);
         $this->assertSame(DevProfileAnalyzer::LEVEL_ERROR, $issues[0]['level']);
-        $this->assertStringContainsString('31 identical queries', $issues[0]['message']);
+        $this->assertStringContainsString('31 repeats of a same SQL', $issues[0]['message']);
         $this->assertStringContainsString('32 times', $issues[0]['message']);
         $this->assertStringContainsString('site_block', $issues[0]['message']);
     }

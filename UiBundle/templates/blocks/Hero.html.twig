@@ -1,10 +1,12 @@
 {# Unlike the other single-media kinds, Hero rotates through every attached media via "medias" #}
-{% set medias = block.media %}
+{# Same mimetype split as blocks/Video.html.twig: an attached video is always the section's background, the images being laid out beside the text - or, with the video, standing as the still painted while it downloads #}
+{% set video = block.media|filter(item => item.mimeType starts with 'video/')|first %}
+{% set medias = block.media|filter(item => item.mimeType starts with 'image/') %}
 {% set media = medias|length == 1 ? medias|first : null %}
 {# Intrinsic pixel size, not the free-text width/height which may hold an unusable "50%"; kept out of the tag, which parses attributes only #}
 <twig:c975LUi:Hero:Hero
     badge="{{ badge|default('') }}"
-    title="{{ title }}"
+    title="{{ title|default('') }}"
     level="{{ titleLevel|default('h1') }}"
     subtitle="{{ subtitle|default('') }}"
     primaryLabel="{{ primaryLabel|default('') }}"
@@ -18,6 +20,8 @@
     width="{{ media ? media.intrinsicWidth : '' }}"
     height="{{ media ? media.intrinsicHeight : '' }}"
     medias="{{ medias|length > 1 ? medias : [] }}"
+    videoSrc="{{ video ? vich_uploader_asset(video) : '' }}"
+    videoType="{{ video ? video.mimeType : '' }}"
     mediaLayout="{{ mediaLayout|default('') }}"
     hasBackgroundImage="{{ hasBackgroundImage|default(false) }}"
     background="{{ background|default('') }}"

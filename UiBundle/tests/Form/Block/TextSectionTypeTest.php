@@ -69,9 +69,22 @@ class TextSectionTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['eyebrow', 'title', 'slug', 'content', 'background'] as $field) {
+        foreach (['eyebrow', 'title', 'slug', 'content', 'tone', 'background'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the TextSection form");
         }
+    }
+
+    // "secondary" is for a section standing beside a louder one; "normal" carries no placeholder, an unset value
+    // having to keep meaning exactly that - which is what every section stored before the field existed is
+    public function testToneOffersNormalAndSecondaryWithoutAPlaceholder(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame(
+            ['label.text_tone_normal' => 'normal', 'label.text_tone_secondary' => 'secondary'],
+            $added['tone']['choices']
+        );
+        $this->assertFalse($added['tone']['placeholder']);
     }
 
     public function testTitleIsOptional(): void

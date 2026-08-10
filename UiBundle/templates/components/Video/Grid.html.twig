@@ -1,0 +1,27 @@
+{# Dynamic usage only: "slots" holds real Block entities ("video_iframe" or "video"), each rendered exactly as it would be bare in the page - the grid only places them #}
+{# A headingless <section> is invalid HTML, hence the <div> fallback #}
+{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+<{{ tag }} class="video-grid"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+    <div class="section-wrap">
+        {# The head's own "see it all elsewhere" link sits beside it, so the pair can't use Section/_head.html.twig as-is #}
+        <div class="video-grid__head">
+            <div>
+                {% if title|default('') %}
+                    {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+                    <h2 class="section-title">{{ title }}</h2>
+                {% elseif eyebrow|default('') %}
+                    <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+                {% endif %}
+            </div>
+            {% if linkLabel|default('') and linkUrl|default('') %}<a class="section-btn section-btn--ghost" href="{{ linkUrl }}">{{ linkLabel }}</a>{% endif %}
+        </div>
+        {# No row at all rather than an empty one: the head's own bottom margin would otherwise hang below it #}
+        {% if slots|length %}
+            <div class="video-grid__grid">
+                {% for slot in slots %}
+                    <div class="video-grid__item">{{ render_block(slot) }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</{{ tag }}>

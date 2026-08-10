@@ -117,6 +117,37 @@ class BlockFixtureMediaAttacherTest extends TestCase
         }
     }
 
+    // A hero takes a video too, but as a background filling the whole section and dropping everything laid out beside
+    // the text - the default variant showing that instead of the ordinary hero would be showing another block altogether
+    public function testHeroDefaultVariantGetsItsImagesAndNoVideo(): void
+    {
+        $attacher = $this->createAttacher(['image/*', 'video/mp4', 'video/webm', 'video/ogg'], multiUpload: true);
+        $block = (new Block())->setKind('hero');
+
+        $attacher->attach($block, 'hero');
+
+        $medias = $block->getMedia();
+        $this->assertCount(2, $medias);
+        foreach ($medias as $media) {
+            $this->assertContains($media->getFilename(), self::IMAGES);
+        }
+    }
+
+    // The "video" variant is the other look shown beside it: the video filling the section, and one single image
+    // under it as the still - the medias a slideshow would have laid out beside the text never show there
+    public function testHeroVideoVariantGetsTheVideoAndOneStill(): void
+    {
+        $attacher = $this->createAttacher(['image/*', 'video/mp4', 'video/webm', 'video/ogg'], multiUpload: true);
+        $block = (new Block())->setKind('hero');
+
+        $attacher->attach($block, 'hero', 'video');
+
+        $medias = $block->getMedia();
+        $this->assertCount(2, $medias);
+        $this->assertContains($medias->first()->getFilename(), self::IMAGES);
+        $this->assertSame(self::VIDEO, $medias->last()->getFilename());
+    }
+
     // Regression guard: video mixing used to be hardcoded to "slider" by name - any kind whose own media_types include video/* gets a video slide now, without UiBundle needing to know its name
     public function testAnyKindWithVideoMediaTypeGetsAVideoMixedIn(): void
     {

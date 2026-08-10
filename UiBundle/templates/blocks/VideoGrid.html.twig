@@ -1,0 +1,9 @@
+{# Adapter for the dynamic Block system - "slots" is the nested-Block relation, not part of Block::$data, so it is read straight off "block" #}
+<twig:c975LUi:Video:Grid
+    eyebrow="{{ eyebrow|default('') }}"
+    title="{{ title|default('') }}"
+    linkLabel="{{ linkLabel|default('') }}"
+    linkUrl="{{ linkUrl|default('') }}"
+    slots="{{ block.slots }}"
+    id="{{ anchor_id }}"
+/>

@@ -6,6 +6,16 @@
                 "en": "A dashboard watching several sites no longer waits for each of them to report in: it asks them at the moment you look at it. It can no longer show you week-old information as if it were current, and a site that has stopped answering shows up straight away instead of two days later",
                 "fr": "Un tableau de bord qui surveille plusieurs sites n'attend plus que chacun lui envoie de ses nouvelles : il les leur demande au moment où vous le regardez. Il ne peut donc plus vous présenter comme actuelle une information vieille d'une semaine, et un site qui ne répond plus se voit immédiatement au lieu de deux jours plus tard",
                 "es": "Un panel que vigila varios sitios ya no espera a que cada uno le dé noticias: se las pide en el momento en que usted lo mira. Por tanto ya no puede presentarle como actual una información de hace una semana, y un sitio que ha dejado de responder se ve de inmediato en lugar de dos días después"
+            },
+            {
+                "en": "A setting whose value has to be one of a fixed list - light or dark mode, the corner your watermark sits in - is now picked from a dropdown instead of typed, and a value that is not on the list is refused rather than quietly ignored",
+                "fr": "Un réglage dont la valeur doit faire partie d'une liste fixe - mode clair ou sombre, coin où se place votre filigrane - se choisit désormais dans une liste déroulante au lieu d'être saisi, et une valeur hors liste est refusée au lieu d'être ignorée sans rien dire",
+                "es": "Un ajuste cuyo valor debe formar parte de una lista fija - modo claro u oscuro, esquina donde se coloca su marca de agua - se elige ahora en una lista desplegable en lugar de escribirse, y un valor fuera de la lista se rechaza en lugar de ignorarse sin decir nada"
+            },
+            {
+                "en": "The credit at the bottom of your pages - \"Made by\", \"Hosted by\" - is no longer just shown or hidden: you pick what it shows, between nothing, the logo, the name, or the name above the logo. Two new settings hold those names, next to the logo and the address that were already there",
+                "fr": "Le crédit en bas de vos pages - « Réalisé par », « Hébergé par » - ne s'affiche plus simplement ou non : vous choisissez ce qu'il montre, entre rien, le logo, le nom, ou le nom au-dessus du logo. Deux nouveaux réglages contiennent ces noms, à côté du logo et de l'adresse qui existaient déjà",
+                "es": "El crédito al pie de sus páginas - «Realizado por», «Alojado por» - ya no se muestra u oculta sin más: usted elige lo que muestra, entre nada, el logotipo, el nombre, o el nombre encima del logotipo. Dos nuevos ajustes contienen esos nombres, junto al logotipo y la dirección que ya existían"
             }
         ]
     },

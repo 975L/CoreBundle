@@ -16,7 +16,9 @@ use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Form\Util\MultiUploadMerger;
 use c975L\UiBundle\Form\Util\SubmissionIntegrity;
 use c975L\UiBundle\Registry\BlockRegistry;
+use c975L\UiBundle\Service\VideoPosterImporter;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -46,6 +48,7 @@ class BlockType extends AbstractType
         private BlockRegistry $registry,
         private UrlGeneratorInterface $router,
         private ?RequestStack $requestStack = null,
+        private ?VideoPosterImporter $videoPosterImporter = null,
     ) {
     }
 
@@ -129,6 +132,18 @@ class BlockType extends AbstractType
                     // "data" (and "medias"/"slots") were just (re)added above - move "animation" back below them, in case this is a brand new collection entry whose PRE_SET_DATA fired with no kind yet (so "animation" was added there before "data" ever existed)
                     $event->getForm()->remove('animation');
                     $this->addAnimationField($event->getForm());
+                }
+            }
+        );
+
+        // Here rather than in a Doctrine listener (unlike the nocookie rewrite, see BlockVideoNoCookieListener): the import sets a Vich file field, which has to be in place before Vich's own prePersist/preUpdate listener runs, not alongside it
+        // Runs whatever the submission turns out to be worth - this form is always a CollectionType entry, so its POST_SUBMIT precedes the root form's validation. Nothing is flushed here, and a rejected submission's downloaded still is swept on kernel.terminate (see VideoPosterImporter::removeTemporaryFiles)
+        $builder->addEventListener(
+            FormEvents::POST_SUBMIT,
+            function (PostSubmitEvent $event): void {
+                $block = $event->getData();
+                if ($block instanceof Block) {
+                    $this->videoPosterImporter?->importIfRequested($block);
                 }
             }
         );

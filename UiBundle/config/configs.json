@@ -38,7 +38,8 @@
         "sensitive": false,
         "restricted": false,
         "value": null,
-        "kind": "text",
+        "kind": "choice",
+        "choices": ["anthropic", "openai", "euria"],
         "group": "ai",
         "severity": null,
         "description": "description.ai_assistant_rephrase_provider"
@@ -258,7 +259,8 @@
         "sensitive": false,
         "restricted": false,
         "value": "auto",
-        "kind": "text",
+        "kind": "choice",
+        "choices": ["auto", "light", "dark"],
         "group": "theme",
         "severity": null,
         "description": "description.theme_mode"
@@ -313,7 +315,8 @@
         "sensitive": false,
         "restricted": false,
         "value": "bottom-right",
-        "kind": "text",
+        "kind": "choice",
+        "choices": ["top-left", "top-right", "bottom-right", "bottom-left"],
         "group": "general",
         "severity": null,
         "description": "description.watermark_position"

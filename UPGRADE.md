@@ -1,5 +1,110 @@
 # UPGRADE
 
+## From `v1.5` to `v1.6`
+
+### A config whose value is a fixed list is now picked, not typed
+
+`site_config` gains a `choices` column, and a new `choice` entry kind alongside `text`/`bool`/`json`/`font`.
+An entry declaring `"kind": "choice"` plus a `"choices": [...]` list is edited as a `<select>` over exactly
+those values, and refuses anything else — in the back office and through `c975l:config:set` alike.
+
+Nothing about the values already in production changes: the column is added empty, `c975l:config:load-all`
+fills it from each bundle's `configs.json` the same way it already re-syncs `label`/`kind`/`group`, and no
+`value` is ever rewritten. A value that is *not* on its entry's list — set by hand before the list existed —
+stays exactly as it is, stays selectable in the form so the entry can still be opened, and is only rejected
+the day someone saves that entry, which is the moment to replace it.
+
+On each site:
+
+```bash
+composer update c975l/core-bundle
+php bin/console doctrine:migrations:diff && php bin/console doctrine:migrations:migrate
+php bin/console c975l:config:load-all
+```
+
+Three entries become `choice` in this release, all of them settings whose wrong value used to be swallowed
+silently by whatever read them:
+
+| Config | Values | What a typo used to do |
+|---|---|---|
+| `theme-mode` | `auto`, `light`, `dark` | read as `auto`, the site staying on the visitor's own preference |
+| `ui-watermark-position` | `top-left`, `top-right`, `bottom-right`, `bottom-left` | read as `bottom-right` |
+| `ui-ai-assistant-rephrase-provider` | `anthropic`, `openai`, `euria` | the AI assistant answering nothing at all |
+
+Check those three in the back office after the upgrade: an off-list value is exactly what this change is
+about, and this is where it becomes visible.
+
+Bundles of your own declaring a config read back against a fixed list should follow — see the `choice` kind in
+ConfigBundle's README.
+
+### A footer credit is a choice of what it shows, and can show a name
+
+`display-made-by` and `display-hosted-by` are `choice` entries now — `none`, `logo`, `name` or `logo-name` —
+and two keys join the `credits` group: `site-made-by-name` and `site-hosted-by-name`, the text half of a credit
+whose logo and url were already declared.
+
+**Four keys move to this bundle**: `site-hosted-by-url`, `site-hosted-by-logo`, `display-made-by` and
+`display-hosted-by`, declared by SiteBundle until now. `site-made-by-logo` and `site-made-by-url` came here in
+`v1.5` and their hosted-by counterparts had no reason to stay behind. Same slugs, same `credits` group, same
+`site_config` rows — only the bundle declaring them changes.
+
+**`credits_mode()`** is the Twig function to read those two entries with (SiteBundle's `MadeBy`/`HostedBy`
+components do). It always answers one of the four modes, and that is where the value of an older site is
+understood: `c975l:config:load-all` never rewrites a `value` (see `ConfigService::syncMetadata`), so a row still
+holding `"true"` reads as `logo` — the only thing a credit could show back then — and `"false"` as `none`. A
+footer switched off stays off, which a raw `config('display-made-by')` would no longer manage: as a `choice`,
+the string `"false"` is no longer cast to a boolean, and any non-empty string is truthy in Twig.
+
+Nothing breaks untouched then, but the back office keeps offering that stale `true` as an extra entry of the
+select, and refuses to save the entry while it is picked. Re-pick both values after the upgrade, or:
+
+```sql
+UPDATE site_config SET value = 'logo' WHERE slug IN ('display-made-by', 'display-hosted-by') AND value = 'true';
+UPDATE site_config SET value = 'none' WHERE slug IN ('display-made-by', 'display-hosted-by') AND value = 'false';
+```
+
+### A menu no longer offers a container that can't hold its items
+
+`BlockRegistry::isAllowedInContext()` now applies to the `menu` context the opt-in rule it already applied
+inside a container's slots: **a container kind is only offered in a menu if it declared `contexts: 'menu'`
+itself.** In practice that means `c975l/site-bundle`'s `menu_group` — built with the `menu_slot` slot context a
+`menu_link` opts into — and no longer UiBundle's own `block_group`, which shares its form and its template but
+builds its slots with the default context, where no menu link is ever allowed. A `block_group` picked in a
+footer was accepted by the picker, then refused every link dropped into it (`kind_not_allowed_in_target`), with
+no way for the editor to tell why. Non-container kinds are untouched: a footer takes any of them on purpose.
+
+**A footer composed before `menu_group` existed may hold a `block_group`.** It renders exactly as it did — a
+stored block's kind is never re-checked against a context — and keeps holding whatever it holds: what it never
+accepted, before this release as after it, is a `menu_link`. So a footer grouping social links or an image in a
+`block_group` needs nothing; one meant to group *links* wants a `menu_group` instead, the group being only a
+wrapper. Nothing is migrated automatically, for that exact reason: both are legitimate.
+
+### A refused block move is explained, in a modal
+
+Dragging a saved block into a container it doesn't take used to end on a native `alert()` saying only that the
+move failed. It now opens a Bootstrap modal carrying the reason the server gave, when it is one an editor can
+act on. Three things come with it, none needing action: `assets/js/admin-modal.js`, exporting
+`showAdminMessage(title, message, closeLabel)` for any admin script; a `data-block-move-close-label` attribute
+added by `Service\BlockMoveRowAttrBuilder` (so a caller asserting on that method's exact output has to follow);
+and the `action.close` / `flash.block_move_kind_not_allowed` translations in the `ui` domain.
+
+### The block layer's body text now follows the page's own reading size
+
+`c975l/site-bundle` gains `--font-size-body`, the size every text set in the body font is read at (it defaults
+to `1rem`, i.e. the browser's own default, which is what a site was read at before the token existed). For that
+setting to mean anything, the block layer's body-font text is now sized in `em` rather than in fixed pixels:
+a `feature_bar`'s items, a `cta_band`'s paragraph, an `expertise_banner`'s text, a `process_steps` step's text,
+a `portfolio_grid` card's text, a `hero`'s stat label, a `section_btn`'s label, a slider's caption and a
+`blockquote`. **Titles and eyebrows are deliberately left in px** — they are the design's own marks and must not
+grow with the body copy — and so is everything already read through a token of its own.
+
+Nothing moves on a site that sets no `--font-size-body`: every converted value is the exact `em` equivalent of
+the pixel length it replaces at the default `1rem`. A site that *does* raise the token sees its block text
+follow, which is the point. `BlockTextScaleTest` (UiBundle) and `BodyFontSizeTest` (SiteBundle) lock the split.
+
+One default changes unit with it: `--hero-sub-size` now falls back to `1.1875em` instead of `19px`. Same size
+at the default reading size; a theme already setting that token in px is unaffected.
+
 ## From `v1.4` to `v1.5`
 
 ### The status report is now read from the site, not sent by it

@@ -32,6 +32,8 @@ class Config
     public const TYPE_DATE = 'date';
     public const TYPE_JSON = 'json';
     public const TYPE_FONT = 'font';
+    // A value read back against a fixed list (a theme mode, a watermark corner, an AI provider...): whoever reads it falls back silently on anything off that list, so the admin picks from the list instead of typing it - see the "choices" key of the configs.json entry declaring it
+    public const TYPE_CHOICE = 'choice';
 
     // Always offered alongside the custom fonts, and never needing a fallback suffix of its own
     public const GENERIC_FONT_FAMILIES = ['serif', 'sans-serif', 'monospace'];
@@ -45,6 +47,7 @@ class Config
         self::TYPE_DATE,
         self::TYPE_JSON,
         self::TYPE_FONT,
+        self::TYPE_CHOICE,
     ];
 
     public const GROUP_SYSTEM = 'system';
@@ -120,6 +123,10 @@ class Config
     #[ORM\Column(length: 20)]
     #[Assert\Choice(choices: self::TYPES)]
     private string $kind = self::TYPE_TEXT;
+
+    // The values a TYPE_CHOICE entry accepts, in the order the select offers them, declared by the bundle owning the entry - null for every other kind
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $choices = null;
 
     // Column name is backtick-quoted because `group` is a reserved SQL keyword (MySQL/MariaDB): without this, Doctrine emits unquoted `group` in generated SQL and every UPDATE/INSERT fails with a syntax error
     #[ORM\Column(name: '`group`', length: 20, nullable: true)]
@@ -230,6 +237,19 @@ class Config
         return $this;
     }
 
+    public function getChoices(): ?array
+    {
+        return $this->choices;
+    }
+
+    public function setChoices(?array $choices): static
+    {
+        // An empty list is stored as none at all: a "choice" kind declaring no value would otherwise render an empty select, which offers the admin nothing to pick and no way to keep what is already there
+        $this->choices = [] === $choices ? null : $choices;
+
+        return $this;
+    }
+
     public function getGroup(): ?string
     {
         return $this->group;
@@ -313,6 +333,27 @@ class Config
             && null === json_decode($this->value)
         ) {
             $context->buildViolation('label.invalid_json')
+                ->atPath('value')
+                ->addViolation();
+        }
+    }
+
+    // Validates that a "choice" kind config holds one of its declared values: everything reading such an entry falls back on a default for anything else (an unknown theme-mode reads as "auto", an unknown watermark corner as bottom-right, an unknown AI provider stops answering), so a typo is invisible until someone wonders why the setting does nothing
+    #[Assert\Callback]
+    public function validateChoiceValue(ExecutionContextInterface $context): void
+    {
+        if (
+            self::TYPE_CHOICE !== $this->kind
+            || null === $this->choices
+            || null === $this->value
+            || '' === $this->value
+        ) {
+            return;
+        }
+
+        if (!in_array($this->value, $this->choices, true)) {
+            $context->buildViolation('label.invalid_choice')
+                ->setParameter('%choices%', implode(', ', $this->choices))
                 ->atPath('value')
                 ->addViolation();
         }

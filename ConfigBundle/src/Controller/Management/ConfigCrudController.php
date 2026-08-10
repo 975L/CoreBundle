@@ -258,7 +258,7 @@ class ConfigCrudController extends AbstractCrudController
         $field = match (true) {
             Crud::PAGE_INDEX === $pageName => $this->maskedValueField(),
             $isEdit && true === $config?->getIsSensitive() => $this->sensitiveValueField($kind, $rawValue),
-            default => $this->kindValueField($kind, $rawValue),
+            default => $this->kindValueField($kind, $rawValue, $config?->getChoices()),
         };
 
         // Edit form renders field help as plain text below the widget (unlike detail/index, which use a tooltip/popover). The json kind keeps its own dedicated help instead, since it needs to explain the expected format
@@ -297,7 +297,7 @@ class ConfigCrudController extends AbstractCrudController
     }
 
     // Non-sensitive fields use a widget matching the config kind
-    private function kindValueField(string $kind, ?string $rawValue): FieldInterface
+    private function kindValueField(string $kind, ?string $rawValue, ?array $choices = null): FieldInterface
     {
         return match ($kind) {
             // The raw string value must be overridden with a real bool/DateTime via setValue(), since EasyAdmin's boolean/date templates and formatters read the field's raw value directly
@@ -330,6 +330,10 @@ class ConfigCrudController extends AbstractCrudController
                 ->setRequired(false),
             // Falls back to a plain TextField with no font declared, an empty <select> being worse than free text
             Config::TYPE_FONT => $this->buildFontField($rawValue),
+            // Same fallback when the entry declares no choice at all - a kind changed by a bundle newer than the last c975l:config:load-all run, say
+            Config::TYPE_CHOICE => null !== $choices ? $this->buildChoiceField($rawValue, $choices) : TextField::new('value')
+                ->setLabel(t('label.value', [], 'config'))
+                ->setRequired(false),
             // Text kind is plain string (URLs, ids, emails...), a rich editor would wrap it in a <div>
             default => TextField::new('value')
                 ->setLabel(t('label.value', [], 'config'))
@@ -689,6 +693,22 @@ class ConfigCrudController extends AbstractCrudController
             ->setLabel(t('label.value', [], 'config'))
             ->setFormType(FontChoiceType::class)
             ->setFormTypeOptions(['choices' => $choices])
+            ->setRequired(false);
+    }
+
+    // The values the entry declares, offered as-is: they are what gets stored and what the code reading the config compares against, so translating them would hide the only thing that matters here
+    private function buildChoiceField(?string $rawValue, array $declared): FieldInterface
+    {
+        $choices = array_combine($declared, $declared);
+
+        // A value stored before the entry became a choice (or since dropped from the list) is kept selectable rather than making the form unopenable - it still fails validation on save, which is how the admin learns it has to be replaced
+        if (null !== $rawValue && '' !== $rawValue && !isset($choices[$rawValue])) {
+            $choices = [$rawValue => $rawValue] + $choices;
+        }
+
+        return ChoiceField::new('value')
+            ->setLabel(t('label.value', [], 'config'))
+            ->setChoices($choices)
             ->setRequired(false);
     }
 

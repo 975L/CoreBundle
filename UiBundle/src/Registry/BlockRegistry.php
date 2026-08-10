@@ -229,9 +229,32 @@ class BlockRegistry
             return false;
         }
 
-        $isSlotContext = in_array($context, [self::SLOT_CONTEXT, self::NESTED_SLOT_CONTEXT], true);
+        // Any context a registered container builds its slots with, not just this bundle's own: a satellite
+        // bundle declaring a slot_context of its own (SiteBundle's "menu_slot") gets the same depth guard,
+        // without this registry ever having to know that context's name
+        $isSlotContext = in_array($context, $this->slotContexts(), true);
 
-        return !($isSlotContext && $config['container'] && !in_array($context, $config['contexts'], true));
+        // A menu joins them: its own kinds ("menu_link") only ever opt into the slot context of the container
+        // meant for them (SiteBundle's "menu_group"), so a generic container picked in a menu would be a group
+        // no link can be put into - the picker offers it, then refuses every drop, which is exactly what the
+        // editor cannot make sense of. Containers only, a menu otherwise taking any kind on purpose
+        $isContainerOnlyOnOptIn = $isSlotContext || self::MENU_CONTEXT === $context;
+
+        return !($isContainerOnlyOnOptIn && $config['container'] && !in_array($context, $config['contexts'], true));
+    }
+
+    /**
+     * Every context a registered container builds its slots with, i.e. the union of the "slot_context" tag
+     * attributes - the contexts where a container is only offered if it opted into that exact one.
+     *
+     * @return list<string>
+     */
+    private function slotContexts(): array
+    {
+        return array_values(array_unique(array_column(
+            array_filter($this->blocks, static fn (array $config): bool => $config['container']),
+            'slotContext'
+        )));
     }
 
     // Result only depends on the static block registrations, cached per $context after its first call - excludes non-pickable kinds (singleton blocks with their own dedicated admin entry, e.g. SocialBundle's "social_links": offering them here would let editors create duplicate, independently-filled instances instead of reusing the single site-wide one found via BlockRepository::findOneByKind()), and kinds restricted to other contexts (e.g. SiteBundle's "menu_link", declared with contexts: ['menu'] so it doesn't leak into a Page's block picker). A kind declared with no contexts at all is available everywhere, and passing no $context here skips the contexts filter entirely - both keep existing callers (that don't pass $context yet) working unchanged.

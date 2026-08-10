@@ -1,0 +1,120 @@
+/* FLIP CARD */
+// The perspective lives on the outer box, not on the element that rotates: a rotateY on the element also
+// carrying its own perspective is projected from that element's centre and reads flat, with no depth at all
+.flip-card {
+    perspective: 1200px;
+    // Same measure as ".card": a flip card dropped in a ".cards" row lines up with the plain cards around it
+    width: clamp(300px, 380px, 90vw);
+    margin: 1em auto;
+}
+
+// ".cards" already spaces its children with "gap" - the same reset ".card" gets there, for the same reason.
+// "margin-block", not the shorthand: the inline "auto" above is what centers the card, and writing the
+// shorthand over it drops that silently (see ComponentCenteringTest)
+.cards > .flip-card {
+    margin-block: 0;
+}
+
+// A face is a real ".card", so the accent band, the body padding and the tail alignment all come from
+// _cards.scss - only the box holding the two faces is described here
+.flip-card > .flip-card-inner > .card {
+    margin-block: 0;
+    width: 100%;
+}
+
+// The very ratios a slider offers (see SliderType::RATIO_CHOICES), each naming its own value and nothing
+// else: what reads it is the folded stack below, which only exists once the controller ran. "free" declares
+// no class at all, and the card keeps the height of its tallest face
+.flip-card-ratio-2-3 {
+    --flip-card-ratio: 2 / 3;
+}
+.flip-card-ratio-3-4 {
+    --flip-card-ratio: 3 / 4;
+}
+.flip-card-ratio-9-16 {
+    --flip-card-ratio: 9 / 16;
+}
+.flip-card-ratio-1-1 {
+    --flip-card-ratio: 1 / 1;
+}
+.flip-card-ratio-3-2 {
+    --flip-card-ratio: 3 / 2;
+}
+.flip-card-ratio-4-3 {
+    --flip-card-ratio: 4 / 3;
+}
+.flip-card-ratio-16-9 {
+    --flip-card-ratio: 16 / 9;
+}
+.flip-card-ratio-21-9 {
+    --flip-card-ratio: 21 / 9;
+}
+
+.flip-card-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    // One pixel under --radius-card for the same reason as ".card-header" - the image sits inside the face's
+    // own 1px border, where the curve is that much tighter
+    border-radius: calc(var(--radius-card) - 1px);
+}
+
+// Everything below is scoped to ".flip-card--js", added by flip-card.js on connect (see assets/js/flip-card.js).
+// Without it - no JS at all, or the controller not loaded yet - the two faces stay in normal flow, one under
+// the other: everything the block holds stays readable, just not folded. Stacking them without a working
+// toggle would leave the back face hidden behind a rotation nothing could undo
+.flip-card--js .flip-card-inner {
+    // Grid rather than absolute positioning: both faces share one cell, so the card is as tall as its tallest
+    // face whatever an editor typed in either, where the fixed height absolute positioning needs would clip it
+    display: grid;
+    transform-style: preserve-3d;
+    transition: transform 0.7s;
+}
+
+// A ratio is a floor under the card's shape, not a crop: an empty cell-mate sized by it holds the row open,
+// and a face holding more than that simply grows past it - so a row of cards lines up on one shape without a
+// long content ever being clipped or pushed behind a scrollbar. Nothing declared and it collapses to nothing
+.flip-card--js .flip-card-inner::before {
+    content: "";
+    grid-area: 1 / 1;
+    // Not stretched like the faces are: a stretched item takes the row's height instead of giving it
+    align-self: start;
+    aspect-ratio: var(--flip-card-ratio, auto);
+}
+
+.flip-card--js .flip-card-face {
+    grid-area: 1 / 1;
+    // What hides the face turned away from the eye. It hides it from the eye *only*, which is why the
+    // controller also marks it "inert" - its buttons and links stay in the tab order without that
+    backface-visibility: hidden;
+}
+
+.flip-card--js .flip-card-back {
+    transform: rotateY(180deg);
+}
+
+.flip-card--js.is-flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+// The card sways under the pointer to say it can be turned - the catalogue's own "rotateY5deg", the very
+// keyframes ".animation.rotate-y5deg" runs (see sass/_animations.scss, compiled into animations.css, which
+// StylesheetProvider loads before this sheet). The whole stack sways rather than the front face alone: that
+// is what a visitor sees anyway, only the face up being visible.
+// Kept off the turned card, where these keyframes' own transform would write over the rotateY(180deg)
+// holding the back face up and drop it back to the front at every cycle
+.flip-card--js:not(.is-flipped):hover .flip-card-inner {
+    animation: rotateY5deg 0.5s infinite ease-in-out;
+}
+
+// Both moves are decoration, not information: the faces still swap, the card still says it can be turned -
+// through the pointer's own cursor rather than through a sway nobody asked for
+@media (prefers-reduced-motion: reduce) {
+    .flip-card--js .flip-card-inner {
+        transition: none;
+    }
+
+    .flip-card--js:not(.is-flipped):hover .flip-card-inner {
+        animation: none;
+    }
+}

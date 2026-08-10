@@ -80,7 +80,12 @@ class BlockMoveController extends AbstractController
 
             $error = $this->validateTarget($block, $targetContainer, $owner);
             if (null !== $error) {
-                return new JsonResponse(['error' => $error], 400);
+                // "message" only for what the editor can act on: a kind this container doesn't take. Everything else
+                // (an unknown block, a foreign owner) is a technical refusal the sortable reports as a plain failure
+                return new JsonResponse(array_filter([
+                    'error' => $error,
+                    'message' => 'kind_not_allowed_in_target' === $error ? $this->translator->trans('flash.block_move_kind_not_allowed', [], 'ui') : null,
+                ]), 400);
             }
         }
 

@@ -85,7 +85,7 @@ class HasAnchorFieldTraitTest extends TestCase
         $this->assertSame('des-services-taille-sur-mesure', $data['anchor']);
     }
 
-    // FeatureBarType has no "title" field - the anchor field must be typed explicitly, no slug fallback
+    // ContactDetailsType names "name" as its title field, the kind having no "title" of its own
     public function testSubmitListenerUsesTheConfiguredTitleFieldForTheFallback(): void
     {
         $data = $this->fireSubmit(['anchor' => '', 'heading' => 'Custom title field'], 'heading');

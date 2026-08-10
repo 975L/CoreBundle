@@ -22,7 +22,7 @@ const ROOT_MARGIN = "200px";
 
 // Deliberately not coupled to any particular consent-banner implementation or bundle - reacts to an optional external contract instead: a banner element matching CONSENT_BANNER_SELECTOR present in the page, a `window.CookieConsent` global exposing vanilla-cookieconsent v3's API (https://cookieconsent.orestbida.com/), and its `cc:onConsent`/`cc:onChange` DOM events. c975l/site-bundle's `<twig:c975LSite:General:CookieConsent/>` is one such provider, but any consuming app's own banner satisfying the same contract works just as well - no composer dependency on it either way.
 export default class extends Controller {
-    static targets = ["placeholder"];
+    static targets = ["placeholder", "consent", "play"];
     static values = { src: String, title: String, width: String, height: String };
 
     connect() {
@@ -35,21 +35,34 @@ export default class extends Controller {
 
         // No consent banner on this page - never block content on a site that doesn't use one
         if (!document.querySelector(CONSENT_BANNER_SELECTOR)) {
-            this.scheduleIframe();
+            this.onConsentSettled();
             return;
         }
 
         if (window.CookieConsent?.acceptedCategory("content")) {
-            this.scheduleIframe();
+            this.onConsentSettled();
             return;
         }
 
-        // Consent not yet decided (or lib still loading) - wait for it. "cc:onConsent" fires on every page load once the user's choice is known (not just the first time), so returning visitors who already accepted still get the iframe without needing to click again
+        // Consent not yet decided (or lib still loading) - wait for it
+        this.listen();
+    }
+
+    // "cc:onConsent" fires on every page load once the user's choice is known (not just the first time), so returning visitors who already accepted still get the iframe without needing to click again
+    listen() {
         window.addEventListener("cc:onConsent", this.onConsent);
         window.addEventListener("cc:onChange", this.onConsent);
     }
 
+    // Turbo caches the page as it stands, so the revealed play button is put back behind its prompt here rather than left frozen in a snapshot restored before consent is checked again (same reason as flip-card.js)
     disconnect() {
+        if (this.hasPlayTarget) {
+            this.playTarget.hidden = true;
+        }
+        if (this.hasConsentTarget) {
+            this.consentTarget.hidden = false;
+        }
+
         this.stopListening();
         this.observer?.disconnect();
         this.sizingStyleEl?.remove();
@@ -67,8 +80,48 @@ export default class extends Controller {
 
     onConsent() {
         if (window.CookieConsent?.acceptedCategory("content")) {
-            this.scheduleIframe();
+            this.onConsentSettled();
+
+            return;
         }
+
+        // The category was withdrawn from the banner after the poster had been revealed - the play button goes back behind the prompt, or it goes on offering a video the visitor has just refused
+        if (this.hasPlayTarget) {
+            this.playTarget.hidden = true;
+            if (this.hasConsentTarget) {
+                this.consentTarget.hidden = false;
+            }
+        }
+    }
+
+    // Consent is no longer in the way - what happens next depends on whether there is a poster to hand the decision to the visitor with
+    // With one, the player waits for a click: it is ~1 MB of third-party JavaScript, and a grid of six of them would otherwise pull all six as they scroll past. Without one, there is nothing to look at but an empty box, so it loads on approach as it always has
+    onConsentSettled() {
+        if (!this.hasPlayTarget) {
+            this.scheduleIframe();
+            return;
+        }
+
+        // The listeners stay on while the poster waits for its click, so a withdrawal from the banner takes the button back off screen (see onConsent)
+        if (this.hasConsentTarget) {
+            this.consentTarget.hidden = true;
+        }
+        this.playTarget.hidden = false;
+    }
+
+    // A withdrawal the banner never announced - its script loaded after the button was revealed, an event missed - leaves this button on screen with no consent behind it, so the click is checked against the current answer rather than against the one that revealed it, and puts the prompt back on screen instead of framing the player
+    play() {
+        if (window.CookieConsent && !window.CookieConsent.acceptedCategory("content")) {
+            this.playTarget.hidden = true;
+            if (this.hasConsentTarget) {
+                this.consentTarget.hidden = false;
+            }
+            this.listen();
+
+            return;
+        }
+
+        this.renderIframe();
     }
 
     // Consent is settled, the player may now be loaded - defers to the first time the figure nears the viewport (see ROOT_MARGIN). A visitor who clicks the placeholder's own "accept" button is looking straight at it, so the observer fires immediately in that case

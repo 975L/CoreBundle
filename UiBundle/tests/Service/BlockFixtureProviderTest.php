@@ -22,7 +22,7 @@ class BlockFixtureProviderTest extends TestCase
         $fixtures = (new BlockFixtureProvider())->getFixtures();
 
         $this->assertSame(
-            ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band', 'legal_model'],
+            ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'flip_card', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band', 'legal_model'],
             array_keys($fixtures)
         );
     }
@@ -97,7 +97,7 @@ class BlockFixtureProviderTest extends TestCase
     {
         $fixtures = (new BlockFixtureProvider())->getFixtures();
 
-        foreach (['audio', 'article', 'banner_title', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
+        foreach (['audio', 'article', 'banner_title', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
             $this->assertSame([''], array_keys($fixtures[$kind]), "Kind \"{$kind}\" should have a single unlabelled variant");
         }
     }
@@ -110,5 +110,16 @@ class BlockFixtureProviderTest extends TestCase
         $this->assertSame(['', 'freeflow'], array_keys($fixtures['slider']));
         $this->assertSame('default', $fixtures['slider']['']['layout']);
         $this->assertSame('freeflow', $fixtures['slider']['freeflow']['layout']);
+    }
+
+    // hero shows its ordinary layout alongside the background video, which fills the section and drops everything
+    // laid out beside the text - two looks of one kind, the same as the slider's above. The variant carries no field
+    // of its own: what tells them apart is the video BlockFixtureMediaAttacher attaches to this one only
+    public function testHeroFixtureCoversTheOrdinaryLayoutAndTheBackgroundVideo(): void
+    {
+        $fixtures = (new BlockFixtureProvider())->getFixtures();
+
+        $this->assertSame(['', 'video'], array_keys($fixtures['hero']));
+        $this->assertSame(array_keys($fixtures['hero']['']), array_keys($fixtures['hero']['video']));
     }
 }

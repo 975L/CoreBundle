@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="es" datatype="plaintext" original="validators.en.xlf">
         <body>
+            <trans-unit id=".FEManO">
+                <source>label.invalid_choice</source>
+                <target>Este valor debe ser uno de: %choices%</target>
+            </trans-unit>
             <trans-unit id="gDPKXt0">
                 <source>label.invalid_json</source>
                 <target>Este valor debe ser un array JSON válido</target>

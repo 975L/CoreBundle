@@ -110,6 +110,73 @@ class ConfigTest extends TestCase
         $config->validateJsonValue($context);
     }
 
+    public function testValidateChoiceValueAddsViolationWhenValueIsNotDeclared(): void
+    {
+        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('Dark');
+
+        $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $violationBuilder->expects($this->once())->method('setParameter')->with('%choices%', 'auto, light, dark')->willReturnSelf();
+        $violationBuilder->expects($this->once())->method('atPath')->with('value')->willReturnSelf();
+        $violationBuilder->expects($this->once())->method('addViolation');
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->once())
+            ->method('buildViolation')
+            ->with('label.invalid_choice')
+            ->willReturn($violationBuilder);
+
+        $config->validateChoiceValue($context);
+    }
+
+    public function testValidateChoiceValueAddsNoViolationForADeclaredValue(): void
+    {
+        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('dark');
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->never())->method('buildViolation');
+
+        $config->validateChoiceValue($context);
+    }
+
+    public function testValidateChoiceValueAddsNoViolationWhenKindIsNotChoice(): void
+    {
+        $config = (new Config())->setKind(Config::TYPE_TEXT)->setChoices(['auto', 'light'])->setValue('whatever');
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->never())->method('buildViolation');
+
+        $config->validateChoiceValue($context);
+    }
+
+    // A row whose kind became "choice" in a bundle newer than the last c975l:config:load-all run holds no declared value yet: rejecting what it has would lock its own form
+    public function testValidateChoiceValueAddsNoViolationWhenNothingIsDeclared(): void
+    {
+        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setValue('bottom-right');
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->never())->method('buildViolation');
+
+        $config->validateChoiceValue($context);
+    }
+
+    public function testValidateChoiceValueAddsNoViolationWhenValueIsNullOrEmpty(): void
+    {
+        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light'])->setValue(null);
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->never())->method('buildViolation');
+
+        $config->validateChoiceValue($context);
+    }
+
+    // An empty list would render an empty select, offering neither a value to pick nor the one already stored
+    public function testSetChoicesStoresAnEmptyListAsNone(): void
+    {
+        $config = (new Config())->setChoices([]);
+
+        $this->assertNull($config->getChoices());
+    }
+
     public function testValidateThemeColorValueAddsViolationForAnInvalidColor(): void
     {
         $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('red; background: url(evil.css)');

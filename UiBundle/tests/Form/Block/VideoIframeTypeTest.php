@@ -36,9 +36,18 @@ class VideoIframeTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['src', 'noCookie', 'title', 'description', 'width', 'height', 'class'] as $field) {
+        foreach (['src', 'noCookie', 'importPoster', 'title', 'description', 'width', 'height', 'class'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the VideoIframe form");
         }
+    }
+
+    // A one-shot action, not a stored preference: VideoPosterImporter clears it once done, so it is never required
+    public function testImportPosterIsAnOptionalSwitch(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertFalse($added['importPoster']['required']);
+        $this->assertSame('checkbox-switch', $added['importPoster']['label_attr']['class']);
     }
 
     public function testTitleAndDescriptionAreOptional(): void

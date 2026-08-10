@@ -124,7 +124,7 @@ class DevProfileRunCommandTest extends TestCase
         $tester = $this->createTester([
             $this->entry('/', 'Accueil'),
             $this->entry('/pages/contact', 'Contact', [
-                ['level' => DevProfileAnalyzer::LEVEL_ERROR, 'area' => 'Doctrine', 'message' => '31 identical queries repeated (n+1)'],
+                ['level' => DevProfileAnalyzer::LEVEL_ERROR, 'area' => 'Doctrine', 'message' => '31 repeats of a same SQL (n+1)'],
             ]),
         ]);
         $tester->execute([]);

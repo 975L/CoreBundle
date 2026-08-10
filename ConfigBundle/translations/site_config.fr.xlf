@@ -2,6 +2,14 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="site_config.fr.xlf">
         <body>
+            <trans-unit id="ZwY3EOi">
+                <source>description.display_hosted_by</source>
+                <target>Ce que le crédit « Hébergé par » affiche dans le pied de page : none, logo, name ou logo-name</target>
+            </trans-unit>
+            <trans-unit id="Ngy_KLc">
+                <source>description.display_made_by</source>
+                <target>Ce que le crédit « Réalisé par » affiche dans le pied de page : none, logo, name ou logo-name</target>
+            </trans-unit>
             <trans-unit id="gzatlgG">
                 <source>description.email_from</source>
                 <target>Adresse email d'envoi des emails, ex. contact@example.com</target>
@@ -134,6 +142,18 @@
                 <source>description.site_health_check_retention_days</source>
                 <target>Nombre de jours d'historique des bilans de santé conservés en base de données. Le dernier résultat de chaque contrôle est toujours conservé, quel que soit son âge. 0 conserve tout l'historique</target>
             </trans-unit>
+            <trans-unit id="QwEr1a7">
+                <source>description.site_hosted_by_logo</source>
+                <target>Chemin ou URL du logo de l'hébergeur</target>
+            </trans-unit>
+            <trans-unit id="rEpsMu0">
+                <source>description.site_hosted_by_name</source>
+                <target>Nom de l'hébergeur, affiché quand le crédit montre un nom</target>
+            </trans-unit>
+            <trans-unit id="aOobf9k">
+                <source>description.site_hosted_by_url</source>
+                <target>URL de l'hébergeur, ex. https://example.com</target>
+            </trans-unit>
             <trans-unit id="8hKkN.f">
                 <source>description.site_hosting_provider</source>
                 <target>Hébergeur du site, affiché dans les mentions légales (HTML autorisé)</target>
@@ -141,6 +161,10 @@
             <trans-unit id="FoJZsKG">
                 <source>description.site_made_by_logo</source>
                 <target>Chemin ou URL du logo du développeur/de l'agence</target>
+            </trans-unit>
+            <trans-unit id="_yCNWMS">
+                <source>description.site_made_by_name</source>
+                <target>Nom du développeur/de l'agence, affiché quand le crédit montre un nom</target>
             </trans-unit>
             <trans-unit id="0vWLzrI">
                 <source>description.site_made_by_url</source>
@@ -197,6 +221,14 @@
             <trans-unit id="hDOR3CX">
                 <source>description.user_roles_available</source>
                 <target>Rôles supplémentaires sélectionnables (en plus de ROLE_USER), tableau JSON, ex. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
+            </trans-unit>
+            <trans-unit id="xVF9T4p">
+                <source>label.display_hosted_by</source>
+                <target>Afficher le crédit « Hébergé par »</target>
+            </trans-unit>
+            <trans-unit id="oosom3.">
+                <source>label.display_made_by</source>
+                <target>Afficher le crédit « Réalisé par »</target>
             </trans-unit>
             <trans-unit id="meevaqA">
                 <source>label.email_from</source>
@@ -330,6 +362,18 @@
                 <source>label.site_health_check_retention_days</source>
                 <target>Rétention du bilan de santé (jours)</target>
             </trans-unit>
+            <trans-unit id="TB6bEAb">
+                <source>label.site_hosted_by_logo</source>
+                <target>Logo de l'hébergeur</target>
+            </trans-unit>
+            <trans-unit id="ho.OAS1">
+                <source>label.site_hosted_by_name</source>
+                <target>Nom de l'hébergeur</target>
+            </trans-unit>
+            <trans-unit id="3RIS25s">
+                <source>label.site_hosted_by_url</source>
+                <target>URL de l'hébergeur</target>
+            </trans-unit>
             <trans-unit id="aCpqS8A">
                 <source>label.site_hosting_provider</source>
                 <target>Hébergeur du site</target>
@@ -337,6 +381,10 @@
             <trans-unit id="dw.E02A">
                 <source>label.site_made_by_logo</source>
                 <target>Logo du réalisateur</target>
+            </trans-unit>
+            <trans-unit id="DS3LnlZ">
+                <source>label.site_made_by_name</source>
+                <target>Nom du réalisateur</target>
             </trans-unit>
             <trans-unit id="E1ZJDYD">
                 <source>label.site_made_by_url</source>

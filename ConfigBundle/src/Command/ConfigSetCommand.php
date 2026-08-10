@@ -259,6 +259,10 @@ class ConfigSetCommand extends Command
             Config::TYPE_INT => preg_match('/^-?\d+$/', $value) ? null : 'expected an integer, got "' . $value . '"',
             Config::TYPE_JSON => null === json_decode($value, true) && JSON_ERROR_NONE !== json_last_error() ? 'expected valid JSON, got "' . $value . '"' : null,
             Config::TYPE_DATE => false !== strtotime($value) ? null : 'expected a date, got "' . $value . '"',
+            // An entry declaring no choice (kind changed by a bundle newer than the last load-all run) accepts anything rather than nothing
+            Config::TYPE_CHOICE => null === $config->getChoices() || in_array($value, $config->getChoices(), true)
+                ? null
+                : 'expected one of ' . implode(', ', $config->getChoices()) . ', got "' . $value . '"',
             default => null,
         };
     }

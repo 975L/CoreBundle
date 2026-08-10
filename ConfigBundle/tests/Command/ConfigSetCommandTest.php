@@ -281,6 +281,43 @@ class ConfigSetCommandTest extends TestCase
         $this->assertSame('-5', $config->getValue());
     }
 
+    // Everything reading a "choice" entry falls back on a default for anything off its list, so a typo set from the console would be invisible until someone wondered why the setting did nothing
+    public function testExecuteFailsOnValueOffTheEntrysChoices(): void
+    {
+        $config = $this->createConfig('theme-mode', 'auto', kind: Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark']);
+
+        $tester = $this->createTester([$config]);
+        $tester->execute(['slug' => 'theme-mode', 'value' => 'darck']);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertSame('auto', $config->getValue());
+        $this->assertStringContainsString('INVALID: theme-mode', $tester->getDisplay());
+        $this->assertStringContainsString('expected one of auto, light, dark', $tester->getDisplay());
+    }
+
+    public function testExecuteSetsAValueOnTheEntrysChoices(): void
+    {
+        $config = $this->createConfig('theme-mode', 'auto', kind: Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark']);
+
+        $tester = $this->createTester([$config]);
+        $tester->execute(['slug' => 'theme-mode', 'value' => 'dark']);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame('dark', $config->getValue());
+    }
+
+    // A kind changed by a bundle newer than the last c975l:config:load-all run declares no choice at all - accepting anything then, rather than nothing
+    public function testExecuteAcceptsAnyValueWhenTheEntryDeclaresNoChoice(): void
+    {
+        $config = $this->createConfig('theme-mode', null, kind: Config::TYPE_CHOICE);
+
+        $tester = $this->createTester([$config]);
+        $tester->execute(['slug' => 'theme-mode', 'value' => 'dark']);
+
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame('dark', $config->getValue());
+    }
+
     public function testExecuteSetsSeveralEntriesFromFile(): void
     {
         $name = $this->createConfig('site-name');

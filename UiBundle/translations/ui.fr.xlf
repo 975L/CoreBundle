@@ -6,6 +6,10 @@
                 <source>action.add_block</source>
                 <target>Ajouter un UiBlock</target>
             </trans-unit>
+            <trans-unit id="PO_UHtX">
+                <source>action.close</source>
+                <target>Fermer</target>
+            </trans-unit>
             <trans-unit id="DYrEVzQ">
                 <source>action.export_selection</source>
                 <target>Exporter la sélection</target>
@@ -97,6 +101,10 @@
             <trans-unit id="nUlFj1t">
                 <source>flash.block_move_failed</source>
                 <target>Le déplacement du bloc a échoué</target>
+            </trans-unit>
+            <trans-unit id="_g8gZAH">
+                <source>flash.block_move_kind_not_allowed</source>
+                <target>Ce type de bloc n'est pas accepté dans ce conteneur</target>
             </trans-unit>
             <trans-unit id="7AVJlDV">
                 <source>flash.block_moved</source>
@@ -462,6 +470,14 @@
                 <source>label.autoplay</source>
                 <target>Lecture automatique</target>
             </trans-unit>
+            <trans-unit id="p1nqHGY">
+                <source>label.back_content</source>
+                <target>Contenu du verso</target>
+            </trans-unit>
+            <trans-unit id="6x7U92I">
+                <source>label.back_title</source>
+                <target>Titre du verso</target>
+            </trans-unit>
             <trans-unit id="1GXuSep">
                 <source>label.back_to_list</source>
                 <target>Retour à la liste</target>
@@ -505,6 +521,14 @@
             <trans-unit id="mrR4xZH">
                 <source>label.block_banner_title_description</source>
                 <target>Titre plein écran sur une image de fond</target>
+            </trans-unit>
+            <trans-unit id="swIuhWM">
+                <source>label.block_block_group</source>
+                <target>Groupe de blocks</target>
+            </trans-unit>
+            <trans-unit id="ZpjJH1Q">
+                <source>label.block_block_group_description</source>
+                <target>Regroupe plusieurs blocks sur une même ligne (ou en pile), sans habillage propre</target>
             </trans-unit>
             <trans-unit id="lWfyux5">
                 <source>label.block_button</source>
@@ -589,6 +613,14 @@
             <trans-unit id="ywC8FXr">
                 <source>label.block_flex_columns_description</source>
                 <target>Titre de section suivi de colonnes flexibles, chacune un block existant au choix</target>
+            </trans-unit>
+            <trans-unit id="UyORTUO">
+                <source>label.block_flip_card</source>
+                <target>Carte recto/verso</target>
+            </trans-unit>
+            <trans-unit id="seLk9VU">
+                <source>label.block_flip_card_description</source>
+                <target>Carte à deux faces retournée par un bouton, titre, image et contenu optionnels de chaque côté</target>
             </trans-unit>
             <trans-unit id="VW1LdXQ">
                 <source>label.block_form</source>
@@ -725,6 +757,14 @@
             <trans-unit id="iXzS_mG">
                 <source>label.block_video_description</source>
                 <target>Lecteur vidéo intégré à partir d'un fichier</target>
+            </trans-unit>
+            <trans-unit id="_aCd97h">
+                <source>label.block_video_grid</source>
+                <target>Grille de vidéos</target>
+            </trans-unit>
+            <trans-unit id="jE1IU6W">
+                <source>label.block_video_grid_description</source>
+                <target>Titre de section suivi d'une grille de blocs Vidéo complets (lecteur, consentement, miniature)</target>
             </trans-unit>
             <trans-unit id="UbocQXH">
                 <source>label.block_video_iframe</source>
@@ -1238,6 +1278,22 @@
                 <source>label.file_name_help</source>
                 <target>Utilisé pour nommer le fichier stocké. Sert aussi de titre à la carte de téléchargement si plusieurs fichiers sont attachés.</target>
             </trans-unit>
+            <trans-unit id="ZpKkgFn">
+                <source>label.flip_card_media_help</source>
+                <target>La première image est celle du recto, la seconde celle du verso</target>
+            </trans-unit>
+            <trans-unit id="yXrP7UX">
+                <source>label.flip_card_ratio_help</source>
+                <target>Libre laisse la carte prendre la hauteur de son contenu ; un ratio lui donne au moins cette forme</target>
+            </trans-unit>
+            <trans-unit id="wn8fWxj">
+                <source>label.flip_card_show_back</source>
+                <target>Voir le verso</target>
+            </trans-unit>
+            <trans-unit id="XdbcfW9">
+                <source>label.flip_card_show_front</source>
+                <target>Voir le recto</target>
+            </trans-unit>
             <trans-unit id="ZbTNTSZ">
                 <source>label.font</source>
                 <target>Police</target>
@@ -1390,6 +1446,14 @@
                 <source>label.friday</source>
                 <target>Vendredi</target>
             </trans-unit>
+            <trans-unit id="b_5dtcO">
+                <source>label.front_content</source>
+                <target>Contenu du recto</target>
+            </trans-unit>
+            <trans-unit id="9ZnYKKB">
+                <source>label.front_title</source>
+                <target>Titre du recto</target>
+            </trans-unit>
             <trans-unit id="3NDFv4Q">
                 <source>label.gallery_showcase_collection</source>
                 <target>Collection</target>
@@ -1413,6 +1477,42 @@
             <trans-unit id="ZgxEnHs">
                 <source>label.gallery_showcase_section_cards_description</source>
                 <target>Une rangée de cartes complètes sous un titre de section, avec son ancre.</target>
+            </trans-unit>
+            <trans-unit id="b_WLGhv">
+                <source>label.group_direction</source>
+                <target>Disposition</target>
+            </trans-unit>
+            <trans-unit id="UQJthTW">
+                <source>label.group_direction_column</source>
+                <target>En pile</target>
+            </trans-unit>
+            <trans-unit id="wWjexhr">
+                <source>label.group_direction_help</source>
+                <target>En ligne, les blocks du groupe se suivent ; en pile, ils se placent les uns sous les autres</target>
+            </trans-unit>
+            <trans-unit id="iWDT2G2">
+                <source>label.group_direction_row</source>
+                <target>En ligne</target>
+            </trans-unit>
+            <trans-unit id="q8T4r7k">
+                <source>label.group_justify</source>
+                <target>Alignement horizontal</target>
+            </trans-unit>
+            <trans-unit id="bDdHGtR">
+                <source>label.group_justify_between</source>
+                <target>Réparti</target>
+            </trans-unit>
+            <trans-unit id="CELQcnz">
+                <source>label.group_justify_center</source>
+                <target>Centré</target>
+            </trans-unit>
+            <trans-unit id="8O0vXbZ">
+                <source>label.group_justify_end</source>
+                <target>À droite</target>
+            </trans-unit>
+            <trans-unit id="xzL.v6f">
+                <source>label.group_justify_start</source>
+                <target>À gauche</target>
             </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
@@ -1524,7 +1624,11 @@
             </trans-unit>
             <trans-unit id="KPqN5C4">
                 <source>label.hero_background_image_help</source>
-                <target>Utilise la première image ajoutée en fond pleine largeur derrière le texte, au lieu de l'afficher à côté.</target>
+                <target>Utilise la première image ajoutée en fond pleine largeur derrière le texte, au lieu de l'afficher à côté. Une vidéo ajoutée est toujours mise en fond, que cette case soit cochée ou non.</target>
+            </trans-unit>
+            <trans-unit id="UzEune3">
+                <source>label.hero_media_help</source>
+                <target>Ajoutez des images, ou une vidéo (MP4, WebM ou OGG) qui remplira alors le fond de la section, muette et en boucle. Elle reste figée sur sa première image pour un visiteur ayant demandé de réduire les animations. Ajoutez une image avec elle : elle s'affichera le temps que la vidéo se charge.</target>
             </trans-unit>
             <trans-unit id="CYanl3o">
                 <source>label.hero_media_layout</source>
@@ -1541,6 +1645,10 @@
             <trans-unit id="qQIbICK">
                 <source>label.hero_media_layout_slideshow</source>
                 <target>Diaporama</target>
+            </trans-unit>
+            <trans-unit id="Vqyb8PD">
+                <source>label.hero_title_help</source>
+                <target>Facultatif : un hero ouvrant sur une vidéo de fond dont les images portent déjà le titre n'affiche aucun titre, plutôt qu'un titre vide.</target>
             </trans-unit>
             <trans-unit id="7uubg0.">
                 <source>label.hero_title_level</source>
@@ -2166,6 +2274,22 @@
                 <source>label.text</source>
                 <target>Texte</target>
             </trans-unit>
+            <trans-unit id="B1Hz9o9">
+                <source>label.text_tone</source>
+                <target>Présentation</target>
+            </trans-unit>
+            <trans-unit id="CEQYbZY">
+                <source>label.text_tone_help</source>
+                <target>« Secondaire » pour un texte placé à côté d'un autre plus fort — le paragraphe qui répond à une accroche dans la colonne voisine : un cran au-dessus du corps de texte, dans une couleur plus discrète.</target>
+            </trans-unit>
+            <trans-unit id="AsnOWPQ">
+                <source>label.text_tone_normal</source>
+                <target>Normale</target>
+            </trans-unit>
+            <trans-unit id="KdrbMcM">
+                <source>label.text_tone_secondary</source>
+                <target>Secondaire</target>
+            </trans-unit>
             <trans-unit id="ZkFsxeA">
                 <source>label.thursday</source>
                 <target>Jeudi</target>
@@ -2206,6 +2330,26 @@
                 <source>label.variant_portfolio</source>
                 <target>Grille portfolio</target>
             </trans-unit>
+            <trans-unit id="M3Bgg9j">
+                <source>label.vertical_align</source>
+                <target>Alignement vertical</target>
+            </trans-unit>
+            <trans-unit id="eBE_c7V">
+                <source>label.vertical_align_bottom</source>
+                <target>Bas</target>
+            </trans-unit>
+            <trans-unit id="be23utf">
+                <source>label.vertical_align_help</source>
+                <target>Comment les colonnes de hauteurs différentes se placent les unes par rapport aux autres. « Milieu » pour deux colonnes qui ne disent qu'une chose à elles deux, « Haut » pour une rangée d'éléments parallèles.</target>
+            </trans-unit>
+            <trans-unit id="TWDYt51">
+                <source>label.vertical_align_middle</source>
+                <target>Milieu</target>
+            </trans-unit>
+            <trans-unit id="VuUmCMC">
+                <source>label.vertical_align_top</source>
+                <target>Haut (par défaut)</target>
+            </trans-unit>
             <trans-unit id="pt4FACS">
                 <source>label.video_file</source>
                 <target>Fichier vidéo</target>
@@ -2221,6 +2365,22 @@
             <trans-unit id="wBwi8fo">
                 <source>label.video_iframe_consent_required</source>
                 <target>Ce contenu est hébergé par un site tiers, qui peut déposer des traceurs : il nécessite votre consentement pour être affiché.</target>
+            </trans-unit>
+            <trans-unit id="DwBDqui">
+                <source>label.video_iframe_media_help</source>
+                <target>Miniature du lecteur. Laissez vide et cochez « Importer la miniature » pour la récupérer depuis la plateforme.</target>
+            </trans-unit>
+            <trans-unit id="iFl9soO">
+                <source>label.video_iframe_play</source>
+                <target>Lire la vidéo</target>
+            </trans-unit>
+            <trans-unit id="6wyDG8X">
+                <source>label.video_import_poster</source>
+                <target>Importer la miniature</target>
+            </trans-unit>
+            <trans-unit id="3fSeLho">
+                <source>label.video_import_poster_help</source>
+                <target>Copie la miniature de la plateforme (YouTube uniquement) dans les fichiers du site, une fois, à l'enregistrement. Recochez pour la remettre à jour.</target>
             </trans-unit>
             <trans-unit id="cXYQ_gN">
                 <source>label.video_media_help</source>

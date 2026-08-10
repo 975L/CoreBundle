@@ -13,9 +13,12 @@ namespace c975L\UiBundle\Tests\Form;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Form\BlockType;
 use c975L\UiBundle\Registry\BlockRegistry;
+use c975L\UiBundle\Service\VideoPosterImporter;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -440,6 +443,47 @@ class BlockTypeTest extends TestCase
         $added = $this->invokeAddKindField($registry, BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT, null);
 
         $this->assertSame(['Column' => 'flex_column'], $added['kind']['choices']['Sections']);
+    }
+
+    // The import sets a Vich file field, which has to be in place before Vich's own prePersist/preUpdate listener runs - hence the form's POST_SUBMIT rather than a Doctrine listener
+    public function testPostSubmitHandsTheSubmittedBlockToThePosterImporter(): void
+    {
+        $block = new Block();
+        $importer = $this->createMock(VideoPosterImporter::class);
+        $importer->expects($this->once())->method('importIfRequested')->with($block);
+
+        $this->dispatchPostSubmit($importer, $block);
+    }
+
+    // Every other POST_SUBMIT payload (a container's slot collection, say) is left alone
+    public function testPostSubmitIgnoresDataThatIsNotABlock(): void
+    {
+        $importer = $this->createMock(VideoPosterImporter::class);
+        $importer->expects($this->never())->method('importIfRequested');
+
+        $this->dispatchPostSubmit($importer, null);
+    }
+
+    // Fires the POST_SUBMIT listener buildForm() registers, with the given submitted data
+    private function dispatchPostSubmit(VideoPosterImporter $importer, mixed $data): void
+    {
+        $listeners = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnSelf();
+        $builder->method('addEventListener')->willReturnCallback(function (string $event, callable $listener) use (&$listeners, $builder) {
+            $listeners[$event][] = $listener;
+
+            return $builder;
+        });
+
+        $type = new BlockType($this->createStub(BlockRegistry::class), $this->createRouter(), null, $importer);
+        $type->buildForm($builder, ['context' => null]);
+
+        $this->assertArrayHasKey(FormEvents::POST_SUBMIT, $listeners);
+
+        foreach ($listeners[FormEvents::POST_SUBMIT] as $listener) {
+            $listener(new PostSubmitEvent($this->createStub(FormInterface::class), $data));
+        }
     }
 
     // Captures the "kind" field the private addKindField() adds, for a given context and already-held kind

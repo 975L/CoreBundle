@@ -47,6 +47,8 @@ class BlockMoveRowAttrBuilder
             'data-block-move-url' => $url,
             'data-block-move-csrf-token' => $this->csrfTokenManager->getToken(self::ROUTE)->getValue(),
             'data-block-move-failed-label' => $this->translator->trans('flash.block_move_failed', [], 'ui'),
+            // The failure is shown in a modal of the sortable's own (see admin-modal.js), which has no other way to label its dismiss button
+            'data-block-move-close-label' => $this->translator->trans('action.close', [], 'ui'),
         ];
     }
 }

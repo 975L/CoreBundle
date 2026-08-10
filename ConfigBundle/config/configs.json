@@ -341,6 +341,74 @@
         "description": "description.site_made_by_url"
     },
     {
+        "label": "label.site_made_by_name",
+        "slug": "site-made-by-name",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "credits",
+        "severity": "info",
+        "description": "description.site_made_by_name"
+    },
+    {
+        "label": "label.site_hosted_by_url",
+        "slug": "site-hosted-by-url",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "credits",
+        "severity": "info",
+        "description": "description.site_hosted_by_url"
+    },
+    {
+        "label": "label.site_hosted_by_logo",
+        "slug": "site-hosted-by-logo",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "credits",
+        "severity": "info",
+        "description": "description.site_hosted_by_logo"
+    },
+    {
+        "label": "label.site_hosted_by_name",
+        "slug": "site-hosted-by-name",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "credits",
+        "severity": "info",
+        "description": "description.site_hosted_by_name"
+    },
+    {
+        "label": "label.display_made_by",
+        "slug": "display-made-by",
+        "sensitive": false,
+        "restricted": false,
+        "value": "logo",
+        "kind": "choice",
+        "choices": ["none", "logo", "name", "logo-name"],
+        "group": "credits",
+        "severity": null,
+        "description": "description.display_made_by"
+    },
+    {
+        "label": "label.display_hosted_by",
+        "slug": "display-hosted-by",
+        "sensitive": false,
+        "restricted": false,
+        "value": "logo",
+        "kind": "choice",
+        "choices": ["none", "logo", "name", "logo-name"],
+        "group": "credits",
+        "severity": null,
+        "description": "description.display_hosted_by"
+    },
+    {
         "label": "label.url_terms_of_use",
         "slug": "url-terms-of-use",
         "sensitive": false,

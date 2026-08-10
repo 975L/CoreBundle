@@ -52,6 +52,30 @@ class FlexColumnWidthMarkupTest extends TestCase
         $this->assertSame(FlexColumnType::WIDTHS, $whitelisted);
     }
 
+    // Same rule as the width above: the alignment comes from stored block data and may only build a class it was
+    // matched against first. "top" is deliberately absent - it is the row's own default and writes nothing, which
+    // is also what every row stored before the field existed renders as
+    public function testTheRowWhitelistsTheStoredAlignmentBeforeBuildingTheClass(): void
+    {
+        $twig = $this->template();
+
+        $this->assertStringContainsString("verticalAlign|default('') in ['middle', 'bottom']", $twig);
+        $this->assertSame(
+            1,
+            substr_count($twig, 'flex-columns--'),
+            sprintf('"%s" writes the flex-columns-- prefix more than once, only the whitelisted set may build it.', self::TEMPLATE)
+        );
+    }
+
+    // A component supporting the option is useless if the block adapter never passes the stored value on
+    public function testTheBlockAdapterPassesTheStoredAlignmentToItsComponent(): void
+    {
+        $path = \dirname(__DIR__, 2) . '/templates/blocks/FlexColumns.html.twig';
+        $this->assertFileExists($path);
+
+        $this->assertStringContainsString('verticalAlign="{{ verticalAlign|default(\'\') }}"', (string) file_get_contents($path));
+    }
+
     // Comments document the mechanism and name the classes, which is not markup
     private function template(): string
     {

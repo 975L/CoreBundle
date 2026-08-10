@@ -101,6 +101,10 @@
 // nothing else
 .card-header,
 h2.card-header {
+    // Family and alignment stated, not inherited: the band holds an <h2> on a card and a <div> on an accordion,
+    // and the theme's own h1-h6 rule would center the first while the second stayed flush left
+    font-family: var(--font-family-title);
+    text-align: start;
     background-color: var(--card-accent, var(--primary));
     color: var(--card-accent-color, var(--white));
     // Same hue as the band above it, so the separator disappears into it - a grey line under an accented

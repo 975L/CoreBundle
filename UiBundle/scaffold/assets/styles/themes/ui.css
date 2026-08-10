@@ -12,6 +12,14 @@
     /* --font-title-weight: normal; */
     /* --font-body-weight: normal; */
 
+    /* Titles and eyebrows keep their own lengths - they are the design's marks, and SiteBundle's
+       --font-size-body must not drag them along - so each is multiplied by the factor of its family.
+       A factor and not one shared size: those lengths are a hierarchy, from a 66px hero title down to
+       a 19px card title, and one value for all of them would flatten it. Raise one when the picked face
+       reads small at the size a wider one reads right, which is a matter of its x-height, not of its size */
+    /* --font-size-title-scale: 1; */
+    /* --font-size-eyebrow-scale: 1; */
+
     /* Measure of the page and of a section's content, plus the gutter keeping it off the viewport edges.
        --section-wrap-max-width defaults to --body-max-width: set it only for sections narrower than the page */
     /* --body-max-width: 1440px; */
@@ -38,8 +46,14 @@
     /* --slider-margin-block: 3em; */
     /* --image-compare-margin-block: 3em; */
 
+    /* What parts two blocks grouped in a "block_group" - the row gap first, which only shows once the group
+       wraps. It is the gap of a footer's own items too, a group being what puts a footer's links on a line */
+    /* --blocks-group-gap: 0.5rem 1.5rem; */
+
     /* The measures of the section-level blocks */
     /* --section-head-max-width: 640px; */
+    /* The step a section's title starts in on, under its own eyebrow - 0 lines the two up */
+    /* --section-head-indent: 32px; */
     /* --hero-text-max-width: 720px; */
     /* --hero-media-max-width: 520px; */
     /* --cta-band-text-max-width: 560px; */
@@ -60,6 +74,9 @@
     /* The opaque plate each mark is read against, so its own colors never mix into the hero background -
        repaint it for marks drawn for a dark ground */
     /* --hero-media-grid-background: #fff; */
+    /* The room a hero opening on a background video gives it: the shot is cropped to the section's height,
+       which would otherwise be that of the text alone. Only read when a video is attached */
+    /* --hero-video-min-height: 70vh; */
 
     /* Text hook - the lead-in phrase of the "text_hook" block and of an article */
     /* --text-hook-size: clamp(17px, 1.7vw, 20px); */
@@ -75,6 +92,12 @@
     /* --text-hook-article-color: var(--section-accent, var(--primary)); */
     /* --text-hook-article-max-width: none; */
     /* --text-hook-article-margin: 24px; */
+
+    /* The "secondary" presentation of the "text_section" block - a section standing beside a louder one,
+       the companion paragraph of a hook in the column next to it, rather than carrying the page on its own */
+    /* --text-section-secondary-size: clamp(17px, 1.5vw, 21px); */
+    /* --text-section-secondary-line-height: 1.7; */
+    /* --text-section-secondary-color: var(--section-text, var(--label-color)); */
 
     /* The three flats a page section can be painted with, when an editor sets its "background" field.
        Only the background is set here: the text, dividers and translucent chips of each variant are mixed

@@ -272,6 +272,48 @@ class ConfigServiceTest extends TestCase
         $this->declarationFiles = [];
     }
 
+    // An entry turning into a choice reaches production as a plain text row already holding an admin-set value: the declared choices land on it, its value does not move
+    public function testLoadDefaultConfigSyncsDeclaredChoicesWithoutTouchingTheStoredValue(): void
+    {
+        $config = $this->createConfig('theme-mode', 'light');
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config));
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'theme-mode', 'label' => 'label.theme_mode', 'value' => 'auto',
+            'kind' => Config::TYPE_CHOICE, 'choices' => ['auto', 'light', 'dark'],
+        ]));
+
+        $this->assertSame(Config::TYPE_CHOICE, $config->getKind());
+        $this->assertSame(['auto', 'light', 'dark'], $config->getChoices());
+        $this->assertSame('light', $config->getValue());
+    }
+
+    // Nothing here rejects a value the declaration no longer offers - the row stays as it is, and it is the admin form/c975l:config:set that says so, once someone edits it
+    public function testLoadDefaultConfigKeepsAStoredValueThatIsNotDeclaredAnymore(): void
+    {
+        $config = $this->createConfig('ui-watermark-position', 'middle-left');
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config));
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'ui-watermark-position', 'label' => 'label.watermark_position',
+            'kind' => Config::TYPE_CHOICE, 'choices' => ['top-left', 'bottom-right'],
+        ]));
+
+        $this->assertSame('middle-left', $config->getValue());
+    }
+
+    public function testLoadDefaultConfigLeavesChoicesEmptyForAnEntryDeclaringNone(): void
+    {
+        $config = $this->createConfig('site-name', 'My site');
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config));
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'site-name', 'label' => 'label.site_name', 'kind' => Config::TYPE_TEXT,
+        ]));
+
+        $this->assertNull($config->getChoices());
+    }
+
     public function testLoadDefaultConfigEncryptsValueWhenEntryBecomesSensitive(): void
     {
         $config = $this->createConfig('api-key', 'plain-secret', isSensitive: false);

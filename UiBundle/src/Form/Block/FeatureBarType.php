@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Form\Block;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Count;
@@ -31,8 +32,19 @@ class FeatureBarType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // No "title" field on this kind - the anchor field must be typed explicitly, no slug fallback
         $this->addAnchorField($builder, $this->anchorSlugger);
+
+        // Both optional: a reassurance band commonly stands on its items alone, and stays headingless then
+        $builder
+            ->add('eyebrow', TextType::class, [
+                'label' => 'label.eyebrow',
+                'required' => false,
+            ])
+            ->add('title', TextType::class, [
+                'label' => 'label.title',
+                'required' => false,
+            ]);
+
         $this->addBackgroundField($builder);
 
         $builder->add('items', CollectionType::class, [

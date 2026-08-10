@@ -76,6 +76,64 @@ img.white {
     border-radius: var(--radius-btn);
 }
 
+// With a poster the box is the still itself, so the padded grey placeholder gives way to it - the ratio and the
+// centering above are what the poster and the play button are then laid out against
+.video-iframe-placeholder--poster {
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    background-color: transparent;
+}
+
+.video-iframe-poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    // cover, not contain: the still is the tile, and it crops off the black bars a 4:3 fallback poster carries
+    // around 16:9 content (see VideoPlatform::posterUrls)
+    object-fit: cover;
+}
+
+// Both stack over the poster rather than beside it
+.video-iframe-placeholder--poster .video-iframe-prompt,
+.video-iframe-play {
+    position: relative;
+}
+
+// Legible whatever the still behind it: a prompt sitting straight on a photo is not
+.video-iframe-placeholder--poster .video-iframe-prompt {
+    padding: 1.5rem;
+    border-radius: var(--radius-btn);
+    background-color: color-mix(in srgb, var(--background) 82%, transparent);
+}
+
+.video-iframe-play {
+    width: 60px;
+    height: 60px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: color-mix(in srgb, var(--primary) 92%, transparent);
+}
+
+// The triangle is drawn rather than typed: a "▶" glyph renders as a full-colour emoji on some platforms and as a
+// hair-thin arrow on others. The button carries its accessible name in its own .sr-only span, so this is decoration
+.video-iframe-play::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    margin: 20px 0 0 24px;
+    border-block: 10px solid transparent;
+    border-inline-start: 17px solid var(--button-color);
+}
+
+.video-iframe-play:hover {
+    background-color: var(--primary);
+}
+
 // Shared by the "video", "video_iframe" and "audio" blocks, all three rendering the same <figure>
 .video-figure,
 .video-iframe-figure,
@@ -83,10 +141,15 @@ img.white {
     margin: 0;
 }
 
+// One look for every block title (see sass/_page-sections.scss): stated rather than left to the theme's own
+// h1-h6 rule, which centers them and paints them --primary where every other title in this bundle reads --text
 .video-title,
 .video-iframe-title,
 .audio-title {
     margin-bottom: 0.5rem;
+    font-family: var(--font-family-title);
+    color: var(--section-text, var(--text));
+    text-align: start;
 }
 
 .video-description,

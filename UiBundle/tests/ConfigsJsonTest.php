@@ -68,6 +68,24 @@ class ConfigsJsonTest extends TestCase
         }
     }
 
+    // A "choice" entry is only worth its kind if it says what it accepts, and if its own default is part of it - the select is built from that list alone (see ConfigCrudController::buildChoiceField)
+    public function testChoiceEntriesDeclareTheValuesTheyAccept(): void
+    {
+        foreach ($this->loadConfigs() as $config) {
+            if ('choice' !== $config['kind']) {
+                continue;
+            }
+
+            $slug = $config['slug'];
+            $this->assertArrayHasKey('choices', $config, sprintf('Config "%s" is a choice but declares no choices', $slug));
+            $this->assertNotSame([], $config['choices'], sprintf('Config "%s" declares an empty choices list', $slug));
+
+            if (null !== $config['value']) {
+                $this->assertContains($config['value'], $config['choices'], sprintf('Default value of "%s" is not one of its choices', $slug));
+            }
+        }
+    }
+
     // Both the label and the description of every entry are translated in each shipped locale
     public function testLabelsAndDescriptionsAreTranslatedInEveryLocale(): void
     {

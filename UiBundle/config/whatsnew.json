@@ -1,5 +1,90 @@
 [
     {
+        "date": "2026-08-10",
+        "description": [
+            {
+                "en": "A new \"Blocks group\" block holds several other blocks together, laid out side by side or one below the other, aligned as you choose - and holds no content of its own: it is there to arrange the blocks dropped into it",
+                "fr": "Un nouveau bloc « Groupe de blocks » réunit plusieurs autres blocks, disposés côte à côte ou les uns sous les autres, alignés à votre choix - et ne porte aucun contenu propre : il est là pour organiser les blocks qu'on y dépose",
+                "es": "Un nuevo bloque «Grupo de blocks» reúne varios bloques más, dispuestos uno al lado de otro o uno debajo de otro, alineados a su elección - y no lleva contenido propio: está ahí para organizar los bloques que se colocan en él"
+            },
+            {
+                "en": "A new \"Flip card\" block holds two faces of one card - a title, an image and a content on each - turned over by a button; the two images are picked together, the first for the front, the second for the back",
+                "fr": "Un nouveau bloc « Carte recto/verso » porte les deux faces d'une même carte - un titre, une image et un contenu de chaque côté - retournée par un bouton : les deux images se choisissent ensemble, la première pour le recto, la seconde pour le verso",
+                "es": "Un nuevo bloque «Tarjeta reversible» contiene las dos caras de una misma tarjeta - un título, una imagen y un contenido en cada una - girada con un botón: las dos imágenes se eligen juntas, la primera para el anverso, la segunda para el reverso"
+            },
+            {
+                "en": "A flip card sways under the mouse to say it can be turned, and takes a ratio - the same list as a slider - which holds its shape open without ever cutting a content longer than it",
+                "fr": "Une carte recto/verso ondule sous la souris pour dire qu'elle peut être retournée, et accepte un ratio - la même liste qu'un diaporama - qui tient sa forme sans jamais couper un contenu plus long qu'elle",
+                "es": "Una tarjeta reversible se balancea bajo el ratón para indicar que puede girarse, y acepta una proporción - la misma lista que un carrusel - que mantiene su forma sin cortar nunca un contenido más largo que ella"
+            },
+            {
+                "en": "A flip card lines up in the same row as the plain cards next to it, and can be dropped into a cards section like any other block",
+                "fr": "Une carte recto/verso s'aligne dans la même rangée que les cartes simples placées à côté d'elle, et se dépose dans une section de cartes comme n'importe quel autre bloc",
+                "es": "Una tarjeta reversible se alinea en la misma fila que las tarjetas simples situadas a su lado, y se coloca en una sección de tarjetas como cualquier otro bloque"
+            },
+            {
+                "en": "A reassurance band can now carry an eyebrow and a title above its items, both optional: typed, it becomes a titled section, left empty it stays the plain band it was",
+                "fr": "Une bande de réassurance peut désormais porter un surtitre et un titre au-dessus de ses points, tous deux facultatifs : renseignés, elle devient une section titrée, laissés vides, elle reste la bande simple qu'elle était",
+                "es": "Una banda de garantías puede ahora llevar un antetítulo y un título encima de sus puntos, ambos opcionales: rellenados, se convierte en una sección titulada; vacíos, sigue siendo la banda simple que era"
+            },
+            {
+                "en": "A new \"Video grid\" block lays several videos out side by side under a section title, each keeping its own player and its own consent prompt",
+                "fr": "Un nouveau bloc « Grille de vidéos » dispose plusieurs vidéos côte à côte sous un titre de section, chacune gardant son propre lecteur et sa propre demande de consentement",
+                "es": "Un nuevo bloque «Cuadrícula de vídeos» dispone varios vídeos uno al lado de otro bajo un título de sección, cada uno conservando su propio reproductor y su propia solicitud de consentimiento"
+            },
+            {
+                "en": "A video from a platform can now show a thumbnail: upload your own image, or tick \"Import thumbnail\" and it is copied once from YouTube into your site's own files",
+                "fr": "Une vidéo issue d'une plateforme peut désormais afficher une miniature : téléversez votre propre image, ou cochez « Importer la miniature » et elle est copiée une fois depuis YouTube dans les fichiers de votre site",
+                "es": "Un vídeo de una plataforma puede ahora mostrar una miniatura: suba su propia imagen, o marque «Importar la miniatura» y se copia una vez desde YouTube a los archivos de su sitio"
+            },
+            {
+                "en": "A video showing a thumbnail now waits for a click before loading its player, so a page holding six of them no longer loads six players as you scroll past",
+                "fr": "Une vidéo affichant une miniature attend désormais un clic avant de charger son lecteur : une page qui en contient six ne charge plus six lecteurs au défilement",
+                "es": "Un vídeo que muestra una miniatura espera ahora un clic antes de cargar su reproductor: una página que contiene seis ya no carga seis reproductores al desplazarse"
+            },
+            {
+                "en": "A hero section can now open on a background video: add a video file to it and it fills the whole section, muted and looping, with your text over it. An image added beside it shows while the video loads, and the video stays still on its first image for a visitor who asked to reduce animations",
+                "fr": "Une section d'accueil peut désormais s'ouvrir sur une vidéo de fond : ajoutez-lui un fichier vidéo et elle remplit toute la section, muette et en boucle, votre texte par-dessus. Une image ajoutée à côté s'affiche le temps que la vidéo se charge, et la vidéo reste figée sur sa première image pour un visiteur ayant demandé de réduire les animations",
+                "es": "Una sección de portada puede ahora abrirse sobre un vídeo de fondo: añádale un archivo de vídeo y llena toda la sección, en silencio y en bucle, con su texto encima. Una imagen añadida junto a él se muestra mientras el vídeo se carga, y el vídeo permanece detenido en su primera imagen para un visitante que ha pedido reducir las animaciones"
+            },
+            {
+                "en": "A hero's title is now optional, for an opening whose video already carries it",
+                "fr": "Le titre d'une section d'accueil est désormais facultatif, pour une ouverture dont la vidéo le porte déjà",
+                "es": "El título de una sección de portada es ahora opcional, para una apertura cuyo vídeo ya lo lleva"
+            },
+            {
+                "en": "A row of columns can now set its columns against each other's middle or bottom, instead of always hanging them from the top",
+                "fr": "Une rangée de colonnes peut désormais aligner ses colonnes sur leur milieu ou sur leur bas, au lieu de toujours les suspendre en haut",
+                "es": "Una fila de columnas puede ahora alinear sus columnas por su centro o por su parte inferior, en lugar de colgarlas siempre desde arriba"
+            },
+            {
+                "en": "Section titles, and the headings of a legal document, now line up with the text they announce instead of floating centred above it",
+                "fr": "Les titres de section, et ceux d'un document légal, s'alignent désormais sur le texte qu'ils annoncent au lieu de flotter centrés au-dessus",
+                "es": "Los títulos de sección, y los de un documento legal, se alinean ahora con el texto que anuncian en lugar de flotar centrados encima"
+            },
+            {
+                "en": "A custom font whose name carries a digit or a space now applies to the site, instead of silently falling back to the browser's own font",
+                "fr": "Une police personnalisée dont le nom contient un chiffre ou une espace s'applique désormais au site, au lieu de retomber silencieusement sur la police du navigateur",
+                "es": "Una fuente personalizada cuyo nombre contiene una cifra o un espacio se aplica ahora al sitio, en lugar de recurrir silenciosamente a la fuente del navegador"
+            },
+            {
+                "en": "A text section now picks how it is presented: normal, the size a section carrying the page on its own is read at, or secondary, a little smaller and quieter, for a section standing beside a louder one",
+                "fr": "Une section de texte choisit désormais sa présentation : normale, la taille à laquelle se lit une section qui porte la page à elle seule, ou secondaire, un peu plus petite et plus discrète, pour une section placée à côté d'une autre plus forte",
+                "es": "Una sección de texto elige ahora su presentación: normal, el tamaño al que se lee una sección que sostiene la página por sí sola, o secundaria, algo más pequeña y discreta, para una sección situada junto a otra más fuerte"
+            },
+            {
+                "en": "When a block cannot be dropped where you dragged it, a proper window now tells you why - that this container does not take that kind of block - instead of a bare browser alert saying only that it failed",
+                "fr": "Quand un block ne peut pas être déposé là où vous l'avez glissé, une vraie fenêtre vous dit désormais pourquoi - que ce conteneur n'accepte pas ce type de block - au lieu d'une simple alerte du navigateur disant seulement que ça a échoué",
+                "es": "Cuando un bloque no puede soltarse donde lo ha arrastrado, una verdadera ventana le dice ahora por qué - que ese contenedor no admite ese tipo de bloque - en lugar de una simple alerta del navegador que solo dice que ha fallado"
+            },
+            {
+                "en": "A menu no longer offers you a group that could hold none of its links: only the group meant for menu items is proposed there",
+                "fr": "Un menu ne vous propose plus un groupe qui ne pourrait recevoir aucun de ses liens : seul le groupe prévu pour les éléments de menu y est proposé",
+                "es": "Un menú ya no le ofrece un grupo que no podría acoger ninguno de sus enlaces: allí solo se propone el grupo previsto para los elementos de menú"
+            }
+        ]
+    },
+    {
         "date": "2026-08-08",
         "description": [
             {

@@ -313,6 +313,53 @@ class BlockRegistryTest extends TestCase
         $this->assertTrue($registry->isAllowedInContext('flex_column', BlockRegistry::SLOT_CONTEXT));
     }
 
+    // A slot context declared by another bundle (SiteBundle's "menu_slot") is a slot context all the same: the depth guard reads them off the registered containers rather than off a list this registry holds
+    public function testIsAllowedInContextGuardsTheDepthOfASatelliteBundlesOwnSlotContext(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register(
+            'menu_group',
+            'label.menu_group',
+            ArticleFormStub::class,
+            'menu_group.html.twig',
+            container: true,
+            contexts: ['menu'],
+            slotContext: 'menu_slot'
+        );
+        $registry->register('card', 'label.card', ArticleFormStub::class, 'card.html.twig');
+
+        $this->assertTrue($registry->isAllowedInContext('card', 'menu_slot'));
+        $this->assertFalse($registry->isAllowedInContext('menu_group', 'menu_slot'));
+    }
+
+    // A menu's own kinds only ever opt into the slot context of the container meant for them, so a generic container picked there would be a group nothing can be put into - offered by the picker, then refusing every drop
+    public function testIsAllowedInContextRejectsAGenericContainerInAMenu(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register('block_group', 'label.block_group', ArticleFormStub::class, 'block_group.html.twig', container: true);
+
+        $this->assertFalse($registry->isAllowedInContext('block_group', BlockRegistry::MENU_CONTEXT));
+    }
+
+    // The container declared for menus keeps its place there, and so does every non-container kind: a footer takes any of them on purpose
+    public function testIsAllowedInContextAllowsTheMenusOwnContainerAndOrdinaryKinds(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register(
+            'menu_group',
+            'label.menu_group',
+            ArticleFormStub::class,
+            'menu_group.html.twig',
+            container: true,
+            contexts: [BlockRegistry::MENU_CONTEXT],
+            slotContext: 'menu_slot'
+        );
+        $registry->register('card', 'label.card', ArticleFormStub::class, 'card.html.twig');
+
+        $this->assertTrue($registry->isAllowedInContext('menu_group', BlockRegistry::MENU_CONTEXT));
+        $this->assertTrue($registry->isAllowedInContext('card', BlockRegistry::MENU_CONTEXT));
+    }
+
     public function testIsAllowedInContextRejectsANonPickableKindEvenOutsideAnySlotContext(): void
     {
         $registry = new BlockRegistry($this->createTranslator());

@@ -24,4 +24,10 @@ final readonly class ResolvedVideo
     {
         return $this->platform->embedUrl($this->id, $this->carriedParams);
     }
+
+    // Empty for every platform serving no guessable still - which is also how a caller knows not to offer the import at all (see VideoIframeType)
+    public function posterUrls(): array
+    {
+        return $this->platform->posterUrls($this->id);
+    }
 }
