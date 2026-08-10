@@ -274,4 +274,17 @@ a.ea-sidebar-item-link[target=_blank]::after {
   cursor: default;
 }
 
+/* FAILED MESSAGES TABLE (management/messenger_failed_index.html.twig) */
+.failed-message-cell {
+  max-width: 12rem;
+}
+
+.failed-message-cell-wide {
+  max-width: 18rem;
+}
+
+.failed-message-cell-group {
+  max-width: 32rem;
+}
+
 /*# sourceMappingURL=management.css.map */

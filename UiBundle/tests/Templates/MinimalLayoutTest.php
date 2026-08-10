@@ -93,6 +93,15 @@ class MinimalLayoutTest extends TestCase
         $this->assertSame('noindex, follow', $twig->render('robots', ['status_code' => 404]));
     }
 
+    // A nonce present on a directive makes 'unsafe-inline' a no-op for it, so style-src has to be nonced on every page or not at all: nonced only where an inline <style> is rendered, it would drop a site's own inline styles on those pages alone and leave them working everywhere else
+    public function testStyleSrcIsNoncedOnEveryPage(): void
+    {
+        $layout = $this->layout();
+
+        $this->assertMatchesRegularExpression("/\{% set \w+ = csp_nonce\('style'\) %\}/", $layout, 'The layout no longer nonces style-src, so it is nonced only on the pages rendering an inline style element.');
+        $this->assertLessThan(strpos($layout, '</head>'), strpos($layout, "csp_nonce('style')"), 'The style nonce is called after the head, where the stylesheets it governs have already been linked.');
+    }
+
     // csp_nonce() is NelmioSecurityBundle's own Twig function: with that bundle merely suggested, an app running Config+Ui alone - the exact audience for this layout - got "Unknown csp_nonce function" on every single page. Moving it back out of "require" is what this locks
     public function testTheCspNonceProviderIsARealDependency(): void
     {

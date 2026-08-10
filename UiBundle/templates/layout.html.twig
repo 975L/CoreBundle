@@ -33,6 +33,9 @@
                 {# Turbo reads this to nonce the inline tags it re-executes, which the CSP would otherwise block #}
                 <meta name="csp-nonce" content="{{ csp_nonce('script') }}">
 
+                {# Nonces style-src on every page of this layout, not only on the ones rendering an inline <style> (the Banner component, say): a nonce present on a directive disables 'unsafe-inline' for it, so a rule varying page by page would break inline styles on those pages alone. The value itself is unused here, the call is what adds the nonce to the directive #}
+                {% set styleNonce = csp_nonce('style') %}
+
                 {# "noindex, follow" on every error page: "status_code" is only ever set by Symfony's error renderer, and a 404/500 rendered with this layout would otherwise inherit the "index, follow" default and invite search engines to index it #}
                 <meta name="robots" content="{{ robots|default(status_code is defined and status_code >= 400 ? 'noindex, follow' : 'index, follow') }}">
 

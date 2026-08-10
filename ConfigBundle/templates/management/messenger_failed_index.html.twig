@@ -28,7 +28,7 @@
                     {% for group in groups %}
                         <tr>
                             <td>
-                                <div class="text-break" style="max-width: 32rem;" title="{{ group.message }}">{{ group.message|linkify }}</div>
+                                <div class="text-break failed-message-cell-group" title="{{ group.message }}">{{ group.message|linkify }}</div>
                             </td>
                             <td>{{ group.count }}</td>
                             <td>
@@ -74,20 +74,20 @@
                         <tr>
                             <td class="text-nowrap">{{ message.createdAt|date('Y-m-d H:i') }}</td>
                             <td>
-                                <div class="text-break" style="max-width: 12rem;" title="{{ message.from }}">{{ message.from ?? '-' }}</div>
+                                <div class="text-break failed-message-cell" title="{{ message.from }}">{{ message.from ?? '-' }}</div>
                             </td>
                             <td>
-                                <div class="text-break" style="max-width: 12rem;" title="{{ message.to }}">{{ message.to ?? '-' }}</div>
+                                <div class="text-break failed-message-cell" title="{{ message.to }}">{{ message.to ?? '-' }}</div>
                             </td>
                             <td>
-                                <div class="text-break" style="max-width: 12rem;" title="{{ message.subject }}">{{ message.subject ?? '-' }}</div>
+                                <div class="text-break failed-message-cell" title="{{ message.subject }}">{{ message.subject ?? '-' }}</div>
                             </td>
                             <td>
-                                <div class="text-break" style="max-width: 18rem;" title="{{ message.exceptionMessage }}">{{ message.exceptionMessage|default('-')|linkify }}</div>
+                                <div class="text-break failed-message-cell-wide" title="{{ message.exceptionMessage }}">{{ message.exceptionMessage|default('-')|linkify }}</div>
                             </td>
                             <td>{{ message.exceptionCode ?? '-' }}</td>
                             <td>
-                                <div class="text-break" style="max-width: 12rem;" title="{{ message.exceptionClass }}">{{ message.exceptionClass ?? '-' }}</div>
+                                <div class="text-break failed-message-cell" title="{{ message.exceptionClass }}">{{ message.exceptionClass ?? '-' }}</div>
                             </td>
                             <td>{{ message.retryCount }}</td>
                             <td>{{ message.originalTransport ?? '-' }}</td>

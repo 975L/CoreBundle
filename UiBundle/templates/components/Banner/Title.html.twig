@@ -3,10 +3,17 @@
 {% set imgSrc = src is defined and src ? asset(src) : '' %}
 
 {% set styles = [] %}
-{% if imgSrc %}{% set styles = styles|merge(["background-image:url('" ~ imgSrc ~ "')"]) %}{% endif %}
-{% if maxHeight is defined and maxHeight %}{% set styles = styles|merge(['max-height:' ~ maxHeight ~ 'px']) %}{% endif %}
-
-<div class="banner-title"{% if styles %} style="{{ styles|join(';') }}"{% endif %}{% if alt is defined and alt %} role="img" aria-label="{{ alt }}"{% endif %}>
+{% if imgSrc %}{% set styles = styles|merge(["background-image:url('" ~ imgSrc|e('css') ~ "')"]) %}{% endif %}
+{% if maxHeight is defined and maxHeight %}{% set styles = styles|merge(['max-height:' ~ maxHeight|e('css') ~ 'px']) %}{% endif %}
+{% set bannerId = 'banner-title-' ~ random(100000, 999999) %}
+{# The image and the height belong to the instance: no class can carry them, and a style="" attribute is
+   never authorized by a nonce - only a <style> element is (the same reason as assets/js/nonced-style-element.js
+   on the JS side). The values are escaped for CSS then output raw: the HTML autoescape would turn the
+   apostrophes into entities, which the browser does not decode here #}
+{%- if styles %}
+<style nonce="{{ csp_nonce('style') }}">#{{ bannerId }} { {{ styles|join(';')|raw }} }</style>
+{%- endif %}
+<div{% if styles %} id="{{ bannerId }}"{% endif %} class="banner-title"{% if alt is defined and alt %} role="img" aria-label="{{ alt }}"{% endif %}>
     <div class="banner-title-overlay">
         <{{ level }} class="banner-title-text">{{ title }}</{{ level }}>
     </div>

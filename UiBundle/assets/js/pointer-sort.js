@@ -23,7 +23,7 @@ let active = null;
 // Options: "item" is the element to drag (or a function receiving the pointerdown event and returning it), "touch" set to false restricts the zone to the mouse, "ignore" is a selector a pointerdown inside of never starts a drag from, and "onStart"/"onMove"/"onDrop"/"onCancel" are the caller's four hooks - none of them ever fires for a gesture that stayed under the threshold.
 export function addSortGesture(zone, options) {
     // Without this the browser claims the gesture for panning as soon as a finger moves and no pointermove ever reaches us. Only on zones that accept touch: one covering a whole row header would otherwise make the page unscrollable from everywhere that header sits.
-    if (false !== options.touch) zone.style.touchAction = 'none';
+    if (false !== options.touch) zone.classList.add('ui-sort-zone-touch');
 
     zone.addEventListener('pointerdown', event => onPointerDown(event, options));
 }
@@ -75,8 +75,7 @@ function begin() {
     active.item.classList.add('ui-dragging');
 
     // Taken out of hit-testing the way a native drag image was: a caller asking what sits under the pointer would otherwise always be answered the dragged element itself, or a collection nested inside it, instead of what it is being dropped onto
-    active.item.style.pointerEvents = 'none';
-    document.body.style.userSelect = 'none';
+    document.body.classList.add('ui-dragging-body');
 
     active.options.onStart?.(active.item);
     active.frame = requestAnimationFrame(autoScroll);
@@ -125,8 +124,7 @@ function finish(cancelled) {
     if (!started) return;
 
     item.classList.remove('ui-dragging');
-    item.style.pointerEvents = '';
-    document.body.style.userSelect = '';
+    document.body.classList.remove('ui-dragging-body');
     suppressNextClick();
 
     if (cancelled) options.onCancel?.(item);

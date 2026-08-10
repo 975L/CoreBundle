@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-11",
+        "description": [
+            {
+                "en": "On a site protected by a strict security policy, the back-office was quietly losing part of its look: the highlight on a block being moved, the alignment of a row's buttons, the preview of a picture just picked. All of it shows again",
+                "fr": "Sur un site protégé par une politique de sécurité stricte, l'administration perdait discrètement une partie de son apparence : la mise en évidence d'un block en cours de déplacement, l'alignement des boutons d'une ligne, l'aperçu d'une image tout juste choisie. Tout cela s'affiche de nouveau",
+                "es": "En un sitio protegido por una política de seguridad estricta, la administración perdía discretamente parte de su aspecto: el resaltado de un bloque que se está moviendo, la alineación de los botones de una fila, la vista previa de una imagen recién elegida. Todo ello se muestra de nuevo"
+            },
+            {
+                "en": "On those same sites, a banner's background image and its height are applied again, instead of the banner showing bare",
+                "fr": "Sur ces mêmes sites, l'image de fond d'une bannière et sa hauteur s'appliquent de nouveau, au lieu que la bannière s'affiche nue",
+                "es": "En esos mismos sitios, la imagen de fondo de un banner y su altura se aplican de nuevo, en lugar de mostrarse el banner desnudo"
+            }
+        ]
+    },
+    {
         "date": "2026-08-10",
         "description": [
             {

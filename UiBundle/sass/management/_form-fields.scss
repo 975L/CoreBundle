@@ -1,0 +1,17 @@
+/* FORM FIELDS (assets/js/form-field-template.js, plus .ui-field-locked for the scripts consuming it) */
+
+// These rules used to be written from JS as element.style.x: EasyAdmin's layout calls csp_nonce('style'),
+// which makes 'unsafe-inline' a no-op on style-src, and a nonce never covers an inline style written
+// from JS. A class to toggle is the only form that survives
+.ui-form-field-template-picker {
+    display: inline-block;
+    width: auto;
+    margin-left: .5rem;
+}
+
+// A neutralized form row: a shared utility, used by SiteBundle for the sitemap fields a checkbox locks
+// (assets/js/sitemap-fields.js)
+.ui-field-locked {
+    pointer-events: none;
+    opacity: .5;
+}

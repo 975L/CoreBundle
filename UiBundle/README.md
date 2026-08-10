@@ -27,7 +27,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 
 - **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
 - **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails)
-- **Styling** — [automatic CSS injection](#automatic-css-injection) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
+- **Styling** — [automatic CSS injection](#automatic-css-injection) · [no inline styles](#no-inline-styles) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections) · [confirming a title change that rewrites a slug](#confirming-a-title-change-that-rewrites-a-slug)
 - **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
@@ -1573,7 +1573,7 @@ Wraps [`vanilla-cookieconsent`](https://cookieconsent.orestbida.com/) v3 (MIT), 
 
 **The component carries its own guard**: it renders nothing unless `site-enable-cookie-consent` is on, so a layout includes it unconditionally. `url-cookies-policy` (optional) links the banner to your cookies page.
 
-Deliberately binary — one non-essential category (`content`), two buttons (accept/reject), no preferences panel to build or maintain. That single category is what the [`video_iframe`](#video-blocks) block waits on before creating its real iframe.
+Deliberately binary — one non-essential category (`content`), two buttons (accept/reject), no preferences panel to build or maintain. That single category is what the [`video_iframe`](#videoiframe-consent-gated-third-party-embeds) block waits on before creating its real iframe.
 
 ---
 
@@ -1788,11 +1788,24 @@ Call `bundle_stylesheets()` in the `stylesheets` block of your layout:
 
 Local paths are resolved to absolute versioned URLs via Symfony's asset package. CDN URLs (starting with `http`) are returned as-is.
 
+### No inline styles
+
+`templates/layout.html.twig` calls `csp_nonce('style')` on every page, and EasyAdmin's own layout does the same on every management page. From CSP2 on, a directive carrying a nonce ignores `'unsafe-inline'` altogether — so a `style="..."` attribute, and any rule a script writes onto an element (`el.style.top = …`, `el.style.cssText = …`, `el.setAttribute('style', …)`), is dropped by the browser. Silently, on the sites that have a CSP, and nowhere else.
+
+Nothing in this bundle's front and management templates carries one any more, and no script writes one. Two forms are authorized in their place:
+
+- **A class**, for anything that isn't computed at render time — that is, nearly everything. `sass/management/_block-collection.scss` and `sass/management/_form-fields.scss` hold the rules the back-office scripts used to write themselves.
+- **A `<style>` element carrying the nonce**, for a value only the instance knows. In Twig, the pattern is `components/Banner/Title.html.twig`: an id on the element, the rule next to it, the value run through `|e('css')`. In JS, `assets/js/nonced-style-element.js` builds that element (ES modules never populate `document.currentScript`, so it copies the nonce off any nonce'd element the page already carries) — `assets/js/block-edit-overlay.js` uses it to place a button on measured coordinates.
+
+Emails are the exception and keep their inline styles: no CSP applies to them, and mail clients strip everything else.
+
+A site's own templates are subject to the same rule as soon as they render from this layout — see [UPGRADE.md](../UPGRADE.md).
+
 ---
 
 ## Automatic CSS injection for EasyAdmin management pages
 
-Same idea as above, but for CSS that should only load on the EasyAdmin dashboard (e.g. `/management`), not on the public site. Keep using plain `style="..."` attributes for one-off, low-value cases (a single `margin: 0` isn't worth an extra HTTP request) — reach for this mechanism when a management template accumulates real, reusable CSS (see `templates/management/media_index.html.twig` for an example).
+Same idea as above, but for CSS that should only load on the EasyAdmin dashboard (e.g. `/management`), not on the public site. Reach for it as soon as a management template or script needs any styling at all — a single `margin: 0` included, `style="..."` no longer being an option there either (see [No inline styles](#no-inline-styles)). See `templates/management/media_index.html.twig` for an example.
 
 ### How it works
 

@@ -26,7 +26,6 @@ document.addEventListener('change', event => {
     if (!preview) {
         preview = document.createElement('img');
         preview.className = 'ui-media-preview';
-        preview.style.cssText = 'display:block;max-width:200px;max-height:200px;margin-bottom:.5rem;';
         wrapper.prepend(preview);
     }
 

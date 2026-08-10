@@ -20,14 +20,6 @@
     background-color: rgba(13, 110, 253, 0.06);
 }
 
-// At the finger, the move handle is the only place a row can be picked up from (ea-sortable.js keeps the rest of the header to the mouse, a touchable header being a header the page can no longer be scrolled from), and the bare icon is well under a comfortable touch target. "!important" because the padding it widens is an inline one, written by block-toolbar.js to line every row action up with EasyAdmin's own delete button.
-@media (pointer: coarse) {
-    .ui-sort-handle {
-        padding-block: .5rem !important;
-        padding-inline: .75rem !important;
-    }
-}
-
 // EasyAdmin lays out every field of a collection entry as flex items (the column wrapper of its own form_row, then a 20% label + a "flex: 1" .form-widget), and a flex item defaults to "min-width: auto" - it can never shrink below its content. The block kind picker is a <select> whose intrinsic width is that of its longest option label ("Colonnes flexibles (Titre de section...)"), so each nesting level of blocks-in-blocks renders wider than the box holding it and the deepest one spills out of the panel. Letting those items shrink to 0 is what keeps a nested block inside its parent.
 .form-group.field-collection .accordion-body > .row > div,
 .form-group.field-collection .accordion-item .form-widget {
@@ -38,4 +30,94 @@
 .form-group.field-collection .accordion-item .form-widget .form-select,
 .form-group.field-collection .accordion-item .form-widget .form-control {
     max-inline-size: 100%;
+}
+
+/* STYLES THAT USED TO BE WRITTEN FROM JS (block-toolbar.js, ea-sortable.js, media-preview.js) */
+
+// EasyAdmin's layout calls csp_nonce('style'), which makes 'unsafe-inline' a no-op on style-src: no
+// nonce ever covers a style written from JS, and a class is the only form that survives
+.ui-row-header-flex {
+    display: flex;
+    align-items: center;
+}
+
+.ui-row-toolbar {
+    display: flex;
+    align-items: center;
+    gap: .125rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+// EasyAdmin's own delete button, moved into the toolbar: put back in the flow so order and gap place it
+.ui-row-toolbar .field-collection-delete-button {
+    order: 3;
+    margin: 0;
+    position: static;
+    padding: 0 .25rem;
+}
+
+.ui-toolbar-btn {
+    flex-shrink: 0;
+    padding: 0 .25rem;
+    // Fallback for a button whose order has no --order-* class of its own: it sits in the middle of the
+    // bar rather than in front of the handle, where the default 0 would put it
+    order: 2;
+}
+
+// order: 1 on the left (the handle), 2 in the middle (duplicate), 3 the delete (see block-toolbar.js)
+.ui-toolbar-btn--order-1 { order: 1; }
+.ui-toolbar-btn--order-2 { order: 2; }
+.ui-toolbar-btn--order-3 { order: 3; }
+
+.ui-sort-handle,
+.ui-sort-grabbable {
+    cursor: grab;
+}
+
+// A row being dragged (ea-sortable.js)
+.ui-dragging-visual {
+    opacity: .4;
+    box-shadow: 0 0 0 2px var(--bs-primary, #0d6efd);
+}
+
+// The delete button hidden on a restricted row (ea-sortable.js, applyRestriction)
+.ui-hidden {
+    display: none;
+}
+
+// The preview thumbnail of a picked media (media-preview.js)
+.ui-media-preview {
+    display: block;
+    max-width: 200px;
+    max-height: 200px;
+    margin-bottom: .5rem;
+}
+
+// A touch-enabled grab zone: without touch-action the browser claims the gesture and not one
+// pointermove ever reaches us (pointer-sort.js)
+.ui-sort-zone-touch {
+    touch-action: none;
+}
+
+// The element being dragged: taken out of hit-testing so that what sits under the pointer is the drop
+// target and not itself, the way a native drag image was
+.ui-dragging {
+    pointer-events: none;
+}
+
+// Text selection neutralized for the duration of the drag
+.ui-dragging-body {
+    user-select: none;
+}
+
+// At the finger, the handle is the only place a row can be picked up from (ea-sortable.js keeps the
+// rest of the header to the mouse, a touchable header being a header the page can no longer be
+// scrolled from), and the bare icon is well under a comfortable touch target. Declared at the end of
+// the file to win on the cascade over .ui-toolbar-btn's padding, at equal specificity
+@media (pointer: coarse) {
+    .ui-sort-handle {
+        padding-block: .5rem;
+        padding-inline: .75rem;
+    }
 }

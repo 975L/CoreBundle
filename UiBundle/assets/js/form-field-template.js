@@ -23,10 +23,9 @@ export default class extends Controller {
         if (!addButton) return;
 
         const select = document.createElement('select');
+        // Styling carried by .ui-form-field-template-picker (sass/management/_form-fields.scss): a style
+        // written from JS is never authorized by the nonce EasyAdmin's layout puts on style-src
         select.className = 'form-select ui-form-field-template-picker';
-        select.style.display = 'inline-block';
-        select.style.width = 'auto';
-        select.style.marginLeft = '.5rem';
 
         const placeholder = document.createElement('option');
         placeholder.value = '';

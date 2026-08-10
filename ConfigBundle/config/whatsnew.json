@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-11",
+        "description": [
+            {
+                "en": "The page your visitors see while the site is under maintenance keeps its look on a site protected by a strict security policy, instead of showing as bare text at the very moment the site is down",
+                "fr": "La page que voient vos visiteurs pendant une maintenance garde son apparence sur un site protégé par une politique de sécurité stricte, au lieu de s'afficher en texte brut au moment même où le site est coupé",
+                "es": "La página que ven sus visitantes durante un mantenimiento conserva su aspecto en un sitio protegido por una política de seguridad estricta, en lugar de mostrarse como texto sin formato en el momento mismo en que el sitio está caído"
+            },
+            {
+                "en": "In the failed-messages screen, a long message or a long error no longer stretches the table past the width of the screen",
+                "fr": "Dans l'écran des messages en échec, un message ou une erreur de grande longueur n'étire plus le tableau au-delà de la largeur de l'écran",
+                "es": "En la pantalla de mensajes fallidos, un mensaje o un error muy largo ya no estira la tabla más allá del ancho de la pantalla"
+            }
+        ]
+    },
+    {
         "date": "2026-08-10",
         "description": [
             {

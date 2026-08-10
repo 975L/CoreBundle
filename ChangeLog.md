@@ -1,5 +1,39 @@
 # ChangeLog
 
+## v1.7.0
+
+The layout nonces style-src, and every inline style gives way
+
+### ConfigBundle
+
+- The maintenance page nonces its `<style>`, under a guard for a site with no `csp:` section (11/08/2026)
+- The failed-message table truncates its cells by class instead of `style=""` (11/08/2026)
+- Added `.failed-message-cell`, `.failed-message-cell-wide` and `.failed-message-cell-group` (11/08/2026)
+- Added `MaintenancePageStyleTest` and `FailedMessagesCellWidthTest` (11/08/2026)
+
+### UiBundle
+
+- `layout.html.twig` calls `csp_nonce('style')` on every page, so `style-src` is nonced uniformly (11/08/2026) [BC-Break]
+- `Banner:Title` writes its image and its height into a nonce'd `<style>` addressing its own id (11/08/2026)
+- Those values are escaped for CSS rather than for HTML, an entity reaching a stylesheet undecoded (11/08/2026)
+- `block-edit-overlay.js` writes its measured coordinates into a nonce'd `<style>` (11/08/2026)
+- That sheet and its rule are dropped on disconnect, so a reconnect builds its own (11/08/2026)
+- `block-toolbar.js` places its buttons by class instead of an inline `order` (11/08/2026)
+- `ea-sortable.js` marks a dragged row, a grab zone and a hidden delete button by class (11/08/2026)
+- `pointer-sort.js` carries its `touch-action` and its hit-testing opt-out by class (11/08/2026)
+- `media-preview.js` and `form-field-template.js` drop their inline styling for a class (11/08/2026)
+- `legal_model_customize.html.twig` spaces its action row by class (11/08/2026)
+- Added `sass/management/_form-fields.scss` and `sass/management/_legal-model.scss` (11/08/2026)
+- Added `.ui-field-locked`, the shared rule a consumer bundle's locked field wears (11/08/2026)
+- The rules those scripts used to write moved into `sass/management/_block-collection.scss` (11/08/2026)
+- The coarse-pointer handle drops its `!important`, the padding it widens being a class now (11/08/2026)
+- Added `NoncedStyleSrcTest`, `BannerTitleStyleTest` and `BlockToolbarOrderTest` (11/08/2026)
+- `MinimalLayoutTest` covers `style-src` being nonced on every page (11/08/2026)
+- `PointerSortTest` reads its classes off the compiled stylesheets (11/08/2026)
+- README documents the rule and the two forms a nonce authorizes (11/08/2026)
+- The cookie banner's link to the `video_iframe` section points at a heading that exists (11/08/2026)
+- UPGRADE.md documents what a site's own templates and scripts have to change (11/08/2026)
+
 ## v1.6.1
 
 A config file left unloaded now fails the run

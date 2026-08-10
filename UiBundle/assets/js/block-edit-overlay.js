@@ -6,6 +6,7 @@
  * with this source code in the file LICENSE.
  */
 import { Controller } from "@hotwired/stimulus";
+import { createNoncedStyleElement } from "./nonced-style-element.js";
 
 // One floating button shared by every editable block: the wrappers are display:contents and can't host it
 export default class extends Controller {
@@ -41,6 +42,10 @@ export default class extends Controller {
             return;
         }
         window.blockEditOverlayController = null;
+        this.positionStyle?.remove();
+        this.positionStyle = null;
+        // Dropped along with its sheet, so a later connect() builds a new element rather than mutating a detached rule
+        this.positionRule = null;
 
         document.removeEventListener("mouseover", this.onMouseOver);
         document.removeEventListener("mouseout", this.onMouseOut);
@@ -138,8 +143,17 @@ export default class extends Controller {
     position(target) {
         // The wrapper is display:contents and measures as a zero rect, so its rendered child is measured instead
         const rect = (target.firstElementChild || target).getBoundingClientRect();
-        this.button.style.top = `${Math.max(rect.top, 0) + 8}px`;
+
+        // Measured coordinates can't be carried by a class, and a style written from JS onto the element is never covered by a nonce, so they go into a nonce'd <style> - the only inline form a nonce authorizes
+        if (!this.positionRule) {
+            this.positionStyle = createNoncedStyleElement();
+            this.positionStyle.sheet.insertRule(".block-edit-overlay-btn{top:0;left:0}", 0);
+            this.positionRule = this.positionStyle.sheet.cssRules[0];
+        }
+
+        // The rule is mutated through the CSSOM rather than rewritten: this runs on every scroll event, and rewriting textContent would re-parse the sheet each time. The <style> element stays the same one, so the nonce still covers it
         // The block's right edge; CSS translateX(-100%) right-aligns the varying label width
-        this.button.style.left = `${rect.right - 8}px`;
+        this.positionRule.style.setProperty("top", `${Math.max(rect.top, 0) + 8}px`);
+        this.positionRule.style.setProperty("left", `${rect.right - 8}px`);
     }
 }

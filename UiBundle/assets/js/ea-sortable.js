@@ -55,8 +55,7 @@ export default class extends Controller {
         this.dragOriginContainer = item.parentElement;
         this.dragOriginNextSibling = item.nextElementSibling;
 
-        item.style.opacity = '0.4';
-        item.style.boxShadow = '0 0 0 2px var(--bs-primary,#0d6efd)';
+        item.classList.add('ui-dragging-visual');
 
         if (this.isBlockCollectionField(this.dragOriginField)) this.highlightDropTargets(this.dragOriginField);
     }
@@ -106,8 +105,7 @@ export default class extends Controller {
     }
 
     clearDragStyle(item) {
-        item.style.opacity = '';
-        item.style.boxShadow = '';
+        item.classList.remove('ui-dragging-visual');
     }
 
     clearDrag() {
@@ -156,7 +154,6 @@ export default class extends Controller {
         if (!btn) return;
 
         btn.classList.add('ui-sort-handle');
-        btn.style.cursor = 'grab';
 
         const gesture = {
             item,
@@ -171,7 +168,7 @@ export default class extends Controller {
         // The mouse alone, though: offering the whole bar to a finger takes "touch-action: none" over all of it, and the page would stop scrolling from everywhere a block header sits. At the finger the handle above is the one grab point, which is why it gets a bigger hit area there (see sass/management/_block-collection.scss).
         const header = item.querySelector('.accordion-header');
         if (header) {
-            header.style.cursor = 'grab';
+            header.classList.add('ui-sort-grabbable');
             addSortGesture(header, { ...gesture, touch: false, ignore: '.ui-row-toolbar' });
         }
     }
@@ -182,7 +179,7 @@ export default class extends Controller {
         if (!marker?.checked) return;
 
         const deleteButton = item.querySelector('.field-collection-delete-button');
-        if (deleteButton) deleteButton.style.display = 'none';
+        if (deleteButton) deleteButton.classList.add('ui-hidden');
     }
 
     dragAfter(field, y) {

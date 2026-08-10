@@ -31,16 +31,18 @@ class PointerSortTest extends TestCase
         $this->assertDoesNotMatchRegularExpression('/addEventListener\([\'"]drag/', $js, 'The native drag API is back, and touch browsers do not fire it.');
     }
 
-    // Without it the browser claims the gesture for panning and not one pointermove ever arrives
+    // Without it the browser claims the gesture for panning and not one pointermove ever arrives. Carried by a class, not by an inline style: EasyAdmin's layout puts a nonce on style-src, which makes 'unsafe-inline' a no-op, and a nonce never authorizes a style written from JS
     public function testTouchZonesGiveUpBrowserPanning(): void
     {
-        $this->assertStringContainsString("style.touchAction = 'none'", $this->js('pointer-sort.js'), 'A touch-enabled zone no longer opts out of panning, so a finger scrolls the page instead of dragging.');
+        $this->assertStringContainsString("classList.add('ui-sort-zone-touch')", $this->js('pointer-sort.js'), 'A touch-enabled zone no longer opts out of panning, so a finger scrolls the page instead of dragging.');
+        $this->assertStringContainsString('.ui-sort-zone-touch{touch-action:none;}', $this->css('/public/css/management.css'), 'The class is set but nothing declares touch-action, so the finger still pans the page.');
     }
 
-    // A native drag image was transparent to hit-testing; the dragged row itself is not, and would answer every "what sits under the pointer" with itself or with a collection nested inside it
+    // A native drag image was transparent to hit-testing; the dragged row itself is not, and would answer every "what sits under the pointer" with itself or with a collection nested inside it. Declared on .ui-dragging, the class the gesture already toggles, for the same nonce reason as above
     public function testDraggedElementIsTakenOutOfHitTesting(): void
     {
-        $this->assertStringContainsString("style.pointerEvents = 'none'", $this->js('pointer-sort.js'), 'The dragged element still takes hits, so it is dropped onto itself.');
+        $this->assertStringContainsString("classList.add('ui-dragging')", $this->js('pointer-sort.js'), 'The dragged element no longer carries the class its styling hangs on.');
+        $this->assertStringContainsString('.ui-dragging{pointer-events:none;}', $this->css('/public/css/management.css'), 'The dragged element still takes hits, so it is dropped onto itself.');
     }
 
     // The browser scrolled the page near the viewport edges on its own during a native drag; a collection taller than the screen is otherwise only sortable as far as the screen shows
@@ -84,7 +86,11 @@ class PointerSortTest extends TestCase
             $css = $this->css($file);
 
             $this->assertMatchesRegularExpression('/@media ?\(pointer:coarse\)/', $css, $file . ' has no coarse-pointer rule at all.');
-            $this->assertMatchesRegularExpression('/\.ui-sort-handle\{padding-block:0?\.5rem !important;padding-inline:0?\.75rem !important;?\}/', $css, $file . ' no longer widens the move handle for a finger.');
+            $this->assertMatchesRegularExpression('/\.ui-sort-handle\{padding-block:0?\.5rem;padding-inline:0?\.75rem;?\}/', $css, $file . ' no longer widens the move handle for a finger.');
+
+            // Nothing but the declaration order makes it win: .ui-toolbar-btn sets the padding of every toolbar button at the very same specificity, so moving the coarse-pointer block back above it would silently drop the touch target without breaking the assertion above
+            $handle = (int) preg_match('/@media ?\(pointer:coarse\)/', $css, $matches, PREG_OFFSET_CAPTURE) ? $matches[0][1] : -1;
+            $this->assertGreaterThan(strpos($css, '.ui-toolbar-btn{'), $handle, $file . ' declares the coarse-pointer rule before .ui-toolbar-btn, whose padding then wins on the cascade.');
         }
     }
 

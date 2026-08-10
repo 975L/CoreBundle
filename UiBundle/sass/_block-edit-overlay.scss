@@ -11,6 +11,8 @@
     display: contents;
 }
 
+// The coordinates are written by block-edit-overlay.js into a nonce'd <style>, a style written from JS
+// onto the element never being authorized by a nonce (see assets/js/nonced-style-element.js)
 .block-edit-overlay-btn {
     position: fixed;
     z-index: 1000;

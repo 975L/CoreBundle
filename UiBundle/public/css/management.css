@@ -184,12 +184,6 @@
   background-color: rgba(13, 110, 253, 0.06);
 }
 
-@media (pointer: coarse) {
-  .ui-sort-handle {
-    padding-block: 0.5rem !important;
-    padding-inline: 0.75rem !important;
-  }
-}
 .form-group.field-collection .accordion-body > .row > div,
 .form-group.field-collection .accordion-item .form-widget {
   min-inline-size: 0;
@@ -198,6 +192,101 @@
 .form-group.field-collection .accordion-item .form-widget .form-select,
 .form-group.field-collection .accordion-item .form-widget .form-control {
   max-inline-size: 100%;
+}
+
+/* STYLES THAT USED TO BE WRITTEN FROM JS (block-toolbar.js, ea-sortable.js, media-preview.js) */
+.ui-row-header-flex {
+  display: flex;
+  align-items: center;
+}
+
+.ui-row-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.ui-row-toolbar .field-collection-delete-button {
+  order: 3;
+  margin: 0;
+  position: static;
+  padding: 0 0.25rem;
+}
+
+.ui-toolbar-btn {
+  flex-shrink: 0;
+  padding: 0 0.25rem;
+  order: 2;
+}
+
+.ui-toolbar-btn--order-1 {
+  order: 1;
+}
+
+.ui-toolbar-btn--order-2 {
+  order: 2;
+}
+
+.ui-toolbar-btn--order-3 {
+  order: 3;
+}
+
+.ui-sort-handle,
+.ui-sort-grabbable {
+  cursor: grab;
+}
+
+.ui-dragging-visual {
+  opacity: 0.4;
+  box-shadow: 0 0 0 2px var(--bs-primary, #0d6efd);
+}
+
+.ui-hidden {
+  display: none;
+}
+
+.ui-media-preview {
+  display: block;
+  max-width: 200px;
+  max-height: 200px;
+  margin-bottom: 0.5rem;
+}
+
+.ui-sort-zone-touch {
+  touch-action: none;
+}
+
+.ui-dragging {
+  pointer-events: none;
+}
+
+.ui-dragging-body {
+  user-select: none;
+}
+
+@media (pointer: coarse) {
+  .ui-sort-handle {
+    padding-block: 0.5rem;
+    padding-inline: 0.75rem;
+  }
+}
+/* LEGAL MODEL (management/legal_model_customize.html.twig) - spacing of the action row */
+.legal-model-row-actions {
+  gap: 1rem;
+}
+
+/* FORM FIELDS (assets/js/form-field-template.js, plus .ui-field-locked for the scripts consuming it) */
+.ui-form-field-template-picker {
+  display: inline-block;
+  width: auto;
+  margin-left: 0.5rem;
+}
+
+.ui-field-locked {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /*# sourceMappingURL=management.css.map */

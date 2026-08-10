@@ -1,5 +1,44 @@
 # UPGRADE
 
+## From `v1.6` to `v1.7`
+
+### The front layout now nonces `style-src`, so a theme's `style=""` stops being applied
+
+`UiBundle/templates/layout.html.twig` calls `csp_nonce('style')` on every page it renders. In CSP2 and
+above, a directive carrying a nonce ignores `'unsafe-inline'` altogether, so every inline style served by
+a site using this layout is now dropped by the browser unless it carries that same nonce: `style=""`
+attributes in the site's own templates, and inline styles written by third-party scripts.
+
+The bundles' own front templates no longer hold a single `style=""` attribute, so nothing inside them
+changes. What has to be checked is the site's own templates and any embedded widget.
+
+On each site:
+
+```bash
+grep -rn 'style="' templates/
+```
+
+Each hit moves to a class in the site's stylesheet. Where the value is computed at render time — a
+background image, a width — the pattern used by the bundles is a `<style>` element carrying the nonce:
+
+```twig
+<style nonce="{{ csp_nonce('style') }}">#{{ elementId }} { background-image: url('{{ url }}'); }</style>
+```
+
+The site's own scripts are subject to the same rule, a nonce authorizing an element and never an
+attribute — so `el.style.top = …`, `el.style.cssText = …` and `el.setAttribute('style', …)` stop being
+applied too:
+
+```bash
+grep -rn '\.style\.\|setAttribute(.style.' assets/
+```
+
+Each hit becomes a class the script toggles. For a value only the runtime knows — a measured position —
+`UiBundle`'s `assets/js/nonced-style-element.js` builds a nonce'd `<style>` to write it into, and
+`assets/js/block-edit-overlay.js` shows the pattern.
+
+A site rendering from its own layout rather than `UiBundle`'s is unaffected until it makes the same call.
+
 ## From `v1.5` to `v1.6`
 
 ### A config whose value is a fixed list is now picked, not typed
