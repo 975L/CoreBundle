@@ -16,26 +16,26 @@ class UserTest extends TestCase
 
     public function testGetRolesDoesNotDuplicateRoleUser(): void
     {
-        $user = (new User())->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
+        $user = new User()->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
 
         $this->assertSame(['ROLE_ADMIN', 'ROLE_USER'], array_values($user->getRoles()));
     }
 
     public function testGetUserIdentifierReturnsEmail(): void
     {
-        $user = (new User())->setEmail('user@example.test');
+        $user = new User()->setEmail('user@example.test');
 
         $this->assertSame('user@example.test', $user->getUserIdentifier());
     }
 
     public function testGetUserIdentifierReturnsEmptyStringWhenEmailIsNull(): void
     {
-        $this->assertSame('', (new User())->getUserIdentifier());
+        $this->assertSame('', new User()->getUserIdentifier());
     }
 
     public function testSerializeHashesPasswordInsteadOfStoringItInClear(): void
     {
-        $user = (new User())->setPassword('$argon2id$hashedPassword');
+        $user = new User()->setPassword('$argon2id$hashedPassword');
 
         $data = $user->__serialize();
 

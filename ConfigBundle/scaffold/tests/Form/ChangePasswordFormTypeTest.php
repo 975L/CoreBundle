@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Validation;
 class ChangePasswordFormTypeTest extends TypeTestCase
 {
     // Uses a real validator so the Length constraint is actually exercised, but with NotCompromisedPassword disabled to avoid a real HTTP call to the haveibeenpwned API during tests.
+    #[\Override]
     protected function getExtensions(): array
     {
         $validator = Validation::createValidatorBuilder()

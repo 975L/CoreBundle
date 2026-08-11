@@ -21,7 +21,7 @@ class MaintenanceScheduleTest extends TestCase
     {
         $cache = $this->createStub(CacheInterface::class);
 
-        $schedule = (new MaintenanceSchedule($this->createBuilder(), $cache))->getSchedule();
+        $schedule = new MaintenanceSchedule($this->createBuilder(), $cache)->getSchedule();
 
         $this->assertInstanceOf(Schedule::class, $schedule);
         $this->assertSame($cache, $schedule->getState());
@@ -39,7 +39,7 @@ class MaintenanceScheduleTest extends TestCase
     // The declared cadence is drawn per site rather than fixed, so this site's own minute is whatever ScheduleSpreader gave it - only the shape can be asserted
     public function testTheCadenceIsSpreadOverThisSitesOwnMinute(): void
     {
-        $schedule = (new MaintenanceSchedule($this->createBuilder(), $this->createStub(CacheInterface::class)))->getSchedule();
+        $schedule = new MaintenanceSchedule($this->createBuilder(), $this->createStub(CacheInterface::class))->getSchedule();
 
         $trigger = (string) array_values($schedule->getRecurringMessages())[0]->getTrigger();
 

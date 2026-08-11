@@ -35,7 +35,7 @@ class RegisterFormAction implements FormActionInterface, RequiresAnonymousInterf
             return true;
         }
 
-        $user = (new User())->setEmail($submittedData['email']);
+        $user = new User()->setEmail($submittedData['email']);
 
         return $this->userRegistrar->register(
             $user,

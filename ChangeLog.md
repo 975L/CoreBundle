@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.8.4
+
+The scaffold writes PHP 8.4, dropping the parentheses around `new`
+
+### ConfigBundle
+
+- `new User()`, `new Schedule()`, `new UserChecker()` and `new MaintenanceSchedule()` are chained without wrapping parentheses (11/08/2026)
+- The scaffold's promoted constructor properties are `readonly` (11/08/2026)
+- `ChangePasswordFormTypeTest::getExtensions()` carries `#[\Override]` (11/08/2026)
+
 ## v1.8.3
 
 White ink stays white on a dark ground, whatever the color mode

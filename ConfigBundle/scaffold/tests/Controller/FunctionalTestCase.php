@@ -25,7 +25,7 @@ abstract class FunctionalTestCase extends WebTestCase
         // Cast because ConfigServiceInterface::get() returns mixed, which would leave the roles array untyped
         $adminRole = (string) $container->get(ConfigServiceInterface::class)->get('site-role-admin');
 
-        $user = (new User())
+        $user = new User()
             ->setEmail('functional-tests@example.test')
             ->setPassword('not-used')
             ->setRoles(array_values(array_unique([$adminRole, ...$extraRoles])))

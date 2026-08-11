@@ -117,7 +117,7 @@ class ResetPasswordRequestFormActionTest extends TestCase
         $emailService->expects($this->once())->method('send');
 
         $action = new ResetPasswordRequestFormAction(
-            $this->createEntityManager((new User())->setEmail('someone@example.test')),
+            $this->createEntityManager(new User()->setEmail('someone@example.test')),
             $resetPasswordHelper,
             $emailService,
             $this->createEmailTemplateRenderer(),
@@ -138,7 +138,7 @@ class ResetPasswordRequestFormActionTest extends TestCase
         $emailService->expects($this->never())->method('send');
 
         $action = new ResetPasswordRequestFormAction(
-            $this->createEntityManager((new User())->setEmail('someone@example.test')),
+            $this->createEntityManager(new User()->setEmail('someone@example.test')),
             $resetPasswordHelper,
             $emailService,
             $this->createEmailTemplateRenderer(null),
