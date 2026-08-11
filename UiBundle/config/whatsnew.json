@@ -41,6 +41,21 @@
                 "en": "The site's colors and fonts are shown filled in with what the site actually uses, instead of seven empty fields",
                 "fr": "Les couleurs et les polices du site s'affichent renseignées avec ce que le site utilise réellement, au lieu de sept champs vides",
                 "es": "Los colores y las tipografías del sitio se muestran rellenados con lo que el sitio usa realmente, en lugar de siete campos vacíos"
+            },
+            {
+                "en": "A banner's height is picked from a short list - automatic, small, medium, large - instead of being typed in pixels, and a title too long for the height picked is given the room it needs rather than being cut off. A banner that had a height in pixels goes back to automatic, so re-pick one on those",
+                "fr": "La hauteur d'une bannière se choisit dans une courte liste - automatique, petite, moyenne, grande - au lieu d'être saisie en pixels, et un titre trop long pour la hauteur choisie obtient la place qu'il lui faut au lieu d'être coupé. Une bannière qui avait une hauteur en pixels revient à automatique : il faut y rechoisir une hauteur",
+                "es": "La altura de un banner se elige de una lista corta - automática, pequeña, mediana, grande - en lugar de escribirse en píxeles, y un título demasiado largo para la altura elegida obtiene el espacio que necesita en lugar de quedar cortado. Un banner que tenía una altura en píxeles vuelve a automática: hay que volver a elegir una altura"
+            },
+            {
+                "en": "A page made of blocks no longer breaks when its editing buttons cannot be prepared: the page shows as usual, simply without them",
+                "fr": "Une page composée de blocks ne tombe plus en erreur lorsque ses boutons de modification ne peuvent pas être préparés : la page s'affiche normalement, simplement sans eux",
+                "es": "Una página compuesta de bloques ya no falla cuando sus botones de edición no se pueden preparar: la página se muestra con normalidad, simplemente sin ellos"
+            },
+            {
+                "en": "Typing in a rich-text field stays responsive on a page holding many of them, where each keystroke used to take longer than the one before",
+                "fr": "La saisie dans un champ de texte enrichi reste fluide sur une page qui en compte beaucoup, là où chaque frappe mettait plus de temps que la précédente",
+                "es": "Escribir en un campo de texto enriquecido sigue siendo fluido en una página que tiene muchos, donde cada pulsación tardaba más que la anterior"
             }
         ]
     },

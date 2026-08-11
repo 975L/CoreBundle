@@ -14,18 +14,42 @@
     width: 100vw;
     margin-left: -50vw;
     margin-right: -50vw;
-    // Keeps the next block off the banner, which the full-bleed breakout would otherwise sit flush against
-    margin-bottom: 3em;
+    // The shared rhythm of _page-sections.scss, on the top edge only: a block owns the room above it and declares nothing below, so any two blocks are parted by exactly one step - the one the next block declares, which under a banner is that block's own padding-top. A gap here too was added to it and parted that pair by two.
+    // A margin and not the padding those sections carry their step as: the picture fills the whole banner and would be painted over a padding, which then parts nothing at all - the same reason .feature-bar carries its own step as a margin.
+    // The tight step, as .text-section: a banner commonly opens a page, right under the navbar, where the full step reads as a hole. Read through the same token, so a site retuning its rhythm from theme.css moves the banner along with everything else
+    margin-block-start: var(--section-space-tight, clamp(24px, 4vw, 48px));
+    margin-block-end: 0;
     min-height: 200px;
     overflow: hidden;
     display: flex;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
-// Fixed dark overlay so the title stays readable regardless of the uploaded background image
+// The three steps BannerTitleType offers, each raising the floor above to one of the heights defaulted in sass/_tokens.scss. A floor and not a ceiling: what an editor asks for here is a banner of that height, and a cap would sit under a title long enough to need the room, cropping it - the overlay is centered, so it would lose a line at each end. A banner left on "automatic" declares none of them and keeps the 200px above, which is what every banner rendered before this field existed already had.
+// Written out rather than looped over the three step names: an interpolated var(--banner-title-height-#{$step}) reads as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
+.banner-title--height-small {
+    min-height: var(--banner-title-height-small);
+}
+.banner-title--height-medium {
+    min-height: var(--banner-title-height-medium);
+}
+.banner-title--height-large {
+    min-height: var(--banner-title-height-large);
+}
+
+// The picture the block holds, laid over the whole banner and cropped exactly as the background-image it replaces was. An element rather than a background: the url is a per-instance value no class can carry, which under a nonced style-src took a <style> element the HTML spec allows nowhere but the <head> (see templates/components/Banner/Title.html.twig)
+.banner-title-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+// Fixed dark overlay so the title stays readable regardless of the uploaded background image.
+// Positioned, so it paints over the picture: that one is out of flow and would otherwise cover the title, being painted after everything still in it
 .banner-title-overlay {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -15,53 +15,59 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;
 
-// The banner's image and height are per-instance and no class can carry them, so they go into a <style> element - the only inline form a nonce ever authorizes, an attribute never being one. The nonce itself is not written here: this markup is cached verbatim by BlockExtension, which swaps the "data-ui-nonce" marker for the nonce of the response being built (see BlockExtension::applyNonce), a real one frozen into a cache entry matching nothing afterwards. What each assertion locks is that the values still reach the page, and that they reach it in that form
+// The banner writes no CSS of its own at all: the picture is an element carrying its own src, and the height is one of three steps naming a class. What it used to write was a <style> element - the only inline form a nonce ever authorizes, an attribute never being one - and the HTML spec allows that element nowhere but the <head>, which a block rendered mid-page cannot reach. What each assertion locks is that both values still reach the page, and that they reach it in that form
 class BannerTitleStyleTest extends TestCase
 {
-    // The rule and the element it addresses are written in the same render, so an id drifting from its selector would leave the banner with no image at all
-    public function testTheBannerIsStyledByAMarkedElementAddressingItsOwnId(): void
+    // A <style> anywhere in this markup is invalid HTML wherever the block is dropped, the element being metadata content
+    public function testTheBannerWritesNoStyleElementAndNoStyleAttribute(): void
     {
-        $html = $this->render(['title' => 'Un titre', 'src' => 'img/banner.jpg']);
+        $html = $this->render(['title' => 'Un titre', 'src' => 'img/banner.jpg', 'height' => 'medium']);
 
-        $this->assertSame(1, preg_match('/<style data-ui-nonce>#(banner-title-\d+) \{ ([^}]+) \}<\/style>/', $html, $matches), 'The banner no longer carries its style element.');
-        $this->assertStringContainsString('id="' . $matches[1] . '"', $html, 'The rule addresses an id the banner does not carry.');
-        $this->assertStringContainsString('background-image:url(', $matches[2]);
+        $this->assertStringNotContainsString('<style', $html, 'The banner writes a style element again, which is invalid outside the <head>.');
+        $this->assertStringNotContainsString('style="', $html, 'The banner writes its styling as an attribute, which a nonced style-src drops.');
     }
 
-    // A nonce authorizes an element, never an attribute: a style="" here would be dropped by the browser on every site whose layout nonces style-src
-    public function testTheBannerCarriesNoStyleAttribute(): void
+    // The picture is what the block holds, so it is an <img> carrying its own alt - where a background had to be described through the role="img"/aria-label the banner used to wear
+    public function testThePictureIsAnImageElementCarryingItsOwnAlt(): void
     {
-        $html = $this->render(['title' => 'Un titre', 'src' => 'img/banner.jpg', 'maxHeight' => 320]);
+        $html = $this->render(['title' => 'Un titre', 'src' => 'img/banner.jpg', 'alt' => 'Un paysage']);
 
-        $this->assertStringNotContainsString('style="', $html, 'The banner writes its styling as an attribute again, which a nonced style-src drops.');
+        $this->assertStringContainsString('<img src="/build/img/banner.jpg" alt="Un paysage" class="banner-title-img">', $html);
+        $this->assertStringNotContainsString('role="img"', $html);
+        $this->assertStringNotContainsString('aria-label', $html);
     }
 
-    // Both values share the one element, the height being as per-instance as the image
-    public function testTheMaxHeightIsWrittenInThatSameRule(): void
+    // Decorative rather than undescribed: an alt is what tells a screen reader to skip the picture, and its absence what makes it announce the file name instead
+    public function testAPictureWithNoAltIsStillGivenAnEmptyOne(): void
     {
-        $html = $this->render(['title' => 'Un titre', 'src' => 'img/banner.jpg', 'maxHeight' => 320]);
-
-        $this->assertSame(1, preg_match_all('/<style /', $html), 'The banner emits more than one style element.');
-        $this->assertStringContainsString('max-height:320px', $html);
+        $this->assertStringContainsString('alt=""', $this->render(['title' => 'Un titre', 'src' => 'img/banner.jpg']));
     }
 
-    // Escaped for CSS, not for HTML: the apostrophe closing the url() is what a path could break the rule out of, and an entity would reach the browser undecoded inside a stylesheet
-    public function testTheImagePathIsEscapedForCss(): void
+    // The height names a class off a closed list, so nothing an editor stores against the block ever writes CSS
+    public function testTheHeightIsOneOfThreeStepsWrittenAsAClass(): void
     {
-        $html = $this->render(['title' => 'Un titre', 'src' => "img/a'b.jpg"]);
-
-        $this->assertStringContainsString('\27 ', $html, 'The apostrophe is no longer CSS-escaped, so a path can close the url() and write its own declarations.');
-        $this->assertStringNotContainsString('&#039;', $html, 'The value is HTML-escaped, and a stylesheet does not decode entities.');
+        foreach (['small', 'medium', 'large'] as $step) {
+            $html = $this->render(['title' => 'Un titre', 'height' => $step]);
+            $this->assertStringContainsString('class="banner-title banner-title--height-' . $step . '"', $html);
+        }
     }
 
-    // Nothing to declare, nothing to address: a banner with neither image nor height gets no element and no id
-    public function testABareBannerEmitsNoStyleElementAndNoId(): void
+    // A value off the list is a value the stylesheet knows nothing about: it names no class rather than writing one of its own - a banner stored back when this field took a pixel value lands here
+    public function testAValueOutsideTheListNamesNoClassAtAll(): void
+    {
+        foreach (['320', 'small; color:red', ''] as $stored) {
+            $html = $this->render(['title' => 'Un titre', 'height' => $stored]);
+            $this->assertStringNotContainsString('banner-title--height', $html, sprintf('"%s" wrote a class of its own.', $stored));
+        }
+    }
+
+    // Nothing to show: a banner with neither picture nor height is the overlay and its title, and nothing else
+    public function testABareBannerCarriesNeitherImageNorHeightClass(): void
     {
         $html = $this->render(['title' => 'Un titre']);
 
-        $this->assertStringNotContainsString('<style', $html);
-        $this->assertStringNotContainsString('id="banner-title-', $html);
-        $this->assertStringContainsString('<div class="banner-title">', $html);
+        $this->assertStringNotContainsString('<img', $html);
+        $this->assertStringContainsString('class="banner-title "', $html);
     }
 
     // "asset" comes from the app and is not booted here; "csp_nonce" is deliberately absent, the template no longer calling it

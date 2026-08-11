@@ -15,6 +15,9 @@
     --alert-success-background: #d0e9c6;
     --alert-warning-background: #f9dba7;
     --background: var(--c975l-color-background, #fff);
+    --banner-title-height-large: 520px;
+    --banner-title-height-medium: 360px;
+    --banner-title-height-small: 240px;
     --black: #000;
     --block-accent-blue: #2b5d8a;
     --block-accent-cyan: #2e7c9a;
@@ -234,16 +237,36 @@
   width: 100vw;
   margin-left: -50vw;
   margin-right: -50vw;
-  margin-bottom: 3em;
+  margin-block-start: var(--section-space-tight, clamp(24px, 4vw, 48px));
+  margin-block-end: 0;
   min-height: 200px;
   overflow: hidden;
   display: flex;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+}
+
+.banner-title--height-small {
+  min-height: var(--banner-title-height-small);
+}
+
+.banner-title--height-medium {
+  min-height: var(--banner-title-height-medium);
+}
+
+.banner-title--height-large {
+  min-height: var(--banner-title-height-large);
+}
+
+.banner-title-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .banner-title-overlay {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -903,7 +926,7 @@ label[for=contact_form_username],
   border-radius: var(--block-radius, var(--flip-card-radius));
   background-color: var(--flip-card-front-background);
   box-shadow: var(--block-shadow, var(--box-shadow));
-  padding-bottom: 1em;
+  padding-bottom: 0.5em;
   text-align: start;
 }
 
@@ -917,7 +940,7 @@ label[for=contact_form_username],
   font-weight: var(--font-title-weight);
   color: var(--flip-card-accent, var(--primary));
   text-align: center;
-  margin: 0.5rem auto;
+  margin: 0.25rem auto;
   padding: 0 0.5em;
 }
 
@@ -958,7 +981,7 @@ label[for=contact_form_username],
 
 .flip-card-media {
   width: min(70vw, var(--flip-card-media-max-width));
-  margin: 1rem auto;
+  margin: 0.5rem auto;
 }
 
 .flip-card-img {

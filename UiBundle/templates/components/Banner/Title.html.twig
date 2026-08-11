@@ -1,17 +1,11 @@
-{# <twig:c975LUi:Banner:Title title="Title" [level="h2"] [src="your-path/file.ext"] [alt=""] [maxHeight=""]/> #}
-{# Rendered through render_block() only, so through its own block kind: the <style> below carries a nonce marker that BlockExtension alone substitutes, and calling the component directly ships that marker inert - the style-src then rejects the element, and the image and the height with it #}
+{# <twig:c975LUi:Banner:Title title="Title" [level="h2"] [src="your-path/file.ext"] [alt=""] [height="small|medium|large"]/> #}
 {% set level = level|default('h2') %}
 {% set imgSrc = src is defined and src ? asset(src) : '' %}
-
-{% set styles = [] %}
-{% if imgSrc %}{% set styles = styles|merge(["background-image:url('" ~ imgSrc|e('css') ~ "')"]) %}{% endif %}
-{% if maxHeight is defined and maxHeight %}{% set styles = styles|merge(['max-height:' ~ maxHeight|e('css') ~ 'px']) %}{% endif %}
-{% set bannerId = 'banner-title-' ~ random(100000, 999999) %}
-{# The image and the height belong to the instance: no class can carry them, and a style="" attribute is never authorized by a nonce - only a <style> element is (the same reason as assets/js/nonced-style-element.js on the JS side). The values are escaped for CSS then output raw: the HTML autoescape would turn the apostrophes into entities, which the browser does not decode here. "data-ui-nonce" rather than the nonce itself: this markup is cached verbatim by BlockExtension, which swaps the marker for the nonce of the response actually being built (see BlockExtension::applyNonce) #}
-{%- if styles %}
-<style data-ui-nonce>#{{ bannerId }} { {{ styles|join(';')|raw }} }</style>
-{%- endif %}
-<div{% if styles %} id="{{ bannerId }}"{% endif %} class="banner-title"{% if alt is defined and alt %} role="img" aria-label="{{ alt }}"{% endif %}>
+{# Matched against the closed list, not interpolated: the value comes from stored block data and must not write any class name (same rule as the flip card's ratio). Empty declares none, and the banner keeps the floor the stylesheet sets. See BannerTitleType::HEIGHT_CHOICES, whose values these are #}
+{% set heightClass = height|default('') in ['small', 'medium', 'large'] ? 'banner-title--height-' ~ height : '' %}
+<div class="banner-title {{ heightClass }}">
+    {# A real image rather than a background: the picture is what the block holds, so it carries its own alt instead of the role="img"/aria-label a background has to be described through - and being per-instance, a background url is a value no class can carry, which under a nonced style-src took a <style> element the HTML spec allows nowhere but the <head>. Laid over the whole banner and cropped exactly as that background was (see sass/_banner-title.scss) #}
+    {% if imgSrc %}<img src="{{ imgSrc }}" alt="{{ alt|default('') }}" class="banner-title-img">{% endif %}
     <div class="banner-title-overlay">
         <{{ level }} class="banner-title-text">{{ title }}</{{ level }}>
     </div>

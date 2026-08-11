@@ -1,5 +1,33 @@
 # ChangeLog
 
+## v1.8.1
+
+The banner writes no CSS: its picture is an image, its height a step
+
+### UiBundle
+
+- `banner_title` paints its picture as an `<img>` instead of a `background-image` (11/08/2026) [BC-Break]
+- The picture carries the media's own `alt`, replacing the `role="img"`/`aria-label` the banner wore (11/08/2026)
+- Its height is one of three steps, on top of the "automatic" default it keeps (11/08/2026) [BC-Break]
+- A step raises the banner's floor and caps nothing: a title needing more room gets it (11/08/2026)
+- The field is `height` where it was `maxHeight`, so a stored pixel value renders as "automatic" (11/08/2026)
+- Added `BannerTitleType::HEIGHT_CHOICES` (11/08/2026)
+- Added `--banner-title-height-small`, `--banner-title-height-medium` and `--banner-title-height-large` (11/08/2026)
+- No block template writes a `<style>` element any more, invalid anywhere but the `<head>` (11/08/2026)
+- `banner_title` takes its step from `--section-space-tight`, on its top edge only (11/08/2026)
+- `BlockEditUrlRegistry` skips a provider that throws, where it used to 500 the page holding the blocks (11/08/2026)
+- The `banner_title` fixture seeds a step, where it seeded the pixel value the field no longer takes (11/08/2026)
+- `BannerTitleLayoutTest` locks each height step to a rule and the picture laid over the banner (11/08/2026)
+- `BlockFixtureProviderTest` locks the banner fixture to a key and a value the FormType still has (11/08/2026)
+- `BannerTitleStyleTest` locks the markup carrying neither a `<style>` element nor a `style` attribute (11/08/2026)
+- UPGRADE.md documents the step, the picture and the pixel values left unmigrated (11/08/2026)
+- README says the flip card's fold is undone by `@media (scripting: none)`, not a `<noscript>` (11/08/2026)
+- README lists `banner_title` among the kinds reading the tight step, and carrying it as a margin (11/08/2026)
+- A flip card's face, title and illustration are spaced tighter, the values coming back from a site (11/08/2026)
+- A Trix editor keeps its `trix-change` to itself, EasyAdmin rebuilding a form-wide tracker on each one (11/08/2026)
+- It re-runs the validity of its own required field instead, the one thing those handlers did for it (11/08/2026)
+- Added `TrixEditorChangeScopeTest`, locking the scope and the validity it takes over (11/08/2026)
+
 ## v1.8.0
 
 The flip card divorces the card, and both pick their own surface
@@ -31,7 +59,8 @@ The flip card divorces the card, and both pick their own surface
 - A list on a face clears `list-style` whole, SiteBundle pointing every `ul` at an image (11/08/2026)
 - `FlipCardAccessibilityTest` locks the title-as-control, its focus ring and the `.card` divorce (11/08/2026)
 - The fold is the stylesheet's own: the card is painted in shape instead of flashing both faces (11/08/2026)
-- A `<noscript>` undoes it for a browser running no JS, where the toggles never appear (11/08/2026)
+- `@media (scripting: none)` undoes it for a browser running no JS, where the toggles never appear (11/08/2026)
+- Said from the stylesheet rather than from a `<style>` in a `<noscript>`, invalid outside the `<head>` (11/08/2026)
 - The illustration takes the card's own ratio instead of a fixed 3/2 (11/08/2026)
 - `flip_card`'s edit form groups its fields into a "Recto" and a "Verso" fieldset (11/08/2026)
 - A FormType groups its fields through `row_attr`'s `data-block-fieldset`, any kind may (11/08/2026)

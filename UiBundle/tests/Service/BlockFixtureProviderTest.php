@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\UiBundle\Contract\PlaceholderMediaProviderInterface;
+use c975L\UiBundle\Form\Block\BannerTitleType;
 use c975L\UiBundle\Registry\PlaceholderMediaRegistry;
 use c975L\UiBundle\Service\BlockFixtureProvider;
 use PHPUnit\Framework\TestCase;
@@ -25,6 +26,15 @@ class BlockFixtureProviderTest extends TestCase
             ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'flip_card', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band', 'legal_model'],
             array_keys($fixtures)
         );
+    }
+
+    // A fixture is stored block data like any other: a key the FormType has since renamed, or a height off the step list, seeds a demo banner standing at the plain floor
+    public function testBannerTitleFixtureStandsOnOneOfTheSteps(): void
+    {
+        $fixtures = (new BlockFixtureProvider())->getFixtures();
+
+        $this->assertSame(['title', 'level', 'height'], array_keys($fixtures['banner_title']['']));
+        $this->assertContains($fixtures['banner_title']['']['height'], BannerTitleType::HEIGHT_CHOICES);
     }
 
     // "audio" carries no file nor format: both are auto-attached generically by BlockFixtureMediaAttacher (any "audio/*" mediaType), so the fixture only needs the player's own display fields

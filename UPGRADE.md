@@ -27,6 +27,31 @@ The twelve accents work exactly as before, through `flip-card--accent-*` classes
 "red" stays marked "red", and the accent now paints its outline and its two titles rather than a header band.
 Nothing has to be re-entered.
 
+### A `banner_title`'s height is a step, and its picture an `<img>`
+
+The block took a **maximum height in pixels** and painted its picture as a `background-image`. Both were
+per-instance values no class could carry, so the component wrote them into a `<style>` element of its own —
+and a `style` element is metadata content, which the HTML spec allows nowhere but the `<head>`. Any page
+holding a banner failed validation on that alone.
+
+- **The picture is a real `<img>`**, laid over the banner and cropped exactly as the background was
+  (`object-fit: cover`, centered): nothing moves. It carries the media's `alt` itself, so the `role="img"` /
+  `aria-label` pair the banner used to wear is gone — **a stylesheet reaching that picture through
+  `.banner-title { background-image }`** must target `.banner-title-img` instead.
+- **The height is one of three steps** — small, medium, large — on top of the "automatic" default, each a
+  `--banner-title-height-*` token a site retunes from its own `theme.css`. Same rule as a block's corners
+  and shadow: what a banner stores is the step, never the length. It is a **floor and never a cap**: a step
+  is the height the banner stands at, and a title needing more room than that gets it rather than being
+  cropped, which is what a maximum height in pixels did.
+
+**Stored pixel values are not migrated**, the field being `height` where it was `maxHeight`. A banner
+holding one stands at the 200px floor the stylesheet sets, which is what a banner with no height set always
+stood at. Re-pick a step on the banners that had one:
+
+```sql
+SELECT id, data FROM site_block WHERE kind = 'banner_title' AND data LIKE '%maxHeight%';
+```
+
 ### The honeypot field hides itself with a class
 
 `Service\FormBotProtection::addHoneypotField()` writes `'class' => 'ui-field-aside'` on the decoy's row and

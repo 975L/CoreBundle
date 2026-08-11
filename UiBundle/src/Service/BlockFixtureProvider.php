@@ -63,7 +63,7 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                 '' => [
                     'title' => 'Titre de la bannière',
                     'level' => 'h1',
-                    'maxHeight' => 400,
+                    'height' => 'medium',
                 ],
             ],
             // Every choice of ButtonType::$choices, so an editor can compare all five styles at a glance

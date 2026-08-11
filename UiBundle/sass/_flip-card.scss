@@ -69,7 +69,7 @@ $radius: var(--block-radius, var(--flip-card-radius));
     background-color: var(--flip-card-front-background);
     // Unlike a card, a flip card has always been shadowed: the field retunes that shadow, so "theme" is --box-shadow and not "none" - a card stored before the field existed goes on looking as it did
     box-shadow: var(--block-shadow, var(--box-shadow));
-    padding-bottom: 1em;
+    padding-bottom: 0.5em;
     // Both faces read left, whatever the page's own alignment: their content is a list or a paragraph, and only the title and the image below are centered - each on its own rule
     text-align: start;
 }
@@ -85,7 +85,7 @@ $radius: var(--block-radius, var(--flip-card-radius));
     font-weight: var(--font-title-weight);
     color: var(--flip-card-accent, var(--primary));
     text-align: center;
-    margin: 0.5rem auto;
+    margin: 0.25rem auto;
     padding: 0 0.5em;
 }
 
@@ -131,7 +131,7 @@ $radius: var(--block-radius, var(--flip-card-radius));
 
 .flip-card-media {
     width: min(70vw, var(--flip-card-media-max-width));
-    margin: 1rem auto;
+    margin: 0.5rem auto;
 }
 
 // "height: auto" is not decoration: the width/height attributes the template writes are presentational hints on both properties, and a rule shaping the image without settling its height leaves the attribute in charge and the aspect-ratio below ignored (see ImageAspectRatioHeightTest)

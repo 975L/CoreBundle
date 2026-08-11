@@ -486,6 +486,26 @@
                 <source>label.badge</source>
                 <target>Insignia</target>
             </trans-unit>
+            <trans-unit id="AwTVudo">
+                <source>label.banner_height_auto</source>
+                <target>Automática</target>
+            </trans-unit>
+            <trans-unit id="L1zIaAP">
+                <source>label.banner_height_help</source>
+                <target>El banner nunca baja de la altura elegida, y crece si su título lo necesita</target>
+            </trans-unit>
+            <trans-unit id="pHrMOS7">
+                <source>label.banner_height_large</source>
+                <target>Grande</target>
+            </trans-unit>
+            <trans-unit id="r7uokUK">
+                <source>label.banner_height_medium</source>
+                <target>Mediana</target>
+            </trans-unit>
+            <trans-unit id="_hglAlg">
+                <source>label.banner_height_small</source>
+                <target>Pequeña</target>
+            </trans-unit>
             <trans-unit id="3RQoM3j">
                 <source>label.before_label</source>
                 <target>Etiqueta Antes</target>
@@ -1877,14 +1897,6 @@
             <trans-unit id="qKF181v">
                 <source>label.map_url_help</source>
                 <target>URL de la ficha de Google Maps u OpenStreetMap</target>
-            </trans-unit>
-            <trans-unit id="z9uF1b7">
-                <source>label.max_height</source>
-                <target>Altura máxima</target>
-            </trans-unit>
-            <trans-unit id="HC6BXIl">
-                <source>label.max_height_help</source>
-                <target>En píxeles, dejar vacío para una altura automática</target>
             </trans-unit>
             <trans-unit id="hC0xs1.">
                 <source>label.media</source>

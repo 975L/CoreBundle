@@ -141,6 +141,14 @@
     /* --block-shadow-medium: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
     /* --block-shadow-large: 0 12px 28px 0 rgba(0, 0, 0, 0.55); */
 
+    /* The three steps the banner's "height" field offers, on top of the "automatic" default it keeps for
+       itself - the 200px floor the banner sets. Each raises that floor and none of them caps anything: a
+       banner grows past its step rather than cropping a title that needs the room. Same rule as the steps
+       above: what a banner stores is the step, never the length */
+    /* --banner-title-height-small: 240px; */
+    /* --banner-title-height-medium: 360px; */
+    /* --banner-title-height-large: 520px; */
+
     /* Surfaces and rules mixed out of the admin's own palette - they follow it automatically when the colors are retuned in the backoffice, which a hardcoded value here would stop. */
     /* --surface-accent: color-mix(in srgb, var(--primary) 12%, var(--background)); */
     /* --surface-alt: color-mix(in srgb, var(--background) 94%, var(--text)); */

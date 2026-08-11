@@ -50,6 +50,22 @@ class BlockEditUrlRegistryTest extends TestCase
         $this->assertSame([1 => '/from-a'], $registry->getEditUrls([]));
     }
 
+    // EasyAdmin reads the dashboard these URLs are mounted under from a cache map only written when the route collection is regenerated, so a provider can throw on a perfectly working site (a wiped cache pool, fresh compiled routes) - the page then loses that provider's hover buttons only, where a thrown error would 500 the public page holding the blocks
+    public function testGetEditUrlsSkipsAProviderThatThrows(): void
+    {
+        $failing = $this->createStub(BlockEditUrlProviderInterface::class);
+        $failing->method('getEditUrls')->willThrowException(new \TypeError('setDashboard(): Argument #1 must be of type string, null given'));
+
+        $working = $this->createStub(BlockEditUrlProviderInterface::class);
+        $working->method('getEditUrls')->willReturn([2 => '/from-working']);
+
+        $registry = new BlockEditUrlRegistry();
+        $registry->addProvider($failing);
+        $registry->addProvider($working);
+
+        $this->assertSame([2 => '/from-working'], $registry->getEditUrls([]));
+    }
+
     public function testGetEditUrlsKeepsEntriesForDifferentBlockIdsSeparate(): void
     {
         $provider = $this->createStub(BlockEditUrlProviderInterface::class);

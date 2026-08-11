@@ -486,6 +486,26 @@
                 <source>label.badge</source>
                 <target>Badge</target>
             </trans-unit>
+            <trans-unit id="AwTVudo">
+                <source>label.banner_height_auto</source>
+                <target>Automatic</target>
+            </trans-unit>
+            <trans-unit id="L1zIaAP">
+                <source>label.banner_height_help</source>
+                <target>The banner never stands below the chosen height, and grows past it if its title needs the room</target>
+            </trans-unit>
+            <trans-unit id="pHrMOS7">
+                <source>label.banner_height_large</source>
+                <target>Large</target>
+            </trans-unit>
+            <trans-unit id="r7uokUK">
+                <source>label.banner_height_medium</source>
+                <target>Medium</target>
+            </trans-unit>
+            <trans-unit id="_hglAlg">
+                <source>label.banner_height_small</source>
+                <target>Small</target>
+            </trans-unit>
             <trans-unit id="3RQoM3j">
                 <source>label.before_label</source>
                 <target>Before label</target>
@@ -1877,14 +1897,6 @@
             <trans-unit id="qKF181v">
                 <source>label.map_url_help</source>
                 <target>URL of the Google Maps or OpenStreetMap listing</target>
-            </trans-unit>
-            <trans-unit id="z9uF1b7">
-                <source>label.max_height</source>
-                <target>Max height</target>
-            </trans-unit>
-            <trans-unit id="HC6BXIl">
-                <source>label.max_height_help</source>
-                <target>In pixels, leave empty for an automatic height</target>
             </trans-unit>
             <trans-unit id="hC0xs1.">
                 <source>label.media</source>

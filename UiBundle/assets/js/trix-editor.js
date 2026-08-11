@@ -108,6 +108,19 @@ function initToolbarAlignment(toolbar, editorElement) {
     });
 }
 
+// EasyAdmin's field-text-editor.js builds one tracker object per editor of the page (a "new" on every trix-before-initialize), and each of them puts two more trix-change listeners on the document: one re-runs setCustomValidity() over every field of the form, the other rebuilds the whole unsaved-changes tracker from scratch - which adds a fresh change+input listener to each of those fields, keeps every one it added before, and does it again on the next keystroke. The cost of a keystroke is therefore editors x fields, and it grows with every character typed: on a page holding 31 editors and 400 fields, an insertion measured 142ms, then 228, then 294. So the event is kept inside the editor it came from, and the one thing those handlers did for our own fields is done here instead.
+// stopPropagation() and not stopImmediatePropagation(): EasyAdmin's own unsaved-changes tracker (form.js, built once on DOMContentLoaded, which is the correct one) listens on the editor element itself and must go on seeing the event.
+function initChangeScope(editor, textarea) {
+    editor.addEventListener('trix-change', (event) => {
+        event.stopPropagation();
+
+        // Required is carried by data-ea-trix-is-required, EasyAdmin having moved it off the textarea at init so the browser doesn't ask to fill a field it hides
+        if ('true' === textarea.dataset.eaTrixIsRequired) {
+            textarea.setCustomValidity('' === textarea.value ? 'invalid' : '');
+        }
+    });
+}
+
 function initTrixEditors() {
     patchTrixConfig();
 
@@ -122,6 +135,7 @@ function initTrixEditors() {
         editor.setAttribute('input', textarea.id);
         editor.className = 'trix-content';
         wrapper.appendChild(editor);
+        initChangeScope(editor, textarea);
         textarea.insertAdjacentElement('afterend', wrapper);
 
         editor.addEventListener('trix-initialize', () => {

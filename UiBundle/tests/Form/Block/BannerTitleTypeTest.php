@@ -32,11 +32,11 @@ class BannerTitleTypeTest extends TestCase
         return $added;
     }
 
-    public function testBuildFormAddsTitleLevelAndMaxHeightFields(): void
+    public function testBuildFormAddsTitleLevelAndHeightFields(): void
     {
         $added = $this->buildAddedFields();
 
-        foreach (['title', 'level', 'maxHeight'] as $field) {
+        foreach (['title', 'level', 'height'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the BannerTitle form");
         }
     }
@@ -48,11 +48,29 @@ class BannerTitleTypeTest extends TestCase
         $this->assertSame(['h1' => 'h1', 'h2' => 'h2', 'h3' => 'h3'], $added['level']['choices']);
     }
 
-    public function testMaxHeightFieldIsNotRequired(): void
+    public function testHeightFieldIsNotRequired(): void
     {
         $added = $this->buildAddedFields();
 
-        $this->assertFalse($added['maxHeight']['required']);
+        $this->assertFalse($added['height']['required']);
+    }
+
+    // Three steps and no free length: what is stored has to be a value sass/_banner-title.scss already has a class for, a pixel value typed here being arbitrary CSS no class can carry
+    public function testHeightFieldOffersTheThreeStepsAndNothingElse(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame(BannerTitleType::HEIGHT_CHOICES, $added['height']['choices']);
+        $this->assertSame(['small', 'medium', 'large'], array_values(BannerTitleType::HEIGHT_CHOICES));
+    }
+
+    // "Automatic" is the placeholder rather than a choice: an unset value keeps the floor the stylesheet sets, which is what every banner rendered before this field existed already stood at
+    public function testHeightFieldKeepsTheAutomaticDefaultAsItsPlaceholder(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame('label.banner_height_auto', $added['height']['placeholder']);
+        $this->assertNotContains('', BannerTitleType::HEIGHT_CHOICES, 'An empty choice would store a value for what is the absence of one.');
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

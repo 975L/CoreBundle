@@ -1,4 +1,4 @@
 {# Adapter for the dynamic Block system — resolves the media file into the Banner:Title component #}
 {% set media = block.media|first %}
 {# "src", not a resolved URL, so the component runs it through asset() itself #}
-<twig:c975LUi:Banner:Title title="{{ title }}" level="{{ level|default('h2') }}" maxHeight="{{ maxHeight|default('') }}" src="{{ media ? vich_uploader_asset(media) : '' }}" alt="{{ media ? media.alt : '' }}"/>
+<twig:c975LUi:Banner:Title title="{{ title }}" level="{{ level|default('h2') }}" height="{{ height|default('') }}" src="{{ media ? vich_uploader_asset(media) : '' }}" alt="{{ media ? media.alt : '' }}"/>
