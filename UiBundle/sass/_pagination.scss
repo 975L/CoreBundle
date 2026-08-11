@@ -15,9 +15,10 @@
     padding: 0.5em 1em;
 }
 
+// White stated, not read from --white: the page in hand is a --primary chip in both color modes, and dark mode swaps that token with --black (SiteBundle's sass/_theme-dark.scss), which left the one number a visitor looks for written in near-black on it
 .current {
     background-color: var(--primary);
-    color: var(--white);
+    color: #fff;
 }
 
 .pagination-next,

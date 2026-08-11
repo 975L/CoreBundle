@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.8.3
+
+White ink stays white on a dark ground, whatever the color mode
+
+### UiBundle
+
+- A hero opening on a background media writes a stated `#fff`, where `var(--white)` left its title near-black in dark mode (11/08/2026)
+- The "primary" and "dark" section flats, and the derived tones mixed out of them, do the same (11/08/2026)
+- The primary CTA sitting on one of those flats keeps its white background, its label being picked to read on white (11/08/2026)
+- A card's header band and the paginator's current page chip write that same stated `#fff` (11/08/2026)
+- `CardAccentTest` reads the band's new fallback, the four light hues keeping their own `#000` (11/08/2026)
+- README states the rule under "Colored backgrounds" and under the card accents (11/08/2026)
+- Added `DarkGroundInkTest` (11/08/2026)
+- A hero's background media and a banner's picture are dropped when printing, black ink not being readable on a photograph (11/08/2026)
+- The room a background video was given goes with it, or the printed page opens on a blank half-page (11/08/2026)
+- Added `PrintedBackgroundMediaTest` (11/08/2026)
+
 ## v1.8.2
 
 A minified sheet keeps its rules, "*/*" no longer read as a comment

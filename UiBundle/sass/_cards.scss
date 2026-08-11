@@ -106,7 +106,8 @@ h2.card-header {
     font-family: var(--font-family-title);
     text-align: start;
     background-color: var(--card-accent, var(--primary));
-    color: var(--card-accent-color, var(--white));
+    // White stated, not read from --white: the band is one of the twelve accents in both color modes, and dark mode swaps that token with --black (SiteBundle's sass/_theme-dark.scss), which turned every header near-black on its own hue. The four light hues still darken their own title through --card-accent-color, which is the way to give a band another ink
+    color: var(--card-accent-color, #fff);
     // Same hue as the band above it, so the separator disappears into it - a grey line under an accented band would cut the card's own outline in two. It stays visible on an unaccented card, where the band is --primary and the outline is the neutral border it has always been
     border-bottom: 1px solid var(--card-accent, var(--input-border-color));
     padding: 0.5em 1em;

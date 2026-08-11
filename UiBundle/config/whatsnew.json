@@ -61,6 +61,16 @@
                 "en": "A site that had lost most of its styling since the last update, its menu first of all, looks the way it should again",
                 "fr": "Un site qui avait perdu l'essentiel de sa mise en forme depuis la dernière mise à jour, son menu en premier lieu, retrouve son apparence normale",
                 "es": "Un sitio que había perdido la mayor parte de su presentación desde la última actualización, empezando por su menú, recupera su aspecto normal"
+            },
+            {
+                "en": "On a site shown in dark mode, text written on a colored ground - a hero over its image, a colored band, a card header, the current page number - is white again instead of nearly black",
+                "fr": "Sur un site affiché en mode sombre, le texte écrit sur un fond coloré - une accroche sur son image, une bande colorée, l'en-tête d'une carte, le numéro de la page en cours - est de nouveau blanc au lieu d'être presque noir",
+                "es": "En un sitio mostrado en modo oscuro, el texto escrito sobre un fondo de color - un hero sobre su imagen, una banda de color, la cabecera de una tarjeta, el número de la página actual - vuelve a ser blanco en lugar de casi negro"
+            },
+            {
+                "en": "When a page is printed, the picture or video behind a hero or a banner is left out, so its title reads in black on white paper instead of over the photograph",
+                "fr": "À l'impression d'une page, l'image ou la vidéo placée derrière une accroche ou une bannière n'est plus imprimée : son titre se lit en noir sur le papier blanc au lieu de se perdre sur la photo",
+                "es": "Al imprimir una página, la imagen o el vídeo situado detrás de un hero o un banner ya no se imprime: su título se lee en negro sobre el papel blanco en lugar de perderse sobre la fotografía"
             }
         ]
     },

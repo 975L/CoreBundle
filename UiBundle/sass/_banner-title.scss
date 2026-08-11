@@ -59,6 +59,13 @@
     text-align: center;
 }
 
+// Printed, the picture is a decorative ground the title is laid over, and paper carries black ink: the title would come out black on a photograph. The banner keeps its own text and prints as a plain heading
+@media print {
+    .banner-title-img {
+        display: none;
+    }
+}
+
 // Alignment left to .banner-title-overlay above, which centers the whole banner on purpose; the family is stated, as on every other block title, so it doesn't rest on the theme's own h1-h6 rule
 .banner-title-text {
     margin: 0;

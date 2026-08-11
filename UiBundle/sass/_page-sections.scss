@@ -232,13 +232,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 // Shared: both flats are dark enough for white text, the derived tones mixed back into their own color
+// White stated, not read from --white: dark mode swaps that token with --black (SiteBundle's sass/_theme-dark.scss), which is right for a surface that was white and turns dark, and wrong for ink written on a flat that is dark in both modes - it left every one of these bands with near-black text on a dark ground. A design wanting another ink restates --section-text in its own theme file
 .section--bg-primary,
 .section--bg-dark {
-    --section-text: var(--white);
-    --section-text-soft: color-mix(in srgb, var(--white) 78%, var(--section-background));
-    --section-accent: color-mix(in srgb, var(--white) 88%, var(--section-background));
-    --section-border: color-mix(in srgb, var(--white) 22%, transparent);
-    --section-overlay: color-mix(in srgb, var(--white) 16%, transparent);
+    --section-text: #fff;
+    --section-text-soft: color-mix(in srgb, #fff 78%, var(--section-background));
+    --section-accent: color-mix(in srgb, #fff 88%, var(--section-background));
+    --section-border: color-mix(in srgb, #fff 22%, transparent);
+    --section-overlay: color-mix(in srgb, #fff 16%, transparent);
 }
 
 .section--bg-primary {
@@ -270,9 +271,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 // The primary CTA is a --primary flat itself, so on a colored band it inverts and drops its shadow
+// Same fixed white as the band's ink above: read from --white, the button turned near-black in dark mode, and its label - a --section-btn-color picked to read on white - disappeared into it
 .section--bg-primary .section-btn--primary,
 .section--bg-dark .section-btn--primary {
-    background: var(--white);
+    background: #fff;
     color: var(--section-btn-color, var(--primary));
     box-shadow: none;
 }
@@ -497,8 +499,9 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     margin-left: var(--section-flat-margin-x, -50vw);
     margin-right: var(--section-flat-margin-x, -50vw);
     // Fixed values, there being no flat color to mix into; --section-accent is left unset on purpose
-    --section-text: var(--white);
-    --section-text-soft: var(--white);
+    // White stated rather than read from --white, which dark mode swaps with --black: the ::before voile below is a fixed black whatever the mode, so the title written on it has to be a fixed white too
+    --section-text: #fff;
+    --section-text-soft: #fff;
     --section-overlay: rgba(255, 255, 255, .15);
 }
 
@@ -519,6 +522,17 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     height: 100%;
     object-fit: cover;
     z-index: 0;
+}
+
+// Printed, that media is a decorative ground the title is laid over, and paper carries black ink: the title would come out black on a photograph. The room a video was given goes with it, or the page opens on a blank half-page
+@media print {
+    .hero.hero--has-bg .hero__bg {
+        display: none;
+    }
+
+    .hero.hero--has-bg:has(.hero__bg--video) {
+        min-height: 0;
+    }
 }
 
 // Fixed dark overlay so the text stays readable whatever the image - a ::before, there being no wrapper

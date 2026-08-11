@@ -56,7 +56,7 @@ class CardAccentTest extends TestCase
             sprintf('"%s" no longer has the header band read --card-accent, so an accented card is headed with --primary.', $file)
         );
         $this->assertMatchesRegularExpression(
-            '/\.card-header,h2\.card-header\{[^}]*color:var\(--card-accent-color,var\(--white\)\)/',
+            '/\.card-header,h2\.card-header\{[^}]*color:var\(--card-accent-color,#fff\)/',
             $css,
             sprintf('"%s" writes a fixed color on the header band, which the four light hues cannot darken.', $file)
         );
