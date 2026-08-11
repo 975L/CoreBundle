@@ -22,7 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Alerts for the site-wide graphics (favicon, apple-touch-icon, og-image, logo) not yet uploaded
 class SiteGraphicAlertProvider implements AlertProviderInterface
 {
-    private const ROLE_LABELS = [
+    private const array ROLE_LABELS = [
         Media::ROLE_FAVICON => 'label.favicon',
         Media::ROLE_APPLE_TOUCH_ICON => 'label.apple_touch_icon',
         Media::ROLE_OG_IMAGE => 'label.og_image',

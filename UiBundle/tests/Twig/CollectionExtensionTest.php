@@ -19,7 +19,7 @@ class CollectionExtensionTest extends TestCase
     // The actual rendering logic lives in CollectionRuntime (see CollectionRuntimeTest) - this extension only declares the function, pointing Twig at the runtime's method so it stays uninstantiated until a template actually calls collection_render_items()
     public function testGetFunctionsRegistersCollectionFunctionPointingAtRuntime(): void
     {
-        $functions = (new CollectionExtension())->getFunctions();
+        $functions = new CollectionExtension()->getFunctions();
         $names = array_map(fn ($f) => $f->getName(), $functions);
 
         $this->assertSame(['collection_render_items'], $names);

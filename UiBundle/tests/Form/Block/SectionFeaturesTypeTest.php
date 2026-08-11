@@ -31,7 +31,7 @@ class SectionFeaturesTypeTest extends TestCase
             return $builder;
         });
 
-        (new SectionFeaturesType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new SectionFeaturesType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

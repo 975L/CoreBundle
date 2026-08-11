@@ -15,11 +15,12 @@ use Twig\TwigFilter;
 
 class Nl2brExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [
             // Overrides Twig's own 'nl2br' filter, for an HTML5 <br> instead of its <br /> - 'pre_escape' is the native one's, without which {{ value|nl2br }} would come out unescaped ({{ value|raw|nl2br }} always goes through)
-            new TwigFilter('nl2br', [self::class, 'nl2br'], ['pre_escape' => 'html', 'is_safe' => ['html']]),
+            new TwigFilter('nl2br', self::nl2br(...), ['pre_escape' => 'html', 'is_safe' => ['html']]),
         ];
     }
 

@@ -27,7 +27,7 @@ class ButtonTypeTest extends TestCase
             return $builder;
         });
 
-        (new ButtonType())->buildForm($builder, []);
+        new ButtonType()->buildForm($builder, []);
 
         return $added;
     }
@@ -51,7 +51,7 @@ class ButtonTypeTest extends TestCase
 
     public function testGetBlockPrefixReturnsUiButton(): void
     {
-        $this->assertSame('ui_button', (new ButtonType())->getBlockPrefix());
+        $this->assertSame('ui_button', new ButtonType()->getBlockPrefix());
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

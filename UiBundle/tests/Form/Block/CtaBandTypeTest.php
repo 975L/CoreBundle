@@ -29,7 +29,7 @@ class CtaBandTypeTest extends TestCase
             return $builder;
         });
 
-        (new CtaBandType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new CtaBandType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

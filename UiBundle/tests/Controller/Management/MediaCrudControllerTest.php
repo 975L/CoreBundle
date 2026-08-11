@@ -62,7 +62,7 @@ class MediaCrudControllerTest extends TestCase
     public function testUpdateEntityKeepsTheAutoDetectedDimensionsOfAMediaSavedWithBlankInputs(): void
     {
         $projectDir = sys_get_temp_dir() . '/media-crud-test-' . uniqid();
-        (new Filesystem())->mkdir($projectDir . '/public/medias');
+        new Filesystem()->mkdir($projectDir . '/public/medias');
         imagepng(imagecreatetruecolor(640, 480), $projectDir . '/public/medias/photo.png');
 
         $media = new Media();
@@ -70,7 +70,7 @@ class MediaCrudControllerTest extends TestCase
 
         $this->createController($projectDir)->updateEntity($this->createStub(EntityManagerInterface::class), $media);
 
-        (new Filesystem())->remove($projectDir);
+        new Filesystem()->remove($projectDir);
         $this->assertSame('640', $media->getWidth());
         $this->assertSame('480', $media->getHeight());
     }
@@ -113,8 +113,8 @@ class MediaCrudControllerTest extends TestCase
 
     private function mediaWithId(int $id, ?string $role = null): Media
     {
-        $media = (new Media())->setRole($role);
-        (new \ReflectionProperty(Media::class, 'id'))->setValue($media, $id);
+        $media = new Media()->setRole($role);
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, $id);
 
         return $media;
     }
@@ -127,7 +127,7 @@ class MediaCrudControllerTest extends TestCase
             $medias
         );
 
-        return (new \ReflectionMethod($controller, 'siteGraphicUrls'))->invoke($controller, new EntityCollection($entities));
+        return new \ReflectionMethod($controller, 'siteGraphicUrls')->invoke($controller, new EntityCollection($entities));
     }
 
     // Site-wide graphics are read-only in the library (their Edit action is hidden), so their thumbnail must open SiteGraphicCrudController rather than fall back on EasyAdmin's next default row action
@@ -170,7 +170,7 @@ class MediaCrudControllerTest extends TestCase
 
         $this->assertSame(
             'photo.jpg',
-            $imageUri((new Media())->setMimeType('image/jpeg'), 'photo.jpg')
+            $imageUri(new Media()->setMimeType('image/jpeg'), 'photo.jpg')
         );
     }
 
@@ -178,7 +178,7 @@ class MediaCrudControllerTest extends TestCase
     {
         $imageUri = $this->fileFieldImageUri($this->createController());
 
-        $this->assertNull($imageUri((new Media())->setMimeType('application/pdf'), null));
+        $this->assertNull($imageUri(new Media()->setMimeType('application/pdf'), null));
     }
 
     public function testFileFieldImageUriFallsBackToWebpThumbnailWhenItExists(): void
@@ -192,7 +192,7 @@ class MediaCrudControllerTest extends TestCase
 
             $this->assertSame(
                 'documents/report.webp',
-                $imageUri((new Media())->setMimeType('application/pdf'), 'documents/report.pdf')
+                $imageUri(new Media()->setMimeType('application/pdf'), 'documents/report.pdf')
             );
         } finally {
             unlink($projectDir . '/public/documents/report.webp');
@@ -208,7 +208,7 @@ class MediaCrudControllerTest extends TestCase
 
         $this->assertSame(
             'documents/report.pdf',
-            $imageUri((new Media())->setMimeType('application/pdf'), 'documents/report.pdf')
+            $imageUri(new Media()->setMimeType('application/pdf'), 'documents/report.pdf')
         );
     }
 }

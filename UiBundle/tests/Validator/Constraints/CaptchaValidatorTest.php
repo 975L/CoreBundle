@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 class CaptchaValidatorTest extends ConstraintValidatorTestCase
 {
-    private const KEYS = [
+    private const array KEYS = [
         'recaptcha3-site-key' => 'site-key',
         'recaptcha3-secret-key' => 'secret-key',
     ];

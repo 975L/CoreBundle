@@ -16,13 +16,13 @@ use PHPUnit\Framework\TestCase;
 // A template asking for a key the bundle doesn't ship renders that key's raw name to the visitor - which is what pointing a component at the consuming app's "site" domain did for years
 class TemplateDomainCatalogueTest extends TestCase
 {
-    private const LOCALES = ['fr', 'en', 'es'];
+    private const array LOCALES = ['fr', 'en', 'es'];
 
     // The two the bundle ships. Anything else - "site" above all - belongs to the app, which owes this bundle nothing
-    private const OWN_DOMAINS = ['ui', 'validators'];
+    private const array OWN_DOMAINS = ['ui', 'validators'];
 
     // Domains of the packages composer.json requires: their catalogue is installed wherever this bundle is, so a template overriding one of their blocks may keep their wording
-    private const REQUIRED_DOMAINS = ['EasyAdminBundle'];
+    private const array REQUIRED_DOMAINS = ['EasyAdminBundle'];
 
     // The bundle translates in its own domains only: a component rendered on a site that never declared the key shows its raw name instead of a sentence
     public function testNoTemplateTranslatesInAnotherPackagesDomain(): void

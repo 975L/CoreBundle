@@ -62,7 +62,7 @@ class FontCssListenerTest extends TestCase
 
     private function font(string $name, int $weight, string $style, ?string $filename): Font
     {
-        $font = (new Font())->setName($name)->setWeight($weight)->setStyle($style);
+        $font = new Font()->setName($name)->setWeight($weight)->setStyle($style);
         $font->setFilename($filename);
 
         return $font;

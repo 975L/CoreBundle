@@ -22,7 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class MaintenanceAlertProvider implements AlertProviderInterface
 {
     // Days of uninterrupted maintenance after which search engines stop reading the 503 as temporary and start dropping the pages from their index
-    private const DEINDEXING_RISK_DAYS = 2;
+    private const int DEINDEXING_RISK_DAYS = 2;
 
     public function __construct(
         private readonly ConfigRepository $configRepository,

@@ -22,12 +22,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class MenuBuilder
 {
     // Fixed label for the single, merged "links" section, regardless of which bundle contributes links
-    private const LINKS_SECTION_LABEL = 'label.links';
-    private const LINKS_SECTION_TRANSLATION_DOMAIN = 'config';
+    private const string LINKS_SECTION_LABEL = 'label.links';
+    private const string LINKS_SECTION_TRANSLATION_DOMAIN = 'config';
 
     // Fixed label for the single, merged "Avancé" submenu, regardless of which bundle contributes an advanced-tier section
-    private const ADVANCED_SUBMENU_LABEL = 'label.menu_advanced';
-    private const ADVANCED_SUBMENU_TRANSLATION_DOMAIN = 'config';
+    private const string ADVANCED_SUBMENU_LABEL = 'label.menu_advanced';
+    private const string ADVANCED_SUBMENU_TRANSLATION_DOMAIN = 'config';
 
     public function __construct(
         private readonly iterable $menuProviders,

@@ -30,7 +30,7 @@ use Twig\RuntimeLoader\FactoryRuntimeLoader;
 // Actually renders the widget rather than reading the template as text: overriding the block at the "c975l_ui_captcha" prefix bypasses "hidden_widget", so a missing "type" default silently produces a visible text input carrying the token - the sort of thing no unit test on CaptchaType would ever notice
 class CaptchaWidgetRenderTest extends FormIntegrationTestCase
 {
-    private const KEYS = [
+    private const array KEYS = [
         'recaptcha3-site-key' => 'site-key',
         'recaptcha3-secret-key' => 'secret-key',
     ];
@@ -38,6 +38,7 @@ class CaptchaWidgetRenderTest extends FormIntegrationTestCase
     /** @var array<string, mixed> */
     private array $configValues = self::KEYS;
 
+    #[\Override]
     protected function getTypes(): array
     {
         $configValues = $this->configValues;
@@ -57,7 +58,7 @@ class CaptchaWidgetRenderTest extends FormIntegrationTestCase
         // getTypes() is consumed by setUp(), so a test wanting other config re-runs it
         parent::setUp();
 
-        $formDirectory = \dirname((new \ReflectionClass(FormExtension::class))->getFileName(), 2) . '/Resources/views/Form';
+        $formDirectory = \dirname(new \ReflectionClass(FormExtension::class)->getFileName(), 2) . '/Resources/views/Form';
         $twig = new Environment(new FilesystemLoader([
             $formDirectory,
             \dirname(__DIR__, 2) . '/templates',

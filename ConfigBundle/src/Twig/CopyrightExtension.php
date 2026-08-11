@@ -23,10 +23,11 @@ class CopyrightExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('site_copyright', [$this, 'getCopyright']),
+            new TwigFunction('site_copyright', $this->getCopyright(...)),
         ];
     }
 

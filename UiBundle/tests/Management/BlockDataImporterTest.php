@@ -20,7 +20,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildBlocksReturnsEmptyArrayForNoBlocksData(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = (new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class)))->buildBlocks([], null);
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([], null);
 
         $this->assertSame([], $blocks);
     }
@@ -38,7 +38,7 @@ class BlockDataImporterTest extends TestCase
             ->method('ensureDependenciesExist')
             ->with(['kind' => 'form', 'position' => 1, 'data' => ['name' => 'contact'], 'animation' => 'fade-in']);
 
-        $blocks = (new BlockDataImporter($em, $defaultPagesImporter))->buildBlocks([
+        $blocks = new BlockDataImporter($em, $defaultPagesImporter)->buildBlocks([
             ['kind' => 'form', 'position' => 1, 'data' => ['name' => 'contact'], 'animation' => 'fade-in'],
         ], null);
 
@@ -53,7 +53,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildBlocksRecursesIntoNestedContainerSlotsTwoLevelsDeep(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = (new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class)))->buildBlocks([[
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([[
             'kind' => 'flex_columns',
             'position' => 0,
             'data' => [],
@@ -81,7 +81,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildBlocksAttachesMediaBuiltFromEachBlocksMediasEntry(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = (new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class)))->buildBlocks([[
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([[
             'kind' => 'image',
             'position' => 0,
             'data' => [],
@@ -106,7 +106,7 @@ class BlockDataImporterTest extends TestCase
         file_put_contents($filesDir . '/files/photo.jpg', 'fake-image-bytes');
 
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = (new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class)))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
             'role' => 'illustration',
             'alt' => 'A photo',
             'position' => 0,
@@ -127,7 +127,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildMediaDoesNotSetFileWhenFilesDirIsNull(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = (new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class)))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
             'role' => 'illustration',
             'originalFilename' => 'photo.jpg',
             'file' => 'files/photo.jpg',
@@ -144,7 +144,7 @@ class BlockDataImporterTest extends TestCase
         file_put_contents($filesDir . '/files/photo.webp', 'fake-webp-bytes');
 
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = (new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class)))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
             'role' => 'illustration',
             'originalFilename' => 'photo.pdf',
             'file' => 'files/photo.pdf',
@@ -166,7 +166,7 @@ class BlockDataImporterTest extends TestCase
         file_put_contents($filesDir . '/files/photo.jpg', 'fake-image-bytes');
 
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = (new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class)))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
             'role' => 'illustration',
             'originalFilename' => 'photo.jpg',
             'file' => 'files/photo.jpg',

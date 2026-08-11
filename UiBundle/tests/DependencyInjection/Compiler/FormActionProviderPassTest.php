@@ -23,7 +23,7 @@ class FormActionProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new FormActionProviderPass())->process($container);
+        new FormActionProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class FormActionProviderPassTest extends TestCase
         $container->register('ui.form_action_provider', DummyFormAction::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new FormActionProviderPass())->process($container);
+        new FormActionProviderPass()->process($container);
 
         $calls = $container->getDefinition(FormActionRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class FormActionProviderPassTest extends TestCase
         $container->register(FormActionRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new FormActionProviderPass())->process($container);
+        new FormActionProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(FormActionRegistry::class)->getMethodCalls());
     }

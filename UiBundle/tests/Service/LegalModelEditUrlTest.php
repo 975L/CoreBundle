@@ -34,7 +34,7 @@ class LegalModelEditUrlTest extends TestCase
         $block = new Block();
         $block->setKind($kind);
         $block->setData($data);
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($block, $id);
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, $id);
 
         return $block;
     }

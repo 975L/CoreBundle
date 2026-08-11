@@ -32,7 +32,7 @@ class MediaGalleryLinkTest extends TestCase
 
     private function render(array $context): string
     {
-        return trim((new Environment(new ArrayLoader(['link' => $this->openingTag()])))->render('link', $context));
+        return trim(new Environment(new ArrayLoader(['link' => $this->openingTag()]))->render('link', $context));
     }
 
     // A site-wide graphic (role set) is read-only here: its thumbnail opens SiteGraphicCrudController, the only screen editing it

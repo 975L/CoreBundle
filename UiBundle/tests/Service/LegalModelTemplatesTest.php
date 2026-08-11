@@ -25,14 +25,14 @@ use Twig\TwigFunction;
 // Guards the shipped templates themselves rather than the renderer: the customization delta is keyed on "data-legal-id", so an untagged section is silently uncustomizable, a duplicated identifier customizes two places at once, and identifiers drifting apart between locales lose a client's work the day they add a language
 class LegalModelTemplatesTest extends TestCase
 {
-    private const LOCALES = ['fr', 'en', 'es'];
+    private const array LOCALES = ['fr', 'en', 'es'];
 
     // Shared, so the legal_var() binding below and the renderer switch marker mode on the same instance
     private ?LegalModelPlaceholders $placeholders = null;
 
     public static function models(): iterable
     {
-        foreach ((new LegalModelCatalog())->all() as $model) {
+        foreach (new LegalModelCatalog()->all() as $model) {
             yield $model => [$model];
         }
     }

@@ -24,7 +24,7 @@ class DatabaseLoadHealthCheckProvider implements HealthCheckProviderInterface
     public const KIND = 'database-load';
 
     // Read as-is from SHOW GLOBAL STATUS and kept in the row's details, so the next run can subtract them: every one of them counts up since the server started, an absolute value saying nothing on its own
-    private const COUNTERS = [
+    private const array COUNTERS = [
         'Com_begin', 'Com_commit', 'Com_rollback', 'Com_select', 'Questions',
         'Com_insert', 'Com_insert_select', 'Com_update', 'Com_update_multi',
         'Com_delete', 'Com_delete_multi', 'Com_replace', 'Com_replace_select',
@@ -33,22 +33,22 @@ class DatabaseLoadHealthCheckProvider implements HealthCheckProviderInterface
     ];
 
     // Everything that writes a row, whatever the statement - a transaction holding none of them wrote nothing
-    private const WRITE_COUNTERS = [
+    private const array WRITE_COUNTERS = [
         'Com_insert', 'Com_insert_select', 'Com_update', 'Com_update_multi',
         'Com_delete', 'Com_delete_multi', 'Com_replace', 'Com_replace_select',
     ];
 
     // Two readings this many seconds apart, giving the rate at the very moment of the run - the whole point being that the weekly run happens at night (see the scaffold's MaintenanceSchedule): whatever the server still does with no visitor on the site is background noise, not traffic. It sleeps, which is why nothing calls this provider from a controller (see HealthCheckProviderInterface)
-    private const SAMPLE_SECONDS = 5;
+    private const int SAMPLE_SECONDS = 5;
 
     // Below this, the two readings are too close together for their difference to mean anything
-    private const MIN_SAMPLE_SECONDS = 0.1;
+    private const float MIN_SAMPLE_SECONDS = 0.1;
 
     // Under a transaction per second there is nothing to optimise, whatever the ratio - a site can be perfectly idle
-    private const MIN_RATE = 1.0;
+    private const float MIN_RATE = 1.0;
 
     // Past this share of transactions holding no write at all, they're being opened around reads, or around nothing
-    private const MAX_EMPTY_SHARE = 0.5;
+    private const float MAX_EMPTY_SHARE = 0.5;
 
     public function __construct(
         private readonly Connection $connection,
@@ -76,7 +76,7 @@ class DatabaseLoadHealthCheckProvider implements HealthCheckProviderInterface
 
         $platform = $this->connection->getDatabasePlatform();
         if (!$platform instanceof AbstractMySQLPlatform) {
-            return [$this->row($url, HealthCheckResult::STATUS_SKIPPED, 'label.health_check_database_load_unsupported', ['%platform%' => (new \ReflectionClass($platform))->getShortName()])];
+            return [$this->row($url, HealthCheckResult::STATUS_SKIPPED, 'label.health_check_database_load_unsupported', ['%platform%' => new \ReflectionClass($platform)->getShortName()])];
         }
 
         try {

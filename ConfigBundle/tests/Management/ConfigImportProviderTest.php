@@ -63,7 +63,7 @@ class ConfigImportProviderTest extends TestCase
 
     public function testImportOverwritesAnExistingNonSensitiveConfig(): void
     {
-        $existing = (new Config())->setSlug('site-title')->setLabel('Old label')->setKind(Config::TYPE_TEXT)->setValue('Old value');
+        $existing = new Config()->setSlug('site-title')->setLabel('Old label')->setKind(Config::TYPE_TEXT)->setValue('Old value');
 
         $em = $this->createStub(EntityManagerInterface::class);
 
@@ -84,7 +84,7 @@ class ConfigImportProviderTest extends TestCase
 
     public function testImportSkipsAnExistingSensitiveConfigToPreserveItsProductionValue(): void
     {
-        $existing = (new Config())->setSlug('api-key')->setLabel('API key')->setKind(Config::TYPE_TEXT)->setValue('prod-secret');
+        $existing = new Config()->setSlug('api-key')->setLabel('API key')->setKind(Config::TYPE_TEXT)->setValue('prod-secret');
 
         $em = $this->createStub(EntityManagerInterface::class);
 
@@ -104,7 +104,7 @@ class ConfigImportProviderTest extends TestCase
 
     public function testImportFillsAnExistingSensitiveConfigLeftEmpty(): void
     {
-        $existing = (new Config())->setSlug('api-key')->setLabel('API key')->setKind(Config::TYPE_TEXT)->setValue('');
+        $existing = new Config()->setSlug('api-key')->setLabel('API key')->setKind(Config::TYPE_TEXT)->setValue('');
 
         $em = $this->createStub(EntityManagerInterface::class);
 
@@ -124,7 +124,7 @@ class ConfigImportProviderTest extends TestCase
 
     public function testImportFillsAnExistingSensitiveConfigLeftNull(): void
     {
-        $existing = (new Config())->setSlug('api-key')->setLabel('API key')->setKind(Config::TYPE_TEXT)->setValue(null);
+        $existing = new Config()->setSlug('api-key')->setLabel('API key')->setKind(Config::TYPE_TEXT)->setValue(null);
 
         $em = $this->createStub(EntityManagerInterface::class);
 
@@ -145,7 +145,7 @@ class ConfigImportProviderTest extends TestCase
     // A restore losing what an entry accepts would leave the select empty, and the form with nothing to pick
     public function testImportCarriesTheChoicesOfAChoiceEntry(): void
     {
-        $existing = (new Config())->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_TEXT)->setValue('auto');
+        $existing = new Config()->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_TEXT)->setValue('auto');
 
         $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing));
 
@@ -165,7 +165,7 @@ class ConfigImportProviderTest extends TestCase
     // An export made before choices existed carries none: left empty rather than guessed, the next c975l:config:load-all filling it back from the declaring bundle
     public function testImportLeavesChoicesEmptyWhenTheExportCarriesNone(): void
     {
-        $existing = (new Config())->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark']);
+        $existing = new Config()->setSlug('theme-mode')->setLabel('Theme mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark']);
 
         $provider = new ConfigImportProvider($this->createStub(EntityManagerInterface::class), $this->createConfigRepository($existing));
 

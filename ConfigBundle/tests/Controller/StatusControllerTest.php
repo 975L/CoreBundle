@@ -20,9 +20,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class StatusControllerTest extends TestCase
 {
-    private const KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
+    private const string KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
-    private const REPORT = ['version' => 1, 'site' => 'https://papa-calin.com'];
+    private const array REPORT = ['version' => 1, 'site' => 'https://papa-calin.com'];
 
     private function createController(?string $configuredKey, ?LoggerInterface $logger = null): StatusController
     {

@@ -30,7 +30,7 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 class MediaUploadType extends AbstractType
 {
     // Symfony validates against the type guessed from the file's own bytes, not the label the browser sent, and the two disagree on names the "accept" lists are written with: a real .wav is guessed "audio/x-wav", so declaring "audio/wav" rejected every .wav upload. Kept here rather than in the kinds' media_types, which the file dialog's own list is built from and has no use for the aliases
-    private const MIME_ALIASES = [
+    private const array MIME_ALIASES = [
         'audio/wav' => ['audio/x-wav', 'audio/wave', 'audio/vnd.wave'],
         'audio/ogg' => ['application/ogg'],
         'video/ogg' => ['application/ogg'],
@@ -185,7 +185,7 @@ class MediaUploadType extends AbstractType
     // The "accept" attribute is a hint to the file dialog and nothing more - it never reached the server, and mobile-file-accept.js now drops it outright on touch devices, where an images-only list makes Android open its photo picker (gallery only, no Drive, no third-party storage provider). This is where the kind's declared media types are actually enforced, on both upload paths: the multi-file input is spliced into this same collection before mapping (see BlockType::mergeMultiUpload()). Symfony's File constraint reads the "image/*" wildcards the tags are written with as-is, so the tag's list is passed through untouched.
     private function mimeTypeConstraints(?string $accept): array
     {
-        $declared = array_filter(array_map('trim', explode(',', (string) $accept)));
+        $declared = array_filter(array_map(trim(...), explode(',', (string) $accept)));
         if ([] === $declared) {
             return [];
         }

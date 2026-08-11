@@ -92,6 +92,7 @@ class CollectionType extends AbstractType
     }
 
     // Without this, the default block prefix derived from the class name ("CollectionType" -> "collection") collides with Symfony's own CollectionType (used by PageCrudController's "blocks" field), making EasyAdmin's collection_row/collection_widget form theme blocks wrongly apply here and blow up on "allow_add"/"allow_delete" - vars only a real CollectionType field populates
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'block_collection';

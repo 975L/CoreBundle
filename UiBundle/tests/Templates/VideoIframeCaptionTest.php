@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 // A page laying out its own heading around this component (c975l/gallery-bundle's media page) turns the second off - and must not be able to turn the first off with it, an iframe with no accessible name being what a screen reader announces as nothing at all
 class VideoIframeCaptionTest extends TestCase
 {
-    private const TEMPLATE = 'templates/components/Video/Iframe.html.twig';
+    private const string TEMPLATE = 'templates/components/Video/Iframe.html.twig';
 
     public function testTheCaptionIsShownUnlessItIsTurnedOff(): void
     {

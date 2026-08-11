@@ -46,7 +46,7 @@ class ConfigShortcutProviderTest extends TestCase
     {
         $repository = $this->createStub(FormRepository::class);
         $repository->method('findOneBy')->willReturn(
-            null === $registerEnabled ? null : (new Form())->setName('register')->setEnabled($registerEnabled)
+            null === $registerEnabled ? null : new Form()->setName('register')->setEnabled($registerEnabled)
         );
 
         return $repository;

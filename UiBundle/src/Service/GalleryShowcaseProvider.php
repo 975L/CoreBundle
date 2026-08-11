@@ -21,7 +21,7 @@ use Twig\Environment;
 class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 {
     // The same shape CollectionRuntime::renderItems() builds from a source's own CollectionItem, so a preview item renders exactly as a real one
-    private const COLLECTION_ITEMS = [
+    private const array COLLECTION_ITEMS = [
         ['title' => 'Première entrée', 'content' => 'La description courte que la source renvoie pour cette entrée.'],
         ['title' => 'Deuxième entrée', 'content' => 'Chaque entrée est rendue comme un block, jamais enregistré.'],
         ['title' => 'Troisième entrée', 'content' => 'La source décide du nombre d\'entrées, la limite du block les tronque.'],
@@ -75,7 +75,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
     // A single row: what this kind adds to bare consecutive "card" blocks is the section head and the anchor, not a layout that varies
     private function sectionCardsVariants(): array
     {
-        $section = (new Block())->setKind('section_cards')->setData([
+        $section = new Block()->setKind('section_cards')->setData([
             'eyebrow' => 'Surtitre de la section',
             'title' => 'Une rangée de cartes sous un titre de section',
         ]);
@@ -105,7 +105,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         $items = [];
         foreach (self::COLLECTION_ITEMS as $item) {
             $items[] = $this->blockExtension->renderBlock(
-                (new Block())->setKind('collection_item')->setData($item + [
+                new Block()->setKind('collection_item')->setData($item + [
                     'url' => '',
                     'imageUrl' => 'portfolio' === $variant ? $this->placeholderImage() : '',
                     'buttonLabel' => '',
@@ -130,13 +130,13 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
     // The section goes through BlockExtension::renderBlock() like any block: never persisted, it has no id, so nothing of this is cached (see renderBlock())
     private function renderFlexColumns(string $title, array $columns): string
     {
-        $section = (new Block())->setKind('flex_columns')->setData([
+        $section = new Block()->setKind('flex_columns')->setData([
             'eyebrow' => 'Colonnes flexibles',
             'title' => $title,
         ]);
 
         foreach ($columns as $position => [$width, $slot]) {
-            $column = (new Block())->setKind('flex_column')->setPosition($position)->setData(['columnWidth' => $width]);
+            $column = new Block()->setKind('flex_column')->setPosition($position)->setData(['columnWidth' => $width]);
             $column->addSlot($slot);
             $section->addSlot($column);
         }
@@ -146,7 +146,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 
     private function textSlot(string $title, string $content): Block
     {
-        return (new Block())->setKind('text_section')->setData([
+        return new Block()->setKind('text_section')->setData([
             'eyebrow' => '',
             'title' => $title,
             // Empty: the anchor a real editor would set has no use in a preview, and would collide with the page's own anchors
@@ -157,7 +157,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 
     private function cardSlot(string $title, string $content): Block
     {
-        return (new Block())->setKind('card')->setData([
+        return new Block()->setKind('card')->setData([
             'id' => '',
             'title' => $title,
             'level' => 'h3',

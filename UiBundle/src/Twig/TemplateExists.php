@@ -20,6 +20,7 @@ class TemplateExists extends AbstractExtension
     {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [new TwigFunction('template_exists', $this->templateExists(...))];

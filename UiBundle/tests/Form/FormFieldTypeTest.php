@@ -31,7 +31,7 @@ class FormFieldTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new FormFieldType())->buildForm($builder, []);
+        new FormFieldType()->buildForm($builder, []);
 
         return $added;
     }
@@ -50,7 +50,7 @@ class FormFieldTypeTest extends TestCase
             }
         );
 
-        (new FormFieldType())->buildForm($builder, []);
+        new FormFieldType()->buildForm($builder, []);
 
         $added = [];
         $innerForm = $this->createStub(FormInterface::class);
@@ -81,7 +81,7 @@ class FormFieldTypeTest extends TestCase
 
     public function testTypeFieldIsEnabledForAnOrdinaryField(): void
     {
-        $field = (new FormField())->setLabel('Phone')->setName('phone');
+        $field = new FormField()->setLabel('Phone')->setName('phone');
 
         $added = $this->firePreSetData($field);
 
@@ -90,7 +90,7 @@ class FormFieldTypeTest extends TestCase
 
     public function testTypeFieldIsDisabledForARestrictedField(): void
     {
-        $field = (new FormField())->setLabel('Email')->setName('email')->setRestricted(true);
+        $field = new FormField()->setLabel('Email')->setName('email')->setRestricted(true);
 
         $added = $this->firePreSetData($field);
 
@@ -123,7 +123,7 @@ class FormFieldTypeTest extends TestCase
 
     public function testIdFieldCarriesTheFieldId(): void
     {
-        $field = (new FormField())->setLabel('Phone')->setName('phone');
+        $field = new FormField()->setLabel('Phone')->setName('phone');
         $reflection = new \ReflectionProperty(FormField::class, 'id');
         $reflection->setValue($field, 42);
 

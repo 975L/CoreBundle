@@ -20,15 +20,15 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class FixedIconFormatValidator extends ConstraintValidator
 {
     // Read directly by GD, which the icon pipeline runs on
-    private const RASTER_MIME_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+    private const array RASTER_MIME_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
 
     // Both are met in the wild, the second one mostly from older tooling
-    private const SVG_MIME_TYPES = ['image/svg+xml', 'image/svg'];
+    private const array SVG_MIME_TYPES = ['image/svg+xml', 'image/svg'];
 
     // What the admin is told to upload instead, the raw mime types meaning nothing to them
-    private const FORMAT_LABELS = 'PNG, JPG, GIF, WEBP';
+    private const string FORMAT_LABELS = 'PNG, JPG, GIF, WEBP';
 
-    public function __construct(private SvgRasterizer $svgRasterizer)
+    public function __construct(private readonly SvgRasterizer $svgRasterizer)
     {
     }
 

@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 // The failed-message table truncates its cells, an exception message running to several lines otherwise pushing the table past the screen. Those widths used to be style="" attributes, which the EasyAdmin layout's nonce on style-src drops - so they are classes now, and a class nothing declares truncates nothing without a single error to show for it.
 class FailedMessagesCellWidthTest extends TestCase
 {
-    private const CSS = ['/public/css/management.css', '/public/css/management.min.css'];
+    private const array CSS = ['/public/css/management.css', '/public/css/management.min.css'];
 
-    private const WIDTHS = [
+    private const array WIDTHS = [
         'failed-message-cell' => '12rem',
         'failed-message-cell-wide' => '18rem',
         'failed-message-cell-group' => '32rem',

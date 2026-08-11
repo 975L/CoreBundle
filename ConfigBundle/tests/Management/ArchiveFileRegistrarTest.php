@@ -25,7 +25,7 @@ class ArchiveFileRegistrarTest extends TestCase
 
     protected function tearDown(): void
     {
-        array_map('unlink', glob($this->projectDir . '/public/media/*') ?: []);
+        array_map(unlink(...), glob($this->projectDir . '/public/media/*') ?: []);
         @rmdir($this->projectDir . '/public/media');
         @rmdir($this->projectDir . '/public');
         @rmdir($this->projectDir);

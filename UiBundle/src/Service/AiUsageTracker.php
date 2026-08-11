@@ -43,14 +43,14 @@ class AiUsageTracker
 
     private function findOrCreateCurrentMonth(): AiUsage
     {
-        $yearMonth = (new \DateTimeImmutable())->format('Y-m');
+        $yearMonth = new \DateTimeImmutable()->format('Y-m');
 
         return $this->aiUsageRepository->findOneByYearMonth($yearMonth)
-            ?? (new AiUsage())->setYearMonth($yearMonth);
+            ?? new AiUsage()->setYearMonth($yearMonth);
     }
 
     public function getCurrentMonth(): ?AiUsage
     {
-        return $this->aiUsageRepository->findOneByYearMonth((new \DateTimeImmutable())->format('Y-m'));
+        return $this->aiUsageRepository->findOneByYearMonth(new \DateTimeImmutable()->format('Y-m'));
     }
 }

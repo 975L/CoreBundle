@@ -24,7 +24,7 @@ class StatusReportBuilder
     public const VERSION = 1;
 
     // Caps the error rows carried by one report. A site with hundreds of broken pages would otherwise send a payload sized by its content rather than by its state - the counts stay exact, only the list is cut, and issuesTruncated says so rather than letting a receiver read a short list as "that's all of them"
-    private const MAX_ISSUES = 20;
+    private const int MAX_ISSUES = 20;
 
     public function __construct(
         private readonly iterable $statusProviders,
@@ -41,7 +41,7 @@ class StatusReportBuilder
         return [
             'version' => self::VERSION,
             'site' => (string) $this->configService->get('site-url'),
-            'generatedAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+            'generatedAt' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
             'environment' => $this->environment,
             'php' => \PHP_VERSION,
             'symfony' => Kernel::VERSION,

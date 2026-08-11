@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 class CardRowAlignmentTest extends TestCase
 {
     // "display: contents" - neither ever becomes the flex item, but both stay nodes in the DOM, which a child combinator reads. Two sheets: the entrance wrapper is styled with the keyframes it exists for, the editor's overlay with the rest of the page
-    private const TRANSPARENT_WRAPPERS = [
+    private const array TRANSPARENT_WRAPPERS = [
         'block-animation' => ['animations.css', 'animations.min.css'],
         'block-editable' => ['styles.css', 'styles.min.css'],
     ];

@@ -17,7 +17,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class AiCrawlerListClientTest extends TestCase
 {
-    private const SOURCE = 'https://example.com/robots.json';
+    private const string SOURCE = 'https://example.com/robots.json';
 
     private function createClient(string $body, int $statusCode = 200): AiCrawlerListClient
     {

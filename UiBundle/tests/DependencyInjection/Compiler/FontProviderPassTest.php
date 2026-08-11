@@ -23,7 +23,7 @@ class FontProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new FontProviderPass())->process($container);
+        new FontProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class FontProviderPassTest extends TestCase
         $container->register('ui.font_provider', DummyFontProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new FontProviderPass())->process($container);
+        new FontProviderPass()->process($container);
 
         $calls = $container->getDefinition(FontRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class FontProviderPassTest extends TestCase
         $container->register(FontRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new FontProviderPass())->process($container);
+        new FontProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(FontRegistry::class)->getMethodCalls());
     }

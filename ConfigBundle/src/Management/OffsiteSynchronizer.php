@@ -23,7 +23,7 @@ use Symfony\Component\Process\Process;
 class OffsiteSynchronizer
 {
     // A remote name as rclone spells it, then an optional path under it - letters, digits and the handful of separators a path needs, so nothing reaching Process can be read as an option or as another command
-    private const TARGET_PATTERN = '#^[A-Za-z0-9_-]+:[A-Za-z0-9._/-]*$#';
+    private const string TARGET_PATTERN = '#^[A-Za-z0-9_-]+:[A-Za-z0-9._/-]*$#';
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,
@@ -157,6 +157,6 @@ class OffsiteSynchronizer
     {
         $local = $this->parameterBag->get('kernel.project_dir') . '/bin/rclone';
 
-        return (new ExecutableFinder())->find('rclone', is_executable($local) ? $local : null);
+        return new ExecutableFinder()->find('rclone', is_executable($local) ? $local : null);
     }
 }

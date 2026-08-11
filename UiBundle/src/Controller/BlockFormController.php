@@ -25,8 +25,8 @@ use Symfony\Component\Routing\Attribute\Route;
 class BlockFormController extends AbstractController
 {
     public function __construct(
-        private BlockRegistry $registry,
-        private FormFactoryInterface $formFactory,
+        private readonly BlockRegistry $registry,
+        private readonly FormFactoryInterface $formFactory,
     ) {
     }
 

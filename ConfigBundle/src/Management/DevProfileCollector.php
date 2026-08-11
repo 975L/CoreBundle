@@ -24,17 +24,17 @@ use Symfony\Contracts\Service\ResetInterface;
 class DevProfileCollector
 {
     // Any host works, none of the collected data depends on it - https so a route requiring that scheme, or an app-level http-to-https redirect, doesn't answer a 301 instead of the page
-    private const BASE_URL = 'https://localhost';
+    private const string BASE_URL = 'https://localhost';
 
     // DataCollectorTranslator::MESSAGE_MISSING, hardcoded so ConfigBundle doesn't require symfony/translation for it
-    private const TRANSLATION_MISSING = 1;
+    private const int TRANSLATION_MISSING = 1;
 
     // The doctrine bridge logs a transaction as a query of its own, sql and quotes included (see its Middleware\Debug\Connection) - which is what makes them countable here at all, and what makes them worth taking back out of the duplicate count: a page flushing five times shows five identical "START TRANSACTION" and would be reported as an n+1 it isn't
-    private const TRANSACTION_START = '"START TRANSACTION"';
-    private const TRANSACTION_END = ['"COMMIT"', '"ROLLBACK"'];
+    private const string TRANSACTION_START = '"START TRANSACTION"';
+    private const array TRANSACTION_END = ['"COMMIT"', '"ROLLBACK"'];
 
     // A transaction holding none of these wrote nothing - it was opened around reads, or around nothing at all
-    private const WRITE_STATEMENTS = ['INSERT', 'UPDATE', 'DELETE', 'REPLACE'];
+    private const array WRITE_STATEMENTS = ['INSERT', 'UPDATE', 'DELETE', 'REPLACE'];
 
     public function __construct(
         private readonly KernelInterface $kernel,
@@ -218,13 +218,7 @@ class DevProfileCollector
 
     private function isWrite(string $sql): bool
     {
-        foreach (self::WRITE_STATEMENTS as $statement) {
-            if (str_starts_with(strtoupper(ltrim($sql)), $statement)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(self::WRITE_STATEMENTS, fn ($statement) => str_starts_with(strtoupper(ltrim($sql)), $statement));
     }
 
     // Distinct deprecation messages, the same one usually being triggered on every call site of the deprecated code

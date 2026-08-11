@@ -22,6 +22,7 @@ class RouteExists extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [new TwigFunction('route_exists', $this->routeExists(...))];

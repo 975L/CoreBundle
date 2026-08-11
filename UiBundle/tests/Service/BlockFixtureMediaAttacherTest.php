@@ -20,16 +20,16 @@ use PHPUnit\Framework\TestCase;
 class BlockFixtureMediaAttacherTest extends TestCase
 {
     // The five images mirror what a real showcase site declares (see PlaceholderMediaProviderInterface) - enough for the rotation below to actually rotate
-    private const IMAGES = [
+    private const array IMAGES = [
         'showcase/photo-1.webp',
         'showcase/photo-2.webp',
         'showcase/photo-3.webp',
         'showcase/photo-4.webp',
         'showcase/photo-5.webp',
     ];
-    private const VIDEO = 'showcase/clip.mp4';
-    private const AUDIO = 'showcase/loop.mp3';
-    private const DOCUMENT = 'showcase/brochure.pdf';
+    private const string VIDEO = 'showcase/clip.mp4';
+    private const string AUDIO = 'showcase/loop.mp3';
+    private const string DOCUMENT = 'showcase/brochure.pdf';
 
     private function createRegistry(array $mediaTypes, bool $multiUpload = false): BlockRegistry
     {
@@ -68,7 +68,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testSingleImageKindGetsOnePlaceholderImage(): void
     {
         $attacher = $this->createAttacher(['image/*']);
-        $block = (new Block())->setKind('image');
+        $block = new Block()->setKind('image');
 
         $attacher->attach($block, 'image');
 
@@ -80,7 +80,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testImageCompareGetsTwoDistinctPlaceholderImages(): void
     {
         $attacher = $this->createAttacher(['image/*']);
-        $block = (new Block())->setKind('image_compare');
+        $block = new Block()->setKind('image_compare');
 
         $attacher->attach($block, 'image_compare');
 
@@ -93,7 +93,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testSliderGetsTwoImagesAndOneVideo(): void
     {
         $attacher = $this->createAttacher(['image/*', 'video/*'], multiUpload: true);
-        $block = (new Block())->setKind('slider');
+        $block = new Block()->setKind('slider');
 
         $attacher->attach($block, 'slider');
 
@@ -106,7 +106,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testSliderFreeflowVariantGetsFiveImagesAndNoVideo(): void
     {
         $attacher = $this->createAttacher(['image/*', 'video/*'], multiUpload: true);
-        $block = (new Block())->setKind('slider');
+        $block = new Block()->setKind('slider');
 
         $attacher->attach($block, 'slider', 'freeflow');
 
@@ -121,7 +121,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testHeroDefaultVariantGetsItsImagesAndNoVideo(): void
     {
         $attacher = $this->createAttacher(['image/*', 'video/mp4', 'video/webm', 'video/ogg'], multiUpload: true);
-        $block = (new Block())->setKind('hero');
+        $block = new Block()->setKind('hero');
 
         $attacher->attach($block, 'hero');
 
@@ -136,7 +136,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testHeroVideoVariantGetsTheVideoAndOneStill(): void
     {
         $attacher = $this->createAttacher(['image/*', 'video/mp4', 'video/webm', 'video/ogg'], multiUpload: true);
-        $block = (new Block())->setKind('hero');
+        $block = new Block()->setKind('hero');
 
         $attacher->attach($block, 'hero', 'video');
 
@@ -150,7 +150,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testAnyKindWithVideoMediaTypeGetsAVideoMixedIn(): void
     {
         $attacher = $this->createAttacher(['image/*', 'video/*'], multiUpload: true);
-        $block = (new Block())->setKind('gallery_carousel');
+        $block = new Block()->setKind('gallery_carousel');
 
         $attacher->attach($block, 'gallery_carousel');
 
@@ -161,7 +161,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testVideoKindGetsOneVideoAndOneCoverImage(): void
     {
         $attacher = $this->createAttacher(['video/mp4', 'video/webm', 'video/ogg', 'image/*']);
-        $block = (new Block())->setKind('video');
+        $block = new Block()->setKind('video');
 
         $attacher->attach($block, 'video');
 
@@ -186,7 +186,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
             ['video/*', 'image/*'],
             media: ['images' => ['showcase/photo-1.jpg'], 'video' => 'showcase/clip.webm'],
         );
-        $block = (new Block())->setKind('video');
+        $block = new Block()->setKind('video');
 
         $attacher->attach($block, 'video');
 
@@ -198,14 +198,14 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testAnAmbiguousExtensionIsReadWithinItsOwnSlotFamily(): void
     {
         $attacher = $this->createAttacher(['video/*'], media: ['video' => 'showcase/clip.ogg']);
-        $block = (new Block())->setKind('video');
+        $block = new Block()->setKind('video');
 
         $attacher->attach($block, 'video');
 
         $this->assertSame('video/ogg', $block->getMedia()->first()->getMimeType());
 
         $attacher = $this->createAttacher(['audio/*'], media: ['audio' => 'showcase/theme.ogg']);
-        $block = (new Block())->setKind('audio');
+        $block = new Block()->setKind('audio');
 
         $attacher->attach($block, 'audio');
 
@@ -216,7 +216,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testArticleGetsThreeImages(): void
     {
         $attacher = $this->createAttacher(['image/*'], multiUpload: true);
-        $block = (new Block())->setKind('article');
+        $block = new Block()->setKind('article');
 
         $attacher->attach($block, 'article');
 
@@ -227,7 +227,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testAnyMultiUploadKindGetsTwoImagesByDefault(): void
     {
         $attacher = $this->createAttacher(['image/*'], multiUpload: true);
-        $block = (new Block())->setKind('gallery_carousel');
+        $block = new Block()->setKind('gallery_carousel');
 
         $attacher->attach($block, 'gallery_carousel');
 
@@ -238,7 +238,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testNonMultiUploadKindGetsOneImage(): void
     {
         $attacher = $this->createAttacher(['image/*'], multiUpload: false);
-        $block = (new Block())->setKind('hero');
+        $block = new Block()->setKind('hero');
 
         $attacher->attach($block, 'hero');
 
@@ -250,15 +250,15 @@ class BlockFixtureMediaAttacherTest extends TestCase
     {
         $attacher = $this->createAttacher(['image/*']);
 
-        $first = (new Block())->setKind('image');
+        $first = new Block()->setKind('image');
         $attacher->attach($first, 'image');
-        $second = (new Block())->setKind('image');
+        $second = new Block()->setKind('image');
         $attacher->attach($second, 'image');
 
         $this->assertNotSame($first->getMedia()->first()->getFilename(), $second->getMedia()->first()->getFilename());
 
         $attacher->reset();
-        $third = (new Block())->setKind('image');
+        $third = new Block()->setKind('image');
         $attacher->attach($third, 'image');
 
         $this->assertSame($first->getMedia()->first()->getFilename(), $third->getMedia()->first()->getFilename());
@@ -268,7 +268,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testAudioKindGetsThePlaceholderAudioAttached(): void
     {
         $attacher = $this->createAttacher(['audio/*']);
-        $block = (new Block())->setKind('audio');
+        $block = new Block()->setKind('audio');
 
         $attacher->attach($block, 'audio');
 
@@ -279,7 +279,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testPdfKindGetsThePlaceholderDocumentAttached(): void
     {
         $attacher = $this->createAttacher(['application/pdf']);
-        $block = (new Block())->setKind('document_download');
+        $block = new Block()->setKind('document_download');
 
         $attacher->attach($block, 'document_download');
 
@@ -290,7 +290,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testPortfolioGridGetsSeveralDistinctlyCaptionedProjects(): void
     {
         $attacher = $this->createAttacher(['image/*']);
-        $block = (new Block())->setKind('portfolio_grid');
+        $block = new Block()->setKind('portfolio_grid');
 
         $attacher->attach($block, 'portfolio_grid');
 
@@ -305,7 +305,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testKindWithNoMediaTypesGetsNothingAttached(): void
     {
         $attacher = $this->createAttacher([]);
-        $block = (new Block())->setKind('alert');
+        $block = new Block()->setKind('alert');
 
         $attacher->attach($block, 'alert');
 
@@ -316,7 +316,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testNothingIsAttachedWhenTheAppDeclaresNoPlaceholderMedia(): void
     {
         $attacher = new BlockFixtureMediaAttacher($this->createRegistry(['image/*', 'video/*'], multiUpload: true));
-        $block = (new Block())->setKind('slider');
+        $block = new Block()->setKind('slider');
 
         $attacher->attach($block, 'slider');
 
@@ -328,7 +328,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testNothingIsAttachedWhenTheRegistryIsEmpty(): void
     {
         $attacher = $this->createAttacher(['audio/*'], media: []);
-        $block = (new Block())->setKind('audio');
+        $block = new Block()->setKind('audio');
 
         $attacher->attach($block, 'audio');
 
@@ -339,7 +339,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testPartiallyDeclaredPlaceholderMediaOnlyCoversWhatItDeclares(): void
     {
         $attacher = $this->createAttacher(['audio/*'], media: ['images' => self::IMAGES]);
-        $block = (new Block())->setKind('audio');
+        $block = new Block()->setKind('audio');
 
         $attacher->attach($block, 'audio');
 
@@ -350,7 +350,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
     public function testPortfolioGridGetsNoProjectWhenNoImageIsDeclared(): void
     {
         $attacher = $this->createAttacher(['image/*'], media: []);
-        $block = (new Block())->setKind('portfolio_grid');
+        $block = new Block()->setKind('portfolio_grid');
 
         $attacher->attach($block, 'portfolio_grid');
 

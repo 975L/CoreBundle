@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 // Registry-aware, so it can't live as a plain #[Assert\Callback] on Block itself (entities have no DI) - same "ui" translation domain trick as FixedIconFormatValidator
 class RequiredMediaValidator extends ConstraintValidator
 {
-    public function __construct(private BlockRegistry $registry)
+    public function __construct(private readonly BlockRegistry $registry)
     {
     }
 

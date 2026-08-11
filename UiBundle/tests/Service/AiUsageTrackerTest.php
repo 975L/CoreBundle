@@ -33,7 +33,7 @@ class AiUsageTrackerTest extends TestCase
 
     public function testRecordAccumulatesOnExistingRow(): void
     {
-        $existing = (new AiUsage())->setYearMonth((new \DateTimeImmutable())->format('Y-m'));
+        $existing = new AiUsage()->setYearMonth(new \DateTimeImmutable()->format('Y-m'));
         $existing->addUsage(10, 5);
 
         $repository = $this->createStub(AiUsageRepository::class);
@@ -53,7 +53,7 @@ class AiUsageTrackerTest extends TestCase
 
     public function testGetCurrentMonthReturnsRepositoryResult(): void
     {
-        $usage = (new AiUsage())->setYearMonth((new \DateTimeImmutable())->format('Y-m'));
+        $usage = new AiUsage()->setYearMonth(new \DateTimeImmutable()->format('Y-m'));
 
         $repository = $this->createStub(AiUsageRepository::class);
         $repository->method('findOneByYearMonth')->willReturn($usage);
@@ -85,7 +85,7 @@ class AiUsageTrackerTest extends TestCase
 
     public function testRecordAfterFailureClearsIt(): void
     {
-        $existing = (new AiUsage())->setYearMonth((new \DateTimeImmutable())->format('Y-m'));
+        $existing = new AiUsage()->setYearMonth(new \DateTimeImmutable()->format('Y-m'));
         $existing->recordFailure('HTTP 401 returned');
 
         $repository = $this->createStub(AiUsageRepository::class);

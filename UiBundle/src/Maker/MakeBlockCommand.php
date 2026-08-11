@@ -23,7 +23,7 @@ use Symfony\Component\Console\Input\InputInterface;
 // Generates the FormType/template/test skeleton for a new UiBundle block "kind" in the consuming app. Doesn't touch services.yaml: the "ui.block.<kind>" tagged-service registration (see README "Registering a custom block kind") has too many app-specific choices (category, media_types, priority...) to guess safely, so it's printed as a snippet to paste instead
 class MakeBlockCommand extends AbstractMaker
 {
-    private const SKELETON_DIR = __DIR__ . '/../Resources/skeleton/block';
+    private const string SKELETON_DIR = __DIR__ . '/../Resources/skeleton/block';
 
     public static function getCommandName(): string
     {

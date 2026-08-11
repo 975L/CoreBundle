@@ -30,6 +30,7 @@ class VectorType extends Type
     /**
      * @return float[]|null
      */
+    #[\Override]
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?array
     {
         return null === $value ? null : self::unpack($value);
@@ -38,6 +39,7 @@ class VectorType extends Type
     /**
      * @param float[]|null $value
      */
+    #[\Override]
     public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): ?string
     {
         return null === $value ? null : self::pack($value);
@@ -55,6 +57,7 @@ class VectorType extends Type
     }
 
     // The packed bytes are arbitrary binary: STRING would let charset conversion mangle them
+    #[\Override]
     public function getBindingType(): ParameterType
     {
         return ParameterType::BINARY;

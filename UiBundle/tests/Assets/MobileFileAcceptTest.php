@@ -15,8 +15,8 @@ use PHPUnit\Framework\TestCase;
 // The module is what lets an admin editing a block from a phone reach kDrive/Nextcloud/"Files" instead of the gallery alone, and the repository has no browser to run it in - what can still be checked is that it is loaded at all, and that the three conditions keeping it harmless (mouse untouched, media-only lists only, delegated so late-arriving inputs are covered) are still written in it
 class MobileFileAcceptTest extends TestCase
 {
-    private const MODULE_JS = 'assets/js/mobile-file-accept.js';
-    private const ADMIN_BARREL = 'assets/controllers-admin.js';
+    private const string MODULE_JS = 'assets/js/mobile-file-accept.js';
+    private const string ADMIN_BARREL = 'assets/controllers-admin.js';
 
     // Not a Stimulus controller: it is imported for its side effect only, so a missing import is the whole feature missing
     public function testTheModuleIsImportedByTheAdminBarrel(): void

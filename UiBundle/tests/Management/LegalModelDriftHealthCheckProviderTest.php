@@ -30,7 +30,7 @@ class LegalModelDriftHealthCheckProviderTest extends TestCase
         $block = new Block();
         $block->setKind('legal_model');
         $block->setData($data);
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($block, $id);
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, $id);
 
         return $block;
     }

@@ -18,7 +18,7 @@ class MediaTest extends TestCase
 {
     public function testIsOgImageIsTrueForTheSiteWideOgImageRole(): void
     {
-        $media = (new Media())->setRole(Media::ROLE_OG_IMAGE);
+        $media = new Media()->setRole(Media::ROLE_OG_IMAGE);
 
         $this->assertTrue($media->isOgImage());
         $this->assertSame(600, $media->getImageWidth());
@@ -35,7 +35,7 @@ class MediaTest extends TestCase
 
     public function testIsOgImageIsFalseForABlockAttachedMedia(): void
     {
-        $media = (new Media())->setBlock(new Block());
+        $media = new Media()->setBlock(new Block());
 
         $this->assertFalse($media->isOgImage());
         $this->assertSame(800, $media->getImageWidth());
@@ -43,7 +43,7 @@ class MediaTest extends TestCase
 
     public function testGetImageWidthUsesMaxWidthsForARoleDeclaredThere(): void
     {
-        $media = (new Media())->setRole(Media::ROLE_LOGO);
+        $media = new Media()->setRole(Media::ROLE_LOGO);
 
         $this->assertSame(600, $media->getImageWidth());
     }
@@ -51,14 +51,14 @@ class MediaTest extends TestCase
     // Hero crops tightly via CSS object-fit:cover (see sass/_page-sections.scss) - needs a wider stored image than other block kinds to avoid pixelating on retina displays
     public function testGetImageWidthUsesBlockKindMaxWidthsForHero(): void
     {
-        $media = (new Media())->setBlock((new Block())->setKind('hero'));
+        $media = new Media()->setBlock(new Block()->setKind('hero'));
 
         $this->assertSame(1200, $media->getImageWidth());
     }
 
     public function testGetIntrinsicDimensionsReturnTheValueWhenItIsABarePixelCount(): void
     {
-        $media = (new Media())->setWidth('600')->setHeight('120');
+        $media = new Media()->setWidth('600')->setHeight('120');
 
         $this->assertSame(600, $media->getIntrinsicWidth());
         $this->assertSame(120, $media->getIntrinsicHeight());
@@ -67,7 +67,7 @@ class MediaTest extends TestCase
     // The admin fields are free text, and a css length in an HTML width/height attribute is silently discarded by browsers - see getIntrinsicWidth()
     public function testGetIntrinsicDimensionsReturnNullForACssLength(): void
     {
-        $media = (new Media())->setWidth('50%')->setHeight('100px');
+        $media = new Media()->setWidth('50%')->setHeight('100px');
 
         $this->assertNull($media->getIntrinsicWidth());
         $this->assertNull($media->getIntrinsicHeight());

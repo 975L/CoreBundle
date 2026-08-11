@@ -28,6 +28,7 @@ class AnimationChoiceType extends AbstractType
         'label.animation_zoom_in' => 'zoom-in',
     ];
 
+    #[\Override]
     public function getParent(): string
     {
         return ChoiceType::class;

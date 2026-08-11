@@ -19,6 +19,7 @@ class FlexColumnsType extends AbstractSectionHeadContainerType
     // Matches the ".flex-columns--{alignment}" modifiers styled in sass/_page-sections.scss; "top" is the row's own default and writes no class, so every row stored before this field existed goes on rendering as it did
     public const VERTICAL_ALIGNMENTS = ['top', 'middle', 'bottom'];
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);

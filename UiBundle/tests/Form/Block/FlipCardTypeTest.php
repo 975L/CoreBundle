@@ -28,7 +28,7 @@ class FlipCardTypeTest extends TestCase
             return $builder;
         });
 
-        (new FlipCardType())->buildForm($builder, []);
+        new FlipCardType()->buildForm($builder, []);
 
         return $added;
     }

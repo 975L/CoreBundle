@@ -23,7 +23,7 @@ class AiCrawlersHealthCheckProvider implements HealthCheckProviderInterface
     public const KIND = 'ai-crawlers';
 
     // Named in the warning rather than counted alone, so the dashboard says what would be blocked without having to run anything - beyond that the row would be unreadable, and the command prints the full list
-    private const NAMED_IN_SUMMARY = 5;
+    private const int NAMED_IN_SUMMARY = 5;
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,

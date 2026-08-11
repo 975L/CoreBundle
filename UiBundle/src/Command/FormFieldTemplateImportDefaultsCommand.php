@@ -24,7 +24,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'c975l:ui:form-field-template:import-defaults', description: 'Imports default FormFieldTemplate rows')]
 class FormFieldTemplateImportDefaultsCommand extends Command
 {
-    private const DEFAULTS = [
+    private const array DEFAULTS = [
         [
             'name' => 'name',
             'fieldLabel' => 'Nom',
@@ -107,7 +107,7 @@ class FormFieldTemplateImportDefaultsCommand extends Command
                 continue;
             }
 
-            $template = (new FormFieldTemplate())
+            $template = new FormFieldTemplate()
                 ->setName($default['name'])
                 ->setFieldLabel($default['fieldLabel'])
                 ->setPlaceholder($default['placeholder'])

@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 
 class FormSeederTest extends TestCase
 {
-    private const CONTACT_FIELDS = [
+    private const array CONTACT_FIELDS = [
         'en' => [
             'email' => ['email', 'Your e-mail', null],
             'message' => ['textarea', 'Your message', null],
@@ -82,7 +82,7 @@ class FormSeederTest extends TestCase
     // Idempotent: running the seed again on an already-seeded, up-to-date Form creates nothing
     public function testEnsureFormDoesNotSeedTwice(): void
     {
-        $existing = (new Form())->setName('contact')->setAction('send_email')->setRestricted(true);
+        $existing = new Form()->setName('contact')->setAction('send_email')->setRestricted(true);
         $seeder = $this->seeder('en', $existing);
 
         $seeder->ensureForm('contact', self::CONTACT_FIELDS, 'send_email');
@@ -93,7 +93,7 @@ class FormSeederTest extends TestCase
     // A Form seeded before its owning bundle gained an action is brought up to date in place
     public function testEnsureFormBackfillsAMissingActionOnARestrictedForm(): void
     {
-        $existing = (new Form())->setName('contact')->setRestricted(true);
+        $existing = new Form()->setName('contact')->setRestricted(true);
         $seeder = $this->seeder('en', $existing);
 
         $seeder->ensureForm('contact', self::CONTACT_FIELDS, 'send_email', ['to' => 'contact@example.test']);
@@ -106,7 +106,7 @@ class FormSeederTest extends TestCase
     // A Form an admin has taken over is never rewritten
     public function testEnsureFormLeavesAnUnrestrictedFormAlone(): void
     {
-        $existing = (new Form())->setName('contact')->setRestricted(false);
+        $existing = new Form()->setName('contact')->setRestricted(false);
         $seeder = $this->seeder('en', $existing);
 
         $seeder->ensureForm('contact', self::CONTACT_FIELDS, 'send_email');
@@ -118,8 +118,8 @@ class FormSeederTest extends TestCase
     // A field gaining a "url" in a later version gets it, as long as it is still the seeded null
     public function testEnsureFormBackfillsAStillNullFieldUrl(): void
     {
-        $field = (new FormField())->setName('gdpr')->setType('checkbox')->setRestricted(true);
-        $existing = (new Form())->setName('contact')->setAction('send_email')->setRestricted(true)->addField($field);
+        $field = new FormField()->setName('gdpr')->setType('checkbox')->setRestricted(true);
+        $existing = new Form()->setName('contact')->setAction('send_email')->setRestricted(true)->addField($field);
         $seeder = $this->seeder('en', $existing);
 
         $seeder->ensureForm('contact', ['en' => ['gdpr' => ['checkbox', 'I accept', '/terms']]], 'send_email');
@@ -130,8 +130,8 @@ class FormSeederTest extends TestCase
     // ... but an admin's own edit, blank included, is never overwritten
     public function testEnsureFormLeavesAnAlreadySetFieldUrlAlone(): void
     {
-        $field = (new FormField())->setName('gdpr')->setType('checkbox')->setRestricted(true)->setUrl('');
-        $existing = (new Form())->setName('contact')->setAction('send_email')->setRestricted(true)->addField($field);
+        $field = new FormField()->setName('gdpr')->setType('checkbox')->setRestricted(true)->setUrl('');
+        $existing = new Form()->setName('contact')->setAction('send_email')->setRestricted(true)->addField($field);
         $seeder = $this->seeder('en', $existing);
 
         $seeder->ensureForm('contact', ['en' => ['gdpr' => ['checkbox', 'I accept', '/terms']]], 'send_email');
@@ -155,7 +155,7 @@ class FormSeederTest extends TestCase
     // A Form seeded before its bundle declared any link gets them, without the action having to change
     public function testEnsureFormBackfillsMissingLinks(): void
     {
-        $existing = (new Form())->setName('register')->setAction('register')->setRestricted(true);
+        $existing = new Form()->setName('register')->setAction('register')->setRestricted(true);
         $seeder = $this->seeder('en', $existing);
 
         $seeder->ensureForm('register', self::CONTACT_FIELDS, 'register', null, ['en' => [['label' => 'Sign in', 'url' => '/login']]]);
@@ -167,7 +167,7 @@ class FormSeederTest extends TestCase
     // ... but an admin who has edited them, emptied included, keeps their own version - built through setLinks(), the way the back-office really empties them, and not by hand-writing the key
     public function testEnsureFormLeavesAlreadyEditedLinksAlone(): void
     {
-        $existing = (new Form())->setName('register')->setAction('register')->setRestricted(true)
+        $existing = new Form()->setName('register')->setAction('register')->setRestricted(true)
             ->setLinks([['label' => 'Mine', 'url' => '/mine']]);
         $existing->setLinks([]);
         $seeder = $this->seeder('en', $existing);
@@ -181,7 +181,7 @@ class FormSeederTest extends TestCase
     // Renaming a seeded action used to replace the whole column, taking the admin's own links down with it - the rest of the config does belong to the action, the links never did
     public function testEnsureFormKeepsEditedLinksWhenTheActionIsRenamed(): void
     {
-        $existing = (new Form())->setName('register')->setAction('register')->setRestricted(true)
+        $existing = new Form()->setName('register')->setAction('register')->setRestricted(true)
             ->setActionConfig(['links' => [['label' => 'My own', 'url' => '/mine']], 'stale' => 'value']);
         $seeder = $this->seeder('en', $existing);
 
@@ -195,7 +195,7 @@ class FormSeederTest extends TestCase
     // A Form that never carried any link still receives the seeded ones through the same rename
     public function testEnsureFormSeedsLinksWhenTheActionIsRenamedAndNoneWereSet(): void
     {
-        $existing = (new Form())->setName('register')->setAction('register')->setRestricted(true);
+        $existing = new Form()->setName('register')->setAction('register')->setRestricted(true);
         $seeder = $this->seeder('en', $existing);
 
         $seeder->ensureForm('register', self::CONTACT_FIELDS, 'register_v2', null, ['en' => [['label' => 'Sign in', 'url' => '/login']]]);

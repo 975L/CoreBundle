@@ -225,7 +225,7 @@ abstract class ManagementTargetsTestCase extends TestCase
     // Every route name the watched controllers declare, spelled the way it is registered: the dashboard's own route name prefixing each #[AdminRoute], and plain #[Route] names as they are
     private function declaredRouteNames(): array
     {
-        $dashboardRouteName = (new \ReflectionClass(DashboardController::class))->getAttributes(AdminDashboard::class)[0]->newInstance()->routeName;
+        $dashboardRouteName = new \ReflectionClass(DashboardController::class)->getAttributes(AdminDashboard::class)[0]->newInstance()->routeName;
         $names = [$dashboardRouteName];
 
         foreach ($this->controllerDirectories() as $directory) {
@@ -273,11 +273,11 @@ abstract class ManagementTargetsTestCase extends TestCase
             return false;
         }
 
-        if ([] !== (new \ReflectionMethod($controller, $action))->getAttributes(AdminRoute::class)) {
+        if ([] !== new \ReflectionMethod($controller, $action)->getAttributes(AdminRoute::class)) {
             return true;
         }
 
-        return '__invoke' === $action && [] !== (new \ReflectionClass($controller))->getAttributes(AdminRoute::class);
+        return '__invoke' === $action && [] !== new \ReflectionClass($controller)->getAttributes(AdminRoute::class);
     }
 
     // The name a class-level route attribute contributes as a prefix, '' when it carries none (the usual case) - both attributes spell it as a public "name" property

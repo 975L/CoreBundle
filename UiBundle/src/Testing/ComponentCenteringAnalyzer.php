@@ -24,7 +24,7 @@ namespace c975L\UiBundle\Testing;
 final class ComponentCenteringAnalyzer
 {
     // Every property able to overwrite the inline axis a centering declaration lives on
-    private const INLINE_MARGIN_PROPERTIES = ['margin', 'margin-inline', 'margin-left', 'margin-right', 'margin-inline-start', 'margin-inline-end'];
+    private const array INLINE_MARGIN_PROPERTIES = ['margin', 'margin-inline', 'margin-left', 'margin-right', 'margin-inline-start', 'margin-inline-end'];
 
     public function __construct(
         private readonly StylesheetCascade $cascade,
@@ -61,7 +61,7 @@ final class ComponentCenteringAnalyzer
             }
         }
 
-        return array_map('array_keys', $tags);
+        return array_map(array_keys(...), $tags);
     }
 
     // The tags an element is rendered as. Half the sections pick theirs at runtime ("<{{ tag }}"), so the literals of the expression are what names them - the whole of the page-section family is invisible to a reading that only takes a written-out tag.
@@ -82,7 +82,7 @@ final class ComponentCenteringAnalyzer
         preg_match_all('/[\'"]([a-z][a-z0-9]*)[\'"]/i', $expression, $literals);
 
         // Nothing written out: read as "any tag", an unresolved collision costing more than a reported one
-        return [] === $literals[1] ? ['*'] : array_map('strtolower', $literals[1]);
+        return [] === $literals[1] ? ['*'] : array_map(strtolower(...), $literals[1]);
     }
 
     /**

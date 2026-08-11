@@ -27,7 +27,7 @@ class BannerTitleTypeTest extends TestCase
             return $builder;
         });
 
-        (new BannerTitleType())->buildForm($builder, []);
+        new BannerTitleType()->buildForm($builder, []);
 
         return $added;
     }

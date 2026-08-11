@@ -41,7 +41,7 @@ class EmailTemplateTest extends TestCase
 
     public function testToStringReturnsName(): void
     {
-        $emailTemplate = (new EmailTemplate())->setName('contact_notification');
+        $emailTemplate = new EmailTemplate()->setName('contact_notification');
 
         $this->assertSame('contact_notification', (string) $emailTemplate);
     }

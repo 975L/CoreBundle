@@ -33,7 +33,7 @@ class FeatureBarTypeTest extends TestCase
             return $builder;
         });
 
-        (new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         $this->assertArrayHasKey('items', $added);
         $this->assertArrayHasKey('background', $added);
@@ -55,7 +55,7 @@ class FeatureBarTypeTest extends TestCase
             return $builder;
         });
 
-        (new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         foreach (['eyebrow', 'title'] as $field) {
             $this->assertArrayHasKey($field, $added);
@@ -75,7 +75,7 @@ class FeatureBarTypeTest extends TestCase
             return $builder;
         });
 
-        (new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new FeatureBarType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         $this->assertSame(5, FeatureBarType::MAX_ITEMS);
         $this->assertCount(1, $added['items']['options']['constraints']);

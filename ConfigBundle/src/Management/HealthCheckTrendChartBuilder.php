@@ -19,7 +19,7 @@ use Symfony\UX\Chartjs\Model\Chart;
 // Builds the "is our site's health improving or degrading" line chart for the Health check page, from HealthCheckResultRepository::findStatusCountsByDate() - the historisation artefact (RGAA/EAA audit trail), not a per-page breakdown
 class HealthCheckTrendChartBuilder
 {
-    private const COLORS = [
+    private const array COLORS = [
         HealthCheckResult::STATUS_OK => '#198754',
         HealthCheckResult::STATUS_WARNING => '#ffc107',
         HealthCheckResult::STATUS_ERROR => '#dc3545',

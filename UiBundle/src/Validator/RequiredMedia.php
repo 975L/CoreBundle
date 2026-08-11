@@ -18,6 +18,7 @@ class RequiredMedia extends Constraint
 {
     public string $message = 'label.block_media_required';
 
+    #[\Override]
     public function getTargets(): string
     {
         return self::CLASS_CONSTRAINT;

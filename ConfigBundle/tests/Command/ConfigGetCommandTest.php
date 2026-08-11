@@ -20,11 +20,11 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class ConfigGetCommandTest extends TestCase
 {
-    private const VAULT_KEY = 'a-test-vault-key';
+    private const string VAULT_KEY = 'a-test-vault-key';
 
     private function createConfig(string $slug, ?string $value = null, bool $isSensitive = false, string $kind = Config::TYPE_TEXT): Config
     {
-        return (new Config())->setSlug($slug)->setLabel($slug)->setKind($kind)->setIsSensitive($isSensitive)->setValue($value);
+        return new Config()->setSlug($slug)->setLabel($slug)->setKind($kind)->setIsSensitive($isSensitive)->setValue($value);
     }
 
     private function createRepository(array $configs): ConfigRepository

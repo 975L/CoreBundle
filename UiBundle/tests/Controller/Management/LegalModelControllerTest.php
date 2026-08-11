@@ -38,10 +38,10 @@ class LegalModelControllerTest extends TestCase
 {
     use ControllerContainerTestTrait;
 
-    private const MODEL = 'france/cookies';
+    private const string MODEL = 'france/cookies';
 
     // Same shape as a shipped model: a tagged loose <div>, a plain <section>, and one holding two <h3>
-    private const TEMPLATE = '<div class="legal"><div data-legal-id="intro">Intro</div>'
+    private const string TEMPLATE = '<div class="legal"><div data-legal-id="intro">Intro</div>'
         . '<section data-legal-id="one"><h2>One</h2><div>Body one</div></section>'
         . '<section data-legal-id="two"><h2>Two</h2><div>Lead two</div>'
         . '<h3 data-legal-id="two.a">A</h3><div>Body A</div><h3 data-legal-id="two.b">B</h3><div>Body B</div></section></div>';
@@ -63,7 +63,7 @@ class LegalModelControllerTest extends TestCase
         $block = new Block();
         $block->setKind($kind);
         $block->setData($data);
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($block, $id);
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, $id);
 
         return $block;
     }
@@ -237,7 +237,7 @@ class LegalModelControllerTest extends TestCase
         $response = $this->createController([])->customize($this->createBlock(['model' => self::MODEL]), new Request());
 
         // Three top-level nodes (intro, one, two), the last holding two.a and two.b, whose row indices follow
-        $this->assertSame('label.cookies_policy|3|2|two.a|3|' . \count((new LegalModelPlaceholders($this->createStub(ConfigServiceInterface::class)))->slugs()), $response->getContent());
+        $this->assertSame('label.cookies_policy|3|2|two.a|3|' . \count(new LegalModelPlaceholders($this->createStub(ConfigServiceInterface::class))->slugs()), $response->getContent());
     }
 
     public function testCustomizeStoresTheDeltaAndRedirects(): void

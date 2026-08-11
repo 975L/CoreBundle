@@ -17,7 +17,7 @@ class SslCertificateClient
     {
         $certificate = $this->fetchCertificate($host, $port);
 
-        return (new \DateTimeImmutable())->setTimestamp($certificate['validTo_time_t']);
+        return new \DateTimeImmutable()->setTimestamp($certificate['validTo_time_t']);
     }
 
     // Every hostname the certificate this host presents is valid for: its common name plus every DNS entry of its subjectAltName, lowercased. What a browser compares the address it was given against, and what a certificate issued for the apex alone fails to list for its own "www" alias - the host then serves a certificate covering neither, and every client refuses the connection (see DeploymentHealthCheckProvider)

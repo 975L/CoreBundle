@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\Reference;
 class StylesheetRegistryPass implements CompilerPassInterface
 {
     // Below any priority a bundle would give itself, so an auto-tagged provider lands last whatever the bundles around it declare - rather than relying on 0 happening to be the floor of their range
-    private const AUTO_TAG_PRIORITY = -100;
+    private const int AUTO_TAG_PRIORITY = -100;
 
     public function process(ContainerBuilder $container): void
     {

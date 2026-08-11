@@ -26,7 +26,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[FixedIconFormat]
 class Media implements VichImageResizableInterface, VichMediaNamableInterface
 {
-    private const IMAGE_WIDTH = 800;
+    private const int IMAGE_WIDTH = 800;
 
     // Site-wide graphics, not attached to a Block - fixed filename at the root of public/ (see getVichMediaPath), one row per role enforced at the application level (see isSingletonRole)
     public const ROLE_FAVICON = 'favicon';
@@ -41,7 +41,7 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     // Site-wide but repeatable role: several rows share it (e.g. a pool of images picked at random), each gets its own filename
     public const ROLE_ERROR_IMAGE = 'error-image';
 
-    private const SINGLETON_ROLES = [
+    private const array SINGLETON_ROLES = [
         self::ROLE_FAVICON,
         self::ROLE_APPLE_TOUCH_ICON,
         self::ROLE_OG_IMAGE,
@@ -51,18 +51,18 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     ];
 
     // Roles needing a fixed target size/format regardless of the uploaded file (see UiMediaNamer/VichImageResizeListener). Favicon stays .ico (48x48 is the historical browser/OS expectation), apple-touch-icon stays .png (iOS ignores other formats)
-    private const FIXED_ICON_SPECS = [
+    private const array FIXED_ICON_SPECS = [
         self::ROLE_FAVICON => ['width' => 48, 'height' => 48, 'format' => 'ico'],
         self::ROLE_APPLE_TOUCH_ICON => ['width' => 114, 'height' => 114, 'format' => 'png'],
     ];
 
     // Roles resized to a max width (aspect ratio kept, unlike FIXED_ICON_SPECS) instead of the default IMAGE_WIDTH
-    private const MAX_WIDTHS = [
+    private const array MAX_WIDTHS = [
         self::ROLE_LOGO => 600,
     ];
 
     // Block kinds needing a wider stored image than IMAGE_WIDTH (block medias all share role=null, so MAX_WIDTHS above can't key on them). Hero crops tightly via CSS object-fit:cover into a 4/3.2 box and can display up to 520px CSS-wide - on a retina/2x display that needs ~1040 native pixels, and the default 800 falls short, visibly pixelating once cover crops further into the image
-    private const BLOCK_KIND_MAX_WIDTHS = [
+    private const array BLOCK_KIND_MAX_WIDTHS = [
         'hero' => 1200,
     ];
 

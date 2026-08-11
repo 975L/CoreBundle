@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ContentQualityAnalyzer
 {
     // How many requests are kept in flight at once, for the page analyses as well as the link checks. Symfony's HttpClient caps concurrent connections per host, so firing every url of the whole site at once only queues the surplus - while each queued request's own timeout is already running, turning perfectly valid pages/links into timeouts, and timeouts into "broken" rows. It also bounds how many responses are held in memory at once, which matters for a bundle declaring thousands of urls (see DeclaredUrlsHealthCheckProvider)
-    private const BATCH_SIZE = 10;
+    private const int BATCH_SIZE = 10;
 
     // Recommended <title> window, in characters. The upper bound is the only one search engines actually impose: past 65 the results page truncates it mid-word. The lower one is editorial, and deliberately far below the 30 characters SEO tools conventionally flag - a title is built here as "Page title - Site name" (see layout.html.twig), so a short site name alone can push a perfectly explicit title under such a threshold, and a warning raised one character short of it only teaches the reader to ignore the table. Ten catches what it is meant to catch: a title reduced to a word or two. Public so PageHealthCheckAdviceBuilder states the same numbers in its advice line rather than keeping its own copy
     public const TITLE_MIN_LENGTH = 10;

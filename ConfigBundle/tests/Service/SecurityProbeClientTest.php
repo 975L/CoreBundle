@@ -30,7 +30,7 @@ class SecurityProbeClientTest extends TestCase
             ])
         );
 
-        $response = (new SecurityProbeClient($httpClient))->probe('https://example.com/vendor/');
+        $response = new SecurityProbeClient($httpClient)->probe('https://example.com/vendor/');
 
         $this->assertSame(200, $response['status']);
         $this->assertSame(['text/html'], $response['headers']['content-type']);
@@ -46,7 +46,7 @@ class SecurityProbeClientTest extends TestCase
             fn (string $method, string $url, array $options) => new MockResponse('Not found', ['http_code' => 404])
         );
 
-        $this->assertSame(404, (new SecurityProbeClient($httpClient))->probe('https://example.com/.env')['status']);
+        $this->assertSame(404, new SecurityProbeClient($httpClient)->probe('https://example.com/.env')['status']);
     }
 
     // A redirect is an answer in itself: a site sending /_profiler back to its home page is not exposing it
@@ -59,7 +59,7 @@ class SecurityProbeClientTest extends TestCase
             ])
         );
 
-        $this->assertSame(302, (new SecurityProbeClient($httpClient))->probe('https://example.com/_profiler')['status']);
+        $this->assertSame(302, new SecurityProbeClient($httpClient)->probe('https://example.com/_profiler')['status']);
     }
 
     public function testProbeTruncatesTheBody(): void
@@ -68,7 +68,7 @@ class SecurityProbeClientTest extends TestCase
             fn (string $method, string $url, array $options) => new MockResponse(str_repeat('x', 10000), ['http_code' => 200])
         );
 
-        $this->assertSame(2048, \strlen((new SecurityProbeClient($httpClient))->probe('https://example.com/')['body']));
+        $this->assertSame(2048, \strlen(new SecurityProbeClient($httpClient)->probe('https://example.com/')['body']));
     }
 
     public function testProbePropagatesTransportExceptions(): void
@@ -79,6 +79,6 @@ class SecurityProbeClientTest extends TestCase
             fn (string $method, string $url, array $options) => new MockResponse('', ['error' => 'Connection refused'])
         );
 
-        (new SecurityProbeClient($httpClient))->probe('https://example.com/');
+        new SecurityProbeClient($httpClient)->probe('https://example.com/');
     }
 }

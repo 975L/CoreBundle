@@ -40,7 +40,7 @@ class VichImageResizeListenerTest extends TestCase
     // Recursive: a kept original lands under its own directory outside public/, and the stored files themselves sit in nested paths
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createMapping(): PropertyMapping

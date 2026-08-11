@@ -91,6 +91,7 @@ class ConfigCrudController extends AbstractCrudController
     }
 
     // Without a "group" to scope to, shows the intermediate "pick a group" screen instead of EasyAdmin's own grid - same reasoning/pattern as SiteBundle's CollectionItemCrudController: the flat list became unreadable once enough groups accumulated. A search query typed from that screen bypasses it though: the search box is otherwise displayed but dead (nothing on the "pick a group" screen reads it), so a non-empty query instead falls through to the grid, unscoped by group (createIndexQueryBuilder() only filters by group when currentGroup() is set), searching across every group at once
+    #[\Override]
     public function index(AdminContext $context): KeyValueStore | Response
     {
         if ($this->showGroupsScreen()) {
@@ -110,6 +111,7 @@ class ConfigCrudController extends AbstractCrudController
         return parent::index($context);
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         $context = $this->getContext();
@@ -341,6 +343,7 @@ class ConfigCrudController extends AbstractCrudController
         };
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $exportGroup = ActionGroup::new('export', t('label.export', [], 'config'), 'fa fa-download')
@@ -407,6 +410,7 @@ class ConfigCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -421,6 +425,7 @@ class ConfigCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
     {
         if (Crud::PAGE_INDEX === $responseParameters->get('pageName')) {
@@ -436,6 +441,7 @@ class ConfigCrudController extends AbstractCrudController
     }
 
     // "group" is deliberately not filterable here anymore - the index is already scoped to one group via the "pick a group" screen (see index()), and a second, conflicting group filter on top of that URL-driven scoping would just AND against it and silently return zero rows
+    #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
@@ -457,6 +463,7 @@ class ConfigCrudController extends AbstractCrudController
         return $choices;
     }
 
+    #[\Override]
     public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
         $query = $searchDto->getQuery();
@@ -529,7 +536,7 @@ class ConfigCrudController extends AbstractCrudController
         $matching = [];
         foreach ($rows as $row) {
             $slug = $row['slug'];
-            $label = $this->configLabelResolver->resolve((new Config())->setSlug($slug)->setLabel((string) $row['label']));
+            $label = $this->configLabelResolver->resolve(new Config()->setSlug($slug)->setLabel((string) $row['label']));
             $description = $row['description'] ? $this->translator->trans($row['description'], [], 'site_config') : '';
 
             if (
@@ -553,6 +560,7 @@ class ConfigCrudController extends AbstractCrudController
         }
     }
 
+    #[\Override]
     public function edit(AdminContext $context): KeyValueStore | Response
     {
         $this->denyAccessToRestrictedConfig($context);
@@ -561,6 +569,7 @@ class ConfigCrudController extends AbstractCrudController
     }
 
     // New config - encrypt sensitive value if provided, then invalidate cache
+    #[\Override]
     public function persistEntity(EntityManagerInterface $entityManager, mixed $config): void
     {
         if ($config->getIsSensitive() && null !== $config->getValue() && '' !== $config->getValue()) {
@@ -577,6 +586,7 @@ class ConfigCrudController extends AbstractCrudController
     }
 
     // Updated config - encrypt sensitive value if provided, then invalidate cache
+    #[\Override]
     public function updateEntity(EntityManagerInterface $entityManager, mixed $config): void
     {
         if ($config->getIsSensitive()) {
@@ -597,6 +607,7 @@ class ConfigCrudController extends AbstractCrudController
     }
 
     // Deleted config - Invalidate cache
+    #[\Override]
     public function deleteEntity(EntityManagerInterface $entityManager, mixed $config): void
     {
         parent::deleteEntity($entityManager, $config);

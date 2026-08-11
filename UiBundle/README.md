@@ -1845,18 +1845,30 @@ A site registers its own theme files the same way, minus the tag: `config/servic
 namespace App\Service;
 
 use c975L\UiBundle\Contract\BundleStylesheetProviderInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class ThemeStylesheetProvider implements BundleStylesheetProviderInterface
 {
+    public function __construct(
+        #[Autowire('%kernel.project_dir%')]
+        private readonly string $projectDir,
+    ) {
+    }
+
+    // Every sheet the site owns, its own ones first and its themes after them, so a theme retunes what precedes it
     public function getStylesheets(): array
     {
-        return [
-            'assets/styles/themes/ui.css',
-            'assets/styles/themes/site.css',
+        $stylesheets = [
+            ...glob($this->projectDir . '/assets/styles/*.css') ?: [],
+            ...glob($this->projectDir . '/assets/styles/themes/*.css') ?: [],
         ];
+
+        return array_map(fn (string $path): string => substr($path, \strlen($this->projectDir) + 1), $stylesheets);
     }
 }
 ```
+
+Globbing both directories rather than listing files means a sheet added to `assets/styles/` is contributed without touching the provider — and, `assets/styles/app.css` being one of them, that its `import './styles/app.css'` in `assets/app.js` can go: what the provider returns is what the compiled `bundles/build/site.css` holds.
 
 Nothing to add to `config/services.yaml` — autowiring registers the class, and the compiler pass does the rest. Do **not** copy the tagged snippet above into an app: any priority a bundle also uses puts the site's theme ahead of that bundle's sheet, which then overrides the theme rather than the other way round.
 

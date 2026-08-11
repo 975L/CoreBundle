@@ -40,7 +40,7 @@ class SslCertificateClientTest extends TestCase
     {
         [$port, $expectedExpiry] = $this->startTlsServer(10);
 
-        $expiresAt = (new SslCertificateClient())->fetchExpiry('127.0.0.1', $port);
+        $expiresAt = new SslCertificateClient()->fetchExpiry('127.0.0.1', $port);
 
         $this->assertSame($expectedExpiry->getTimestamp(), $expiresAt->getTimestamp());
     }
@@ -50,7 +50,7 @@ class SslCertificateClientTest extends TestCase
         $this->expectException(\RuntimeException::class);
 
         // Nothing is listening on this port
-        (new SslCertificateClient())->fetchExpiry('127.0.0.1', 1);
+        new SslCertificateClient()->fetchExpiry('127.0.0.1', 1);
     }
 
     // The common name alone, on a certificate naming no alternative name at all
@@ -58,7 +58,7 @@ class SslCertificateClientTest extends TestCase
     {
         [$port] = $this->startTlsServer(10);
 
-        $names = (new SslCertificateClient())->fetchSubjectNames('127.0.0.1', $port);
+        $names = new SslCertificateClient()->fetchSubjectNames('127.0.0.1', $port);
 
         $this->assertSame(['127.0.0.1'], $names);
     }
@@ -68,7 +68,7 @@ class SslCertificateClientTest extends TestCase
     {
         [$port] = $this->startTlsServer(10, ['DNS:127.0.0.1', 'DNS:Example.com', 'DNS:*.example.com', 'IP:127.0.0.1']);
 
-        $names = (new SslCertificateClient())->fetchSubjectNames('127.0.0.1', $port);
+        $names = new SslCertificateClient()->fetchSubjectNames('127.0.0.1', $port);
 
         // Lowercased, deduplicated against the common name, and carrying no entry naming something other than a host
         $this->assertSame(['127.0.0.1', 'example.com', '*.example.com'], $names);
@@ -78,7 +78,7 @@ class SslCertificateClientTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        (new SslCertificateClient())->fetchSubjectNames('127.0.0.1', 1);
+        new SslCertificateClient()->fetchSubjectNames('127.0.0.1', 1);
     }
 
     // Spawns a background TLS server on a short-lived self-signed certificate for the client to reach
@@ -98,7 +98,7 @@ class SslCertificateClientTest extends TestCase
         $this->certificatePath = tempnam(sys_get_temp_dir(), 'ssl-cert-test-');
         file_put_contents($this->certificatePath, $certificatePem . $keyPem);
 
-        $expiresAt = (new \DateTimeImmutable())->setTimestamp(openssl_x509_parse($certificate)['validTo_time_t']);
+        $expiresAt = new \DateTimeImmutable()->setTimestamp(openssl_x509_parse($certificate)['validTo_time_t']);
 
         $port = random_int(20000, 60000);
         // Loops rather than accepting one connection, the readiness probe consuming one of its own

@@ -53,12 +53,12 @@ class BackupOffsiteCommand extends Command
 {
     // Past this many deletions the sync aborts rather than carrying them over. The failure this guards against is not the exotic one: it's a gallery emptied by mistake, or a hacked site, propagated to the backup within hours.
     // Aborting is the right answer - it costs a night's mirroring and a look from a human, against a copy that faithfully reproduces the damage
-    private const MAX_DELETE = 100;
+    private const int MAX_DELETE = 100;
 
-    private const DEFAULT_KEEP_DAYS = 15;
+    private const int DEFAULT_KEEP_DAYS = 15;
 
     // Where --backup-dir puts what a sync would otherwise have overwritten or lost, one folder per day. Named for what an operator comes looking for - the previous version of a file - rather than for the rclone mechanism that fills it: "deleted/" reads as a bin holding only what was removed, when a file merely overwritten is in there too, and this is the folder someone opens on the day a gallery got emptied
-    private const PREVIOUS_FOLDER = 'previous';
+    private const string PREVIOUS_FOLDER = 'previous';
 
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
@@ -103,7 +103,7 @@ class BackupOffsiteCommand extends Command
             return Command::SUCCESS;
         }
 
-        $dated = (new \DateTimeImmutable())->format('Y-m-d');
+        $dated = new \DateTimeImmutable()->format('Y-m-d');
         $failures = [];
 
         foreach ($paths as $path) {

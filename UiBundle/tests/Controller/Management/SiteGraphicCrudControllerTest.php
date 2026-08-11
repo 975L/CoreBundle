@@ -124,7 +124,7 @@ class SiteGraphicCrudControllerTest extends TestCase
     // Reaches the list feeding the index's "missing graphic" buttons, only ever built for the index page
     private function missingRoles(SiteGraphicCrudController $controller): array
     {
-        return (new \ReflectionMethod($controller, 'missingRoles'))->invoke($controller);
+        return new \ReflectionMethod($controller, 'missingRoles')->invoke($controller);
     }
 
     // --- configureFields: role ----------------------------------------------------------------------------

@@ -21,8 +21,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SitemapRobotsHealthCheckProviderTest extends TestCase
 {
-    private const ROBOTS_URL = 'https://example.com/robots.txt';
-    private const OPEN_ROBOTS = "User-agent: *\nAllow: /\n";
+    private const string ROBOTS_URL = 'https://example.com/robots.txt';
+    private const string OPEN_ROBOTS = "User-agent: *\nAllow: /\n";
 
     // A real resolver over a stubbed config, so the trailing-slash normalisation the provider relies on is exercised rather than stubbed away
     private function createSiteUrlResolver(?string $siteUrl): SiteUrlResolver

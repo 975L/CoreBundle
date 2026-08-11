@@ -32,9 +32,9 @@ class SiteGraphicExportProviderTest extends TestCase
         $filename = 'favicon.ico';
         file_put_contents($projectDir . '/public/' . $filename, 'fake-icon-bytes');
 
-        $media = (new Media())->setRole(Media::ROLE_FAVICON)->setFilename($filename);
+        $media = new Media()->setRole(Media::ROLE_FAVICON)->setFilename($filename);
 
-        $data = (new SiteGraphicExportProvider($this->createStub(MediaRepository::class), $projectDir))->serialize([$media]);
+        $data = new SiteGraphicExportProvider($this->createStub(MediaRepository::class), $projectDir)->serialize([$media]);
 
         $this->assertSame(Media::ROLE_FAVICON, $data['items'][0]['role']);
         $this->assertSame('favicon.ico', $data['items'][0]['originalFilename']);
@@ -48,9 +48,9 @@ class SiteGraphicExportProviderTest extends TestCase
 
     public function testSerializeSkipsAGraphicWithNoReadableFile(): void
     {
-        $media = (new Media())->setRole(Media::ROLE_LOGO)->setFilename('logo.svg');
+        $media = new Media()->setRole(Media::ROLE_LOGO)->setFilename('logo.svg');
 
-        $data = (new SiteGraphicExportProvider($this->createStub(MediaRepository::class), sys_get_temp_dir()))->serialize([$media]);
+        $data = new SiteGraphicExportProvider($this->createStub(MediaRepository::class), sys_get_temp_dir())->serialize([$media]);
 
         $this->assertSame([], $data['items']);
         $this->assertSame([], $data['files']);

@@ -22,7 +22,7 @@ use Doctrine\ORM\Events;
 #[AsDoctrineListener(event: Events::preUpdate)]
 class BlockVideoNoCookieListener
 {
-    public function __construct(private VideoExtension $videoExtension)
+    public function __construct(private readonly VideoExtension $videoExtension)
     {
     }
 

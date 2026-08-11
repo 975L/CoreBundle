@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
 {
     // How long the sitemap file may go without being rewritten before it is called stale. Not a rule Google publishes: it's simply longer than any of the schedules this bundle documents (the weekly c975l:sitemaps:create entry), so only a sitemap that genuinely stopped being regenerated trips it
-    private const STALE_AFTER_DAYS = 30;
+    private const int STALE_AFTER_DAYS = 30;
 
     public function __construct(
         private readonly SiteUrlResolver $siteUrlResolver,
@@ -81,7 +81,7 @@ class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
     {
         try {
             $file = $this->seoFilesClient->fetch($url);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return [];
         }
 
@@ -179,7 +179,7 @@ class SeoFilesHealthCheckProvider implements HealthCheckProviderInterface
     {
         try {
             $file = $this->seoFilesClient->fetch($url);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return [];
         }
 

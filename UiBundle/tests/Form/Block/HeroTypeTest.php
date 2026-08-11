@@ -36,7 +36,7 @@ class HeroTypeTest extends TestCase
             return $builder;
         });
 
-        (new HeroType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new HeroType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

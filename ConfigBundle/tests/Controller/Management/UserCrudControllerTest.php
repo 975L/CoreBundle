@@ -33,10 +33,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserCrudControllerTest extends TestCase
 {
-    private const AVAILABLE_ROLES = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'];
+    private const array AVAILABLE_ROLES = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'];
 
     // What config/configs.json now ships: ROLE_SUPER_ADMIN is no longer declared there, the controller decides it
-    private const DEFAULT_ROLES = ['ROLE_ADMIN', 'ROLE_EDITOR'];
+    private const array DEFAULT_ROLES = ['ROLE_ADMIN', 'ROLE_EDITOR'];
 
     // AbstractCrudController::configureFields() only ever calls getDefaultFields() on whatever the container returns for FieldProvider::class - the real one is final readonly, so an anonymous object with that single method stands in for it
     private function createContainer(): Container

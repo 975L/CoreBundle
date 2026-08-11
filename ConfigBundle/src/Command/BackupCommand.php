@@ -65,8 +65,8 @@ use Symfony\Component\Process\Process;
 )]
 class BackupCommand extends Command
 {
-    private const DEFAULT_RETENTION_DAYS = 15;
-    private const DEFAULT_OFFSITE_MAX_AGE_HOURS = 30;
+    private const int DEFAULT_RETENTION_DAYS = 15;
+    private const int DEFAULT_OFFSITE_MAX_AGE_HOURS = 30;
 
     private string $projectDir;
     private string $credentialsFile; // path to the runtime-generated temp file
@@ -227,7 +227,7 @@ class BackupCommand extends Command
         }
 
         return array_values(array_filter(
-            array_map('trim', explode("\n", $process->getOutput())),
+            array_map(trim(...), explode("\n", $process->getOutput())),
             fn ($t) => $t && 'TABLE_NAME' !== $t
         ));
     }
@@ -286,7 +286,7 @@ class BackupCommand extends Command
 
         $process = new Process(array_merge(
             ['nice', 'tar', '--remove-files', '--bzip2', '--create', '--file', $archiveName],
-            array_map('basename', $sqlFiles)
+            array_map(basename(...), $sqlFiles)
         ), $this->finalFolder);
         $process->setTimeout(600);
         $process->run();
@@ -451,7 +451,7 @@ class BackupCommand extends Command
     private function cleanup(): void
     {
         // An archive small enough to land here holds nothing usable, so it goes - but it goes on the record too: deleting it silently is how a table that dumped empty used to disappear without leaving any sign it had
-        foreach ((new Finder())->files()->in($this->finalFolder)->size('< 50') as $file) {
+        foreach (new Finder()->files()->in($this->finalFolder)->size('< 50') as $file) {
             $this->warnings[] = sprintf('Discarded empty file %s (%d bytes).', $file->getFilename(), $file->getSize());
             $this->report .= sprintf("DISCARDED empty file: %s (%d bytes)\n", $file->getFilename(), $file->getSize());
             unlink($file->getRealPath());
@@ -462,7 +462,7 @@ class BackupCommand extends Command
         $this->durationSeconds = time() - $this->startedAt->getTimestamp();
         $this->report .= sprintf(
             "\nEnd of backup: %s - Duration: %d minutes and %d seconds\n",
-            (new \DateTime())->format('Y-m-d H:i:s'),
+            new \DateTime()->format('Y-m-d H:i:s'),
             intdiv($this->durationSeconds, 60),
             $this->durationSeconds % 60
         );
@@ -539,7 +539,7 @@ class BackupCommand extends Command
     {
         foreach (glob($path . '/*', GLOB_ONLYDIR) as $dir) {
             $this->deleteEmptyDirectories($dir);
-            if (!(new \FilesystemIterator($dir))->valid()) {
+            if (!new \FilesystemIterator($dir)->valid()) {
                 rmdir($dir);
             }
         }

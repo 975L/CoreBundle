@@ -25,7 +25,7 @@ class SvgRasterizerTest extends TestCase
 
     protected function tearDown(): void
     {
-        array_map('unlink', glob($this->directory . '/*'));
+        array_map(unlink(...), glob($this->directory . '/*'));
         rmdir($this->directory);
     }
 
@@ -51,7 +51,7 @@ class SvgRasterizerTest extends TestCase
 
         $path = $this->writeFile('icon.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e63946"/></svg>');
 
-        $this->assertTrue((new SvgRasterizer())->rasterizeInPlace($path));
+        $this->assertTrue(new SvgRasterizer()->rasterizeInPlace($path));
 
         $dimensions = getimagesize($path);
         $this->assertSame(IMAGETYPE_PNG, $dimensions[2]);
@@ -65,7 +65,7 @@ class SvgRasterizerTest extends TestCase
 
         $path = $this->writeFile('tiny.svg', '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" fill="#457b9d"/></svg>');
 
-        (new SvgRasterizer())->rasterizeInPlace($path);
+        new SvgRasterizer()->rasterizeInPlace($path);
 
         $this->assertGreaterThanOrEqual(256, getimagesize($path)[0]);
     }
@@ -77,7 +77,7 @@ class SvgRasterizerTest extends TestCase
 
         $path = $this->writeFile('nosize.svg', '<svg xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="50" height="50" fill="#264653"/></svg>');
 
-        $this->assertTrue((new SvgRasterizer())->rasterizeInPlace($path));
+        $this->assertTrue(new SvgRasterizer()->rasterizeInPlace($path));
         $this->assertSame(IMAGETYPE_PNG, getimagesize($path)[2]);
     }
 
@@ -88,7 +88,7 @@ class SvgRasterizerTest extends TestCase
 
         $path = $this->writeFile('stroked.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" stroke="#2a9d8f" stroke-width="1"><circle cx="256" cy="256" r="200"/></svg>');
 
-        $this->assertTrue((new SvgRasterizer())->rasterizeInPlace($path));
+        $this->assertTrue(new SvgRasterizer()->rasterizeInPlace($path));
         $this->assertSame(IMAGETYPE_PNG, getimagesize($path)[2]);
     }
 
@@ -99,7 +99,7 @@ class SvgRasterizerTest extends TestCase
 
         $path = $this->writeFile('exported.svg', "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- Generator: Adobe Illustrator -->\n<svg xmlns=\"http://www.w3.org/2000/svg\" x=\"0px\" y=\"0px\" width=\"64px\" height=\"64px\" viewBox=\"0 0 64 64\"><circle cx=\"32\" cy=\"32\" r=\"30\" fill=\"#f4a261\"/></svg>");
 
-        $this->assertTrue((new SvgRasterizer())->rasterizeInPlace($path));
+        $this->assertTrue(new SvgRasterizer()->rasterizeInPlace($path));
         $this->assertGreaterThanOrEqual(256, getimagesize($path)[0]);
     }
 
@@ -108,7 +108,7 @@ class SvgRasterizerTest extends TestCase
     {
         $path = $this->writeFile('favicon.ico', 'not-an-svg-at-all');
 
-        $this->assertFalse((new SvgRasterizer())->rasterizeInPlace($path));
+        $this->assertFalse(new SvgRasterizer()->rasterizeInPlace($path));
         $this->assertSame('not-an-svg-at-all', file_get_contents($path));
     }
 
@@ -120,7 +120,7 @@ class SvgRasterizerTest extends TestCase
         $broken = '<svg xmlns="http://www.w3.org/2000/svg"><circle cx="50"';
         $path = $this->writeFile('broken.svg', $broken);
 
-        $this->assertFalse((new SvgRasterizer())->rasterizeInPlace($path));
+        $this->assertFalse(new SvgRasterizer()->rasterizeInPlace($path));
         $this->assertSame($broken, file_get_contents($path));
     }
 

@@ -241,7 +241,7 @@ class DevProfileCollectorTest extends TestCase
     {
         $metrics = $this->createCollector($this->createProfiler($this->createProfile([
             new DevProfileCollectorTestCollectorFixture('translation', [
-                'messages' => (new VarCloner())->cloneVar([['id' => 'label.legal', 'domain' => 'site', 'state' => 1]]),
+                'messages' => new VarCloner()->cloneVar([['id' => 'label.legal', 'domain' => 'site', 'state' => 1]]),
             ]),
         ])))->collect('/');
 
@@ -325,7 +325,7 @@ class DevProfileCollectorTest extends TestCase
         $kernel->method('handle')->willReturn($response);
         $kernel->expects($this->once())->method('terminate')->with($this->isInstanceOf(Request::class), $response);
 
-        (new DevProfileCollector($kernel, $this->createProfiler(null), $this->createStub(ResetInterface::class)))->collect('/');
+        new DevProfileCollector($kernel, $this->createProfiler(null), $this->createStub(ResetInterface::class))->collect('/');
     }
 }
 

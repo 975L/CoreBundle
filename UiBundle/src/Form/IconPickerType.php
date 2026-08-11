@@ -35,11 +35,13 @@ class IconPickerType extends AbstractType
         $view->vars['value_field'] = $options['value_field'];
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return TextType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'icon_picker';

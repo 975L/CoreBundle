@@ -14,13 +14,13 @@ namespace c975L\UiBundle\Service;
 class SvgRasterizer
 {
     // Rendered well above any target size (48px favicon, 114px apple-touch-icon), the icon pipeline then downscaling it with its own filtering - rasterizing straight at the target size leaves ImageMagick's scaler alone in charge, and it is visibly rougher at icon sizes
-    private const RENDER_SIZE = 512;
+    private const int RENDER_SIZE = 512;
 
     // The density one SVG user unit is one pixel at - the rendering density is scaled from it so the output lands on RENDER_SIZE whatever size the document declares
-    private const BASE_DENSITY = 96;
+    private const int BASE_DENSITY = 96;
 
     // Assumed for a document declaring neither a width nor a viewBox: small enough that the rendering density stays generous, the final thumbnail capping the result at RENDER_SIZE anyway
-    private const DEFAULT_WIDTH = 100;
+    private const int DEFAULT_WIDTH = 100;
 
     // ImageMagick reads SVG through librsvg when that delegate is installed, and through its own (far more limited) internal renderer otherwise - either way the extension has to expose the format at all
     public static function isSupported(): bool

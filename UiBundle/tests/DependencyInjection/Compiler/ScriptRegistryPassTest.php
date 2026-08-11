@@ -22,7 +22,7 @@ class ScriptRegistryPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new ScriptRegistryPass())->process($container);
+        new ScriptRegistryPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -33,7 +33,7 @@ class ScriptRegistryPassTest extends TestCase
         $container->register(ScriptRegistry::class);
         $container->register('provider.a')->addTag('ui.script');
 
-        (new ScriptRegistryPass())->process($container);
+        new ScriptRegistryPass()->process($container);
 
         $calls = $container->getDefinition(ScriptRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -49,7 +49,7 @@ class ScriptRegistryPassTest extends TestCase
         $container->register('provider.low')->addTag('ui.script', ['priority' => 0]);
         $container->register('provider.high')->addTag('ui.script', ['priority' => 10]);
 
-        (new ScriptRegistryPass())->process($container);
+        new ScriptRegistryPass()->process($container);
 
         $calls = $container->getDefinition(ScriptRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('provider.high'), $calls[0][1][0]);
@@ -64,7 +64,7 @@ class ScriptRegistryPassTest extends TestCase
         $container->register('provider.a')->addTag('ui.script');
         $container->register('provider.b')->addTag('ui.script', ['priority' => -5]);
 
-        (new ScriptRegistryPass())->process($container);
+        new ScriptRegistryPass()->process($container);
 
         $calls = $container->getDefinition(ScriptRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('provider.a'), $calls[0][1][0]);

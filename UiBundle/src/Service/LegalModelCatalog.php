@@ -17,7 +17,7 @@ class LegalModelCatalog
     public const FALLBACK_LOCALE = 'fr';
 
     // country label => [translation key => model identifier]
-    private const MODELS = [
+    private const array MODELS = [
         'France' => [
             'label.cookies_policy' => 'france/cookies',
             'label.copyright' => 'france/copyright',

@@ -167,7 +167,7 @@ class FontCrudControllerTest extends TestCase
         $filename = 'uploads/roboto-bold.woff2';
         file_put_contents($projectDir . '/public/' . $filename, 'fake-font-bytes');
 
-        $font = (new Font())->setName('Roboto')->setWeight(700)->setStyle('normal')->setFilename($filename);
+        $font = new Font()->setName('Roboto')->setWeight(700)->setStyle('normal')->setFilename($filename);
 
         $fontRepository = $this->createStub(FontRepository::class);
         $fontRepository->method('findBy')->willReturn([$font]);

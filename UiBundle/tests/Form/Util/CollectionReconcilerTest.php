@@ -19,8 +19,8 @@ class CollectionReconcilerTest extends TestCase
 {
     private function createItem(string $id): object
     {
-        return new class ($id) {
-            public function __construct(private readonly string $id)
+        return new readonly class ($id) {
+            public function __construct(private string $id)
             {
             }
 

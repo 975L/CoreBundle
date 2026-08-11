@@ -191,7 +191,7 @@ class BlockFixtureMediaAttacher
         $family = strstr($default, '/', true) . '/';
         $extension = strtolower(pathinfo($filename, \PATHINFO_EXTENSION));
 
-        return (new Media())
+        return new Media()
             ->setFilename($filename)
             ->setMimeType($extensions[$family][$extension] ?? $default)
             ->setAlt($alt);

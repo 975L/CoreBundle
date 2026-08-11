@@ -20,7 +20,7 @@ class DatabaseLoadHealthCheckAdviceProviderTest extends TestCase
 {
     private function createResult(?array $details, string $status = HealthCheckResult::STATUS_WARNING, string $kind = DatabaseLoadHealthCheckProvider::KIND): HealthCheckResult
     {
-        return (new HealthCheckResult())
+        return new HealthCheckResult()
             ->setKind($kind)
             ->setUrl('https://example.com')
             ->setStatus($status)

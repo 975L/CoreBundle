@@ -66,7 +66,7 @@ class MediaFileRemoveListenerTest extends TestCase
 
         // Real Vich metadata stack (attribute reader/driver/factory), reading the fixtures' actual #[Vich\UploadableField] attributes below, exactly as the real app container does - this is what lets the test catch a getFileName()/getName() mismatch instead of hiding it behind a stub
         $metadataReader = new MetadataReader(
-            new MetadataFactory(new AttributeDriver(new AttributeReader(), []), 'Metadata\ClassHierarchyMetadata', false)
+            new MetadataFactory(new AttributeDriver(new AttributeReader(), []), \Metadata\ClassHierarchyMetadata::class, false)
         );
         $resolver = new PropertyMappingResolver([], [], ['test' => []]);
 

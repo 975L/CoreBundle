@@ -35,6 +35,7 @@ class ImageClassChoiceType extends AbstractType
         'label.css_class_width_500' => 'width-500',
     ];
 
+    #[\Override]
     public function getParent(): string
     {
         return ChoiceType::class;

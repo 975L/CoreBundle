@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // Locks "color: inherit" back onto the inline tags a theme's "*" rule would otherwise repaint
 class RichTextInheritColorTest extends TestCase
 {
-    private const INLINE_TAGS = ['b', 'strong', 'i', 'em', 'u', 's', 'del', 'ins', 'sub', 'sup', 'small', 'span'];
+    private const array INLINE_TAGS = ['b', 'strong', 'i', 'em', 'u', 's', 'del', 'ins', 'sub', 'sup', 'small', 'span'];
 
     /**
      * @return array<string, array{string}>

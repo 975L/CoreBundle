@@ -27,7 +27,7 @@ jobs:
               with:
                   php-version: '8.4'
                   coverage: pcov
-                  tools: phpcs, phpstan, php-cs-fixer
+                  tools: phpcs, phpstan, php-cs-fixer, rector
 
             # update rather than install: composer.lock is not versioned
             - name: Dépendances
@@ -49,6 +49,10 @@ jobs:
 
             - name: Analyse statique du scaffold
               run: composer stan-scaffold
+
+            # Reports rather than rewrites, over the bundles and the scaffold alike - see rector.php for why the scaffold is in there
+            - name: Modernisation
+              run: composer rector
 
             # One single pass for both bundles: it is what catches the cross Config <-> Ui breakages the two separate CIs could not see
             - name: Tests

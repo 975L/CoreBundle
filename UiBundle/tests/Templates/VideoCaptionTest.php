@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // Same prop and same meaning as Video:Iframe's (see VideoIframeCaptionTest), so a page laying out its own heading around either video kind turns it off the same way
 class VideoCaptionTest extends TestCase
 {
-    private const TEMPLATE = 'templates/components/Video/Video.html.twig';
+    private const string TEMPLATE = 'templates/components/Video/Video.html.twig';
 
     public function testTheCaptionIsShownUnlessItIsTurnedOff(): void
     {

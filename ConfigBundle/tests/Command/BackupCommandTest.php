@@ -47,7 +47,7 @@ class BackupCommandTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createParameterBag(): ParameterBagInterface
@@ -97,8 +97,8 @@ class BackupCommandTest extends TestCase
     // The bundles' declarations, as the compiler pass would have collected them
     private function createPathCollector(): BackupPathCollector
     {
-        $provider = new class ($this->declaredPaths) implements BackupPathProviderInterface {
-            public function __construct(private readonly array $paths)
+        $provider = new readonly class ($this->declaredPaths) implements BackupPathProviderInterface {
+            public function __construct(private array $paths)
             {
             }
 
@@ -234,7 +234,7 @@ class BackupCommandTest extends TestCase
     // An install whose backups are pulled by an outside machine says so with --ack, and must not then be reported as never backed up offsite
     public function testAnAcknowledgedOffsiteCopyCountsAsHavingLeft(): void
     {
-        (new OffsiteState())->recordSuccess($this->projectDir, ['what' => 'pulled']);
+        new OffsiteState()->recordSuccess($this->projectDir, ['what' => 'pulled']);
 
         $report = $this->runAndCaptureReport();
 
@@ -245,9 +245,9 @@ class BackupCommandTest extends TestCase
     // Past site-backup-offsite-max-age-hours, a copy that stopped leaving is what the dashboard has to show - the archives themselves being written all along, and looking perfectly healthy
     public function testAnOffsiteCopyPastItsMaxAgeIsWarnedAbout(): void
     {
-        (new OffsiteState())->recordSuccess($this->projectDir, []);
+        new OffsiteState()->recordSuccess($this->projectDir, []);
         $state = json_decode((string) file_get_contents($this->projectDir . '/' . OffsiteState::FILE), true);
-        $state['at'] = (new \DateTimeImmutable('-40 hours'))->format(\DateTimeInterface::ATOM);
+        $state['at'] = new \DateTimeImmutable('-40 hours')->format(\DateTimeInterface::ATOM);
         file_put_contents($this->projectDir . '/' . OffsiteState::FILE, json_encode($state));
 
         $this->runAndCaptureReport();
@@ -258,9 +258,9 @@ class BackupCommandTest extends TestCase
     // The field emptied at the back-office comes back as a 0, and a 0 used to switch the staleness check off entirely - a copy that stopped leaving a month ago still reporting "ok"
     public function testAnEmptiedMaxAgeFallsBackInsteadOfSilencingTheAlert(): void
     {
-        (new OffsiteState())->recordSuccess($this->projectDir, []);
+        new OffsiteState()->recordSuccess($this->projectDir, []);
         $state = json_decode((string) file_get_contents($this->projectDir . '/' . OffsiteState::FILE), true);
-        $state['at'] = (new \DateTimeImmutable('-40 hours'))->format(\DateTimeInterface::ATOM);
+        $state['at'] = new \DateTimeImmutable('-40 hours')->format(\DateTimeInterface::ATOM);
         file_put_contents($this->projectDir . '/' . OffsiteState::FILE, json_encode($state));
 
         $this->runAndCaptureReport(['site-backup-offsite-max-age-hours' => '0']);
@@ -338,7 +338,7 @@ class BackupCommandTest extends TestCase
     {
         $capturedEmail = null;
 
-        (new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail), null, ['site-url' => '', 'email-from' => ''])))->execute([]);
+        new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail), null, ['site-url' => '', 'email-from' => '']))->execute([]);
 
         $this->assertNotNull($capturedEmail);
         $this->assertSame('[ERROR] Backup failed - test_db', $capturedEmail->subject);
@@ -350,7 +350,7 @@ class BackupCommandTest extends TestCase
     {
         $capturedEmail = null;
 
-        (new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail))))->execute([]);
+        new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail)))->execute([]);
 
         $this->assertSame('noreply@example.com', $capturedEmail->replyTo);
     }
@@ -389,7 +389,7 @@ class BackupCommandTest extends TestCase
     {
         $capturedEmail = null;
 
-        (new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail), null, $configOverrides)))->execute([]);
+        new CommandTester($this->createCommand($this->createCapturingEmailService($capturedEmail), null, $configOverrides))->execute([]);
 
         return $capturedEmail->text;
     }

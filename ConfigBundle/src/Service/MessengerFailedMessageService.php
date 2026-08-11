@@ -33,10 +33,10 @@ use Symfony\Component\Mime\Email;
 class MessengerFailedMessageService
 {
     // Exception message keywords indicating the failure is caused by the recipient's own reputation (blacklisted spammer domain, ...) rather than an issue worth an admin's attention
-    private const MINOR_KEYWORDS = ['blacklist', 'blocklist', 'block-listed', 'rbl', 'spam', 'reputation'];
+    private const array MINOR_KEYWORDS = ['blacklist', 'blocklist', 'block-listed', 'rbl', 'spam', 'reputation'];
 
     // What decode() knows about a row whose body it couldn't read back into an Envelope - the same keys describeEnvelope() fills in, so the row is still listed with its id and date
-    private const EMPTY_DETAILS = [
+    private const array EMPTY_DETAILS = [
         'from' => null,
         'to' => null,
         'subject' => null,
@@ -68,7 +68,7 @@ class MessengerFailedMessageService
             return [];
         }
 
-        return array_map(fn (array $row) => $this->decode($row), $rows);
+        return array_map($this->decode(...), $rows);
     }
 
     // Counts failed messages not classified as minor (spam-related)
@@ -102,7 +102,7 @@ class MessengerFailedMessageService
     public function purgeOlderThan(int $days): int
     {
         // Compared against a column the transport fills in UTC, so the cutoff is computed in UTC too
-        $cutoff = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))->modify("-{$days} days")->format('Y-m-d H:i:s');
+        $cutoff = new \DateTimeImmutable('now', new \DateTimeZone('UTC'))->modify("-{$days} days")->format('Y-m-d H:i:s');
 
         // Same as findAll(): the nightly cleanup on an install where no message ever failed has nothing to purge, not a reason to report a failed command
         try {
@@ -133,7 +133,7 @@ class MessengerFailedMessageService
 
         return $this->connection->executeStatement(
             'DELETE FROM messenger_messages WHERE queue_name = \'failed\' AND id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')',
-            array_map('intval', $ids)
+            array_map(intval(...), $ids)
         );
     }
 
@@ -280,12 +280,7 @@ class MessengerFailedMessageService
     private function isMinor(string $exceptionMessage): bool
     {
         $lower = strtolower($exceptionMessage);
-        foreach (self::MINOR_KEYWORDS as $keyword) {
-            if (str_contains($lower, $keyword)) {
-                return true;
-            }
-        }
 
-        return false;
+        return array_any(self::MINOR_KEYWORDS, fn ($keyword) => str_contains($lower, $keyword));
     }
 }

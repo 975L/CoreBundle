@@ -16,15 +16,15 @@ use PHPUnit\Framework\TestCase;
 class SectionRhythmTest extends TestCase
 {
     // Read through the token, never written out: a rule carrying the value itself is one a theme cannot retune
-    private const STEP = 'var(--section-space,clamp(48px,8vw,84px))';
+    private const string STEP = 'var(--section-space,clamp(48px,8vw,84px))';
 
-    private const STEP_TIGHT = 'var(--section-space-tight,clamp(24px,4vw,48px))';
+    private const string STEP_TIGHT = 'var(--section-space-tight,clamp(24px,4vw,48px))';
 
     // Its step is a margin, the band painting its own background between its own hairlines
-    private const SPACED_BY_MARGIN = ['.feature-bar'];
+    private const array SPACED_BY_MARGIN = ['.feature-bar'];
 
     // Laid out by their own container rather than by the page, and deliberately outside the rhythm
-    private const OUTSIDE_THE_RHYTHM = ['.hero'];
+    private const array OUTSIDE_THE_RHYTHM = ['.hero'];
 
     // Every kind the margin reset names is a page-level block, and every page-level block owns a step. A kind added to the reset and left out of the rhythm is the bug ".flex-columns-section" carried.
     public function testEveryPageLevelKindOwnsAStep(): void

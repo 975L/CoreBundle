@@ -14,10 +14,10 @@ namespace c975L\UiBundle\Service;
 class SvgTextDetector
 {
     // Elements that paint glyphs, whatever namespace prefix the document gave them
-    private const TEXT_ELEMENTS = ['text', 'tspan', 'textPath'];
+    private const array TEXT_ELEMENTS = ['text', 'tspan', 'textPath'];
 
     // Read before the file is parsed at all, so handing this a 100M video costs one fread and not an XML parse
-    private const SNIFF_BYTES = 1024;
+    private const int SNIFF_BYTES = 1024;
 
     // Past this, a file claiming to be an SVG is not one anyone is going to fix by vectorizing its text
     private const MAX_BYTES = 8 * 1024 * 1024;

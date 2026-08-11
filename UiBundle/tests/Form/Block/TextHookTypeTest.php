@@ -31,7 +31,7 @@ class TextHookTypeTest extends TestCase
             return $builder;
         });
 
-        (new TextHookType())->buildForm($builder, []);
+        new TextHookType()->buildForm($builder, []);
 
         return $added;
     }

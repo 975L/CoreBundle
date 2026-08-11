@@ -28,7 +28,7 @@ class SitemapWriterTest extends TestCase
 
     protected function tearDown(): void
     {
-        array_map('unlink', glob($this->projectDir . '/public/*') ?: []);
+        array_map(unlink(...), glob($this->projectDir . '/public/*') ?: []);
         @rmdir($this->projectDir . '/public');
         @rmdir($this->projectDir);
     }

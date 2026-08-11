@@ -49,7 +49,7 @@ class RedirectSubscriberTest extends TestCase
     // A path matching a stored redirect gets a response set, with the status matching its permanent flag
     public function testOnKernelRequestSetsPermanentRedirectResponse(): void
     {
-        $subscriber = $this->createSubscriber((new Redirect())->setFromPath('/old')->setToUrl('/new')->setPermanent(true));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/old')->setToUrl('/new')->setPermanent(true));
         $event = $this->createEvent('/old');
 
         $subscriber->onKernelRequest($event);
@@ -63,7 +63,7 @@ class RedirectSubscriberTest extends TestCase
     // A non-permanent redirect yields a 302 instead of a 301
     public function testOnKernelRequestSetsTemporaryRedirectResponse(): void
     {
-        $subscriber = $this->createSubscriber((new Redirect())->setFromPath('/old')->setToUrl('/new')->setPermanent(false));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/old')->setToUrl('/new')->setPermanent(false));
         $event = $this->createEvent('/old');
 
         $subscriber->onKernelRequest($event);
@@ -85,7 +85,7 @@ class RedirectSubscriberTest extends TestCase
     // A non-gone row whose destination is empty is unusable, and this subscriber runs before the router: building a RedirectResponse out of it would throw a TypeError and 500 the path outright
     public function testOnKernelRequestIgnoresARowWithoutADestination(): void
     {
-        $subscriber = $this->createSubscriber((new Redirect())->setFromPath('/old'));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/old'));
         $event = $this->createEvent('/old');
 
         $subscriber->onKernelRequest($event);
@@ -96,7 +96,7 @@ class RedirectSubscriberTest extends TestCase
     // A url declared gone answers 410, not a redirect - there is nothing to redirect to
     public function testOnKernelRequestThrowsGoneForAGoneRedirect(): void
     {
-        $subscriber = $this->createSubscriber((new Redirect())->setFromPath('/removed')->setGone(true));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/removed')->setGone(true));
         $event = $this->createEvent('/removed');
 
         $this->expectException(GoneHttpException::class);
@@ -106,7 +106,7 @@ class RedirectSubscriberTest extends TestCase
     // A single "/apidoc/*" row covers every url below it, however deep
     public function testOnKernelRequestMatchesAPrefixRow(): void
     {
-        $subscriber = $this->createSubscriber((new Redirect())->setFromPath('/apidoc/*')->setGone(true));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/apidoc/*')->setGone(true));
         $event = $this->createEvent('/apidoc/c975L/ConfigBundle/Form.html');
 
         $this->expectException(GoneHttpException::class);
@@ -116,7 +116,7 @@ class RedirectSubscriberTest extends TestCase
     // "/fr/*" covers the bare "/fr/" too, its prefix being "/fr/" itself
     public function testOnKernelRequestMatchesAPrefixRowOnTheBarePrefix(): void
     {
-        $subscriber = $this->createSubscriber((new Redirect())->setFromPath('/fr/*')->setGone(true));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/fr/*')->setGone(true));
         $event = $this->createEvent('/fr/');
 
         $this->expectException(GoneHttpException::class);
@@ -126,7 +126,7 @@ class RedirectSubscriberTest extends TestCase
     // A prefix only matches what is actually below it
     public function testOnKernelRequestIgnoresANonMatchingPrefixRow(): void
     {
-        $subscriber = $this->createSubscriber((new Redirect())->setFromPath('/apidoc/*')->setGone(true));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/apidoc/*')->setGone(true));
         $event = $this->createEvent('/pages/blocks');
 
         $subscriber->onKernelRequest($event);
@@ -138,8 +138,8 @@ class RedirectSubscriberTest extends TestCase
     public function testOnKernelRequestPrefersAnExactRowOverAPrefixCoveringIt(): void
     {
         $subscriber = $this->createSubscriber(
-            (new Redirect())->setFromPath('/apidoc/*')->setGone(true),
-            (new Redirect())->setFromPath('/apidoc/kept.html')->setToUrl('/pages/bundles')->setPermanent(true),
+            new Redirect()->setFromPath('/apidoc/*')->setGone(true),
+            new Redirect()->setFromPath('/apidoc/kept.html')->setToUrl('/pages/bundles')->setPermanent(true),
         );
         $event = $this->createEvent('/apidoc/kept.html');
 
@@ -152,8 +152,8 @@ class RedirectSubscriberTest extends TestCase
     public function testOnKernelRequestPrefersTheLongestMatchingPrefix(): void
     {
         $subscriber = $this->createSubscriber(
-            (new Redirect())->setFromPath('/apidoc/*')->setGone(true),
-            (new Redirect())->setFromPath('/apidoc/c975L/*')->setToUrl('/pages/bundles')->setPermanent(true),
+            new Redirect()->setFromPath('/apidoc/*')->setGone(true),
+            new Redirect()->setFromPath('/apidoc/c975L/*')->setToUrl('/pages/bundles')->setPermanent(true),
         );
         $event = $this->createEvent('/apidoc/c975L/ConfigBundle/Form.html');
 

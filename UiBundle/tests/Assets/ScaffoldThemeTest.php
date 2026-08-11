@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 class ScaffoldThemeTest extends TestCase
 {
     // Admin-editable from the backoffice, so listing them would hand the palette to this file's editor
-    private const ADMIN_EDITABLE = [
+    private const array ADMIN_EDITABLE = [
         '--primary',
         '--secondary',
         '--background',
@@ -27,13 +27,13 @@ class ScaffoldThemeTest extends TestCase
     ];
 
     // Written by JS on the element itself, never read off :root, so a value here would apply to nothing
-    private const RUNTIME_ONLY = [
+    private const array RUNTIME_ONLY = [
         '--image-compare-position',
         '--slider-freeflow-vw',
     ];
 
     // Read, but never off :root either: the "--c975l-" ones are what the backoffice compiles into site-theme.css, and the "--bs-" ones belong to EasyAdmin
-    private const NOT_THEMABLE = [
+    private const array NOT_THEMABLE = [
         '--bs-border-color',
         '--bs-primary',
         '--bs-secondary-bg',
@@ -49,7 +49,7 @@ class ScaffoldThemeTest extends TestCase
     ];
 
     // Set inside the rules of each variant - .section--bg-* for the flats, .card--accent-* for the twelve card hues - so one value in :root would collapse every variant into a single look (the scaffold's own header says as much). A design retunes the tokens those rules point at instead: --section-bg-* for the flats, --block-accent-* for the hues, both of which the scaffold does offer. --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange, yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule - see the "Card accents" section of the README. --flip-card-ratio is the same shape one step further: only the eight .flip-card-ratio-* classes set it, one per shape an editor picks per card, and a card left on "free" declares none at all - a value in :root would give every flip card on the site one shape, which is the field's whole point undone. --block-radius and --block-shadow are that same shape again, one per step of the "rounded corners" and "shadow" fields (.block-radius-* / .block-shadow-*): the scale behind them is what a design retunes, and the scaffold does offer it as --block-radius-* / --block-shadow-*
-    private const PER_VARIANT = [
+    private const array PER_VARIANT = [
         '--section-background',
         '--section-text',
         '--section-text-soft',
@@ -66,7 +66,7 @@ class ScaffoldThemeTest extends TestCase
     ];
 
     // SiteBundle restates these three in its own unlayered :root, which beats this bundle's @layer ui-defaults whatever the load order. The scaffold therefore shows SiteBundle's value, the one a site running it actually gets. Empty this list the day SiteBundle stops redeclaring them
-    private const SITE_BUNDLE_OVERRIDES = [
+    private const array SITE_BUNDLE_OVERRIDES = [
         '--button-background-primary',
         '--button-background-secondary',
         '--button-secondary-color',

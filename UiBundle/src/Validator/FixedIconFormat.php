@@ -18,6 +18,7 @@ class FixedIconFormat extends Constraint
 {
     public string $message = 'label.fixed_icon_invalid_format';
 
+    #[\Override]
     public function getTargets(): string
     {
         return self::CLASS_CONSTRAINT;

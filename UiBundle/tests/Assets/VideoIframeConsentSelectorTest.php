@@ -15,10 +15,10 @@ use PHPUnit\Framework\TestCase;
 // A casing mismatch on the banner's identifier returns null and loads YouTube before any consent
 class VideoIframeConsentSelectorTest extends TestCase
 {
-    private const CONTROLLER_JS = 'assets/js/video-iframe.js';
+    private const string CONTROLLER_JS = 'assets/js/video-iframe.js';
 
     // Every spelling a consent banner may register itself under - "cookie-consent" is the one c975l/site-bundle's General:CookieConsent component writes
-    private const IDENTIFIERS = ['cookie-consent', 'cookieConsent'];
+    private const array IDENTIFIERS = ['cookie-consent', 'cookieConsent'];
 
     public function testConsentSelectorMatchesEveryAcceptedIdentifier(): void
     {

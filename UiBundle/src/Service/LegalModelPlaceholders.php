@@ -22,13 +22,13 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 class LegalModelPlaceholders
 {
     // Value printed as-is, HTML-escaped
-    private const ESCAPE = 'escape';
+    private const string ESCAPE = 'escape';
     // Value is rich text authored in ConfigBundle, printed unescaped
-    private const RAW = 'raw';
+    private const string RAW = 'raw';
     // Same, with newlines turned into <br> (multi-line postal addresses)
-    private const RAW_NL2BR = 'raw_nl2br';
+    private const string RAW_NL2BR = 'raw_nl2br';
 
-    private const VARS = [
+    private const array VARS = [
         'site-name' => self::ESCAPE,
         'site-owner' => self::RAW,
         'site-director' => self::ESCAPE,

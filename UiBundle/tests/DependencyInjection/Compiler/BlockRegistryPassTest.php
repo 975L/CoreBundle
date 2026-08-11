@@ -21,7 +21,7 @@ class BlockRegistryPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -37,7 +37,7 @@ class BlockRegistryPassTest extends TestCase
             'template' => 'article.html.twig',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -79,7 +79,7 @@ class BlockRegistryPassTest extends TestCase
             'template' => '@c975LSite/blocks/LegalModel.html.twig',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertSame('Site', $calls[0][1][14]);
@@ -97,7 +97,7 @@ class BlockRegistryPassTest extends TestCase
             'template' => '@App/blocks/custom.html.twig',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertSame('', $calls[0][1][14]);
@@ -116,7 +116,7 @@ class BlockRegistryPassTest extends TestCase
             'media_required' => 'true',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertTrue($calls[0][1][12]);
@@ -135,7 +135,7 @@ class BlockRegistryPassTest extends TestCase
             'media_multi_upload' => 'true',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertTrue($calls[0][1][13]);
@@ -154,7 +154,7 @@ class BlockRegistryPassTest extends TestCase
             'media_types' => 'image/jpeg, image/png,image/webp',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertSame(['image/jpeg', 'image/png', 'image/webp'], $calls[0][1][5]);
@@ -174,7 +174,7 @@ class BlockRegistryPassTest extends TestCase
             'cacheable' => 'false',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertFalse($calls[0][1][8]);
@@ -194,7 +194,7 @@ class BlockRegistryPassTest extends TestCase
             'contexts' => 'menu, sidebar',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertSame(['menu', 'sidebar'], $calls[0][1][11]);
@@ -213,7 +213,7 @@ class BlockRegistryPassTest extends TestCase
             'container' => 'true',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertTrue($calls[0][1][15]);
@@ -232,7 +232,7 @@ class BlockRegistryPassTest extends TestCase
             'container' => 'true',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertSame(BlockRegistry::SLOT_CONTEXT, $calls[0][1][16]);
@@ -252,7 +252,7 @@ class BlockRegistryPassTest extends TestCase
             'slot_context' => BlockRegistry::NESTED_SLOT_CONTEXT,
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertSame(BlockRegistry::NESTED_SLOT_CONTEXT, $calls[0][1][16]);
@@ -271,7 +271,7 @@ class BlockRegistryPassTest extends TestCase
             'media_help' => 'label.document_download_media_help',
         ]);
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
 
         $calls = $container->getDefinition(BlockRegistry::class)->getMethodCalls();
         $this->assertSame('label.document_download_media_help', $calls[0][1][17]);
@@ -291,6 +291,6 @@ class BlockRegistryPassTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('block.broken');
 
-        (new BlockRegistryPass())->process($container);
+        new BlockRegistryPass()->process($container);
     }
 }

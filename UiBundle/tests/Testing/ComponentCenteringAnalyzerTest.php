@@ -41,7 +41,7 @@ class ComponentCenteringAnalyzerTest extends TestCase
         $path = $this->directory . '/styles-' . uniqid() . '.css';
         file_put_contents($path, $css);
 
-        return (new ComponentCenteringAnalyzer(StylesheetCascade::fromFiles($path)))->analyse($tagsByClass);
+        return new ComponentCenteringAnalyzer(StylesheetCascade::fromFiles($path))->analyse($tagsByClass);
     }
 
     // The v1.12.0 defect itself: a page-wide reset naming the tag alone, stronger than the component's own rule, writing the shorthand over the "auto" the slider is centered on

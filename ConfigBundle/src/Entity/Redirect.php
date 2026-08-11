@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: RedirectRepository::class)]
 #[ORM\Table(name: 'site_redirect')]
 #[UniqueEntity('fromPath')]
-class Redirect
+class Redirect implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

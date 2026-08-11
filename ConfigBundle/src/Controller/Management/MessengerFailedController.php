@@ -133,7 +133,7 @@ class MessengerFailedController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN');
 
         if ($this->isCsrfTokenValid(self::DELETE_GROUP_ROUTE, $request->request->get('_token'))) {
-            $ids = array_map('intval', $request->request->all('ids'));
+            $ids = array_map(intval(...), $request->request->all('ids'));
             $count = $this->messengerFailedMessageService->deleteByIds($ids);
             $this->addFlash('success', $this->translator->trans('flash.messenger_group_deleted', ['%count%' => $count], 'config'));
         }

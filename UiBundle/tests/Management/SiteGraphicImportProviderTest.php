@@ -67,7 +67,7 @@ class SiteGraphicImportProviderTest extends TestCase
     public function testImportOverwritesAnExistingSingletonRoleGraphicsFile(): void
     {
         $filesDir = $this->createFilesDir('files/logo.svg', 'new-logo-bytes');
-        $existing = (new Media())->setRole(Media::ROLE_LOGO);
+        $existing = new Media()->setRole(Media::ROLE_LOGO);
 
         $mediaRepository = $this->createStub(MediaRepository::class);
         $mediaRepository->method('findOneByRole')->willReturn($existing);
@@ -94,7 +94,7 @@ class SiteGraphicImportProviderTest extends TestCase
     {
         $filesDir = $this->createFilesDir('files/error-1.jpg', 'fake-error-image-bytes');
 
-        $staleErrorImage = (new Media())->setRole(Media::ROLE_ERROR_IMAGE);
+        $staleErrorImage = new Media()->setRole(Media::ROLE_ERROR_IMAGE);
 
         $removed = [];
         $em = $this->createStub(EntityManagerInterface::class);

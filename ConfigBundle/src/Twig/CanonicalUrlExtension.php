@@ -24,10 +24,11 @@ class CanonicalUrlExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('canonical_url', [$this, 'getCanonicalUrl']),
+            new TwigFunction('canonical_url', $this->getCanonicalUrl(...)),
         ];
     }
 

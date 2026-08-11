@@ -95,7 +95,7 @@ class HealthCheckResultRepository extends ServiceEntityRepository
     // @return int[]
     public function findLatestIdPerUrlAndKind(): array
     {
-        return array_map('intval', $this->createQueryBuilder('h')
+        return array_map(intval(...), $this->createQueryBuilder('h')
             ->select('MAX(h.id)')
             ->groupBy('h.url')
             ->addGroupBy('h.kind')

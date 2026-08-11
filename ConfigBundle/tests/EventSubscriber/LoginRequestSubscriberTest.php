@@ -41,7 +41,7 @@ class LoginRequestSubscriberTest extends TestCase
     {
         $event = $this->createEvent('POST', 'app_login');
 
-        (new LoginRequestSubscriber())->onKernelRequest($event);
+        new LoginRequestSubscriber()->onKernelRequest($event);
 
         $response = $event->getResponse();
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -53,7 +53,7 @@ class LoginRequestSubscriberTest extends TestCase
     {
         $event = $this->createEvent('POST', 'app_login', ['_username' => ['a', 'b']]);
 
-        (new LoginRequestSubscriber())->onKernelRequest($event);
+        new LoginRequestSubscriber()->onKernelRequest($event);
 
         $this->assertInstanceOf(RedirectResponse::class, $event->getResponse());
     }
@@ -63,7 +63,7 @@ class LoginRequestSubscriberTest extends TestCase
     {
         $event = $this->createEvent('POST', 'app_login', ['_username' => 'user@example.com', '_password' => 'secret']);
 
-        (new LoginRequestSubscriber())->onKernelRequest($event);
+        new LoginRequestSubscriber()->onKernelRequest($event);
 
         $this->assertNull($event->getResponse());
     }
@@ -73,7 +73,7 @@ class LoginRequestSubscriberTest extends TestCase
     {
         $event = $this->createEvent('POST', 'app_login', ['_username' => '']);
 
-        (new LoginRequestSubscriber())->onKernelRequest($event);
+        new LoginRequestSubscriber()->onKernelRequest($event);
 
         $this->assertNull($event->getResponse());
     }
@@ -83,7 +83,7 @@ class LoginRequestSubscriberTest extends TestCase
     {
         $event = $this->createEvent('GET', 'app_login');
 
-        (new LoginRequestSubscriber())->onKernelRequest($event);
+        new LoginRequestSubscriber()->onKernelRequest($event);
 
         $this->assertNull($event->getResponse());
     }
@@ -93,7 +93,7 @@ class LoginRequestSubscriberTest extends TestCase
     {
         $event = $this->createEvent('POST', 'app_contact');
 
-        (new LoginRequestSubscriber())->onKernelRequest($event);
+        new LoginRequestSubscriber()->onKernelRequest($event);
 
         $this->assertNull($event->getResponse());
     }
@@ -103,7 +103,7 @@ class LoginRequestSubscriberTest extends TestCase
     {
         $event = $this->createEvent('POST', 'app_login', [], false);
 
-        (new LoginRequestSubscriber())->onKernelRequest($event);
+        new LoginRequestSubscriber()->onKernelRequest($event);
 
         $this->assertNull($event->getResponse());
     }

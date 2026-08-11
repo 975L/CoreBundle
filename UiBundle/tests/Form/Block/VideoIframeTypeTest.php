@@ -27,7 +27,7 @@ class VideoIframeTypeTest extends TestCase
             return $builder;
         });
 
-        (new VideoIframeType())->buildForm($builder, []);
+        new VideoIframeType()->buildForm($builder, []);
 
         return $added;
     }

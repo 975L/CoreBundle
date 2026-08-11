@@ -22,7 +22,7 @@ class BackupResultRecorder
     public const KIND = 'backup';
 
     // Below this share of the previous run's SQL archive, the run is downgraded to a warning: a dump that suddenly holds half of what it held last week is the failure mode no per-table error ever reports, the tables all having dumped "successfully" into a truncated result
-    private const SHRINK_RATIO = 0.5;
+    private const float SHRINK_RATIO = 0.5;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -36,7 +36,7 @@ class BackupResultRecorder
     {
         $warnings = array_merge($outcome['warnings'], $this->shrinkWarnings($outcome));
 
-        $result = (new HealthCheckResult())
+        $result = new HealthCheckResult()
             ->setKind(self::KIND)
             ->setUrl($outcome['url'])
             ->setLabel(null)

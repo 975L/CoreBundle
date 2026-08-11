@@ -29,7 +29,7 @@ class FlexColumnsTypeTest extends TestCase
             return $builder;
         });
 
-        (new FlexColumnsType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new FlexColumnsType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

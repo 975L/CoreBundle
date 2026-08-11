@@ -52,8 +52,8 @@ class MaintenanceShortcutControllerTest extends TestCase
     // The toggle and the token entry, as the fixtures answer them slug by slug
     private function createTogglingController(?string $hashValue, bool $currentlyEnabled = false): array
     {
-        $config = (new Config())->setSlug('site-maintenance')->setValue($currentlyEnabled);
-        $hash = (new Config())->setSlug('site-maintenance-hash')->setValue($hashValue);
+        $config = new Config()->setSlug('site-maintenance')->setValue($currentlyEnabled);
+        $hash = new Config()->setSlug('site-maintenance-hash')->setValue($hashValue);
 
         $controller = $this->createController(
             $config,
@@ -73,7 +73,7 @@ class MaintenanceShortcutControllerTest extends TestCase
 
     public function testToggleMaintenanceFlipsTheConfigValueAndFlushesWhenTokenIsValid(): void
     {
-        $config = (new Config())->setSlug('site-maintenance')->setValue(false);
+        $config = new Config()->setSlug('site-maintenance')->setValue(false);
         $manager = $this->createMock(EntityManagerInterface::class);
         $manager->expects($this->once())->method('flush');
 
@@ -94,7 +94,7 @@ class MaintenanceShortcutControllerTest extends TestCase
 
     public function testToggleMaintenanceInvalidatesCacheAndAddsFlashOnSuccess(): void
     {
-        $config = (new Config())->setSlug('site-maintenance')->setValue(false);
+        $config = new Config()->setSlug('site-maintenance')->setValue(false);
         $manager = $this->createStub(EntityManagerInterface::class);
 
         $configService = $this->createMock(ConfigServiceInterface::class);
@@ -118,7 +118,7 @@ class MaintenanceShortcutControllerTest extends TestCase
 
     public function testToggleMaintenanceDoesNothingWhenCsrfTokenIsInvalid(): void
     {
-        $config = (new Config())->setSlug('site-maintenance')->setValue(false);
+        $config = new Config()->setSlug('site-maintenance')->setValue(false);
         $manager = $this->createMock(EntityManagerInterface::class);
         $manager->expects($this->never())->method('flush');
 
@@ -195,7 +195,7 @@ class MaintenanceShortcutControllerTest extends TestCase
     {
         $this->expectException(\Symfony\Component\Security\Core\Exception\AccessDeniedException::class);
 
-        $config = (new Config())->setSlug('site-maintenance')->setValue(false);
+        $config = new Config()->setSlug('site-maintenance')->setValue(false);
         $controller = $this->createController(
             $config,
             $this->createStub(EntityManagerInterface::class),

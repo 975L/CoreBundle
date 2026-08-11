@@ -28,7 +28,7 @@ class VideoTypeTest extends TestCase
             return $builder;
         });
 
-        (new VideoType())->buildForm($builder, []);
+        new VideoType()->buildForm($builder, []);
 
         return $added;
     }
@@ -50,7 +50,7 @@ class VideoTypeTest extends TestCase
 
             return $builder;
         });
-        (new VideoIframeType())->buildForm($builder, []);
+        new VideoIframeType()->buildForm($builder, []);
 
         $shared = ['title', 'description', 'width', 'height', 'class'];
         $this->assertSame($shared, array_values(array_intersect(array_keys($iframeAdded), $shared)));

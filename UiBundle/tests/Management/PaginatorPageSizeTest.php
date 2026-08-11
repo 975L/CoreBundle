@@ -25,7 +25,7 @@ class PaginatorPageSizeTest extends TestCase
             $requestStack->push(new Request($query));
         }
 
-        return (new PaginatorPageSize($requestStack))->resolve();
+        return new PaginatorPageSize($requestStack)->resolve();
     }
 
     public function testAnOfferedSizeIsUsed(): void

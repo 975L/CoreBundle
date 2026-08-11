@@ -12,6 +12,7 @@ namespace c975L\UiBundle\CacheWarmer;
 
 use c975L\UiBundle\Registry\StylesheetManagementRegistry;
 use c975L\UiBundle\Registry\StylesheetRegistry;
+use Symfony\Component\AssetMapper\AssetMapperInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
@@ -22,6 +23,8 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
         private readonly StylesheetManagementRegistry $stylesheetManagementRegistry,
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
+        // Optional so an app running without AssetMapper still gets a compiled sheet: only the url() of its own assets/ files then stay as written (see resolveAssetPath)
+        private readonly ?AssetMapperInterface $assetMapper = null,
     ) {
     }
 
@@ -61,6 +64,7 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
     // Concatenates the content of every local stylesheet, skipping absolute URLs (CDN resources like cookieconsent.min.css), which stay served as separate <link> tags
     private function compile(array $stylesheets): string
     {
+        $imports = [];
         $content = [];
         foreach ($stylesheets as $stylesheet) {
             if (StylesheetRegistry::isExternal($stylesheet)) {
@@ -73,11 +77,96 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
                 ? $this->projectDir . '/' . $stylesheet
                 : $this->projectDir . '/public/' . $stylesheet;
             if (is_file($path)) {
-                $content[] = self::stripComments(self::stripByteOrderMark((string) file_get_contents($path)));
+                $css = self::stripComments(self::stripByteOrderMark((string) file_get_contents($path)));
+                $content[] = $this->rewriteUrls($this->extractImports($css, $stylesheet, $imports), $stylesheet);
             }
         }
 
-        return implode("\n", $content);
+        // Every collected @import goes first: the spec requires them before any other rule, so those of a sheet concatenated after the first one would be invalid where they stand and dropped
+        return implode("\n", array_merge($imports, $content));
+    }
+
+    // Pulls a sheet's @import rules out of its body and collects them for the head of the compiled file - a site's app.css is contributed last, right where its own imports stop being read. Their relative paths are resolved here for the same reason url() is: the compiled file is served from another directory than the sheet that wrote them
+    private function extractImports(string $css, string $stylesheet, array &$imports): string
+    {
+        return preg_replace_callback(
+            '#@import\s+(?:url\(\s*(["\']?)(?<url>[^"\')]+)\1\s*\)|(["\'])(?<quoted>[^"\']+)\3)(?<media>[^;]*);#i',
+            function (array $matches) use ($stylesheet, &$imports): string {
+                // Both groups are always set, one of the two alternatives having matched: the empty one is the branch that did not
+                $url = '' !== $matches['url'] ? $matches['url'] : $matches['quoted'];
+                $statement = sprintf('@import url("%s")%s;', $this->resolveAssetPath($url, $stylesheet) ?? $url, rtrim($matches['media']));
+                if (!in_array($statement, $imports, true)) {
+                    $imports[] = $statement;
+                }
+
+                return '';
+            },
+            $css
+        ) ?? $css;
+    }
+
+    // Rewrites the relative url() of a sheet against the compiled file's own location: served from bundles/build/, the "../fonts/Cabin.ttf" of a site's @font-face - correct while that sheet had its own <link> - points at a file that is not there
+    private function rewriteUrls(string $css, string $stylesheet): string
+    {
+        return preg_replace_callback(
+            '#\burl\(\s*(["\']?)([^"\')]+)\1\s*\)#i',
+            function (array $matches) use ($stylesheet): string {
+                $resolved = $this->resolveAssetPath(trim($matches[2]), $stylesheet);
+
+                return null === $resolved ? $matches[0] : sprintf('url("%s")', $resolved);
+            },
+            $css
+        ) ?? $css;
+    }
+
+    // The path a reference must carry once its sheet is concatenated: an app asset goes through AssetMapper, which alone knows the versioned name its file is published under, while a bundle's sheet under public/ resolves against the site root. Returns null for whatever already resolves on its own (absolute URL, root-relative path, data:, fragment) or cannot be resolved, leaving the reference untouched
+    private function resolveAssetPath(string $url, string $stylesheet): ?string
+    {
+        if ('' === $url || str_starts_with($url, '/') || str_starts_with($url, '#') || 1 === preg_match('#^[a-z][a-z0-9+.-]*:#i', $url)) {
+            return null;
+        }
+
+        // A query string or a fragment (a font's "#iefix", a sprite id) is no part of the file to look up, but has to survive the rewrite
+        $length = strcspn($url, '?#');
+        $suffix = substr($url, $length);
+        $directory = \dirname(StylesheetRegistry::logicalPath($stylesheet));
+        $path = self::normalizePath(('.' === $directory ? '' : $directory . '/') . substr($url, 0, $length));
+        if (null === $path) {
+            return null;
+        }
+
+        if (!StylesheetRegistry::isAppAsset($stylesheet)) {
+            return '/' . $path . $suffix;
+        }
+
+        $publicPath = $this->assetMapper?->getPublicPath($path);
+
+        return null === $publicPath ? null : $publicPath . $suffix;
+    }
+
+    // Collapses the "." and ".." segments of a path joined to its sheet's directory, AssetMapper logical paths and public ones alike knowing nothing of them. Returns null for a path climbing above its own root, which no longer designates anything either way
+    private static function normalizePath(string $path): ?string
+    {
+        $segments = [];
+        foreach (explode('/', $path) as $segment) {
+            if ('' === $segment || '.' === $segment) {
+                continue;
+            }
+
+            if ('..' === $segment) {
+                if ([] === $segments) {
+                    return null;
+                }
+
+                array_pop($segments);
+
+                continue;
+            }
+
+            $segments[] = $segment;
+        }
+
+        return [] === $segments ? null : implode('/', $segments);
     }
 
     // A browser silently drops a UTF-8 BOM at the very start of a stylesheet, so one costs nothing while each file is served on its own <link>. Concatenated, every BOM but the first lands mid-file, where it is just a stray character: the rule following it becomes a parse error and is thrown away whole.

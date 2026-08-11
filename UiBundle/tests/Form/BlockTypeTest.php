@@ -90,7 +90,7 @@ class BlockTypeTest extends TestCase
 
     private function invokeMergeMultiUpload(BlockType $type, array $submitted, string $kind): array
     {
-        return (new \ReflectionMethod($type, 'mergeMultiUpload'))->invoke($type, $submitted, $kind);
+        return new \ReflectionMethod($type, 'mergeMultiUpload')->invoke($type, $submitted, $kind);
     }
 
     // Captures every form->add() call's options fired by the private addMediaSubForm(), so the "medias" field's "constraints" can be asserted
@@ -104,7 +104,7 @@ class BlockTypeTest extends TestCase
             return $form;
         });
 
-        (new \ReflectionMethod($type, 'addMediaSubForm'))->invoke($type, $form, $kind);
+        new \ReflectionMethod($type, 'addMediaSubForm')->invoke($type, $form, $kind);
 
         return $added;
     }
@@ -220,7 +220,7 @@ class BlockTypeTest extends TestCase
             return $form;
         });
 
-        (new \ReflectionMethod($type, 'addSlotsSubForm'))->invoke($type, $form, 'flex_columns', null);
+        new \ReflectionMethod($type, 'addSlotsSubForm')->invoke($type, $form, 'flex_columns', null);
 
         $this->assertSame(CollectionType::class, $added['slots']['type']);
         $this->assertSame(BlockType::class, $added['slots']['options']['entry_type']);
@@ -245,7 +245,7 @@ class BlockTypeTest extends TestCase
             return $form;
         });
 
-        (new \ReflectionMethod($type, 'addSlotsSubForm'))->invoke($type, $form, 'section_cards', null);
+        new \ReflectionMethod($type, 'addSlotsSubForm')->invoke($type, $form, 'section_cards', null);
 
         $this->assertSame('label.slots_cards', $added['slots']['options']['label']);
     }
@@ -265,7 +265,7 @@ class BlockTypeTest extends TestCase
             return $form;
         });
 
-        (new \ReflectionMethod($type, 'addSlotsSubForm'))->invoke($type, $form, 'flex_columns', null);
+        new \ReflectionMethod($type, 'addSlotsSubForm')->invoke($type, $form, 'flex_columns', null);
 
         $this->assertSame([], $added['slots']['options']['row_attr']);
     }
@@ -278,7 +278,7 @@ class BlockTypeTest extends TestCase
         $type = new BlockType($registry, $this->createRouter());
 
         $container = new Block();
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($container, 42);
+        new \ReflectionProperty(Block::class, 'id')->setValue($container, 42);
 
         $added = [];
         $form = $this->createStub(FormInterface::class);
@@ -288,7 +288,7 @@ class BlockTypeTest extends TestCase
             return $form;
         });
 
-        (new \ReflectionMethod($type, 'addSlotsSubForm'))->invoke($type, $form, 'flex_columns', $container);
+        new \ReflectionMethod($type, 'addSlotsSubForm')->invoke($type, $form, 'flex_columns', $container);
 
         $this->assertSame('1', $added['slots']['options']['row_attr']['data-block-collection']);
         $this->assertSame(42, $added['slots']['options']['row_attr']['data-block-container-id']);
@@ -309,7 +309,7 @@ class BlockTypeTest extends TestCase
             return $form;
         });
 
-        (new \ReflectionMethod($type, 'addSlotsSubForm'))->invoke($type, $form, 'flex_column', null);
+        new \ReflectionMethod($type, 'addSlotsSubForm')->invoke($type, $form, 'flex_column', null);
 
         $this->assertSame(BlockRegistry::NESTED_SLOT_CONTEXT, $added['slots']['options']['entry_options']['context']);
     }
@@ -372,10 +372,10 @@ class BlockTypeTest extends TestCase
     private function createContainer(array $slots): Block
     {
         $container = new Block();
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($container, 42);
+        new \ReflectionProperty(Block::class, 'id')->setValue($container, 42);
 
         foreach ($slots as $definition) {
-            $slot = (new Block())
+            $slot = new Block()
                 ->setKind($definition['kind'])
                 ->setPosition($definition['position']);
             if (null !== $definition['title']) {
@@ -399,7 +399,7 @@ class BlockTypeTest extends TestCase
         });
 
         $type = new BlockType($registry, $this->createRouter());
-        (new \ReflectionMethod($type, 'addSlotsSubForm'))->invoke($type, $form, 'flex_columns', $container);
+        new \ReflectionMethod($type, 'addSlotsSubForm')->invoke($type, $form, 'flex_columns', $container);
 
         return $added;
     }
@@ -498,7 +498,7 @@ class BlockTypeTest extends TestCase
         });
 
         $type = new BlockType($registry, $this->createRouter());
-        (new \ReflectionMethod($type, 'addKindField'))->invoke($type, $form, $context, $kind);
+        new \ReflectionMethod($type, 'addKindField')->invoke($type, $form, $context, $kind);
 
         return $added;
     }

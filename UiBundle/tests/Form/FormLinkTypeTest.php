@@ -28,7 +28,7 @@ class FormLinkTypeTest extends TestCase
             return $builder;
         });
 
-        (new FormLinkType())->buildForm($builder, []);
+        new FormLinkType()->buildForm($builder, []);
 
         return $added;
     }
@@ -46,7 +46,7 @@ class FormLinkTypeTest extends TestCase
     public function testEntriesAreMappedAsPlainArrays(): void
     {
         $resolver = new OptionsResolver();
-        (new FormLinkType())->configureOptions($resolver);
+        new FormLinkType()->configureOptions($resolver);
 
         $options = $resolver->resolve();
         $this->assertNull($options['data_class']);

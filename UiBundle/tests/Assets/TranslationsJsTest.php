@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // A locale dropped from translations.js falls back to English, a missing key renders raw
 class TranslationsJsTest extends TestCase
 {
-    private const LOCALES = ['en', 'es', 'fr'];
+    private const array LOCALES = ['en', 'es', 'fr'];
 
     /**
      * @return array<string, array<string, string>>

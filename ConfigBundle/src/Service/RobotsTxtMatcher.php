@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 final class RobotsTxtMatcher
 {
     // The fields that carry a rule - every other line (Sitemap, Crawl-delay, Host...) says nothing about whether a path may be crawled
-    private const RULE_FIELDS = ['allow', 'disallow'];
+    private const array RULE_FIELDS = ['allow', 'disallow'];
 
     // @param list<array{allow: bool, pattern: string}> $rules
     private function __construct(

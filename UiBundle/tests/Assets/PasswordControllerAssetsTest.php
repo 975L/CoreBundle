@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 // Locks the identifier, the classes and the icon paths together, none of which fails loudly on its own
 class PasswordControllerAssetsTest extends TestCase
 {
-    private const CONTROLLER_JS = 'assets/js/password.js';
-    private const CONTROLLERS_BARREL = 'assets/controllers.js';
-    private const CSS_CLASSES = ['has-toggle', 'toggle-password', 'error-message', 'error', 'success'];
+    private const string CONTROLLER_JS = 'assets/js/password.js';
+    private const string CONTROLLERS_BARREL = 'assets/controllers.js';
+    private const array CSS_CLASSES = ['has-toggle', 'toggle-password', 'error-message', 'error', 'success'];
 
     public function testTheControllerIsRegisteredInTheBarrel(): void
     {

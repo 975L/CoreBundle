@@ -22,7 +22,7 @@ class StylesheetManagementRegistryPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new StylesheetManagementRegistryPass())->process($container);
+        new StylesheetManagementRegistryPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -33,7 +33,7 @@ class StylesheetManagementRegistryPassTest extends TestCase
         $container->register(StylesheetManagementRegistry::class);
         $container->register('provider.a')->addTag('ui.management_stylesheet');
 
-        (new StylesheetManagementRegistryPass())->process($container);
+        new StylesheetManagementRegistryPass()->process($container);
 
         $calls = $container->getDefinition(StylesheetManagementRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -48,7 +48,7 @@ class StylesheetManagementRegistryPassTest extends TestCase
         $container->register('provider.low')->addTag('ui.management_stylesheet', ['priority' => 0]);
         $container->register('provider.high')->addTag('ui.management_stylesheet', ['priority' => 10]);
 
-        (new StylesheetManagementRegistryPass())->process($container);
+        new StylesheetManagementRegistryPass()->process($container);
 
         $calls = $container->getDefinition(StylesheetManagementRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('provider.high'), $calls[0][1][0]);

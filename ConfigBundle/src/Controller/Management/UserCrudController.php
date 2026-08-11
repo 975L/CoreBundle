@@ -51,6 +51,7 @@ class UserCrudController extends AbstractCrudController
     }
 
     // Relies on EasyAdmin's auto-discovery of App\Entity\User's own fields (which vary per app), except for: the hashed password (excluded so it's never displayed or overwritten from the backoffice), creation/modification (made readonly since they're set automatically), isVerified (made readonly since it must only be set by EmailVerifier upon email confirmation); "roles" is excluded by EasyAdmin's own auto-discovery (JSON columns are never auto-discovered), so it's added explicitly as a proper multiple-choice field
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         foreach (parent::configureFields($pageName) as $field) {
@@ -139,6 +140,7 @@ class UserCrudController extends AbstractCrudController
         return array_combine($roles, $roles);
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $exportGroup = ActionGroup::new('export', t('label.export', [], 'config'), 'fa fa-download')
@@ -175,6 +177,7 @@ class UserCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud

@@ -28,7 +28,7 @@ class BlockCacheTagRegistryTest extends TestCase
     public function testGetExtraTagsReturnsEmptyArrayWhenNoResolverRegisteredTheKind(): void
     {
         $registry = new BlockCacheTagRegistry();
-        $block = (new Block())->setKind('article');
+        $block = new Block()->setKind('article');
 
         $this->assertSame([], $registry->getExtraTags($block));
     }
@@ -40,7 +40,7 @@ class BlockCacheTagRegistryTest extends TestCase
             'articles_slider' => fn (Block $b) => ['page_' . $b->getData()['pageId']],
         ]));
 
-        $block = (new Block())->setKind('articles_slider')->setData(['pageId' => 5]);
+        $block = new Block()->setKind('articles_slider')->setData(['pageId' => 5]);
 
         $this->assertSame(['page_5'], $registry->getExtraTags($block));
     }
@@ -52,7 +52,7 @@ class BlockCacheTagRegistryTest extends TestCase
         $registry->addProvider($this->createProvider(['articles_slider' => fn () => ['page_1']]));
         $registry->addProvider($this->createProvider(['menu_link' => fn () => ['route_x']]));
 
-        $this->assertSame(['page_1'], $registry->getExtraTags((new Block())->setKind('articles_slider')));
-        $this->assertSame(['route_x'], $registry->getExtraTags((new Block())->setKind('menu_link')));
+        $this->assertSame(['page_1'], $registry->getExtraTags(new Block()->setKind('articles_slider')));
+        $this->assertSame(['route_x'], $registry->getExtraTags(new Block()->setKind('menu_link')));
     }
 }

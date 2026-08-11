@@ -16,13 +16,13 @@ use PHPUnit\Framework\TestCase;
 class SectionBackgroundTest extends TestCase
 {
     // The kinds offering the option: component template => block adapter
-    private const KINDS = [
+    private const array KINDS = [
         'components/Hero/Hero.html.twig' => 'blocks/Hero.html.twig',
         'components/Feature/Bar.html.twig' => 'blocks/FeatureBar.html.twig',
         'components/Text/Section.html.twig' => 'blocks/TextSection.html.twig',
     ];
 
-    private const VARIANTS = ['muted', 'primary', 'dark'];
+    private const array VARIANTS = ['muted', 'primary', 'dark'];
 
     // The value comes from stored block data, so every component must match it against the known variants
     public function testEveryComponentMatchesTheValueAgainstTheKnownVariantsBeforeBuildingTheClass(): void

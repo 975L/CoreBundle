@@ -35,9 +35,9 @@ class DevProfileAnalyzer
     public const MAX_TEMPLATES = 150;
 
     // The sql of the worst offender is quoted in the report - kept short enough to stay readable in a terminal
-    private const SQL_EXCERPT_LENGTH = 120;
+    private const int SQL_EXCERPT_LENGTH = 120;
 
-    private const MAX_LISTED_ITEMS = 5;
+    private const int MAX_LISTED_ITEMS = 5;
 
     // One entry per offence: ['level' => self::LEVEL_*, 'area' => string, 'message' => string]. Empty means the page is clean
     public function analyze(array $metrics): array
@@ -229,7 +229,7 @@ class DevProfileAnalyzer
         $shown = \array_slice($items, 0, self::MAX_LISTED_ITEMS);
         $remaining = \count($items) - \count($shown);
 
-        return sprintf(': %s%s', implode(', ', array_map([$this, 'excerpt'], $shown)), $remaining > 0 ? sprintf(' (+%d)', $remaining) : '');
+        return sprintf(': %s%s', implode(', ', array_map($this->excerpt(...), $shown)), $remaining > 0 ? sprintf(' (+%d)', $remaining) : '');
     }
 
     private function excerpt(string $text): string

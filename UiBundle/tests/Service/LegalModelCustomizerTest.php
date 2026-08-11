@@ -21,10 +21,10 @@ use Twig\Loader\ArrayLoader;
 
 class LegalModelCustomizerTest extends TestCase
 {
-    private const MODEL = 'france/cookies';
+    private const string MODEL = 'france/cookies';
 
     // The class attributes matter here: they are exactly what Trix strips on its way back
-    private const TEMPLATE = <<<'HTML'
+    private const string TEMPLATE = <<<'HTML'
         <div class="legal">
         	<section data-legal-id="one"><h2>One</h2><div class="text text-justify">Body one</div></section>
         	<section data-legal-id="two"><h2>Two</h2><div>Lead two</div><h3 data-legal-id="two.a">A</h3><div>Body A</div><h3 data-legal-id="two.b">B</h3><div>Body B</div></section>
@@ -32,7 +32,7 @@ class LegalModelCustomizerTest extends TestCase
         HTML;
 
     // The revised bundle text, as a later release would ship it
-    private const TEMPLATE_REVISED = <<<'HTML'
+    private const string TEMPLATE_REVISED = <<<'HTML'
         <div class="legal">
         	<section data-legal-id="one"><h2>One</h2><div class="text text-justify">Body one, reworded</div></section>
         	<section data-legal-id="two"><h2>Two</h2><div>Lead two</div><h3 data-legal-id="two.a">A</h3><div>Body A</div><h3 data-legal-id="two.b">B</h3><div>Body B</div></section>

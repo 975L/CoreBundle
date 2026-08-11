@@ -23,9 +23,9 @@ use Vich\UploaderBundle\Event\Event;
 #[AsEventListener(event: 'vich_uploader.post_upload', method: 'onPostUpload')]
 class VichPdfThumbnailListener
 {
-    private const THUMBNAIL_WIDTH = 400;
+    private const int THUMBNAIL_WIDTH = 400;
 
-    private Filesystem $filesystem;
+    private readonly Filesystem $filesystem;
 
     // Single source of truth for the pdf -> webp naming convention this listener writes to - DocumentExtension::getThumbnailPath() reads it back through this same method, so the two never drift apart
     public static function toWebpPath(string $pdfPath): string

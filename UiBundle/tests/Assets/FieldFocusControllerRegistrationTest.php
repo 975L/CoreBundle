@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 // EasyAdmin's layout never sets data-controller itself, so the controller only ever connects through the barrel's own body mount, and the query param it reads is what other bundles link with - each of those three ends drifts silently, the repository having no browser to run the controller in
 class FieldFocusControllerRegistrationTest extends TestCase
 {
-    private const CONTROLLER_JS = 'assets/js/field-focus.js';
-    private const ADMIN_BARREL = 'assets/controllers-admin.js';
-    private const IDENTIFIER = 'fieldFocus';
+    private const string CONTROLLER_JS = 'assets/js/field-focus.js';
+    private const string ADMIN_BARREL = 'assets/controllers-admin.js';
+    private const string IDENTIFIER = 'fieldFocus';
 
     public function testTheControllerIsRegisteredInTheAdminBarrel(): void
     {

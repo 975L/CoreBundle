@@ -37,7 +37,7 @@ class BlockRemovalListenerTest extends TestCase
         $em->method('getUnitOfWork')->willReturn($unitOfWork);
         $em->expects($this->once())->method('remove')->with($block);
 
-        (new BlockRemovalListener())->preFlush(new PreFlushEventArgs($em));
+        new BlockRemovalListener()->preFlush(new PreFlushEventArgs($em));
     }
 
     public function testPreFlushIgnoresEntitiesThatDoNotOwnBlocks(): void
@@ -51,7 +51,7 @@ class BlockRemovalListenerTest extends TestCase
         $em->method('getUnitOfWork')->willReturn($unitOfWork);
         $em->expects($this->never())->method('remove');
 
-        (new BlockRemovalListener())->preFlush(new PreFlushEventArgs($em));
+        new BlockRemovalListener()->preFlush(new PreFlushEventArgs($em));
     }
 
     public function testPreFlushRemovesNothingWhenNoBlockIsPending(): void
@@ -67,6 +67,6 @@ class BlockRemovalListenerTest extends TestCase
         $em->method('getUnitOfWork')->willReturn($unitOfWork);
         $em->expects($this->never())->method('remove');
 
-        (new BlockRemovalListener())->preFlush(new PreFlushEventArgs($em));
+        new BlockRemovalListener()->preFlush(new PreFlushEventArgs($em));
     }
 }

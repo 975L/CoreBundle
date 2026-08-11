@@ -20,7 +20,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Entity(repositoryClass: FontRepository::class)]
 #[ORM\Table(name: 'site_font')]
 #[Vich\Uploadable]
-class Font implements VichMediaNamableInterface
+class Font implements VichMediaNamableInterface, \Stringable
 {
     // Sentinel meaning "variable font": real weights start at 100, and the actual fvar axis is unreadable behind Brotli
     public const WEIGHT_VARIABLE = 0;

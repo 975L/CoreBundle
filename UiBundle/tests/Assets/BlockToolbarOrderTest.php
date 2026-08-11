@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // The place of every button of a row's toolbar is carried by a class, EasyAdmin's layout nonce'ing style-src and no nonce ever covering a style written from JS. Which moves a failure that used to be impossible - "addToolbarButton" wrote whatever order it was handed - into the stylesheet: an order with no class declared for it leaves the button at the default 0, in front of the move handle, without a single error to show for it.
 class BlockToolbarOrderTest extends TestCase
 {
-    private const CSS = ['/public/css/management.css', '/public/css/management.min.css'];
+    private const array CSS = ['/public/css/management.css', '/public/css/management.min.css'];
 
     // The middle of the bar, before the delete button: where a button whose order has no class of its own belongs, rather than in front of the handle
     public function testAButtonWithNoOrderClassLandsInTheMiddle(): void

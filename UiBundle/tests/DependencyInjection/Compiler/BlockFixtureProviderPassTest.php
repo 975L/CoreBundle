@@ -23,7 +23,7 @@ class BlockFixtureProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new BlockFixtureProviderPass())->process($container);
+        new BlockFixtureProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class BlockFixtureProviderPassTest extends TestCase
         $container->register('ui.block_fixture_provider', BlockFixtureProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new BlockFixtureProviderPass())->process($container);
+        new BlockFixtureProviderPass()->process($container);
 
         $calls = $container->getDefinition(BlockFixtureRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class BlockFixtureProviderPassTest extends TestCase
         $container->register(BlockFixtureRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new BlockFixtureProviderPass())->process($container);
+        new BlockFixtureProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(BlockFixtureRegistry::class)->getMethodCalls());
     }

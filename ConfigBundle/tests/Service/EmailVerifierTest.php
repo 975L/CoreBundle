@@ -37,7 +37,7 @@ class EmailVerifierTest extends TestCase
     // The body comes from the admin-editable "account_validation" EmailTemplate, already wrapped in whichever email layout is registered - so it goes out as pre-rendered html, never as a Twig path this bundle would have to own
     public function testSendEmailConfirmationSignsRendersTheTemplateAndSendsThroughEmailService(): void
     {
-        $user = (new UserStub('user@example.test'))->withId(42);
+        $user = new UserStub('user@example.test')->withId(42);
 
         $signature = new VerifyEmailSignatureComponents(
             new \DateTimeImmutable('+1 hour'),
@@ -54,21 +54,17 @@ class EmailVerifierTest extends TestCase
         $emailTemplateRenderer = $this->createMock(EmailTemplateRenderer::class);
         $emailTemplateRenderer->expects($this->once())
             ->method('renderNamed')
-            ->with(EmailVerifier::EMAIL_TEMPLATE, $this->callback(static function (array $variables) use ($signature): bool {
-                return $variables['signed_url'] === $signature->getSignedUrl()
-                    && str_starts_with($variables['expires_at'], 'text.link_expires_in ');
-            }))
+            ->with(EmailVerifier::EMAIL_TEMPLATE, $this->callback(static fn (array $variables): bool => $variables['signed_url'] === $signature->getSignedUrl()
+                && str_starts_with($variables['expires_at'], 'text.link_expires_in ')))
             ->willReturn('<html>rendered</html>');
 
         $emailService = $this->createMock(EmailService::class);
         $emailService->expects($this->once())
             ->method('send')
-            ->with($this->callback(static function (EmailSendRequest $request): bool {
-                return 'Confirm your email' === $request->subject
-                    && '<html>rendered</html>' === $request->html
-                    && null === $request->template
-                    && 'user@example.test' === $request->to;
-            }))
+            ->with($this->callback(static fn (EmailSendRequest $request): bool => 'Confirm your email' === $request->subject
+                && '<html>rendered</html>' === $request->html
+                && null === $request->template
+                && 'user@example.test' === $request->to))
             ->willReturn(true);
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
@@ -82,7 +78,7 @@ class EmailVerifierTest extends TestCase
     // An admin who renamed or deleted the template gets no email at all rather than an empty one, and the caller is told
     public function testSendEmailConfirmationReturnsFalseWhenTheTemplateIsGone(): void
     {
-        $user = (new UserStub('user@example.test'))->withId(42);
+        $user = new UserStub('user@example.test')->withId(42);
 
         $verifyEmailHelper = $this->createStub(VerifyEmailHelperInterface::class);
         $verifyEmailHelper->method('generateSignature')->willReturn(new VerifyEmailSignatureComponents(

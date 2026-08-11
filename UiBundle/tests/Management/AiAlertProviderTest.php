@@ -117,7 +117,7 @@ class AiAlertProviderTest extends TestCase
 
     public function testReturnsAWarningAlertWhenLastRephraseAttemptFailed(): void
     {
-        $usage = (new AiUsage())->setYearMonth('2026-07');
+        $usage = new AiUsage()->setYearMonth('2026-07');
         $usage->recordFailure('HTTP 401 returned');
 
         $provider = new AiAlertProvider(
@@ -138,7 +138,7 @@ class AiAlertProviderTest extends TestCase
 
     public function testReturnsNoFailureAlertWhenLastAttemptSucceeded(): void
     {
-        $usage = (new AiUsage())->setYearMonth('2026-07');
+        $usage = new AiUsage()->setYearMonth('2026-07');
 
         $provider = new AiAlertProvider(
             $this->createUsageTracker($usage),

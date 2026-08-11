@@ -21,7 +21,7 @@ use Symfony\Component\Console\Input\InputInterface;
 // Generates a self-hosted backend for the dashboard assistant; configs.json entries are printed as a snippet, never guess-merged
 class MakeDonovanQaCommand extends AbstractMaker
 {
-    private const SKELETON_DIR = __DIR__ . '/../Resources/skeleton/donovan_qa';
+    private const string SKELETON_DIR = __DIR__ . '/../Resources/skeleton/donovan_qa';
 
     // Set by interact(), read by generate() - both run within the same command invocation
     private bool $withSemanticCache = false;

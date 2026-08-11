@@ -42,7 +42,7 @@ class DeclaredUrlsHealthCheckPass implements CompilerPassInterface
 
             $container->setDefinition(
                 'c975l.site.declared_urls_health_check.' . $this->suffix($class),
-                (new Definition(DeclaredUrlsHealthCheckProvider::class))
+                new Definition(DeclaredUrlsHealthCheckProvider::class)
                     ->setArguments([new Reference($id), new Reference(ContentQualityAnalyzer::class), $this->frequencyOf($class)])
                     ->addTag('c975l.health_check_provider'),
             );
@@ -53,7 +53,7 @@ class DeclaredUrlsHealthCheckPass implements CompilerPassInterface
     private function frequencyOf(string $class): string
     {
         try {
-            $attributes = (new \ReflectionClass($class))->getAttributes(AsHealthCheck::class);
+            $attributes = new \ReflectionClass($class)->getAttributes(AsHealthCheck::class);
         } catch (\Throwable) {
             return AsHealthCheck::FREQUENCY_WEEKLY;
         }

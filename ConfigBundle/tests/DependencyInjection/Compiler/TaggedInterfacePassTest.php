@@ -23,7 +23,7 @@ class TaggedInterfacePassTest extends TestCase
         $container->register('matching', TaggedInterfacePassFixtureProvider::class);
         $container->register('non_matching', TaggedInterfacePassFixtureOther::class);
 
-        (new TaggedInterfacePass(AlertProviderInterface::class, 'c975l_config.alert_provider'))->process($container);
+        new TaggedInterfacePass(AlertProviderInterface::class, 'c975l_config.alert_provider')->process($container);
 
         $this->assertTrue($container->getDefinition('matching')->hasTag('c975l_config.alert_provider'));
         $this->assertFalse($container->getDefinition('non_matching')->hasTag('c975l_config.alert_provider'));
@@ -35,7 +35,7 @@ class TaggedInterfacePassTest extends TestCase
         $definition = $container->register('no_class');
         $definition->setClass(null);
 
-        (new TaggedInterfacePass(AlertProviderInterface::class, 'c975l_config.alert_provider'))->process($container);
+        new TaggedInterfacePass(AlertProviderInterface::class, 'c975l_config.alert_provider')->process($container);
 
         $this->assertFalse($container->getDefinition('no_class')->hasTag('c975l_config.alert_provider'));
     }
@@ -46,7 +46,7 @@ class TaggedInterfacePassTest extends TestCase
         $container = new ContainerBuilder();
         $container->register('unresolvable', 'This\\Class\\Does\\Not\\Exist');
 
-        (new TaggedInterfacePass(AlertProviderInterface::class, 'c975l_config.alert_provider'))->process($container);
+        new TaggedInterfacePass(AlertProviderInterface::class, 'c975l_config.alert_provider')->process($container);
 
         $this->assertFalse($container->getDefinition('unresolvable')->hasTag('c975l_config.alert_provider'));
     }

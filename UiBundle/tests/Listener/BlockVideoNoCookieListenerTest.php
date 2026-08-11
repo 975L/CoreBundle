@@ -37,7 +37,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
 
     private function videoIframeBlock(array $data): Block
     {
-        return (new Block())->setKind('video_iframe')->setData($data);
+        return new Block()->setKind('video_iframe')->setData($data);
     }
 
     public function testPrePersistIgnoresEntitiesThatAreNotBlock(): void
@@ -51,9 +51,9 @@ class BlockVideoNoCookieListenerTest extends TestCase
 
     public function testPrePersistIgnoresBlocksOfOtherKinds(): void
     {
-        $block = (new Block())->setKind('video')->setData(['src' => 'https://youtu.be/abc123', 'noCookie' => true]);
+        $block = new Block()->setKind('video')->setData(['src' => 'https://youtu.be/abc123', 'noCookie' => true]);
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))->prePersist($this->createPersistArgs($block));
+        new BlockVideoNoCookieListener(new VideoExtension())->prePersist($this->createPersistArgs($block));
 
         $this->assertSame('https://youtu.be/abc123', $block->getData()['src']);
     }
@@ -62,7 +62,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
     {
         $block = $this->videoIframeBlock(['src' => 'https://youtu.be/abc123', 'noCookie' => false]);
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))->prePersist($this->createPersistArgs($block));
+        new BlockVideoNoCookieListener(new VideoExtension())->prePersist($this->createPersistArgs($block));
 
         $this->assertSame('https://youtu.be/abc123', $block->getData()['src']);
     }
@@ -71,7 +71,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
     {
         $block = $this->videoIframeBlock(['src' => 'https://youtu.be/abc123', 'noCookie' => true]);
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))->prePersist($this->createPersistArgs($block));
+        new BlockVideoNoCookieListener(new VideoExtension())->prePersist($this->createPersistArgs($block));
 
         $this->assertSame('https://www.youtube-nocookie.com/embed/abc123', $block->getData()['src']);
     }
@@ -81,7 +81,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
     {
         $block = $this->videoIframeBlock(['src' => 'https://vimeo.com/123456', 'noCookie' => true]);
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))->prePersist($this->createPersistArgs($block));
+        new BlockVideoNoCookieListener(new VideoExtension())->prePersist($this->createPersistArgs($block));
 
         $this->assertSame('https://player.vimeo.com/video/123456?dnt=1', $block->getData()['src']);
     }
@@ -91,7 +91,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
     {
         $block = $this->videoIframeBlock(['src' => 'https://975l.com/player/123456', 'noCookie' => true]);
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))->prePersist($this->createPersistArgs($block));
+        new BlockVideoNoCookieListener(new VideoExtension())->prePersist($this->createPersistArgs($block));
 
         $this->assertSame('https://975l.com/player/123456', $block->getData()['src']);
     }
@@ -101,7 +101,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('getUnitOfWork');
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))
+        new BlockVideoNoCookieListener(new VideoExtension())
             ->preUpdate($this->createUpdateArgs(new \stdClass(), $entityManager));
 
         $this->addToAssertionCount(1);
@@ -114,7 +114,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
 
         $block = $this->videoIframeBlock(['src' => 'https://youtu.be/abc123', 'noCookie' => false]);
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))
+        new BlockVideoNoCookieListener(new VideoExtension())
             ->preUpdate($this->createUpdateArgs($block, $entityManager));
 
         $this->assertSame('https://youtu.be/abc123', $block->getData()['src']);
@@ -134,7 +134,7 @@ class BlockVideoNoCookieListenerTest extends TestCase
 
         $block = $this->videoIframeBlock(['src' => 'https://youtu.be/abc123', 'noCookie' => true]);
 
-        (new BlockVideoNoCookieListener(new VideoExtension()))
+        new BlockVideoNoCookieListener(new VideoExtension())
             ->preUpdate($this->createUpdateArgs($block, $entityManager));
 
         $this->assertSame('https://www.youtube-nocookie.com/embed/abc123', $block->getData()['src']);

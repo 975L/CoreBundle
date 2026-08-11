@@ -95,8 +95,8 @@ class EmailTemplateCrudControllerTest extends TestCase
         $reflection = new \ReflectionProperty($deleteAction, 'displayCallable');
         $displayCallable = $reflection->getValue($deleteAction);
 
-        $this->assertFalse($displayCallable((new EmailTemplate())->setRestricted(true)));
-        $this->assertTrue($displayCallable((new EmailTemplate())->setRestricted(false)));
+        $this->assertFalse($displayCallable(new EmailTemplate()->setRestricted(true)));
+        $this->assertTrue($displayCallable(new EmailTemplate()->setRestricted(false)));
     }
 
     // The index page's own global button must point at FormFieldTemplateCrudController, not a sidebar menu entry (see ChangeLog)

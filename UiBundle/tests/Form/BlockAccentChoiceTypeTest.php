@@ -20,14 +20,14 @@ class BlockAccentChoiceTypeTest extends TestCase
     private function options(): array
     {
         $resolver = new OptionsResolver();
-        (new BlockAccentChoiceType())->configureOptions($resolver);
+        new BlockAccentChoiceType()->configureOptions($resolver);
 
         return $resolver->resolve();
     }
 
     public function testItIsAChoiceType(): void
     {
-        $this->assertSame(ChoiceType::class, (new BlockAccentChoiceType())->getParent());
+        $this->assertSame(ChoiceType::class, new BlockAccentChoiceType()->getParent());
     }
 
     // Not optional and not placeholdered would make "no accent" unreachable, which is what every card stored before this field existed holds

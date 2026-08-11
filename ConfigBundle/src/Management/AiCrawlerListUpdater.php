@@ -123,12 +123,6 @@ class AiCrawlerListUpdater
     // User agent tokens are matched case-insensitively by crawlers themselves, so "GPTBot" and "gptbot" are the same entry - adding the second because the site wrote the first in another case would grow the list forever
     private function holds(array $agents, string $agent): bool
     {
-        foreach ($agents as $known) {
-            if (0 === strcasecmp($known, $agent)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($agents, fn ($known) => 0 === strcasecmp($known, $agent));
     }
 }

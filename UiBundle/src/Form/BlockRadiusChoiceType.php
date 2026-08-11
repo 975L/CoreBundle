@@ -24,6 +24,7 @@ class BlockRadiusChoiceType extends AbstractType
         'label.radius_large' => 'large',
     ];
 
+    #[\Override]
     public function getParent(): string
     {
         return ChoiceType::class;

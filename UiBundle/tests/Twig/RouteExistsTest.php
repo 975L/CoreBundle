@@ -32,12 +32,12 @@ class RouteExistsTest extends TestCase
         $collection = new RouteCollection();
         $collection->add('page_display', new Route('/page/{page}'));
 
-        $this->assertNotNull((new RouteExists($this->createRouter($collection)))->routeExists('page_display'));
+        $this->assertNotNull(new RouteExists($this->createRouter($collection))->routeExists('page_display'));
     }
 
     // An unregistered route yields null
     public function testRouteExistsReturnsNullWhenNotRegistered(): void
     {
-        $this->assertNull((new RouteExists($this->createRouter(new RouteCollection())))->routeExists('unknown_route'));
+        $this->assertNull(new RouteExists($this->createRouter(new RouteCollection()))->routeExists('unknown_route'));
     }
 }

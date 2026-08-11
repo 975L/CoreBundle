@@ -36,7 +36,7 @@ class LegalPlaceholderCacheListenerTest extends TestCase
 
     private function config(string $slug): Config
     {
-        return (new Config())->setSlug($slug)->setValue('whatever');
+        return new Config()->setSlug($slug)->setValue('whatever');
     }
 
     private function entityManager(): EntityManagerInterface

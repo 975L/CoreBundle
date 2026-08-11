@@ -36,7 +36,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ConfigGetCommand extends Command
 {
     // What a sensitive value shows instead of itself, of a length telling nothing about the secret's own
-    private const MASK = '********';
+    private const string MASK = '********';
 
     public function __construct(
         private readonly ConfigRepository $configRepository,

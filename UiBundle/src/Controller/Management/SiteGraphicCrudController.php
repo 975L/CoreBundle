@@ -37,7 +37,7 @@ use function Symfony\Component\Translation\t;
 // Manages the site-wide graphics (favicon, apple-touch-icon, default og-image, logo, the two watermark signatures), stored as c975L\UiBundle\Entity\Media rows carrying a "role" instead of being attached to a Block. For singleton roles the file is always saved at a fixed name at the root of public/ (see UiMediaNamer), so it stays reachable at its well-known URL (e.g. /favicon.ico) whatever gets re-uploaded. The error-image role is repeatable: several rows can share it, forming the pool the error pages pick a random image from.
 class SiteGraphicCrudController extends AbstractCrudController
 {
-    private const ROLE_LABELS = [
+    private const array ROLE_LABELS = [
         Media::ROLE_FAVICON => 'label.favicon',
         Media::ROLE_APPLE_TOUCH_ICON => 'label.apple_touch_icon',
         Media::ROLE_OG_IMAGE => 'label.og_image',
@@ -48,7 +48,7 @@ class SiteGraphicCrudController extends AbstractCrudController
     ];
 
     // Roles allowed to have several rows (e.g. a pool of images picked at random), unlike the singleton graphics
-    private const REPEATABLE_ROLES = [
+    private const array REPEATABLE_ROLES = [
         Media::ROLE_ERROR_IMAGE,
     ];
 
@@ -71,6 +71,7 @@ class SiteGraphicCrudController extends AbstractCrudController
         return Media::class;
     }
 
+    #[\Override]
     public function createIndexQueryBuilder(...$args): QueryBuilder
     {
         return parent::createIndexQueryBuilder(...$args)
@@ -78,6 +79,7 @@ class SiteGraphicCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -91,6 +93,7 @@ class SiteGraphicCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $role = $this->configService->get('site-role-editor');
@@ -120,6 +123,7 @@ class SiteGraphicCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         $isNew = Crud::PAGE_NEW === $pageName;
@@ -157,6 +161,7 @@ class SiteGraphicCrudController extends AbstractCrudController
     }
 
     // Hands the index template the graphics still missing, each rendered as its own button opening the upload form with the role already picked (see site_graphic_crud_index.html.twig)
+    #[\Override]
     public function index(AdminContext $context): KeyValueStore | Response
     {
         $responseParameters = parent::index($context);
@@ -169,6 +174,7 @@ class SiteGraphicCrudController extends AbstractCrudController
     }
 
     // Pre-fills the role asked for by the clicked button, the ChoiceField then being disabled (see configureFields)
+    #[\Override]
     public function createEntity(string $entityFqcn): object
     {
         $media = new Media();

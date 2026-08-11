@@ -20,7 +20,7 @@ class ConfigEditUrlResolverTest extends TestCase
     private function createConfig(int $id): Config
     {
         $config = new Config();
-        (new \ReflectionProperty($config, 'id'))->setValue($config, $id);
+        new \ReflectionProperty($config, 'id')->setValue($config, $id);
 
         return $config;
     }

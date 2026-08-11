@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 // The identifier is a cross-bundle contract: SiteBundle's PageCrudController and GalleryBundle's GalleryCategoryCrudController write it as a plain data-controller string, and neither end drifts loudly - the repository has no browser to run the controller in
 class TitleConfirmControllerRegistrationTest extends TestCase
 {
-    private const CONTROLLER_JS = 'assets/js/title-confirm.js';
-    private const ADMIN_BARREL = 'assets/controllers-admin.js';
-    private const IDENTIFIER = 'title-confirm';
+    private const string CONTROLLER_JS = 'assets/js/title-confirm.js';
+    private const string ADMIN_BARREL = 'assets/controllers-admin.js';
+    private const string IDENTIFIER = 'title-confirm';
 
     public function testTheControllerIsRegisteredInTheAdminBarrel(): void
     {

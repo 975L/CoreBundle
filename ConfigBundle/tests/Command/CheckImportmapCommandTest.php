@@ -34,12 +34,12 @@ class CheckImportmapCommandTest extends TestCase
     {
         $this->projectDir = sys_get_temp_dir() . '/check-importmap-project-' . uniqid();
         $this->importmapFile = $this->projectDir . '/importmap.php';
-        (new Filesystem())->mkdir($this->projectDir);
+        new Filesystem()->mkdir($this->projectDir);
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createProvider(array $adminEntries): ImportmapProviderInterface
@@ -89,7 +89,7 @@ class CheckImportmapCommandTest extends TestCase
 
     private function writeControllersJson(bool $chartjsEnabled): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/assets/controllers.json', json_encode([
+        new Filesystem()->dumpFile($this->projectDir . '/assets/controllers.json', json_encode([
             'controllers' => [
                 '@symfony/ux-chartjs' => ['chart' => ['enabled' => $chartjsEnabled, 'fetch' => 'eager']],
             ],
@@ -99,7 +99,7 @@ class CheckImportmapCommandTest extends TestCase
 
     public function testExecuteAddsMissingEntryToEmptyImportmap(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
 
         $provider = $this->createProvider([
             '@c975l/config-bundle/controllers-admin.js' => ['path' => './vendor/c975l/config-bundle/assets/controllers-admin.js', 'entrypoint' => true],
@@ -118,8 +118,8 @@ class CheckImportmapCommandTest extends TestCase
     // An override is a deliberate choice as long as what it points at is really servable, so the provider's own path never wins over it
     public function testExecuteNeverTouchesAnOverrideThatStillResolves(): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/assets/a-custom-override-path.js', '');
-        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+        new Filesystem()->dumpFile($this->projectDir . '/assets/a-custom-override-path.js', '');
+        new Filesystem()->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
@@ -144,8 +144,8 @@ class CheckImportmapCommandTest extends TestCase
     // What merging ConfigBundle and UiBundle into c975l/core-bundle did to every path under vendor/: the entry is there, its file is not, and only the provider knows where the bundle went
     public function testExecuteRepointsAnEntryWhoseFileIsGone(): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/vendor/c975l/core-bundle/ConfigBundle/assets/controllers-admin.js', '');
-        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+        new Filesystem()->dumpFile($this->projectDir . '/vendor/c975l/core-bundle/ConfigBundle/assets/controllers-admin.js', '');
+        new Filesystem()->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
@@ -171,8 +171,8 @@ class CheckImportmapCommandTest extends TestCase
     public function testExecuteNeverTouchesAnOverrideWrittenAsAnAbsolutePath(): void
     {
         $override = $this->projectDir . '/assets/shared/a-custom-override-path.js';
-        (new Filesystem())->dumpFile($override, '');
-        (new Filesystem())->dumpFile($this->importmapFile, <<<PHP
+        new Filesystem()->dumpFile($override, '');
+        new Filesystem()->dumpFile($this->importmapFile, <<<PHP
             <?php
 
             return [
@@ -197,8 +197,8 @@ class CheckImportmapCommandTest extends TestCase
     // Same for a path climbing out of a subdirectory: only the reader's own resolution reads it the way AssetMapper will
     public function testExecuteNeverTouchesAnOverrideReachingUpADirectory(): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/assets/a-custom-override-path.js', '');
-        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+        new Filesystem()->dumpFile($this->projectDir . '/assets/a-custom-override-path.js', '');
+        new Filesystem()->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
@@ -220,11 +220,11 @@ class CheckImportmapCommandTest extends TestCase
     // The working copy's own trap: a c975L bundle symlinked into vendor/ for development resolves to its repository, and the path written then keeps pointing there once Composer puts the real package back. The file is still on disk, so "does it exist" saw nothing wrong, and the entry brought every page loading it down until it was fixed by hand
     public function testExecuteRepointsAnEntryPointingOutsideTheMappedPaths(): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/vendor/c975l/core-bundle/UiBundle/assets/js/pointer-sort.js', '');
+        new Filesystem()->dumpFile($this->projectDir . '/vendor/c975l/core-bundle/UiBundle/assets/js/pointer-sort.js', '');
 
         // Stands for the bundle's own repository, where the symlink used to lead: a real file, mapped by nothing
-        (new Filesystem())->dumpFile($this->projectDir . '/dev-checkout/UiBundle/assets/js/pointer-sort.js', '');
-        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+        new Filesystem()->dumpFile($this->projectDir . '/dev-checkout/UiBundle/assets/js/pointer-sort.js', '');
+        new Filesystem()->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
@@ -249,8 +249,8 @@ class CheckImportmapCommandTest extends TestCase
     // Same path, but claimed by no provider: nothing can repair it, so it is at least reported rather than left to surface as a 500
     public function testExecuteWarnsAboutAPathOutsideTheMappedPathsNoProviderClaims(): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/dev-checkout/some-asset.js', '');
-        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+        new Filesystem()->dumpFile($this->projectDir . '/dev-checkout/some-asset.js', '');
+        new Filesystem()->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
@@ -270,7 +270,7 @@ class CheckImportmapCommandTest extends TestCase
     // A dead path no provider claims can't be repaired, only reported - it answers 500 on the first page rendering it, and nothing else says so
     public function testExecuteWarnsAboutADeadPathNoProviderClaims(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+        new Filesystem()->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
@@ -289,7 +289,7 @@ class CheckImportmapCommandTest extends TestCase
 
     public function testExecuteIsIdempotentAcrossTwoRuns(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
 
         $provider = $this->createProvider([
             '@c975l/config-bundle/controllers-admin.js' => ['path' => './vendor/c975l/config-bundle/assets/controllers-admin.js', 'entrypoint' => true],
@@ -304,7 +304,7 @@ class CheckImportmapCommandTest extends TestCase
 
     public function testExecuteWarnsWhenControllersJsonEnablesChartjs(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
         $this->writeControllersJson(true);
 
         $tester = $this->createTester([]);
@@ -316,7 +316,7 @@ class CheckImportmapCommandTest extends TestCase
 
     public function testExecuteDoesNotWarnWhenControllersJsonDisablesChartjs(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
         $this->writeControllersJson(false);
 
         $tester = $this->createTester([]);
@@ -327,7 +327,7 @@ class CheckImportmapCommandTest extends TestCase
 
     public function testExecuteDoesNotWarnWhenControllersJsonIsMissing(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
 
         $tester = $this->createTester([]);
         $tester->execute([]);
@@ -338,8 +338,8 @@ class CheckImportmapCommandTest extends TestCase
     // An unreadable controllers.json is the app's own problem to report, not this command's job to fail on
     public function testExecuteStillSucceedsOnMalformedControllersJson(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
-        (new Filesystem())->dumpFile($this->projectDir . '/assets/controllers.json', '{ not json');
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->projectDir . '/assets/controllers.json', '{ not json');
 
         $tester = $this->createTester([]);
         $tester->execute([]);
@@ -351,8 +351,8 @@ class CheckImportmapCommandTest extends TestCase
     // The entry sits under a "controllers" key - a flat file (or one enabling something else entirely) must not trigger the warning
     public function testExecuteDoesNotWarnWhenChartjsIsNotUnderTheControllersKey(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
-        (new Filesystem())->dumpFile($this->projectDir . '/assets/controllers.json', json_encode([
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->projectDir . '/assets/controllers.json', json_encode([
             '@symfony/ux-chartjs' => ['chart' => ['enabled' => true]],
         ]));
 
@@ -365,13 +365,13 @@ class CheckImportmapCommandTest extends TestCase
     // Mimics an installed c975L bundle whose own JS imports a bare specifier
     private function writeBundleAsset(string $contents): void
     {
-        (new Filesystem())->dumpFile($this->projectDir . '/vendor/c975l/config-bundle/assets/controllers-admin.js', $contents);
+        new Filesystem()->dumpFile($this->projectDir . '/vendor/c975l/config-bundle/assets/controllers-admin.js', $contents);
     }
 
     // Mimics a Symfony UX package as Composer installs it: an assets/package.json naming the specifier and pointing at its entry file
     private function writeUxPackage(string $vendor, string $name, string $specifier, string $main = 'dist/controller.js'): void
     {
-        (new Filesystem())->dumpFile(
+        new Filesystem()->dumpFile(
             $this->projectDir . '/vendor/' . $vendor . '/' . $name . '/assets/package.json',
             json_encode(['name' => $specifier, 'main' => $main])
         );
@@ -380,7 +380,7 @@ class CheckImportmapCommandTest extends TestCase
     // The failure this whole check exists for: a bundle's JS imports a package by bare specifier, no importmap entry declares it, and the browser then fails the entire module - every Stimulus controller it registers silently lost
     public function testExecuteAddsAnEntryForABareSpecifierImportedByABundleAsset(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
         $this->writeBundleAsset("import ChartjsController from '@symfony/ux-chartjs';\n");
         $this->writeUxPackage('symfony', 'ux-chartjs', '@symfony/ux-chartjs');
 
@@ -398,7 +398,7 @@ class CheckImportmapCommandTest extends TestCase
     // Relative imports are resolved by AssetMapper from the importing file itself and never need an entry of their own
     public function testExecuteIgnoresRelativeImports(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
         $this->writeBundleAsset("import { addToolbarButton } from './js/block-toolbar.js';\nimport '../styles/app.css';\n");
 
         $tester = $this->createTester([]);
@@ -410,7 +410,7 @@ class CheckImportmapCommandTest extends TestCase
     // An entry an app deliberately points elsewhere (a fork, a CDN version) must survive untouched
     public function testExecuteLeavesABareSpecifierAlreadyDeclaredAlone(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, <<<'PHP'
+        new Filesystem()->dumpFile($this->importmapFile, <<<'PHP'
             <?php
 
             return [
@@ -432,7 +432,7 @@ class CheckImportmapCommandTest extends TestCase
     // Nothing to resolve it against: reported rather than guessed at, so the missing package is visible from the CLI instead of only in the browser console
     public function testExecuteWarnsWhenABareSpecifierCannotBeResolvedInVendor(): void
     {
-        (new Filesystem())->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
         $this->writeBundleAsset("import Thing from '@acme/not-installed';\n");
 
         $tester = $this->createTester([]);

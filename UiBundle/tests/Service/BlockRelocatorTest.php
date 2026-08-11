@@ -24,7 +24,7 @@ class BlockRelocatorTest extends TestCase
         $owner->addBlock($block);
         $container = new Block();
 
-        (new BlockRelocator())->relocate($block, $owner, $container);
+        new BlockRelocator()->relocate($block, $owner, $container);
 
         $this->assertFalse($owner->getBlocks()->contains($block));
         $this->assertTrue($container->getSlots()->contains($block));
@@ -39,7 +39,7 @@ class BlockRelocatorTest extends TestCase
         $owner->addBlock($block);
         $container = new Block();
 
-        (new BlockRelocator())->relocate($block, $owner, $container);
+        new BlockRelocator()->relocate($block, $owner, $container);
 
         $this->assertSame([], $owner->popPendingBlockRemovals());
     }
@@ -51,7 +51,7 @@ class BlockRelocatorTest extends TestCase
         $block = new Block();
         $container->addSlot($block);
 
-        (new BlockRelocator())->relocate($block, $owner, null);
+        new BlockRelocator()->relocate($block, $owner, null);
 
         $this->assertFalse($container->getSlots()->contains($block));
         $this->assertTrue($owner->getBlocks()->contains($block));
@@ -66,7 +66,7 @@ class BlockRelocatorTest extends TestCase
         $block = new Block();
         $oldContainer->addSlot($block);
 
-        (new BlockRelocator())->relocate($block, $owner, $newContainer);
+        new BlockRelocator()->relocate($block, $owner, $newContainer);
 
         $this->assertFalse($oldContainer->getSlots()->contains($block));
         $this->assertTrue($newContainer->getSlots()->contains($block));
@@ -82,7 +82,7 @@ class BlockRelocatorTest extends TestCase
         $block = new Block();
         $owner->addBlock($block);
 
-        (new BlockRelocator())->relocate($block, $owner, $container);
+        new BlockRelocator()->relocate($block, $owner, $container);
 
         $this->assertSame(2, $block->getPosition());
     }
@@ -96,7 +96,7 @@ class BlockRelocatorTest extends TestCase
         $block = new Block();
         $container->addSlot($block);
 
-        (new BlockRelocator())->relocate($block, $owner, null);
+        new BlockRelocator()->relocate($block, $owner, null);
 
         $this->assertSame(2, $block->getPosition());
     }
@@ -116,7 +116,7 @@ class BlockRelocatorTest extends TestCase
         $second->setPosition(1);
         $third->setPosition(2);
 
-        (new BlockRelocator())->relocate($first, $owner, null);
+        new BlockRelocator()->relocate($first, $owner, null);
 
         $this->assertSame(0, $second->getPosition());
         $this->assertSame(1, $third->getPosition());
@@ -135,11 +135,11 @@ class BlockRelocatorTest extends TestCase
         $first->setPosition(0);
         $second->setPosition(1);
         $third->setPosition(2);
-        (new BlockRelocator())->relocate($first, $owner, null);
+        new BlockRelocator()->relocate($first, $owner, null);
 
         $incoming = new Block();
         $owner->addBlock($incoming);
-        (new BlockRelocator())->relocate($incoming, $owner, $container);
+        new BlockRelocator()->relocate($incoming, $owner, $container);
 
         $this->assertSame(2, $incoming->getPosition());
         $this->assertNotSame($third->getPosition(), $incoming->getPosition());

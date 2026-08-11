@@ -51,7 +51,7 @@ class BackupResultRecorderTest extends TestCase
 
         $previous = [];
         if (null !== $previousSqlBytes) {
-            $previous = [(new HealthCheckResult())
+            $previous = [new HealthCheckResult()
                 ->setKind(BackupResultRecorder::KIND)
                 ->setUrl('https://example.com')
                 ->setStatus(HealthCheckResult::STATUS_OK)

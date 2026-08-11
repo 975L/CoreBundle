@@ -29,7 +29,7 @@ class PortfolioGridTypeTest extends TestCase
             return $builder;
         });
 
-        (new PortfolioGridType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new PortfolioGridType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

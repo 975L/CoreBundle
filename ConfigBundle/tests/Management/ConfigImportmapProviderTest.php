@@ -17,7 +17,7 @@ class ConfigImportmapProviderTest extends TestCase
 {
     public function testGetAdminImportmapEntriesReturnsControllersAdminEntrypoint(): void
     {
-        $entries = (new ConfigImportmapProvider())->getAdminImportmapEntries();
+        $entries = new ConfigImportmapProvider()->getAdminImportmapEntries();
 
         $this->assertSame([
             '@c975l/config-bundle/controllers-admin.js' => [
@@ -29,6 +29,6 @@ class ConfigImportmapProviderTest extends TestCase
 
     public function testGetImportmapEntriesReturnsNoneYet(): void
     {
-        $this->assertSame([], (new ConfigImportmapProvider())->getImportmapEntries());
+        $this->assertSame([], new ConfigImportmapProvider()->getImportmapEntries());
     }
 }

@@ -34,7 +34,7 @@ class BackupRetentionPurgerTest extends TestCase
     // Creates var/backup/YYYY/YYYY-MM/YYYY-MM-DD/archive.tar.bz2 for a date given as a "-N days" offset
     private function createRun(int $daysAgo, int $bytes = 100): string
     {
-        $date = (new \DateTimeImmutable())->modify(sprintf('-%d days', $daysAgo));
+        $date = new \DateTimeImmutable()->modify(sprintf('-%d days', $daysAgo));
         $folder = sprintf('%s/%s/%s/%s', $this->backupFolder, $date->format('Y'), $date->format('Y-m'), $date->format('Y-m-d'));
 
         $this->filesystem->mkdir($folder);
@@ -48,7 +48,7 @@ class BackupRetentionPurgerTest extends TestCase
         $old = $this->createRun(40);
         $kept = $this->createRun(3);
 
-        $stats = (new BackupRetentionPurger($this->filesystem))->purge($this->backupFolder, 15);
+        $stats = new BackupRetentionPurger($this->filesystem)->purge($this->backupFolder, 15);
 
         $this->assertDirectoryDoesNotExist($old);
         $this->assertDirectoryExists($kept);
@@ -61,7 +61,7 @@ class BackupRetentionPurgerTest extends TestCase
     {
         $today = $this->createRun(0);
 
-        (new BackupRetentionPurger($this->filesystem))->purge($this->backupFolder, 1);
+        new BackupRetentionPurger($this->filesystem)->purge($this->backupFolder, 1);
 
         $this->assertDirectoryExists($today);
     }
@@ -71,7 +71,7 @@ class BackupRetentionPurgerTest extends TestCase
     {
         $old = $this->createRun(400);
 
-        $stats = (new BackupRetentionPurger($this->filesystem))->purge($this->backupFolder, 0);
+        $stats = new BackupRetentionPurger($this->filesystem)->purge($this->backupFolder, 0);
 
         $this->assertDirectoryExists($old);
         $this->assertSame(0, $stats['deleted']);
@@ -85,7 +85,7 @@ class BackupRetentionPurgerTest extends TestCase
         $this->filesystem->mkdir($stray);
         file_put_contents($stray . '/keep.txt', 'keep');
 
-        (new BackupRetentionPurger($this->filesystem))->purge($this->backupFolder, 1);
+        new BackupRetentionPurger($this->filesystem)->purge($this->backupFolder, 1);
 
         $this->assertDirectoryExists($stray);
     }
@@ -95,16 +95,16 @@ class BackupRetentionPurgerTest extends TestCase
         $this->createRun(10, 300);
         $this->createRun(2, 200);
 
-        $stats = (new BackupRetentionPurger($this->filesystem))->stats($this->backupFolder);
+        $stats = new BackupRetentionPurger($this->filesystem)->stats($this->backupFolder);
 
         $this->assertSame(2, $stats['runs']);
         $this->assertSame(500, $stats['bytes']);
-        $this->assertSame((new \DateTimeImmutable('-10 days'))->format('Y-m-d'), $stats['oldest']);
+        $this->assertSame(new \DateTimeImmutable('-10 days')->format('Y-m-d'), $stats['oldest']);
     }
 
     public function testStatsOnAnEmptyBackupFolderReportsNoOldestRun(): void
     {
-        $stats = (new BackupRetentionPurger($this->filesystem))->stats($this->backupFolder);
+        $stats = new BackupRetentionPurger($this->filesystem)->stats($this->backupFolder);
 
         $this->assertSame(0, $stats['runs']);
         $this->assertNull($stats['oldest']);
@@ -115,7 +115,7 @@ class BackupRetentionPurgerTest extends TestCase
     {
         $this->createRun(400);
 
-        (new BackupRetentionPurger($this->filesystem))->purge($this->backupFolder, 15);
+        new BackupRetentionPurger($this->filesystem)->purge($this->backupFolder, 15);
 
         $this->assertSame([], glob($this->backupFolder . '/*', GLOB_ONLYDIR));
     }

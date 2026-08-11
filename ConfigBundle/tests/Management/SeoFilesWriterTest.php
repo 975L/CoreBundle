@@ -30,7 +30,7 @@ class SeoFilesWriterTest extends TestCase
     protected function tearDown(): void
     {
         foreach (['/public', '/existingFiles/public', '/existingFiles'] as $folder) {
-            array_map('unlink', glob($this->projectDir . $folder . '/*') ?: []);
+            array_map(unlink(...), glob($this->projectDir . $folder . '/*') ?: []);
             @rmdir($this->projectDir . $folder);
         }
         @rmdir($this->projectDir);

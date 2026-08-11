@@ -41,7 +41,7 @@ class OffsiteState
             && $failedWhat !== ($details['what'] ?? null);
 
         $this->write($projectDir, array_merge($previous, $details, [
-            'at' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+            'at' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
             'status' => $keepFailure ? 'failed' : 'ok',
             'lastError' => $keepFailure ? ($previous['lastError'] ?? null) : null,
             'failedWhat' => $keepFailure ? $failedWhat : null,
@@ -57,7 +57,7 @@ class OffsiteState
             'status' => 'failed',
             'lastError' => $error,
             'failedWhat' => $what,
-            'lastAttemptAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+            'lastAttemptAt' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
         ]));
     }
 

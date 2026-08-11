@@ -45,7 +45,7 @@ class HealthCheckRunProgressTest extends TestCase
     {
         [$requestStack] = $this->createRequestStackWithSession();
 
-        $this->assertNull((new HealthCheckRunProgress($requestStack, $this->createRepository()))->poll());
+        $this->assertNull(new HealthCheckRunProgress($requestStack, $this->createRepository())->poll());
     }
 
     public function testPollCountsTheKindsHavingRecordedSomethingSinceTheRunStarted(): void

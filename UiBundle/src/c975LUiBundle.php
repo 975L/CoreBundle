@@ -136,6 +136,7 @@ class c975LUiBundle extends AbstractBundle
         }
     }
 
+    #[\Override]
     public function getPath(): string
     {
         return \dirname(__DIR__);

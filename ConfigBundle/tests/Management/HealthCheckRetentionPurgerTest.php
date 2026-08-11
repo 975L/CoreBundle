@@ -25,12 +25,12 @@ class HealthCheckRetentionPurgerTest extends TestCase
             ->expects($this->once())
             ->method('deleteOlderThan')
             ->with(
-                $this->callback(fn (\DateTimeInterface $limit) => 30 === (new \DateTimeImmutable())->diff($limit)->days),
+                $this->callback(fn (\DateTimeInterface $limit) => 30 === new \DateTimeImmutable()->diff($limit)->days),
                 [12, 34],
             )
             ->willReturn(417);
 
-        $this->assertSame(417, (new HealthCheckRetentionPurger($repository, $this->configService('30')))->purge());
+        $this->assertSame(417, new HealthCheckRetentionPurger($repository, $this->configService('30'))->purge());
     }
 
     // What the dashboard reads: a check whose latest run fell out of the window must keep that row, or the line saying how it went goes blank
@@ -40,7 +40,7 @@ class HealthCheckRetentionPurgerTest extends TestCase
         $repository->expects($this->once())->method('findLatestIdPerUrlAndKind')->willReturn([7]);
         $repository->expects($this->once())->method('deleteOlderThan')->with($this->anything(), [7])->willReturn(0);
 
-        (new HealthCheckRetentionPurger($repository, $this->configService('90')))->purge();
+        new HealthCheckRetentionPurger($repository, $this->configService('90'))->purge();
     }
 
     // An entry anyone can mistype: read as "keep everything", the one reading that cannot destroy an install's whole health history. The empty string belongs with them rather than with the fallback below: the entry is declared "int", so a field cleared at the back-office reaches this as a 0 like a typed one
@@ -50,7 +50,7 @@ class HealthCheckRetentionPurgerTest extends TestCase
             $repository = $this->createMock(HealthCheckResultRepository::class);
             $repository->expects($this->never())->method('deleteOlderThan');
 
-            $this->assertSame(0, (new HealthCheckRetentionPurger($repository, $this->configService($days)))->purge());
+            $this->assertSame(0, new HealthCheckRetentionPurger($repository, $this->configService($days))->purge());
         }
     }
 
@@ -63,11 +63,11 @@ class HealthCheckRetentionPurgerTest extends TestCase
             ->expects($this->once())
             ->method('deleteOlderThan')
             ->with($this->callback(
-                fn (\DateTimeInterface $limit) => HealthCheckRetentionPurger::DEFAULT_RETENTION_DAYS === (new \DateTimeImmutable())->diff($limit)->days
+                fn (\DateTimeInterface $limit) => HealthCheckRetentionPurger::DEFAULT_RETENTION_DAYS === new \DateTimeImmutable()->diff($limit)->days
             ))
             ->willReturn(3);
 
-        $this->assertSame(3, (new HealthCheckRetentionPurger($repository, $this->configService(null)))->purge());
+        $this->assertSame(3, new HealthCheckRetentionPurger($repository, $this->configService(null))->purge());
     }
 
     private function configService(?string $days): ConfigServiceInterface

@@ -45,7 +45,7 @@ use Symfony\Component\Process\Process;
 class ExportTablesCommand extends Command
 {
     // The table list goes through "mysql --execute", where neither the database name nor the prefix can be bound as a parameter - so both are refused outside the character set of a MySQL identifier rather than escaped. That also rules out the LIKE wildcards: a prefix holding a "%" or a "_" would quietly match tables it was never meant to, and every table this command lists is TRUNCATEd on replay
-    private const IDENTIFIER_PATTERN = '/^[A-Za-z0-9_]+$/';
+    private const string IDENTIFIER_PATTERN = '/^[A-Za-z0-9_]+$/';
 
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
@@ -177,7 +177,7 @@ class ExportTablesCommand extends Command
         }
 
         $tables = array_values(array_filter(
-            array_map('trim', explode("\n", $process->getOutput())),
+            array_map(trim(...), explode("\n", $process->getOutput())),
             fn ($t) => $t && 'TABLE_NAME' !== $t
         ));
 
@@ -230,7 +230,7 @@ class ExportTablesCommand extends Command
             return str_starts_with($output, '/') ? $output : $projectDir . '/' . $output;
         }
 
-        $timestamp = (new \DateTimeImmutable())->format('Y-m-d_H-i-s');
+        $timestamp = new \DateTimeImmutable()->format('Y-m-d_H-i-s');
 
         return sprintf('%s/var/export/%s_%s.sql', $projectDir, rtrim($prefix, '_'), $timestamp);
     }

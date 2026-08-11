@@ -30,7 +30,7 @@ class StatusController extends AbstractController
     public const KEY_HEADER = 'X-Status-Key';
 
     // Signing what left the site let a short key be merely weak; authenticating who may read it makes it guessable online, against a route that can be asked as often as wanted. Below this length a key is treated as no key at all, the site answering nobody rather than answering weakly
-    private const MIN_KEY_LENGTH = 32;
+    private const int MIN_KEY_LENGTH = 32;
 
     // The logger is optional: an app without Monolog leaves it null and everything else works the same, only the refusals go unrecorded
     public function __construct(

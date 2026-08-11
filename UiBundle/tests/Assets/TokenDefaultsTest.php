@@ -16,10 +16,10 @@ use PHPUnit\Framework\TestCase;
 class TokenDefaultsTest extends TestCase
 {
     // Read from EasyAdmin's own Bootstrap theme, which declares them on the management pages
-    private const PROVIDED_BY_EASYADMIN = ['--bs-primary', '--bs-secondary-bg', '--bs-tertiary-bg'];
+    private const array PROVIDED_BY_EASYADMIN = ['--bs-primary', '--bs-secondary-bg', '--bs-tertiary-bg'];
 
     // Written by JS on the element itself, never read off :root - a default would apply to nothing
-    private const RUNTIME_ONLY = ['--image-compare-position', '--slider-freeflow-vw'];
+    private const array RUNTIME_ONLY = ['--image-compare-position', '--slider-freeflow-vw'];
 
     public function testEveryTokenReadHasADefaultOrAnInlineFallback(): void
     {
@@ -88,13 +88,7 @@ class TokenDefaultsTest extends TestCase
 
     private function referencedByAnotherDefault(string $token): bool
     {
-        foreach ($this->tokenDefaults() as $name => $value) {
-            if ($name !== $token && str_contains($value, 'var(' . $token)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->tokenDefaults(), fn ($value, $name) => $name !== $token && str_contains($value, 'var(' . $token));
     }
 
     /**

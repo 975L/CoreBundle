@@ -19,10 +19,10 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 final class AsHealthCheck
 {
     // The cadence the scaffold's cron entries ask for, one entry per value
-    public const FREQUENCY_WEEKLY = 'weekly';
-    public const FREQUENCY_MONTHLY = 'monthly';
+    public const string FREQUENCY_WEEKLY = 'weekly';
+    public const string FREQUENCY_MONTHLY = 'monthly';
 
-    public const FREQUENCIES = [self::FREQUENCY_WEEKLY, self::FREQUENCY_MONTHLY];
+    public const array FREQUENCIES = [self::FREQUENCY_WEEKLY, self::FREQUENCY_MONTHLY];
 
     public function __construct(
         public readonly string $frequency = self::FREQUENCY_WEEKLY,

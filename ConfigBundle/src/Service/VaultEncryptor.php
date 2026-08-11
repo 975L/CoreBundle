@@ -14,8 +14,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class VaultEncryptor
 {
-    private const MARKER = 'C975L:';
-    private const ALGO = 'aes-256-cbc';
+    private const string MARKER = 'C975L:';
+    private const string ALGO = 'aes-256-cbc';
 
     public function __construct(
         #[Autowire(env: 'default::C975L_VAULT_KEY')]

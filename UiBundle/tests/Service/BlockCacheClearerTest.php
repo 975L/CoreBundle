@@ -23,7 +23,7 @@ class BlockCacheClearerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with([BlockCacheInvalidator::CACHE_TAG_ALL]);
 
-        (new BlockCacheClearer(new BlockCacheInvalidator($cache)))->clear('/var/cache/prod');
+        new BlockCacheClearer(new BlockCacheInvalidator($cache))->clear('/var/cache/prod');
     }
 
     // The whole point is that cache:clear picks it up on its own - FrameworkBundle autoconfigures this interface into the "kernel.cache_clearer" tag, so dropping it would silently stop deployments from invalidating anything, with nothing failing anywhere

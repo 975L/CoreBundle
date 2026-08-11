@@ -23,10 +23,11 @@ class ThemeVariablesExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('theme_variables_css', [$this, 'getThemeVariablesCss'], ['is_safe' => ['html']]),
+            new TwigFunction('theme_variables_css', $this->getThemeVariablesCss(...), ['is_safe' => ['html']]),
         ];
     }
 

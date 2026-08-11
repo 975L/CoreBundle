@@ -407,7 +407,7 @@ class ConfigServiceTest extends TestCase
 
     public function testLoadDefaultConfigKeepsSensitiveFlagWhenValueCannotBeDecrypted(): void
     {
-        $config = $this->createConfig('api-key', (new VaultEncryptor('another-key'))->encrypt('secret'), isSensitive: true);
+        $config = $this->createConfig('api-key', new VaultEncryptor('another-key')->encrypt('secret'), isSensitive: true);
         $service = $this->createService(
             $this->createRepositoryIndexedBySlug($config),
             vaultEncryptor: new VaultEncryptor('a-test-vault-key'),

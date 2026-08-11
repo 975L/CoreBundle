@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityHeadersHealthCheckProviderTest extends TestCase
 {
-    private const ALL_HEADERS_SET = [
+    private const array ALL_HEADERS_SET = [
         'strict-transport-security' => 'max-age=31536000',
         'x-content-type-options' => 'nosniff',
         'content-security-policy' => "default-src 'self'",

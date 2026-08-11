@@ -194,8 +194,8 @@ class HealthCheckRunnerTest extends TestCase
     // Two instances of the very same class, each with its own cadence - what the attribute alone cannot express
     private function createInstanceAwareProviders(): array
     {
-        $provider = new class ('urls-book', AsHealthCheck::FREQUENCY_WEEKLY) implements HealthCheckProviderInterface, HealthCheckFrequencyAwareInterface {
-            public function __construct(private readonly string $kind, private readonly string $frequency)
+        $provider = new readonly class ('urls-book', AsHealthCheck::FREQUENCY_WEEKLY) implements HealthCheckProviderInterface, HealthCheckFrequencyAwareInterface {
+            public function __construct(private string $kind, private string $frequency)
             {
             }
 

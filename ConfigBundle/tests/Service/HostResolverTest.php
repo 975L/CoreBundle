@@ -36,20 +36,20 @@ class HostResolverTest extends TestCase
     {
         self::$records = [['host' => 'example.com', 'type' => 'AAAA', 'ipv6' => '2001:db8::1']];
 
-        $this->assertTrue((new HostResolver())->resolves('example.com'));
+        $this->assertTrue(new HostResolver()->resolves('example.com'));
     }
 
     public function testAHostCarryingAnARecordResolves(): void
     {
         self::$records = [['host' => 'example.com', 'type' => 'A', 'ip' => '93.184.216.34']];
 
-        $this->assertTrue((new HostResolver())->resolves('example.com'));
+        $this->assertTrue(new HostResolver()->resolves('example.com'));
     }
 
     // Both record types are asked for in one call, an A-only lookup being what misses an IPv6-only host
     public function testBothRecordTypesAreAskedForInOneCall(): void
     {
-        (new HostResolver())->resolves('example.com');
+        new HostResolver()->resolves('example.com');
 
         $this->assertSame([['example.com', \DNS_A | \DNS_AAAA]], self::$calls);
     }
@@ -58,7 +58,7 @@ class HostResolverTest extends TestCase
     {
         self::$records = [];
 
-        $this->assertFalse((new HostResolver())->resolves('www.example.com'));
+        $this->assertFalse(new HostResolver()->resolves('www.example.com'));
     }
 
     // A failed lookup is the very answer wanted here, never an error to raise
@@ -66,7 +66,7 @@ class HostResolverTest extends TestCase
     {
         self::$records = false;
 
-        $this->assertFalse((new HostResolver())->resolves('www.example.com'));
+        $this->assertFalse(new HostResolver()->resolves('www.example.com'));
     }
 
     // The real lookup, kept as the one check that the silenced call answers at all: a name reserved by RFC 2606 exists nowhere, online or off
@@ -74,7 +74,7 @@ class HostResolverTest extends TestCase
     {
         self::$stubbed = false;
 
-        $this->assertFalse((new HostResolver())->resolves('c975l-health-check.invalid'));
+        $this->assertFalse(new HostResolver()->resolves('c975l-health-check.invalid'));
     }
 }
 

@@ -35,10 +35,11 @@ class CreditsExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('credits_mode', [$this, 'getCreditsMode']),
+            new TwigFunction('credits_mode', $this->getCreditsMode(...)),
         ];
     }
 

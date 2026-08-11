@@ -21,7 +21,7 @@ class BlockMediaUsageProviderTest extends TestCase
     // Media::$id has no public setter (assigned by Doctrine on persist) - reflection mirrors that for a real, non-null array key, avoiding the "null used as array offset" deprecation
     private function assignId(Media $media, int $id): void
     {
-        (new \ReflectionProperty(Media::class, 'id'))->setValue($media, $id);
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, $id);
     }
 
     private function createTranslator(): TranslatorInterface

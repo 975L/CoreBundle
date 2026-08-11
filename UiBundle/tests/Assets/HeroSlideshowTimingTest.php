@@ -119,7 +119,7 @@ class HeroSlideshowTimingTest extends TestCase
     private function heroMediaMax(): int
     {
         // Private: it is an implementation detail of the form, this test being the only other reader
-        $constant = (new \ReflectionClass(BlockType::class))->getReflectionConstant('HERO_MEDIA_MAX');
+        $constant = new \ReflectionClass(BlockType::class)->getReflectionConstant('HERO_MEDIA_MAX');
         $this->assertNotFalse($constant, 'BlockType no longer holds HERO_MEDIA_MAX, this test no longer checks anything.');
 
         return (int) $constant->getValue();

@@ -56,9 +56,9 @@ class FormFlashMarkupTest extends TestCase
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/'));
 
         return $twig->render('components/Form/Form.html.twig', [
-            'app' => new class ($flashes) {
+            'app' => new readonly class ($flashes) {
                 /** @param array<string, string[]> $flashes */
-                public function __construct(private readonly array $flashes)
+                public function __construct(private array $flashes)
                 {
                 }
 

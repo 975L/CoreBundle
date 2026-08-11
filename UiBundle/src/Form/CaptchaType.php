@@ -47,11 +47,13 @@ class CaptchaType extends AbstractType
         $resolver->setAllowedTypes('action_name', 'string');
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return HiddenType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'c975l_ui_captcha';

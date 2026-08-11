@@ -16,9 +16,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 // Where the c975L bundles this application runs actually sit on disk - what every "read something from each installed c975L bundle" service (configs.json, scaffold, assets, sources) asks instead of guessing at "vendor/c975l/<package>". A package is free to ship several bundles: c975l/core-bundle ships two, one directory deeper than that guess ever looked
 class BundleLocator
 {
-    private const NAMESPACE_PREFIX = 'c975L\\';
+    private const string NAMESPACE_PREFIX = 'c975L\\';
 
-    private const VENDOR_PREFIX = 'c975l/';
+    private const string VENDOR_PREFIX = 'c975l/';
 
     /**
      * @param array<string, array{path: string, namespace: string}> $bundlesMetadata

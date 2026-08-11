@@ -18,7 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Table(name: 'site_form_field')]
 #[ORM\UniqueConstraint(name: 'form_field_unique', columns: ['form_id', 'name'])]
 #[UniqueEntity(fields: ['form', 'name'])]
-class FormField
+class FormField implements \Stringable
 {
     public const TYPE_TEXT = 'text';
     public const TYPE_TEXTAREA = 'textarea';

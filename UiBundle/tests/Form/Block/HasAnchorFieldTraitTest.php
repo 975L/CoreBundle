@@ -35,7 +35,7 @@ class HasAnchorFieldTraitTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new HasAnchorFieldTraitStub($this->anchorSlugger()))->buildForm($builder, []);
+        new HasAnchorFieldTraitStub($this->anchorSlugger())->buildForm($builder, []);
 
         return $added;
     }
@@ -54,7 +54,7 @@ class HasAnchorFieldTraitTest extends TestCase
             }
         );
 
-        (new HasAnchorFieldTraitStub($this->anchorSlugger(), $titleField))->buildForm($builder, []);
+        new HasAnchorFieldTraitStub($this->anchorSlugger(), $titleField)->buildForm($builder, []);
 
         $form = $this->createStub(FormInterface::class);
         $event = new FormEvent($form, $submittedData);

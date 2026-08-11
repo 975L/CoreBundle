@@ -35,8 +35,8 @@ class SiteGraphicMediaUsageProviderTest extends TestCase
 
     private function mediaWithId(int $id, ?string $role = null): Media
     {
-        $media = (new Media())->setRole($role);
-        (new \ReflectionProperty(Media::class, 'id'))->setValue($media, $id);
+        $media = new Media()->setRole($role);
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, $id);
 
         return $media;
     }

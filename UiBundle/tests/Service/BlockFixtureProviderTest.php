@@ -20,7 +20,7 @@ class BlockFixtureProviderTest extends TestCase
 {
     public function testGetFixturesCoversEveryBuiltInKind(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $this->assertSame(
             ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'flip_card', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band', 'legal_model'],
@@ -31,7 +31,7 @@ class BlockFixtureProviderTest extends TestCase
     // A fixture is stored block data like any other: a key the FormType has since renamed, or a height off the step list, seeds a demo banner standing at the plain floor
     public function testBannerTitleFixtureStandsOnOneOfTheSteps(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $this->assertSame(['title', 'level', 'height'], array_keys($fixtures['banner_title']['']));
         $this->assertContains($fixtures['banner_title']['']['height'], BannerTitleType::HEIGHT_CHOICES);
@@ -40,7 +40,7 @@ class BlockFixtureProviderTest extends TestCase
     // "audio" carries no file nor format: both are auto-attached generically by BlockFixtureMediaAttacher (any "audio/*" mediaType), so the fixture only needs the player's own display fields
     public function testAudioFixtureOnlyCarriesDisplayFields(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $this->assertSame(['title', 'description', 'class'], array_keys($fixtures['audio']['']));
     }
@@ -48,7 +48,7 @@ class BlockFixtureProviderTest extends TestCase
     // "video" carries no file path nor format anymore: both come from the Media auto-attached by BlockFixtureMediaAttacher (any "video/*" mediaType), so the fixture only needs the player's own display fields, the same ones as "video_iframe" - "muted" so a gallery page full of blocks stays silent
     public function testVideoFixtureOnlyCarriesDisplayFields(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $this->assertSame(['options', 'title', 'description', 'width', 'height', 'class'], array_keys($fixtures['video']['']));
         $this->assertContains('muted', $fixtures['video']['']['options']);
@@ -57,7 +57,7 @@ class BlockFixtureProviderTest extends TestCase
     // video_iframe just renders any URL in an <iframe> (see Video/Iframe.html.twig) - a raw video file navigated to directly would autoplay with sound via the browser's own player, so this uses the muted HTML wrapper the app declares (see PlaceholderMediaProviderInterface). Leading "/" for the same reason as above.
     public function testVideoIframeFixtureUsesTheDeclaredMutedVideoEmbedWrapper(): void
     {
-        $fixtures = (new BlockFixtureProvider($this->createPlaceholderMedia(['video_embed' => 'showcase/clip-embed.html'])))->getFixtures();
+        $fixtures = new BlockFixtureProvider($this->createPlaceholderMedia(['video_embed' => 'showcase/clip-embed.html']))->getFixtures();
 
         $this->assertSame('/showcase/clip-embed.html', $fixtures['video_iframe']['']['src']);
         $this->assertNotEmpty($fixtures['video_iframe']['']['title']);
@@ -67,8 +67,8 @@ class BlockFixtureProviderTest extends TestCase
     // The bundle ships no wrapper of its own: with none declared the preview shows the block's consent placeholder with nothing behind it, rather than a src pointing at a file that isn't there
     public function testVideoIframeFixtureCarriesNoSrcWhenNoneIsDeclared(): void
     {
-        $this->assertSame('', (new BlockFixtureProvider())->getFixtures()['video_iframe']['']['src']);
-        $this->assertSame('', (new BlockFixtureProvider($this->createPlaceholderMedia([])))->getFixtures()['video_iframe']['']['src']);
+        $this->assertSame('', new BlockFixtureProvider()->getFixtures()['video_iframe']['']['src']);
+        $this->assertSame('', new BlockFixtureProvider($this->createPlaceholderMedia([]))->getFixtures()['video_iframe']['']['src']);
     }
 
     private function createPlaceholderMedia(array $media): PlaceholderMediaRegistry
@@ -85,7 +85,7 @@ class BlockFixtureProviderTest extends TestCase
     // alert has 4 style choices (info/success/warning/danger) - all shown side by side in the gallery
     public function testAlertFixtureCoversEveryStyleChoice(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $types = array_column($fixtures['alert'], 'type');
         sort($types);
@@ -95,7 +95,7 @@ class BlockFixtureProviderTest extends TestCase
     // button has 5 style choices (primary/secondary/success/danger/link) - all shown side by side in the gallery
     public function testButtonFixtureCoversEveryStyleChoice(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $types = array_column($fixtures['button'], 'type');
         sort($types);
@@ -105,7 +105,7 @@ class BlockFixtureProviderTest extends TestCase
     // Kinds without a meaningful style variant use '' as their single, unlabelled key
     public function testKindsWithoutStyleVariantsUseASingleUnlabelledVariant(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         foreach (['audio', 'article', 'banner_title', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
             $this->assertSame([''], array_keys($fixtures[$kind]), "Kind \"{$kind}\" should have a single unlabelled variant");
@@ -115,7 +115,7 @@ class BlockFixtureProviderTest extends TestCase
     // slider shows its default (single-slide-at-a-time) layout alongside the freeflow layout (see Slider.html.twig's layout="" param) so both are visible side by side in the gallery
     public function testSliderFixtureCoversDefaultAndFreeflowLayouts(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $this->assertSame(['', 'freeflow'], array_keys($fixtures['slider']));
         $this->assertSame('default', $fixtures['slider']['']['layout']);
@@ -125,7 +125,7 @@ class BlockFixtureProviderTest extends TestCase
     // hero shows its ordinary layout alongside the background video, which fills the section and drops everything laid out beside the text - two looks of one kind, the same as the slider's above. The variant carries no field of its own: what tells them apart is the video BlockFixtureMediaAttacher attaches to this one only
     public function testHeroFixtureCoversTheOrdinaryLayoutAndTheBackgroundVideo(): void
     {
-        $fixtures = (new BlockFixtureProvider())->getFixtures();
+        $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $this->assertSame(['', 'video'], array_keys($fixtures['hero']));
         $this->assertSame(array_keys($fixtures['hero']['']), array_keys($fixtures['hero']['video']));

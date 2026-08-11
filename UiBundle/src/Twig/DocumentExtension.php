@@ -24,10 +24,11 @@ class DocumentExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('document_thumbnail_path', [$this, 'getThumbnailPath']),
+            new TwigFunction('document_thumbnail_path', $this->getThumbnailPath(...)),
         ];
     }
 

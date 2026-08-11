@@ -18,7 +18,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Checks the site's HTTP response headers against the same short-list securityheaders.com grades on (HSTS, CSP, X-Frame-Options...) - reimplemented directly (see SecurityHeadersClient) rather than calling that site, which has no public API for automated use. These headers are set once for the whole site (server/app config), never per-page, so only the site root is actually fetched - checking every url would just repeat the exact same result once per url, and it is a site with no pages at all (a shop, a catalogue) that needs this check just as much
 class SecurityHeadersHealthCheckProvider implements HealthCheckProviderInterface
 {
-    private const RECOMMENDED_HEADERS = [
+    private const array RECOMMENDED_HEADERS = [
         'strict-transport-security',
         'x-content-type-options',
         'content-security-policy',

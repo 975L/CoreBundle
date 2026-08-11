@@ -19,7 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class UserFormSeeder
 {
     // name => [type, label, url], one set per locale - FormSubmissionType renders FormField labels as literal text (translation_domain: false, an admin is expected to type real text, not a key), so these have to be actual words, picked once for kernel.default_locale since Form::$name is unique site-wide. "cgu"'s url points at that locale's own terms-of-use legal page, kept as a plain relative "/pages/{slug}" path (no router involved) since it's only ever read back once by FormSubmissionType - a site without those pages simply shows the label without a link
-    private const REGISTER_CORE_FIELDS = [
+    private const array REGISTER_CORE_FIELDS = [
         'fr' => [
             'email' => [FormField::TYPE_EMAIL, 'Email', null],
             'plainPassword' => [FormField::TYPE_PASSWORD_REPEATED, 'Mot de passe', null],
@@ -38,7 +38,7 @@ class UserFormSeeder
     ];
 
     // Shown under the register form's submit button (see UiBundle's Form::getLinks()) - a visitor who already has an account, or who came here because they lost their password, would otherwise be stuck on a form that can't help them. Same locale keying and same plain-path convention as the "cgu" url above: "/login" is the scaffolded App\Controller\SecurityController route, the other one that locale's own default page (see SiteBundle's DefaultPagesImporter) - a site without that page simply has one dead link to fix or drop, the links staying fully editable
-    private const REGISTER_LINKS = [
+    private const array REGISTER_LINKS = [
         'fr' => [
             ['label' => 'J\'ai déjà un compte, me connecter', 'url' => '/login'],
             ['label' => 'Mot de passe oublié ?', 'url' => '/pages/mot-de-passe-oublie'],
@@ -54,7 +54,7 @@ class UserFormSeeder
     ];
 
     // The way back out of the "I forgot my password" form, for a visitor who remembers it after all or who has no account yet
-    private const RESET_PASSWORD_REQUEST_LINKS = [
+    private const array RESET_PASSWORD_REQUEST_LINKS = [
         'fr' => [
             ['label' => 'Retour à la connexion', 'url' => '/login'],
             ['label' => 'Créer un compte', 'url' => '/pages/creer-un-compte'],
@@ -70,7 +70,7 @@ class UserFormSeeder
     ];
 
     // Same shape, for the "reset_password_request" Form - see the scaffolded App\Service\ResetPasswordRequestFormAction for the FormActionInterface key processing it
-    private const RESET_PASSWORD_REQUEST_CORE_FIELDS = [
+    private const array RESET_PASSWORD_REQUEST_CORE_FIELDS = [
         'fr' => [
             'email' => [FormField::TYPE_EMAIL, 'Email', null],
         ],
@@ -83,7 +83,7 @@ class UserFormSeeder
     ];
 
     // One EmailBlock tuple set per locale, unused positions left null. "{{ signed_url }}"/"{{ expires_at }}" are resolved by EmailVerifier at send time
-    private const ACCOUNT_VALIDATION_BLOCKS = [
+    private const array ACCOUNT_VALIDATION_BLOCKS = [
         'fr' => [
             [EmailBlock::TYPE_HEADING, 'Confirmez votre adresse email', EmailBlock::LEVEL_H1, null, null, null],
             [EmailBlock::TYPE_TEXT, null, null, 'Merci de votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email.', null, null],
@@ -105,7 +105,7 @@ class UserFormSeeder
     ];
 
     // "{{ reset_url }}"/"{{ expires_at }}" are resolved by the scaffolded ResetPasswordRequestFormAction
-    private const PASSWORD_RESET_BLOCKS = [
+    private const array PASSWORD_RESET_BLOCKS = [
         'fr' => [
             [EmailBlock::TYPE_HEADING, 'Réinitialisation de votre mot de passe', EmailBlock::LEVEL_H1, null, null, null],
             [EmailBlock::TYPE_TEXT, null, null, 'Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.', null, null],

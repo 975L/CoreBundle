@@ -24,7 +24,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 class DnsEmailValidator extends ConstraintValidator
 {
     // DNS records for a domain rarely change within a few hours - caching absorbs repeated hits on the same domain (bot floods, or an admin re-saving the same user) without a live lookup on every single request
-    private const CACHE_TTL = 21600;
+    private const int CACHE_TTL = 21600;
 
     public function __construct(
         #[Autowire(service: 'cache.app')]

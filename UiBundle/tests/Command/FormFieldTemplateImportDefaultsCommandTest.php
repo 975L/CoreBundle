@@ -22,7 +22,7 @@ class FormFieldTemplateImportDefaultsCommandTest extends TestCase
 {
     private function defaultsCount(): int
     {
-        return \count((new \ReflectionClassConstant(FormFieldTemplateImportDefaultsCommand::class, 'DEFAULTS'))->getValue());
+        return \count(new \ReflectionClassConstant(FormFieldTemplateImportDefaultsCommand::class, 'DEFAULTS')->getValue());
     }
 
     public function testCreatesEveryDefaultWhenNoneExistYet(): void
@@ -62,7 +62,7 @@ class FormFieldTemplateImportDefaultsCommandTest extends TestCase
     // Two defaults sharing the same "name" would silently collapse to one at import time (findOneBy() would match the first one already persisted earlier in the same run, in a real DB - not reproducible with a stub, hence this static guard instead)
     public function testEveryDefaultHasAUniqueName(): void
     {
-        $names = array_column((new \ReflectionClassConstant(FormFieldTemplateImportDefaultsCommand::class, 'DEFAULTS'))->getValue(), 'name');
+        $names = array_column(new \ReflectionClassConstant(FormFieldTemplateImportDefaultsCommand::class, 'DEFAULTS')->getValue(), 'name');
 
         $this->assertSame(array_unique($names), $names);
     }

@@ -89,7 +89,7 @@ class FormFieldTemplateCrudControllerTest extends TestCase
         $reflection = new \ReflectionProperty($deleteAction, 'displayCallable');
         $displayCallable = $reflection->getValue($deleteAction);
 
-        $this->assertFalse($displayCallable((new FormFieldTemplate())->setRestricted(true)));
-        $this->assertTrue($displayCallable((new FormFieldTemplate())->setRestricted(false)));
+        $this->assertFalse($displayCallable(new FormFieldTemplate()->setRestricted(true)));
+        $this->assertTrue($displayCallable(new FormFieldTemplate()->setRestricted(false)));
     }
 }

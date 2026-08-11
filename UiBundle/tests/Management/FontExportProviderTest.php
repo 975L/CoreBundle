@@ -32,12 +32,12 @@ class FontExportProviderTest extends TestCase
         $filename = 'uploads/roboto-bold.woff2';
         file_put_contents($projectDir . '/public/' . $filename, 'fake-font-bytes');
 
-        $font = (new Font())->setName('Roboto')->setWeight(700)->setStyle('normal')->setFilename($filename);
+        $font = new Font()->setName('Roboto')->setWeight(700)->setStyle('normal')->setFilename($filename);
 
         $fontRepository = $this->createStub(FontRepository::class);
         $fontRepository->method('findAllOrdered')->willReturn([$font]);
 
-        $data = (new FontExportProvider($fontRepository, $projectDir))->exportAll();
+        $data = new FontExportProvider($fontRepository, $projectDir)->exportAll();
 
         $this->assertSame('Roboto', $data['items'][0]['name']);
         $this->assertSame(700, $data['items'][0]['weight']);
@@ -53,9 +53,9 @@ class FontExportProviderTest extends TestCase
 
     public function testSerializeSkipsFontsWithNoReadableFile(): void
     {
-        $font = (new Font())->setName('Ghost')->setWeight(400)->setStyle('normal')->setFilename('uploads/missing.woff2');
+        $font = new Font()->setName('Ghost')->setWeight(400)->setStyle('normal')->setFilename('uploads/missing.woff2');
 
-        $data = (new FontExportProvider($this->createStub(FontRepository::class), sys_get_temp_dir()))->serialize([$font]);
+        $data = new FontExportProvider($this->createStub(FontRepository::class), sys_get_temp_dir())->serialize([$font]);
 
         $this->assertSame([], $data['items']);
         $this->assertSame([], $data['files']);

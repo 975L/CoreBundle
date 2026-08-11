@@ -25,9 +25,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class VideoPosterImporter implements EventSubscriberInterface
 {
     // A still is a few hundred KB; anything past this is not one, and is dropped rather than written to disk
-    private const MAX_BYTES = 4_000_000;
+    private const int MAX_BYTES = 4_000_000;
 
-    private const TIMEOUT = 8;
+    private const int TIMEOUT = 8;
 
     // The files written by toTemporaryFile() during this request, kept to be swept once it is over
     private array $temporaryPaths = [];

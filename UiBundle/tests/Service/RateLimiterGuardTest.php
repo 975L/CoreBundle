@@ -29,7 +29,7 @@ class RateLimiterGuardTest extends TestCase
 
     public function testIsAcceptedTrueWhenNoLimiterFactoryConfigured(): void
     {
-        $this->assertTrue((new RateLimiterGuard())->isAccepted(null, 'some-key'));
+        $this->assertTrue(new RateLimiterGuard()->isAccepted(null, 'some-key'));
     }
 
     public function testIsAcceptedReflectsLimitDecision(): void
@@ -53,7 +53,7 @@ class RateLimiterGuardTest extends TestCase
 
     public function testIsAcceptedForIpTrueWhenNoLimiterFactoryConfigured(): void
     {
-        $this->assertTrue((new RateLimiterGuard())->isAcceptedForIp(null, '203.0.113.7'));
+        $this->assertTrue(new RateLimiterGuard()->isAcceptedForIp(null, '203.0.113.7'));
     }
 
     // An IPv4 address stands for its holder, so it is counted whole - two of them are two callers

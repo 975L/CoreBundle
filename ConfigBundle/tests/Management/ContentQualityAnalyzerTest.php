@@ -21,7 +21,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ContentQualityAnalyzerTest extends TestCase
 {
-    private const GOOD_ANALYSIS = [
+    private const array GOOD_ANALYSIS = [
         'title' => 'Un titre de page tout à fait correct',
         'description' => 'Une description de test suffisamment longue pour passer le seuil minimal recommandé.',
         'hasDescription' => true,

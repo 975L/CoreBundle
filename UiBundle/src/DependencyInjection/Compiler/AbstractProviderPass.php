@@ -42,7 +42,7 @@ abstract class AbstractProviderPass implements CompilerPassInterface
                 if (is_subclass_of($class, $this->interface)) {
                     $registry->addMethodCall('addProvider', [new Reference($id)]);
                 }
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 continue;
             }
         }

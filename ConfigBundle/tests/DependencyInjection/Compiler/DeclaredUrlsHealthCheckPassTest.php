@@ -58,7 +58,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container->setDefinition('book.sitemap', new Definition(FakeBookSitemapProvider::class));
         $container->setDefinition('shop.sitemap', new Definition(FakeShopSitemapProvider::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $definitions = $this->healthCheckDefinitions($container);
         $this->assertCount(2, $definitions);
@@ -73,7 +73,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container = $this->createContainer();
         $container->setDefinition('site.sitemap', new Definition(SitePageSitemapProvider::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $this->assertSame([], $this->healthCheckDefinitions($container));
     }
@@ -83,7 +83,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container = $this->createContainer();
         $container->setDefinition('some.service', new Definition(\stdClass::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $this->assertSame([], $this->healthCheckDefinitions($container));
     }
@@ -94,7 +94,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container = $this->createContainer();
         $container->setDefinition('classless', new Definition());
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $this->assertSame([], $this->healthCheckDefinitions($container));
     }
@@ -105,7 +105,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container = $this->createContainer(withAnalyzer: false);
         $container->setDefinition('book.sitemap', new Definition(FakeBookSitemapProvider::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $this->assertSame([], $this->healthCheckDefinitions($container));
     }
@@ -114,9 +114,9 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
     public function testProcessSkipsAnAbstractDefinition(): void
     {
         $container = $this->createContainer();
-        $container->setDefinition('book.sitemap.abstract', (new Definition(FakeBookSitemapProvider::class))->setAbstract(true));
+        $container->setDefinition('book.sitemap.abstract', new Definition(FakeBookSitemapProvider::class)->setAbstract(true));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $this->assertSame([], $this->healthCheckDefinitions($container));
     }
@@ -125,9 +125,9 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
     public function testProcessSkipsASyntheticDefinition(): void
     {
         $container = $this->createContainer();
-        $container->setDefinition('book.sitemap.synthetic', (new Definition(FakeBookSitemapProvider::class))->setSynthetic(true));
+        $container->setDefinition('book.sitemap.synthetic', new Definition(FakeBookSitemapProvider::class)->setSynthetic(true));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $this->assertSame([], $this->healthCheckDefinitions($container));
     }
@@ -137,12 +137,12 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
     {
         $container = $this->createContainer();
         $container->setDefinition('book.sitemap', new Definition(FakeBookSitemapProvider::class));
-        $container->setDefinition('book.sitemap.abstract', (new Definition(FakeBookSitemapProvider::class))->setAbstract(true));
-        $container->setDefinition('health_check_runner', (new Definition(\ArrayObject::class))
+        $container->setDefinition('book.sitemap.abstract', new Definition(FakeBookSitemapProvider::class)->setAbstract(true));
+        $container->setDefinition('health_check_runner', new Definition(\ArrayObject::class)
             ->setPublic(true)
             ->setArguments([new TaggedIteratorArgument('c975l.health_check_provider')]));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
         $container->compile();
 
         $this->assertCount(1, $this->healthCheckDefinitions($container));
@@ -155,7 +155,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container->setDefinition('book.sitemap', new Definition(FakeBookSitemapProvider::class));
         $container->setDefinition('shop.sitemap', new Definition(FakeShopSitemapProvider::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $this->assertCount(2, array_unique(array_keys($this->healthCheckDefinitions($container))));
     }
@@ -166,7 +166,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container = $this->createContainer();
         $container->setDefinition('book.sitemap', new Definition(FakeBookSitemapProvider::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $definition = array_values($this->healthCheckDefinitions($container))[0];
         $this->assertSame(AsHealthCheck::FREQUENCY_WEEKLY, $definition->getArgument(2));
@@ -178,7 +178,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container = $this->createContainer();
         $container->setDefinition('gallery.sitemap', new Definition(FakeGallerySitemapProvider::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $definition = array_values($this->healthCheckDefinitions($container))[0];
         $this->assertSame(AsHealthCheck::FREQUENCY_MONTHLY, $definition->getArgument(2));
@@ -191,7 +191,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
         $container->setDefinition('book.sitemap', new Definition(FakeBookSitemapProvider::class));
         $container->setDefinition('gallery.sitemap', new Definition(FakeGallerySitemapProvider::class));
 
-        (new DeclaredUrlsHealthCheckPass())->process($container);
+        new DeclaredUrlsHealthCheckPass()->process($container);
 
         $frequencies = array_map(
             static fn (Definition $definition) => $definition->getArgument(2),

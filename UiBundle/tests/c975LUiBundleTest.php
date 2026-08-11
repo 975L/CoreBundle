@@ -27,7 +27,7 @@ class c975LUiBundleTest extends TestCase
         $container = new ContainerBuilder();
         $container->registerExtension($this->extension('twig'));
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $config = $container->getExtensionConfig('twig');
 
@@ -40,7 +40,7 @@ class c975LUiBundleTest extends TestCase
         $container = new ContainerBuilder();
         $container->registerExtension($this->extension('twig'));
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $paths = $container->getExtensionConfig('twig')[0]['paths'];
 
@@ -53,7 +53,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $this->assertSame([], $container->getExtensionConfig('twig'));
     }
@@ -63,7 +63,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $paths = $container->getExtensionConfig('framework')[0]['asset_mapper']['paths'];
 
@@ -75,7 +75,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $limiter = $container->getExtensionConfig('framework')[0]['rate_limiter']['ui_form'];
 
@@ -89,7 +89,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $this->assertSame(['ui_form'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
         $this->assertStringContainsString(
@@ -116,7 +116,7 @@ class c975LUiBundleTest extends TestCase
         $container = new ContainerBuilder();
         $container->registerExtension($this->extension('vich_uploader'));
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $mappings = $container->getExtensionConfig('vich_uploader')[0]['mappings'];
 
@@ -129,7 +129,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $this->assertSame([], $container->getExtensionConfig('vich_uploader'));
     }
@@ -139,7 +139,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->build($container);
+        new c975LUiBundle()->build($container);
 
         $passes = array_map(
             static fn (object $pass): string => $pass::class,
@@ -155,7 +155,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->build($container);
+        new c975LUiBundle()->build($container);
 
         $passes = array_map(
             static fn (object $pass): string => $pass::class,
@@ -170,7 +170,7 @@ class c975LUiBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LUiBundle())->loadExtension([], $this->containerConfigurator($container), $container);
+        new c975LUiBundle()->loadExtension([], $this->containerConfigurator($container), $container);
 
         $origins = $container->getParameter('c975l_ui.video.embed_origins');
 
@@ -190,8 +190,8 @@ class c975LUiBundleTest extends TestCase
     // A bare extension, just enough for hasExtension() to answer true
     private function extension(string $alias): ExtensionInterface
     {
-        return new class ($alias) implements ExtensionInterface {
-            public function __construct(private readonly string $alias)
+        return new readonly class ($alias) implements ExtensionInterface {
+            public function __construct(private string $alias)
             {
             }
 

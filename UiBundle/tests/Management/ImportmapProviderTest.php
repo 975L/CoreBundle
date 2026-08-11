@@ -17,7 +17,7 @@ class ImportmapProviderTest extends TestCase
 {
     public function testGetAdminImportmapEntriesReturnsControllersAdminEntrypoint(): void
     {
-        $entries = (new ImportmapProvider())->getAdminImportmapEntries();
+        $entries = new ImportmapProvider()->getAdminImportmapEntries();
 
         $this->assertSame([
             '@c975l/ui-bundle/controllers-admin.js' => [
@@ -33,7 +33,7 @@ class ImportmapProviderTest extends TestCase
     // The drag gesture is imported by name from another bundle, so it needs an entry of its own - but not an entrypoint: nothing ever loads it as a script tag
     public function testPointerSortIsDeclaredWithoutBeingAnEntrypoint(): void
     {
-        $entry = (new ImportmapProvider())->getAdminImportmapEntries()['@c975l/ui-bundle/pointer-sort.js'] ?? null;
+        $entry = new ImportmapProvider()->getAdminImportmapEntries()['@c975l/ui-bundle/pointer-sort.js'] ?? null;
 
         $this->assertNotNull($entry, 'The drag gesture module is no longer importable from outside UiBundle.');
         $this->assertArrayNotHasKey('entrypoint', $entry, 'The drag gesture module is declared as an entrypoint, which would have the dashboard load it as a script of its own.');
@@ -42,7 +42,7 @@ class ImportmapProviderTest extends TestCase
 
     public function testGetImportmapEntriesReturnsControllersEntrypoint(): void
     {
-        $entries = (new ImportmapProvider())->getImportmapEntries();
+        $entries = new ImportmapProvider()->getImportmapEntries();
 
         $this->assertSame([
             '@c975l/ui-bundle/controllers.js' => [

@@ -23,7 +23,7 @@ class FormPageUrlProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new FormPageUrlProviderPass())->process($container);
+        new FormPageUrlProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class FormPageUrlProviderPassTest extends TestCase
         $container->register('site.form_page_url_provider', DummyFormPageUrlProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new FormPageUrlProviderPass())->process($container);
+        new FormPageUrlProviderPass()->process($container);
 
         $calls = $container->getDefinition(FormPageUrlRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class FormPageUrlProviderPassTest extends TestCase
         $container->register(FormPageUrlRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new FormPageUrlProviderPass())->process($container);
+        new FormPageUrlProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(FormPageUrlRegistry::class)->getMethodCalls());
     }

@@ -40,7 +40,7 @@ class CaptchaTypeTest extends TestCase
         return new CaptchaType(new CaptchaVerifier(new MockHttpClient(), $configService, $requestStack));
     }
 
-    private const KEYS = [
+    private const array KEYS = [
         'recaptcha3-site-key' => 'site-key',
         'recaptcha3-secret-key' => 'secret-key',
     ];

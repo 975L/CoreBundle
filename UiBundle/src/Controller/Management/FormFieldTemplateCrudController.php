@@ -42,6 +42,7 @@ class FormFieldTemplateCrudController extends AbstractCrudController
         return FormFieldTemplate::class;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         $entity = $this->adminContextProvider->getContext()?->getEntity()?->getInstance();
@@ -73,6 +74,7 @@ class FormFieldTemplateCrudController extends AbstractCrudController
         ];
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $role = $this->configService->get('site-role-admin');
@@ -99,6 +101,7 @@ class FormFieldTemplateCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud

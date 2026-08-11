@@ -21,7 +21,7 @@ class BackupHealthCheckAdviceProviderTest extends TestCase
 {
     private function createResult(string $kind, ?array $details): HealthCheckResult
     {
-        return (new HealthCheckResult())
+        return new HealthCheckResult()
             ->setKind($kind)
             ->setUrl('https://example.com')
             ->setStatus(HealthCheckResult::STATUS_OK)

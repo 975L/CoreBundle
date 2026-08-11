@@ -57,7 +57,7 @@ class c975LConfigBundleTest extends TestCase
         $container->register('guided_project_provider', c975LConfigBundleTestGuidedProjectProviderFixture::class);
         $container->register('content_offence_locator', c975LConfigBundleTestContentOffenceLocatorFixture::class);
 
-        (new c975LConfigBundle())->build($container);
+        new c975LConfigBundle()->build($container);
 
         foreach ($container->getCompilerPassConfig()->getBeforeOptimizationPasses() as $pass) {
             if ($pass instanceof TaggedInterfacePass) {
@@ -89,7 +89,7 @@ class c975LConfigBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LConfigBundle())->build($container);
+        new c975LConfigBundle()->build($container);
 
         $passes = array_filter(
             $container->getCompilerPassConfig()->getBeforeOptimizationPasses(),
@@ -104,7 +104,7 @@ class c975LConfigBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LConfigBundle())->getContainerExtension()->load([], $container);
+        new c975LConfigBundle()->getContainerExtension()->load([], $container);
 
         $this->assertTrue($container->hasDefinition(ConfigService::class));
     }
@@ -114,7 +114,7 @@ class c975LConfigBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LConfigBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LConfigBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $paths = $container->getExtensionConfig('framework')[0]['asset_mapper']['paths'];
         $this->assertSame(['@c975l/config-bundle'], array_values($paths));
@@ -127,10 +127,10 @@ class c975LConfigBundleTest extends TestCase
         $container = new ContainerBuilder();
         $container->registerExtension(new c975LConfigBundleTestDoctrineExtensionFixture());
 
-        (new c975LConfigBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LConfigBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $this->assertSame(
-            [['orm' => ['resolve_target_entities' => [UserInterface::class => 'App\Entity\User']]]],
+            [['orm' => ['resolve_target_entities' => [UserInterface::class => \App\Entity\User::class]]]],
             $container->getExtensionConfig('doctrine')
         );
     }
@@ -140,7 +140,7 @@ class c975LConfigBundleTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new c975LConfigBundle())->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+        new c975LConfigBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
         $this->assertSame([], $container->getExtensionConfig('doctrine'));
     }

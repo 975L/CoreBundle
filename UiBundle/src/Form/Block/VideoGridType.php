@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 // A container rather than a media collection of its own: a grid holding platform players has to carry the whole consent dance (nocookie rewrite, banner contract, click-to-play, poster import), all of which "video_iframe" already carries alone in the page flow. Duplicating it per grid item would be a second implementation of the one thing on this page that must not be got wrong
 class VideoGridType extends AbstractSectionHeadContainerType
 {
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);

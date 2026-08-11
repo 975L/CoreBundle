@@ -109,7 +109,7 @@ class ConfigGuidedProjectProviderTest extends TestCase
 
     private function easyAdminActionNames(): array
     {
-        $constants = (new \ReflectionClass(Action::class))->getConstants();
+        $constants = new \ReflectionClass(Action::class)->getConstants();
 
         return array_values(array_filter(
             $constants,

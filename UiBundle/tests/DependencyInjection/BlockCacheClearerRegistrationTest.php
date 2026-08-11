@@ -35,8 +35,8 @@ class BlockCacheClearerRegistrationTest extends TestCase
         // Exactly what FrameworkBundle's extension does, so the test asserts the real mechanism rather than a tag written by hand
         $container->registerForAutoconfiguration(CacheClearerInterface::class)->addTag('kernel.cache_clearer');
 
-        (new YamlFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config')))->load('services.yaml');
-        (new ResolveInstanceofConditionalsPass())->process($container);
+        new YamlFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config'))->load('services.yaml');
+        new ResolveInstanceofConditionalsPass()->process($container);
 
         return $container;
     }

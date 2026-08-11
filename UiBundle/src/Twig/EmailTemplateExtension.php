@@ -24,10 +24,11 @@ class EmailTemplateExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('email_template_body', [$this, 'renderEmailTemplateBody'], ['is_safe' => ['html']]),
+            new TwigFunction('email_template_body', $this->renderEmailTemplateBody(...), ['is_safe' => ['html']]),
         ];
     }
 

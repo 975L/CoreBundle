@@ -198,7 +198,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'same-content');
 
-        (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $manifest = json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true);
         $this->assertSame(hash('sha256', 'same-content'), $manifest['src/Kernel.php']);
@@ -209,7 +209,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'delivered-now']);
 
-        (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $manifest = json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true);
         $this->assertSame(hash('sha256', 'delivered-now'), $manifest['src/Kernel.php']);
@@ -344,7 +344,7 @@ class ScaffoldInstallerTest extends TestCase
         $reminder = $installer->themeImportReminder();
 
         $this->assertNotNull($reminder);
-        $this->assertStringContainsString('Remove the theme import', $reminder);
+        $this->assertStringContainsString('Remove the stylesheet import', $reminder);
         $this->assertStringContainsString('ui.css', $reminder);
         // install() never writes to app.js: the removal is the developer's own move
         $this->assertSame("import './styles/themes/ui.css';\n", file_get_contents($this->projectDir . '/assets/app.js'));
@@ -361,8 +361,24 @@ class ScaffoldInstallerTest extends TestCase
 
         $reminder = (string) $installer->themeImportReminder();
 
-        $this->assertStringContainsString('Remove the theme import', $reminder);
+        $this->assertStringContainsString('Remove the stylesheet import', $reminder);
         $this->assertStringContainsString('site.css', $reminder);
+    }
+
+    // The line Symfony's own recipe writes into assets/app.js, which no site ever had a reason to question: the provider contributes assets/styles/*.css alongside the themes, so that import is stale too - and its cost is not one extra request but the whole entrypoint, AssetMapper addressing a CSS import map entry by a "data:application/javascript," URL the site's Content-Security-Policy blocks
+    public function testThemeImportReminderWarnsAboutTheRecipeAppCssImport(): void
+    {
+        mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
+        file_put_contents($this->projectDir . '/assets/styles/themes/ui.css', ':root {}');
+        file_put_contents($this->projectDir . '/assets/styles/app.css', "body { color: red; }\n");
+        file_put_contents($this->projectDir . '/assets/app.js', "import './styles/app.css';\n");
+        $this->addThemeProvider();
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $reminder = (string) $installer->themeImportReminder();
+
+        $this->assertStringContainsString('Remove the stylesheet import', $reminder);
+        $this->assertStringContainsString('assets/app.js → styles/app.css', $reminder);
     }
 
     // Without the provider, that import is the only thing loading the theme: advising its removal would take the theme down with it
@@ -375,18 +391,30 @@ class ScaffoldInstallerTest extends TestCase
 
         $reminder = (string) $installer->themeImportReminder();
 
-        $this->assertStringContainsString('Keep the theme import', $reminder);
+        $this->assertStringContainsString('Keep the stylesheet import', $reminder);
         $this->assertStringContainsString('src/Service/ThemeStylesheetProvider.php', $reminder);
     }
 
-    // The normal state of a site on the provider: theme files present, nothing importing them
-    public function testThemeImportReminderIsNullWhenNothingImportsTheThemes(): void
+    // The normal state of a site on the provider: stylesheets present, nothing importing them
+    public function testThemeImportReminderIsNullWhenNothingImportsTheStylesheets(): void
     {
         mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
         file_put_contents($this->projectDir . '/assets/styles/themes/ui.css', ':root {}');
         file_put_contents($this->projectDir . '/assets/styles/themes/site.css', ':root {}');
-        file_put_contents($this->projectDir . '/assets/app.js', "import './styles/app.css';\n");
+        file_put_contents($this->projectDir . '/assets/app.js', "import './stimulus_bootstrap.js';\n");
         file_put_contents($this->projectDir . '/assets/styles/app.css', "body { color: red; }\n");
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $this->assertNull($installer->themeImportReminder());
+    }
+
+    // A sheet naming itself is not an import - app.css carries its own name in the header comment every site's scaffold writes there
+    public function testThemeImportReminderIgnoresAStylesheetNamingItself(): void
+    {
+        mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
+        file_put_contents($this->projectDir . '/assets/styles/themes/ui.css', ':root {}');
+        file_put_contents($this->projectDir . '/assets/styles/app.css', "/* app.css - this site's own overrides */\n");
+        $this->addThemeProvider();
         $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
 
         $this->assertNull($installer->themeImportReminder());
@@ -410,6 +438,34 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertNull($installer->themeImportReminder());
     }
 
+    // Under assets/styles/ a sheet is named by its bare file name, which prose mentions it just as well as an import does - only a quote or a closing parenthesis after it makes it one
+    public function testThemeImportReminderIgnoresASisterStylesheetNamedInProse(): void
+    {
+        mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
+        file_put_contents($this->projectDir . '/assets/styles/themes/ui.css', ':root {}');
+        file_put_contents($this->projectDir . '/assets/styles/print.css', '@media print {}');
+        file_put_contents($this->projectDir . '/assets/styles/app.css', "/* screen only, see print.css for the rest */\n");
+        $this->addThemeProvider();
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $this->assertNull($installer->themeImportReminder());
+    }
+
+    // The same name behind an @import is the real thing, delimiter and all
+    public function testThemeImportReminderWarnsAboutASisterStylesheetActuallyImported(): void
+    {
+        mkdir($this->projectDir . '/assets/styles/themes', 0775, true);
+        file_put_contents($this->projectDir . '/assets/styles/themes/ui.css', ':root {}');
+        file_put_contents($this->projectDir . '/assets/styles/print.css', '@media print {}');
+        file_put_contents($this->projectDir . '/assets/styles/app.css', "@import \"print.css\";\n");
+        $this->addThemeProvider();
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $reminder = (string) $installer->themeImportReminder();
+
+        $this->assertStringContainsString('assets/styles/app.css → print.css', $reminder);
+    }
+
     // Propagating one upgraded scaffold file must not pass over every other file the project may have diverged on
     public function testInstallRestrictedToAPathLeavesTheRestAlone(): void
     {
@@ -420,7 +476,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'my-own-kernel');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install(['src/Scheduler']);
 
         $this->assertSame(['copied' => 1, 'backedUp' => 0, 'skipped' => 0], $this->counts($result));
         $this->assertSame('new-schedule', file_get_contents($this->projectDir . '/src/Scheduler/MaintenanceSchedule.php'));
@@ -432,7 +488,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         $this->addScaffoldBundle('site-bundle', ['src/SchedulerOther/Foo.php' => 'foo']);
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install(['src/Scheduler']);
 
         $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 0], $this->counts($result));
         $this->assertFileDoesNotExist($this->projectDir . '/src/SchedulerOther/Foo.php');
@@ -443,7 +499,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         $this->addScaffoldBundle('site-bundle', ['src/Scheduler/MaintenanceSchedule.php' => 'new-schedule']);
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler', 'src/Sheduler', 'scaffold/src/Scheduler']);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install(['src/Scheduler', 'src/Sheduler', 'scaffold/src/Scheduler']);
 
         $this->assertSame(['src/Sheduler', 'scaffold/src/Scheduler'], $result['unmatched']);
     }
@@ -455,7 +511,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/src/Scheduler', 0775, true);
         file_put_contents($this->projectDir . '/src/Scheduler/MaintenanceSchedule.php', 'same-content');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install(['src/Scheduler']);
 
         $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 1], $this->counts($result));
         $this->assertSame([], $result['unmatched']);
@@ -468,7 +524,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
         $this->addProjectFile('src/Security/EmailVerifier.php', 'as-delivered');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
         $this->assertSame([], $result['obsolete']);
@@ -481,7 +537,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addRemovedDeclaration('site-bundle', ['src/Form/RegistrationFormType.php' => ['first-version', 'second-version']]);
         $this->addProjectFile('src/Form/RegistrationFormType.php', 'first-version');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $this->assertSame(['src/Form/RegistrationFormType.php'], $result['deleted']);
         $this->assertFileDoesNotExist($this->projectDir . '/src/Form/RegistrationFormType.php');
@@ -494,7 +550,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addProjectFile('src/Security/EmailVerifier.php', 'what-this-site-got');
         $this->recordAsDelivered('src/Security/EmailVerifier.php', 'what-this-site-got');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
         $manifest = json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true);
@@ -507,7 +563,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
         $this->addProjectFile('src/Security/EmailVerifier.php', 'my-own-verifier');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $this->assertSame([], $result['deleted']);
         $this->assertSame(['src/Security/EmailVerifier.php' => 'site-bundle'], $result['obsolete']);
@@ -520,7 +576,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
         $this->addProjectFile('src/Security/EmailVerifier.php', 'my-own-verifier');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], false, true);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install([], false, true);
 
         $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
         $this->assertSame([], $result['obsolete']);
@@ -535,7 +591,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addScaffoldBundle('config-bundle', ['src/Security/UserChecker.php' => 'now-shipped-here']);
         $this->addRemovedDeclaration('site-bundle', ['src/Security/UserChecker.php' => ['now-shipped-here']]);
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $this->assertSame([], $result['deleted']);
         $this->assertSame('now-shipped-here', file_get_contents($this->projectDir . '/src/Security/UserChecker.php'));
@@ -546,7 +602,7 @@ class ScaffoldInstallerTest extends TestCase
     {
         $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install();
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install();
 
         $this->assertSame([], $result['deleted']);
         $this->assertSame([], $result['obsolete']);
@@ -559,7 +615,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
         $this->addProjectFile('src/Security/EmailVerifier.php', 'as-delivered');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install(['src/Scheduler']);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install(['src/Scheduler']);
 
         $this->assertSame([], $result['deleted']);
         $this->assertFileExists($this->projectDir . '/src/Security/EmailVerifier.php');
@@ -571,7 +627,7 @@ class ScaffoldInstallerTest extends TestCase
         $this->addRemovedDeclaration('site-bundle', ['src/Security/EmailVerifier.php' => ['as-delivered']]);
         $this->addProjectFile('src/Security/EmailVerifier.php', 'as-delivered');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], true);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install([], true);
 
         $this->assertSame(['src/Security/EmailVerifier.php'], $result['deleted']);
         $this->assertSame('as-delivered', file_get_contents($this->projectDir . '/src/Security/EmailVerifier.php'));
@@ -584,7 +640,7 @@ class ScaffoldInstallerTest extends TestCase
         mkdir($this->projectDir . '/src', 0775, true);
         file_put_contents($this->projectDir . '/src/Kernel.php', 'original-content');
 
-        $result = (new ScaffoldInstaller($this->bundleLocator(), $this->projectDir))->install([], true, true);
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->install([], true, true);
 
         $this->assertSame(['copied' => 1, 'backedUp' => 1, 'skipped' => 0], $this->counts($result));
         $this->assertSame(['src/Kernel.php'], $result['files']);

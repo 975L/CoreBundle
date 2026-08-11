@@ -24,17 +24,17 @@ class FontPreloadExtension extends AbstractExtension
     public const CACHE_KEY = 'c975l_site.font_preloads';
 
     // Only the families the theme applies: preloading an unused font competes with the ones in use
-    private const FONT_FAMILY_SLUGS = [
+    private const array FONT_FAMILY_SLUGS = [
         'theme-font-family-title',
         'theme-font-family-body',
         'theme-font-family-accent',
     ];
 
     // Two covers the usual title and body pair; beyond that, everything high-priority means nothing is
-    private const MAX_PRELOADS = 2;
+    private const int MAX_PRELOADS = 2;
 
     // From the extension: the upload-time mime is often "application/octet-stream", and getFormat() returns a CSS keyword
-    private const MIME_TYPES = [
+    private const array MIME_TYPES = [
         'woff2' => 'font/woff2',
         'woff' => 'font/woff',
         'ttf' => 'font/ttf',
@@ -48,10 +48,11 @@ class FontPreloadExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('font_preloads', [$this, 'getFontPreloads']),
+            new TwigFunction('font_preloads', $this->getFontPreloads(...)),
         ];
     }
 

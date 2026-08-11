@@ -17,7 +17,7 @@ use Symfony\Component\Filesystem\Path;
 // Merges the importmap entries contributed by every ImportmapProviderInterface (see readme), each path resolved against the directory of the bundle that declared it
 class ImportmapRegistry
 {
-    private array $entries;
+    private readonly array $entries;
 
     // @param iterable<ImportmapProviderInterface> $providers
     public function __construct(

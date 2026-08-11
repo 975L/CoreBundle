@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // A kind's data sub-form is themed once, on the "ui_block_data" block prefix, and is reached from two places: the EasyAdmin edit screen through BlockType, and the fragment the kind picker loads over AJAX through BlockFormController. Either one dropping the option is what makes the same kind lay its fields out differently on the two screens - a fieldset grouping and a hoisted media collection on one, a flat run of inputs on the other - with nothing failing and nothing said
 class BlockDataThemePrefixTest extends TestCase
 {
-    private const PREFIX = 'ui_block_data';
+    private const string PREFIX = 'ui_block_data';
 
     private function source(string $path): string
     {

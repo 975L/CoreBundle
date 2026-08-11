@@ -16,8 +16,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ShortcutBuilder
 {
     // Fallback category for a shortcut not opting into one (see ShortcutProviderInterface::getShortcuts())
-    private const OTHER_CATEGORY_LABEL = 'label.shortcuts_category_other';
-    private const OTHER_CATEGORY_TRANSLATION_DOMAIN = 'config';
+    private const string OTHER_CATEGORY_LABEL = 'label.shortcuts_category_other';
+    private const string OTHER_CATEGORY_TRANSLATION_DOMAIN = 'config';
 
     public function __construct(
         private readonly iterable $shortcutProviders,

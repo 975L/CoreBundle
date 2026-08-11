@@ -15,27 +15,27 @@ use PHPUnit\Framework\TestCase;
 // The three rules setting the page measure must read the same token chain, else they misalign
 class SectionWrapMeasureTest extends TestCase
 {
-    private const MEASURE = 'max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px))';
+    private const string MEASURE = 'max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px))';
 
     // Selectors as they read once normalized: no space around the combinators, one around a descendant
-    private const MEASURED_RULES = [
+    private const array MEASURED_RULES = [
         '.section-wrap',
         '.blocks>.cards',
         '.feature-bar.section--bg-dark .feature-bar__grid',
     ];
 
-    private const GUTTERED_RULES = ['.section-wrap', '.blocks>.cards'];
+    private const array GUTTERED_RULES = ['.section-wrap', '.blocks>.cards'];
 
     // The measure alone, as it reads inside a calc(): a rule taking its own gutters off it can't state it straight
-    private const MEASURE_CHAIN = 'var(--section-wrap-max-width, var(--body-max-width, 1440px))';
+    private const string MEASURE_CHAIN = 'var(--section-wrap-max-width, var(--body-max-width, 1440px))';
 
     // Panels padding themselves, so their gutters are margins: capped on the same measure, less those gutters
-    private const MARGIN_GUTTERED_RULES = ['.blocks>.contact-details'];
+    private const array MARGIN_GUTTERED_RULES = ['.blocks>.contact-details'];
 
     // Every rule padding its own box, measured or not: the panel is padded but laid out on its slot
-    private const SELF_PADDED_RULES = ['.section-wrap', '.blocks>.cards', '.contact-details'];
+    private const array SELF_PADDED_RULES = ['.section-wrap', '.blocks>.cards', '.contact-details'];
 
-    private const GUTTERS = [
+    private const array GUTTERS = [
         'padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px))',
         'padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px))',
     ];

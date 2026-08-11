@@ -18,7 +18,7 @@ class ConfigMaintenanceTaskProviderTest extends TestCase
 {
     private function getTasks(): array
     {
-        return (new ConfigMaintenanceTaskProvider())->getMaintenanceTasks();
+        return new ConfigMaintenanceTaskProvider()->getMaintenanceTasks();
     }
 
     public function testEveryDeclaredTaskIsAMaintenanceTask(): void

@@ -27,7 +27,7 @@ class BlockLocationRegistryTest extends TestCase
     // What an app running Ui with no bundle owning blocks answers: the screens list their blocks unlocated
     public function testGetLocationsReturnsEmptyArrayWhenNoProviders(): void
     {
-        $this->assertSame([], (new BlockLocationRegistry())->getLocations([]));
+        $this->assertSame([], new BlockLocationRegistry()->getLocations([]));
     }
 
     public function testGetLocationsReturnsSingleProviderResult(): void

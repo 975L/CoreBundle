@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class BackupRetentionPurger
 {
     // var/backup/YYYY/YYYY-MM/YYYY-MM-DD - only the leaf is dated to the day, and it's the only level this class ever deletes
-    private const DATED_FOLDER_PATTERN = '/^\d{4}-\d{2}-\d{2}$/';
+    private const string DATED_FOLDER_PATTERN = '/^\d{4}-\d{2}-\d{2}$/';
 
     public function __construct(
         private readonly Filesystem $filesystem,
@@ -32,7 +32,7 @@ class BackupRetentionPurger
 
         // A zero or negative retention would wipe every archive on the very first run, including the one that has just been written - treated as "keep everything" instead, the setting being a plain config entry anyone can mistype
         if ($days > 0) {
-            $limit = (new \DateTimeImmutable())->modify(sprintf('-%d days', $days))->format('Y-m-d');
+            $limit = new \DateTimeImmutable()->modify(sprintf('-%d days', $days))->format('Y-m-d');
 
             foreach ($this->datedFolders($backupFolder) as $folder) {
                 if (basename($folder) >= $limit) {
@@ -102,7 +102,7 @@ class BackupRetentionPurger
     {
         foreach ([$backupFolder . '/*/*', $backupFolder . '/*'] as $pattern) {
             foreach (glob($pattern, GLOB_ONLYDIR) ?: [] as $folder) {
-                if (!(new \FilesystemIterator($folder))->valid()) {
+                if (!new \FilesystemIterator($folder)->valid()) {
                     $this->filesystem->remove($folder);
                 }
             }

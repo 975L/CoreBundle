@@ -79,14 +79,14 @@ class BackupDigestCommandTest extends TestCase
 
     public function testTheWindowDefaultsToAWeek(): void
     {
-        (new CommandTester($this->createCommand()))->execute([]);
+        new CommandTester($this->createCommand())->execute([]);
 
         $this->assertSame(BackupDigestBuilder::DEFAULT_DAYS, $this->requestedDays);
     }
 
     public function testTheWindowCanBeWidened(): void
     {
-        (new CommandTester($this->createCommand()))->execute(['--days' => '30']);
+        new CommandTester($this->createCommand())->execute(['--days' => '30']);
 
         $this->assertSame(30, $this->requestedDays);
     }

@@ -18,7 +18,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 
 class VideoPosterImporterTest extends TestCase
 {
-    private const YOUTUBE_URL = 'https://www.youtube.com/watch?v=lXqKJvMxEdo';
+    private const string YOUTUBE_URL = 'https://www.youtube.com/watch?v=lXqKJvMxEdo';
 
     private array $temporaryFiles = [];
 
@@ -43,7 +43,7 @@ class VideoPosterImporterTest extends TestCase
 
     private function createBlock(string $kind, array $data): Block
     {
-        return (new Block())->setKind($kind)->setData($data);
+        return new Block()->setKind($kind)->setData($data);
     }
 
     private function createImporter(array $responses): VideoPosterImporter

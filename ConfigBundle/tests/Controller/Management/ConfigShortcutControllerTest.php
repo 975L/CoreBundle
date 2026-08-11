@@ -478,7 +478,7 @@ class ConfigShortcutControllerTest extends TestCase
     // Flips the "register" Form's own $enabled flag, the same lever FormController checks before building the form
     public function testRegistrationEnabledToggleFlipsTheRegisterFormAndFlushes(): void
     {
-        $form = (new Form())->setName('register')->setEnabled(false);
+        $form = new Form()->setName('register')->setEnabled(false);
         $formRepository = $this->createStub(FormRepository::class);
         $formRepository->method('findOneBy')->willReturn($form);
 

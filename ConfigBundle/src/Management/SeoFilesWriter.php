@@ -22,13 +22,13 @@ class SeoFilesWriter
     public const GENERATED_MARKER = 'c975l:seo:files:create';
 
     // Long enough to say what a page is, short enough to keep llms.txt readable when a site declares hundreds of them
-    private const DESCRIPTION_MAX_LENGTH = 200;
+    private const int DESCRIPTION_MAX_LENGTH = 200;
 
-    private string $publicFolder;
+    private readonly string $publicFolder;
 
-    private string $backupFolder;
+    private readonly string $backupFolder;
 
-    private Filesystem $filesystem;
+    private readonly Filesystem $filesystem;
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,
@@ -244,6 +244,6 @@ class SeoFilesWriter
             return [];
         }
 
-        return array_values(array_filter(array_map(fn (mixed $item): ?string => $this->text($item), $value)));
+        return array_values(array_filter(array_map($this->text(...), $value)));
     }
 }

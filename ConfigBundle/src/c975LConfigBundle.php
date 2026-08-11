@@ -56,7 +56,7 @@ class c975LConfigBundle extends AbstractBundle
             $container->prependExtensionConfig('doctrine', [
                 'orm' => [
                     'resolve_target_entities' => [
-                        UserInterface::class => 'App\Entity\User',
+                        UserInterface::class => \App\Entity\User::class,
                     ],
                 ],
             ]);
@@ -101,6 +101,7 @@ class c975LConfigBundle extends AbstractBundle
         }
     }
 
+    #[\Override]
     public function getPath(): string
     {
         return \dirname(__DIR__);

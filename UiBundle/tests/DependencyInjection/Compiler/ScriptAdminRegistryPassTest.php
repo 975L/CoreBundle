@@ -22,7 +22,7 @@ class ScriptAdminRegistryPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new ScriptAdminRegistryPass())->process($container);
+        new ScriptAdminRegistryPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -33,7 +33,7 @@ class ScriptAdminRegistryPassTest extends TestCase
         $container->register(ScriptAdminRegistry::class);
         $container->register('provider.a')->addTag('ui.admin_script');
 
-        (new ScriptAdminRegistryPass())->process($container);
+        new ScriptAdminRegistryPass()->process($container);
 
         $calls = $container->getDefinition(ScriptAdminRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -48,7 +48,7 @@ class ScriptAdminRegistryPassTest extends TestCase
         $container->register('provider.low')->addTag('ui.admin_script', ['priority' => 0]);
         $container->register('provider.high')->addTag('ui.admin_script', ['priority' => 10]);
 
-        (new ScriptAdminRegistryPass())->process($container);
+        new ScriptAdminRegistryPass()->process($container);
 
         $calls = $container->getDefinition(ScriptAdminRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('provider.high'), $calls[0][1][0]);

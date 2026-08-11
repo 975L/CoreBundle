@@ -35,7 +35,7 @@ class BackupOffsiteCommandTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createCommand(string $target = '', array $paths = [], ?\ArrayObject $calls = null): BackupOffsiteCommand
@@ -48,8 +48,8 @@ class BackupOffsiteCommandTest extends TestCase
             static fn (string $key) => 'site-backup-offsite-target' === $key ? $target : null
         );
 
-        $provider = new class ($paths) implements BackupPathProviderInterface {
-            public function __construct(private readonly array $paths)
+        $provider = new readonly class ($paths) implements BackupPathProviderInterface {
+            public function __construct(private array $paths)
             {
             }
 
@@ -102,7 +102,7 @@ class BackupOffsiteCommandTest extends TestCase
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
 
-        $state = (new OffsiteState())->read($this->projectDir);
+        $state = new OffsiteState()->read($this->projectDir);
         $this->assertSame('ok', $state['status']);
         $this->assertSame('pulled', $state['what']);
     }
@@ -137,7 +137,7 @@ class BackupOffsiteCommandTest extends TestCase
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
         // The console wraps its warning block, so only the head of the message is matched here
         $this->assertStringContainsString('is not a valid', $tester->getDisplay());
-        $this->assertNull((new OffsiteState())->read($this->projectDir));
+        $this->assertNull(new OffsiteState()->read($this->projectDir));
     }
 
     // The folder --backup-dir fills and the folder the purge empties have to be the same one. Renaming one and leaving the other aims the purge at a folder that doesn't exist: the previous versions then pile up offsite for good, while every run goes on reporting success - which is why the name is asserted here rather than read twice
@@ -158,7 +158,7 @@ class BackupOffsiteCommandTest extends TestCase
             sprintf(
                 'sync %s/public/medias storagebox:975l.com/files/public/medias --backup-dir storagebox:975l.com/previous/%s/public/medias --max-delete 100',
                 $this->projectDir,
-                (new \DateTimeImmutable())->format('Y-m-d'),
+                new \DateTimeImmutable()->format('Y-m-d'),
             ),
             (array) $calls,
         );

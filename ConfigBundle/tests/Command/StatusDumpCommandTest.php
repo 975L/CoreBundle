@@ -18,7 +18,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class StatusDumpCommandTest extends TestCase
 {
-    private const REPORT = ['version' => 1, 'site' => 'https://papa-calin.com', 'packages' => ['c975l/core-bundle' => 'v1.4.3']];
+    private const array REPORT = ['version' => 1, 'site' => 'https://papa-calin.com', 'packages' => ['c975l/core-bundle' => 'v1.4.3']];
 
     private function createTester(): CommandTester
     {

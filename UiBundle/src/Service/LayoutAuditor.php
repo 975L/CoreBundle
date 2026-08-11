@@ -33,10 +33,10 @@ class LayoutAuditor
     public const DEFAULT_WIDTHS = [390, 1280];
 
     // Two CSS pixels: what a sub-pixel layout rounds to either side, below the asymmetry a lost centering leaves. Read twice - as that asymmetry, and as the room a box needs to spare before being centred means anything at all
-    private const CENTERING_TOLERANCE = 2;
+    private const int CENTERING_TOLERANCE = 2;
 
     // Long enough for the reveals to land once their duration has been zeroed
-    private const SETTLE_MICROSECONDS = 400000;
+    private const int SETTLE_MICROSECONDS = 400000;
 
     public function __construct(
         private readonly string $chromeBinary = 'google-chrome',
@@ -54,7 +54,7 @@ class LayoutAuditor
      */
     public function audit(string $url, array $widths = self::DEFAULT_WIDTHS): array
     {
-        $browser = (new BrowserFactory($this->chromeBinary))->createBrowser([
+        $browser = new BrowserFactory($this->chromeBinary)->createBrowser([
             'headless' => true,
             // The managed server and most CI images run as a user Chrome's sandbox refuses to start for
             'noSandbox' => true,

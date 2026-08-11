@@ -19,14 +19,14 @@ use Twig\Environment;
 class SitemapWriter
 {
     // Applied to an url a provider left incomplete, so a missing key never produces an empty element
-    private const DEFAULT_CHANGEFREQ = 'weekly';
+    private const string DEFAULT_CHANGEFREQ = 'weekly';
     // On the providers' own 0-10 scale, so 5 ends up as the 0.5 the protocol gets
-    private const DEFAULT_PRIORITY = 5;
-    private const PRIORITY_SCALE = 10;
+    private const int DEFAULT_PRIORITY = 5;
+    private const int PRIORITY_SCALE = 10;
 
-    private string $sitemapFolder;
+    private readonly string $sitemapFolder;
 
-    private Filesystem $filesystem;
+    private readonly Filesystem $filesystem;
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,

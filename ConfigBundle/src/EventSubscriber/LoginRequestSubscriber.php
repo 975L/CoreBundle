@@ -19,10 +19,10 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class LoginRequestSubscriber implements EventSubscriberInterface
 {
     // Name of the login route, as scaffolded by this bundle and used across the c975L apps
-    private const LOGIN_ROUTE = 'app_login';
+    private const string LOGIN_ROUTE = 'app_login';
 
     // Default username_parameter of Symfony's form_login
-    private const USERNAME_PARAMETER = '_username';
+    private const string USERNAME_PARAMETER = '_username';
 
     public static function getSubscribedEvents(): array
     {

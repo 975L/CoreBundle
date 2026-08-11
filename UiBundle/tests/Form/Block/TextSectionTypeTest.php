@@ -37,7 +37,7 @@ class TextSectionTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new TextSectionType($this->anchorSlugger()))->buildForm($builder, []);
+        new TextSectionType($this->anchorSlugger())->buildForm($builder, []);
 
         return $added;
     }
@@ -56,7 +56,7 @@ class TextSectionTypeTest extends TestCase
             }
         );
 
-        (new TextSectionType($this->anchorSlugger()))->buildForm($builder, []);
+        new TextSectionType($this->anchorSlugger())->buildForm($builder, []);
 
         $form = $this->createStub(FormInterface::class);
         $event = new FormEvent($form, $submittedData);

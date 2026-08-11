@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 // Constraint messages are translated in the "validators" domain, not "ui": a key left in the wrong catalogue shows the editor its raw name
 class ConstraintMessageCatalogueTest extends TestCase
 {
-    private const LOCALES = ['fr', 'en', 'es'];
+    private const array LOCALES = ['fr', 'en', 'es'];
 
     public static function localeProvider(): array
     {
@@ -38,7 +38,7 @@ class ConstraintMessageCatalogueTest extends TestCase
     }
 
     // Every way a message key reaches the validator - a named argument alone misses the three others
-    private const PATTERNS = [
+    private const array PATTERNS = [
         // new IsTrue(message: 'text.checkbox_required')
         '/[a-zA-Z]*[Mm]essage: \'([a-z][a-zA-Z0-9_]*\.[a-zA-Z0-9_.]+)\'/',
         // public string $message = 'text.captcha_failed';

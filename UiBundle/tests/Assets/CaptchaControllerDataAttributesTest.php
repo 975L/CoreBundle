@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 // Stimulus derives value names from the registered identifier, so a mismatch leaves siteKeyValue empty with nothing complaining
 class CaptchaControllerDataAttributesTest extends TestCase
 {
-    private const CONTROLLER_JS = 'assets/js/captcha.js';
-    private const CONTROLLERS_BARREL = 'assets/controllers.js';
-    private const WIDGET_TWIG = 'templates/form/captcha_theme.html.twig';
+    private const string CONTROLLER_JS = 'assets/js/captcha.js';
+    private const string CONTROLLERS_BARREL = 'assets/controllers.js';
+    private const string WIDGET_TWIG = 'templates/form/captcha_theme.html.twig';
 
     public function testTheControllerIsRegisteredUnderTheIdentifierTheWidgetUses(): void
     {

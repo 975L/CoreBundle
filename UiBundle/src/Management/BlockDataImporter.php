@@ -20,7 +20,7 @@ use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 class BlockDataImporter
 {
     // Every scalar Media field an export carries, with the value to fall back on when the archive predates that field - keeps buildMedia() a plain mapping instead of a chain of thirteen "?? default"
-    private const MEDIA_DEFAULTS = [
+    private const array MEDIA_DEFAULTS = [
         'role' => null,
         'name' => null,
         'alt' => null,
@@ -58,7 +58,7 @@ class BlockDataImporter
     {
         $this->formBlockDependencyRegistry->ensureDependenciesExist($blockData);
 
-        $block = (new Block())
+        $block = new Block()
             ->setKind($blockData['kind'])
             ->setPosition($blockData['position'])
             ->setData($blockData['data'] ?? [])
@@ -93,7 +93,7 @@ class BlockDataImporter
             $values[$key] = $mediaData[$key] ?? $default;
         }
 
-        $media = (new Media())
+        $media = new Media()
             ->setRole($values['role'])
             ->setName($values['name'])
             ->setAlt($values['alt'])

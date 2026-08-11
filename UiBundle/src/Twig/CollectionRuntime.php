@@ -20,10 +20,10 @@ use Twig\Extension\RuntimeExtensionInterface;
 class CollectionRuntime implements RuntimeExtensionInterface
 {
     public function __construct(
-        private CollectionSourceRegistry $sourceRegistry,
-        private BlockExtension $blockExtension,
-        private RequestStack $requestStack,
-        private UrlGeneratorInterface $urlGenerator,
+        private readonly CollectionSourceRegistry $sourceRegistry,
+        private readonly BlockExtension $blockExtension,
+        private readonly RequestStack $requestStack,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -32,7 +32,7 @@ class CollectionRuntime implements RuntimeExtensionInterface
     {
         $rendered = [];
         foreach ($this->sourceRegistry->items($source, $limit) as $item) {
-            $block = (new Block())->setKind('collection_item')->setData([
+            $block = new Block()->setKind('collection_item')->setData([
                 'title' => $item->title,
                 'content' => $item->description,
                 'url' => $item->url,

@@ -20,12 +20,13 @@ class ContactExtension extends AbstractExtension
     {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
             // Already encoded here, hence "is_safe": the builder escapes every tag-opening character itself, which Twig's own json_encode filter would then escape a second time
-            new TwigFunction('contact_json_ld', [$this, 'jsonLd'], ['is_safe' => ['html']]),
-            new TwigFunction('contact_day_runs', [$this, 'dayRuns']),
+            new TwigFunction('contact_json_ld', $this->jsonLd(...), ['is_safe' => ['html']]),
+            new TwigFunction('contact_day_runs', $this->dayRuns(...)),
         ];
     }
 

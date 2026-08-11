@@ -23,7 +23,7 @@ class StylesheetRegistryPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new StylesheetRegistryPass())->process($container);
+        new StylesheetRegistryPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -34,7 +34,7 @@ class StylesheetRegistryPassTest extends TestCase
         $container->register(StylesheetRegistry::class);
         $container->register('provider.a')->addTag('ui.stylesheet');
 
-        (new StylesheetRegistryPass())->process($container);
+        new StylesheetRegistryPass()->process($container);
 
         $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -49,7 +49,7 @@ class StylesheetRegistryPassTest extends TestCase
         $container->register('provider.low')->addTag('ui.stylesheet', ['priority' => 0]);
         $container->register('provider.high')->addTag('ui.stylesheet', ['priority' => 10]);
 
-        (new StylesheetRegistryPass())->process($container);
+        new StylesheetRegistryPass()->process($container);
 
         $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('provider.high'), $calls[0][1][0]);
@@ -62,7 +62,7 @@ class StylesheetRegistryPassTest extends TestCase
         $container->register(StylesheetRegistry::class);
         $container->register('app.theme', AppThemeProvider::class);
 
-        (new StylesheetRegistryPass())->process($container);
+        new StylesheetRegistryPass()->process($container);
 
         $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -77,7 +77,7 @@ class StylesheetRegistryPassTest extends TestCase
         $container->register('app.theme', AppThemeProvider::class);
         $container->register('bundle.provider')->addTag('ui.stylesheet', ['priority' => 0]);
 
-        (new StylesheetRegistryPass())->process($container);
+        new StylesheetRegistryPass()->process($container);
 
         $calls = $container->getDefinition(StylesheetRegistry::class)->getMethodCalls();
         $this->assertEquals(new Reference('bundle.provider'), $calls[0][1][0]);
@@ -91,7 +91,7 @@ class StylesheetRegistryPassTest extends TestCase
         $container->register('bundle.provider', AppThemeProvider::class)
             ->addTag('ui.stylesheet', ['priority' => 100]);
 
-        (new StylesheetRegistryPass())->process($container);
+        new StylesheetRegistryPass()->process($container);
 
         $definition = $container->getDefinition('bundle.provider');
         $this->assertCount(1, $definition->getTag('ui.stylesheet'));

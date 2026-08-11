@@ -23,7 +23,7 @@ class WhatsNewProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new WhatsNewProviderPass())->process($container);
+        new WhatsNewProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class WhatsNewProviderPassTest extends TestCase
         $container->register('ui.whats_new_provider', WhatsNewProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new WhatsNewProviderPass())->process($container);
+        new WhatsNewProviderPass()->process($container);
 
         $calls = $container->getDefinition(WhatsNewRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class WhatsNewProviderPassTest extends TestCase
         $container->register(WhatsNewRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new WhatsNewProviderPass())->process($container);
+        new WhatsNewProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(WhatsNewRegistry::class)->getMethodCalls());
     }

@@ -21,7 +21,7 @@ class FontPreloadExtensionTest extends TestCase
 {
     private function createFont(string $name, string $filename, int $weight = 400, string $style = 'normal'): Font
     {
-        return (new Font())
+        return new Font()
             ->setName($name)
             ->setFilename($filename)
             ->setWeight($weight)

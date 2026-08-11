@@ -31,7 +31,7 @@ class EmailBlockTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new EmailBlockType())->buildForm($builder, []);
+        new EmailBlockType()->buildForm($builder, []);
 
         return $added;
     }
@@ -50,7 +50,7 @@ class EmailBlockTypeTest extends TestCase
             }
         );
 
-        (new EmailBlockType())->buildForm($builder, []);
+        new EmailBlockType()->buildForm($builder, []);
 
         $added = [];
         $innerForm = $this->createStub(FormInterface::class);
@@ -100,7 +100,7 @@ class EmailBlockTypeTest extends TestCase
     public function testConfigureOptionsSetsDataClassAndTranslationDomain(): void
     {
         $resolver = new OptionsResolver();
-        (new EmailBlockType())->configureOptions($resolver);
+        new EmailBlockType()->configureOptions($resolver);
 
         $resolved = $resolver->resolve([]);
 

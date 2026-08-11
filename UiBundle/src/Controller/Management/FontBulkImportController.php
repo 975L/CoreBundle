@@ -26,7 +26,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Uploads several font files at once, guessing name/weight/style from each filename; a wrong guess is fixed on that row afterward
 class FontBulkImportController extends AbstractController
 {
-    private const ALLOWED_EXTENSIONS = ['ttf', 'woff', 'woff2'];
+    private const array ALLOWED_EXTENSIONS = ['ttf', 'woff', 'woff2'];
     private const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     // EasyAdmin prefixes this with the Dashboard's own route name, giving management_site_font_bulk_import
@@ -105,7 +105,7 @@ class FontBulkImportController extends AbstractController
 
         $guess = $this->fontFilenameParser->parse($file->getClientOriginalName());
 
-        return (new Font())
+        return new Font()
             ->setName($guess['name'])
             ->setWeight($guess['weight'])
             ->setStyle($guess['style'])

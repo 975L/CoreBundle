@@ -38,7 +38,7 @@ class SqlEncoderTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        (new SqlEncoder($this->createConnection()))->encode([], ExportFormat::Sql->value, []);
+        new SqlEncoder($this->createConnection())->encode([], ExportFormat::Sql->value, []);
     }
 
     public function testEncodeGeneratesPlainInsertWithoutPrimaryKey(): void

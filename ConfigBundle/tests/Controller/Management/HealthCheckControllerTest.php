@@ -100,8 +100,8 @@ class HealthCheckControllerTest extends TestCase
 
     public function testIndexRendersTemplateWithLatestResultsAndAlerts(): void
     {
-        $resultA = (new HealthCheckResult())->setKind('pagespeed')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
-        $resultB = (new HealthCheckResult())->setKind('w3c')->setUrl('https://example.com/contact/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 10:05:00'));
+        $resultA = new HealthCheckResult()->setKind('pagespeed')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $resultB = new HealthCheckResult()->setKind('w3c')->setUrl('https://example.com/contact/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 10:05:00'));
 
         $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
         $healthCheckResultRepository->method('findLatestPerUrlAndKind')->willReturn([$resultA, $resultB]);
@@ -150,19 +150,19 @@ class HealthCheckControllerTest extends TestCase
 
     public function testIndexPullsSiteWideKindsOutOfTheTableResults(): void
     {
-        $pagespeedResult = (new HealthCheckResult())->setKind('pagespeed')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
-        $securityHeadersResult = (new HealthCheckResult())->setKind('security-headers')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('6/6')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $pagespeedResult = new HealthCheckResult()->setKind('pagespeed')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $securityHeadersResult = new HealthCheckResult()->setKind('security-headers')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('6/6')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         // What the deployed site hands to an anonymous visitor (debug tooling, sensitive files, cookie flags): the server's own configuration, so one row for the whole site
-        $securityMisconfigResult = (new HealthCheckResult())->setKind('security-misconfig')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('9 paths checked')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
-        $sslCertificateResult = (new HealthCheckResult())->setKind('ssl-certificate')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('89 days left')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $securityMisconfigResult = new HealthCheckResult()->setKind('security-misconfig')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('9 paths checked')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $sslCertificateResult = new HealthCheckResult()->setKind('ssl-certificate')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('89 days left')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         // Checked once for the whole site (http/https redirection, 404 page), not once per page
-        $deploymentResult = (new HealthCheckResult())->setKind('deployment')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('4/4')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $deploymentResult = new HealthCheckResult()->setKind('deployment')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('4/4')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         // The database server's own counters: one row for the whole site, never one per page
-        $databaseLoadResult = (new HealthCheckResult())->setKind(DatabaseLoadHealthCheckProvider::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('12 tx/s')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $databaseLoadResult = new HealthCheckResult()->setKind(DatabaseLoadHealthCheckProvider::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('12 tx/s')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         // Contributed by SiteBundle, and site-wide all the same: the uploaded svg files, not the pages serving them
-        $svgFontsResult = (new HealthCheckResult())->setKind('svg-fonts')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('3 files')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $svgFontsResult = new HealthCheckResult()->setKind('svg-fonts')->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('3 files')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
         // The crawlers this site blocks against the community list: one row for the whole site, the robots.txt holding them being site-wide itself
-        $aiCrawlersResult = (new HealthCheckResult())->setKind(AiCrawlersHealthCheckProvider::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('up to date')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+        $aiCrawlersResult = new HealthCheckResult()->setKind(AiCrawlersHealthCheckProvider::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('up to date')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
 
         $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
         $healthCheckResultRepository->method('findLatestPerUrlAndKind')->willReturn([$pagespeedResult, $securityHeadersResult, $securityMisconfigResult, $sslCertificateResult, $deploymentResult, $databaseLoadResult, $svgFontsResult, $aiCrawlersResult]);
@@ -209,8 +209,8 @@ class HealthCheckControllerTest extends TestCase
     // The backup rows land here every few hours on a scheduler of their own, and would keep the page's date fresh long after the health-check one had stopped running - the very failure that date is here to make visible
     public function testIndexIgnoresTheBackupRowsWhenDatingTheLastCheck(): void
     {
-        $pagespeedResult = (new HealthCheckResult())->setKind('pagespeed')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-20 10:00:00'));
-        $backupResult = (new HealthCheckResult())->setKind(BackupResultRecorder::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 04:00:00'));
+        $pagespeedResult = new HealthCheckResult()->setKind('pagespeed')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-20 10:00:00'));
+        $backupResult = new HealthCheckResult()->setKind(BackupResultRecorder::KIND)->setUrl('https://example.com')->setStatus(HealthCheckResult::STATUS_OK)->setSummary('ok')->setCheckedAt(new \DateTime('2026-07-24 04:00:00'));
 
         $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
         $healthCheckResultRepository->method('findLatestPerUrlAndKind')->willReturn([$pagespeedResult, $backupResult]);
@@ -667,7 +667,7 @@ class HealthCheckControllerTest extends TestCase
 
     public function testExportCsvMapsResultsAndDelegatesToTheTableExporter(): void
     {
-        $result = (new HealthCheckResult())
+        $result = new HealthCheckResult()
             ->setKind('pagespeed')
             ->setUrl('https://example.com/')
             ->setLabel('Home')

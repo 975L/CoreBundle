@@ -19,7 +19,7 @@ class ContentExporterTest extends TestCase
     {
         $items = [['slug' => 'home', 'title' => 'Home']];
 
-        $response = (new ContentExporter())->export('site_page', $items);
+        $response = new ContentExporter()->export('site_page', $items);
 
         $this->assertSame('application/zip', $response->headers->get('Content-Type'));
         $this->assertStringContainsString('filename=site_page_', $response->headers->get('Content-Disposition'));
@@ -42,7 +42,7 @@ class ContentExporterTest extends TestCase
         $sourcePath = tempnam(sys_get_temp_dir(), 'content_exporter_test_');
         file_put_contents($sourcePath, 'binary-content');
 
-        $response = (new ContentExporter())->export('site_page', [], ['files/photo.jpg' => $sourcePath]);
+        $response = new ContentExporter()->export('site_page', [], ['files/photo.jpg' => $sourcePath]);
 
         $path = $response->getFile()->getPathname();
         $zip = new \ZipArchive();
@@ -61,7 +61,7 @@ class ContentExporterTest extends TestCase
             ['kind' => 'site_config', 'items' => [['slug' => 'site-title']], 'files' => []],
         ];
 
-        $response = (new ContentExporter())->exportMultiple($exports);
+        $response = new ContentExporter()->exportMultiple($exports);
 
         $this->assertSame('application/zip', $response->headers->get('Content-Type'));
         $this->assertStringContainsString('filename=sync_all_', $response->headers->get('Content-Disposition'));
@@ -91,7 +91,7 @@ class ContentExporterTest extends TestCase
             ['kind' => 'site_font', 'items' => []],
         ];
 
-        $response = (new ContentExporter())->exportMultiple($exports);
+        $response = new ContentExporter()->exportMultiple($exports);
 
         $path = $response->getFile()->getPathname();
         $zip = new \ZipArchive();

@@ -28,7 +28,7 @@ class OffsiteStateTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     // Nothing recorded is not "a while ago", it's "never", and the two deserve different words on the dashboard
@@ -51,7 +51,7 @@ class OffsiteStateTest extends TestCase
     {
         $this->state->recordSuccess($this->projectDir);
         $written = $this->state->read($this->projectDir);
-        $written['at'] = (new \DateTimeImmutable('-40 hours'))->format(\DateTimeInterface::ATOM);
+        $written['at'] = new \DateTimeImmutable('-40 hours')->format(\DateTimeInterface::ATOM);
         file_put_contents($this->projectDir . '/' . OffsiteState::FILE, json_encode($written));
 
         $this->state->recordFailure($this->projectDir, 'connection refused');

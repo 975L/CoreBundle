@@ -59,6 +59,7 @@ class FormCrudController extends AbstractCrudController
         return Form::class;
     }
 
+    #[\Override]
     public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
         if ($entityInstance instanceof Form) {
@@ -68,6 +69,7 @@ class FormCrudController extends AbstractCrudController
         parent::persistEntity($entityManager, $entityInstance);
     }
 
+    #[\Override]
     public function updateEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
         if ($entityInstance instanceof Form) {
@@ -78,6 +80,7 @@ class FormCrudController extends AbstractCrudController
     }
 
     // Removing the very last field also leaves nothing submitted at all for "fields" (an HTML form can't represent an empty array, only an absent key), which has to be normalized to [] below or Symfony skips add/remove handling entirely for the whole field - same reconciliation as ContactFormCrudController/PageCrudController used for their own collections
+    #[\Override]
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
         $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
@@ -114,6 +117,7 @@ class FormCrudController extends AbstractCrudController
         return $formBuilder;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         $entity = $this->adminContextProvider->getContext()?->getEntity()?->getInstance();
@@ -172,6 +176,7 @@ class FormCrudController extends AbstractCrudController
         ];
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $role = $this->configService->get('site-role-admin');
@@ -205,6 +210,7 @@ class FormCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud

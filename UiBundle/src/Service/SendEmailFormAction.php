@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Built-in FormActionInterface provider (key "send_email"), so a Form built entirely through the admin - no custom bundle/code - can still notify someone by email on submit. Configured via Form::$actionConfig: "to"/"toName"/"from"/"fromName"/"replyTo"/"replyToName"/"subject" (all optional, EmailService/ConfigService fill in the rest), "senderEmailField" (name of the submitted field holding the visitor's own email, used as replyTo) and "offerReceiveCopy" (shows a "receive a copy" checkbox, see FormSubmissionType - the visitor's own answer, not a fixed admin choice, decides whether a copy is actually sent). The email body is either "emailTemplate" (the name of an EmailTemplate, rendered by EmailTemplateRenderer with the submitted fields available to a TYPE_FIELDS_TABLE block - see UiBundle Readme) or, failing that/its lookup, the legacy "template" Twig path (defaults to DEFAULT_TEMPLATE)
 class SendEmailFormAction implements FormActionInterface, DebugPreviewCapableInterface
 {
-    private const DEFAULT_TEMPLATE = '@c975LUi/emails/form_submission.html.twig';
+    private const string DEFAULT_TEMPLATE = '@c975LUi/emails/form_submission.html.twig';
 
     public function __construct(
         private readonly EmailService $emailService,

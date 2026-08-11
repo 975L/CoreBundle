@@ -23,7 +23,7 @@ class EmailLayoutProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new EmailLayoutProviderPass())->process($container);
+        new EmailLayoutProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class EmailLayoutProviderPassTest extends TestCase
         $container->register('ui.email_layout_provider', DummyEmailLayoutProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new EmailLayoutProviderPass())->process($container);
+        new EmailLayoutProviderPass()->process($container);
 
         $calls = $container->getDefinition(EmailLayoutRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class EmailLayoutProviderPassTest extends TestCase
         $container->register(EmailLayoutRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new EmailLayoutProviderPass())->process($container);
+        new EmailLayoutProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(EmailLayoutRegistry::class)->getMethodCalls());
     }

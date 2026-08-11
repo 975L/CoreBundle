@@ -32,7 +32,7 @@ class MakeBlockCommandTest extends TestCase
     public function testConfigureCommandAddsRequiredKindArgument(): void
     {
         $command = new Command('c975l:ui:block:create');
-        (new MakeBlockCommand())->configureCommand($command, new InputConfiguration());
+        new MakeBlockCommand()->configureCommand($command, new InputConfiguration());
 
         $this->assertTrue($command->getDefinition()->hasArgument('kind'));
         $this->assertTrue($command->getDefinition()->getArgument('kind')->isRequired());

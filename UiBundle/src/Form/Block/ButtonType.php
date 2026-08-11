@@ -63,6 +63,7 @@ class ButtonType extends AbstractType
             ]);
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'ui_button';

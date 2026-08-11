@@ -21,7 +21,7 @@ class ContentExporter
     {
         $payload = [
             'kind' => $kind,
-            'exportedAt' => (new \DateTimeImmutable())->format(\DATE_ATOM),
+            'exportedAt' => new \DateTimeImmutable()->format(\DATE_ATOM),
             'items' => $items,
         ];
         // Throws rather than silently writing a truncated/empty manifest - json_encode() returns false (not an exception) on failure, easy to miss with a large payload
@@ -55,7 +55,7 @@ class ContentExporter
         }
 
         $payload = [
-            'exportedAt' => (new \DateTimeImmutable())->format(\DATE_ATOM),
+            'exportedAt' => new \DateTimeImmutable()->format(\DATE_ATOM),
             'exports' => $sections,
         ];
         $manifest = json_encode($payload, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_THROW_ON_ERROR);

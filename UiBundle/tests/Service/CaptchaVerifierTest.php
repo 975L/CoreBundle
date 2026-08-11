@@ -43,7 +43,7 @@ class CaptchaVerifierTest extends TestCase
         return new MockHttpClient(new MockResponse(json_encode($payload, \JSON_THROW_ON_ERROR), ['http_code' => $statusCode]));
     }
 
-    private const KEYS = [
+    private const array KEYS = [
         'recaptcha3-site-key' => 'site-key',
         'recaptcha3-secret-key' => 'secret-key',
     ];

@@ -22,10 +22,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DeploymentHealthCheckProviderTest extends TestCase
 {
-    private const PROBE_URL = 'https://example.com/c975l-health-check-404-probe';
-    private const VARIANT_URL = 'https://www.example.com/';
-    private const SITE_PAGE = '<html><head><title>Introuvable</title></head><body>Example Site</body></html>';
-    private const DEFAULT_ERROR_PAGE = '<html><head><title>An Error Occurred</title></head><body>Oops!</body></html>';
+    private const string PROBE_URL = 'https://example.com/c975l-health-check-404-probe';
+    private const string VARIANT_URL = 'https://www.example.com/';
+    private const string SITE_PAGE = '<html><head><title>Introuvable</title></head><body>Example Site</body></html>';
+    private const string DEFAULT_ERROR_PAGE = '<html><head><title>An Error Occurred</title></head><body>Oops!</body></html>';
 
     private function createConfigService(?string $siteUrl, ?string $siteName = 'Example Site'): ConfigServiceInterface
     {
@@ -263,7 +263,7 @@ class DeploymentHealthCheckProviderTest extends TestCase
         $client->method('fetchWithoutRedirect')->willReturn(['statusCode' => 301, 'location' => 'https://www.example.com/']);
         $client->method('fetch')->willReturn(['statusCode' => 404, 'content' => self::SITE_PAGE]);
 
-        $results = (new DeploymentHealthCheckProvider($configService, new SiteUrlResolver($configService), $client, $this->createTranslator(), $this->createHostResolver(), $this->createSslCertificateClient()))->runChecks();
+        $results = new DeploymentHealthCheckProvider($configService, new SiteUrlResolver($configService), $client, $this->createTranslator(), $this->createHostResolver(), $this->createSslCertificateClient())->runChecks();
 
         $this->assertSame('https://example.com/', $results[2]['url']);
         $this->assertSame(HealthCheckResult::STATUS_OK, $results[2]['status']);

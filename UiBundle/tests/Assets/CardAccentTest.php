@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 class CardAccentTest extends TestCase
 {
     // White falls under 4.5:1 on these four, so they carry dark text and stop the icon's inversion with it
-    private const DARK_TEXT_HUES = ['orange', 'yellow', 'lime', 'teal'];
+    private const array DARK_TEXT_HUES = ['orange', 'yellow', 'lime', 'teal'];
 
     /**
      * @return array<string, array{string}>

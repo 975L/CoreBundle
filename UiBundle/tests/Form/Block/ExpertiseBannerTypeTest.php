@@ -31,7 +31,7 @@ class ExpertiseBannerTypeTest extends TestCase
             return $builder;
         });
 
-        (new ExpertiseBannerType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new ExpertiseBannerType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

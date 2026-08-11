@@ -49,7 +49,7 @@ class BlockUserListenerTest extends TestCase
         $security = $this->createMock(Security::class);
         $security->expects($this->never())->method('getUser');
 
-        (new BlockUserListener($security))->prePersist($this->createPersistArgs(new \stdClass()));
+        new BlockUserListener($security)->prePersist($this->createPersistArgs(new \stdClass()));
 
         $this->addToAssertionCount(1);
     }
@@ -61,7 +61,7 @@ class BlockUserListenerTest extends TestCase
 
         $media = new Media();
 
-        (new BlockUserListener($security))->prePersist($this->createPersistArgs($media));
+        new BlockUserListener($security)->prePersist($this->createPersistArgs($media));
 
         $this->assertNull($media->getUser());
     }
@@ -73,7 +73,7 @@ class BlockUserListenerTest extends TestCase
 
         $block = new Block();
 
-        (new BlockUserListener($security))->prePersist($this->createPersistArgs($block));
+        new BlockUserListener($security)->prePersist($this->createPersistArgs($block));
 
         $this->assertNull($block->getUser());
     }
@@ -86,7 +86,7 @@ class BlockUserListenerTest extends TestCase
 
         $media = new Media();
 
-        (new BlockUserListener($security))->prePersist($this->createPersistArgs($media));
+        new BlockUserListener($security)->prePersist($this->createPersistArgs($media));
 
         $this->assertSame($user, $media->getUser());
     }
@@ -98,9 +98,9 @@ class BlockUserListenerTest extends TestCase
         $security = $this->createStub(Security::class);
         $security->method('getUser')->willReturn($newUser);
 
-        $block = (new Block())->setUser($this->createUserStub());
+        $block = new Block()->setUser($this->createUserStub());
 
-        (new BlockUserListener($security))->prePersist($this->createPersistArgs($block));
+        new BlockUserListener($security)->prePersist($this->createPersistArgs($block));
 
         $this->assertSame($newUser, $block->getUser());
     }
@@ -113,7 +113,7 @@ class BlockUserListenerTest extends TestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('getUnitOfWork');
 
-        (new BlockUserListener($security))->preUpdate($this->createUpdateArgs(new \stdClass(), $entityManager));
+        new BlockUserListener($security)->preUpdate($this->createUpdateArgs(new \stdClass(), $entityManager));
 
         $this->addToAssertionCount(1);
     }
@@ -129,7 +129,7 @@ class BlockUserListenerTest extends TestCase
 
         $media = new Media();
 
-        (new BlockUserListener($security))->preUpdate($this->createUpdateArgs($media, $entityManager));
+        new BlockUserListener($security)->preUpdate($this->createUpdateArgs($media, $entityManager));
 
         $this->assertNull($media->getUser());
     }
@@ -144,7 +144,7 @@ class BlockUserListenerTest extends TestCase
 
         $block = new Block();
 
-        (new BlockUserListener($security))->preUpdate($this->createUpdateArgs($block, $entityManager));
+        new BlockUserListener($security)->preUpdate($this->createUpdateArgs($block, $entityManager));
 
         $this->assertNull($block->getUser());
     }
@@ -167,9 +167,9 @@ class BlockUserListenerTest extends TestCase
         $entityManager->expects($this->once())->method('getClassMetadata')->with(Block::class)->willReturn($classMetadata);
         $entityManager->method('getUnitOfWork')->willReturn($unitOfWork);
 
-        $block = (new Block())->setUser($this->createUserStub());
+        $block = new Block()->setUser($this->createUserStub());
 
-        (new BlockUserListener($security))->preUpdate($this->createUpdateArgs($block, $entityManager));
+        new BlockUserListener($security)->preUpdate($this->createUpdateArgs($block, $entityManager));
 
         $this->assertSame($newUser, $block->getUser());
     }

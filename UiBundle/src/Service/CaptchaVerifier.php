@@ -18,11 +18,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // reCAPTCHA v3, verified against Google's siteverify endpoint - replaces karser/karser-recaptcha3-bundle, whose only part this ecosystem ever used was this one call (the rest was a vendored copy of google/recaptcha with six interchangeable transports) while three compiler passes/type extensions existed solely to feed it ConfigBundle's values. See CaptchaType/Validator\Constraints\Captcha
 class CaptchaVerifier
 {
-    private const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
+    private const string VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
     // The very value config/configs.json seeds "recaptcha3-score-threshold" with, restated here for the two cases that never read a row: an app whose configs were never loaded, and a field emptied at the back office
     // It was Google's own 0.5 and karser's before it, which no site running this bundle has ever been scored on - a loaded config has always answered 0.05 instead - so the constant only ever named a threshold nobody used, and named it ten times stricter than the one they did
-    private const DEFAULT_SCORE_THRESHOLD = 0.05;
+    private const float DEFAULT_SCORE_THRESHOLD = 0.05;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,

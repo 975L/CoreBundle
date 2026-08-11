@@ -18,10 +18,10 @@ use PHPUnit\Framework\TestCase;
 class SectionMarginResetTest extends TestCase
 {
     // The wrapper half of the reset, the section kinds it then names being read off the compiled sheet
-    private const RESET_WRAPPERS = 'main :is(.blocks, .block-animation, .block-editable) > :is(';
+    private const string RESET_WRAPPERS = 'main :is(.blocks, .block-animation, .block-editable) > :is(';
 
     // Where each transparent wrapper is declared
-    private const WRAPPER_SHEETS = ['_animations-media.scss', '_block-edit-overlay.scss', '_page-sections.scss'];
+    private const array WRAPPER_SHEETS = ['_animations-media.scss', '_block-edit-overlay.scss', '_page-sections.scss'];
 
     public function testTheResetIsCompiledIntoBothStylesheets(): void
     {

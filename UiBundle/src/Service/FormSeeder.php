@@ -82,14 +82,14 @@ class FormSeeder
 
         $blocks = $this->forLocale($blocksByLocale);
 
-        $emailTemplate = (new EmailTemplate())
+        $emailTemplate = new EmailTemplate()
             ->setName($name)
             ->setRestricted(true);
 
         $position = 0;
         foreach ($blocks as [$type, $heading, $level, $content, $label, $url]) {
             $emailTemplate->addBlock(
-                (new EmailBlock())
+                new EmailBlock()
                     ->setType($type)
                     ->setHeading($heading)
                     ->setLevel($level)
@@ -132,7 +132,7 @@ class FormSeeder
     // $fields entries are [type, label, url] tuples, in the order they're declared
     private function buildForm(string $name, array $fields, ?string $action, ?array $actionConfig): Form
     {
-        $form = (new Form())
+        $form = new Form()
             ->setName($name)
             ->setAction($action)
             ->setRestricted(true)
@@ -141,7 +141,7 @@ class FormSeeder
         $position = 0;
         foreach ($fields as $fieldName => [$type, $label, $url]) {
             $form->addField(
-                (new FormField())
+                new FormField()
                     ->setName($fieldName)
                     ->setLabel($label)
                     ->setType($type)

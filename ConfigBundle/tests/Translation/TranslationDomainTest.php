@@ -16,10 +16,10 @@ use PHPUnit\Framework\TestCase;
 class TranslationDomainTest extends TestCase
 {
     // The catalogues the bundle ships, keyed by the domain their name declares
-    private const DOMAINS = ['config', 'site_config', 'validators'];
+    private const array DOMAINS = ['config', 'site_config', 'validators'];
 
     // The two ways a domain is named next to its key in "src/"
-    private const PATTERNS = [
+    private const array PATTERNS = [
         // $this->translator->trans('label.x', [...], 'config') - the tempered dot keeps a call missing its domain from reaching into the next one, and the trailing comma is the multi-line form's
         '/->trans\(\s*\'([a-z][a-zA-Z0-9_]*\.[a-zA-Z0-9_.]+)\'(?:(?!->trans\().)*?,\s*\'([a-zA-Z_]+)\'\s*,?\s*\)/s',
         // HealthCheckErrorRow::build($this->translator, 'config', $url, $label, 'label.x', ...)

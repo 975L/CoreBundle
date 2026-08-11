@@ -15,10 +15,11 @@ use Twig\TwigFilter;
 
 class LinkifyExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [
-            new TwigFilter('linkify', [self::class, 'linkify'], ['is_safe' => ['html']]),
+            new TwigFilter('linkify', self::linkify(...), ['is_safe' => ['html']]),
         ];
     }
 

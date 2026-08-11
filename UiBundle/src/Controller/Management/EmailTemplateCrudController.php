@@ -54,6 +54,7 @@ class EmailTemplateCrudController extends AbstractCrudController
     }
 
     // An absent "blocks" key is normalized to [], an HTML form having no way to submit an empty array
+    #[\Override]
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
         $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
@@ -82,6 +83,7 @@ class EmailTemplateCrudController extends AbstractCrudController
         return $formBuilder;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         $entity = $this->adminContextProvider->getContext()?->getEntity()?->getInstance();
@@ -107,6 +109,7 @@ class EmailTemplateCrudController extends AbstractCrudController
         ];
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $role = $this->configService->get('site-role-admin');
@@ -148,6 +151,7 @@ class EmailTemplateCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud

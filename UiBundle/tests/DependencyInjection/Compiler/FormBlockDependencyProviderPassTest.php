@@ -23,7 +23,7 @@ class FormBlockDependencyProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new FormBlockDependencyProviderPass())->process($container);
+        new FormBlockDependencyProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class FormBlockDependencyProviderPassTest extends TestCase
         $container->register('site.form_block_dependency_provider', DummyFormBlockDependencyProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new FormBlockDependencyProviderPass())->process($container);
+        new FormBlockDependencyProviderPass()->process($container);
 
         $calls = $container->getDefinition(FormBlockDependencyRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class FormBlockDependencyProviderPassTest extends TestCase
         $container->register(FormBlockDependencyRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new FormBlockDependencyProviderPass())->process($container);
+        new FormBlockDependencyProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(FormBlockDependencyRegistry::class)->getMethodCalls());
     }

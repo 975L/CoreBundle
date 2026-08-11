@@ -16,6 +16,7 @@ use Twig\TwigFunction;
 // Deliberately dependency-free - Twig instantiates every Extension eagerly with the environment on every request (even one rendering an error page or the profiler toolbar), so CollectionRuntime (and the DB query behind its CollectionSourceRegistry) only gets built lazily by Twig the first time a template actually calls collection_render_items()
 class CollectionExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFunctions(): array
     {
         return [

@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 // The width comes from stored block data, so it may only build a class it was matched against first
 class FlexColumnWidthMarkupTest extends TestCase
 {
-    private const TEMPLATE = 'components/Section/FlexColumns.html.twig';
+    private const string TEMPLATE = 'components/Section/FlexColumns.html.twig';
 
     public function testTheRowWhitelistsTheStoredValueBeforeBuildingTheClass(): void
     {

@@ -40,15 +40,15 @@ use function Symfony\Component\Translation\t;
 // Lets an admin upload their own font files, no deploy needed; FontCssListener compiles every row into one stylesheet
 class FontCrudController extends AbstractCrudController
 {
-    private const ALLOWED_EXTENSIONS = ['ttf', 'woff', 'woff2'];
+    private const array ALLOWED_EXTENSIONS = ['ttf', 'woff', 'woff2'];
 
-    private const STYLE_CHOICES = [
+    private const array STYLE_CHOICES = [
         'label.font_style_normal' => 'normal',
         'label.font_style_italic' => 'italic',
     ];
 
     // The standard OpenType weight scale, shown as "100 - Thin" so a named weight needs no conversion
-    private const WEIGHT_NAMES = [
+    private const array WEIGHT_NAMES = [
         Font::WEIGHT_VARIABLE => 'label.font_weight_variable',
         100 => 'label.font_weight_thin',
         200 => 'label.font_weight_extra_light',
@@ -76,6 +76,7 @@ class FontCrudController extends AbstractCrudController
         return Font::class;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -90,6 +91,7 @@ class FontCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $role = $this->configService->get('site-role-editor');
@@ -151,6 +153,7 @@ class FontCrudController extends AbstractCrudController
         return $this->contentExporter->export(FontImportProvider::KIND, $data['items'], $data['files']);
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         $isNew = Crud::PAGE_NEW === $pageName;

@@ -48,6 +48,7 @@ class RedirectCrudController extends AbstractCrudController
         return Redirect::class;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         return [
@@ -75,6 +76,7 @@ class RedirectCrudController extends AbstractCrudController
         ];
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         $exportGroup = ActionGroup::new('export', t('label.export', [], 'config'), 'fa fa-download')
@@ -113,6 +115,7 @@ class RedirectCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -125,6 +128,7 @@ class RedirectCrudController extends AbstractCrudController
     }
 
     // "gone" is worth a filter of its own: the rows a satellite bundle writes when it removes a page are all of that kind (see GalleryBundle, one per deleted media), and they would otherwise bury the handful of redirects an admin actually maintains by hand
+    #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
         return $filters

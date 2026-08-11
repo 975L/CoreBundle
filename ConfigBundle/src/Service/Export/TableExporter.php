@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Serializer;
 // Exports an array of associative rows (e.g. Connection::fetchAllAssociative()) as a downloadable SQL/CSV/JSON file, so CRUD controllers only need to wire an "Export" action per format
 class TableExporter
 {
-    private const CONTENT_TYPES = [
+    private const array CONTENT_TYPES = [
         ExportFormat::Sql->value => 'application/octet-stream',
         ExportFormat::Csv->value => 'text/csv; charset=utf-8',
         ExportFormat::Json->value => 'application/json',

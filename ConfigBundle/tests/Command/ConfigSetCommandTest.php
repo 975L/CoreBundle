@@ -22,7 +22,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class ConfigSetCommandTest extends TestCase
 {
-    private const VAULT_KEY = 'a-test-vault-key';
+    private const string VAULT_KEY = 'a-test-vault-key';
 
     private array $tempFiles = [];
 
@@ -37,7 +37,7 @@ class ConfigSetCommandTest extends TestCase
 
     private function createConfig(string $slug, ?string $value = null, bool $isSensitive = false, string $kind = Config::TYPE_TEXT): Config
     {
-        return (new Config())->setSlug($slug)->setLabel($slug)->setKind($kind)->setIsSensitive($isSensitive)->setValue($value);
+        return new Config()->setSlug($slug)->setLabel($slug)->setKind($kind)->setIsSensitive($isSensitive)->setValue($value);
     }
 
     private function createRepository(array $configs): ConfigRepository
@@ -215,7 +215,7 @@ class ConfigSetCommandTest extends TestCase
         $tester->execute(['slug' => 'stripe-secret', 'value' => 'sk_live_secret']);
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
-        $this->assertSame('sk_live_secret', (new VaultEncryptor(self::VAULT_KEY))->decrypt($config->getValue()));
+        $this->assertSame('sk_live_secret', new VaultEncryptor(self::VAULT_KEY)->decrypt($config->getValue()));
         $this->assertStringNotContainsString('sk_live_secret', $tester->getDisplay());
     }
 

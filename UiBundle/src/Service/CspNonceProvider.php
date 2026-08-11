@@ -16,7 +16,7 @@ class CspNonceProvider
 {
     // Null for a site that has configured no csp section at all: NelmioSecurityBundle only registers its listener alongside such a section, and the service is wired to take it optionally (see services.yaml) rather than let a whole container fail to compile over a header that site never asked for
     public function __construct(
-        private ?ContentSecurityPolicyListener $listener = null,
+        private readonly ?ContentSecurityPolicyListener $listener = null,
     ) {
     }
 

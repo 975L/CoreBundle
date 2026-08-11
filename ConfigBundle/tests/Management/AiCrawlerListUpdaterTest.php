@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 
 class AiCrawlerListUpdaterTest extends TestCase
 {
-    private const SOURCE = 'https://example.com/robots.json';
+    private const string SOURCE = 'https://example.com/robots.json';
 
     private function createConfigService(array $current, ?string $source = self::SOURCE): ConfigServiceInterface
     {
@@ -144,7 +144,7 @@ class AiCrawlerListUpdaterTest extends TestCase
 
     public function testApplyAddsTheGivenAgentsToTheConfigSorted(): void
     {
-        $config = (new Config())->setSlug('seo-robots-ai-crawlers')->setValue('["GPTBot"]');
+        $config = new Config()->setSlug('seo-robots-ai-crawlers')->setValue('["GPTBot"]');
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('persist')->with($config);
         $entityManager->expects($this->once())->method('flush');
@@ -160,7 +160,7 @@ class AiCrawlerListUpdaterTest extends TestCase
     // Additive on purpose: a name this site added by hand, or one upstream has since dropped, is never removed by an update it didn't ask for
     public function testApplyNeverRemovesWhatTheSiteAlreadyHad(): void
     {
-        $config = (new Config())->setSlug('seo-robots-ai-crawlers')->setValue('["SiteOwnBot"]');
+        $config = new Config()->setSlug('seo-robots-ai-crawlers')->setValue('["SiteOwnBot"]');
 
         $updater = $this->createUpdater(['SiteOwnBot'], [], configRepository: $this->createRepository($config));
 
@@ -174,7 +174,7 @@ class AiCrawlerListUpdaterTest extends TestCase
         $configService->method('get')->willReturn([]);
         $configService->expects($this->once())->method('invalidateCache');
 
-        $updater = $this->createUpdater([], [], configRepository: $this->createRepository((new Config())->setSlug('seo-robots-ai-crawlers')), configService: $configService);
+        $updater = $this->createUpdater([], [], configRepository: $this->createRepository(new Config()->setSlug('seo-robots-ai-crawlers')), configService: $configService);
 
         $updater->apply(['NewBot']);
     }

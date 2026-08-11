@@ -27,7 +27,7 @@ class ProcessStepItemTypeTest extends TestCase
             return $builder;
         });
 
-        (new ProcessStepItemType())->buildForm($builder, []);
+        new ProcessStepItemType()->buildForm($builder, []);
 
         foreach (['title', 'text'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the ProcessStepItem form");

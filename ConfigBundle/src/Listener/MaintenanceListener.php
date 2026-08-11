@@ -23,7 +23,7 @@ use Twig\Environment;
 class MaintenanceListener
 {
     // Seconds sent as Retry-After on the maintenance page
-    private const RETRY_AFTER = 3600;
+    private const int RETRY_AFTER = 3600;
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,

@@ -33,7 +33,7 @@ class ContactDetailsTypeTest extends TestCase
             return $builder;
         });
 
-        (new ContactDetailsType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new ContactDetailsType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

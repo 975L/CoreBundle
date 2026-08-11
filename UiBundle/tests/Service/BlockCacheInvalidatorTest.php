@@ -21,6 +21,6 @@ class BlockCacheInvalidatorTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with([BlockCacheInvalidator::CACHE_TAG_ALL]);
 
-        (new BlockCacheInvalidator($cache))->invalidateAll();
+        new BlockCacheInvalidator($cache)->invalidateAll();
     }
 }

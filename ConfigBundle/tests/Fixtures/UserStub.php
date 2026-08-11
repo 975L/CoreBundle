@@ -17,16 +17,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class UserStub implements UserInterface, PasswordAuthenticatedUserInterface
 {
     private ?int $id = null;
-    private string $email;
     private ?string $password = null;
     private bool $verified = false;
     private bool $enabled = false;
     private ?\DateTime $creation = null;
     private ?\DateTime $modification = null;
 
-    public function __construct(string $email = 'user@example.test')
+    public function __construct(private readonly string $email = 'user@example.test')
     {
-        $this->email = $email;
     }
 
     public function withId(int $id): self
@@ -49,10 +47,6 @@ class UserStub implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         return ['ROLE_USER'];
-    }
-
-    public function eraseCredentials(): void
-    {
     }
 
     public function getPassword(): ?string

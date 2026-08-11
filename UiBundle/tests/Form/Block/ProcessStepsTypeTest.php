@@ -31,7 +31,7 @@ class ProcessStepsTypeTest extends TestCase
             return $builder;
         });
 
-        (new ProcessStepsType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new ProcessStepsType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

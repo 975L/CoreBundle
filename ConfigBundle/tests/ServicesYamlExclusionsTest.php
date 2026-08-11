@@ -16,7 +16,7 @@ use Symfony\Component\Yaml\Yaml;
 // The resource scan of services.yaml reflects on every class it finds under src/, so a class that can't be loaded there fails the container compilation of every consuming app - which is why some paths are excluded. An exclusion is silent when it goes stale (a renamed directory excludes nothing at all), and only shows up as a broken app, so each one is checked here
 class ServicesYamlExclusionsTest extends TestCase
 {
-    private const SRC_DIR = __DIR__ . '/../src';
+    private const string SRC_DIR = __DIR__ . '/../src';
 
     // The paths listed between the braces of "../src/{A,B,C}"
     private function excludedPaths(): array
@@ -25,7 +25,7 @@ class ServicesYamlExclusionsTest extends TestCase
         $services = Yaml::parseFile(__DIR__ . '/../config/services.yaml', Yaml::PARSE_CUSTOM_TAGS)['services'];
         preg_match('/\{(.+)\}/', $services['c975L\ConfigBundle\\']['exclude'], $matches);
 
-        return array_map('trim', explode(',', $matches[1]));
+        return array_map(trim(...), explode(',', $matches[1]));
     }
 
     public function testEveryExcludedPathStillExists(): void

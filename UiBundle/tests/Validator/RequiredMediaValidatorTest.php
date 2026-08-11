@@ -48,7 +48,7 @@ class RequiredMediaValidatorTest extends ConstraintValidatorTestCase
 
     public function testKindNotRequiringMediaRaisesNoViolationWhenEmpty(): void
     {
-        $block = (new Block())->setKind('article');
+        $block = new Block()->setKind('article');
 
         $this->validator->validate($block, new RequiredMedia());
 
@@ -57,7 +57,7 @@ class RequiredMediaValidatorTest extends ConstraintValidatorTestCase
 
     public function testUnknownKindRaisesNoViolation(): void
     {
-        $block = (new Block())->setKind('unknown');
+        $block = new Block()->setKind('unknown');
 
         $this->validator->validate($block, new RequiredMedia());
 
@@ -66,7 +66,7 @@ class RequiredMediaValidatorTest extends ConstraintValidatorTestCase
 
     public function testKindRequiringMediaRaisesViolationWhenEmpty(): void
     {
-        $block = (new Block())->setKind('banner_title');
+        $block = new Block()->setKind('banner_title');
 
         $this->validator->validate($block, new RequiredMedia());
 
@@ -77,7 +77,7 @@ class RequiredMediaValidatorTest extends ConstraintValidatorTestCase
 
     public function testKindRequiringMediaRaisesNoViolationWhenMediaAttached(): void
     {
-        $block = (new Block())->setKind('banner_title');
+        $block = new Block()->setKind('banner_title');
         $block->addMedia(new Media());
 
         $this->validator->validate($block, new RequiredMedia());

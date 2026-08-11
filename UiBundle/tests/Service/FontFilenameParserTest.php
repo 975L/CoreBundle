@@ -34,6 +34,6 @@ class FontFilenameParserTest extends TestCase
     #[DataProvider('provideFilenames')]
     public function testParseGuessesNameWeightAndStyleFromFilename(string $filename, array $expected): void
     {
-        $this->assertSame($expected, (new FontFilenameParser())->parse($filename));
+        $this->assertSame($expected, new FontFilenameParser()->parse($filename));
     }
 }

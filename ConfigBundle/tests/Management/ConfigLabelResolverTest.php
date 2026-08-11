@@ -31,7 +31,7 @@ class ConfigLabelResolverTest extends TestCase
     // Builds a config with the given slug and stored label, no DB needed
     private function createConfig(string $slug, string $label): Config
     {
-        return (new Config())->setSlug($slug)->setLabel($label);
+        return new Config()->setSlug($slug)->setLabel($label);
     }
 
     public function testResolveReturnsTheTranslationWhenTheDerivedKeyHasOne(): void

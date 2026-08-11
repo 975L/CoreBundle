@@ -27,7 +27,7 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[AsDoctrineListener(event: Events::preRemove)]
 class BlockCacheInvalidationListener
 {
-    public function __construct(private TagAwareCacheInterface $cache)
+    public function __construct(private readonly TagAwareCacheInterface $cache)
     {
     }
 

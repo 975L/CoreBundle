@@ -61,7 +61,7 @@ class SiteGraphicImportProvider implements ImportProviderInterface
         if (in_array($role, Media::getSingletonRoles(), true)) {
             $media = $this->mediaRepository->findOneByRole($role);
 
-            return [$media ?? (new Media())->setRole($role), null === $media];
+            return [$media ?? new Media()->setRole($role), null === $media];
         }
 
         if (!isset($clearedRepeatableRoles[$role])) {
@@ -71,6 +71,6 @@ class SiteGraphicImportProvider implements ImportProviderInterface
             $clearedRepeatableRoles[$role] = true;
         }
 
-        return [(new Media())->setRole($role), true];
+        return [new Media()->setRole($role), true];
     }
 }

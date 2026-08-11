@@ -23,7 +23,7 @@ class BlockEditUrlProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new BlockEditUrlProviderPass())->process($container);
+        new BlockEditUrlProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class BlockEditUrlProviderPassTest extends TestCase
         $container->register('ui.block_edit_url_provider', DummyBlockEditUrlProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new BlockEditUrlProviderPass())->process($container);
+        new BlockEditUrlProviderPass()->process($container);
 
         $calls = $container->getDefinition(BlockEditUrlRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class BlockEditUrlProviderPassTest extends TestCase
         $container->register(BlockEditUrlRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new BlockEditUrlProviderPass())->process($container);
+        new BlockEditUrlProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(BlockEditUrlRegistry::class)->getMethodCalls());
     }

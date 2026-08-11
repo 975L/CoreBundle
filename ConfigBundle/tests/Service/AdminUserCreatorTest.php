@@ -43,8 +43,8 @@ class AdminUserCreatorTest extends TestCase
 
     public function testExistsReportsWhetherAnAccountAlreadyCarriesThatEmail(): void
     {
-        $this->assertTrue((new AdminUserCreator($this->createEntityManager(new User()), $this->createPasswordHasher()))->exists('admin@example.test'));
-        $this->assertFalse((new AdminUserCreator($this->createEntityManager(null), $this->createPasswordHasher()))->exists('admin@example.test'));
+        $this->assertTrue(new AdminUserCreator($this->createEntityManager(new User()), $this->createPasswordHasher())->exists('admin@example.test'));
+        $this->assertFalse(new AdminUserCreator($this->createEntityManager(null), $this->createPasswordHasher())->exists('admin@example.test'));
     }
 
     // Verified and enabled up front: there is no email to confirm for an account created from the console, and an admin locked out of the site they just installed would have nothing to unlock it with

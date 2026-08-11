@@ -22,7 +22,7 @@ class HealthCheckAlertProviderTest extends TestCase
 {
     private function createResult(string $status, string $checkedAt = '2026-07-27 04:00:00'): HealthCheckResult
     {
-        return (new HealthCheckResult())
+        return new HealthCheckResult()
             ->setKind('content-quality')
             ->setUrl('https://example.com/')
             ->setStatus($status)

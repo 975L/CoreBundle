@@ -17,10 +17,11 @@ use Twig\TwigFunction;
 // Hands management/paginator.html.twig the sizes it offers, so the list an admin clicks and the list PaginatorPageSize accepts stay the same one
 class PageSizeExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('page_sizes', [$this, 'getSizes']),
+            new TwigFunction('page_sizes', $this->getSizes(...)),
         ];
     }
 

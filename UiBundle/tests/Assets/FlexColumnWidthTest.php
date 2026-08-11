@@ -17,10 +17,10 @@ use PHPUnit\Framework\TestCase;
 class FlexColumnWidthTest extends TestCase
 {
     // $page-section-bp-md, as it reads once normalized
-    private const BREAKPOINT = '@media(min-width:861px)';
+    private const string BREAKPOINT = '@media(min-width:861px)';
 
     // One formula for all twelve, reading the unit its own class declares
-    private const FORMULA = 'calc(100% * var(--flex-columns-span) / 12 - var(--flex-columns-gap) * (12 - var(--flex-columns-span)) / 12)';
+    private const string FORMULA = 'calc(100% * var(--flex-columns-span) / 12 - var(--flex-columns-gap) * (12 - var(--flex-columns-span)) / 12)';
 
     /**
      * @return array<string, array{string}>
@@ -36,7 +36,7 @@ class FlexColumnWidthTest extends TestCase
     // The form and the stylesheets are written apart from each other: nothing but this ties them together
     public function testTheFormOffersExactlyTheTwelveUnitsTheStylesheetsSize(): void
     {
-        $this->assertSame(array_map('strval', range(1, 12)), FlexColumnType::WIDTHS);
+        $this->assertSame(array_map(strval(...), range(1, 12)), FlexColumnType::WIDTHS);
     }
 
     // A unit the form offers and no rule sizes is a setting that silently does nothing

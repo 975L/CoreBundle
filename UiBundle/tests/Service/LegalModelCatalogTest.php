@@ -17,7 +17,7 @@ class LegalModelCatalogTest extends TestCase
 {
     public function testChoicesAreGroupedByCountry(): void
     {
-        $choices = (new LegalModelCatalog())->choices();
+        $choices = new LegalModelCatalog()->choices();
 
         $this->assertArrayHasKey('France', $choices);
         $this->assertSame('france/cookies', $choices['France']['label.cookies_policy']);
@@ -25,7 +25,7 @@ class LegalModelCatalogTest extends TestCase
 
     public function testAllFlattensEveryCountryIntoOneList(): void
     {
-        $all = (new LegalModelCatalog())->all();
+        $all = new LegalModelCatalog()->all();
 
         $this->assertContains('france/cookies', $all);
         $this->assertContains('france/terms-of-use', $all);
@@ -46,18 +46,18 @@ class LegalModelCatalogTest extends TestCase
 
     public function testLabelReturnsTheTranslationKeyOfAShippedModel(): void
     {
-        $this->assertSame('label.privacy_policy', (new LegalModelCatalog())->label('france/privacy-policy'));
+        $this->assertSame('label.privacy_policy', new LegalModelCatalog()->label('france/privacy-policy'));
     }
 
     // An identifier nothing ships is shown as it is rather than silently labelled as something else
     public function testLabelFallsBackOnTheIdentifierItself(): void
     {
-        $this->assertSame('elsewhere/invented', (new LegalModelCatalog())->label('elsewhere/invented'));
+        $this->assertSame('elsewhere/invented', new LegalModelCatalog()->label('elsewhere/invented'));
     }
 
     public function testEveryShippedModelHasATemplateInTheAuthoringLocale(): void
     {
-        foreach ((new LegalModelCatalog())->all() as $model) {
+        foreach (new LegalModelCatalog()->all() as $model) {
             $this->assertFileExists(
                 \dirname(__DIR__, 2) . '/templates/models/' . $model . '.' . LegalModelCatalog::FALLBACK_LOCALE . '.html.twig',
             );

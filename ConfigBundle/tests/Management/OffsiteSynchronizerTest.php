@@ -29,7 +29,7 @@ class OffsiteSynchronizerTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createSynchronizer(?string $target): OffsiteSynchronizer

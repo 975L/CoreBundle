@@ -55,7 +55,7 @@ class MessengerFailedMessageServiceTest extends TestCase
 
     public function testFindAllDecodesAFailedEmailEnvelope(): void
     {
-        $email = (new Email())
+        $email = new Email()
             ->from('sender@example.com')
             ->to('recipient@example.com')
             ->subject('Hello');
@@ -94,7 +94,7 @@ class MessengerFailedMessageServiceTest extends TestCase
         $messages = $service->findAll();
 
         $this->assertSame(
-            (new \DateTimeImmutable('2026-07-15 10:00:00', new \DateTimeZone('UTC')))->getTimestamp(),
+            new \DateTimeImmutable('2026-07-15 10:00:00', new \DateTimeZone('UTC'))->getTimestamp(),
             $messages[0]['createdAt']->getTimestamp()
         );
     }
@@ -144,7 +144,7 @@ class MessengerFailedMessageServiceTest extends TestCase
 
     public function testCountImportantExcludesBlacklistFailures(): void
     {
-        $email = (new Email())->from('sender@example.com')->to('recipient@example.com')->subject('Hi');
+        $email = new Email()->from('sender@example.com')->to('recipient@example.com')->subject('Hi');
         $envelope = new Envelope(new SendEmailMessage($email), [
             new ErrorDetailsStamp(\RuntimeException::class, 550, 'Recipient domain is blacklisted'),
         ]);

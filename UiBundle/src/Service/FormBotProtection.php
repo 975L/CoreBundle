@@ -17,13 +17,13 @@ use Symfony\Component\HttpFoundation\Request;
 // Shared honeypot + submission-timing anti-bot check, used by every public form that needs it (contact, registration, reset-password request...) so the heuristic lives in one place instead of being copy-pasted into each Form/Controller pair. Merges what used to be two separate implementations (c975L\SiteBundle\Service\FormBotProtection - fixed field name - and c975L\ContactFormBundle\Service\ContactFormService's own rotating honeypot) into one, keeping the rotating behavior.
 class FormBotProtection
 {
-    private const SESSION_HONEYPOT_FIELD = 'ui_honeypot_field';
-    private const SESSION_HONEYPOT_LABEL = 'ui_honeypot_label';
+    private const string SESSION_HONEYPOT_FIELD = 'ui_honeypot_field';
+    private const string SESSION_HONEYPOT_LABEL = 'ui_honeypot_label';
 
-    private const HONEYPOT_NAME_PREFIXES = ['user', 'account', 'client', 'contact', 'person', 'profile'];
-    private const HONEYPOT_NAME_SUFFIXES = ['name', 'info', 'data', 'field', 'input', 'details'];
+    private const array HONEYPOT_NAME_PREFIXES = ['user', 'account', 'client', 'contact', 'person', 'profile'];
+    private const array HONEYPOT_NAME_SUFFIXES = ['name', 'info', 'data', 'field', 'input', 'details'];
 
-    private const HONEYPOT_LABELS = [
+    private const array HONEYPOT_LABELS = [
         'Company website',
         'Your website',
         'Organization',

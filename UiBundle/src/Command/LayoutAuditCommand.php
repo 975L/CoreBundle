@@ -66,7 +66,7 @@ class LayoutAuditCommand extends Command
             return Command::SUCCESS;
         }
 
-        $widths = array_map('intval', (array) $input->getOption('width'));
+        $widths = array_map(intval(...), (array) $input->getOption('width'));
         $findings = [];
         $unmeasured = 0;
 

@@ -18,7 +18,7 @@ class PageSizeExtensionTest extends TestCase
 {
     public function testGetFunctionsRegistersPageSizesFunction(): void
     {
-        $functions = (new PageSizeExtension())->getFunctions();
+        $functions = new PageSizeExtension()->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertSame('page_sizes', $functions[0]->getName());
@@ -27,6 +27,6 @@ class PageSizeExtensionTest extends TestCase
     // A list of its own would let the paginator offer a size PaginatorPageSize then refuses, sending the admin back to 20 rows on every click
     public function testTheSizesOfferedAreTheOnesResolveAccepts(): void
     {
-        $this->assertSame(PaginatorPageSize::SIZES, (new PageSizeExtension())->getSizes());
+        $this->assertSame(PaginatorPageSize::SIZES, new PageSizeExtension()->getSizes());
     }
 }

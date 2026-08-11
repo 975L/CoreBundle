@@ -36,11 +36,13 @@ class MediaUsagesType extends AbstractType
     }
 
     // Without a parent, this type gets none of FormType's base machinery (block-prefix fallback chain, "compound" default...) and renders nothing at all - same reason IconPickerType extends TextType instead of leaving getParent() as the AbstractType default (null)
+    #[\Override]
     public function getParent(): string
     {
         return TextType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'media_usages';

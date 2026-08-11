@@ -22,11 +22,13 @@ class FontChoiceType extends AbstractType
     {
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return ChoiceType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'font_choice';

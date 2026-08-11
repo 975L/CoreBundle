@@ -31,7 +31,7 @@ class CollectionSourceProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new CollectionSourceProviderPass())->process($container);
+        new CollectionSourceProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -44,7 +44,7 @@ class CollectionSourceProviderPassTest extends TestCase
         $container->register('site.collection_source_provider', FakeCollectionSourceProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new CollectionSourceProviderPass())->process($container);
+        new CollectionSourceProviderPass()->process($container);
 
         $calls = $container->getDefinition(CollectionSourceRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -59,7 +59,7 @@ class CollectionSourceProviderPassTest extends TestCase
         $container->register(CollectionSourceRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new CollectionSourceProviderPass())->process($container);
+        new CollectionSourceProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(CollectionSourceRegistry::class)->getMethodCalls());
     }

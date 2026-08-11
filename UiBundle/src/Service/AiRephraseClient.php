@@ -19,14 +19,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Rephrases free text using the client's own key ("ui-ai-assistant-rephrase-*" config, distinct from the dashboard assistant's key) - stateless, nothing is ever persisted or logged beyond the request itself. Supports Anthropic and any OpenAI-compatible API (OpenAI itself, or Infomaniak's Euria, whose only difference from OpenAI is its base URI). No interface here (unlike AiAssistantClient): there's nothing to override, a consuming app not wanting this feature simply leaves the api-key config empty. Token counts from each response are handed to AiUsageTracker - a numeric count alone reveals nothing about the rephrased content, so this doesn't compromise the "nothing is persisted" promise above
 class AiRephraseClient
 {
-    private const ANTHROPIC_URI = 'https://api.anthropic.com/v1/messages';
-    private const ANTHROPIC_DEFAULT_MODEL = 'claude-haiku-4-5';
-    private const OPENAI_URI = 'https://api.openai.com/v1/chat/completions';
-    private const OPENAI_DEFAULT_MODEL = 'gpt-4o-mini';
+    private const string ANTHROPIC_URI = 'https://api.anthropic.com/v1/messages';
+    private const string ANTHROPIC_DEFAULT_MODEL = 'claude-haiku-4-5';
+    private const string OPENAI_URI = 'https://api.openai.com/v1/chat/completions';
+    private const string OPENAI_DEFAULT_MODEL = 'gpt-4o-mini';
     // No euria default: its catalog isn't static enough, so the model config is required by isEnabled()
 
     // Closed list: $style indexes this map, so a request parameter can never inject its own instructions
-    private const STYLES = [
+    private const array STYLES = [
         'neutral' => '',
         'professional' => ' Use a formal, professional tone.',
         'friendly' => ' Use a warm, friendly, conversational tone.',
@@ -38,7 +38,7 @@ class AiRephraseClient
     ];
 
     // Same closed list as STYLES; an explicit paragraph count, a relative "longer" being unpredictable
-    private const LENGTHS = [
+    private const array LENGTHS = [
         'same' => ' Keep approximately the same length.',
         'paragraph_1' => ' Rewrite it as exactly one paragraph.',
         'paragraph_2' => ' Rewrite it as exactly two paragraphs, separated by a blank line.',

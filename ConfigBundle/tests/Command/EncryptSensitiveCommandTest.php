@@ -23,7 +23,7 @@ class EncryptSensitiveCommandTest extends TestCase
 {
     private function createConfig(string $slug, ?string $value, bool $isSensitive = true): Config
     {
-        return (new Config())->setSlug($slug)->setLabel($slug)->setIsSensitive($isSensitive)->setValue($value);
+        return new Config()->setSlug($slug)->setLabel($slug)->setIsSensitive($isSensitive)->setValue($value);
     }
 
     private function createRepository(array $configs): ConfigRepository

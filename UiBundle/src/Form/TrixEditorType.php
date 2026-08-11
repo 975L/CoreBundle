@@ -22,11 +22,13 @@ class TrixEditorType extends AbstractType
         $view->vars['attr']['data-trix'] = '1';
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return TextareaType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'trix_editor';

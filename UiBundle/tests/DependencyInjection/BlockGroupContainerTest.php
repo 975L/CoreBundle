@@ -51,8 +51,8 @@ class BlockGroupContainerTest extends TestCase
     private function registry(): BlockRegistry
     {
         $container = new ContainerBuilder();
-        (new YamlFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config')))->load('services.yaml');
-        (new BlockRegistryPass())->process($container);
+        new YamlFileLoader($container, new FileLocator(\dirname(__DIR__, 2) . '/config'))->load('services.yaml');
+        new BlockRegistryPass()->process($container);
 
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnCallback(static fn (string $key) => $key);

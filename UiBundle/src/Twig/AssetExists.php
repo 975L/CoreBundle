@@ -20,6 +20,7 @@ class AssetExists extends AbstractExtension
     {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [new TwigFunction('asset_exists', $this->assetExists(...))];

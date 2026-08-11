@@ -33,6 +33,7 @@ class BlockAccentChoiceType extends AbstractType
         'label.accent_grey' => 'grey',
     ];
 
+    #[\Override]
     public function getParent(): string
     {
         return ChoiceType::class;

@@ -136,7 +136,7 @@ class UiGuidedProjectProviderTest extends TestCase
     private function easyAdminActionNames(): array
     {
         $names = [];
-        foreach ((new \ReflectionClass(Action::class))->getConstants() as $name => $value) {
+        foreach (new \ReflectionClass(Action::class)->getConstants() as $name => $value) {
             if (!str_starts_with($name, 'TYPE_')) {
                 $names[] = $value;
             }

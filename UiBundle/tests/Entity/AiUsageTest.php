@@ -29,7 +29,7 @@ class AiUsageTest extends TestCase
 
     public function testAddUsageClearsAPreviouslyRecordedFailure(): void
     {
-        $usage = (new AiUsage())->recordFailure('provider unavailable');
+        $usage = new AiUsage()->recordFailure('provider unavailable');
 
         $usage->addUsage(10, 5);
 
@@ -39,7 +39,7 @@ class AiUsageTest extends TestCase
 
     public function testRecordFailureStoresTheMessageAndTimestamp(): void
     {
-        $usage = (new AiUsage())->recordFailure('invalid key');
+        $usage = new AiUsage()->recordFailure('invalid key');
 
         $this->assertSame('invalid key', $usage->getLastFailureMessage());
         $this->assertInstanceOf(\DateTimeImmutable::class, $usage->getLastFailureAt());
@@ -47,7 +47,7 @@ class AiUsageTest extends TestCase
 
     public function testClearFailureResetsBothFields(): void
     {
-        $usage = (new AiUsage())->recordFailure('invalid key');
+        $usage = new AiUsage()->recordFailure('invalid key');
 
         $usage->clearFailure();
 

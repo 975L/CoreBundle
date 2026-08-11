@@ -31,7 +31,7 @@ class GuidedProjectBuilder
         $projects = array_filter($projects, fn (array $project) => !isset($project['role']) || $this->security->isGranted($project['role']));
         usort($projects, fn (array $a, array $b) => $a['order'] <=> $b['order']);
 
-        return array_map(fn (array $project) => $this->buildProject($project), $projects);
+        return array_map($this->buildProject(...), $projects);
     }
 
     // One project by its slug, or null when no provider declares it anymore (a bundle uninstalled since the browser stored it) or when the current user lacks its role - a slug being theirs to forge, that second check is the only thing standing between them and another role's parcours

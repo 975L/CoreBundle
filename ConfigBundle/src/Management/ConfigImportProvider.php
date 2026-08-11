@@ -63,7 +63,7 @@ class ConfigImportProvider implements ImportProviderInterface
         }
 
         $isNew = null === $config;
-        $config ??= (new Config())->setSlug($item['slug'])->setCreation($now);
+        $config ??= new Config()->setSlug($item['slug'])->setCreation($now);
 
         $this->fillConfig($config, $item, $isSensitive, $now);
         $this->em->persist($config);

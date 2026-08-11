@@ -31,7 +31,7 @@ class BlockCacheTagProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new BlockCacheTagProviderPass())->process($container);
+        new BlockCacheTagProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -44,7 +44,7 @@ class BlockCacheTagProviderPassTest extends TestCase
         $container->register('site.block_cache_tag_provider', FakeBlockCacheTagProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new BlockCacheTagProviderPass())->process($container);
+        new BlockCacheTagProviderPass()->process($container);
 
         $calls = $container->getDefinition(BlockCacheTagRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -59,7 +59,7 @@ class BlockCacheTagProviderPassTest extends TestCase
         $container->register(BlockCacheTagRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new BlockCacheTagProviderPass())->process($container);
+        new BlockCacheTagProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(BlockCacheTagRegistry::class)->getMethodCalls());
     }

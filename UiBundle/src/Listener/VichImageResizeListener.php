@@ -35,10 +35,10 @@ use Vich\UploaderBundle\Event\Event;
 class VichImageResizeListener
 {
     // Image types Imagine\Gd can actually read as a source, decided on the file's own content rather than on its name: a fixed icon role's stored file always carries the role's target extension whatever was uploaded (see UiMediaNamer), so an .ico name says nothing about what is inside it. A real .ico is the one thing that never gets in - it is what FIXED_ICON_SPECS produces (see wrapAsIco()), never what it consumes, and a site_graphic export/import roundtrip (see SiteBundle's SiteGraphicExportProvider) re-feeds a role=favicon Media's already-converted file back in as if it were a fresh upload, which would otherwise crash the whole import
-    private const READABLE_IMAGE_TYPES = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_WEBP];
+    private const array READABLE_IMAGE_TYPES = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_WEBP];
 
     // What a kept original may be named, keyed by the mime type read off the file's own bytes. An allow-list rather than a conversion table: the stored file's extension is forced to webp (see UiMediaNamer::determineExtension), so the original's cannot be reused from it and has to be decided here - and the one other source, the name the browser sent, is client input that would end up as a path written to disk
-    private const ORIGINAL_EXTENSIONS = [
+    private const array ORIGINAL_EXTENSIONS = [
         'image/jpeg' => 'jpg',
         'image/png' => 'png',
         'image/gif' => 'gif',
@@ -46,7 +46,7 @@ class VichImageResizeListener
         'image/tiff' => 'tif',
     ];
 
-    private Filesystem $filesystem;
+    private readonly Filesystem $filesystem;
 
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
@@ -126,7 +126,7 @@ class VichImageResizeListener
     // Broader than isReadable() below, and asked earlier: this one covers every image, including the SVG no rasterizer may end up handling and the .ico an import re-feeds, both of which belong to the pipeline even though GD cannot decode them
     private function isImage(string $absolutePath): bool
     {
-        $mimeType = (new File($absolutePath))->getMimeType();
+        $mimeType = new File($absolutePath)->getMimeType();
 
         return null !== $mimeType && str_starts_with($mimeType, 'image/');
     }
@@ -177,7 +177,7 @@ class VichImageResizeListener
         ]);
 
         if (method_exists($entity, 'setSize')) {
-            $entity->setSize((new \SplFileInfo($absolutePath))->getSize());
+            $entity->setSize(new \SplFileInfo($absolutePath)->getSize());
         }
     }
 
@@ -266,7 +266,7 @@ class VichImageResizeListener
         }
 
         if (method_exists($entity, 'setSize')) {
-            $entity->setSize((new \SplFileInfo($absolutePath))->getSize());
+            $entity->setSize(new \SplFileInfo($absolutePath)->getSize());
         }
     }
 
@@ -330,7 +330,7 @@ class VichImageResizeListener
         }
 
         // A type not on the list is not kept at all rather than copied under a guessed extension - an upload whose original cannot be named safely is one this has no business writing anywhere
-        $extension = self::ORIGINAL_EXTENSIONS[(string) (new File($publicPath))->getMimeType()] ?? null;
+        $extension = self::ORIGINAL_EXTENSIONS[(string) new File($publicPath)->getMimeType()] ?? null;
         if (null === $extension) {
             return;
         }

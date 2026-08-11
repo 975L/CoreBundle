@@ -16,10 +16,11 @@ use Twig\TwigFilter;
 
 class VideoExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [
-            new TwigFilter('privacy_embed_url', [$this, 'toPrivacyEmbedUrl']),
+            new TwigFilter('privacy_embed_url', $this->toPrivacyEmbedUrl(...)),
         ];
     }
 

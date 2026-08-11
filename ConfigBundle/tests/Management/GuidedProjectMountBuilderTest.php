@@ -79,7 +79,7 @@ class GuidedProjectMountBuilderTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturn('L\'"écran"');
 
-        $html = (new GuidedProjectMountBuilder($keyGenerator, $urlGenerator, $translator))->getHtml();
+        $html = new GuidedProjectMountBuilder($keyGenerator, $urlGenerator, $translator)->getHtml();
 
         // Reading the attribute back up to its own closing quote proves it wasn't cut short by the one inside the label
         preg_match('/data-guided-project-labels-value="([^"]*)"/', $html, $matches);

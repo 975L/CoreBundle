@@ -56,7 +56,7 @@ class MenuProviderTest extends TestCase
     // This bundle's own CRUD entries, which SiteBundle used to declare on its behalf - a site without SiteBundle got none of them
     public function testGetMenusReturnsThisBundlesOwnCrudEntries(): void
     {
-        $menus = (new MenuProvider($this->createConfigService(), $this->createTranslator()))->getMenus();
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
 
         $this->assertSame(['media', 'form', 'email_template', 'font', 'site_graphic'], array_keys($menus));
         $this->assertSame(MediaCrudController::class, $menus['media']['controller']);
@@ -73,7 +73,7 @@ class MenuProviderTest extends TestCase
     // The media library is a day-to-day screen and stays at the top level; forms, email templates, fonts and the site graphics are set up once, so they belong in MenuBuilder's collapsed "Advanced" submenu
     public function testOnlyTheSetupOnceScreensAreTieredAsAdvanced(): void
     {
-        $menus = (new MenuProvider($this->createConfigService(), $this->createTranslator()))->getMenus();
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
 
         $this->assertArrayNotHasKey('tier', $menus['media']);
 
@@ -85,7 +85,7 @@ class MenuProviderTest extends TestCase
     // Every entry's 'description' reuses the exact same key as its own screen's explanatory text - one text, not a separate onboarding-only string
     public function testGetMenusDescriptionReusesEachScreensOwnExplanatoryText(): void
     {
-        $menus = (new MenuProvider($this->createConfigService(), $this->createTranslator()))->getMenus();
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
 
         $this->assertSame('label.info_media', $menus['media']['description']);
         $this->assertSame('label.info_form', $menus['form']['description']);
@@ -112,7 +112,7 @@ class MenuProviderTest extends TestCase
     // The one non-CRUD screen of this bundle: customizing a legal model is not an entity CRUD, it edits one block's delta against templates the bundle ships (see LegalModelController)
     public function testGetLinksContributesTheLegalModelsScreen(): void
     {
-        $links = (new MenuProvider($this->createConfigService(), $this->createTranslator()))->getLinks();
+        $links = new MenuProvider($this->createConfigService(), $this->createTranslator())->getLinks();
 
         $this->assertSame(LegalModelController::INDEX_ROUTE, $links['legal_models']['name']);
         $this->assertSame('ui', $links['legal_models']['translation_domain']);

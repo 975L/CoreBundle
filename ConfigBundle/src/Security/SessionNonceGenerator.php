@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 // NelmioSecurityBundle's default generator returns a fresh random nonce per request, but Turbo Drive/Frames/Streams re-merge/re-execute <script> tags from fetched HTML into the already-loaded document without a real navigation, so a per-request nonce mismatches the CSP header the browser already enforces and every re-executed script gets blocked - storing the nonce in session keeps it stable for the whole visit, same fix as turbo-rails documents for this exact issue
 class SessionNonceGenerator implements NonceGeneratorInterface
 {
-    private const SESSION_KEY = 'csp_nonce';
+    private const string SESSION_KEY = 'csp_nonce';
 
     public function __construct(
         private readonly RequestStack $requestStack,

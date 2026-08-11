@@ -16,7 +16,7 @@ namespace c975L\UiBundle\Service;
 class CssVariableResolver
 {
     // A var() chain deeper than this is a cycle the CSS itself would treat as invalid
-    private const MAX_DEPTH = 32;
+    private const int MAX_DEPTH = 32;
 
     public function resolve(string $css): string
     {

@@ -66,7 +66,7 @@ class ConfigPruneCommandTest extends TestCase
         $repository = $this->createStub(ConfigRepository::class);
         $repository->method('findAllSlugs')->willReturn($slugsInDatabase);
         $repository->method('findBy')->willReturnCallback(
-            fn (array $criteria) => array_map(fn ($slug) => (new Config())->setSlug($slug)->setLabel($slug), $criteria['slug'])
+            fn (array $criteria) => array_map(fn ($slug) => new Config()->setSlug($slug)->setLabel($slug), $criteria['slug'])
         );
 
         return new CommandTester(new ConfigPruneCommand(

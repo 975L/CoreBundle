@@ -21,7 +21,7 @@ class WhatsNewProviderTest extends TestCase
     {
         $expected = WhatsNewJsonReader::read(\dirname(__DIR__, 2) . '/config/whatsnew.json');
 
-        $entries = (new WhatsNewProvider())->getEntries();
+        $entries = new WhatsNewProvider()->getEntries();
 
         $this->assertNotEmpty($entries);
         $this->assertEquals($expected, $entries);

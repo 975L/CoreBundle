@@ -24,6 +24,7 @@ class FormUrlExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [

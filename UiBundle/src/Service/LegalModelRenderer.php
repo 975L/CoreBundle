@@ -82,13 +82,7 @@ class LegalModelRenderer
     // True as soon as the block carries any delta - the cheap guard keeping untouched blocks off the DOM path
     private function isCustomized(array $customization): bool
     {
-        foreach (['hidden', 'positions', 'overrides', 'extra'] as $key) {
-            if (!empty($customization[$key])) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(['hidden', 'positions', 'overrides', 'extra'], fn ($key) => !empty($customization[$key]));
     }
 
     private function renderModel(string $model, ?string $latestUpdate, string $locale): string

@@ -15,10 +15,11 @@ use Twig\TwigFilter;
 
 class BoolExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [
-            new TwigFilter('to_bool', [$this, 'toBool']),
+            new TwigFilter('to_bool', $this->toBool(...)),
         ];
     }
 

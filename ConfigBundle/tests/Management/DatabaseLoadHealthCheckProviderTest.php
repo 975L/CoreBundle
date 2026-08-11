@@ -24,10 +24,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DatabaseLoadHealthCheckProviderTest extends TestCase
 {
-    private const SAMPLE_SECONDS = 5;
+    private const int SAMPLE_SECONDS = 5;
 
     // A quiet server: whatever the two readings hold is what the sample measures
-    private const BASE_COUNTERS = [
+    private const array BASE_COUNTERS = [
         'Com_begin' => 1000, 'Com_commit' => 1000, 'Com_rollback' => 0, 'Com_select' => 5000,
         'Questions' => 10000, 'Com_insert' => 100, 'Com_insert_select' => 0, 'Com_update' => 100,
         'Com_update_multi' => 0, 'Com_delete' => 0, 'Com_delete_multi' => 0, 'Com_replace' => 0,
@@ -38,7 +38,7 @@ class DatabaseLoadHealthCheckProviderTest extends TestCase
 
     private function counters(array $overrides = []): array
     {
-        return array_map('strval', $overrides + self::BASE_COUNTERS);
+        return array_map(strval(...), $overrides + self::BASE_COUNTERS);
     }
 
     // The counters as the server names them, one reading per call - the provider takes two, sampleSeconds apart
@@ -53,12 +53,12 @@ class DatabaseLoadHealthCheckProviderTest extends TestCase
 
     private function createPreviousResult(array $counters, \DateTimeInterface $checkedAt): HealthCheckResult
     {
-        return (new HealthCheckResult())
+        return new HealthCheckResult()
             ->setKind(DatabaseLoadHealthCheckProvider::KIND)
             ->setUrl('https://example.com')
             ->setStatus(HealthCheckResult::STATUS_OK)
             ->setSummary('summary')
-            ->setDetails(['counters' => array_map('intval', $counters)])
+            ->setDetails(['counters' => array_map(intval(...), $counters)])
             ->setCheckedAt($checkedAt);
     }
 

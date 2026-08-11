@@ -21,7 +21,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: FormRepository::class)]
 #[ORM\Table(name: 'site_form')]
 #[UniqueEntity('name')]
-class Form
+class Form implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

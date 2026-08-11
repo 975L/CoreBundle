@@ -32,7 +32,7 @@ class BlockExtensionTest extends TestCase
         $block->setKind($kind);
         $block->setData(['title' => 'Hello']);
         if (null !== $id) {
-            (new \ReflectionProperty(Block::class, 'id'))->setValue($block, $id);
+            new \ReflectionProperty(Block::class, 'id')->setValue($block, $id);
         }
 
         return $block;
@@ -66,7 +66,7 @@ class BlockExtensionTest extends TestCase
     public function testRenderBlockReturnsEmptyStringWhenBlockHasNoKind(): void
     {
         $block = new Block();
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($block, 1);
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, 1);
 
         $registry = $this->createMock(BlockRegistry::class);
         $registry->method('has')->willReturn(true);
@@ -135,7 +135,7 @@ class BlockExtensionTest extends TestCase
         $block = new Block();
         $block->setKind('hero');
         $block->setData(['title' => 'Hello', 'anchor' => 'services']);
-        (new \ReflectionProperty(Block::class, 'id'))->setValue($block, 42);
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, 42);
 
         $registry = $this->createStub(BlockRegistry::class);
         $registry->method('has')->willReturn(true);
@@ -204,9 +204,7 @@ class BlockExtensionTest extends TestCase
         $cache->expects($this->once())
             ->method('get')
             ->with('block_render_42_en', $this->isCallable())
-            ->willReturnCallback(function (string $key, callable $callback) use ($item) {
-                return $callback($item);
-            });
+            ->willReturnCallback(fn (string $key, callable $callback) => $callback($item));
 
         $extension = new BlockExtension($registry, $twig, $cache, $requestStack, new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
@@ -237,9 +235,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())
             ->method('get')
-            ->willReturnCallback(function (string $key, callable $callback) use ($item) {
-                return $callback($item);
-            });
+            ->willReturnCallback(fn (string $key, callable $callback) => $callback($item));
 
         $requestStack = new RequestStack();
         $requestStack->push(Request::create('/'));

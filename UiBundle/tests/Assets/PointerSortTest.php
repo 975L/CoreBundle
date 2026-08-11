@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // Reordering rows in the back-office runs on Pointer Events, not on the native HTML5 drag and drop it used to: no touch browser can be counted on to emit "dragstart" at all, so a finger could never move a block. Nothing here is provable from a unit test - it is a browser gesture - so what is locked is that the pieces making it work at the finger stay in place, the same way SliderSwipeTest guards the freeflow swipe.
 class PointerSortTest extends TestCase
 {
-    private const CSS = ['/public/css/management.css', '/public/css/management.min.css'];
+    private const array CSS = ['/public/css/management.css', '/public/css/management.min.css'];
 
     // The whole point of the shared module: one gesture layer, reused by every sortable rather than re-hand-rolled in each
     public function testGestureLayerIsBuiltOnPointerEvents(): void

@@ -27,12 +27,12 @@ class MediaDimensionsCommandTest extends TestCase
     protected function setUp(): void
     {
         $this->projectDir = sys_get_temp_dir() . '/media-dimensions-test-' . uniqid();
-        (new Filesystem())->mkdir($this->projectDir . '/public/medias');
+        new Filesystem()->mkdir($this->projectDir . '/public/medias');
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createMedia(string $filename): Media

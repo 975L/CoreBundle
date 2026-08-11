@@ -25,6 +25,7 @@ class BlockShadowChoiceType extends AbstractType
         'label.shadow_large' => 'large',
     ];
 
+    #[\Override]
     public function getParent(): string
     {
         return ChoiceType::class;

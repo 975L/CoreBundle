@@ -25,7 +25,7 @@ class SessionNonceGeneratorTest extends TestCase
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->expects($this->once())->method('getCurrentRequest')->willReturn(null);
 
-        $nonce = (new SessionNonceGenerator($requestStack))->generate();
+        $nonce = new SessionNonceGenerator($requestStack)->generate();
 
         $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $nonce);
     }
@@ -40,7 +40,7 @@ class SessionNonceGeneratorTest extends TestCase
         $requestStack->expects($this->once())->method('getCurrentRequest')->willReturn($request);
         $requestStack->expects($this->never())->method('getSession');
 
-        $nonce = (new SessionNonceGenerator($requestStack))->generate();
+        $nonce = new SessionNonceGenerator($requestStack)->generate();
 
         $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $nonce);
     }
@@ -53,7 +53,7 @@ class SessionNonceGeneratorTest extends TestCase
         $session->expects($this->once())->method('set')
             ->with('csp_nonce', $this->matchesRegularExpression('/^[0-9a-f]{32}$/'));
 
-        $nonce = (new SessionNonceGenerator($this->requestStack($session)))->generate();
+        $nonce = new SessionNonceGenerator($this->requestStack($session))->generate();
 
         $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $nonce);
     }
@@ -77,7 +77,7 @@ class SessionNonceGeneratorTest extends TestCase
         $session->expects($this->never())->method('get');
         $session->expects($this->never())->method('set');
 
-        $nonce = (new SessionNonceGenerator($this->requestStack($session, true)))->generate();
+        $nonce = new SessionNonceGenerator($this->requestStack($session, true))->generate();
 
         $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $nonce);
     }

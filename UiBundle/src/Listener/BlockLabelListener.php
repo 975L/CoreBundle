@@ -19,7 +19,7 @@ use Doctrine\ORM\Events;
 #[AsDoctrineListener(event: Events::postLoad)]
 class BlockLabelListener
 {
-    public function __construct(private BlockRegistry $registry)
+    public function __construct(private readonly BlockRegistry $registry)
     {
     }
 

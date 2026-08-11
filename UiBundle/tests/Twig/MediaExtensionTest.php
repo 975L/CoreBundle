@@ -29,7 +29,7 @@ class MediaExtensionTest extends TestCase
     // "logo" is one of Media::getSingletonRoles() - resolved via the batch preload, never an individual findOneByRole() call
     public function testGetSiteMediaResolvesASingletonRoleFromTheBatchPreload(): void
     {
-        $media = (new Media())->setRole('logo');
+        $media = new Media()->setRole('logo');
         $repository = $this->createMock(MediaRepository::class);
         $repository->expects($this->once())->method('findBySingletonRoles')->willReturn([$media]);
         $repository->expects($this->never())->method('findOneByRole');
@@ -67,8 +67,8 @@ class MediaExtensionTest extends TestCase
     // A base layout typically asks for several distinct roles (logo, favicon...) from several places in one request - only the first call of any of them should trigger the batch preload
     public function testGetSiteMediaPreloadsSingletonRolesOnlyOnce(): void
     {
-        $logo = (new Media())->setRole('logo');
-        $favicon = (new Media())->setRole('favicon');
+        $logo = new Media()->setRole('logo');
+        $favicon = new Media()->setRole('favicon');
         $repository = $this->createMock(MediaRepository::class);
         $repository->expects($this->once())->method('findBySingletonRoles')->willReturn([$logo, $favicon]);
 
@@ -95,7 +95,7 @@ class MediaExtensionTest extends TestCase
     // The whole point of a cross-request cache: a fresh MediaExtension instance (simulating a new request) sharing the same cache pool must not hit the repository again
     public function testGetSiteMediaSurvivesAcrossInstancesSharingTheSameCachePool(): void
     {
-        $media = (new Media())->setRole('logo');
+        $media = new Media()->setRole('logo');
         $repository = $this->createMock(MediaRepository::class);
         $repository->expects($this->once())->method('findBySingletonRoles')->willReturn([$media]);
 

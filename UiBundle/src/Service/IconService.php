@@ -26,7 +26,7 @@ class IconService implements IconServiceInterface
 
         foreach (glob($publicDir . '/bundles/*/icons/*.svg') ?: [] as $file) {
             $name = pathinfo($file, PATHINFO_FILENAME);
-            $icons[$name] = 'bundles/' . basename(dirname(dirname($file))) . '/icons/' . basename($file);
+            $icons[$name] = 'bundles/' . basename(dirname($file, 2)) . '/icons/' . basename($file);
         }
 
         foreach (glob($publicDir . '/icons/*.svg') ?: [] as $file) {

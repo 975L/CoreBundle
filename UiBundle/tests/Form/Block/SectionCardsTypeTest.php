@@ -29,7 +29,7 @@ class SectionCardsTypeTest extends TestCase
             return $builder;
         });
 
-        (new SectionCardsType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new SectionCardsType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

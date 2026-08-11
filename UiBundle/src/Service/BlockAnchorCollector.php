@@ -16,7 +16,7 @@ use c975L\UiBundle\Entity\Block;
 class BlockAnchorCollector
 {
     // Kinds whose rendered id prefixes the slug instead of using it as-is (see Article.html.twig's id="article-{slug}")
-    private const SLUG_PREFIXES = ['article' => 'article-'];
+    private const array SLUG_PREFIXES = ['article' => 'article-'];
 
     // @param iterable<Block> $blocks
     // @return array<string, string>

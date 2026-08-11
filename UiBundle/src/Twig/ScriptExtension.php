@@ -16,14 +16,15 @@ use Twig\TwigFunction;
 
 class ScriptExtension extends AbstractExtension
 {
-    public function __construct(private ScriptRegistry $registry)
+    public function __construct(private readonly ScriptRegistry $registry)
     {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('bundle_scripts', [$this, 'getBundleScripts']),
+            new TwigFunction('bundle_scripts', $this->getBundleScripts(...)),
         ];
     }
 

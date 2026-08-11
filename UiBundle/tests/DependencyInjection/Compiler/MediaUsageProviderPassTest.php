@@ -23,7 +23,7 @@ class MediaUsageProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new MediaUsageProviderPass())->process($container);
+        new MediaUsageProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class MediaUsageProviderPassTest extends TestCase
         $container->register('ui.media_usage_provider', BlockMediaUsageProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new MediaUsageProviderPass())->process($container);
+        new MediaUsageProviderPass()->process($container);
 
         $calls = $container->getDefinition(MediaUsageRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class MediaUsageProviderPassTest extends TestCase
         $container->register(MediaUsageRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new MediaUsageProviderPass())->process($container);
+        new MediaUsageProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(MediaUsageRegistry::class)->getMethodCalls());
     }

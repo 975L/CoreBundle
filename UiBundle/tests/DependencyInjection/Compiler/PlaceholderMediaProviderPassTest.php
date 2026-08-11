@@ -23,7 +23,7 @@ class PlaceholderMediaProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new PlaceholderMediaProviderPass())->process($container);
+        new PlaceholderMediaProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -43,7 +43,7 @@ class PlaceholderMediaProviderPassTest extends TestCase
         $container->register('ui.placeholder_media_provider', $fakeProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new PlaceholderMediaProviderPass())->process($container);
+        new PlaceholderMediaProviderPass()->process($container);
 
         $calls = $container->getDefinition(PlaceholderMediaRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -58,7 +58,7 @@ class PlaceholderMediaProviderPassTest extends TestCase
         $container->register(PlaceholderMediaRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new PlaceholderMediaProviderPass())->process($container);
+        new PlaceholderMediaProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(PlaceholderMediaRegistry::class)->getMethodCalls());
     }

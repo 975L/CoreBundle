@@ -21,8 +21,8 @@ class ConfigLinkExtensionTest extends TestCase
 {
     private function createConfig(string $slug, int $id): Config
     {
-        $config = (new Config())->setSlug($slug);
-        (new \ReflectionProperty($config, 'id'))->setValue($config, $id);
+        $config = new Config()->setSlug($slug);
+        new \ReflectionProperty($config, 'id')->setValue($config, $id);
 
         return $config;
     }

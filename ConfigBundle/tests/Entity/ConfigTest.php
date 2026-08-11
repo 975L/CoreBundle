@@ -20,7 +20,7 @@ class ConfigTest extends TestCase
 {
     public function testGetLabelTranslationKeyDerivesFromSlugReplacingDashesWithUnderscores(): void
     {
-        $config = (new Config())->setSlug('site-maintenance-hash');
+        $config = new Config()->setSlug('site-maintenance-hash');
 
         $this->assertSame('label.site_maintenance_hash', $config->getLabelTranslationKey());
     }
@@ -28,7 +28,7 @@ class ConfigTest extends TestCase
     // A config built in code carries no label yet, and is read back for display (see ConfigLabelResolver) before anything has set one - an uninitialized property would fatal there instead of simply having nothing to show
     public function testGetLabelReturnsAnEmptyStringOnAFreshConfig(): void
     {
-        $this->assertSame('', (new Config())->getLabel());
+        $this->assertSame('', new Config()->getLabel());
     }
 
     public function testSetValueCoercesBooleansToTrueOrFalseStrings(): void
@@ -44,28 +44,28 @@ class ConfigTest extends TestCase
 
     public function testSetValueFormatsDateTimeAsYmd(): void
     {
-        $config = (new Config())->setValue(new \DateTime('2026-07-12'));
+        $config = new Config()->setValue(new \DateTime('2026-07-12'));
 
         $this->assertSame('2026-07-12', $config->getValue());
     }
 
     public function testSetValueCastsScalarsToString(): void
     {
-        $config = (new Config())->setValue(42);
+        $config = new Config()->setValue(42);
 
         $this->assertSame('42', $config->getValue());
     }
 
     public function testSetValueKeepsNullAsNull(): void
     {
-        $config = (new Config())->setValue(null);
+        $config = new Config()->setValue(null);
 
         $this->assertNull($config->getValue());
     }
 
     public function testValidateJsonValueAddsViolationWhenKindIsJsonAndValueIsInvalid(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_JSON)->setValue('not-json');
+        $config = new Config()->setKind(Config::TYPE_JSON)->setValue('not-json');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
         $violationBuilder->expects($this->once())->method('atPath')->with('value')->willReturnSelf();
@@ -82,7 +82,7 @@ class ConfigTest extends TestCase
 
     public function testValidateJsonValueAddsNoViolationWhenValueIsValidJson(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_JSON)->setValue('["a","b"]');
+        $config = new Config()->setKind(Config::TYPE_JSON)->setValue('["a","b"]');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -92,7 +92,7 @@ class ConfigTest extends TestCase
 
     public function testValidateJsonValueAddsNoViolationWhenKindIsNotJson(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_TEXT)->setValue('not-json');
+        $config = new Config()->setKind(Config::TYPE_TEXT)->setValue('not-json');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -102,7 +102,7 @@ class ConfigTest extends TestCase
 
     public function testValidateJsonValueAddsNoViolationWhenValueIsNullOrEmpty(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_JSON)->setValue(null);
+        $config = new Config()->setKind(Config::TYPE_JSON)->setValue(null);
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -112,7 +112,7 @@ class ConfigTest extends TestCase
 
     public function testValidateChoiceValueAddsViolationWhenValueIsNotDeclared(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('Dark');
+        $config = new Config()->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('Dark');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
         $violationBuilder->expects($this->once())->method('setParameter')->with('%choices%', 'auto, light, dark')->willReturnSelf();
@@ -130,7 +130,7 @@ class ConfigTest extends TestCase
 
     public function testValidateChoiceValueAddsNoViolationForADeclaredValue(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('dark');
+        $config = new Config()->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('dark');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -140,7 +140,7 @@ class ConfigTest extends TestCase
 
     public function testValidateChoiceValueAddsNoViolationWhenKindIsNotChoice(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_TEXT)->setChoices(['auto', 'light'])->setValue('whatever');
+        $config = new Config()->setKind(Config::TYPE_TEXT)->setChoices(['auto', 'light'])->setValue('whatever');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -151,7 +151,7 @@ class ConfigTest extends TestCase
     // A row whose kind became "choice" in a bundle newer than the last c975l:config:load-all run holds no declared value yet: rejecting what it has would lock its own form
     public function testValidateChoiceValueAddsNoViolationWhenNothingIsDeclared(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setValue('bottom-right');
+        $config = new Config()->setKind(Config::TYPE_CHOICE)->setValue('bottom-right');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -161,7 +161,7 @@ class ConfigTest extends TestCase
 
     public function testValidateChoiceValueAddsNoViolationWhenValueIsNullOrEmpty(): void
     {
-        $config = (new Config())->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light'])->setValue(null);
+        $config = new Config()->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light'])->setValue(null);
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -172,14 +172,14 @@ class ConfigTest extends TestCase
     // An empty list would render an empty select, offering neither a value to pick nor the one already stored
     public function testSetChoicesStoresAnEmptyListAsNone(): void
     {
-        $config = (new Config())->setChoices([]);
+        $config = new Config()->setChoices([]);
 
         $this->assertNull($config->getChoices());
     }
 
     public function testValidateThemeColorValueAddsViolationForAnInvalidColor(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('red; background: url(evil.css)');
+        $config = new Config()->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('red; background: url(evil.css)');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
         $violationBuilder->expects($this->once())->method('atPath')->with('value')->willReturnSelf();
@@ -196,7 +196,7 @@ class ConfigTest extends TestCase
 
     public function testValidateThemeColorValueAddsNoViolationForAValidHexColor(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('#b30000');
+        $config = new Config()->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('#b30000');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -206,7 +206,7 @@ class ConfigTest extends TestCase
 
     public function testValidateThemeColorValueAddsNoViolationForAValidRgbaColor(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-secondary')->setValue('rgba(11, 55, 178, .5)');
+        $config = new Config()->setGroup(Config::GROUP_THEME)->setSlug('theme-color-secondary')->setValue('rgba(11, 55, 178, .5)');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -216,7 +216,7 @@ class ConfigTest extends TestCase
 
     public function testValidateThemeColorValueAddsNoViolationForAValidNamedColor(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-background')->setValue('tomato');
+        $config = new Config()->setGroup(Config::GROUP_THEME)->setSlug('theme-color-background')->setValue('tomato');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -227,7 +227,7 @@ class ConfigTest extends TestCase
     // A satellite bundle declares its colors in its own group (c975l/gallery-bundle's "gallery"), and they reach the very same compiled :root: the slug is what is checked, the group deciding nothing but the screen the config shows on
     public function testValidateThemeColorValueAddsViolationWhateverTheGroup(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_GENERAL)->setSlug('theme-color-gallery-frame')->setValue('red; background: url(evil.css)');
+        $config = new Config()->setGroup(Config::GROUP_GENERAL)->setSlug('theme-color-gallery-frame')->setValue('red; background: url(evil.css)');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
         $violationBuilder->expects($this->once())->method('atPath')->with('value')->willReturnSelf();
@@ -245,7 +245,7 @@ class ConfigTest extends TestCase
     // A hex typed without its "#" is made of valid characters, so the pattern alone let it through: CSS then dropped the whole declaration and the property fell back to its initial value, which reads as a color rather than as a mistake
     public function testValidateThemeColorValueAddsViolationForAHexWithoutItsHash(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('ff0000');
+        $config = new Config()->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue('ff0000');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
         $violationBuilder->expects($this->once())->method('atPath')->with('value')->willReturnSelf();
@@ -263,7 +263,7 @@ class ConfigTest extends TestCase
     // theme-mode holds a fixed light/dark/auto choice, not a CSS color, so it's exempt even within the theme group
     public function testValidateThemeColorValueAddsNoViolationWhenSlugIsNotAThemeColor(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-mode')->setValue('not-a-color-or-a-mode;');
+        $config = new Config()->setGroup(Config::GROUP_THEME)->setSlug('theme-mode')->setValue('not-a-color-or-a-mode;');
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -273,7 +273,7 @@ class ConfigTest extends TestCase
 
     public function testValidateThemeColorValueAddsNoViolationWhenValueIsNullOrEmpty(): void
     {
-        $config = (new Config())->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue(null);
+        $config = new Config()->setGroup(Config::GROUP_THEME)->setSlug('theme-color-primary')->setValue(null);
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $context->expects($this->never())->method('buildViolation');
@@ -286,7 +286,7 @@ class ConfigTest extends TestCase
     {
         $user = $this->createStub(UserInterface::class);
 
-        $config = (new Config())->setUser($user);
+        $config = new Config()->setUser($user);
 
         $this->assertSame($user, $config->getUser());
     }

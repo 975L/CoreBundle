@@ -37,7 +37,7 @@ class ArticleTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new ArticleType($this->anchorSlugger()))->buildForm($builder, []);
+        new ArticleType($this->anchorSlugger())->buildForm($builder, []);
 
         return $added;
     }
@@ -56,7 +56,7 @@ class ArticleTypeTest extends TestCase
             }
         );
 
-        (new ArticleType($this->anchorSlugger()))->buildForm($builder, []);
+        new ArticleType($this->anchorSlugger())->buildForm($builder, []);
 
         $form = $this->createStub(FormInterface::class);
         $event = new FormEvent($form, $submittedData);

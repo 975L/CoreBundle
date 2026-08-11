@@ -14,6 +14,7 @@ use c975L\UiBundle\CacheWarmer\StylesheetCacheWarmer;
 use c975L\UiBundle\Registry\StylesheetManagementRegistry;
 use c975L\UiBundle\Registry\StylesheetRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\AssetMapper\AssetMapperInterface;
 
 class StylesheetCacheWarmerTest extends TestCase
 {
@@ -54,7 +55,8 @@ class StylesheetCacheWarmerTest extends TestCase
         file_put_contents($path, $content);
     }
 
-    private function createWarmer(array $stylesheets, array $managementStylesheets): StylesheetCacheWarmer
+    // $publicPaths stands for the manifest AssetMapper builds, keyed by logical path - what an app asset's url() has to be rewritten to
+    private function createWarmer(array $stylesheets, array $managementStylesheets, array $publicPaths = []): StylesheetCacheWarmer
     {
         $registry = $this->createStub(StylesheetRegistry::class);
         $registry->method('all')->willReturn($stylesheets);
@@ -62,7 +64,12 @@ class StylesheetCacheWarmerTest extends TestCase
         $managementRegistry = $this->createStub(StylesheetManagementRegistry::class);
         $managementRegistry->method('all')->willReturn($managementStylesheets);
 
-        return new StylesheetCacheWarmer($registry, $managementRegistry, $this->projectDir);
+        $assetMapper = $this->createStub(AssetMapperInterface::class);
+        $assetMapper->method('getPublicPath')->willReturnCallback(
+            static fn (string $logicalPath): ?string => $publicPaths[$logicalPath] ?? null
+        );
+
+        return new StylesheetCacheWarmer($registry, $managementRegistry, $this->projectDir, $assetMapper);
     }
 
     // Recursively deletes the sandbox directory tree created for a test
@@ -129,6 +136,103 @@ class StylesheetCacheWarmerTest extends TestCase
         $warmer->warmUp($this->projectDir . '/var/cache');
 
         $this->assertSame('', file_get_contents($this->projectDir . '/public/bundles/build/site.css'));
+    }
+
+    // The concatenated sheet is served from bundles/build/, so the "../fonts/…" a site wrote in its @font-face points at nothing once inlined - only AssetMapper knows the versioned name that file is published under
+    public function testWarmUpRewritesTheRelativeUrlOfAnAppAssetThroughAssetMapper(): void
+    {
+        $this->createAppAssetCssFile('assets/styles/_typography.css', '@font-face{src:url("../fonts/Cabin.ttf")}');
+
+        $warmer = $this->createWarmer(
+            ['assets/styles/_typography.css'],
+            [],
+            ['fonts/Cabin.ttf' => '/assets/fonts/Cabin-1a2b3c.ttf']
+        );
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            '@font-face{src:url("/assets/fonts/Cabin-1a2b3c.ttf")}',
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // A bundle's own sheet is published under public/, where its relative paths resolve against the site root rather than through the manifest
+    public function testWarmUpResolvesTheRelativeUrlOfABundleSheetAgainstTheSiteRoot(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', '.ui{background:url(../images/logo.svg)}');
+
+        $warmer = $this->createWarmer(['bundles/c975lui/css/styles.min.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            '.ui{background:url("/bundles/c975lui/images/logo.svg")}',
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // Whatever already resolves on its own is left exactly as written - a rewritten data: URI would be a corrupted one
+    public function testWarmUpLeavesUrlsThatAlreadyResolveUntouched(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', '.a{background:url(/images/logo.svg)}.b{background:url("https://cdn.example.com/logo.svg")}.c{background:url(data:image/gif;base64,R0lGOD)}.d{fill:url(#gradient)}');
+
+        $warmer = $this->createWarmer(['bundles/c975lui/css/styles.min.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            '.a{background:url(/images/logo.svg)}.b{background:url("https://cdn.example.com/logo.svg")}.c{background:url(data:image/gif;base64,R0lGOD)}.d{fill:url(#gradient)}',
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // A font's "#iefix" or a sprite id is no part of the file to look up, but dropping it changes what the rule points at
+    public function testWarmUpKeepsTheQueryAndFragmentOfARewrittenUrl(): void
+    {
+        $this->createAppAssetCssFile('assets/styles/_typography.css', '@font-face{src:url("../fonts/Cabin.woff2?v=2#iefix")}');
+
+        $warmer = $this->createWarmer(
+            ['assets/styles/_typography.css'],
+            [],
+            ['fonts/Cabin.woff2' => '/assets/fonts/Cabin-1a2b3c.woff2']
+        );
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            '@font-face{src:url("/assets/fonts/Cabin-1a2b3c.woff2?v=2#iefix")}',
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // A site's app.css is contributed last, so the @import opening it lands after every bundle's rules - where the spec makes it invalid and the browser drops it, imported sheets and all
+    public function testWarmUpHoistsImportsToTheTopOfTheCompiledStylesheet(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', '.ui{color:red}');
+        $this->createAppAssetCssFile('assets/styles/app.css', '@import "./_variables.css";.app{color:blue}');
+
+        $warmer = $this->createWarmer(
+            ['bundles/c975lui/css/styles.min.css', 'assets/styles/app.css'],
+            [],
+            ['styles/_variables.css' => '/assets/styles/_variables-1a2b3c.css']
+        );
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            "@import url(\"/assets/styles/_variables-1a2b3c.css\");\n.ui{color:red}\n.app{color:blue}",
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // An import of a CDN sheet resolves on its own and keeps its media query, which says when it applies at all
+    public function testWarmUpHoistsAnAbsoluteImportWithItsMediaQuery(): void
+    {
+        $this->createAppAssetCssFile('assets/styles/app.css', '@import url("https://cdn.example.com/print.css") print;.app{color:blue}');
+
+        $warmer = $this->createWarmer(['assets/styles/app.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            "@import url(\"https://cdn.example.com/print.css\") print;\n.app{color:blue}",
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
     }
 
     // A site's own theme files are almost entirely comments - every token ships commented out at its default - so the concatenated sheet drops them rather than sending a quarter of its bytes to every visitor for something no browser reads

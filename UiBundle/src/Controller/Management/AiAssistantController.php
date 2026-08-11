@@ -30,7 +30,7 @@ class AiAssistantController extends AbstractController
     public const REPHRASE_ROUTE = 'management_ui_ai_assistant_rephrase';
 
     // Every config slug the setup guide below links to individually
-    private const LINKED_SLUGS = [
+    private const array LINKED_SLUGS = [
         'ui-ai-assistant-dashboard-enabled',
         'ui-ai-assistant-dashboard-endpoint',
         'ui-ai-assistant-dashboard-token',

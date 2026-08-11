@@ -27,7 +27,7 @@ class CardTypeTest extends TestCase
             return $builder;
         });
 
-        (new CardType())->buildForm($builder, []);
+        new CardType()->buildForm($builder, []);
 
         return $added;
     }

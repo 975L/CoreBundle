@@ -21,14 +21,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SecurityMisconfigurationHealthCheckProviderTest extends TestCase
 {
     // What a correctly deployed site answers on its root: a page, and nothing else worth reporting
-    private const CLEAN_ROOT = [
+    private const array CLEAN_ROOT = [
         'status' => 200,
         'headers' => ['content-type' => ['text/html; charset=UTF-8']],
         'body' => '<html><body>Home</body></html>',
     ];
 
     // What every probed path answers when it is not served
-    private const NOT_FOUND = ['status' => 404, 'headers' => [], 'body' => ''];
+    private const array NOT_FOUND = ['status' => 404, 'headers' => [], 'body' => ''];
 
     // A real resolver rather than a stub, so these tests assert the very url the dashboard will group the row under (see SiteUrlResolver::siteRoot())
     private function createUrlResolver(?string $siteUrl = 'https://example.com'): SiteUrlResolver

@@ -19,13 +19,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SecurityMisconfigurationHealthCheckProvider implements HealthCheckProviderInterface
 {
     // The dev front controller's tooling, routable on any site deployed with APP_ENV=dev. Path => a string its real content carries, for the same reason as SENSITIVE_FILES below. "/_fragment" is left out: a Symfony site answers it 400 or 403 whether it runs in debug or not, so a 200 there only ever comes from a catch-all route. A path answering 3xx or 4xx is not exposed, which is why redirects are never followed (see SecurityProbeClient)
-    private const DEBUG_PATHS = [
+    private const array DEBUG_PATHS = [
         '/_profiler' => 'Symfony Profiler',
         '/_wdt/latest' => 'sf-toolbar',
     ];
 
     // Path => a string its real content carries and no page of the site would. A site answering 200 to everything (catch-all route, soft 404) would otherwise be reported as serving all four
-    private const SENSITIVE_FILES = [
+    private const array SENSITIVE_FILES = [
         '/.env' => 'APP_ENV',
         '/composer.json' => '"require"',
         '/composer.lock' => '"packages"',
@@ -33,12 +33,12 @@ class SecurityMisconfigurationHealthCheckProvider implements HealthCheckProvider
     ];
 
     // Directories whose listing exposes the site's whole tree - both are outside the document root on a correct install, hence a 404 rather than a listing
-    private const LISTED_DIRECTORIES = ['/vendor/', '/var/'];
+    private const array LISTED_DIRECTORIES = ['/vendor/', '/var/'];
 
-    private const FLAGS = ['secure', 'httponly', 'samesite'];
+    private const array FLAGS = ['secure', 'httponly', 'samesite'];
 
     // A severity of an issue inside "details", never a HealthCheckResult status: it is what a finding worth naming but not worth acting on gets, so it shows in the summary without turning the row orange forever
-    private const SEVERITY_INFO = 'info';
+    private const string SEVERITY_INFO = 'info';
 
     public function __construct(
         private readonly SecurityProbeClient $securityProbeClient,

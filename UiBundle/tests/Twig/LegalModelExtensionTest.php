@@ -24,7 +24,7 @@ use Twig\Loader\ArrayLoader;
 
 class LegalModelExtensionTest extends TestCase
 {
-    private const MODEL = 'france/cookies';
+    private const string MODEL = 'france/cookies';
 
     private function createExtension(?string $locale): LegalModelExtension
     {

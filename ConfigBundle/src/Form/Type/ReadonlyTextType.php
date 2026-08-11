@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 // Renders as plain text (a <p>) instead of an <input>, see c975l_readonly_text_widget block in form_theme.html.twig
 class ReadonlyTextType extends TextType
 {
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'c975l_readonly_text';

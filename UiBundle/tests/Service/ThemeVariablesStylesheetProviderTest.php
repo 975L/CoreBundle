@@ -20,7 +20,7 @@ class ThemeVariablesStylesheetProviderTest extends TestCase
     {
         $this->assertSame(
             ['bundles/build/site-theme.css'],
-            (new ThemeVariablesStylesheetProvider())->getStylesheets()
+            new ThemeVariablesStylesheetProvider()->getStylesheets()
         );
     }
 }

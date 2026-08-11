@@ -17,10 +17,10 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class ContentQualityClient
 {
     // The meta names carrying indexing directives. "googlebot" is read alongside the generic "robots" and merged into the same list: it overrides it for Google specifically, and a page is just as absent from the results either way
-    private const ROBOTS_META_NAMES = ['robots', 'googlebot'];
+    private const array ROBOTS_META_NAMES = ['robots', 'googlebot'];
 
     // A missing alt attribute is always an error, but an explicitly empty one (alt="") is the *correct* way to mark a decorative image - it only counts when nothing marks it as such: no aria-hidden, no role="presentation"/"none", and no enclosing link/button already carrying its own accessible name (a share button's icon, a logo inside a labelled link). Flagging those would leave a page in warning forever, since there is nothing to fix
-    private const DECORATIVE_IMAGE = '@aria-hidden="true" or @role="presentation" or @role="none" or ancestor::*[self::a or self::button][@aria-label or @aria-labelledby]';
+    private const string DECORATIVE_IMAGE = '@aria-hidden="true" or @role="presentation" or @role="none" or ancestor::*[self::a or self::button][@aria-label or @aria-labelledby]';
 
     // Verdicts returned by readLinkCheck()/checkLink(). LINK_UNKNOWN is deliberately not LINK_BROKEN: a timeout, a refused connection or a server that won't answer HEAD says something about the run, not about the link, and a health check reporting a live page as dead is worse than reporting nothing at all
     public const LINK_OK = 'ok';
@@ -31,7 +31,7 @@ class ContentQualityClient
     public const INCONCLUSIVE_STATUSES = [403, 405, 429, 501, 999];
 
     // Identifies the checker honestly (a WAF operator can look it up and allow it) while keeping the "Mozilla/5.0 (compatible; ...)" shape crawlers have used since Googlebot, which far fewer filters reject outright than a bare library default. Sites that still answer 403 are reported as inconclusive, not as broken - see INCONCLUSIVE_STATUSES
-    private const LINK_CHECK_USER_AGENT = 'Mozilla/5.0 (compatible; c975LHealthCheck/1.0; +https://github.com/975L/SiteBundle)';
+    private const string LINK_CHECK_USER_AGENT = 'Mozilla/5.0 (compatible; c975LHealthCheck/1.0; +https://github.com/975L/SiteBundle)';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -270,7 +270,7 @@ class ContentQualityClient
             return $text;
         }
 
-        $image = (new \DOMXPath($anchor->ownerDocument))->query('.//img[@alt]', $anchor)->item(0);
+        $image = new \DOMXPath($anchor->ownerDocument)->query('.//img[@alt]', $anchor)->item(0);
 
         return $image instanceof \DOMElement ? trim($image->getAttribute('alt')) : '';
     }

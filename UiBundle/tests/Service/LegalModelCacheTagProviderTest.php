@@ -29,7 +29,7 @@ class LegalModelCacheTagProviderTest extends TestCase
         $registry = new BlockCacheTagRegistry();
         $registry->addProvider(new LegalModelCacheTagProvider());
 
-        $block = (new Block())->setKind('legal_model');
+        $block = new Block()->setKind('legal_model');
 
         $this->assertSame([LegalModelCacheTagProvider::CACHE_TAG], $registry->getExtraTags($block));
     }
@@ -39,6 +39,6 @@ class LegalModelCacheTagProviderTest extends TestCase
         $registry = new BlockCacheTagRegistry();
         $registry->addProvider(new LegalModelCacheTagProvider());
 
-        $this->assertSame([], $registry->getExtraTags((new Block())->setKind('article')));
+        $this->assertSame([], $registry->getExtraTags(new Block()->setKind('article')));
     }
 }

@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 // Derives the localStorage key the guided-project panel stores its progress under (see assets/js/guided-project.js). A project being a replayable exercise rather than a record, its progress isn't worth a table - but two admins sharing one browser profile would then share one key, hence this per-user scoping. Never by the user identifier itself: that's usually an email, and a localStorage key outlives the session, so the next person on a shared machine would read the previous admin's address straight from the devtools. HMAC rather than a plain digest, an email living in a space small enough to be brute-forced back from one - keyed with the application secret, the result gives nothing away
 class GuidedProjectKeyGenerator
 {
-    private const LENGTH = 16;
+    private const int LENGTH = 16;
 
     public function __construct(
         private readonly Security $security,

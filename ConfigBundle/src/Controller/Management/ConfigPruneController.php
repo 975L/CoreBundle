@@ -54,7 +54,7 @@ class ConfigPruneController extends AbstractController
                 // Told apart from "no orphan at all", which looks identical but means the opposite (see findOrphans())
                 'hasDeclarations' => [] !== $this->declarationLocator->findFiles(),
                 'unreadableFiles' => array_map(
-                    fn (string $file) => $this->declarationLocator->describe($file),
+                    $this->declarationLocator->describe(...),
                     $this->declarationLocator->findUnreadableFiles(),
                 ),
             ]

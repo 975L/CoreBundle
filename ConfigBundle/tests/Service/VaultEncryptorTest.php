@@ -86,8 +86,8 @@ class VaultEncryptorTest extends TestCase
 
     public function testIsKeyDefinedReflectsWhetherAVaultKeyWasProvided(): void
     {
-        $this->assertTrue((new VaultEncryptor('a-key'))->isKeyDefined());
-        $this->assertFalse((new VaultEncryptor(null))->isKeyDefined());
-        $this->assertFalse((new VaultEncryptor(''))->isKeyDefined());
+        $this->assertTrue(new VaultEncryptor('a-key')->isKeyDefined());
+        $this->assertFalse(new VaultEncryptor(null)->isKeyDefined());
+        $this->assertFalse(new VaultEncryptor('')->isKeyDefined());
     }
 }

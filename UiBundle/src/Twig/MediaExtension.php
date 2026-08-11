@@ -32,11 +32,12 @@ class MediaExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('site_media', [$this, 'getSiteMedia']),
-            new TwigFunction('site_random_media', [$this, 'getRandomSiteMedia']),
+            new TwigFunction('site_media', $this->getSiteMedia(...)),
+            new TwigFunction('site_random_media', $this->getRandomSiteMedia(...)),
         ];
     }
 

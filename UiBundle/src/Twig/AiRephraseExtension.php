@@ -22,13 +22,14 @@ class AiRephraseExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('ai_rephrase_enabled', [$this->aiRephraseClient, 'isEnabled']),
-            new TwigFunction('ai_rephrase_styles', [$this->aiRephraseClient, 'getStyles']),
-            new TwigFunction('ai_rephrase_lengths', [$this->aiRephraseClient, 'getLengths']),
-            new TwigFunction('ai_assistant_name', [$this, 'assistantName']),
+            new TwigFunction('ai_rephrase_enabled', $this->aiRephraseClient->isEnabled(...)),
+            new TwigFunction('ai_rephrase_styles', $this->aiRephraseClient->getStyles(...)),
+            new TwigFunction('ai_rephrase_lengths', $this->aiRephraseClient->getLengths(...)),
+            new TwigFunction('ai_assistant_name', $this->assistantName(...)),
         ];
     }
 

@@ -27,7 +27,7 @@ class DocumentDownloadTypeTest extends TestCase
             return $builder;
         });
 
-        (new DocumentDownloadType())->buildForm($builder, []);
+        new DocumentDownloadType()->buildForm($builder, []);
 
         return $added;
     }

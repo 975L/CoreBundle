@@ -23,7 +23,7 @@ class GalleryShowcaseProviderPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new GalleryShowcaseProviderPass())->process($container);
+        new GalleryShowcaseProviderPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -43,7 +43,7 @@ class GalleryShowcaseProviderPassTest extends TestCase
         $container->register('ui.gallery_showcase_provider', $fakeProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new GalleryShowcaseProviderPass())->process($container);
+        new GalleryShowcaseProviderPass()->process($container);
 
         $calls = $container->getDefinition(GalleryShowcaseRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -58,7 +58,7 @@ class GalleryShowcaseProviderPassTest extends TestCase
         $container->register(GalleryShowcaseRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new GalleryShowcaseProviderPass())->process($container);
+        new GalleryShowcaseProviderPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(GalleryShowcaseRegistry::class)->getMethodCalls());
     }

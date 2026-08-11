@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Resolves, for the Media library, the medias carrying a site-wide graphic role (favicon, logo...) - they belong to no Block, so BlockMediaUsageProvider skips them, and they are edited from their own screen rather than from a page
 class SiteGraphicMediaUsageProvider implements MediaUsageProviderInterface
 {
-    private const ROLE_LABELS = [
+    private const array ROLE_LABELS = [
         Media::ROLE_FAVICON => 'label.favicon',
         Media::ROLE_APPLE_TOUCH_ICON => 'label.apple_touch_icon',
         Media::ROLE_OG_IMAGE => 'label.og_image',

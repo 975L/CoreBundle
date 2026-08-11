@@ -18,7 +18,7 @@ class VichMediaTraitTest extends TestCase
 {
     public function testToStringReturnsName(): void
     {
-        $media = (new VichMediaTraitStub())->setName('logo.webp');
+        $media = new VichMediaTraitStub()->setName('logo.webp');
 
         $this->assertSame('logo.webp', (string) $media);
     }
@@ -32,16 +32,16 @@ class VichMediaTraitTest extends TestCase
 
     public function testEqualsComparesByIdWhenBothArePersisted(): void
     {
-        $media = (new VichMediaTraitStub())->setId(1);
-        $other = (new VichMediaTraitStub())->setId(1);
+        $media = new VichMediaTraitStub()->setId(1);
+        $other = new VichMediaTraitStub()->setId(1);
 
         $this->assertTrue($media->equals($other));
     }
 
     public function testEqualsReturnsFalseForDifferentIds(): void
     {
-        $media = (new VichMediaTraitStub())->setId(1);
-        $other = (new VichMediaTraitStub())->setId(2);
+        $media = new VichMediaTraitStub()->setId(1);
+        $other = new VichMediaTraitStub()->setId(2);
 
         $this->assertFalse($media->equals($other));
     }
@@ -49,16 +49,16 @@ class VichMediaTraitTest extends TestCase
     // Neither side is persisted yet (both ids null) - falls back to comparing names
     public function testEqualsFallsBackToNameWhenNeitherIsPersisted(): void
     {
-        $media = (new VichMediaTraitStub())->setName('logo.webp');
-        $other = (new VichMediaTraitStub())->setName('logo.webp');
+        $media = new VichMediaTraitStub()->setName('logo.webp');
+        $other = new VichMediaTraitStub()->setName('logo.webp');
 
         $this->assertTrue($media->equals($other));
     }
 
     public function testEqualsReturnsFalseWhenNeitherIdNorNameMatch(): void
     {
-        $media = (new VichMediaTraitStub())->setName('logo.webp');
-        $other = (new VichMediaTraitStub())->setName('banner.webp');
+        $media = new VichMediaTraitStub()->setName('logo.webp');
+        $other = new VichMediaTraitStub()->setName('banner.webp');
 
         $this->assertFalse($media->equals($other));
     }
@@ -73,7 +73,7 @@ class VichMediaTraitTest extends TestCase
 
     public function testSetPositionDefaultsNullToZero(): void
     {
-        $media = (new VichMediaTraitStub())->setPosition(null);
+        $media = new VichMediaTraitStub()->setPosition(null);
 
         $this->assertSame(0, $media->getPosition());
     }

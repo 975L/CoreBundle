@@ -17,7 +17,7 @@ use Twig\Loader\FilesystemLoader;
 // Both head fields are optional on this kind, which is what decides the element the band is rendered as
 class FeatureBarHeadTest extends TestCase
 {
-    private const ITEMS = [['title' => 'Premier point', 'text' => 'une précision']];
+    private const array ITEMS = [['title' => 'Premier point', 'text' => 'une précision']];
 
     // A headingless <section> is invalid HTML, and a band standing on its items alone is the ordinary case
     public function testABandWithNoHeadRendersAsADiv(): void
@@ -62,6 +62,6 @@ class FeatureBarHeadTest extends TestCase
         $loader = new FilesystemLoader(dirname(__DIR__, 2) . '/templates');
         $loader->addPath(dirname(__DIR__, 2) . '/templates', 'c975LUi');
 
-        return (new Environment($loader))->render('components/Feature/Bar.html.twig', $context);
+        return new Environment($loader)->render('components/Feature/Bar.html.twig', $context);
     }
 }

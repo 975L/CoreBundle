@@ -18,8 +18,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Checks the site's TLS certificate expiry - one check for the whole site (the certificate is issued for the host, not per-page), same "only the homepage/site-url matters" pattern as SecurityHeadersHealthCheckProvider. Auto-renewal (eg. Let's Encrypt/certbot) usually makes this a non-issue, but a silently broken renewal job is exactly the kind of failure that stays invisible until the certificate has already expired - this check is what would actually catch it
 class SslCertificateHealthCheckProvider implements HealthCheckProviderInterface
 {
-    private const WARNING_THRESHOLD_DAYS = 30;
-    private const ERROR_THRESHOLD_DAYS = 7;
+    private const int WARNING_THRESHOLD_DAYS = 30;
+    private const int ERROR_THRESHOLD_DAYS = 7;
 
     public function __construct(
         private readonly SiteUrlResolver $siteUrlResolver,
@@ -64,7 +64,7 @@ class SslCertificateHealthCheckProvider implements HealthCheckProviderInterface
             ]];
         }
 
-        $daysLeft = (int) (new \DateTimeImmutable())->diff($expiresAt)->format('%r%a');
+        $daysLeft = (int) new \DateTimeImmutable()->diff($expiresAt)->format('%r%a');
 
         return [[
             'url' => $homeUrl,

@@ -22,7 +22,7 @@ class BackupDigestBuilderTest extends TestCase
 {
     private function createRun(string $status, string $checkedAt, array $details = []): HealthCheckResult
     {
-        return (new HealthCheckResult())
+        return new HealthCheckResult()
             ->setKind(BackupResultRecorder::KIND)
             ->setUrl('https://example.com')
             ->setStatus($status)

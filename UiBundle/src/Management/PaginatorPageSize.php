@@ -30,6 +30,6 @@ class PaginatorPageSize
     {
         $requested = $this->requestStack->getCurrentRequest()?->query->all()['pageSize'] ?? null;
 
-        return \in_array($requested, array_map('strval', self::SIZES), true) ? (int) $requested : self::DEFAULT_SIZE;
+        return \in_array($requested, array_map(strval(...), self::SIZES), true) ? (int) $requested : self::DEFAULT_SIZE;
     }
 }

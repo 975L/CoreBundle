@@ -27,7 +27,7 @@ class CollectionItemTypeTest extends TestCase
             return $builder;
         });
 
-        (new CollectionItemType())->buildForm($builder, []);
+        new CollectionItemType()->buildForm($builder, []);
 
         return $added;
     }

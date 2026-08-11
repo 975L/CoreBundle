@@ -28,7 +28,7 @@ class FlexColumnTypeTest extends TestCase
             return $builder;
         });
 
-        (new FlexColumnType())->buildForm($builder, []);
+        new FlexColumnType()->buildForm($builder, []);
 
         return $added;
     }

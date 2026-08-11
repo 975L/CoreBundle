@@ -15,11 +15,12 @@ use Twig\TwigFilter;
 
 class TrixExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [
-            new TwigFilter('trix_inline', [$this, 'trixInline'], ['is_safe' => ['html']]),
-            new TwigFilter('plain_text', [$this, 'plainText']),
+            new TwigFilter('trix_inline', $this->trixInline(...), ['is_safe' => ['html']]),
+            new TwigFilter('plain_text', $this->plainText(...)),
         ];
     }
 

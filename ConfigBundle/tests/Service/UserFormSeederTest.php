@@ -39,7 +39,7 @@ class UserFormSeederTest extends TestCase
                     return null;
                 }
 
-                $form = (new Form())->setName($criteria['name'])->setAction($criteria['name'])->setRestricted(true);
+                $form = new Form()->setName($criteria['name'])->setAction($criteria['name'])->setRestricted(true);
 
                 return $existingFormsHaveLinks ? $form->setLinks([['label' => 'Me connecter', 'url' => '/login']]) : $form;
             }

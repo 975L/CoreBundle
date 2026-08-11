@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 class LayoutAuditorTest extends TestCase
 {
     // Each one caught a real defect this bundle shipped, and dropping one silently would go unnoticed
-    private const CHECKS = ['overflow', 'centering', 'image-size'];
+    private const array CHECKS = ['overflow', 'centering', 'image-size'];
 
     public function testTheScriptStillCarriesEveryCheck(): void
     {

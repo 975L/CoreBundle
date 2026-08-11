@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: BlockRepository::class)]
 #[ORM\Table(name: 'site_block')]
 #[RequiredMedia]
-class Block
+class Block implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

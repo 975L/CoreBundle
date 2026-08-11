@@ -37,17 +37,17 @@ use Symfony\Component\Validator\Constraints\Count;
 class BlockType extends AbstractType
 {
     // "hero"'s pure-CSS crossfade slideshow only has :nth-child/[data-count] rules for up to this many images (see .hero__media--slideshow in sass/_page-sections.scss) - beyond it, extra images would silently collide with an earlier slide's animation timing instead of taking their own turn. The cap is shared with the "grid" mediaLayout, which has no timing to collide with: one number covering both is worth more than a validation branch reading a sibling field from inside this form's PRE_SUBMIT dance
-    private const HERO_MEDIA_MAX = 9;
+    private const int HERO_MEDIA_MAX = 9;
 
     // Unmapped marker rendered beside a container's "slots" collection, and read back before anything is pruned: it is what tells "the editor removed the last slot" apart from "this form never carried the collection".
     // Outside the collection's own rows on purpose, so deleting every one of them leaves it standing
     public const SLOTS_RENDERED = 'slotsRendered';
 
     public function __construct(
-        private BlockRegistry $registry,
-        private UrlGeneratorInterface $router,
-        private ?RequestStack $requestStack = null,
-        private ?VideoPosterImporter $videoPosterImporter = null,
+        private readonly BlockRegistry $registry,
+        private readonly UrlGeneratorInterface $router,
+        private readonly ?RequestStack $requestStack = null,
+        private readonly ?VideoPosterImporter $videoPosterImporter = null,
     ) {
     }
 

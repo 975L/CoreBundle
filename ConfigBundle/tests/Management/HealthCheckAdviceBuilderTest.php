@@ -50,7 +50,7 @@ class HealthCheckAdviceBuilderTest extends TestCase
     // Kind alone isn't enough: the Health check page lists one row per url *and* per kind
     public function testKeyCombinesKindAndUrl(): void
     {
-        $result = (new HealthCheckResult())->setKind('content-quality')->setUrl('https://example.com/pages/contact/');
+        $result = new HealthCheckResult()->setKind('content-quality')->setUrl('https://example.com/pages/contact/');
 
         $this->assertSame('content-quality|https://example.com/pages/contact/', HealthCheckAdviceBuilder::key($result));
     }
@@ -59,6 +59,6 @@ class HealthCheckAdviceBuilderTest extends TestCase
     {
         $builder = new HealthCheckAdviceBuilder([$this->createProvider([]), $this->createProvider([])]);
 
-        $this->assertSame([], $builder->build([(new HealthCheckResult())->setKind('pagespeed')]));
+        $this->assertSame([], $builder->build([new HealthCheckResult()->setKind('pagespeed')]));
     }
 }

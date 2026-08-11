@@ -44,7 +44,7 @@ class ConfigBackupPathProviderTest extends TestCase
     private function paths(): array
     {
         $paths = [];
-        foreach ((new ConfigBackupPathProvider())->getBackupPaths() as $path) {
+        foreach (new ConfigBackupPathProvider()->getBackupPaths() as $path) {
             $paths[$path->path] = $path->mode;
         }
 

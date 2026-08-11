@@ -26,11 +26,11 @@ class ConfigPruneControllerTest extends TestCase
 {
     use ControllerContainerTestTrait;
 
-    private const TEMPLATE = '@c975LConfig/management/config_prune/index.html.twig';
+    private const string TEMPLATE = '@c975LConfig/management/config_prune/index.html.twig';
 
     private function createConfig(string $slug): Config
     {
-        return (new Config())->setSlug($slug)->setLabel($slug);
+        return new Config()->setSlug($slug)->setLabel($slug);
     }
 
     // Declaration files are located by globbing a real project dir, so the locator is stubbed rather than pointed at a fixture tree - ConfigDeclarationLocatorTest already covers the globbing itself

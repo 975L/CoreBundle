@@ -129,7 +129,7 @@ class FormControllerTest extends TestCase
 
     private function createSubmittableFormRepository(): FormRepository
     {
-        $uiForm = (new Form())->setName('contact')->setAction('send_email');
+        $uiForm = new Form()->setName('contact')->setAction('send_email');
 
         $repository = $this->createStub(FormRepository::class);
         $repository->method('findOneBy')->willReturn($uiForm);
@@ -151,7 +151,7 @@ class FormControllerTest extends TestCase
     public function testFragmentThrowsNotFoundWhenFormHasNoAction(): void
     {
         $repository = $this->createStub(FormRepository::class);
-        $repository->method('findOneBy')->willReturn((new Form())->setName('contact'));
+        $repository->method('findOneBy')->willReturn(new Form()->setName('contact'));
 
         $this->expectException(NotFoundHttpException::class);
 
@@ -172,7 +172,7 @@ class FormControllerTest extends TestCase
     public function testFragmentRendersDisabledNoticeWhenFormIsDisabled(): void
     {
         $repository = $this->createStub(FormRepository::class);
-        $repository->method('findOneBy')->willReturn((new Form())->setName('contact')->setAction('send_email')->setEnabled(false));
+        $repository->method('findOneBy')->willReturn(new Form()->setName('contact')->setAction('send_email')->setEnabled(false));
 
         $response = $this->createController($this->createSubmittedForm(false, false), $repository)
             ->fragment('contact', $this->createRequest());
@@ -184,8 +184,8 @@ class FormControllerTest extends TestCase
     // RegisterFormAction/ResetPasswordRequestFormAction (scaffold) implement RequiresAnonymousInterface - an already-authenticated visitor gets a notice instead of the form, on both routes
     private function createRequiresAnonymousActionRegistry(string $key): FormActionRegistry
     {
-        $action = new class ($key) implements FormActionInterface, RequiresAnonymousInterface {
-            public function __construct(private readonly string $key)
+        $action = new readonly class ($key) implements FormActionInterface, RequiresAnonymousInterface {
+            public function __construct(private string $key)
             {
             }
 
@@ -210,7 +210,7 @@ class FormControllerTest extends TestCase
     public function testFragmentRendersAlreadyAuthenticatedNoticeWhenActionRequiresAnonymousAndUserIsLoggedIn(): void
     {
         $repository = $this->createStub(FormRepository::class);
-        $repository->method('findOneBy')->willReturn((new Form())->setName('register')->setAction('register'));
+        $repository->method('findOneBy')->willReturn(new Form()->setName('register')->setAction('register'));
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())->method('render')
@@ -232,7 +232,7 @@ class FormControllerTest extends TestCase
     public function testSubmitRendersAlreadyAuthenticatedNoticeWithoutHandlingAnySubmissionWhenActionRequiresAnonymousAndUserIsLoggedIn(): void
     {
         $repository = $this->createStub(FormRepository::class);
-        $repository->method('findOneBy')->willReturn((new Form())->setName('register')->setAction('register'));
+        $repository->method('findOneBy')->willReturn(new Form()->setName('register')->setAction('register'));
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())->method('render')
@@ -282,7 +282,7 @@ class FormControllerTest extends TestCase
     public function testSubmitRendersDisabledNoticeWhenFormIsDisabledWithoutHandlingAnySubmission(): void
     {
         $repository = $this->createStub(FormRepository::class);
-        $repository->method('findOneBy')->willReturn((new Form())->setName('contact')->setAction('send_email')->setEnabled(false));
+        $repository->method('findOneBy')->willReturn(new Form()->setName('contact')->setAction('send_email')->setEnabled(false));
         $actionRegistry = $this->createMock(FormActionRegistry::class);
         $actionRegistry->expects($this->never())->method('get');
 

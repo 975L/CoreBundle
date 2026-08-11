@@ -19,7 +19,7 @@ class GuidedProjectMountBuilder
     // Stands in for the slug in the JSON route's url, the panel only knowing which project to fetch once it has read the browser's own stored progress
     public const SLUG_PLACEHOLDER = '__SLUG__';
 
-    private const LABELS = [
+    private const array LABELS = [
         'previous' => 'label.onboarding_previous',
         'next' => 'label.onboarding_next',
         'finish' => 'label.onboarding_finish',

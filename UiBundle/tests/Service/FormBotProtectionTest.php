@@ -80,14 +80,12 @@ class FormBotProtectionTest extends TestCase
             ->with(
                 $expectedName,
                 null,
-                $this->callback(static function (array $options) use ($expectedLabel): bool {
-                    return $expectedLabel === $options['label']
-                        // The decoy label must never reach the translator: it's picked at random and has no translation, which would be reported as a missing key on every form carrying the honeypot
-                        && false === $options['translation_domain']
-                        && false === $options['required']
-                        && false === $options['mapped']
-                        && '' === $options['data'];
-                })
+                $this->callback(static fn (array $options): bool => $expectedLabel === $options['label']
+                    // The decoy label must never reach the translator: it's picked at random and has no translation, which would be reported as a missing key on every form carrying the honeypot
+                    && false === $options['translation_domain']
+                    && false === $options['required']
+                    && false === $options['mapped']
+                    && '' === $options['data'])
             )
             ->willReturn($builder);
 

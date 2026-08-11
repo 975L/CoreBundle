@@ -95,7 +95,7 @@ class DownloadControllerTest extends TestCase
     // The route's own requirement is what keeps a traversal out - the action itself concatenates the path as given
     public function testTheRouteRequirementRejectsTraversalAndAllowsARealPath(): void
     {
-        $route = (new \ReflectionMethod(DownloadController::class, 'downloadFile'))
+        $route = new \ReflectionMethod(DownloadController::class, 'downloadFile')
             ->getAttributes(Route::class)[0]
             ->newInstance();
 

@@ -14,9 +14,9 @@ use c975L\UiBundle\Contract\BundleStylesheetProviderInterface;
 
 class StylesheetRegistry
 {
-    private const APP_ASSETS_PREFIX = 'assets/';
+    private const string APP_ASSETS_PREFIX = 'assets/';
 
-    private const GENERATED_PREFIX = 'bundles/build/';
+    private const string GENERATED_PREFIX = 'bundles/build/';
 
     /** @var BundleStylesheetProviderInterface[] */
     private array $providers = [];

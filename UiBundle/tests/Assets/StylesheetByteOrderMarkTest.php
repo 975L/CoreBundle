@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 // Two guards, because either alone would be enough only until the next stylesheet is added: the compiled files carry no BOM, and the warmer strips one anyway.
 class StylesheetByteOrderMarkTest extends TestCase
 {
-    private const BOM = "\u{FEFF}";
+    private const string BOM = "\u{FEFF}";
 
     /**
      * @return array<string, array{string}>

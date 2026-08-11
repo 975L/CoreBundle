@@ -25,24 +25,25 @@ use Twig\TwigFunction;
 class BlockExtension extends AbstractExtension
 {
     // Written by the block templates, replaced by the real nonce at serve time (see applyNonce)
-    private const NONCE_MARKER = 'data-ui-nonce';
+    private const string NONCE_MARKER = 'data-ui-nonce';
 
     public function __construct(
-        private BlockRegistry $registry,
-        private Environment $twig,
-        private TagAwareCacheInterface $cache,
-        private RequestStack $requestStack,
-        private BlockCacheTagRegistry $cacheTagRegistry,
-        private BlockEditUrlRegistry $blockEditUrlRegistry,
-        private CspNonceProvider $cspNonceProvider,
+        private readonly BlockRegistry $registry,
+        private readonly Environment $twig,
+        private readonly TagAwareCacheInterface $cache,
+        private readonly RequestStack $requestStack,
+        private readonly BlockCacheTagRegistry $cacheTagRegistry,
+        private readonly BlockEditUrlRegistry $blockEditUrlRegistry,
+        private readonly CspNonceProvider $cspNonceProvider,
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('render_block', [$this, 'renderBlock'], ['is_safe' => ['html']]),
-            new TwigFunction('block_edit_urls', [$this, 'getBlockEditUrls']),
+            new TwigFunction('render_block', $this->renderBlock(...), ['is_safe' => ['html']]),
+            new TwigFunction('block_edit_urls', $this->getBlockEditUrls(...)),
         ];
     }
 

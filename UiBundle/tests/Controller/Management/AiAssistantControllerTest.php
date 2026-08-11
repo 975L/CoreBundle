@@ -145,18 +145,18 @@ class AiAssistantControllerTest extends TestCase
     // A slug outside the closed blocking list must never crash missingSlugs()
     private function invokeMissingSlugs(AiAssistantController $controller): array
     {
-        return (new \ReflectionMethod($controller, 'missingSlugs'))->invoke($controller);
+        return new \ReflectionMethod($controller, 'missingSlugs')->invoke($controller);
     }
 
     private function invokeConfigLinks(AiAssistantController $controller): array
     {
-        return (new \ReflectionMethod($controller, 'configLinks'))->invoke($controller);
+        return new \ReflectionMethod($controller, 'configLinks')->invoke($controller);
     }
 
     private function createConfig(string $slug, int $id): Config
     {
-        $config = (new Config())->setSlug($slug);
-        (new \ReflectionProperty($config, 'id'))->setValue($config, $id);
+        $config = new Config()->setSlug($slug);
+        new \ReflectionProperty($config, 'id')->setValue($config, $id);
 
         return $config;
     }

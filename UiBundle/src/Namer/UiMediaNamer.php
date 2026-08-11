@@ -21,7 +21,7 @@ use Vich\UploaderBundle\Naming\NamerInterface;
 
 class UiMediaNamer implements NamerInterface
 {
-    private Filesystem $filesystem;
+    private readonly Filesystem $filesystem;
 
     public function __construct(
         private readonly SluggerInterface $slugger,
@@ -32,7 +32,7 @@ class UiMediaNamer implements NamerInterface
     public function name($entity, PropertyMapping $mapping): string
     {
         if (!$entity instanceof VichMediaNamableInterface) {
-            throw new \RuntimeException(sprintf('Entity "%s" must implement VichMediaNamableInterface.', get_class($entity)));
+            throw new \RuntimeException(sprintf('Entity "%s" must implement VichMediaNamableInterface.', $entity::class));
         }
 
         // Read off the mapping rather than off the entity: which property holds the file is the mapping's own business, and no interface here declares a getter for it

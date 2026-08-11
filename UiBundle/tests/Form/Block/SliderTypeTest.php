@@ -29,7 +29,7 @@ class SliderTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new SliderType())->buildForm($builder, []);
+        new SliderType()->buildForm($builder, []);
 
         return $added;
     }
@@ -48,7 +48,7 @@ class SliderTypeTest extends TestCase
             }
         );
 
-        (new SliderType())->buildForm($builder, []);
+        new SliderType()->buildForm($builder, []);
 
         $form = $this->createStub(FormInterface::class);
         $event = new PreSetDataEvent($form, $initialData);
@@ -77,7 +77,7 @@ class SliderTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new SliderType())->buildForm($builder, []);
+        new SliderType()->buildForm($builder, []);
 
         $this->assertSame(SliderType::LAYOUT_CHOICES, $added['layout']['choices']);
     }

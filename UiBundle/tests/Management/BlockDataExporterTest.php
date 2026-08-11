@@ -20,7 +20,7 @@ class BlockDataExporterTest extends TestCase
     public function testExportBlocksReturnsEmptyArrayForNoBlocks(): void
     {
         $files = [];
-        $data = (new BlockDataExporter(sys_get_temp_dir()))->exportBlocks([], $files);
+        $data = new BlockDataExporter(sys_get_temp_dir())->exportBlocks([], $files);
 
         $this->assertSame([], $data);
         $this->assertSame([], $files);
@@ -28,10 +28,10 @@ class BlockDataExporterTest extends TestCase
 
     public function testExportBlocksSerializesKindPositionDataAndAnimation(): void
     {
-        $block = (new Block())->setKind('text')->setPosition(2)->setData(['content' => 'hello'])->setAnimation('fade-in');
+        $block = new Block()->setKind('text')->setPosition(2)->setData(['content' => 'hello'])->setAnimation('fade-in');
 
         $files = [];
-        $data = (new BlockDataExporter(sys_get_temp_dir()))->exportBlocks([$block], $files);
+        $data = new BlockDataExporter(sys_get_temp_dir())->exportBlocks([$block], $files);
 
         $this->assertSame([[
             'kind' => 'text',
@@ -45,14 +45,14 @@ class BlockDataExporterTest extends TestCase
 
     public function testExportBlocksRecursesIntoNestedContainerSlotsTwoLevelsDeep(): void
     {
-        $innermost = (new Block())->setKind('text')->setPosition(0)->setData(['content' => 'deep']);
-        $middle = (new Block())->setKind('flex_columns')->setPosition(0)->setData([]);
+        $innermost = new Block()->setKind('text')->setPosition(0)->setData(['content' => 'deep']);
+        $middle = new Block()->setKind('flex_columns')->setPosition(0)->setData([]);
         $middle->addSlot($innermost);
-        $outer = (new Block())->setKind('flex_columns')->setPosition(0)->setData([]);
+        $outer = new Block()->setKind('flex_columns')->setPosition(0)->setData([]);
         $outer->addSlot($middle);
 
         $files = [];
-        $data = (new BlockDataExporter(sys_get_temp_dir()))->exportBlocks([$outer], $files);
+        $data = new BlockDataExporter(sys_get_temp_dir())->exportBlocks([$outer], $files);
 
         $middleSlots = $data[0]['slots'];
         $this->assertCount(1, $middleSlots);
@@ -68,7 +68,7 @@ class BlockDataExporterTest extends TestCase
     public function testExportMediaReturnsNullWhenFilenameIsNull(): void
     {
         $files = [];
-        $data = (new BlockDataExporter(sys_get_temp_dir()))->exportMedia(new Media(), $files);
+        $data = new BlockDataExporter(sys_get_temp_dir())->exportMedia(new Media(), $files);
 
         $this->assertNull($data);
         $this->assertSame([], $files);
@@ -76,10 +76,10 @@ class BlockDataExporterTest extends TestCase
 
     public function testExportMediaReturnsNullWhenFileDoesNotExistOnDisk(): void
     {
-        $media = (new Media())->setFilename('uploads/missing.jpg');
+        $media = new Media()->setFilename('uploads/missing.jpg');
 
         $files = [];
-        $data = (new BlockDataExporter(sys_get_temp_dir()))->exportMedia($media, $files);
+        $data = new BlockDataExporter(sys_get_temp_dir())->exportMedia($media, $files);
 
         $this->assertNull($data);
         $this->assertSame([], $files);
@@ -92,7 +92,7 @@ class BlockDataExporterTest extends TestCase
         $filename = 'uploads/photo.jpg';
         file_put_contents($projectDir . '/public/' . $filename, 'fake-image-bytes');
 
-        $media = (new Media())
+        $media = new Media()
             ->setFilename($filename)
             ->setRole('illustration')
             ->setName('rapport-annuel')
@@ -100,7 +100,7 @@ class BlockDataExporterTest extends TestCase
             ->setPosition(0);
 
         $files = [];
-        $data = (new BlockDataExporter($projectDir))->exportMedia($media, $files);
+        $data = new BlockDataExporter($projectDir)->exportMedia($media, $files);
 
         $this->assertNotNull($data);
         $this->assertSame('illustration', $data['role']);
@@ -126,10 +126,10 @@ class BlockDataExporterTest extends TestCase
         file_put_contents($projectDir . '/public/' . $filename, 'fake-pdf-bytes');
         file_put_contents($projectDir . '/public/uploads/rapport.webp', 'fake-webp-bytes');
 
-        $media = (new Media())->setFilename($filename);
+        $media = new Media()->setFilename($filename);
 
         $files = [];
-        $data = (new BlockDataExporter($projectDir))->exportMedia($media, $files);
+        $data = new BlockDataExporter($projectDir)->exportMedia($media, $files);
 
         $this->assertNotNull($data);
         $this->assertNotNull($data['thumbnail']);
@@ -150,10 +150,10 @@ class BlockDataExporterTest extends TestCase
         $filename = 'uploads/rapport.pdf';
         file_put_contents($projectDir . '/public/' . $filename, 'fake-pdf-bytes');
 
-        $media = (new Media())->setFilename($filename);
+        $media = new Media()->setFilename($filename);
 
         $files = [];
-        $data = (new BlockDataExporter($projectDir))->exportMedia($media, $files);
+        $data = new BlockDataExporter($projectDir)->exportMedia($media, $files);
 
         $this->assertNotNull($data);
         $this->assertNull($data['thumbnail']);

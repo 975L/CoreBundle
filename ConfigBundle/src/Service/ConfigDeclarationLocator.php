@@ -99,6 +99,6 @@ class ConfigDeclarationLocator
     {
         return str_starts_with($file, $this->projectDir . '/config/')
             ? 'app (' . basename($file) . ')'
-            : basename(dirname(dirname($file)));
+            : basename(dirname($file, 2));
     }
 }

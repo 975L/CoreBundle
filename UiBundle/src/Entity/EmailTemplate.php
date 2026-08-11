@@ -20,7 +20,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: EmailTemplateRepository::class)]
 #[ORM\Table(name: 'site_email_template')]
 #[UniqueEntity('name')]
-class EmailTemplate
+class EmailTemplate implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

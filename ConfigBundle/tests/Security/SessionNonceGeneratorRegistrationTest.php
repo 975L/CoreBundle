@@ -17,7 +17,7 @@ use Symfony\Component\Yaml\Yaml;
 // SessionNonceGenerator implements a NelmioSecurityBundle interface, so its class can't even be autoloaded when that optional bundle isn't installed: its definition has to stay out of the unconditionally imported services.yaml, otherwise ResolveClassPass fails on its FQCN id (long before decoration_on_invalid can drop it) and no app without NelmioSecurityBundle can compile its container
 class SessionNonceGeneratorRegistrationTest extends TestCase
 {
-    private const CONFIG_DIR = __DIR__ . '/../../config';
+    private const string CONFIG_DIR = __DIR__ . '/../../config';
 
     // The always-imported file must not mention it
     public function testMainServicesFileDoesNotRegisterIt(): void

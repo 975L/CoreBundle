@@ -29,10 +29,10 @@ class BlockRegistry
     public const MENU_NAVBAR_CONTEXT = 'menu_navbar';
 
     // Contexts offering only kinds that declared them, the opposite of the default "no contexts = everywhere"
-    private const EXCLUSIVE_CONTEXTS = [self::MENU_NAVBAR_CONTEXT, self::FLEX_COLUMNS_SLOT_CONTEXT];
+    private const array EXCLUSIVE_CONTEXTS = [self::MENU_NAVBAR_CONTEXT, self::FLEX_COLUMNS_SLOT_CONTEXT];
 
     // Optgroup order, untranslated so it holds across locales; an unlisted category falls after, alphabetically
-    private const CATEGORY_ORDER = [
+    private const array CATEGORY_ORDER = [
         'label.category_sections',
         'label.category_elements',
         'label.category_text',
@@ -51,7 +51,7 @@ class BlockRegistry
     private array $groupedCache = [];
     private array $groupedByBundleCache = [];
 
-    public function __construct(private TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
     }
 

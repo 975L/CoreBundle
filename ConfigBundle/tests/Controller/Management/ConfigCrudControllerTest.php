@@ -280,7 +280,7 @@ class ConfigCrudControllerTest extends TestCase
         $configService->expects($this->once())->method('invalidateCache');
 
         $controller = $this->createController(configService: $configService, vaultEncryptor: $vaultEncryptor);
-        $config = (new Config())->setSlug('api-key')->setIsSensitive(true)->setValue('secret');
+        $config = new Config()->setSlug('api-key')->setIsSensitive(true)->setValue('secret');
 
         $manager = $this->createMock(EntityManagerInterface::class);
         $manager->expects($this->once())->method('persist')->with($config);
@@ -300,7 +300,7 @@ class ConfigCrudControllerTest extends TestCase
         $security->method('getUser')->willReturn($user);
 
         $controller = $this->createController(security: $security);
-        $config = (new Config())->setSlug('site-name')->setValue('My Site');
+        $config = new Config()->setSlug('site-name')->setValue('My Site');
 
         $controller->persistEntity($this->createStub(EntityManagerInterface::class), $config);
 
@@ -314,7 +314,7 @@ class ConfigCrudControllerTest extends TestCase
         $security->method('getUser')->willReturn($this->createStub(SecurityUserInterface::class));
 
         $controller = $this->createController(security: $security);
-        $config = (new Config())->setSlug('site-name')->setValue('My Site');
+        $config = new Config()->setSlug('site-name')->setValue('My Site');
 
         $controller->persistEntity($this->createStub(EntityManagerInterface::class), $config);
 
@@ -328,7 +328,7 @@ class ConfigCrudControllerTest extends TestCase
         $security->method('getUser')->willReturn($user);
 
         $controller = $this->createController(security: $security);
-        $config = (new Config())->setSlug('site-name')->setValue('My Site');
+        $config = new Config()->setSlug('site-name')->setValue('My Site');
 
         $controller->updateEntity($this->createStub(EntityManagerInterface::class), $config);
 
@@ -341,7 +341,7 @@ class ConfigCrudControllerTest extends TestCase
         $configService->expects($this->once())->method('invalidateCache');
 
         $controller = $this->createController(configService: $configService);
-        $config = (new Config())->setSlug('site-name')->setValue('My Site');
+        $config = new Config()->setSlug('site-name')->setValue('My Site');
 
         $manager = $this->createStub(EntityManagerInterface::class);
         $controller->persistEntity($manager, $config);
@@ -352,7 +352,7 @@ class ConfigCrudControllerTest extends TestCase
     public function testPersistEntityDoesNotEncryptAnEmptySensitiveValue(): void
     {
         $controller = $this->createController();
-        $config = (new Config())->setSlug('api-key')->setIsSensitive(true)->setValue(null);
+        $config = new Config()->setSlug('api-key')->setIsSensitive(true)->setValue(null);
 
         $controller->persistEntity($this->createStub(EntityManagerInterface::class), $config);
 
@@ -363,7 +363,7 @@ class ConfigCrudControllerTest extends TestCase
     {
         $vaultEncryptor = new VaultEncryptor('a-test-vault-key');
         $controller = $this->createController(vaultEncryptor: $vaultEncryptor);
-        $config = (new Config())->setSlug('api-key')->setIsSensitive(true)->setValue('new-secret');
+        $config = new Config()->setSlug('api-key')->setIsSensitive(true)->setValue('new-secret');
 
         $controller->updateEntity($this->createStub(EntityManagerInterface::class), $config);
 
@@ -374,7 +374,7 @@ class ConfigCrudControllerTest extends TestCase
     public function testUpdateEntityClearsSensitiveValueOnBlankSubmission(): void
     {
         $controller = $this->createController();
-        $config = (new Config())->setSlug('api-key')->setIsSensitive(true)->setValue('');
+        $config = new Config()->setSlug('api-key')->setIsSensitive(true)->setValue('');
 
         $controller->updateEntity($this->createStub(EntityManagerInterface::class), $config);
 
@@ -387,7 +387,7 @@ class ConfigCrudControllerTest extends TestCase
         $configService->expects($this->once())->method('invalidateCache');
 
         $controller = $this->createController(configService: $configService);
-        $config = (new Config())->setSlug('site-name')->setValue('My Site');
+        $config = new Config()->setSlug('site-name')->setValue('My Site');
 
         $manager = $this->createMock(EntityManagerInterface::class);
         $manager->expects($this->once())->method('remove')->with($config);
@@ -894,8 +894,8 @@ class ConfigCrudControllerTest extends TestCase
 
         $formatValue = $this->findField($controller->configureFields('index'), 'value')->getAsDto()->getFormatValueCallable();
 
-        $sensitive = (new Config())->setSlug('api-key')->setIsSensitive(true);
-        $plain = (new Config())->setSlug('site-name')->setIsSensitive(false);
+        $sensitive = new Config()->setSlug('api-key')->setIsSensitive(true);
+        $plain = new Config()->setSlug('site-name')->setIsSensitive(false);
 
         $this->assertSame('••••••••', $formatValue('encrypted', $sensitive));
         $this->assertSame('', $formatValue(null, $sensitive));
@@ -906,7 +906,7 @@ class ConfigCrudControllerTest extends TestCase
     // The bool/int/date kinds must override the raw string value with a real typed value via setValue(), since EasyAdmin's boolean/date templates and formatters read it directly
     public function testConfigureFieldsCastsBoolKindValueOnEditPage(): void
     {
-        $config = (new Config())->setSlug('site-maintenance')->setKind(Config::TYPE_BOOL)->setValue(true);
+        $config = new Config()->setSlug('site-maintenance')->setKind(Config::TYPE_BOOL)->setValue(true);
         $controller = $this->createController();
         $this->setContextEntity($controller, $config);
 
@@ -920,7 +920,7 @@ class ConfigCrudControllerTest extends TestCase
     public function testConfigureFieldsPreFillsDecryptedValueForSensitiveFieldOnEditPage(): void
     {
         $vaultEncryptor = new VaultEncryptor('a-test-vault-key');
-        $config = (new Config())
+        $config = new Config()
             ->setSlug('api-key')
             ->setIsSensitive(true)
             ->setValue($vaultEncryptor->encrypt('secret-api-key'));
@@ -936,7 +936,7 @@ class ConfigCrudControllerTest extends TestCase
     // Non-sensitive json kind is pre-filled with a re-indented value on edit
     public function testConfigureFieldsPrettyPrintsNonSensitiveJsonValueOnEditPage(): void
     {
-        $config = (new Config())->setSlug('ai-roles')->setKind(Config::TYPE_JSON)->setValue('{"role":"admin","active":true}');
+        $config = new Config()->setSlug('ai-roles')->setKind(Config::TYPE_JSON)->setValue('{"role":"admin","active":true}');
         $expected = "{\n    \"role\": \"admin\",\n    \"active\": true\n}";
 
         $controller = $this->createController();
@@ -949,7 +949,7 @@ class ConfigCrudControllerTest extends TestCase
     // Textarea kind is multi-line plain text: what it holds ends up verbatim in a .txt file (see SeoFilesWriter), where the tags the html kind's rich editor adds would be read as content
     public function testConfigureFieldsUsesATextareaForTheTextareaKind(): void
     {
-        $config = (new Config())->setSlug('seo-robots-extra')->setKind(Config::TYPE_TEXTAREA)->setValue("User-agent: BadBot\nDisallow: /");
+        $config = new Config()->setSlug('seo-robots-extra')->setKind(Config::TYPE_TEXTAREA)->setValue("User-agent: BadBot\nDisallow: /");
 
         $controller = $this->createController();
         $this->setContextEntity($controller, $config);
@@ -960,7 +960,7 @@ class ConfigCrudControllerTest extends TestCase
     // An invalid/malformed json value is kept as-is rather than dropped, so the admin can still see and fix it
     public function testConfigureFieldsKeepsInvalidJsonValueUnchangedOnEditPage(): void
     {
-        $config = (new Config())->setSlug('ai-roles')->setKind(Config::TYPE_JSON)->setValue('not-json');
+        $config = new Config()->setSlug('ai-roles')->setKind(Config::TYPE_JSON)->setValue('not-json');
 
         $controller = $this->createController();
         $this->setContextEntity($controller, $config);
@@ -974,7 +974,7 @@ class ConfigCrudControllerTest extends TestCase
     public function testConfigureFieldsUsesTextareaAndPrettyPrintsSensitiveJsonValueOnEditPage(): void
     {
         $vaultEncryptor = new VaultEncryptor('a-test-vault-key');
-        $config = (new Config())
+        $config = new Config()
             ->setSlug('ai-tokens')
             ->setKind(Config::TYPE_JSON)
             ->setIsSensitive(true)
@@ -992,7 +992,7 @@ class ConfigCrudControllerTest extends TestCase
     // Font kind renders a ChoiceField built from FontChoiceType/FontRegistry, always topped up with the 3 CSS generics
     public function testConfigureFieldsRendersChoiceFieldForFontKindWhenRegistryHasFonts(): void
     {
-        $config = (new Config())->setSlug('theme-font-family-title')->setKind(Config::TYPE_FONT)->setValue('Georgia');
+        $config = new Config()->setSlug('theme-font-family-title')->setKind(Config::TYPE_FONT)->setValue('Georgia');
 
         $controller = $this->createController(fontRegistry: $this->createFontRegistry(['Georgia', 'Roboto']));
         $this->setContextEntity($controller, $config);
@@ -1010,7 +1010,7 @@ class ConfigCrudControllerTest extends TestCase
     // With no font declared the select still offers the 3 generics, never an unusable empty one
     public function testConfigureFieldsOffersOnlyGenericFontFamiliesWhenRegistryIsEmpty(): void
     {
-        $config = (new Config())->setSlug('theme-font-family-title')->setKind(Config::TYPE_FONT)->setValue(null);
+        $config = new Config()->setSlug('theme-font-family-title')->setKind(Config::TYPE_FONT)->setValue(null);
 
         $controller = $this->createController();
         $this->setContextEntity($controller, $config);
@@ -1027,7 +1027,7 @@ class ConfigCrudControllerTest extends TestCase
     // A value no longer declared must stay selectable, else re-saving would silently wipe it
     public function testConfigureFieldsKeepsStaleFontValueSelectableWhenNoLongerInRegistry(): void
     {
-        $config = (new Config())->setSlug('theme-font-family-title')->setKind(Config::TYPE_FONT)->setValue('Old Font');
+        $config = new Config()->setSlug('theme-font-family-title')->setKind(Config::TYPE_FONT)->setValue('Old Font');
 
         $controller = $this->createController(fontRegistry: $this->createFontRegistry(['Georgia', 'Roboto']));
         $this->setContextEntity($controller, $config);
@@ -1043,7 +1043,7 @@ class ConfigCrudControllerTest extends TestCase
     // Choice kind renders a select over the values the entry itself declares, so the admin never has to guess them
     public function testConfigureFieldsRendersChoiceFieldForChoiceKind(): void
     {
-        $config = (new Config())->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('dark');
+        $config = new Config()->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('dark');
 
         $controller = $this->createController();
         $this->setContextEntity($controller, $config);
@@ -1060,7 +1060,7 @@ class ConfigCrudControllerTest extends TestCase
     // A value stored before the entry became a choice (or since dropped from the list) keeps its form openable - validation is what tells the admin to replace it, an unopenable form would not
     public function testConfigureFieldsKeepsAnUndeclaredChoiceValueSelectable(): void
     {
-        $config = (new Config())->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('Dark');
+        $config = new Config()->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setChoices(['auto', 'light', 'dark'])->setValue('Dark');
 
         $controller = $this->createController();
         $this->setContextEntity($controller, $config);
@@ -1076,7 +1076,7 @@ class ConfigCrudControllerTest extends TestCase
     // An entry whose kind is ahead of the last c975l:config:load-all run has no declared choice yet: free text beats an empty select
     public function testConfigureFieldsFallsBackToTextFieldForAChoiceKindDeclaringNoChoice(): void
     {
-        $config = (new Config())->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setValue('auto');
+        $config = new Config()->setSlug('theme-mode')->setKind(Config::TYPE_CHOICE)->setValue('auto');
 
         $controller = $this->createController();
         $this->setContextEntity($controller, $config);

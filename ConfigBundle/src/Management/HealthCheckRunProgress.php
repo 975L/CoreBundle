@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class HealthCheckRunProgress
 {
     // Session key holding the run being followed, dropped as soon as it's over
-    private const SESSION_KEY = 'c975l_health_check_run';
+    private const string SESSION_KEY = 'c975l_health_check_run';
 
     // A run is given up on after this many seconds, however many kinds are still missing: a provider returning no rows at all (a gallery with no photo yet) records nothing to be counted, and would otherwise leave the page polling forever
     public const TIMEOUT = 900;
@@ -44,7 +44,7 @@ class HealthCheckRunProgress
         }
 
         $done = array_intersect(
-            $this->healthCheckResultRepository->findKindsCheckedSince((new \DateTimeImmutable())->setTimestamp($run['startedAt'])),
+            $this->healthCheckResultRepository->findKindsCheckedSince(new \DateTimeImmutable()->setTimestamp($run['startedAt'])),
             $run['kinds'],
         );
 

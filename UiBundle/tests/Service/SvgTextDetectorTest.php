@@ -23,13 +23,13 @@ class SvgTextDetectorTest extends TestCase
     protected function setUp(): void
     {
         $this->directory = sys_get_temp_dir() . '/svg-text-detector-test-' . uniqid();
-        (new Filesystem())->mkdir($this->directory);
+        new Filesystem()->mkdir($this->directory);
         $this->detector = new SvgTextDetector();
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->directory);
+        new Filesystem()->remove($this->directory);
     }
 
     private function write(string $contents, string $name = 'logo.svg'): string

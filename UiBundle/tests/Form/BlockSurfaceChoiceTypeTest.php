@@ -30,8 +30,8 @@ class BlockSurfaceChoiceTypeTest extends TestCase
 
     public function testBothAreChoiceTypes(): void
     {
-        $this->assertSame(ChoiceType::class, (new BlockRadiusChoiceType())->getParent());
-        $this->assertSame(ChoiceType::class, (new BlockShadowChoiceType())->getParent());
+        $this->assertSame(ChoiceType::class, new BlockRadiusChoiceType()->getParent());
+        $this->assertSame(ChoiceType::class, new BlockShadowChoiceType()->getParent());
     }
 
     // "Thème" is the placeholder and not a choice, so an unset value writes no class at all and every block stored before these fields existed goes on rendering as it did

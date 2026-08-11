@@ -63,7 +63,7 @@ class ThemeVariablesCssListenerTest extends TestCase
 
     private function config(string $slug, ?string $value, string $group = Config::GROUP_THEME): Config
     {
-        return (new Config())->setSlug($slug)->setValue($value)->setGroup($group);
+        return new Config()->setSlug($slug)->setValue($value)->setGroup($group);
     }
 
     private function createListener(array $themeConfigs): ThemeVariablesCssListener

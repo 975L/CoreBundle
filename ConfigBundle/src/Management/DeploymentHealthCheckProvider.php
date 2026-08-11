@@ -22,7 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DeploymentHealthCheckProvider implements HealthCheckProviderInterface
 {
     // Deliberately a fixed url rather than a random one: the same path is probed on every run, so it reads as this check in the access logs instead of as a rotating stream of unexplained 404s
-    private const NOT_FOUND_PROBE_PATH = '/c975l-health-check-404-probe';
+    private const string NOT_FOUND_PROBE_PATH = '/c975l-health-check-404-probe';
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,
@@ -111,13 +111,7 @@ class DeploymentHealthCheckProvider implements HealthCheckProviderInterface
         $host = strtolower($host);
         $parent = str_contains($host, '.') ? substr($host, strpos($host, '.') + 1) : null;
 
-        foreach ($names as $name) {
-            if ($name === $host || (null !== $parent && str_starts_with($name, '*.') && substr($name, 2) === $parent)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($names, fn ($name) => $name === $host || (null !== $parent && str_starts_with($name, '*.') && substr($name, 2) === $parent));
     }
 
     private function judgeHostVariant(string $url, string $label, string $variantHost, string $host, array $response): array

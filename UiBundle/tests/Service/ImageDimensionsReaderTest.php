@@ -21,12 +21,12 @@ class ImageDimensionsReaderTest extends TestCase
     protected function setUp(): void
     {
         $this->directory = sys_get_temp_dir() . '/image-dimensions-test-' . uniqid();
-        (new Filesystem())->mkdir($this->directory);
+        new Filesystem()->mkdir($this->directory);
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->directory);
+        new Filesystem()->remove($this->directory);
     }
 
     private function writeSvg(string $attributes): string
@@ -42,12 +42,12 @@ class ImageDimensionsReaderTest extends TestCase
         $path = $this->directory . '/photo.png';
         imagepng(imagecreatetruecolor(640, 480), $path);
 
-        $this->assertSame(['width' => 640, 'height' => 480], (new ImageDimensionsReader())->read($path));
+        $this->assertSame(['width' => 640, 'height' => 480], new ImageDimensionsReader()->read($path));
     }
 
     public function testReadReturnsNullWhenFileDoesNotExist(): void
     {
-        $this->assertNull((new ImageDimensionsReader())->read($this->directory . '/missing.png'));
+        $this->assertNull(new ImageDimensionsReader()->read($this->directory . '/missing.png'));
     }
 
     public function testReadReturnsNullOnANonImageFile(): void
@@ -55,14 +55,14 @@ class ImageDimensionsReaderTest extends TestCase
         $path = $this->directory . '/document.pdf';
         file_put_contents($path, 'not-an-image');
 
-        $this->assertNull((new ImageDimensionsReader())->read($path));
+        $this->assertNull(new ImageDimensionsReader()->read($path));
     }
 
     public function testReadReturnsSvgWidthAndHeightAttributes(): void
     {
         $this->assertSame(
             ['width' => 120, 'height' => 60],
-            (new ImageDimensionsReader())->read($this->writeSvg('width="120px" height="60"'))
+            new ImageDimensionsReader()->read($this->writeSvg('width="120px" height="60"'))
         );
     }
 
@@ -71,7 +71,7 @@ class ImageDimensionsReaderTest extends TestCase
     {
         $this->assertSame(
             ['width' => 300, 'height' => 150],
-            (new ImageDimensionsReader())->read($this->writeSvg('viewBox="0 0 300 150"'))
+            new ImageDimensionsReader()->read($this->writeSvg('viewBox="0 0 300 150"'))
         );
     }
 
@@ -80,13 +80,13 @@ class ImageDimensionsReaderTest extends TestCase
     {
         $this->assertSame(
             ['width' => 300, 'height' => 150],
-            (new ImageDimensionsReader())->read($this->writeSvg('width="100%" height="100%" viewBox="0 0 300 150"'))
+            new ImageDimensionsReader()->read($this->writeSvg('width="100%" height="100%" viewBox="0 0 300 150"'))
         );
     }
 
     public function testReadReturnsNullOnAnSvgWithNoUsableSize(): void
     {
-        $this->assertNull((new ImageDimensionsReader())->read($this->writeSvg('width="100%"')));
+        $this->assertNull(new ImageDimensionsReader()->read($this->writeSvg('width="100%"')));
     }
 
     public function testReadReturnsNullOnAMalformedSvg(): void
@@ -94,6 +94,6 @@ class ImageDimensionsReaderTest extends TestCase
         $path = $this->directory . '/broken.svg';
         file_put_contents($path, '<svg width="10"');
 
-        $this->assertNull((new ImageDimensionsReader())->read($path));
+        $this->assertNull(new ImageDimensionsReader()->read($path));
     }
 }

@@ -28,7 +28,7 @@ class ContactHoursTypeTest extends TestCase
             return $builder;
         });
 
-        (new ContactHoursType())->buildForm($builder, []);
+        new ContactHoursType()->buildForm($builder, []);
 
         return $added;
     }
@@ -67,7 +67,7 @@ class ContactHoursTypeTest extends TestCase
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void
     {
         $resolver = new OptionsResolver();
-        (new ContactHoursType())->configureOptions($resolver);
+        new ContactHoursType()->configureOptions($resolver);
 
         $options = $resolver->resolve();
 

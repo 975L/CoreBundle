@@ -16,7 +16,7 @@ use c975L\UiBundle\Entity\Font;
 class FontFilenameParser
 {
     // Substring-matched against the last segment, longest keyword first so "extrabold" beats "bold"
-    private const WEIGHT_KEYWORDS = [
+    private const array WEIGHT_KEYWORDS = [
         'extralight' => 200,
         'ultralight' => 200,
         'semibold' => 600,

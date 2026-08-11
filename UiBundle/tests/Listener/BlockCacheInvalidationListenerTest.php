@@ -43,7 +43,7 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_9']);
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->postPersist(new PostPersistEventArgs($media, $this->createEntityManager()));
     }
 
@@ -54,7 +54,7 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_42']);
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->postUpdate(new PostUpdateEventArgs($block, $this->createEntityManager()));
     }
 
@@ -70,7 +70,7 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_7']);
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
     }
 
@@ -83,7 +83,7 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['block_3']);
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager()));
     }
 
@@ -97,7 +97,7 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('invalidateTags');
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
     }
 
@@ -106,14 +106,14 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('invalidateTags');
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->postUpdate(new PostUpdateEventArgs(new \stdClass(), $this->createEntityManager()));
     }
 
     // Singleton-role Media (logo, favicon...) is never attached to a Block (see Media::$block's own comment) - it needs its own "media_singletons" tag instead of "block_{id}", since MediaExtension caches these across requests separately (see MediaExtension::preloadSingletonRoles())
     public function testPostUpdateInvalidatesMediaSingletonsTagForASingletonRoleMedia(): void
     {
-        $media = (new Media())->setRole('logo');
+        $media = new Media()->setRole('logo');
 
         $unitOfWork = $this->createStub(UnitOfWork::class);
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
@@ -121,14 +121,14 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())->method('invalidateTags')->with(['media_singletons']);
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
     }
 
     // A repeatable role (e.g. "error-image") isn't a singleton role (see Media::SINGLETON_ROLES) and isn't attached to a Block either - nothing to invalidate for it here
     public function testInvalidateSkipsMediaSingletonsTagForARepeatableRole(): void
     {
-        $media = (new Media())->setRole('error-image');
+        $media = new Media()->setRole('error-image');
 
         $unitOfWork = $this->createStub(UnitOfWork::class);
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
@@ -136,7 +136,7 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('invalidateTags');
 
-        (new BlockCacheInvalidationListener($cache))
+        new BlockCacheInvalidationListener($cache)
             ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
     }
 }

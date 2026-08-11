@@ -29,7 +29,7 @@ class VideoGridTypeTest extends TestCase
             return $builder;
         });
 
-        (new VideoGridType(new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new VideoGridType(new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

@@ -17,7 +17,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DatabaseLoadHealthCheckAdviceProvider implements HealthCheckAdviceProviderInterface
 {
     // Past this share of the average, what the server does during the run's own few seconds is what it does all the time - the weekly run happening at night (see the scaffold's MaintenanceSchedule), that floor is what runs with nobody on the site
-    private const BACKGROUND_SHARE = 0.7;
+    private const float BACKGROUND_SHARE = 0.7;
 
     public function __construct(
         private readonly TranslatorInterface $translator,

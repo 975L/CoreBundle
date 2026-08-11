@@ -58,7 +58,7 @@ class RedirectImportProviderTest extends TestCase
 
     public function testImportOverwritesAnExistingRedirect(): void
     {
-        $existing = (new Redirect())->setFromPath('/old-page')->setToUrl('/somewhere')->setPermanent(false);
+        $existing = new Redirect()->setFromPath('/old-page')->setToUrl('/somewhere')->setPermanent(false);
 
         $provider = new RedirectImportProvider($this->createStub(EntityManagerInterface::class), $this->createRedirectRepository($existing));
 

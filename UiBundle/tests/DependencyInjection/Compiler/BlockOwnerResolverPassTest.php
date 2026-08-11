@@ -24,7 +24,7 @@ class BlockOwnerResolverPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new BlockOwnerResolverPass())->process($container);
+        new BlockOwnerResolverPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -49,7 +49,7 @@ class BlockOwnerResolverPassTest extends TestCase
         $container->register('ui.block_owner_resolver', $fakeResolver::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new BlockOwnerResolverPass())->process($container);
+        new BlockOwnerResolverPass()->process($container);
 
         $calls = $container->getDefinition(BlockOwnerRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -64,7 +64,7 @@ class BlockOwnerResolverPassTest extends TestCase
         $container->register(BlockOwnerRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new BlockOwnerResolverPass())->process($container);
+        new BlockOwnerResolverPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(BlockOwnerRegistry::class)->getMethodCalls());
     }

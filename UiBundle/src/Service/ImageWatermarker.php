@@ -26,19 +26,19 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class ImageWatermarker
 {
     // Defaults ported from the shell script this replaces: a 330x210 signature laid 10px inside the corner of a 2400px-wide export, expressed here as proportions of the width so a thumbnail and a high resolution version carry the same logo at the same relative size
-    private const DEFAULT_WIDTH = 13.75;
-    private const DEFAULT_MARGIN = 0.42;
+    private const float DEFAULT_WIDTH = 13.75;
+    private const float DEFAULT_MARGIN = 0.42;
 
     // Mid-grey on a 0-255 scale, the threshold that script split its two signatures on
-    private const LUMINANCE_THRESHOLD = 128.0;
+    private const float LUMINANCE_THRESHOLD = 128.0;
 
     // Points read per side when averaging a corner: 16x16 is 256 readings whatever the upload's size, where the script it comes from averaged every pixel of the region - the two only ever disagree on a corner already sitting on the threshold, which either signature reads equally poorly on
-    private const LUMINANCE_SAMPLES = 16;
+    private const int LUMINANCE_SAMPLES = 16;
 
     // Rec. 709 luma coefficients, what ImageMagick's "-colorspace Gray" applies - the script measured its corners through it, and a corner has to fall on the same side of the threshold here as it did there
-    private const LUMA_RED = 0.2126;
-    private const LUMA_GREEN = 0.7152;
-    private const LUMA_BLUE = 0.0722;
+    private const float LUMA_RED = 0.2126;
+    private const float LUMA_GREEN = 0.7152;
+    private const float LUMA_BLUE = 0.0722;
 
     /**
      * @var array<string, ImageInterface|null> the two signatures, once each per request - see logo()
@@ -223,7 +223,7 @@ class ImageWatermarker
             return null;
         }
 
-        return (new Imagine())->open($path);
+        return new Imagine()->open($path);
     }
 
     // Height over width, so a logo keeps its proportions whatever width it is laid at

@@ -103,8 +103,8 @@ class FormCrudControllerTest extends TestCase
         $reflection = new \ReflectionProperty($deleteAction, 'displayCallable');
         $displayCallable = $reflection->getValue($deleteAction);
 
-        $this->assertFalse($displayCallable((new Form())->setRestricted(true)));
-        $this->assertTrue($displayCallable((new Form())->setRestricted(false)));
+        $this->assertFalse($displayCallable(new Form()->setRestricted(true)));
+        $this->assertTrue($displayCallable(new Form()->setRestricted(false)));
     }
 
     // Same global button as EmailTemplateCrudController's - this is where an admin actually uses the catalog

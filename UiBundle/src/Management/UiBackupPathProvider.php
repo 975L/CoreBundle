@@ -18,7 +18,7 @@ use c975L\UiBundle\Entity\Media;
 class UiBackupPathProvider implements BackupPathProviderInterface
 {
     // A role with no fixed icon spec keeps whatever it was uploaded as: raster is converted to webp by the namer, and anything else (an SVG logo) keeps its own extension. Both are declared, the one that isn't on disk being skipped
-    private const FREE_EXTENSIONS = ['webp', 'svg'];
+    private const array FREE_EXTENSIONS = ['webp', 'svg'];
 
     public function getBackupPaths(): array
     {

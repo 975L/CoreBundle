@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 class SectionHeadAlignmentTest extends TestCase
 {
     // Laid out flush against their section: they state "start" rather than inheriting the theme's centering
-    private const ALIGNED_TITLES = [
+    private const array ALIGNED_TITLES = [
         '.section-eyebrow',
         '.section-title',
         '.expertise-banner__title',
@@ -29,14 +29,14 @@ class SectionHeadAlignmentTest extends TestCase
     ];
 
     // Centering a whole block is a design call, and belongs to whatever box holds the block's text
-    private const CENTERING_CONTAINERS = [
+    private const array CENTERING_CONTAINERS = [
         '.hero .section-wrap',
         '.cta-band__inner',
         '.banner-title-overlay',
     ];
 
     // Every block title reads the title family, whatever element it is rendered as and wherever it is rendered
-    private const TITLE_FAMILY = [
+    private const array TITLE_FAMILY = [
         '.section-title',
         '.expertise-banner__title',
         '.cta-band__title',

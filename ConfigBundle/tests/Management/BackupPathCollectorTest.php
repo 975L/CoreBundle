@@ -29,7 +29,7 @@ class BackupPathCollectorTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createCollector(array ...$providerPaths): BackupPathCollector
@@ -38,8 +38,8 @@ class BackupPathCollectorTest extends TestCase
         $bag->method('get')->willReturn($this->projectDir);
 
         $providers = array_map(
-            static fn (array $paths) => new class ($paths) implements BackupPathProviderInterface {
-                public function __construct(private readonly array $paths)
+            static fn (array $paths) => new readonly class ($paths) implements BackupPathProviderInterface {
+                public function __construct(private array $paths)
                 {
                 }
 

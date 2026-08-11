@@ -21,7 +21,7 @@ class GuidedProjectControllerTest extends TestCase
 {
     use ControllerContainerTestTrait;
 
-    private const PROJECT = [
+    private const array PROJECT = [
         'slug' => 'creer-page',
         'label' => 'Créer une page',
         'description' => '',

@@ -27,7 +27,7 @@ namespace c975L\UiBundle\Testing;
 final class StylesheetCascade
 {
     // Nested rules are deliberate responsive/state overrides; a layer always loses to the unlayered rules anyway
-    private const SKIPPED_AT_RULES = ['media', 'supports', 'container', 'layer', 'keyframes'];
+    private const array SKIPPED_AT_RULES = ['media', 'supports', 'container', 'layer', 'keyframes'];
 
     /**
      * @param list<array{selectors: list<string>, declarations: array<string, string>, specificity: list<int>, order: int, source: string}> $rules

@@ -182,7 +182,7 @@ class UiMediaNamerTest extends TestCase
     public function testGenericVichMediaNamableEntitySkipsSingletonHandling(): void
     {
         $namer = new UiMediaNamer(new AsciiSlugger());
-        $entity = new class ($this->createFile('upload.gif', 'GIF89a' . str_repeat("\0", 20))) implements VichMediaNamableInterface {
+        $entity = new readonly class ($this->createFile('upload.gif', 'GIF89a' . str_repeat("\0", 20))) implements VichMediaNamableInterface {
             public function __construct(private File $file)
             {
             }

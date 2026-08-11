@@ -35,7 +35,7 @@ class SyncAllExporterTest extends TestCase
                 ['kind' => 'site_config', 'items' => [['slug' => 'site-title']], 'files' => []],
             ]);
 
-        (new SyncAllExporter([$pageProvider, $configProvider], $contentExporter))->export();
+        new SyncAllExporter([$pageProvider, $configProvider], $contentExporter)->export();
     }
 
     public function testExportWorksWithNoProviderRegistered(): void
@@ -43,6 +43,6 @@ class SyncAllExporterTest extends TestCase
         $contentExporter = $this->createMock(ContentExporter::class);
         $contentExporter->expects($this->once())->method('exportMultiple')->with([]);
 
-        (new SyncAllExporter([], $contentExporter))->export();
+        new SyncAllExporter([], $contentExporter)->export();
     }
 }

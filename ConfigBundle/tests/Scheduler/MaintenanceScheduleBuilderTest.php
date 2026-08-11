@@ -23,8 +23,8 @@ class MaintenanceScheduleBuilderTest extends TestCase
 {
     private function createProvider(MaintenanceTask ...$tasks): MaintenanceTaskProviderInterface
     {
-        return new class (array_values($tasks)) implements MaintenanceTaskProviderInterface {
-            public function __construct(private readonly array $tasks)
+        return new readonly class (array_values($tasks)) implements MaintenanceTaskProviderInterface {
+            public function __construct(private array $tasks)
             {
             }
 
@@ -110,7 +110,7 @@ class MaintenanceScheduleBuilderTest extends TestCase
         $builder = $this->createBuilder([$this->createProvider(new MaintenanceTask('# */6 * * *', 'c975l:config:backup'))]);
 
         $schedule = $builder->addTasks(new Schedule());
-        $schedule->add((new ScheduleSpreader($this->createStub(ConfigServiceInterface::class), '/var/www/site'))
+        $schedule->add(new ScheduleSpreader($this->createStub(ConfigServiceInterface::class), '/var/www/site')
             ->spread('0 3 * * *', new RunCommandMessage('app:check-external-links')));
 
         $this->assertContains('0 3 * * *', $this->expressions($schedule));

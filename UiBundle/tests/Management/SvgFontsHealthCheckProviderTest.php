@@ -23,20 +23,20 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SvgFontsHealthCheckProviderTest extends TestCase
 {
-    private const VECTORIZED = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L1 1 Z"/></svg>';
-    private const WITH_TEXT = '<svg xmlns="http://www.w3.org/2000/svg"><text font-family="Riffic Free">975L</text></svg>';
+    private const string VECTORIZED = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L1 1 Z"/></svg>';
+    private const string WITH_TEXT = '<svg xmlns="http://www.w3.org/2000/svg"><text font-family="Riffic Free">975L</text></svg>';
 
     private string $projectDir;
 
     protected function setUp(): void
     {
         $this->projectDir = sys_get_temp_dir() . '/svg-fonts-health-check-test-' . uniqid();
-        (new Filesystem())->mkdir($this->projectDir . '/public');
+        new Filesystem()->mkdir($this->projectDir . '/public');
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     /**

@@ -18,6 +18,6 @@ class CspNonceProviderTest extends TestCase
     // A site that configured no csp section gets no listener at all from NelmioSecurityBundle: it must come out as "no nonce", never as a container that refuses to compile
     public function testItAnswersAnEmptyNonceWithoutAListener(): void
     {
-        $this->assertSame('', (new CspNonceProvider())->styleNonce());
+        $this->assertSame('', new CspNonceProvider()->styleNonce());
     }
 }

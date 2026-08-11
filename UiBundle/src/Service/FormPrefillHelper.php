@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 // Lets app code pre-fill (and lock) a generic Form's field(s) before the visitor reaches it - e.g. a listing page's "Contact us about this" link setting the "contact" Form's "subject" field. Session-based on purpose, not a query string: nothing to build/escape into a URL, and it only kicks in for a visitor who actually clicked through from the page that called prefill()
 class FormPrefillHelper
 {
-    private const SESSION_PREFIX = 'ui_form_prefill_';
+    private const string SESSION_PREFIX = 'ui_form_prefill_';
 
     // Call right before redirecting the visitor to the Form's page. $values is field name => value, matching Form::getFields()'s names
     public function prefill(Request $request, string $formName, array $values): void

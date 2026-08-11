@@ -23,7 +23,7 @@ class FormThemeRegistryPassTest extends TestCase
     {
         $container = new ContainerBuilder();
 
-        (new FormThemeRegistryPass())->process($container);
+        new FormThemeRegistryPass()->process($container);
 
         $this->addToAssertionCount(1);
     }
@@ -36,7 +36,7 @@ class FormThemeRegistryPassTest extends TestCase
         $container->register('ui.form_theme_provider', UiFormThemeProvider::class);
         $container->register('unrelated.service', \stdClass::class);
 
-        (new FormThemeRegistryPass())->process($container);
+        new FormThemeRegistryPass()->process($container);
 
         $calls = $container->getDefinition(FormThemeRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
@@ -51,7 +51,7 @@ class FormThemeRegistryPassTest extends TestCase
         $container->register(FormThemeRegistry::class);
         $container->register('broken.service', 'This\\Class\\Does\\Not\\Exist');
 
-        (new FormThemeRegistryPass())->process($container);
+        new FormThemeRegistryPass()->process($container);
 
         $this->assertSame([], $container->getDefinition(FormThemeRegistry::class)->getMethodCalls());
     }

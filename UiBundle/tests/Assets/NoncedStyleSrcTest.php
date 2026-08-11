@@ -15,10 +15,10 @@ use PHPUnit\Framework\TestCase;
 // EasyAdmin's layout, and this bundle's own since it calls csp_nonce('style'), put a nonce on style-src - which from CSP2 on makes 'unsafe-inline' a no-op for that directive. A nonce authorizes an *element*, never an inline style *attribute*, so a rule a script writes onto an element is simply dropped by the browser: silently, on the sites having a CSP, and nowhere else. Nothing here can be proved from PHP; what is locked is that no script goes back to writing one, and that every class they toggle instead actually carries its rule.
 class NoncedStyleSrcTest extends TestCase
 {
-    private const CSS = ['/public/css/management.css', '/public/css/management.min.css'];
+    private const array CSS = ['/public/css/management.css', '/public/css/management.min.css'];
 
     // Each class a script toggles, with the declaration that has to be found in the compiled sheets for it to do anything at all
-    private const TOGGLED = [
+    private const array TOGGLED = [
         'ui-row-header-flex' => 'display:flex',
         'ui-row-toolbar' => 'margin-left:auto',
         'ui-toolbar-btn' => 'flex-shrink:0',

@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class SecurityProbeClient
 {
     // Enough to recognise what a file or a directory listing is, never enough to hold a page in memory ten times over
-    private const BODY_BYTES = 2048;
+    private const int BODY_BYTES = 2048;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,

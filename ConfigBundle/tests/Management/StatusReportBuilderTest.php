@@ -22,7 +22,7 @@ class StatusReportBuilderTest extends TestCase
     // One health check row, only the fields the report reads being set
     private function row(string $status, string $kind = 'ssl', string $url = 'https://papa-calin.com', string $checkedAt = '2026-08-01 03:00:00'): HealthCheckResult
     {
-        return (new HealthCheckResult())
+        return new HealthCheckResult()
             ->setKind($kind)
             ->setUrl($url)
             ->setStatus($status)

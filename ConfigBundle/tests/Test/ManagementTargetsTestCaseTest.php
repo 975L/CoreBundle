@@ -44,8 +44,8 @@ class ManagementTargetsTestCaseTest extends ManagementTargetsTestCase
     // Written in plain PHP rather than stubbed: the case is instantiated by PHPUnit for each of its inherited tests, and this provider only ever returns what it is given
     private function createMenuProvider(array $menus): MenuProviderInterface
     {
-        return new class ($menus) implements MenuProviderInterface {
-            public function __construct(private readonly array $menus)
+        return new readonly class ($menus) implements MenuProviderInterface {
+            public function __construct(private array $menus)
             {
             }
 
@@ -69,8 +69,8 @@ class ManagementTargetsTestCaseTest extends ManagementTargetsTestCase
     // Same reason as above: the case reads what this returns, nothing more
     private function createLinkableRouteProvider(array $routes): LinkableRouteProviderInterface
     {
-        return new class ($routes) implements LinkableRouteProviderInterface {
-            public function __construct(private readonly array $routes)
+        return new readonly class ($routes) implements LinkableRouteProviderInterface {
+            public function __construct(private array $routes)
             {
             }
 

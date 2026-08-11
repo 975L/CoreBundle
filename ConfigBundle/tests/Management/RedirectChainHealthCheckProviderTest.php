@@ -23,7 +23,7 @@ class RedirectChainHealthCheckProviderTest extends TestCase
 {
     private function createRedirect(string $fromPath, string $toUrl): Redirect
     {
-        return (new Redirect())->setFromPath($fromPath)->setToUrl($toUrl);
+        return new Redirect()->setFromPath($fromPath)->setToUrl($toUrl);
     }
 
     private function createRepository(array $redirects): RedirectRepository
@@ -133,7 +133,7 @@ class RedirectChainHealthCheckProviderTest extends TestCase
     // A "gone" row carries no target at all: the chain ends there, it isn't a chain and it certainly isn't a crash
     public function testRunChecksStatusIsOkForAGoneRedirect(): void
     {
-        $gone = (new Redirect())->setFromPath('/removed')->setGone(true);
+        $gone = new Redirect()->setFromPath('/removed')->setGone(true);
 
         $provider = new RedirectChainHealthCheckProvider($this->createRepository([$gone]), $this->createSiteUrlResolver('https://example.com'), $this->createTranslator());
 
@@ -146,7 +146,7 @@ class RedirectChainHealthCheckProviderTest extends TestCase
     public function testRunChecksStopsTheChainOnAGoneTarget(): void
     {
         $redirect = $this->createRedirect('/old', '/removed');
-        $gone = (new Redirect())->setFromPath('/removed')->setGone(true);
+        $gone = new Redirect()->setFromPath('/removed')->setGone(true);
 
         $provider = new RedirectChainHealthCheckProvider($this->createRepository([$redirect, $gone]), $this->createSiteUrlResolver('https://example.com'), $this->createTranslator());
 

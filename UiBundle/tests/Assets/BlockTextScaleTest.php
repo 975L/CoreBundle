@@ -17,10 +17,10 @@ use PHPUnit\Framework\TestCase;
 // A rule on the wrong side of the split is what this test is for: nothing renders wrong, the text simply stops answering the one setting meant to size it - or moves with a setting that was never meant to reach it
 class BlockTextScaleTest extends TestCase
 {
-    private const STYLESHEET = 'sass/_page-sections.scss';
+    private const string STYLESHEET = 'sass/_page-sections.scss';
 
     // A title/eyebrow says so with its own font-family, every one of them stating it rather than inheriting
-    private const DESIGN_MARK = '/font-family:\s*var\(--font-family-(title|accent)\)/';
+    private const string DESIGN_MARK = '/font-family:\s*var\(--font-family-(title|accent)\)/';
 
     public function testEveryBodyFontSizeInTheBlockLayerIsRelativeToTheBodyCopy(): void
     {

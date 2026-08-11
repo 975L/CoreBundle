@@ -27,7 +27,7 @@ class ProgressBarTypeTest extends TestCase
             return $builder;
         });
 
-        (new ProgressBarType())->buildForm($builder, []);
+        new ProgressBarType()->buildForm($builder, []);
 
         return $added;
     }

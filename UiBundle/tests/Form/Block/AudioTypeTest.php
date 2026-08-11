@@ -27,7 +27,7 @@ class AudioTypeTest extends TestCase
             return $builder;
         });
 
-        (new AudioType())->buildForm($builder, []);
+        new AudioType()->buildForm($builder, []);
 
         return $added;
     }

@@ -31,12 +31,12 @@ class BlockRegistryPass implements CompilerPassInterface
 
                 $mediaTypes = [];
                 if (!empty($tag['media_types'])) {
-                    $mediaTypes = array_map('trim', explode(',', (string) $tag['media_types']));
+                    $mediaTypes = array_map(trim(...), explode(',', (string) $tag['media_types']));
                 }
 
                 $contexts = [];
                 if (!empty($tag['contexts'])) {
-                    $contexts = array_map('trim', explode(',', (string) $tag['contexts']));
+                    $contexts = array_map(trim(...), explode(',', (string) $tag['contexts']));
                 }
 
                 $registry->addMethodCall('register', [

@@ -20,16 +20,16 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SeoFilesHealthCheckProviderTest extends TestCase
 {
-    private const VALID_SITEMAP = '<?xml version="1.0"?><urlset><url><loc>https://example.com/</loc></url></urlset>';
-    private const VALID_SITEMAP_INDEX = '<?xml version="1.0"?><sitemapindex><sitemap><loc>https://example.com/sitemap-page.xml</loc></sitemap><sitemap><loc>https://example.com/sitemap-book.xml</loc></sitemap></sitemapindex>';
-    private const EMPTY_SITEMAP = '<?xml version="1.0"?><urlset></urlset>';
-    private const EMPTY_SITEMAP_INDEX = '<?xml version="1.0"?><sitemapindex></sitemapindex>';
-    private const OPEN_ROBOTS = "User-agent: *\nDisallow:\n";
-    private const BLOCKING_ROBOTS = "User-agent: *\nDisallow: /\n";
-    private const PARTIAL_DISALLOW_ROBOTS = "User-agent: *\nDisallow: /admin/\n";
-    private const SCOPED_DISALLOW_ROBOTS = "User-agent: SomeBot\nDisallow: /\n\nUser-agent: *\nDisallow:\n";
-    private const HUMANS = "# TEAM\n\tAdministrator: Someone\n";
-    private const LLMS = "# Example\n\n## Site\n\n- [About](https://example.com/about): Who we are\n- [Contact](https://example.com/contact)\n";
+    private const string VALID_SITEMAP = '<?xml version="1.0"?><urlset><url><loc>https://example.com/</loc></url></urlset>';
+    private const string VALID_SITEMAP_INDEX = '<?xml version="1.0"?><sitemapindex><sitemap><loc>https://example.com/sitemap-page.xml</loc></sitemap><sitemap><loc>https://example.com/sitemap-book.xml</loc></sitemap></sitemapindex>';
+    private const string EMPTY_SITEMAP = '<?xml version="1.0"?><urlset></urlset>';
+    private const string EMPTY_SITEMAP_INDEX = '<?xml version="1.0"?><sitemapindex></sitemapindex>';
+    private const string OPEN_ROBOTS = "User-agent: *\nDisallow:\n";
+    private const string BLOCKING_ROBOTS = "User-agent: *\nDisallow: /\n";
+    private const string PARTIAL_DISALLOW_ROBOTS = "User-agent: *\nDisallow: /admin/\n";
+    private const string SCOPED_DISALLOW_ROBOTS = "User-agent: SomeBot\nDisallow: /\n\nUser-agent: *\nDisallow:\n";
+    private const string HUMANS = "# TEAM\n\tAdministrator: Someone\n";
+    private const string LLMS = "# Example\n\n## Site\n\n- [About](https://example.com/about): Who we are\n- [Contact](https://example.com/contact)\n";
 
     // A real resolver over a stubbed config, so the trailing-slash normalisation the provider relies on is exercised rather than stubbed away
     private function createSiteUrlResolver(?string $siteUrl): SiteUrlResolver

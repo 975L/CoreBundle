@@ -29,7 +29,7 @@ class ImageCompareTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        (new ImageCompareType())->buildForm($builder, []);
+        new ImageCompareType()->buildForm($builder, []);
 
         return $added;
     }
@@ -48,7 +48,7 @@ class ImageCompareTypeTest extends TestCase
             }
         );
 
-        (new ImageCompareType())->buildForm($builder, []);
+        new ImageCompareType()->buildForm($builder, []);
 
         $form = $this->createStub(FormInterface::class);
         $event = new PreSetDataEvent($form, $initialData);

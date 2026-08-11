@@ -32,7 +32,7 @@ class ImportmapSpecifierLocator
         }
 
         $specifiers = [];
-        foreach ((new Finder())->files()->in($directories)->name('*.js') as $file) {
+        foreach (new Finder()->files()->in($directories)->name('*.js') as $file) {
             foreach ($this->extractSpecifiers((string) $file->getContents()) as $specifier) {
                 $specifiers[] = $specifier;
             }

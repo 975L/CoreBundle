@@ -43,10 +43,10 @@ use function Symfony\Component\Translation\t;
 class MediaCrudController extends AbstractCrudController
 {
     // No ConfigBundle dependency here (ConfigBundle already depends on UiBundle, so UiBundle must stay standalone) - apps wanting the same dynamic role as other c975L CRUDs can override this controller
-    private const ROLE_NEEDED = 'ROLE_ADMIN';
+    private const string ROLE_NEEDED = 'ROLE_ADMIN';
 
     // Kept in line with php.ini's upload_max_filesize/post_max_size - MediaUploadType (the Block-attached upload form) has no such constraint of its own and simply relies on those same ini limits
-    private const MAX_FILE_SIZE = '100M';
+    private const string MAX_FILE_SIZE = '100M';
 
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -65,6 +65,7 @@ class MediaCrudController extends AbstractCrudController
     }
 
     // Hands the gallery template the edit url of each role-carrying row (see media_index.html.twig) - those are read-only here, so their thumbnail has to open the screen that does edit them, SiteGraphicCrudController
+    #[\Override]
     public function index(AdminContext $context): KeyValueStore | Response
     {
         $responseParameters = parent::index($context);
@@ -76,6 +77,7 @@ class MediaCrudController extends AbstractCrudController
         return $responseParameters;
     }
 
+    #[\Override]
     public function persistEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
         if ($entityInstance instanceof Media) {
@@ -86,6 +88,7 @@ class MediaCrudController extends AbstractCrudController
     }
 
     // Same protection as MediaUploadType's own POST_SUBMIT listener: this form exposes the very same width/height fields, so saving a row whose inputs were rendered blank would erase the size auto-detected on upload
+    #[\Override]
     public function updateEntity(EntityManagerInterface $entityManager, mixed $entityInstance): void
     {
         if ($entityInstance instanceof Media) {
@@ -95,6 +98,7 @@ class MediaCrudController extends AbstractCrudController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -108,6 +112,7 @@ class MediaCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
         // Lets the admin back out of a create/edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
@@ -137,6 +142,7 @@ class MediaCrudController extends AbstractCrudController
         ;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         return [

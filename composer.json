@@ -103,6 +103,7 @@
         "fixer": "php-cs-fixer check --diff",
         "stan": "phpstan analyse --no-progress",
         "stan-scaffold": "phpstan analyse -c phpstan-scaffold.dist.neon --no-progress",
+        "rector": "rector process --dry-run",
         "test": "phpunit",
         "qa": [
             "@audit-deps",
@@ -110,6 +111,7 @@
             "@fixer",
             "@stan",
             "@stan-scaffold",
+            "@rector",
             "@test"
         ]
     },

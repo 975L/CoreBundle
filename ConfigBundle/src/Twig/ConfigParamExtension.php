@@ -21,10 +21,11 @@ class ConfigParamExtension extends AbstractExtension
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('configParam', [$this, 'getConfigParam']),
+            new TwigFunction('configParam', $this->getConfigParam(...)),
         ];
     }
 

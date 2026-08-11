@@ -20,20 +20,21 @@ use Twig\TwigFunction;
 class StylesheetExtension extends AbstractExtension
 {
     public function __construct(
-        private StylesheetRegistry $registry,
-        private Packages $packages,
-        private RequestStack $requestStack,
+        private readonly StylesheetRegistry $registry,
+        private readonly Packages $packages,
+        private readonly RequestStack $requestStack,
         #[Autowire('%kernel.debug%')]
-        private bool $debug,
+        private readonly bool $debug,
         #[Autowire('%kernel.project_dir%')]
-        private string $projectDir,
+        private readonly string $projectDir,
     ) {
     }
 
+    #[\Override]
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('bundle_stylesheets', [$this, 'getBundleStylesheets']),
+            new TwigFunction('bundle_stylesheets', $this->getBundleStylesheets(...)),
         ];
     }
 

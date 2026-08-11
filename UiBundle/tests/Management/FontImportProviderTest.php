@@ -83,7 +83,7 @@ class FontImportProviderTest extends TestCase
     public function testImportOverwritesAnExistingFontsFile(): void
     {
         $filesDir = $this->createFilesDir('files/roboto-regular.woff2', 'new-font-bytes');
-        $existing = (new Font())->setName('Roboto')->setWeight(400)->setStyle('normal');
+        $existing = new Font()->setName('Roboto')->setWeight(400)->setStyle('normal');
 
         $provider = new FontImportProvider($this->createStub(EntityManagerInterface::class), $this->createFontRepository($existing));
 

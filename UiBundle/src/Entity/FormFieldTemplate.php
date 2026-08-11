@@ -18,7 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: FormFieldTemplateRepository::class)]
 #[ORM\Table(name: 'site_form_field_template')]
 #[UniqueEntity('name')]
-class FormFieldTemplate
+class FormFieldTemplate implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

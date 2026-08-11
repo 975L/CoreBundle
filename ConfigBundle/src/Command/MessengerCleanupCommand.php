@@ -40,7 +40,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 )]
 class MessengerCleanupCommand extends Command
 {
-    private const DEFAULT_RETENTION_DAYS = 30;
+    private const int DEFAULT_RETENTION_DAYS = 30;
 
     public function __construct(
         private readonly MessengerFailedMessageService $messengerFailedMessageService,

@@ -35,13 +35,13 @@ use Symfony\Contracts\Cache\CacheInterface;
 class ThemeVariablesCssListener implements CacheWarmerInterface
 {
     // What marks a config as a CSS value, wherever it is displayed: the slug, not the group - a satellite bundle declaring colors of its own (c975l/gallery-bundle's "theme-color-gallery-*") keeps them in its own back-office group rather than in SiteBundle's
-    private const CSS_SLUG_PREFIX = 'theme-';
+    private const string CSS_SLUG_PREFIX = 'theme-';
 
     // Theme configs that are never a CSS value, so must stay out of the compiled :root block
-    private const EXCLUDED_SLUGS = ['theme-mode'];
+    private const array EXCLUDED_SLUGS = ['theme-mode'];
 
     // Generic fallback per font slug, for when a chosen custom font fails to load at runtime
-    private const FONT_FALLBACKS = [
+    private const array FONT_FALLBACKS = [
         'theme-font-family-title' => 'sans-serif',
         'theme-font-family-body' => 'sans-serif',
         'theme-font-family-accent' => 'monospace',

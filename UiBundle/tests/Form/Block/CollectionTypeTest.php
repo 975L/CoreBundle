@@ -30,7 +30,7 @@ class CollectionTypeTest extends TestCase
             return $builder;
         });
 
-        (new CollectionType($sourceRegistry, new BlockAnchorSlugger(new AsciiSlugger())))->buildForm($builder, []);
+        new CollectionType($sourceRegistry, new BlockAnchorSlugger(new AsciiSlugger()))->buildForm($builder, []);
 
         return $added;
     }

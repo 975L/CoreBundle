@@ -20,10 +20,10 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class ConfigService implements ConfigServiceInterface
 {
-    private const CACHE_KEY = 'site_configs_all';
+    private const string CACHE_KEY = 'site_configs_all';
 
     // Every optional metadata key a configs.json entry can declare, with what it means when left out ("label" and "slug" are required, so they're not in here)
-    private const METADATA_DEFAULTS = [
+    private const array METADATA_DEFAULTS = [
         'kind' => 'text',
         'group' => null,
         'description' => null,

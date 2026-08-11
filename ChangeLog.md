@@ -1,5 +1,40 @@
 # ChangeLog
 
+## v1.9.0
+
+Rector joins the quality gate, and both bundles catch up
+
+### The package
+
+- Added the `rector` script, `rector process --dry-run` over both bundles' `src/`, `tests/` and `scaffold/` (11/08/2026)
+- It closes `composer qa` before the tests, and the CI workflow installs the tool alongside phpstan and php-cs-fixer (11/08/2026)
+- `rector.php` carries the same sets a site gets from `SymfonyMigrate.sh`, `scaffold/` included (11/08/2026)
+- What the scaffold leaves unmodernised is rewritten in the application, where it stops matching the hash `ScaffoldInstaller` recorded (11/08/2026)
+- `withPhpSets()` reads its target from `composer.json`, the bundles and the sites both requiring `>=8.4` (11/08/2026)
+- `ReadOnlyClassRector` is skipped, a readonly class closing the override door these bundles leave open (11/08/2026)
+- `AddParamBasedOnParentClassMethodRector` too, the CrudControllers' variadic `$args` being deliberate (11/08/2026)
+- Class constants carry their type (11/08/2026)
+- A method redeclaring a parent's carries `#[\Override]` (11/08/2026)
+- `new` is chained without wrapping parentheses (11/08/2026)
+- A string callable passed to `array_map()` becomes a first-class callable (11/08/2026)
+- A property assigned only in the constructor is `readonly`, an anonymous test class too (11/08/2026)
+- A `foreach` returning on the first match becomes `array_any()` (11/08/2026)
+- A class holding `__toString()` declares `\Stringable` (11/08/2026)
+- An unused `catch` variable is dropped (11/08/2026)
+- Nested `dirname()` calls take a depth argument (11/08/2026)
+- Updated the README's quality checks section (11/08/2026)
+
+### ConfigBundle
+
+- The stale-import reminder points at `App\Service\ThemeStylesheetProvider` to be checked, instead of stating what it holds (11/08/2026)
+- A sheet named under `assets/styles/` counts as imported only when a quote or a closing parenthesis ends it (11/08/2026)
+
+### UiBundle
+
+- The README's `ThemeStylesheetProvider` example globs `assets/styles/*.css` and `assets/styles/themes/*.css` rather than listing two files (11/08/2026)
+- `StylesheetCacheWarmer` rewrites the relative `url()` of every concatenated sheet, an app asset through AssetMapper (11/08/2026)
+- It hoists the `@import` rules to the head of the compiled stylesheet (11/08/2026)
+
 ## v1.8.4
 
 The scaffold writes PHP 8.4, dropping the parentheses around `new`

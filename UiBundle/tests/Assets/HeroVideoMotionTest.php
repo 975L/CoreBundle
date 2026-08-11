@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // A hero's background video autoplays with no control of any kind printed beside it, so a visitor asking for reduced motion has no way out of it but this controller (WCAG 2.2.2) - and it only has that say because the markup hands the decision over to it instead of writing an "autoplay" attribute no script can take back
 class HeroVideoMotionTest extends TestCase
 {
-    private const CONTROLLER_JS = 'assets/js/hero-video.js';
+    private const string CONTROLLER_JS = 'assets/js/hero-video.js';
 
     // The attribute is honored before any script runs, and no preference read afterwards can undo the motion
     public function testTheMarkupNeverAutoplaysTheBackgroundVideoByItself(): void

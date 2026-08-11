@@ -63,7 +63,7 @@ class HealthCheckRunner
             return $provider->getFrequency();
         }
 
-        $attributes = (new \ReflectionClass($provider))->getAttributes(AsHealthCheck::class);
+        $attributes = new \ReflectionClass($provider)->getAttributes(AsHealthCheck::class);
 
         return $attributes ? $attributes[0]->newInstance()->frequency : AsHealthCheck::FREQUENCY_WEEKLY;
     }
@@ -71,7 +71,7 @@ class HealthCheckRunner
     // One row as its provider returned it (see HealthCheckProviderInterface::runChecks()), turned into the entity persisted for it - only url/status/summary are required, the rest is what the Health check panel shows when the provider can supply it
     private function buildResult(string $kind, array $row, \DateTime $checkedAt): HealthCheckResult
     {
-        return (new HealthCheckResult())
+        return new HealthCheckResult()
             ->setKind($kind)
             ->setUrl($row['url'])
             ->setLabel($row['label'] ?? null)

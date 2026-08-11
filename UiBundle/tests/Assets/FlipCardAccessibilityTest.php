@@ -15,10 +15,10 @@ use PHPUnit\Framework\TestCase;
 // A card folded in 3D hides its back face from the eye only: everything that makes the fold usable by a keyboard, a screen reader, or a browser with no JS at all is spread over three files that no browser here runs, so each end is checked against the contract the other two assume
 class FlipCardAccessibilityTest extends TestCase
 {
-    private const CONTROLLER_JS = 'assets/js/flip-card.js';
-    private const BARREL = 'assets/controllers.js';
-    private const COMPONENT = 'templates/components/FlipCard/FlipCard.html.twig';
-    private const STYLESHEET = 'sass/_flip-card.scss';
+    private const string CONTROLLER_JS = 'assets/js/flip-card.js';
+    private const string BARREL = 'assets/controllers.js';
+    private const string COMPONENT = 'templates/components/FlipCard/FlipCard.html.twig';
+    private const string STYLESHEET = 'sass/_flip-card.scss';
 
     // Public pages only, and lazily: the barrel imports it on demand, for a document that actually holds one
     public function testTheControllerIsRegisteredAsALazyFrontControllerNamedAfterWhatTheTemplateWrites(): void

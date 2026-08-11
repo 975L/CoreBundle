@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AiCrawlersHealthCheckProviderTest extends TestCase
 {
-    private const SOURCE = 'https://example.com/robots.json';
+    private const string SOURCE = 'https://example.com/robots.json';
 
     private function createConfigService(bool $blocksAi): ConfigServiceInterface
     {
@@ -58,7 +58,7 @@ class AiCrawlersHealthCheckProviderTest extends TestCase
     // That list gains a handful of names every few months, where a weekly call to a third party for it would be noise
     public function testProviderRunsMonthly(): void
     {
-        $attributes = (new \ReflectionClass(AiCrawlersHealthCheckProvider::class))->getAttributes(AsHealthCheck::class);
+        $attributes = new \ReflectionClass(AiCrawlersHealthCheckProvider::class)->getAttributes(AsHealthCheck::class);
 
         $this->assertCount(1, $attributes);
         $this->assertSame(AsHealthCheck::FREQUENCY_MONTHLY, $attributes[0]->newInstance()->frequency);

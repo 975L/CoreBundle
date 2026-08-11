@@ -33,7 +33,7 @@ class BlockLabelListenerTest extends TestCase
         $block = new Block();
         $block->setKind('article');
 
-        (new BlockLabelListener($registry))->postLoad($this->createArgs($block));
+        new BlockLabelListener($registry)->postLoad($this->createArgs($block));
 
         $this->assertSame('Article', $block->getLabel());
     }
@@ -42,7 +42,7 @@ class BlockLabelListenerTest extends TestCase
     {
         $registry = $this->createStub(BlockRegistry::class);
 
-        (new BlockLabelListener($registry))->postLoad($this->createArgs(new \stdClass()));
+        new BlockLabelListener($registry)->postLoad($this->createArgs(new \stdClass()));
 
         $this->addToAssertionCount(1);
     }
@@ -52,7 +52,7 @@ class BlockLabelListenerTest extends TestCase
         $registry = $this->createMock(BlockRegistry::class);
         $registry->expects($this->never())->method('has');
 
-        (new BlockLabelListener($registry))->postLoad($this->createArgs(new Block()));
+        new BlockLabelListener($registry)->postLoad($this->createArgs(new Block()));
 
         $this->addToAssertionCount(1);
     }
@@ -65,7 +65,7 @@ class BlockLabelListenerTest extends TestCase
         $block = new Block();
         $block->setKind('unknown');
 
-        (new BlockLabelListener($registry))->postLoad($this->createArgs($block));
+        new BlockLabelListener($registry)->postLoad($this->createArgs($block));
 
         $this->assertNull($block->getLabel());
     }

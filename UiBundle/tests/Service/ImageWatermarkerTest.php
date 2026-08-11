@@ -23,9 +23,9 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ImageWatermarkerTest extends TestCase
 {
-    private const WHITE = [255, 255, 255];
-    private const BLACK = [0, 0, 0];
-    private const RED = [255, 0, 0];
+    private const array WHITE = [255, 255, 255];
+    private const array BLACK = [0, 0, 0];
+    private const array RED = [255, 0, 0];
 
     private string $projectDir;
 
@@ -37,7 +37,7 @@ class ImageWatermarkerTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     // --- picking a signature -------------------------------------------------------------------------------
@@ -330,7 +330,7 @@ class ImageWatermarkerTest extends TestCase
         imagefill($resource, 0, 0, imagecolorallocate($resource, ...$rgb));
         imagepng($resource, $path);
 
-        return (new Imagine())->open($path);
+        return new Imagine()->open($path);
     }
 
     /**

@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // A freeflow slider is scrolled by hand rather than by the browser's own fling, which carried several slides at once and left the dots behind; the pieces that make that work live half in the stylesheet, half in the controller, and neither half works alone
 class SliderSwipeTest extends TestCase
 {
-    private const CSS = ['/public/css/styles.css', '/public/css/styles.min.css'];
+    private const array CSS = ['/public/css/styles.css', '/public/css/styles.min.css'];
 
     // The incoming slide is centered, not left-aligned, which the scroll math in displaySlideFreeflow() targets
     public function testFreeflowSlidesSnapCentered(): void

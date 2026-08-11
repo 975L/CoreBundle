@@ -13,7 +13,7 @@ namespace c975L\ConfigBundle\Management;
 // Byte sizes as a human reads them, shared by whatever reports a file size (see BackupCommand's report email and BackupResultRecorder's dashboard summary, which must not word the same archive two different ways). Static and untranslated on purpose: the unit symbols are identical in the three languages the bundle ships, so there's no state and nothing to inject
 class ByteFormatter
 {
-    private const UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
+    private const array UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
 
     public static function format(int $bytes): string
     {

@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 // A poster is what turns the player into click-to-play, and the one thing the placeholder must not do while it waits for that click is reach the platform - the whole point of importing the still into the site's own files (see VideoPosterImporter)
 class VideoIframePosterTest extends TestCase
 {
-    private const TEMPLATE = 'templates/components/Video/Iframe.html.twig';
+    private const string TEMPLATE = 'templates/components/Video/Iframe.html.twig';
 
     // Hotlinking the platform's own still would be the very third-party request this placeholder exists to hold back
     public function testThePosterIsRenderedFromTheBlocksOwnMedia(): void

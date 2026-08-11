@@ -51,7 +51,7 @@ class MenuProviderTest extends TestCase
     // Declared here rather than by SiteBundle as it used to be: an app running Config+Ui plus a satellite bundle but no site foundation still has accounts to manage
     public function testGetMenusExposesTheUserCrudControllerEntry(): void
     {
-        $menus = (new MenuProvider($this->createConfigService()))->getMenus();
+        $menus = new MenuProvider($this->createConfigService())->getMenus();
 
         $this->assertSame(UserCrudController::class, $menus['user']['controller']);
         $this->assertSame('label.users', $menus['user']['label']);
@@ -65,7 +65,7 @@ class MenuProviderTest extends TestCase
     // Also declared here rather than by SiteBundle: the rows answer before the router, so they never depended on page management - a shop-only site needs them just as much
     public function testGetMenusExposesTheRedirectCrudControllerEntry(): void
     {
-        $menus = (new MenuProvider($this->createConfigService()))->getMenus();
+        $menus = new MenuProvider($this->createConfigService())->getMenus();
 
         $this->assertSame(RedirectCrudController::class, $menus['redirect']['controller']);
         $this->assertSame('label.redirects', $menus['redirect']['label']);

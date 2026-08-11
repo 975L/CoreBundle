@@ -27,7 +27,7 @@ class FeatureItemTypeTest extends TestCase
             return $builder;
         });
 
-        (new FeatureItemType())->buildForm($builder, []);
+        new FeatureItemType()->buildForm($builder, []);
 
         foreach (['title', 'text'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the FeatureItem form");

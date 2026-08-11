@@ -31,7 +31,7 @@ class FixedIconFormatValidatorTest extends ConstraintValidatorTestCase
 
     protected function tearDown(): void
     {
-        array_map('unlink', glob($this->directory . '/*'));
+        array_map(unlink(...), glob($this->directory . '/*'));
         rmdir($this->directory);
 
         parent::tearDown();
@@ -62,7 +62,7 @@ class FixedIconFormatValidatorTest extends ConstraintValidatorTestCase
         return (string) ob_get_clean();
     }
 
-    private const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e63946"/></svg>';
+    private const string SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e63946"/></svg>';
 
     public function testNonMediaValueIsIgnored(): void
     {

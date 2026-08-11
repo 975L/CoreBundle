@@ -28,7 +28,7 @@ class SectionFeatureItemTypeTest extends TestCase
             return $builder;
         });
 
-        (new SectionFeatureItemType())->buildForm($builder, []);
+        new SectionFeatureItemType()->buildForm($builder, []);
 
         return $added;
     }
