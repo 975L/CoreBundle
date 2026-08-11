@@ -91,6 +91,11 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
     // "/*!" is left in place, the convention marking a header that must survive minification (a license, an authorship notice).
     private static function stripComments(string $css): string
     {
-        return preg_replace('#/\*(?!!).*?\*/#s', '', $css) ?? $css;
+        // Every comment is matched and the callback decides, rather than the pattern excluding "/*!" - such a pattern skips the header and restarts on the "/*" held by the "*/*,::before" that follows it in a minified sheet, swallowing the file down to the next "*/"
+        return preg_replace_callback(
+            '#/\*.*?\*/#s',
+            static fn (array $matches): string => str_starts_with($matches[0], '/*!') ? $matches[0] : '',
+            $css
+        ) ?? $css;
     }
 }

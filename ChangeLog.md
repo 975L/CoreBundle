@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.8.2
+
+A minified sheet keeps its rules, "*/*" no longer read as a comment
+
+### UiBundle
+
+- `StylesheetCacheWarmer` no longer drops everything between a license header and the next comment (11/08/2026)
+- A comment is matched whole and kept or dropped in a callback, instead of being excluded by the pattern (11/08/2026)
+- Added `StylesheetCacheWarmerTest::testWarmUpKeepsARuleStartingWithTheUniversalSelectorRightAfterAHeader` (11/08/2026)
+
 ## v1.8.1
 
 The banner writes no CSS: its picture is an image, its height a step

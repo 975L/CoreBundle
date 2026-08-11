@@ -177,6 +177,21 @@ class StylesheetCacheWarmerTest extends TestCase
         );
     }
 
+    // A minified sheet puts its first rule right after the license header, and the universal selector makes that "*/*". The "/*" it holds is not a comment opening - reading it as one swallowed SiteBundle's 19 KB down to 95 bytes, and bundles/build/site.css lost every menu rule on every site
+    public function testWarmUpKeepsARuleStartingWithTheUniversalSelectorRightAfterAHeader(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', '/*! modern-normalize | MIT */*,::before{box-sizing:border-box}.menu{display:flex}');
+
+        $warmer = $this->createWarmer(['bundles/c975lui/css/styles.min.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            '/*! modern-normalize | MIT */*,::before{box-sizing:border-box}.menu{display:flex}',
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css'),
+            'The rule following the header is gone, so every sheet shipping a normalize header loses its whole content.'
+        );
+    }
+
     // "/*!" is the convention marking a header that must survive minification - a license, an authorship notice
     public function testWarmUpKeepsALicenseHeader(): void
     {

@@ -56,6 +56,11 @@
                 "en": "Typing in a rich-text field stays responsive on a page holding many of them, where each keystroke used to take longer than the one before",
                 "fr": "La saisie dans un champ de texte enrichi reste fluide sur une page qui en compte beaucoup, là où chaque frappe mettait plus de temps que la précédente",
                 "es": "Escribir en un campo de texto enriquecido sigue siendo fluido en una página que tiene muchos, donde cada pulsación tardaba más que la anterior"
+            },
+            {
+                "en": "A site that had lost most of its styling since the last update, its menu first of all, looks the way it should again",
+                "fr": "Un site qui avait perdu l'essentiel de sa mise en forme depuis la dernière mise à jour, son menu en premier lieu, retrouve son apparence normale",
+                "es": "Un sitio que había perdido la mayor parte de su presentación desde la última actualización, empezando por su menú, recupera su aspecto normal"
             }
         ]
     },
