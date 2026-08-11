@@ -137,14 +137,7 @@ final class StylesheetCascade
         return false;
     }
 
-    /*
-     * A rule whose subject names no class of its own only ever reaches a component through its tag. Scoped
-     * under a concrete styled ancestor, that is a coincidence of tag names rather than a collision - a card
-     * is not going to turn up inside ".menu-site-tagline" whatever the fact that both use a <div>.
-     *
-     * Scoped under nothing, or under wrappers that are no box at all, it is the opposite: those hold every
-     * block a page carries, which is exactly the shape of the reset that flattened the slider.
-     */
+    // A rule whose subject names no class of its own only ever reaches a component through its tag. Scoped under a concrete styled ancestor, that is a coincidence of tag names rather than a collision - a card is not going to turn up inside ".menu-site-tagline" whatever the fact that both use a <div>. Scoped under nothing, or under wrappers that are no box at all, it is the opposite: those hold every block a page carries, which is exactly the shape of the reset that flattened the slider.
     private function reachesOnlyByTagUnderAConcreteAncestor(string $selector, array $wrappers): bool
     {
         $compounds = self::splitOnCombinators($selector)['compounds'];

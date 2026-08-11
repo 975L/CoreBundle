@@ -105,8 +105,7 @@ class MenuProvider implements MenuProviderInterface
                 'label' => 'label.legal_models',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-scale-balanced',
-                // Same gate as the screen itself (see LegalModelController) - without it the link shows to a
-                // back-office user who would only ever get a 403 out of it
+                // Same gate as the screen itself (see LegalModelController) - without it the link shows to a back-office user who would only ever get a 403 out of it
                 'role' => $this->configService->get('site-role-editor'),
                 // Set up once when the site opens, revisited a couple of times a year at most
                 'tier' => 'advanced',

@@ -276,14 +276,7 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertFalse($added['receiveCopy']['options']['required']);
     }
 
-    /*
-     * The checkbox is the one protection field whose answer an action reads back (SendEmailFormAction turns it
-     * into the copy it sends), and FormController hands the action nothing but the form's own data - which an
-     * unmapped child never appears in. Left unmapped, every visitor asking for a copy silently got none.
-     *
-     * Driven over a real form rather than the builder stub above: "mapped" is honoured inside Symfony, so only
-     * an actual submission proves the answer arrives where the action looks for it.
-     */
+    // The checkbox is the one protection field whose answer an action reads back (SendEmailFormAction turns it into the copy it sends), and FormController hands the action nothing but the form's own data - which an unmapped child never appears in. Left unmapped, every visitor asking for a copy silently got none. Driven over a real form rather than the builder stub above: "mapped" is honoured inside Symfony, so only an actual submission proves the answer arrives where the action looks for it.
     public function testReceiveCopyAnswerReachesTheSubmittedData(): void
     {
         $form = Forms::createFormFactoryBuilder()

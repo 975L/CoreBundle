@@ -104,8 +104,7 @@ class ConfigSetCommand extends Command
     {
         $config = $this->configRepository->findOneBy(['slug' => $slug]);
 
-        // Entries are declared by the bundles' configs.json, never created here: an unknown slug is a typo,
-        // unless the file is shared by several sites and the bundle declaring it just isn't installed here
+        // Entries are declared by the bundles' configs.json, never created here: an unknown slug is a typo, unless the file is shared by several sites and the bundle declaring it just isn't installed here
         if (null === $config) {
             if ($ignoreUnknown) {
                 $io->text('  SKIP (unknown, no installed bundle declares it): ' . $slug);

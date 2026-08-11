@@ -28,6 +28,12 @@
     --block-accent-teal: #2f8f83;
     --block-accent-violet: #7a4e8f;
     --block-accent-yellow: #dda43a;
+    --block-radius-large: 28px;
+    --block-radius-medium: 14px;
+    --block-radius-small: 6px;
+    --block-shadow-large: 0 12px 28px 0 rgba(0, 0, 0, 0.55);
+    --block-shadow-medium: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
+    --block-shadow-small: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
     --body-max-width: 1440px;
     --border-accent: color-mix(in srgb, var(--primary) 35%, var(--background));
     --border-color: color-mix(in srgb, var(--text) 12%, var(--background));
@@ -47,6 +53,13 @@
     --button-secondary-color: #000;
     --card-background: #fff;
     --disabled: #808080;
+    --flip-card-back-background: color-mix(in srgb, var(--secondary) 30%, var(--background));
+    --flip-card-border-width: 3px;
+    --flip-card-front-background: var(--white);
+    --flip-card-media-max-width: 250px;
+    --flip-card-radius: 25px;
+    --flip-card-text-size: 0.9rem;
+    --flip-card-title-size: 2rem;
     --font-body-weight: normal;
     --font-family-accent: var(--c975l-font-family-accent, monospace);
     --font-family-body: var(--c975l-font-family-body, sans-serif);
@@ -342,6 +355,39 @@
   justify-content: space-between;
 }
 
+/* BLOCK SURFACE */
+.block-radius-none {
+  --block-radius: 0;
+}
+
+.block-radius-small {
+  --block-radius: var(--block-radius-small);
+}
+
+.block-radius-medium {
+  --block-radius: var(--block-radius-medium);
+}
+
+.block-radius-large {
+  --block-radius: var(--block-radius-large);
+}
+
+.block-shadow-none {
+  --block-shadow: none;
+}
+
+.block-shadow-small {
+  --block-shadow: var(--block-shadow-small);
+}
+
+.block-shadow-medium {
+  --block-shadow: var(--block-shadow-medium);
+}
+
+.block-shadow-large {
+  --block-shadow: var(--block-shadow-large);
+}
+
 /* BLOCKQUOTES */
 blockquote {
   padding: 10px 20px;
@@ -554,11 +600,15 @@ button.btn {
   margin: 1em auto;
   width: clamp(300px, 380px, 90vw);
   border: 1px solid var(--card-accent, var(--input-border-color));
-  border-radius: var(--radius-card);
+  border-radius: var(--block-radius, var(--radius-card));
   background-color: var(--card-background);
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+.card:is(.block-shadow-none, .block-shadow-small, .block-shadow-medium, .block-shadow-large) {
+  box-shadow: var(--block-shadow, none);
 }
 
 .card--accent-red {
@@ -617,7 +667,7 @@ button.btn {
   --card-accent-invert: 0;
 }
 
-.cards > .card {
+.cards .card {
   margin: 0;
 }
 
@@ -631,7 +681,7 @@ h2.card-header {
   padding: 0.5em 1em;
   margin: 0;
   width: 100%;
-  border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0;
+  border-radius: calc(var(--block-radius, var(--radius-card)) - 1px) calc(var(--block-radius, var(--radius-card)) - 1px) 0 0;
 }
 
 .card-header .icon {
@@ -792,15 +842,152 @@ label[for=contact_form_username],
   perspective: 1200px;
   width: clamp(300px, 380px, 90vw);
   margin: 1em auto;
+  display: grid;
 }
 
-.cards > .flip-card {
+.cards .flip-card {
   margin-block: 0;
 }
 
-.flip-card > .flip-card-inner > .card {
-  margin-block: 0;
+.flip-card--accent-red {
+  --flip-card-accent: var(--block-accent-red);
+}
+
+.flip-card--accent-orange {
+  --flip-card-accent: var(--block-accent-orange);
+}
+
+.flip-card--accent-yellow {
+  --flip-card-accent: var(--block-accent-yellow);
+}
+
+.flip-card--accent-lime {
+  --flip-card-accent: var(--block-accent-lime);
+}
+
+.flip-card--accent-green {
+  --flip-card-accent: var(--block-accent-green);
+}
+
+.flip-card--accent-teal {
+  --flip-card-accent: var(--block-accent-teal);
+}
+
+.flip-card--accent-cyan {
+  --flip-card-accent: var(--block-accent-cyan);
+}
+
+.flip-card--accent-blue {
+  --flip-card-accent: var(--block-accent-blue);
+}
+
+.flip-card--accent-indigo {
+  --flip-card-accent: var(--block-accent-indigo);
+}
+
+.flip-card--accent-violet {
+  --flip-card-accent: var(--block-accent-violet);
+}
+
+.flip-card--accent-pink {
+  --flip-card-accent: var(--block-accent-pink);
+}
+
+.flip-card--accent-grey {
+  --flip-card-accent: var(--block-accent-grey);
+}
+
+.flip-card-face {
+  position: relative;
+  border: var(--flip-card-border-width) solid var(--flip-card-accent, var(--primary));
+  border-radius: var(--block-radius, var(--flip-card-radius));
+  background-color: var(--flip-card-front-background);
+  box-shadow: var(--block-shadow, var(--box-shadow));
+  padding-bottom: 1em;
+  text-align: start;
+}
+
+.flip-card-back {
+  background-color: var(--flip-card-back-background);
+}
+
+.flip-card-title {
+  font-family: var(--font-family-title);
+  font-size: var(--flip-card-title-size);
+  font-weight: var(--font-title-weight);
+  color: var(--flip-card-accent, var(--primary));
+  text-align: center;
+  margin: 0.5rem auto;
+  padding: 0 0.5em;
+}
+
+.flip-card-toggle {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.flip-card-title,
+.flip-card-body {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.flip-card-title a,
+.flip-card-body a,
+.flip-card-body button,
+.flip-card-body input,
+.flip-card-body summary {
+  pointer-events: auto;
+}
+
+.flip-card-toggle:focus-visible {
+  outline: 3px solid var(--flip-card-accent, var(--primary));
+  outline-offset: -6px;
+  border-radius: calc(var(--block-radius, var(--flip-card-radius)) - var(--flip-card-border-width));
+}
+
+.flip-card-media {
+  width: min(70vw, var(--flip-card-media-max-width));
+  margin: 1rem auto;
+}
+
+.flip-card-img {
+  display: block;
   width: 100%;
+  height: auto;
+  aspect-ratio: var(--flip-card-ratio, 3/2);
+  object-fit: cover;
+  border-radius: calc(var(--block-radius, var(--flip-card-radius)) - var(--flip-card-border-width));
+  box-shadow: var(--box-shadow);
+}
+
+.flip-card-body {
+  padding: 0 1em;
+}
+
+.flip-card-text {
+  font-size: var(--flip-card-text-size);
+}
+
+.flip-card-text p,
+.flip-card-text li {
+  font-size: var(--flip-card-text-size);
+  padding: 2px 0;
+}
+
+.flip-card-text ul {
+  list-style: none;
+  padding-left: 10px;
 }
 
 .flip-card-ratio-2-3 {
@@ -835,49 +1022,61 @@ label[for=contact_form_username],
   --flip-card-ratio: 21 / 9;
 }
 
-.flip-card-img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: calc(var(--radius-card) - 1px);
-}
-
-.flip-card--js .flip-card-inner {
+.flip-card-inner {
   display: grid;
   transform-style: preserve-3d;
   transition: transform 0.7s;
 }
 
-.flip-card--js .flip-card-inner::before {
+.flip-card-inner::before {
   content: "";
   grid-area: 1/1;
   align-self: start;
   aspect-ratio: var(--flip-card-ratio, auto);
 }
 
-.flip-card--js .flip-card-face {
+.flip-card-inner {
+  pointer-events: none;
+}
+
+.flip-card-face {
   grid-area: 1/1;
+  pointer-events: auto;
   backface-visibility: hidden;
 }
 
-.flip-card--js .flip-card-back {
+.flip-card-back {
   transform: rotateY(180deg);
 }
 
-.flip-card--js.is-flipped .flip-card-inner {
+.flip-card.is-flipped .flip-card-inner {
   transform: rotateY(180deg);
 }
 
-.flip-card--js:not(.is-flipped):hover .flip-card-inner {
+.flip-card:not(.is-flipped):hover .flip-card-front {
   animation: rotateY5deg 0.5s infinite ease-in-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flip-card--js .flip-card-inner {
+  .flip-card-inner {
     transition: none;
   }
-  .flip-card--js:not(.is-flipped):hover .flip-card-inner {
+  .flip-card:not(.is-flipped):hover .flip-card-front {
     animation: none;
+  }
+}
+@media (scripting: none) {
+  .flip-card-inner {
+    display: block;
+  }
+  .flip-card-inner::before {
+    content: none;
+  }
+  .flip-card-face {
+    backface-visibility: visible;
+  }
+  .flip-card-back {
+    transform: none;
   }
 }
 /* FORMS */
@@ -1083,6 +1282,14 @@ div:has(> input[type=date]:is(.success, :is([required], [pattern], [minlength], 
     transition: none;
   }
 }
+.ui-field-aside {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 iframe {
   width: 95vw;
   max-width: 400px;

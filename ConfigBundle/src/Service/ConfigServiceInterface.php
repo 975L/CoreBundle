@@ -12,9 +12,7 @@ namespace c975L\ConfigBundle\Service;
 
 interface ConfigServiceInterface
 {
-    /**
-     * Returns the value of a config, cast to the type its declaration gives it (or null if not found).
-     */
+    // Returns the value of a config, cast to the type its declaration gives it (or null if not found).
     public function get(string $key): mixed;
 
     /**
@@ -24,19 +22,13 @@ interface ConfigServiceInterface
      */
     public function getBool($value): bool;
 
-    /**
-     * Returns true if the parameter exists in the configs, false otherwise.
-     */
+    // Returns true if the parameter exists in the configs, false otherwise.
     public function hasParameter(string $parameter): bool;
 
-    /**
-     * Returns the value of a container parameter (or null if not found).
-     */
+    // Returns the value of a container parameter (or null if not found).
     public function getContainerParameter(string $parameter): mixed;
 
-    /**
-     * Invalidates the configs cache (to be called after any modification).
-     */
+    // Invalidates the configs cache (to be called after any modification).
     public function invalidateCache(): void;
 
     /**

@@ -29,8 +29,7 @@ class ContactExtension extends AbstractExtension
         ];
     }
 
-    // Splits the days of one opening range into runs of consecutive days, so a template can print "Monday - Friday"
-    // rather than the five of them; a lone day comes back as a one-entry run, and the week order is the stored one
+    // Splits the days of one opening range into runs of consecutive days, so a template can print "Monday - Friday" rather than the five of them; a lone day comes back as a one-entry run, and the week order is the stored one
     public function dayRuns(array $days): array
     {
         $ordered = array_values(array_intersect(ContactSnippetBuilder::DAYS, $days));

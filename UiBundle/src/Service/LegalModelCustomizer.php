@@ -10,14 +10,9 @@
 
 namespace c975L\UiBundle\Service;
 
-// Translates between what the customization screen shows and the sparse delta stored in the block's data,
-// and answers the one question the drift check asks: has the bundle rewritten a passage this client had
-// already replaced?
+// Translates between what the customization screen shows and the sparse delta stored in the block's data, and answers the one question the drift check asks: has the bundle rewritten a passage this client had already replaced?
 //
-// The screen shows the bundle's own wording, editable in place, rather than empty "override me" fields. What
-// comes back is therefore compared against that wording (see LegalModelRenderer::comparable()) and only a
-// real difference is stored - a client who opens the screen and saves it untouched stores nothing at all and
-// keeps receiving the bundle's updates.
+// The screen shows the bundle's own wording, editable in place, rather than empty "override me" fields. What comes back is therefore compared against that wording (see LegalModelRenderer::comparable()) and only a real difference is stored - a client who opens the screen and saves it untouched stores nothing at all and keeps receiving the bundle's updates.
 class LegalModelCustomizer
 {
     // Units of a model per locale, resolved once - the screen needs them, and so does every override it stamps
@@ -33,8 +28,7 @@ class LegalModelCustomizer
         return $this->units[$model . '.' . $locale] ??= $this->renderer->units($model, $locale);
     }
 
-    // One form row per unit the bundle ships, pre-filled with the text as it currently stands: the client's
-    // own version where they wrote one, ours everywhere else
+    // One form row per unit the bundle ships, pre-filled with the text as it currently stands: the client's own version where they wrote one, ours everywhere else
     public function toFormData(array $units, array $customization): array
     {
         $hidden = array_flip((array) ($customization['hidden'] ?? []));
@@ -77,8 +71,7 @@ class LegalModelCustomizer
 
         foreach ((array) ($formData['units'] ?? []) as $row) {
             $id = (string) ($row['id'] ?? '');
-            // A row whose unit vanished from the model between display and submit is dropped rather than
-            // stored against an identifier nothing renders any more
+            // A row whose unit vanished from the model between display and submit is dropped rather than stored against an identifier nothing renders any more
             if ('' === $id || !isset($byId[$id])) {
                 continue;
             }
@@ -100,8 +93,7 @@ class LegalModelCustomizer
             $overrides[$id] = [
                 'title' => $title,
                 'content' => $content,
-                // Fingerprint of the bundle text this override replaces, and the locale it was taken from -
-                // the drift check compares against exactly that, see LegalModelRenderer::hash()
+                // Fingerprint of the bundle text this override replaces, and the locale it was taken from - the drift check compares against exactly that, see LegalModelRenderer::hash()
                 'baseHash' => (string) $unit['hash'],
                 'baseLocale' => $locale,
             ];
@@ -131,9 +123,7 @@ class LegalModelCustomizer
         ]);
     }
 
-    // The block's data with a freshly computed delta merged in. An empty delta drops the key entirely
-    // rather than storing "customization": [] - saving the screen without changing anything has to leave the
-    // block byte-for-byte as it was, or "untouched" would not be a no-op
+    // The block's data with a freshly computed delta merged in. An empty delta drops the key entirely rather than storing "customization": [] - saving the screen without changing anything has to leave the block byte-for-byte as it was, or "untouched" would not be a no-op
     public function apply(array $data, array $customization): array
     {
         if ([] === $customization) {
@@ -146,8 +136,7 @@ class LegalModelCustomizer
     }
 
     // Overrides whose bundle text has changed since they were written, as [id => the model's current unit].
-    // Nothing is applied automatically: only the client can decide whether a reworded clause of ours belongs
-    // in a text they took responsibility for
+    // Nothing is applied automatically: only the client can decide whether a reworded clause of ours belongs in a text they took responsibility for
     public function drifted(string $model, array $customization): array
     {
         $drifted = [];
@@ -156,8 +145,7 @@ class LegalModelCustomizer
             $units = $this->units($model, (string) ($override['baseLocale'] ?? LegalModelCatalog::FALLBACK_LOCALE));
             $current = array_combine(array_column($units, 'id'), $units)[$id] ?? null;
 
-            // A unit that disappeared from the model is not drift - the override simply has nothing left to
-            // apply to, and the renderer ignores it
+            // A unit that disappeared from the model is not drift - the override simply has nothing left to apply to, and the renderer ignores it
             if (null === $current || ($override['baseHash'] ?? '') === $current['hash']) {
                 continue;
             }
@@ -175,9 +163,7 @@ class LegalModelCustomizer
             && LegalModelRenderer::comparable($content) === LegalModelRenderer::comparable((string) $unit['html']);
     }
 
-    // The units as the screen lists them, and as toFormData() indexes its rows: document order, unless the
-    // client already dragged some around. The screen nests them back into a tree from this same list, so both
-    // must walk it identically
+    // The units as the screen lists them, and as toFormData() indexes its rows: document order, unless the client already dragged some around. The screen nests them back into a tree from this same list, so both must walk it identically
     public function ordered(array $units, array $positions): array
     {
         if ([] === $positions) {
@@ -226,9 +212,7 @@ class LegalModelCustomizer
         return $ordered;
     }
 
-    // Positions are stored per scope, and only for a scope the client actually reordered - dragging nothing
-    // must leave the delta empty. When one did move, every unit of that scope is pinned, so the stored order
-    // is total rather than half-natural
+    // Positions are stored per scope, and only for a scope the client actually reordered - dragging nothing must leave the delta empty. When one did move, every unit of that scope is pinned, so the stored order is total rather than half-natural
     private function reorderedScopes(array $units, array $submitted): array
     {
         $scopes = [];

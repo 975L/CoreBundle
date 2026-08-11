@@ -12,14 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-/*
- * A row of cards holds images of unequal heights and texts of unequal lengths, and its buttons still have
- * to sit on one line. That takes a four-rule chain, each link useless without the others: ".cards"
- * stretches the cards to a common height, ".card" is the column that hands that height down, ".card-body"
- * takes what the header leaves, and ".card-data" - the tail the "card"/"collection" adapters wrap the text
- * and the button in - is pinned to its bottom. Locked here because breaking any one of them costs nothing
- * visible on a row of identical cards, and misaligns every real one.
- */
+// A row of cards holds images of unequal heights and texts of unequal lengths, and its buttons still have to sit on one line. That takes a four-rule chain, each link useless without the others: ".cards" stretches the cards to a common height, ".card" is the column that hands that height down, ".card-body" takes what the header leaves, and ".card-data" - the tail the "card"/"collection" adapters wrap the text and the button in - is pinned to its bottom. Locked here because breaking any one of them costs nothing visible on a row of identical cards, and misaligns every real one.
 class CardTailAlignmentTest extends TestCase
 {
     /**
@@ -43,8 +36,7 @@ class CardTailAlignmentTest extends TestCase
         );
     }
 
-    // The card is the column, the body the part of it that grows: without both, the body ends at its
-    // content and its bottom is not the card's
+    // The card is the column, the body the part of it that grows: without both, the body ends at its content and its bottom is not the card's
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testTheCardHandsItsHeightDownToItsBody(string $file): void
     {
@@ -79,8 +71,7 @@ class CardTailAlignmentTest extends TestCase
         );
     }
 
-    // The 1em separating the tail from the image above it: as a margin it would be the pinning itself,
-    // and would collapse to nothing on a card tall enough to have no free space left
+    // The 1em separating the tail from the image above it: as a margin it would be the pinning itself, and would collapse to nothing on a card tall enough to have no free space left
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testTheTailKeepsItsSpacingAsPadding(string $file): void
     {

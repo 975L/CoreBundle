@@ -189,8 +189,7 @@ class MenuBuilderTest extends TestCase
         $this->assertSame('label.whatsnew', $items[2]->getAsDto()->getLabel()->getMessage());
     }
 
-    // A link can opt into the same collapsed submenu as an advanced CRUD item - and if every link does, the
-    // "Liens" section header is not yielded at all rather than sitting above nothing
+    // A link can opt into the same collapsed submenu as an advanced CRUD item - and if every link does, the "Liens" section header is not yielded at all rather than sitting above nothing
     public function testGetMenuItemsMovesAdvancedLinksIntoTheAdvancedSubmenu(): void
     {
         $section = ['label' => 'label.management', 'translation_domain' => 'site'];

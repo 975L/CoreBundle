@@ -15,6 +15,7 @@ use c975L\UiBundle\Registry\BlockCacheTagRegistry;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
+use c975L\UiBundle\Service\CspNonceProvider;
 use c975L\UiBundle\Twig\BlockExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,7 +57,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('<p>rendered</p>', $extension->renderBlock($block));
     }
@@ -78,13 +79,12 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('', $extension->renderBlock($block));
     }
 
-    // A row outlives its own kind (a satellite bundle removed, a kind dropped): every registry lookup would throw
-    // "Unknown block" and 500 the whole page, so the block is skipped exactly like a kindless one
+    // A row outlives its own kind (a satellite bundle removed, a kind dropped): every registry lookup would throw "Unknown block" and 500 the whole page, so the block is skipped exactly like a kindless one
     public function testRenderBlockReturnsEmptyStringWhenKindIsNoLongerRegistered(): void
     {
         $block = $this->createBlock('rich_snippet');
@@ -100,7 +100,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('', $extension->renderBlock($block));
     }
@@ -124,7 +124,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('<article>fresh</article>', $extension->renderBlock($block));
     }
@@ -150,7 +150,7 @@ class BlockExtensionTest extends TestCase
 
         $cache = $this->createStub(TagAwareCacheInterface::class);
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('<section id="services-42"></section>', $extension->renderBlock($block));
     }
@@ -174,7 +174,7 @@ class BlockExtensionTest extends TestCase
 
         $cache = $this->createStub(TagAwareCacheInterface::class);
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('<section id="services-"></section>', $extension->renderBlock($block));
     }
@@ -208,7 +208,7 @@ class BlockExtensionTest extends TestCase
                 return $callback($item);
             });
 
-        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('<article>cached content</article>', $extension->renderBlock($block));
     }
@@ -244,7 +244,7 @@ class BlockExtensionTest extends TestCase
         $requestStack = new RequestStack();
         $requestStack->push(Request::create('/'));
 
-        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, $cacheTagRegistry, new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, $cacheTagRegistry, new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $extension->renderBlock($block);
     }
@@ -265,7 +265,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry());
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
 
         $this->assertSame('content', $extension->renderBlock($block));
     }
@@ -278,7 +278,8 @@ class BlockExtensionTest extends TestCase
             $this->createStub(TagAwareCacheInterface::class),
             new RequestStack(),
             new BlockCacheTagRegistry(),
-            new BlockEditUrlRegistry()
+            new BlockEditUrlRegistry(),
+            $this->createStub(CspNonceProvider::class)
         );
         $functions = $extension->getFunctions();
 
@@ -302,10 +303,85 @@ class BlockExtensionTest extends TestCase
             $this->createStub(TagAwareCacheInterface::class),
             new RequestStack(),
             new BlockCacheTagRegistry(),
-            $registry
+            $registry,
+            $this->createStub(CspNonceProvider::class)
         );
 
         $this->assertSame([5 => '/admin/edit'], $extension->getBlockEditUrls([$block]));
+    }
+
+    // The rendered html is cached verbatim, so a block writing a real nonce would freeze it into the entry and match nothing on every later request. It writes a marker instead, swapped here for the nonce of the response actually being built
+    public function testTheNonceMarkerIsReplacedByTheResponsesOwnNonce(): void
+    {
+        $extension = $this->extensionRendering('<style data-ui-nonce>#a{color:red}</style>', 'abc123', $this->once());
+
+        $this->assertSame('<style nonce="abc123">#a{color:red}</style>', $extension->renderBlock($this->createBlock('banner', null)), 'The marker survives into the response, so a nonced style-src drops the element.');
+    }
+
+    // A block rendered outside the cache (no id here, but a kind the registry declares uncacheable does the same) carries the very same marker: an early return skipping the substitution would ship it raw
+    public function testTheMarkerIsAlsoReplacedOnABlockThatIsNeverCached(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('isCacheable')->willReturn(false);
+        $registry->method('getTemplate')->willReturn('banner.html.twig');
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn('<style data-ui-nonce>#a{color:red}</style>');
+
+        $nonces = $this->createMock(CspNonceProvider::class);
+        $nonces->expects($this->once())->method('styleNonce')->willReturn('def456');
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('get');
+
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $nonces);
+
+        $this->assertSame('<style nonce="def456">#a{color:red}</style>', $extension->renderBlock($this->createBlock('banner', 7)));
+    }
+
+    // Every other block pays nothing for the feature: no marker, no nonce asked for, and asking is what would put one in the response's style-src
+    public function testABlockWithoutTheMarkerNeverAsksForANonce(): void
+    {
+        $extension = $this->extensionRendering('<p>plain</p>', 'unused', $this->never());
+
+        $this->assertSame('<p>plain</p>', $extension->renderBlock($this->createBlock('article', null)));
+    }
+
+    // A site with no csp section has no nonce to write: the marker goes away entirely rather than leaving a nonce="" no policy ever matches (see CspNonceProvider, wired without a listener there)
+    public function testTheMarkerIsDroppedWhenThereIsNoNonce(): void
+    {
+        $extension = $this->extensionRendering('<style data-ui-nonce>#a{color:red}</style>', '', $this->once());
+
+        $this->assertSame('<style>#a{color:red}</style>', $extension->renderBlock($this->createBlock('banner', null)));
+    }
+
+    // The substitution is scoped to a <style> opening tag: the plain string replacement it used to be also reached the rich text a block renders raw, so the string pasted into a Trix field came back out as a real nonce attribute
+    public function testTheMarkerIsOnlyReplacedOnAStyleTag(): void
+    {
+        $html = '<style data-ui-nonce>#a{color:red}</style><div class="flip-card-text"><span data-ui-nonce>pasted</span>data-ui-nonce</div>';
+        $extension = $this->extensionRendering($html, 'abc123', $this->once());
+
+        $this->assertSame(
+            '<style nonce="abc123">#a{color:red}</style><div class="flip-card-text"><span data-ui-nonce>pasted</span>data-ui-nonce</div>',
+            $extension->renderBlock($this->createBlock('banner', null)),
+            'The marker is replaced wherever it sits, so a rich text field is a way to have any element nonced.'
+        );
+    }
+
+    private function extensionRendering(string $rendered, string $nonce, $nonceCalls): BlockExtension
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getTemplate')->willReturn('block.html.twig');
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn($rendered);
+
+        $nonces = $this->createMock(CspNonceProvider::class);
+        $nonces->expects($nonceCalls)->method('styleNonce')->willReturn($nonce);
+
+        return new BlockExtension($registry, $twig, $this->createStub(TagAwareCacheInterface::class), new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $nonces);
     }
 
     // Twig collections (Doctrine PersistentCollection/ArrayCollection) are iterable but not necessarily arrays
@@ -322,7 +398,8 @@ class BlockExtensionTest extends TestCase
             $this->createStub(TagAwareCacheInterface::class),
             new RequestStack(),
             new BlockCacheTagRegistry(),
-            $registry
+            $registry,
+            $this->createStub(CspNonceProvider::class)
         );
 
         $extension->getBlockEditUrls((function () use ($block) {

@@ -63,9 +63,7 @@ class TemplateDomainCatalogueTest extends TestCase
         return array_map(static fn (string $locale): array => [$locale], self::LOCALES);
     }
 
-    // Collects the literal keys the templates ask this bundle's own catalogue for, each mapped to the first file asking for it. A key
-    // built from a variable ("'label.' ~ kind"|trans) has no literal to read and is left to the runtime, and one named with a
-    // dependency's domain is that dependency's to ship
+    // Collects the literal keys the templates ask this bundle's own catalogue for, each mapped to the first file asking for it. A key built from a variable ("'label.' ~ kind"|trans) has no literal to read and is left to the runtime, and one named with a dependency's domain is that dependency's to ship
     private function templateKeys(): array
     {
         $keys = [];

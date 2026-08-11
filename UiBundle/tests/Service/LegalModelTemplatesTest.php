@@ -22,10 +22,7 @@ use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-// Guards the shipped templates themselves rather than the renderer: the customization delta is keyed on
-// "data-legal-id", so an untagged section is silently uncustomizable, a duplicated identifier customizes two
-// places at once, and identifiers drifting apart between locales lose a client's work the day they add a
-// language
+// Guards the shipped templates themselves rather than the renderer: the customization delta is keyed on "data-legal-id", so an untagged section is silently uncustomizable, a duplicated identifier customizes two places at once, and identifiers drifting apart between locales lose a client's work the day they add a language
 class LegalModelTemplatesTest extends TestCase
 {
     private const LOCALES = ['fr', 'en', 'es'];
@@ -101,8 +98,7 @@ class LegalModelTemplatesTest extends TestCase
         );
     }
 
-    // The site's identity has to stay a %marker%, otherwise a rewritten section freezes whatever the site was
-    // called that day - config() is only left where it drives an {% if %}, never where it prints identity
+    // The site's identity has to stay a %marker%, otherwise a rewritten section freezes whatever the site was called that day - config() is only left where it drives an {% if %}, never where it prints identity
     #[DataProvider('models')]
     public function testIdentityValuesAreEmittedAsPlaceholders(string $model): void
     {
@@ -117,8 +113,7 @@ class LegalModelTemplatesTest extends TestCase
         }
     }
 
-    // End to end on the real templates, not a stand-in: every shipped model must parse into the units the
-    // customization screen lists, and a delta must apply to them
+    // End to end on the real templates, not a stand-in: every shipped model must parse into the units the customization screen lists, and a delta must apply to them
     #[DataProvider('models')]
     public function testShippedModelsRenderAndCustomize(string $model): void
     {
@@ -128,8 +123,7 @@ class LegalModelTemplatesTest extends TestCase
             $units = $renderer->units($model, $locale);
             $ids = array_column($units, 'id');
 
-            // A subset, not an equality: the sections wrapped in {% if config(...) %} (other cookies, other
-            // copyrights, owner) only exist once the site filled that value in, and nothing is set here
+            // A subset, not an equality: the sections wrapped in {% if config(...) %} (other cookies, other copyrights, owner) only exist once the site filled that value in, and nothing is set here
             $this->assertSame(
                 array_values(array_intersect(self::identifiers($model, $locale), $ids)),
                 $ids,
@@ -148,8 +142,7 @@ class LegalModelTemplatesTest extends TestCase
         }
     }
 
-    // The other documented way to put a model on a page: a plain {% include %} from an app's own template,
-    // with no renderer and therefore no post-processing. It must read as finished text, not as %site-name%
+    // The other documented way to put a model on a page: a plain {% include %} from an app's own template, with no renderer and therefore no post-processing. It must read as finished text, not as %site-name%
     #[DataProvider('models')]
     public function testAModelIncludedDirectlyPrintsNoMarker(string $model): void
     {
@@ -160,8 +153,7 @@ class LegalModelTemplatesTest extends TestCase
 
         $this->assertStringNotContainsString('%site-', $html, sprintf('%s leaks a marker when included directly', $model));
 
-        // The cookies policy is the one model that never names the site, so only the others can be checked
-        // for the resolved value itself
+        // The cookies policy is the one model that never names the site, so only the others can be checked for the resolved value itself
         if (str_contains(self::read($model, LegalModelCatalog::FALLBACK_LOCALE), "legal_var('site-name')")) {
             $this->assertStringContainsString('Acme', $html);
         }
@@ -172,8 +164,7 @@ class LegalModelTemplatesTest extends TestCase
         return new LegalModelRenderer($this->twig(), $this->placeholders(), new LegalModelCatalog());
     }
 
-    // The models' own Twig environment, with the handful of things they call that come from the app stubbed
-    // down to what the markup needs
+    // The models' own Twig environment, with the handful of things they call that come from the app stubbed down to what the markup needs
     private function twig(): Environment
     {
         $placeholders = $this->placeholders();

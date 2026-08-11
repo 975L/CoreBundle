@@ -15,11 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-/**
- * Sends a login post carrying no usable username straight back to the form.
- *
- * Scanners post to the login route with none of the expected fields, and FormLoginAuthenticator answers that with a BadRequestHttpException - a legitimate 400, but one the kernel error listener logs at ERROR level, so a few bots are enough to bury the real errors of a production log. Nothing is being let through here: such a request could never authenticate anyone, it just gets the redirect a failed login would have gotten anyway, without the exception.
- */
+// Sends a login post carrying no usable username straight back to the form. Scanners post to the login route with none of the expected fields, and FormLoginAuthenticator answers that with a BadRequestHttpException - a legitimate 400, but one the kernel error listener logs at ERROR level, so a few bots are enough to bury the real errors of a production log. Nothing is being let through here: such a request could never authenticate anyone, it just gets the redirect a failed login would have gotten anyway, without the exception.
 class LoginRequestSubscriber implements EventSubscriberInterface
 {
     // Name of the login route, as scaffolded by this bundle and used across the c975L apps

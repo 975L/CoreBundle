@@ -117,8 +117,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
         }
     }
 
-    // A hero takes a video too, but as a background filling the whole section and dropping everything laid out beside
-    // the text - the default variant showing that instead of the ordinary hero would be showing another block altogether
+    // A hero takes a video too, but as a background filling the whole section and dropping everything laid out beside the text - the default variant showing that instead of the ordinary hero would be showing another block altogether
     public function testHeroDefaultVariantGetsItsImagesAndNoVideo(): void
     {
         $attacher = $this->createAttacher(['image/*', 'video/mp4', 'video/webm', 'video/ogg'], multiUpload: true);
@@ -133,8 +132,7 @@ class BlockFixtureMediaAttacherTest extends TestCase
         }
     }
 
-    // The "video" variant is the other look shown beside it: the video filling the section, and one single image
-    // under it as the still - the medias a slideshow would have laid out beside the text never show there
+    // The "video" variant is the other look shown beside it: the video filling the section, and one single image under it as the still - the medias a slideshow would have laid out beside the text never show there
     public function testHeroVideoVariantGetsTheVideoAndOneStill(): void
     {
         $attacher = $this->createAttacher(['image/*', 'video/mp4', 'video/webm', 'video/ogg'], multiUpload: true);

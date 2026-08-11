@@ -1,5 +1,46 @@
 # UPGRADE
 
+## From `v1.7` to `v1.8`
+
+### A `flip_card` is no longer a `.card`
+
+The two kinds shared `sass/_cards.scss` until now: a flip card's face *was* a `.card`, header band, body
+padding and all. It is its own object from this release on — outlined, rounded, its title inside the face —
+and everything it is made of lives in `UiBundle/sass/_flip-card.scss`.
+
+On each site, two things to check:
+
+```bash
+grep -rn 'flip-card' assets/styles/ templates/
+```
+
+- **A stylesheet reaching a flip card through `.card`** (`.flip-card .card`, `.flip-card .card-header`…)
+  matches nothing any more. The faces are `.flip-card-face` / `.flip-card-front` / `.flip-card-back`, the
+  title is `.flip-card-title` and the content `.flip-card-body`.
+- **A theme retuning a flip card through the card's tokens** does the same through its own:
+  `--flip-card-radius`, `--flip-card-border-width`, `--flip-card-front-background`,
+  `--flip-card-back-background`, `--flip-card-title-size`, `--flip-card-text-size` and
+  `--flip-card-media-max-width`. That separation is the point — retuning a card no longer moves a flip card.
+
+The twelve accents work exactly as before, through `flip-card--accent-*` classes of the kind's own pointing
+`--flip-card-accent` at the same `--block-accent-*` tokens. Stored values are untouched: a flip card marked
+"red" stays marked "red", and the accent now paints its outline and its two titles rather than a header band.
+Nothing has to be re-entered.
+
+### The honeypot field hides itself with a class
+
+`Service\FormBotProtection::addHoneypotField()` writes `'class' => 'ui-field-aside'` on the decoy's row and
+label, where it used to write an off-screen `style=""`. A nonce-based `style-src` makes `'unsafe-inline'` a
+no-op and no nonce ever authorizes an *attribute*, so on any site carrying the CSP of `v1.7` both rules were
+dropped by the browser and the decoy showed up in the middle of the form, asking every visitor for a
+"Department".
+
+Nothing to do if the site's forms are built by the bundles. **A site rendering a form through its own form
+theme** has to let that class reach the rendered row and label like any other — a theme hard-coding
+`class="..."` on a row rather than merging `row_attr` swallows it, and the decoy becomes visible again. The
+class name deliberately states nothing: it ships in the compiled stylesheet, where a telling one would be a
+grep away for the very scripts the field exists to catch.
+
 ## From `v1.6` to `v1.7`
 
 ### The front layout now nonces `style-src`, so a theme's `style=""` stops being applied

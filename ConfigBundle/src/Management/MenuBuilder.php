@@ -67,8 +67,7 @@ class MenuBuilder
             yield from $essentialItems;
         }
 
-        // Links opting into 'advanced' join the same submenu as the CRUD items, which is why they are resolved
-        // before it is yielded rather than inside getLinkItems() below
+        // Links opting into 'advanced' join the same submenu as the CRUD items, which is why they are resolved before it is yielded rather than inside getLinkItems() below
         $essentialLinks = [];
         foreach ($this->getLinks() as $link) {
             $item = $this->buildLinkItem($link);

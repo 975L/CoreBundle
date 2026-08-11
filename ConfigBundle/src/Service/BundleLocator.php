@@ -48,11 +48,7 @@ class BundleLocator
         return $directories;
     }
 
-    /**
-     * The directory of the c975L bundle a class belongs to, matched on its namespace - what lets a registry
-     * resolve a contribution back to the bundle that shipped it. Null for a class living anywhere else,
-     * the consuming application's own services included.
-     */
+    // The directory of the c975L bundle a class belongs to, matched on its namespace - what lets a registry resolve a contribution back to the bundle that shipped it. Null for a class living anywhere else, the consuming application's own services included.
     public function directoryForClass(string $class): ?string
     {
         $path = null;

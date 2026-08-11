@@ -18,7 +18,7 @@ class Nl2brExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            // Écrase le filtre natif 'nl2br' de Twig, pour un <br> HTML5 au lieu de son <br /> - 'pre_escape' est celui du natif, sans lequel {{ value|nl2br }} sortirait non échappé ({{ value|raw|nl2br }} passe toujours à travers)
+            // Overrides Twig's own 'nl2br' filter, for an HTML5 <br> instead of its <br /> - 'pre_escape' is the native one's, without which {{ value|nl2br }} would come out unescaped ({{ value|raw|nl2br }} always goes through)
             new TwigFilter('nl2br', [self::class, 'nl2br'], ['pre_escape' => 'html', 'is_safe' => ['html']]),
         ];
     }

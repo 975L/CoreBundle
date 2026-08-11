@@ -12,12 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-/*
- * The page's vertical rhythm: one step, declared on the top edge of every section-level block and nowhere
- * else, so any two blocks are parted by exactly one. Every defect this locks was live at once on 975l.com -
- * a kind left out of the rhythm sat flush against the one above it, and the two kinds padding their bottom
- * too parted their pair by two steps.
- */
+// The page's vertical rhythm: one step, declared on the top edge of every section-level block and nowhere else, so any two blocks are parted by exactly one. Every defect this locks was live at once on 975l.com - a kind left out of the rhythm sat flush against the one above it, and the two kinds padding their bottom too parted their pair by two steps.
 class SectionRhythmTest extends TestCase
 {
     // Read through the token, never written out: a rule carrying the value itself is one a theme cannot retune
@@ -31,10 +26,7 @@ class SectionRhythmTest extends TestCase
     // Laid out by their own container rather than by the page, and deliberately outside the rhythm
     private const OUTSIDE_THE_RHYTHM = ['.hero'];
 
-    /**
-     * Every kind the margin reset names is a page-level block, and every page-level block owns a step.
-     * A kind added to the reset and left out of the rhythm is the bug ".flex-columns-section" carried.
-     */
+    // Every kind the margin reset names is a page-level block, and every page-level block owns a step. A kind added to the reset and left out of the rhythm is the bug ".flex-columns-section" carried.
     public function testEveryPageLevelKindOwnsAStep(): void
     {
         $css = $this->normalize('styles.min.css');
@@ -54,11 +46,7 @@ class SectionRhythmTest extends TestCase
         }
     }
 
-    /*
-     * The step is declared on the top edge only. A bottom one is added to the next block's top one and parts
-     * that pair by two - which is what .hero and .cta-band did until the rhythm was harmonized. The exception
-     * is a flat: it paints down to its own edge, and its content would otherwise sit right on that edge.
-     */
+    // The step is declared on the top edge only. A bottom one is added to the next block's top one and parts that pair by two - which is what .hero and .cta-band did until the rhythm was harmonized. The exception is a flat: it paints down to its own edge, and its content would otherwise sit right on that edge.
     public function testOnlyAFlatPadsItsBottomEdge(): void
     {
         $css = $this->normalize('styles.min.css');
@@ -88,11 +76,7 @@ class SectionRhythmTest extends TestCase
         ));
     }
 
-    /*
-     * The row of cards Blocks.html.twig synthesizes around consecutive "card" blocks is a page-level block with
-     * no kind of its own for the reset to name, and its cards drop their margin inside it - so the rhythm reaches
-     * it through this rule alone, without which it sits flush against the block above.
-     */
+    // The row of cards Blocks.html.twig synthesizes around consecutive "card" blocks is a page-level block with no kind of its own for the reset to name, and its cards drop their margin inside it - so the rhythm reaches it through this rule alone, without which it sits flush against the block above.
     public function testTheBareRowOfCardsOwnsAStep(): void
     {
         $this->assertMatchesRegularExpression(

@@ -12,9 +12,7 @@ namespace c975L\UiBundle\Contract;
 
 use c975L\UiBundle\Entity\Block;
 
-/**
- * Implement to add extra cache tags for a block kind whose rendered output depends on data outside the Block/Media entities themselves (e.g. articles_slider resolves another Page's own blocks live at render time) - BlockCacheInvalidationListener only ever invalidates "block_{id}", so a kind depending on something else needs its own extra tag plus its own invalidation elsewhere.
- */
+// Implement to add extra cache tags for a block kind whose rendered output depends on data outside the Block/Media entities themselves (e.g. articles_slider resolves another Page's own blocks live at render time) - BlockCacheInvalidationListener only ever invalidates "block_{id}", so a kind depending on something else needs its own extra tag plus its own invalidation elsewhere.
 interface BlockCacheTagProviderInterface
 {
     /**

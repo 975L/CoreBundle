@@ -1,13 +1,12 @@
 {% form_theme form with ['@EasyAdmin/crud/form_theme.html.twig', '@c975LUi/form/block_theme.html.twig', '@c975LUi/form/icon_picker_theme.html.twig'] %}
 
-{% for child in form.data %}
-    {{ form_row(child) }}
-{% endfor %}
-{{ form_rest(form.data) }}
-{% if form.medias is defined %}
+{# The fragment the kind picker loads over AJAX. The data sub-form's own layout - the fieldsets a kind groups its fields into, and the media collection it may hoist among them - is in the theme above ("ui_block_data_widget"), so this fragment and the EasyAdmin screen that renders the same form on page load lay it out identically #}
+{{ form_row(form.data) }}
+{# Rendered by the widget above when the kind hoists it, and skipped here in that case: Symfony marks a view rendered the moment it is #}
+{% if form.medias is defined and not form.medias.rendered %}
     {{ form_row(form.medias) }}
 {% endif %}
-{% if form.mediaUpload is defined %}
+{% if form.mediaUpload is defined and not form.mediaUpload.rendered %}
     {{ form_row(form.mediaUpload) }}
 {% endif %}
 {% if form.slots is defined %}

@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Wraps an EmailTemplateRenderer body in the app's own branded layout, so preview and real send match.
- */
+// Wraps an EmailTemplateRenderer body in the app's own branded layout, so preview and real send match.
 interface EmailLayoutProviderInterface
 {
     /**

@@ -109,8 +109,7 @@ class MenuProviderTest extends TestCase
         $this->assertSame('label.block_showcase_help', $links['block_showcase']['description']);
     }
 
-    // The one non-CRUD screen of this bundle: customizing a legal model is not an entity CRUD, it edits one
-    // block's delta against templates the bundle ships (see LegalModelController)
+    // The one non-CRUD screen of this bundle: customizing a legal model is not an entity CRUD, it edits one block's delta against templates the bundle ships (see LegalModelController)
     public function testGetLinksContributesTheLegalModelsScreen(): void
     {
         $links = (new MenuProvider($this->createConfigService(), $this->createTranslator()))->getLinks();

@@ -1,4 +1,7 @@
 /* CARDS */
+// The corner an editor picked (sass/_block-surface.scss), or the card's own token when they left it on "theme". A sass variable rather than eight hand-written var() calls: the header band has to curve on the very same value one pixel tighter, and the two drifting apart shows the card's background through as a white sliver along the top corners
+$radius: var(--block-radius, var(--radius-card));
+
 .cards {
     display: flex;
     flex-direction: row;
@@ -21,10 +24,9 @@
 .card {
     margin: 1em auto;
     width: clamp(300px, 380px, 90vw);
-    // The accented card is outlined in its own hue, so the header band reads as the top of one colored
-    // object rather than as a patch sitting inside a grey box. An unaccented card keeps the neutral border
+    // The accented card is outlined in its own hue, so the header band reads as the top of one colored object rather than as a patch sitting inside a grey box. An unaccented card keeps the neutral border
     border: 1px solid var(--card-accent, var(--input-border-color));
-    border-radius: var(--radius-card);
+    border-radius: $radius;
     background-color: var(--card-background);
     display: flex;
     flex-direction: column;
@@ -33,13 +35,16 @@
     position: relative;
 }
 
-// The twelve hues BlockAccentChoiceType offers. Each only points --card-accent at its own token (see
-// sass/_tokens.scss) and paints nothing itself: the header band and the card's outline below are what
-// show the accent, so a thirteenth hue is one line and nothing else.
-// A site retunes a hue from its own theme.css without the stored value - a color name, not a meaning -
-// ever changing with it.
-// Written out rather than looped over the twelve names: an interpolated var(--block-accent-#{$hue}) reads
-// as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
+// A card is a flat panel until an editor asks for a shadow, so the step class is what declares one at all - a card left on "theme" carries no box-shadow declaration here, exactly as before the field existed.
+// Stated on the card *and* its own step class rather than as a "var(--block-shadow, none)" on ".card": a card carrying SiteBundle's ".box-shadow" utility from its classes field has to keep that shadow, and both sheets are contributed at the same priority - a single-class rule here would win or lose on concatenation order
+.card:is(.block-shadow-none, .block-shadow-small, .block-shadow-medium, .block-shadow-large) {
+    // The fallback is unreachable - each of the four classes above declares the token - and stated anyway: it is the card's own default, so the rule still says what a card looks like without reading another file
+    box-shadow: var(--block-shadow, none);
+}
+
+// The twelve hues BlockAccentChoiceType offers. Each only points --card-accent at its own token (see sass/_tokens.scss) and paints nothing itself: the header band and the card's outline below are what show the accent, so a thirteenth hue is one line and nothing else.
+// A site retunes a hue from its own theme.css without the stored value - a color name, not a meaning - ever changing with it.
+// Written out rather than looped over the twelve names: an interpolated var(--block-accent-#{$hue}) reads as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
 .card--accent-red {
     --card-accent: var(--block-accent-red);
 }
@@ -65,10 +70,8 @@
     --card-accent: var(--block-accent-grey);
 }
 
-// The four light enough that the white above would fall under the 4.5:1 WCAG AA asks of the header's
-// title - yellow worst at 2.2:1. They carry dark text instead, and stop the icon's inversion with it.
-// Fixed values, not var(--black): --black is swapped for a near-white in dark mode (SiteBundle's
-// sass/_theme-dark.scss) while the hue itself, a plain hex, stays put - the pair has to move together
+// The four light enough that the white above would fall under the 4.5:1 WCAG AA asks of the header's title - yellow worst at 2.2:1. They carry dark text instead, and stop the icon's inversion with it.
+// Fixed values, not var(--black): --black is swapped for a near-white in dark mode (SiteBundle's sass/_theme-dark.scss) while the hue itself, a plain hex, stays put - the pair has to move together
 .card--accent-orange {
     --card-accent: var(--block-accent-orange);
     --card-accent-color: #000;
@@ -90,41 +93,31 @@
     --card-accent-invert: 0;
 }
 
-// ".cards" already spaces its children with "gap" - a card's own margin would stack on top of it
-.cards > .card {
+// ".cards" already spaces its children with "gap" - a card's own margin would stack on top of it.
+// Descendant, not the child combinator: a block is rendered inside wrappers that are "display: contents" (".block-animation" for its entrance effect, ".block-editable" for the editor's overlay), which leaves the card the flex item of the row while making it a grandchild in the DOM - and a combinator reading the DOM misses exactly the cards carrying an animation
+.cards .card {
     margin: 0;
 }
 
-// The band takes the card's own accent, so a card marked "red" is not headed with a --primary blue. The
-// fallback is what an unaccented card has always shown - and what the ".card-header" the management
-// accordion reuses outside any card shows, --card-accent being set by the twelve classes above and by
-// nothing else
+// The band takes the card's own accent, so a card marked "red" is not headed with a --primary blue. The fallback is what an unaccented card has always shown - and what the ".card-header" the management accordion reuses outside any card shows, --card-accent being set by the twelve classes above and by nothing else
 .card-header,
 h2.card-header {
-    // Family and alignment stated, not inherited: the band holds an <h2> on a card and a <div> on an accordion,
-    // and the theme's own h1-h6 rule would center the first while the second stayed flush left
+    // Family and alignment stated, not inherited: the band holds an <h2> on a card and a <div> on an accordion, and the theme's own h1-h6 rule would center the first while the second stayed flush left
     font-family: var(--font-family-title);
     text-align: start;
     background-color: var(--card-accent, var(--primary));
     color: var(--card-accent-color, var(--white));
-    // Same hue as the band above it, so the separator disappears into it - a grey line under an accented
-    // band would cut the card's own outline in two. It stays visible on an unaccented card, where the band
-    // is --primary and the outline is the neutral border it has always been
+    // Same hue as the band above it, so the separator disappears into it - a grey line under an accented band would cut the card's own outline in two. It stays visible on an unaccented card, where the band is --primary and the outline is the neutral border it has always been
     border-bottom: 1px solid var(--card-accent, var(--input-border-color));
     padding: 0.5em 1em;
     margin: 0;
     width: 100%;
-    // One pixel under --radius-card, which is the card's *outer* radius: the band sits inside the card's
-    // 1px border, where the curve is that much tighter. Matching the outer value instead rounds the band
-    // more than the corner containing it, and the card's own background shows through as a white sliver
-    border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0;
+    // One pixel under the card's *outer* radius: the band sits inside the card's 1px border, where the curve is that much tighter. Matching the outer value instead rounds the band more than the corner containing it, and the card's own background shows through as a white sliver
+    border-radius: calc(#{$radius} - 1px) calc(#{$radius} - 1px) 0 0;
 }
 
-// An icon is an <img>, so it paints the SVG file's own fill - black - instead of inheriting the header's
-// color like the title next to it does. Whitened here rather than by a "white" class on the markup, so
-// every card gets it, whichever template built the icon (see the ".white" utility in _images.scss).
-// "brightness(0)" flattens it to black first; the inversion after is what turns that black white, so the
-// four light hues above switch the icon with their title by setting the amount to 0 rather than 1
+// An icon is an <img>, so it paints the SVG file's own fill - black - instead of inheriting the header's color like the title next to it does. Whitened here rather than by a "white" class on the markup, so every card gets it, whichever template built the icon (see the ".white" utility in _images.scss).
+// "brightness(0)" flattens it to black first; the inversion after is what turns that black white, so the four light hues above switch the icon with their title by setting the amount to 0 rather than 1
 .card-header .icon {
     filter: brightness(0) invert(var(--card-accent-invert, 1));
 }
@@ -148,19 +141,14 @@ h2.card-header {
     flex: 1;
 }
 
-// A card's tail - the text and the button the "card"/"collection" adapters wrap in ".card-data" - is
-// pinned to the bottom of the body, so a row of cards holding images of unequal heights and texts of
-// unequal lengths still lines every button up on one line. ".cards" already stretches the cards
-// themselves to a common height; this is what stretches the *body* the pinning needs to have room in.
-// ":has()" keeps it to the bodies those two adapters build: a card whose body is free content stays in
-// plain block flow, where adjacent margins still collapse
+// A card's tail - the text and the button the "card"/"collection" adapters wrap in ".card-data" - is pinned to the bottom of the body, so a row of cards holding images of unequal heights and texts of unequal lengths still lines every button up on one line. ".cards" already stretches the cards themselves to a common height; this is what stretches the *body* the pinning needs to have room in.
+// ":has()" keeps it to the bodies those two adapters build: a card whose body is free content stays in plain block flow, where adjacent margins still collapse
 .card-body:has(> .card-data) {
     display: flex;
     flex-direction: column;
 }
 
-// Padding, not margin: "margin-top" is what does the pinning now, and the 1em separating the tail from
-// whatever precedes it has to survive on a card tall enough that there is no free space left to absorb
+// Padding, not margin: "margin-top" is what does the pinning now, and the 1em separating the tail from whatever precedes it has to survive on a card tall enough that there is no free space left to absorb
 .card-data {
     margin-top: auto;
     padding-top: 1em;

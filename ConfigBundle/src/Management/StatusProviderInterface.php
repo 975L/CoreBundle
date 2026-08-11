@@ -10,14 +10,10 @@
 
 namespace c975L\ConfigBundle\Management;
 
-/**
- * To add a StatusProvider, you need to: add the Management folder in the src/ folder of your bundle; create a class implementing StatusProviderInterface; ConfigBundle will automatically detect it and add its data to the report served by the /status/report route (see StatusReportBuilder), under the key it declares. Meant for the few numbers a maintainer wants to see across several sites at once - an order backlog, a moderation queue - never for the content itself: the report leaves the site, so it must stay small and hold nothing sensitive.
- */
+// To add a StatusProvider, you need to: add the Management folder in the src/ folder of your bundle; create a class implementing StatusProviderInterface; ConfigBundle will automatically detect it and add its data to the report served by the /status/report route (see StatusReportBuilder), under the key it declares. Meant for the few numbers a maintainer wants to see across several sites at once - an order backlog, a moderation queue - never for the content itself: the report leaves the site, so it must stay small and hold nothing sensitive.
 interface StatusProviderInterface
 {
-    /**
-     * Stable identifier for this provider's data (eg. "shop", "book"), used as the key it occupies in the report's "extra" section.
-     */
+    // Stable identifier for this provider's data (eg. "shop", "book"), used as the key it occupies in the report's "extra" section.
     public function getStatusKey(): string;
 
     /**

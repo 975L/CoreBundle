@@ -50,8 +50,7 @@ final class SubmissionIntegrity
         return self::countVariables($submitted, $limit) >= $limit;
     }
 
-    // Counts the leaves PHP itself counted while parsing, stopping at the limit rather than walking a whole
-    // deeply nested body to answer a question already settled
+    // Counts the leaves PHP itself counted while parsing, stopping at the limit rather than walking a whole deeply nested body to answer a question already settled
     private static function countVariables(array $values, int $stopAt): int
     {
         $count = 0;

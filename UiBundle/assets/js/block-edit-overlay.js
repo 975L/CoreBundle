@@ -46,6 +46,8 @@ export default class extends Controller {
         this.positionStyle = null;
         // Dropped along with its sheet, so a later connect() builds a new element rather than mutating a detached rule
         this.positionRule = null;
+        // Cleared with them: the next document is the one that decides whether a <style> of ours is authorized
+        this.positionUnavailable = false;
 
         document.removeEventListener("mouseover", this.onMouseOver);
         document.removeEventListener("mouseout", this.onMouseOut);
@@ -141,14 +143,30 @@ export default class extends Controller {
     }
 
     position(target) {
-        // The wrapper is display:contents and measures as a zero rect, so its rendered child is measured instead
-        const rect = (target.firstElementChild || target).getBoundingClientRect();
+        // A wrapper is display:contents and measures as a zero rect, so the descent goes on until something painted is measured: the block can sit under several of them stacked (.block-editable, then .block-animation)
+        let measured = target;
+        let rect = measured.getBoundingClientRect();
+        while (0 === rect.width && 0 === rect.height && measured.firstElementChild) {
+            measured = measured.firstElementChild;
+            rect = measured.getBoundingClientRect();
+        }
 
         // Measured coordinates can't be carried by a class, and a style written from JS onto the element is never covered by a nonce, so they go into a nonce'd <style> - the only inline form a nonce authorizes
-        if (!this.positionRule) {
+        if (!this.positionRule && !this.positionUnavailable) {
             this.positionStyle = createNoncedStyleElement();
-            this.positionStyle.sheet.insertRule(".block-edit-overlay-btn{top:0;left:0}", 0);
-            this.positionRule = this.positionStyle.sheet.cssRules[0];
+            // A CSP that rejected the element leaves no sheet behind. Giving up once, rather than throwing out of a mouseover handler - this is an editor's convenience, and it must not take the page down with it. Remembered, or every pointer move would append one more dead <style> to the head
+            if (this.positionStyle.sheet) {
+                this.positionStyle.sheet.insertRule(".block-edit-overlay-btn{top:0;left:0}", 0);
+                this.positionRule = this.positionStyle.sheet.cssRules[0];
+            } else {
+                this.positionStyle.remove();
+                this.positionStyle = null;
+                this.positionUnavailable = true;
+            }
+        }
+
+        if (!this.positionRule) {
+            return;
         }
 
         // The rule is mutated through the CSSOM rather than rewritten: this runs on every scroll event, and rewriting textContent would re-parse the sheet each time. The <style> element stays the same one, so the nonce still covers it

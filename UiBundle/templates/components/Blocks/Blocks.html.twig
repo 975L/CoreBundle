@@ -1,4 +1,4 @@
-{# Consecutive card blocks are wrapped in a ".cards" flex row, else they stack instead of lining up. "flip_card" counts as one: it is the same measure and the same box (see sass/_flip-card.scss), so the two mix in one row #}
+{# Consecutive card blocks are wrapped in a ".cards" flex row, else they stack instead of lining up. "flip_card" counts as one: it is an object of its own (see sass/_flip-card.scss) but laid out on the very same measure, so the two mix in one row #}
 {% set cardKinds = ['card', 'flip_card'] %}
 {% set kinds = blocks|map(b => b.kind) %}
 {# Editor-only: resolving edit URLs runs a query nobody else would see the result of #}

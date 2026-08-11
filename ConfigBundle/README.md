@@ -239,6 +239,14 @@ The application file is loaded exactly like a bundle's one, so an app needing a 
 
 New entries (new `slug`) are inserted with their `value` from the JSON. For entries that already exist, only the metadata fixed by the bundle author — `label`, `kind`, `choices`, `group`, `severity`, `description`, `restricted`, `sensitive` — is re-synced from the JSON on every run; the `value` carries production state and is never overwritten, so editing a `configs.json` file (e.g. moving a config to a new group, fixing a typo in a label) and re-running `load-all` is enough to propagate the change, without risking an admin-set value.
 
+### Seeded defaults
+
+One exception to that, and only one: **a row holding nothing takes the value its declaration carries**. A site installed before an entry gained a default held it empty where a fresh install held the value, so two sites on the same version answered differently — and the back office showed an empty field whose real answer lived in a fallback (a CSS `var(--x, …)`, a `?: DEFAULT` in a service) the admin had no way of reading. Seeding puts the answer where it is asked about.
+
+Anything an admin typed is left alone, empty being the only state that is ever written to. Which is what an entry whose *emptiness* carries a meaning has to reckon with: clearing a field writes `null`, the very state this reads as "never filled in", so such an entry names its meaning with a value of its own rather than by being cleared — `0` for the retention entries ("keep everything"), `none` for `seo-robots-ai-crawlers-source` ("review this list by hand"). An entry with nothing sensible to seed — an API key, a site's own url, anything carrying a `severity` so the dashboard asks for it — simply declares no value and keeps its empty row.
+
+A value seeded into a `sensitive` entry is encrypted on the way in, exactly as a fresh install's would be.
+
 `sensitive` is the one flag whose change also touches the value, because the two can't be separated: an entry that becomes sensitive gets its value encrypted, one that stops being sensitive gets it decrypted. Without that, dropping `"sensitive": true` from a declaration would leave a `C975L:…` string sitting in what is now a plain-text setting. When the conversion can't be done — no `C975L_VAULT_KEY`, or a value encrypted with a different one — the flag is left as it was rather than storing something unusable, and the next run picks it up once the key is in place.
 
 A file that can't be loaded — an unparsable JSON, a database refusing the insert — is reported with a `✗` and the run carries on to the next one, so one broken bundle doesn't hide what the others would have said. The command then exits with a failure code, one unloaded file being enough: it runs unattended in deployment scripts, where that single line would otherwise scroll by and the batch carry on with the entries that file declares missing from the site.
@@ -958,7 +966,7 @@ The three are added to the app's `.gitignore` by `c975l:scaffold:install`, being
 
 ### Keeping the AI crawler list current
 
-`seo-robots-ai-crawlers` is the one thing here that goes stale on its own: the community list gains a handful of names every few months while nothing in the site changes. So the `ai-crawlers` health check runs **monthly** against `seo-robots-ai-crawlers-source` ([ai.robots.txt](https://github.com/ai-robots-txt/ai.robots.txt) by default) and reports what appeared upstream that this site doesn't block — `c975l:seo:crawlers:update`, or the "Update the AI crawlers" dashboard tile, then merges it in. Clear the source config to keep the list by hand: nothing is fetched at all then.
+`seo-robots-ai-crawlers` is the one thing here that goes stale on its own: the community list gains a handful of names every few months while nothing in the site changes. So the `ai-crawlers` health check runs **monthly** against `seo-robots-ai-crawlers-source` ([ai.robots.txt](https://github.com/ai-robots-txt/ai.robots.txt) by default) and reports what appeared upstream that this site doesn't block — `c975l:seo:crawlers:update`, or the "Update the AI crawlers" dashboard tile, then merges it in. Set the source config to `none` to keep the list by hand: nothing is fetched at all then. Emptying it says the same until the next `c975l:config:load-all`, which writes the declared url back into any row left empty (see [seeded defaults](#seeded-defaults)) — the word is what makes the choice stick.
 
 The merge is **additive** — a name this site added itself, or one upstream has since dropped, is never removed by an update it didn't ask for — and **never imports the answer engines** (`Claude-User`, `OAI-SearchBot`, `PerplexityBot`, `ChatGPT-User`, `Googlebot`…, see `AiCrawlerListUpdater::ANSWER_ENGINES`), which the upstream list carries alongside the harvesters. They are named in the command's own output rather than silently skipped, a site staying free to block one by hand.
 
@@ -2090,7 +2098,7 @@ class MyService
 ```
 
 `credits_mode()` is how `display-made-by` and `display-hosted-by` are read — never `config()` directly. Both
-entries were a `bool` before `v1.6`, and a value is never rewritten by `c975l:config:load-all`: a site still
+entries were a `bool` before `v1.6`, and a stored value is never rewritten by `c975l:config:load-all`: a site still
 holding `"true"` gets `logo` back (all a credit could show then) and `"false"` gets `none`, where `config()`
 would hand over the string `"false"`, truthy in Twig. It always answers one of the four modes, so a template
 only has to ask whether the mode holds `logo`, `name`, or both.

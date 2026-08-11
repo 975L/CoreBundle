@@ -7,17 +7,11 @@
  */
 
 // The email counterpart of styles.scss. It exists here rather than in SiteBundle for the same reason
-// _forms.scss does: the EmailTemplate builder (entities, CRUD, EmailTemplateRenderer, the blocks under
-// templates/emails/blocks) is UiBundle's, and six bundles send mail - Ui, Site, Shop, Payment, Social,
-// Crowdfunding - of which only one can count on SiteBundle being installed.
+// _forms.scss does: the EmailTemplate builder (entities, CRUD, EmailTemplateRenderer, the blocks under templates/emails/blocks) is UiBundle's, and six bundles send mail - Ui, Site, Shop, Payment, Social, Crowdfunding - of which only one can count on SiteBundle being installed.
 //
-// It is deliberately NOT styles.scss with a few overrides. An email is laid out in tables and read by
-// clients that ignore most of a page stylesheet, so the page's own layout layer (sections, flats, grids,
-// flex) has no counterpart here - and the margins are tighter from the start, which is what removes the
-// need for the override file SiteBundle used to carry.
+// It is deliberately NOT styles.scss with a few overrides. An email is laid out in tables and read by clients that ignore most of a page stylesheet, so the page's own layout layer (sections, flats, grids, flex) has no counterpart here - and the margins are tighter from the start, which is what removes the need for the override file SiteBundle used to carry.
 //
-// Compiled to public/css/emails.min.css and reachable as @c975LUiCss/emails.min.css, so any bundle's own
-// layout can source() it before adding its branding (see SiteBundle's emails/fullLayout.html.twig).
+// Compiled to public/css/emails.min.css and reachable as @c975LUiCss/emails.min.css, so any bundle's own layout can source() it before adding its branding (see SiteBundle's emails/fullLayout.html.twig).
 @use '_tokens.scss';
 @use 'emails/_base.scss';
 @use 'emails/_typography.scss';

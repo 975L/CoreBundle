@@ -12,9 +12,7 @@ namespace c975L\UiBundle\Contract;
 
 use c975L\UiBundle\Entity\Block;
 
-/**
- * Lets any bundle owning blocks (e.g. SiteBundle's Page) resolve the EasyAdmin edit URL of a given Block's owning entity, for the front-end "Edit this block" hover button - see BlockEditUrlProviderPass.
- */
+// Lets any bundle owning blocks (e.g. SiteBundle's Page) resolve the EasyAdmin edit URL of a given Block's owning entity, for the front-end "Edit this block" hover button - see BlockEditUrlProviderPass.
 interface BlockEditUrlProviderInterface
 {
     /**

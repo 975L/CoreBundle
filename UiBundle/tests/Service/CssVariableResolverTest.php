@@ -29,8 +29,7 @@ class CssVariableResolverTest extends TestCase
         $this->assertStringContainsString('background-color: rgb(11, 55, 178)', $this->resolver->resolve($css));
     }
 
-    // --primary reads var(--c975l-color-primary, var(--button-background-primary)), so a value is reached
-    // through several hops before it is a literal
+    // --primary reads var(--c975l-color-primary, var(--button-background-primary)), so a value is reached through several hops before it is a literal
     public function testItFollowsAChainOfTokens(): void
     {
         $css = ':root { --button-background-primary: rgb(11, 55, 178); --primary: var(--c975l-color-primary, var(--button-background-primary)); } .btn { color: var(--primary); }';
@@ -38,8 +37,7 @@ class CssVariableResolverTest extends TestCase
         $this->assertStringContainsString('color: rgb(11, 55, 178)', $this->resolver->resolve($css));
     }
 
-    // The whole point of resolving at render time rather than at compile time: the admin's own palette is
-    // written into a later :root block, and has to be what wins
+    // The whole point of resolving at render time rather than at compile time: the admin's own palette is written into a later :root block, and has to be what wins
     public function testTheLastRootBlockWins(): void
     {
         $css = ':root { --primary: rgb(11, 55, 178); } :root { --c975l-color-primary: #ff6600; --primary: var(--c975l-color-primary, rgb(11, 55, 178)); } .btn { color: var(--primary); }';
@@ -54,9 +52,7 @@ class CssVariableResolverTest extends TestCase
         $this->assertStringContainsString('border-radius: 5px', $this->resolver->resolve($css));
     }
 
-    // A fallback holding its own parentheses is what breaks a regex-based substitution: cut at the first
-    // comma, the fallback would come out as "color-mix(in srgb" and the rest would be lost. Taking it whole
-    // is what lets the mix below be computed at all
+    // A fallback holding its own parentheses is what breaks a regex-based substitution: cut at the first comma, the fallback would come out as "color-mix(in srgb" and the rest would be lost. Taking it whole is what lets the mix below be computed at all
     public function testItHandlesAFallbackHoldingParentheses(): void
     {
         $css = '.btn { background: var(--missing, color-mix(in srgb, rgb(1, 2, 3) 50%, white)); }';
@@ -72,8 +68,7 @@ class CssVariableResolverTest extends TestCase
         $this->assertStringContainsString('var(--nowhere)', $this->resolver->resolve($css));
     }
 
-    // The footer's border and link hover are mixed out of its background, so a token can still resolve to a
-    // color-mix - no better supported than a custom property in a mail client
+    // The footer's border and link hover are mixed out of its background, so a token can still resolve to a color-mix - no better supported than a custom property in a mail client
     public function testItComputesASrgbColorMix(): void
     {
         $css = ':root { --footer-background: rgb(11, 55, 178); } footer { border-top: solid color-mix(in srgb, var(--footer-background) 80%, black) 2px; }';

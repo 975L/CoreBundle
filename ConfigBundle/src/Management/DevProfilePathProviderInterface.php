@@ -10,9 +10,7 @@
 
 namespace c975L\ConfigBundle\Management;
 
-/**
- * To declare the paths c975l:dev-profile:run has to profile, you need to: add the Management folder in the src/ folder of your bundle; create a class implementing DevProfilePathProviderInterface, marked #[When('dev')]; ConfigBundle will automatically detect it and run its paths through the kernel (see DevProfileRunner), same auto-detection mechanism as HealthCheckProviderInterface. Local paths only: unlike the health check, which fetches the live site over HTTP at "site-url" (the production site, even when run from a dev machine), this profiles the very code and database the developer has in front of them.
- */
+// To declare the paths c975l:dev-profile:run has to profile, you need to: add the Management folder in the src/ folder of your bundle; create a class implementing DevProfilePathProviderInterface, marked #[When('dev')]; ConfigBundle will automatically detect it and run its paths through the kernel (see DevProfileRunner), same auto-detection mechanism as HealthCheckProviderInterface. Local paths only: unlike the health check, which fetches the live site over HTTP at "site-url" (the production site, even when run from a dev machine), this profiles the very code and database the developer has in front of them.
 interface DevProfilePathProviderInterface
 {
     /**

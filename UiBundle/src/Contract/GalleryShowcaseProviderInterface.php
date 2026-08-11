@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Implement to add non-block content to a block showcase (see GalleryShowcaseRegistry), for a component or Twig function whose visual styles are worth showcasing but that isn't a "ui.block" kind.
- */
+// Implement to add non-block content to a block showcase (see GalleryShowcaseRegistry), for a component or Twig function whose visual styles are worth showcasing but that isn't a "ui.block" kind.
 interface GalleryShowcaseProviderInterface
 {
     /**

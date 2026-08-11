@@ -1,6 +1,4 @@
-{# Renders the dashboard shortcuts as one flat grid of tiles, ordered by category with no heading per category
- # A shortcut is a CSRF-protected POST form unless it declares 'method' => 'GET'; 'role' is optional
- # The caller checks shortcuts|length > 0 #}
+{# Renders the dashboard shortcuts as one flat grid of tiles, ordered by category with no heading per category A shortcut is a CSRF-protected POST form unless it declares 'method' => 'GET'; 'role' is optional The caller checks shortcuts|length > 0 #}
 <div class="shortcuts-grid">
 {% for shortcut in shortcuts %}
     {% if shortcut.role is not defined or is_granted(shortcut.role) %}

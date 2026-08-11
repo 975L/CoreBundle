@@ -6,13 +6,8 @@
  * with this source code in the file LICENSE.
  */
 
-// A Bootstrap modal built on the fly to tell the user something went wrong, then removed from the DOM again - what
-// replaces window.alert() in the back-office, which blocks the whole tab and looks nothing like the rest of it.
-// EasyAdmin's own "#modal-action-confirmation" is deliberately not reused, unlike title-confirm.js does for an actual
-// confirmation: its button keeps whatever handler the last opened action attached to it (see its app.js, the listener
-// is only dropped once the button is actually clicked), so a click meant to dismiss a message could run a delete.
-// window.bootstrap is exposed globally by EasyAdmin's own admin.js; without it, the native alert is still better than
-// a message nobody sees.
+// A Bootstrap modal built on the fly to tell the user something went wrong, then removed from the DOM again - what replaces window.alert() in the back-office, which blocks the whole tab and looks nothing like the rest of it.
+// EasyAdmin's own "#modal-action-confirmation" is deliberately not reused, unlike title-confirm.js does for an actual confirmation: its button keeps whatever handler the last opened action attached to it (see its app.js, the listener is only dropped once the button is actually clicked), so a click meant to dismiss a message could run a delete. window.bootstrap is exposed globally by EasyAdmin's own admin.js; without it, the native alert is still better than a message nobody sees.
 export function showAdminMessage(title, message = '', closeLabel = 'OK') {
     if (!window.bootstrap) {
         window.alert([title, message].filter(Boolean).join('\n'));

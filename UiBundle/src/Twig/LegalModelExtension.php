@@ -30,17 +30,14 @@ class LegalModelExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            // All three return finished HTML: legal_var() a config value the models print, legal_model() a whole
-            // rendered document whose client-authored parts were escaped when they were stored, and
-            // legal_model_html() that same document for an app holding no block at all
+            // All three return finished HTML: legal_var() a config value the models print, legal_model() a whole rendered document whose client-authored parts were escaped when they were stored, and legal_model_html() that same document for an app holding no block at all
             new TwigFunction('legal_var', $this->legalVar(...), ['is_safe' => ['html']]),
             new TwigFunction('legal_model', $this->legalModel(...), ['is_safe' => ['html']]),
             new TwigFunction('legal_model_html', $this->legalModelHtml(...), ['is_safe' => ['html']]),
         ];
     }
 
-    // The site's own data inside a model - resolved on the spot, or written as a %marker% while the
-    // customization screen is collecting the model's units (see LegalModelPlaceholders)
+    // The site's own data inside a model - resolved on the spot, or written as a %marker% while the customization screen is collecting the model's units (see LegalModelPlaceholders)
     public function legalVar(string $slug): string
     {
         return $this->placeholders->value($slug);
@@ -58,10 +55,7 @@ class LegalModelExtension extends AbstractExtension
         );
     }
 
-    // The same document straight from a model identifier, for an app rendering a legal page from its own
-    // template rather than from a block - what a site installing ShopBundle without any page management needs
-    // for its terms of sales. No customization screen goes with it, so whatever delta is passed here is the
-    // caller's own
+    // The same document straight from a model identifier, for an app rendering a legal page from its own template rather than from a block - what a site installing ShopBundle without any page management needs for its terms of sales. No customization screen goes with it, so whatever delta is passed here is the caller's own
     public function legalModelHtml(string $model, ?string $latestUpdate = null, array $customization = [], ?string $locale = null): string
     {
         return $this->renderer->render(

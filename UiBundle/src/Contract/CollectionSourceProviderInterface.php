@@ -12,9 +12,7 @@ namespace c975L\UiBundle\Contract;
 
 use c975L\UiBundle\Model\CollectionItem;
 
-/**
- * Implement to expose a queryable collection of another bundle's own entities (books, products, projects...) to the "collection" block, without that block ever depending on the owning bundle - same auto-discovery mechanism as BlockFixtureProviderInterface, no tag needed.
- */
+// Implement to expose a queryable collection of another bundle's own entities (books, products, projects...) to the "collection" block, without that block ever depending on the owning bundle - same auto-discovery mechanism as BlockFixtureProviderInterface, no tag needed.
 interface CollectionSourceProviderInterface
 {
     /**

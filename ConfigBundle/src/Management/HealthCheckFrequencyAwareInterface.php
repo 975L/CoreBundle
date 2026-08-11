@@ -10,13 +10,9 @@
 
 namespace c975L\ConfigBundle\Management;
 
-/**
- * Implemented by a HealthCheckProvider whose cadence cannot be written on its class, because one class is registered several times over - one instance per source (see SiteBundle's DeclaredUrlsHealthCheckProvider, registered once per SitemapProviderInterface). Everything else states its cadence with the AsHealthCheck attribute and has no reason to implement this: HealthCheckRunner asks the instance first, then falls back to the class attribute, then to weekly.
- */
+// Implemented by a HealthCheckProvider whose cadence cannot be written on its class, because one class is registered several times over - one instance per source (see SiteBundle's DeclaredUrlsHealthCheckProvider, registered once per SitemapProviderInterface). Everything else states its cadence with the AsHealthCheck attribute and has no reason to implement this: HealthCheckRunner asks the instance first, then falls back to the class attribute, then to weekly.
 interface HealthCheckFrequencyAwareInterface
 {
-    /**
-     * One of AsHealthCheck::FREQUENCIES.
-     */
+    // One of AsHealthCheck::FREQUENCIES.
     public function getFrequency(): string;
 }

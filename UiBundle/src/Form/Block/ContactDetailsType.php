@@ -24,8 +24,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Url;
 
-// Every field is optional: the template renders only what was filled in, and ContactSnippetBuilder drops the rest
-// from the published graph rather than emitting it empty - which is what a microdata-based kind could not do.
+// Every field is optional: the template renders only what was filled in, and ContactSnippetBuilder drops the rest from the published graph rather than emitting it empty - which is what a microdata-based kind could not do.
 class ContactDetailsType extends AbstractType
 {
     use HasAnchorFieldTrait;
@@ -121,8 +120,7 @@ class ContactDetailsType extends AbstractType
             ]);
     }
 
-    // "default_protocol" prepends on submit, so a bare "example.com" is stored absolute: a relative href resolves
-    // against SiteBundle's sitewide <base href> - it would point back at the site - and schema.org takes no such URL
+    // "default_protocol" prepends on submit, so a bare "example.com" is stored absolute: a relative href resolves against SiteBundle's sitewide <base href> - it would point back at the site - and schema.org takes no such URL
     private function urlOptions(): array
     {
         return [

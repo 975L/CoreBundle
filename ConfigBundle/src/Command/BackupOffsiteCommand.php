@@ -51,18 +51,13 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 )]
 class BackupOffsiteCommand extends Command
 {
-    // Past this many deletions the sync aborts rather than carrying them over. The failure this guards against is
-    // not the exotic one: it's a gallery emptied by mistake, or a hacked site, propagated to the backup within hours.
-    // Aborting is the right answer - it costs a night's mirroring and a look from a human, against a copy that
-    // faithfully reproduces the damage
+    // Past this many deletions the sync aborts rather than carrying them over. The failure this guards against is not the exotic one: it's a gallery emptied by mistake, or a hacked site, propagated to the backup within hours.
+    // Aborting is the right answer - it costs a night's mirroring and a look from a human, against a copy that faithfully reproduces the damage
     private const MAX_DELETE = 100;
 
     private const DEFAULT_KEEP_DAYS = 15;
 
-    // Where --backup-dir puts what a sync would otherwise have overwritten or lost, one folder per day. Named for
-    // what an operator comes looking for - the previous version of a file - rather than for the rclone mechanism
-    // that fills it: "deleted/" reads as a bin holding only what was removed, when a file merely overwritten is in
-    // there too, and this is the folder someone opens on the day a gallery got emptied
+    // Where --backup-dir puts what a sync would otherwise have overwritten or lost, one folder per day. Named for what an operator comes looking for - the previous version of a file - rather than for the rclone mechanism that fills it: "deleted/" reads as a bin holding only what was removed, when a file merely overwritten is in there too, and this is the folder someone opens on the day a gallery got emptied
     private const PREVIOUS_FOLDER = 'previous';
 
     public function __construct(
@@ -95,8 +90,7 @@ class BackupOffsiteCommand extends Command
 
         $reason = $this->offsiteSynchronizer->getUnavailabilityReason();
         if (null !== $reason) {
-            // Not a failure: an install that has an outside machine pull is configured exactly like this, and the
-            // dashboard already alerts on its own if nothing has left the server for too long
+            // Not a failure: an install that has an outside machine pull is configured exactly like this, and the dashboard already alerts on its own if nothing has left the server for too long
             $io->warning($reason);
 
             return Command::SUCCESS;
@@ -145,9 +139,7 @@ class BackupOffsiteCommand extends Command
         return Command::SUCCESS;
     }
 
-    // Read back from the destination rather than counted here: an rclone run exiting 0 says the transfer was
-    // accepted, not that the files are there - the same reason this bundle reads its archives back with bzip2 --test
-    // instead of trusting tar's exit code
+    // Read back from the destination rather than counted here: an rclone run exiting 0 says the transfer was accepted, not that the files are there - the same reason this bundle reads its archives back with bzip2 --test instead of trusting tar's exit code
     private function verify(SymfonyStyle $io): array
     {
         $size = $this->offsiteSynchronizer->size('files');
@@ -160,9 +152,7 @@ class BackupOffsiteCommand extends Command
         return ['files' => $size['count'], 'bytes' => $size['bytes']];
     }
 
-    // The dated folders --backup-dir fills with what was overwritten or deleted. Where the destination takes its own
-    // snapshots this is belt and braces - and the snapshots are the better half of it: on a Storage Box they sit in a
-    // read-only ZFS directory this server couldn't touch even if its credentials leaked, which no purge run from here can claim
+    // The dated folders --backup-dir fills with what was overwritten or deleted. Where the destination takes its own snapshots this is belt and braces - and the snapshots are the better half of it: on a Storage Box they sit in a read-only ZFS directory this server couldn't touch even if its credentials leaked, which no purge run from here can claim
     private function purgePreviousFolders(SymfonyStyle $io): void
     {
         $configured = $this->configService->get('site-backup-offsite-keep-days');

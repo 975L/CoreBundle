@@ -117,8 +117,7 @@ class BackupResultRecorder
             : $this->translator->trans('label.health_check_backup_files_none', [], 'config');
     }
 
-    // The half of the row that used to be missing entirely. A dump that ran, was verified and never left the machine
-    // is a dump the fire takes with the server, and "backup ok" said exactly the same thing either way
+    // The half of the row that used to be missing entirely. A dump that ran, was verified and never left the machine is a dump the fire takes with the server, and "backup ok" said exactly the same thing either way
     private function offsiteSummary(array $outcome): string
     {
         $offsite = $outcome['offsite'];

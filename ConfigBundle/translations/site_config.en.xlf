@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="EUyn9gj">
                 <source>description.seo_robots_ai_crawlers_source</source>
-                <target>The community list the monthly health check compares yours to, and the "Update the AI crawlers" shortcut adds from. Leave it empty to keep your list by hand: nothing is fetched then.</target>
+                <target>The community list the monthly health check compares yours to, and the "Update the AI crawlers" shortcut adds from. Set it to "none" to keep your list by hand: nothing is fetched then. Left empty, the entry is written back with the default source at the next config load.</target>
             </trans-unit>
             <trans-unit id="lIc9kKR">
                 <source>description.seo_robots_block_ai</source>

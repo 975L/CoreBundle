@@ -1186,6 +1186,14 @@
                 <source>label.eyebrow</source>
                 <target>Antetítulo</target>
             </trans-unit>
+            <trans-unit id="wZl.GID">
+                <source>label.face_back</source>
+                <target>Reverso</target>
+            </trans-unit>
+            <trans-unit id="bDWBVol">
+                <source>label.face_front</source>
+                <target>Anverso</target>
+            </trans-unit>
             <trans-unit id="akTKyKA">
                 <source>label.favicon</source>
                 <target>Favicon</target>
@@ -2002,6 +2010,34 @@
                 <source>label.progress_percent</source>
                 <target>Porcentaje (0-100)</target>
             </trans-unit>
+            <trans-unit id="LRh8E5t">
+                <source>label.radius</source>
+                <target>Esquinas redondeadas</target>
+            </trans-unit>
+            <trans-unit id="gHMWbhE">
+                <source>label.radius_help</source>
+                <target>El redondeo de las esquinas del bloque. Cada nivel es un token que este sitio puede ajustar en su theme.css.</target>
+            </trans-unit>
+            <trans-unit id="7j7TwDx">
+                <source>label.radius_large</source>
+                <target>Pronunciado</target>
+            </trans-unit>
+            <trans-unit id="CZO7mIV">
+                <source>label.radius_medium</source>
+                <target>Medio</target>
+            </trans-unit>
+            <trans-unit id="hgcr4CS">
+                <source>label.radius_none</source>
+                <target>Ninguno</target>
+            </trans-unit>
+            <trans-unit id="1GMciBQ">
+                <source>label.radius_small</source>
+                <target>Ligero</target>
+            </trans-unit>
+            <trans-unit id="CUhpkad">
+                <source>label.radius_theme</source>
+                <target>Tema</target>
+            </trans-unit>
             <trans-unit id="8NHfPcl">
                 <source>label.ratio</source>
                 <target>Proporción</target>
@@ -2141,6 +2177,34 @@
             <trans-unit id="8wG6aGH">
                 <source>label.send</source>
                 <target>Enviar</target>
+            </trans-unit>
+            <trans-unit id="fOyk.uK">
+                <source>label.shadow</source>
+                <target>Sombra</target>
+            </trans-unit>
+            <trans-unit id="zkZdj2D">
+                <source>label.shadow_help</source>
+                <target>La sombra proyectada bajo el bloque. Cada nivel es un token que este sitio puede ajustar en su theme.css.</target>
+            </trans-unit>
+            <trans-unit id="Wcaflhz">
+                <source>label.shadow_large</source>
+                <target>Pronunciada</target>
+            </trans-unit>
+            <trans-unit id="UhqMzev">
+                <source>label.shadow_medium</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="WBLtGtV">
+                <source>label.shadow_none</source>
+                <target>Ninguna</target>
+            </trans-unit>
+            <trans-unit id="qAK74MW">
+                <source>label.shadow_small</source>
+                <target>Ligera</target>
+            </trans-unit>
+            <trans-unit id="xRRMpgY">
+                <source>label.shadow_theme</source>
+                <target>Tema</target>
             </trans-unit>
             <trans-unit id="M2zj2An">
                 <source>label.show_percent</source>

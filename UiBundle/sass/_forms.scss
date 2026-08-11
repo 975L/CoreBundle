@@ -9,13 +9,11 @@ $text-input-types: date, datetime-local, email, month, number, search, tel, time
 // The attributes making a field verifiable: ":user-valid" alone would paint any touched field green
 $constraints: '[required]', '[pattern]', '[minlength]', '[maxlength]', '[type="email"]', '[type="url"]', '[type="number"]', '[type="tel"]';
 
-// The two states, written once: they are read by the rules painting the field and again by the ones
-// hanging its glyph on the wrapper, and a state added to one but not the other is a half-marked field
+// The two states, written once: they are read by the rules painting the field and again by the ones hanging its glyph on the wrapper, and a state added to one but not the other is a half-marked field
 $invalid-state: ':is(.error, :user-invalid, :autofill:invalid, :-webkit-autofill:invalid)';
 $valid-state: ':is(.success, :is(#{$constraints}):is(:user-valid, :is(:autofill, :-webkit-autofill):valid))';
 
-// "<prefix>input[type="date"]<state>, <prefix>input[type="datetime-local"]<state>, ..." as a
-// comma-separated selector list. The prefix is what lets the same list be reused inside :has()
+// "<prefix>input[type="date"]<state>, <prefix>input[type="datetime-local"]<state>, ..." as a comma-separated selector list. The prefix is what lets the same list be reused inside :has()
 @function text-inputs($state: '', $prefix: '') {
     $selector: ();
     @each $type in $text-input-types {
@@ -45,9 +43,7 @@ label {
     margin-bottom: 5px;
     font-weight: 700;
     font-size: 0.9rem;
-    // Its own token rather than --black directly, which it defaults to: a label reads as the page's own
-    // ink and follows it into dark mode either way, but retuning it no longer means retuning --black -
-    // a variable .lead and SiteBundle's --navbar-text default read too
+    // Its own token rather than --black directly, which it defaults to: a label reads as the page's own ink and follows it into dark mode either way, but retuning it no longer means retuning --black - a variable .lead and SiteBundle's --navbar-text default read too
     color: var(--form-label-color);
 }
 
@@ -63,8 +59,7 @@ input {
     display: block;
     width: 100%;
     height: 34px;
-    // A box-shadow takes no room in the layout, so the 3px validation ring is drawn over whatever sits
-    // above and below - its own label, the previous field. The top margin is what keeps it clear
+    // A box-shadow takes no room in the layout, so the 3px validation ring is drawn over whatever sits above and below - its own label, the previous field. The top margin is what keeps it clear
     margin-block: var(--input-margin-block);
     padding: 6px 12px;
     font-size: 14px;
@@ -131,9 +126,7 @@ textarea:focus {
     border: 1px solid var(--input-focus-border-color);
     border-bottom: 2px solid var(--input-focus-border-color);
     box-shadow: 0 0 10px 2px var(--input-focus-shadow-color);
-    // The field's own ink, the same as at rest: focus is marked by the border and the ring, not by a
-    // change of text color. It used to read --black here, which dark mode hid (the two tokens hold the
-    // same value there) but which swapped the ink under any site retuning --form-input-color alone
+    // The field's own ink, the same as at rest: focus is marked by the border and the ring, not by a change of text color. It used to read --black here, which dark mode hid (the two tokens hold the same value there) but which swapped the ink under any site retuning --form-input-color alone
     color: var(--form-input-color);
 }
 
@@ -185,15 +178,9 @@ textarea:focus {
 // The type list is interpolated to tie the ":focus" rules' specificity, source order settling it
 // The ✓/✗ glyph carries the state without color alone (WCAG 1.4.1); a background-image, <input> taking no pseudo-element
 // Its fill can't follow the token, so the two hexes below must be restated if you retune it
-// ":is()" is what makes the two states share one rule safely: it is forgiving, so a browser not knowing
-// ":user-invalid" (Chrome < 119, Safari < 16.5) drops that argument alone. Listed flat, the one unknown
-// selector would invalidate the whole list and take the ".error" feedback down with it - on browsers
-// where the JS-driven check is the only one there is
-// ":autofill:invalid" covers the value the browser proposes on its own: autofilling is not user
-// interaction, so ":user-invalid" never fires on it and a prefilled login stayed unjudged. Plain
-// ":invalid" is safe in that pairing - a field the browser has filled always has content to judge.
-// ":-webkit-autofill" rides along for the versions predating the standard name, both harmless where
-// unknown thanks to the forgiving ":is()"
+// ":is()" is what makes the two states share one rule safely: it is forgiving, so a browser not knowing ":user-invalid" (Chrome < 119, Safari < 16.5) drops that argument alone. Listed flat, the one unknown selector would invalidate the whole list and take the ".error" feedback down with it - on browsers where the JS-driven check is the only one there is
+// ":autofill:invalid" covers the value the browser proposes on its own: autofilling is not user interaction, so ":user-invalid" never fires on it and a prefilled login stayed unjudged. Plain ":invalid" is safe in that pairing - a field the browser has filled always has content to judge.
+// ":-webkit-autofill" rides along for the versions predating the standard name, both harmless where unknown thanks to the forgiving ":is()"
 #{text-inputs($invalid-state)},
 textarea:is(.error, :user-invalid) {
     border: 1px solid var(--input-invalid-border-color);
@@ -212,19 +199,12 @@ textarea:is(.success, :is([required], [minlength], [maxlength]):user-valid) {
 }
 
 
-// The ✓/✗ carrying the state alongside the color - WCAG 1.4.1 forbids color as its only vehicle, and
-// red/green is exactly the pair deutan/protan color blindness cannot separate (~8% of men).
+// The ✓/✗ carrying the state alongside the color - WCAG 1.4.1 forbids color as its only vehicle, and red/green is exactly the pair deutan/protan color blindness cannot separate (~8% of men).
 //
-// It hangs on the field's wrapper rather than on the field itself. An <input> takes no pseudo-element, so
-// the glyph used to be a background-image on it - which Chrome throws away on an autofilled field, its own
-// UA sheet forcing "background-image: none !important" there. No author rule outranks a UA !important, so
-// a prefilled field kept its colored border and lost its glyph. Read off the wrapper through :has(), one
-// mechanism covers every state on every field, autofill included.
+// It hangs on the field's wrapper rather than on the field itself. An <input> takes no pseudo-element, so the glyph used to be a background-image on it - which Chrome throws away on an autofilled field, its own
+// UA sheet forcing "background-image: none !important" there. No author rule outranks a UA !important, so a prefilled field kept its colored border and lost its glyph. Read off the wrapper through :has(), one mechanism covers every state on every field, autofill included.
 //
-// Anchored from the bottom, not centered: the wrapper is either Symfony's own field <div> (label then
-// input) or the .has-toggle the password controller builds (input alone), and only the bottom edge sits
-// in the same place in both. --input-glyph-offset is that distance - retune it for a form theme that
-// puts anything after the input.
+// Anchored from the bottom, not centered: the wrapper is either Symfony's own field <div> (label then input) or the .has-toggle the password controller builds (input alone), and only the bottom edge sits in the same place in both. --input-glyph-offset is that distance - retune it for a form theme that puts anything after the input.
 div:has(#{text-inputs($invalid-state, '> ')}),
 div:has(#{text-inputs($valid-state, '> ')}) {
     position: relative;
@@ -268,4 +248,15 @@ div:has(#{text-inputs($valid-state, '> ')})::after {
     textarea {
         transition: none;
     }
+}
+
+// Takes a form row and its label off-screen. Used by FormBotProtection::addHoneypotField for the decoy field it plants, which is why the name says nothing: the class ships in the compiled stylesheet, where a name stating what the field is for would be one grep away for the very scripts it exists to catch.
+// Off-screen through a class and not the "style" attribute it used to carry: a nonce-based style-src makes 'unsafe-inline' a no-op, and no nonce ever authorizes an attribute - both rules were dropped by the browser and the decoy showed up in the middle of the form, asking every visitor for a "Department".
+// Not ".visuallyhidden": that one deliberately keeps its content in the accessibility tree, the opposite of what is wanted here - and its name is a well-known one, which would be a tell of its own
+.ui-field-aside {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
 }

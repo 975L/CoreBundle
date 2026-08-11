@@ -83,8 +83,7 @@ class SectionWrapMeasureTest extends TestCase
         }
     }
 
-    // A panel drawing a border and a background can't take padding gutters, so it is centered on the
-    // measure less those gutters instead - drop this and the panel runs the full page width again
+    // A panel drawing a border and a background can't take padding gutters, so it is centered on the measure less those gutters instead - drop this and the panel runs the full page width again
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testTheMarginGutteredRulesStayOnTheMeasure(string $file): void
     {

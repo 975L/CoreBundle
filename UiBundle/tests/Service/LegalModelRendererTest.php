@@ -22,8 +22,7 @@ class LegalModelRendererTest extends TestCase
 {
     private const MODEL = 'france/cookies';
 
-    // A stand-in for a real model, same shape as the shipped ones: an untagged "latest update" paragraph, a
-    // tagged loose <div>, a plain <section>, and a <section> holding two <h3> sub-units
+    // A stand-in for a real model, same shape as the shipped ones: an untagged "latest update" paragraph, a tagged loose <div>, a plain <section>, and a <section> holding two <h3> sub-units
     private const TEMPLATE = <<<'HTML'
         <div class="legal">
         	<p class="text text-center">Updated: {{ latestUpdate }}</p>

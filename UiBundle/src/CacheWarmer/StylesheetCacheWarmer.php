@@ -73,20 +73,24 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
                 ? $this->projectDir . '/' . $stylesheet
                 : $this->projectDir . '/public/' . $stylesheet;
             if (is_file($path)) {
-                $content[] = self::stripByteOrderMark((string) file_get_contents($path));
+                $content[] = self::stripComments(self::stripByteOrderMark((string) file_get_contents($path)));
             }
         }
 
         return implode("\n", $content);
     }
 
-    // A browser silently drops a UTF-8 BOM at the very start of a stylesheet, so one costs nothing while
-    // each file is served on its own <link>. Concatenated, every BOM but the first lands mid-file, where
-    // it is just a stray character: the rule following it becomes a parse error and is thrown away whole.
-    // Sass writes one into any --style=compressed output holding a non-ASCII byte, so this is not
-    // hypothetical - it is how bundles/build/site.css lost UiBundle's entire @layer of token defaults.
+    // A browser silently drops a UTF-8 BOM at the very start of a stylesheet, so one costs nothing while each file is served on its own <link>. Concatenated, every BOM but the first lands mid-file, where it is just a stray character: the rule following it becomes a parse error and is thrown away whole.
+    // Sass writes one into any --style=compressed output holding a non-ASCII byte, so this is not hypothetical - it is how bundles/build/site.css lost UiBundle's entire @layer of token defaults.
     private static function stripByteOrderMark(string $css): string
     {
         return str_starts_with($css, "\u{FEFF}") ? substr($css, 3) : $css;
+    }
+
+    // Comments are dropped here rather than from the sources: a site's own assets/styles/themes/*.css is deliberately almost all comments - every token ships commented out at its default, which is what makes the file readable - and each bundle's compiled sheet keeps its own header. Concatenated, that is a quarter of the bytes sent to every visitor for something no browser reads.
+    // "/*!" is left in place, the convention marking a header that must survive minification (a license, an authorship notice).
+    private static function stripComments(string $css): string
+    {
+        return preg_replace('#/\*(?!!).*?\*/#s', '', $css) ?? $css;
     }
 }

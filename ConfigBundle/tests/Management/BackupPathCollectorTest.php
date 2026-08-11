@@ -107,8 +107,7 @@ class BackupPathCollectorTest extends TestCase
         $this->assertSame([], $collector->getPaths(BackupPath::MODE_ARCHIVE));
     }
 
-    // Deduplicating equal paths isn't enough: an app declaring public/medias while a bundle declares
-    // public/medias/gallery would have the gallery mirrored twice, to two different places at the destination
+    // Deduplicating equal paths isn't enough: an app declaring public/medias while a bundle declares public/medias/gallery would have the gallery mirrored twice, to two different places at the destination
     public function testAPathCoveredByADeclaredAncestorIsDropped(): void
     {
         $this->create('public/medias/gallery/photo.jpg');

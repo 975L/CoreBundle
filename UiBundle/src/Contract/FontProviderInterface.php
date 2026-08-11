@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Exposes the app's own @font-face names so a "font" kind config renders as a <select>, not free text.
- */
+// Exposes the app's own @font-face names so a "font" kind config renders as a <select>, not free text.
 interface FontProviderInterface
 {
     /**

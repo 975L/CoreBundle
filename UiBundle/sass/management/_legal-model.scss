@@ -1,7 +1,6 @@
 /* LEGAL MODEL (management/legal_model_customize.html.twig) - spacing of the action row */
 
-// A class rather than a style="gap: 1rem": EasyAdmin's layout calls csp_nonce('style'), which makes
-// 'unsafe-inline' a no-op on style-src, and a nonce never covers a style attribute
+// A class rather than a style="gap: 1rem": EasyAdmin's layout calls csp_nonce('style'), which makes 'unsafe-inline' a no-op on style-src, and a nonce never covers a style attribute
 .legal-model-row-actions {
     gap: 1rem;
 }

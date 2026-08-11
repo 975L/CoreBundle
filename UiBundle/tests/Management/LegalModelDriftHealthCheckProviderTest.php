@@ -43,8 +43,7 @@ class LegalModelDriftHealthCheckProviderTest extends TestCase
         return $repository;
     }
 
-    // Stands in for whichever bundle owns the block (SiteBundle's Page in practice) - keyed by block id, and
-    // a null id (an unpersisted block, as built here) is exactly the "nobody claims it" case
+    // Stands in for whichever bundle owns the block (SiteBundle's Page in practice) - keyed by block id, and a null id (an unpersisted block, as built here) is exactly the "nobody claims it" case
     private function createLocationRegistry(?string $url, string $label = 'Legal notice'): BlockLocationRegistry
     {
         $registry = new BlockLocationRegistry();
@@ -74,8 +73,7 @@ class LegalModelDriftHealthCheckProviderTest extends TestCase
         return $customizer;
     }
 
-    // Appends the parameters rather than substituting them like the other provider tests do: the summary is
-    // built from a key whose own text lives in the XLF files, so a strtr() stub would swallow what it carries
+    // Appends the parameters rather than substituting them like the other provider tests do: the summary is built from a key whose own text lives in the XLF files, so a strtr() stub would swallow what it carries
     private function createTranslator(): TranslatorInterface
     {
         $translator = $this->createStub(TranslatorInterface::class);
@@ -128,8 +126,7 @@ class LegalModelDriftHealthCheckProviderTest extends TestCase
         $this->assertSame([], $this->createProvider($blocks, $drifted)->runChecks());
     }
 
-    // No public url (unpublished owner, "site-url" not set yet, or no bundle owning blocks at all): a health
-    // check row is keyed on the address it tested, so there is nothing to report
+    // No public url (unpublished owner, "site-url" not set yet, or no bundle owning blocks at all): a health check row is keyed on the address it tested, so there is nothing to report
     public function testRunChecksSkipsABlockWithNoPublicUrl(): void
     {
         $blocks = [$this->createBlock(['model' => 'france/legal-notice'])];

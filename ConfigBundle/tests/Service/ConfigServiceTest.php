@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigService;
 use c975L\ConfigBundle\Service\VaultEncryptor;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -300,6 +301,67 @@ class ConfigServiceTest extends TestCase
         ]));
 
         $this->assertSame('middle-left', $config->getValue());
+    }
+
+    // A site installed before an entry gained a default holds it empty, where a fresh install holds the value - so the two answered differently on the same version, and the back office showed an empty field whose real answer lived in a fallback nobody could read
+    #[DataProvider('provideRowsHoldingNothing')]
+    public function testLoadDefaultConfigSeedsARowHoldingNothing(?string $stored): void
+    {
+        $config = $this->createConfig('theme-color-gallery-backdrop', $stored);
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config));
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'theme-color-gallery-backdrop', 'label' => 'label.backdrop', 'value' => 'rgba(0, 0, 0, 0.9)',
+        ]));
+
+        $this->assertSame('rgba(0, 0, 0, 0.9)', $config->getValue());
+    }
+
+    public static function provideRowsHoldingNothing(): iterable
+    {
+        yield 'never filled in' => [null];
+        yield 'emptied' => [''];
+    }
+
+    // The whole reason an entry whose emptiness means something (0 for a retention, "none" for a crawler source) has to name it with a value: anything stored is left alone, and only that is
+    public function testLoadDefaultConfigLeavesAStoredValueAloneOverADeclaredOne(): void
+    {
+        $config = $this->createConfig('site-backup-retention-days', '0', kind: Config::TYPE_INT);
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config));
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'site-backup-retention-days', 'label' => 'label.retention', 'value' => 15, 'kind' => Config::TYPE_INT,
+        ]));
+
+        $this->assertSame('0', $config->getValue());
+    }
+
+    // An entry with nothing sensible to seed - a key, a site's own url - declares no value and keeps its empty row, so the dashboard alert asking an admin to fill it in still fires
+    public function testLoadDefaultConfigLeavesAnEmptyRowAloneWhenNothingIsDeclared(): void
+    {
+        $config = $this->createConfig('stripe-secret', null);
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config));
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'stripe-secret', 'label' => 'label.stripe_secret',
+        ]));
+
+        $this->assertNull($config->getValue());
+    }
+
+    // Seeded through the same encryption a fresh install goes through, or the row would hold in clear what the entry is declared to keep encrypted
+    public function testLoadDefaultConfigEncryptsAValueSeededIntoASensitiveEntry(): void
+    {
+        $vaultEncryptor = new VaultEncryptor('a-test-vault-key');
+        $config = $this->createConfig('api-endpoint', null, isSensitive: true);
+        $service = $this->createService($this->createRepositoryIndexedBySlug($config), vaultEncryptor: $vaultEncryptor);
+
+        $service->loadDefaultConfig($this->createDeclarationFile([
+            'slug' => 'api-endpoint', 'label' => 'label.api_endpoint', 'sensitive' => true, 'value' => 'https://example.com',
+        ]));
+
+        $this->assertNotSame('https://example.com', $config->getValue());
+        $this->assertSame('https://example.com', $vaultEncryptor->decrypt($config->getValue()));
     }
 
     public function testLoadDefaultConfigLeavesChoicesEmptyForAnEntryDeclaringNone(): void

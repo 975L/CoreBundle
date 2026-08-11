@@ -18,6 +18,9 @@ use Doctrine\ORM\EntityManagerInterface;
 // Keeps the "seo-robots-ai-crawlers" config in step with the community list at "seo-robots-ai-crawlers-source" (ai.robots.txt), which gains a handful of names every few months - a list nobody remembers to review is a robots.txt that quietly stops covering what it was written for. Never applies anything on its own: AiCrawlersHealthCheckProvider reports what appeared upstream, and the c975l:seo:crawlers:update command (or its dashboard tile) is what merges it in, because deciding what a site blocks is not a third party's call
 class AiCrawlerListUpdater
 {
+    // What "seo-robots-ai-crawlers-source" holds to say this site reviews its list itself, see compare()
+    public const NO_SOURCE = 'none';
+
     // Never merged in, whatever the upstream list says about them: these fetch a page to answer someone's question and cite it back, so blocking them costs visibility and gains nothing - they are also what reads the llms.txt a site publishes, and keeping them out is what lets "seo-robots-block-ai" ship on. Named in the generated robots.txt by SeoFilesWriter, and reported rather than silently dropped by an update, since a site is free to add one by hand
     public const ANSWER_ENGINES = [
         'Applebot',
@@ -43,12 +46,13 @@ class AiCrawlerListUpdater
     ) {
     }
 
-    // What the upstream list holds that this site's own doesn't. 'missing' is what the update would add, 'answerEngines' what it deliberately leaves out, 'source' the url read - null when the config is empty, which is how a site turns the whole thing off
+    // What the upstream list holds that this site's own doesn't. 'missing' is what the update would add, 'answerEngines' what it deliberately leaves out, 'source' the url read - null when the config names no source, which is how a site turns the whole thing off
+    // "none" says that in a word the row can hold, an emptied field being written back to its declared url by the next c975l:config:load-all: an empty value is how a config says "never filled in", so a site meaning to keep its list by hand has to say so with a value of its own
     // @return array{missing: list<string>, answerEngines: list<string>, source: ?string}
     public function compare(): array
     {
         $source = trim((string) $this->configService->get('seo-robots-ai-crawlers-source'));
-        if ('' === $source) {
+        if ('' === $source || self::NO_SOURCE === strtolower($source)) {
             return ['missing' => [], 'answerEngines' => [], 'source' => null];
         }
 

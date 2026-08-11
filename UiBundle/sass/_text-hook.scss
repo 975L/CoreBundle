@@ -1,7 +1,6 @@
 /* TEXT HOOK */
 
-// The lead-in paragraph, every value overridable and none read without a fallback
-// --section-text first, so a hook in a colored flat follows that flat's inverted text
+// The lead-in paragraph, every value overridable and none read without a fallback --section-text first, so a hook in a colored flat follows that flat's inverted text
 .text-hook {
     font-size: var(--text-hook-size, clamp(17px, 1.7vw, 20px));
     line-height: var(--text-hook-line-height, 1.65);
@@ -10,8 +9,7 @@
     margin: 0 0 var(--text-hook-margin-bottom, 24px);
 }
 
-// The block on its own has nothing around it to be read against, where an article's hook already sits
-// under a title, inside a body of text. --section-accent first, so the bar follows a colored flat
+// The block on its own has nothing around it to be read against, where an article's hook already sits under a title, inside a body of text. --section-accent first, so the bar follows a colored flat
 .text-hook--standalone {
     border-inline-start: var(--text-hook-bar-width, 3px) solid var(--section-accent, var(--primary));
     padding-inline-start: var(--text-hook-bar-gap, 20px);

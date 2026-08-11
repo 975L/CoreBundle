@@ -155,8 +155,7 @@ class ExportTablesCommand extends Command
         return $tmpFile;
     }
 
-    // Returns [tables, error], error being null on success
-    // site_config is excluded: ConfigBundle's own export has upsert semantics a TRUNCATE would destroy
+    // Returns [tables, error], error being null on success site_config is excluded: ConfigBundle's own export has upsert semantics a TRUNCATE would destroy
     private function getTableList(string $database, string $prefix, string $credentialsFile): array
     {
         $query = 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES '

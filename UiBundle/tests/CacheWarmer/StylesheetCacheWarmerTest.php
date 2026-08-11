@@ -101,8 +101,7 @@ class StylesheetCacheWarmerTest extends TestCase
         );
     }
 
-    // A site splitting its theme into one file per bundle would otherwise pay one <link> each, AssetMapper
-    // never merging CSS - registering them is what folds them into the single sheet the bundles share
+    // A site splitting its theme into one file per bundle would otherwise pay one <link> each, AssetMapper never merging CSS - registering them is what folds them into the single sheet the bundles share
     public function testWarmUpConcatenatesTheAppsOwnAssetsAlongsideTheBundlesOwn(): void
     {
         $this->createCssFile('bundles/c975lui/css/styles.min.css', '.ui{color:red}');
@@ -130,6 +129,66 @@ class StylesheetCacheWarmerTest extends TestCase
         $warmer->warmUp($this->projectDir . '/var/cache');
 
         $this->assertSame('', file_get_contents($this->projectDir . '/public/bundles/build/site.css'));
+    }
+
+    // A site's own theme files are almost entirely comments - every token ships commented out at its default - so the concatenated sheet drops them rather than sending a quarter of its bytes to every visitor for something no browser reads
+    public function testWarmUpStripsCommentsFromTheConcatenatedStylesheet(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', "/* UiBundle */\n.ui{color:red}");
+        $this->createAppAssetCssFile('assets/styles/themes/ui.css', ":root{\n    /* --radius-card: 10px; */\n    --scroll-offset: 72px;\n}");
+
+        $warmer = $this->createWarmer(
+            ['bundles/c975lui/css/styles.min.css', 'assets/styles/themes/ui.css'],
+            []
+        );
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            "\n.ui{color:red}\n:root{\n    \n    --scroll-offset: 72px;\n}",
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // A multi-line comment is one comment, not a run of lines to be matched separately - the theme files' explanations all span several
+    public function testWarmUpStripsAMultiLineComment(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', "/*\n * Explanation\n * over several lines\n */\n.ui{color:red}");
+
+        $warmer = $this->createWarmer(['bundles/c975lui/css/styles.min.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            "\n.ui{color:red}",
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // Two comments on one sheet must not be read as a single one swallowing the rule between them
+    public function testWarmUpKeepsWhatSitsBetweenTwoComments(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', '/* first */.ui{color:red}/* second */.site{color:blue}');
+
+        $warmer = $this->createWarmer(['bundles/c975lui/css/styles.min.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            '.ui{color:red}.site{color:blue}',
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
+    }
+
+    // "/*!" is the convention marking a header that must survive minification - a license, an authorship notice
+    public function testWarmUpKeepsALicenseHeader(): void
+    {
+        $this->createCssFile('bundles/c975lui/css/styles.min.css', "/*! (c) 975L */\n/* internal */\n.ui{color:red}");
+
+        $warmer = $this->createWarmer(['bundles/c975lui/css/styles.min.css'], []);
+        $warmer->warmUp($this->projectDir . '/var/cache');
+
+        $this->assertSame(
+            "/*! (c) 975L */\n\n.ui{color:red}",
+            file_get_contents($this->projectDir . '/public/bundles/build/site.css')
+        );
     }
 
     public function testWarmUpConcatenatesManagementStylesheetsSeparatelyFromSite(): void

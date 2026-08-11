@@ -12,8 +12,7 @@
     border: 0;
 }
 
-// Laid out on the same measure as the body copy (--reading-max-width, declared by SiteBundle), so a slider never outruns the text it sits with
-// Symmetric room above and below: the former "1em auto 3em" left a slider all but flush against the block introducing it
+// Laid out on the same measure as the body copy (--reading-max-width, declared by SiteBundle), so a slider never outruns the text it sits with Symmetric room above and below: the former "1em auto 3em" left a slider all but flush against the block introducing it
 .slider {
     position: relative;
     max-width: var(--reading-max-width, min(75ch, 90vw));
@@ -136,8 +135,7 @@
     object-position: center;
 }
 
-// Centered on purpose, as the caption bar below it: what is stated here is the family, which would otherwise
-// fall to the theme's blanket "*" rule and read in the body font where every other block title reads the title one
+// Centered on purpose, as the caption bar below it: what is stated here is the family, which would otherwise fall to the theme's blanket "*" rule and read in the body font where every other block title reads the title one
 .slider-title {
     position: absolute;
     top: 0;

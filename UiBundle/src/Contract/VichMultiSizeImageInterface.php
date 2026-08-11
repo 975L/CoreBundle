@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Opts an uploaded image into two extra derivatives generated alongside the entity's own stored file (see VichImageResizeListener::processMultiSizeDerivatives): a thumbnail for grid displays and a proportionally-resized highres version for zoom, both holding the whole image. getImageWidth() (from VichImageResizableInterface) still governs the entity's own stored ("medium") file.
- */
+// Opts an uploaded image into two extra derivatives generated alongside the entity's own stored file (see VichImageResizeListener::processMultiSizeDerivatives): a thumbnail for grid displays and a proportionally-resized highres version for zoom, both holding the whole image. getImageWidth() (from VichImageResizableInterface) still governs the entity's own stored ("medium") file.
 interface VichMultiSizeImageInterface extends VichImageResizableInterface
 {
     /**

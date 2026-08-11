@@ -98,11 +98,7 @@ class LayoutAuditor
         return $measured;
     }
 
-    /*
-     * Brings the page to the state a visitor ends up looking at, which is not the state it loads in:
-     * the block animations park their blocks off-screen until animate-scroll.js reveals them, so a page
-     * measured on load reports half its blocks as overflowing, every one of them a false positive.
-     */
+    // Brings the page to the state a visitor ends up looking at, which is not the state it loads in: the block animations park their blocks off-screen until animate-scroll.js reveals them, so a page measured on load reports half its blocks as overflowing, every one of them a false positive.
     private function settleScript(): string
     {
         return <<<'JS'
@@ -134,8 +130,7 @@ class LayoutAuditor
                 const viewport = document.documentElement.clientWidth;
                 const viewportHeight = window.innerHeight;
 
-                // A vertical scrollbar takes its width off the viewport but not off "100vw", so every full-bleed
-                // section hangs half of that over each edge - the frame it is laid out on, not a defect
+                // A vertical scrollbar takes its width off the viewport but not off "100vw", so every full-bleed section hangs half of that over each edge - the frame it is laid out on, not a defect
                 const scrollbar = window.innerWidth - viewport;
                 const findings = [];
 
@@ -144,8 +139,7 @@ class LayoutAuditor
                     + (typeof el.className === 'string' && el.className.trim()
                         ? '.' + el.className.trim().split(/\\s+/).join('.') : '');
 
-                // A scrolling or clipping ancestor is placing its children on purpose - the freeflow slider
-                // lays every slide out past the right edge and lets the user scroll to them
+                // A scrolling or clipping ancestor is placing its children on purpose - the freeflow slider lays every slide out past the right edge and lets the user scroll to them
                 const isReleased = el => {
                     for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
                         const s = getComputedStyle(p);
@@ -184,12 +178,7 @@ class LayoutAuditor
 
                 });
 
-                /*
-                 * Centering has to be read from the stylesheet, never from the element: once a stronger rule
-                 * has written the margin shorthand over it the computed value is "0px", and nothing left on
-                 * the element says it was ever meant to be centred. The rule that declared the intent still
-                 * says so, which is what makes the loss detectable at all.
-                 */
+                // Centering has to be read from the stylesheet, never from the element: once a stronger rule has written the margin shorthand over it the computed value is "0px", and nothing left on the element says it was ever meant to be centred. The rule that declared the intent still says so, which is what makes the loss detectable at all.
                 const centeredSelectors = new Set();
 
                 for (const sheet of document.styleSheets) {
@@ -216,9 +205,7 @@ class LayoutAuditor
                         if (box.width === 0 || style.display.startsWith('inline')) return;
                         if (style.position === 'absolute' || style.position === 'fixed') return;
 
-                        // Only a box holding its own measure: without a max-width it fills its container, and
-                        // any narrower width it ends up with was decided by something else - a grid track, a
-                        // shrink-to-fit. Read from max-width alone, "width" being resolved to pixels by then
+                        // Only a box holding its own measure: without a max-width it fills its container, and any narrower width it ends up with was decided by something else - a grid track, a shrink-to-fit. Read from max-width alone, "width" being resolved to pixels by then
                         if (style.maxWidth === 'none') return;
 
                         // Laid out by its container rather than by its own margins, as ".cards > .card" is
@@ -241,8 +228,7 @@ class LayoutAuditor
                     });
                 });
 
-                // An intrinsic "height" attribute beating a CSS aspect-ratio blows the box up to the pixel
-                // count of the source file - which is what happened to every hero in v1.10.1
+                // An intrinsic "height" attribute beating a CSS aspect-ratio blows the box up to the pixel count of the source file - which is what happened to every hero in v1.10.1
                 document.querySelectorAll('img').forEach(img => {
                     const box = img.getBoundingClientRect();
 
@@ -257,14 +243,12 @@ class LayoutAuditor
                     }
                 });
 
-                // One finding per element and kind: two rules can centre the same box, and reporting the loss
-                // twice says nothing more than once
+                // One finding per element and kind: two rules can centre the same box, and reporting the loss twice says nothing more than once
                 const unique = findings.filter((finding, index) => index === findings.findIndex(other =>
                     other.check === finding.check && other.element === finding.element
                 ));
 
-                // Then only the outermost offender of each kind: a block breaking out of the frame drags every
-                // one of its descendants past the edge too, and naming all forty says nothing more than one.
+                // Then only the outermost offender of each kind: a block breaking out of the frame drags every one of its descendants past the edge too, and naming all forty says nothing more than one.
                 // Compared on the elements, "contains" holding for the node itself
                 const outermost = unique.filter(finding => !unique.some(other =>
                     other.element !== finding.element

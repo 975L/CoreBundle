@@ -221,6 +221,16 @@ class PageCrudController extends AbstractCrudController
 }
 ```
 
+### Which choice fields get a search box
+
+`Form\Extension\ChoiceAutocompleteExtension` decides, for **every choice field of every bundle**, whether it renders as a plain `<select>` or as EasyAdmin's searchable TomSelect widget — the rule being the length of the list, never which bundle declared the field. Below `AUTOCOMPLETE_THRESHOLD` (10 options) a native select is faster to use and keeps its empty "none" option selectable; at or above it, the search box. A `multiple` field always gets the widget however short, the native multi-select asking for ctrl+click.
+
+Written once as a form type extension rather than as a `data-ea-widget` attribute repeated field by field: an attribute nobody remembers to add is what made two neighbouring selects of the same screen behave differently. Extending `ChoiceType` covers `EntityType` and EasyAdmin's own `ChoiceField`/`AssociationField` too, all three being built on it, and the attribute is inert outside the admin where no script reads it.
+
+It therefore **overrides EasyAdmin**, which hands the widget to every non-expanded `ChoiceField` and `AssociationField` there is — a field cannot opt back into a search box below the threshold. Two cases stay exempt: an expanded field (radios and checkboxes, a layout of their own), and a list fed by an endpoint (`data-ea-autocomplete-endpoint-url`), whose length is not something this can count. A `data-ea-widget` naming a widget of *another* name is a deliberate ask and is left alone.
+
+The searchable widget's "clear" cross is shown as soon as the field holds a value, rather than on hover/focus alone as EasyAdmin ships it: TomSelect drops the empty option from its own list, so that cross is the only way back to no value at all.
+
 ---
 
 ## Drag-and-drop sortable for other collections
@@ -362,17 +372,23 @@ Dropped straight on a page, the block has no `.section-wrap` around it to hold i
 
 Same box as a `card`, with a second face behind it: a title, an image and a rich-text content, each optional, on the front *and* on the back. Both images come from the block's own medias, ordered - the first is the front's, the second the back's (`media_multi_upload`, so an editor picks both in one go). One **Title level** covers both faces: they are the same card seen from two sides, and heading them at two different depths would read as two unrelated sections to anything walking the page outline. There is no url/button pair on either face on purpose - both contents are Trix editors, which already write links.
 
-A face is a real `.card`, so the accent band, the body padding and the tail alignment all come from `sass/_cards.scss`, and the twelve accents work here through the very same `card--accent-*` classes (they only point `--card-accent` at a token and paint nothing themselves - see [Card accents](#card-accents)). `sass/_flip-card.scss` only describes the box holding the two faces. A `flip_card` also joins the same auto-wrapped `.cards` row as a plain `card` when several of either are placed consecutively in the page flow, and drops into a `section_cards` slot like any other kind.
+**It is not a card.** The two kinds share the `.cards` row and its measure, and nothing else: a flip card is an object a visitor reaches for - outlined, rounded, its title inside the face - where a card is a panel to read behind a header band. Everything it is made of lives in `sass/_flip-card.scss` and is retuned from its own tokens (`--flip-card-radius`, `--flip-card-border-width`, `--flip-card-front-background`, `--flip-card-back-background`, `--flip-card-title-size`, `--flip-card-text-size`, `--flip-card-media-max-width`), so retuning a card never moves a flip card and the other way round. The twelve accents work here too, through `flip-card--accent-*` classes of its own pointing `--flip-card-accent` at the same `--block-accent-*` tokens the cards share - on a flip card the accent paints the outline and the two titles, where on a card it paints the header band. A `flip_card` still joins the same auto-wrapped `.cards` row as a plain `card` when several of either are placed consecutively in the page flow, and drops into a `section_cards` slot like any other kind.
+
+**The card is the control.** Clicking it - anywhere on it - turns it, and the block offers no other gesture. The toggle is a real `<button>` filling the whole face (`position: absolute; inset: 0`), sitting *under* the content at `z-index: 0`; the title and the body are lifted above it and made `pointer-events: none`, so a click on the image, the heading or a paragraph falls straight through to it. What takes the pointer back is what is itself a control - `a`, `button`, `input`, `summary` inside the body - so a verso offering three buttons still offers three buttons, and clicking anywhere around them turns the card back. The alternative, wrapping a face in a `<button>`, is not open: a heading and a rich text are flow content, and a `<button>` holding either is invalid. Being invisible, the toggle carries a focus ring of its own, drawn inside the face.
 
 **Ratio** offers the very list a `slider` does (`SliderType::RATIO_CHOICES`, reused rather than restated - the same reuse `c975L/SiteBundle`'s `ArticlesSliderType` already makes of it), and a ratio here is a **floor under the card's shape, not a crop**: each `.flip-card-ratio-*` class only names its own `--flip-card-ratio`, which an empty cell-mate of the two faces reads to hold the row open. A face holding more than that shape simply grows past it, so a row of cards lines up on one shape without a long content ever being clipped or pushed behind a scrollbar. **Libre** declares no class at all, and the card keeps the height of its tallest face. That is also why `--flip-card-ratio` is not in the scaffolded theme: it is set per variant, like `--card-accent`, and one value in `:root` would give every flip card on the site one shape.
 
 Hovered, the card sways five degrees to say it can be turned - `rotateY5deg`, the very keyframes `.animation.rotate-y5deg` runs (`sass/_animations.scss`, compiled into `animations.css`, which `StylesheetProvider` loads before this sheet). It runs under the pointer only, never on its own, and stays off a card already turned: those keyframes write the whole `transform`, and would drop the back face back to the front at every cycle.
 
+That sway is also why `.flip-card-inner` takes **no pointer at all** and each `.flip-card-face` takes it back. Inside `transform-style: preserve-3d` the inner's own box - and the ratio spacer drawn on it - sit flat at `z: 0`, while a swaying front face has half of itself turned *behind* that plane; the half behind loses every hit test to the box in front of it, so the toggle filling the face stops answering over it. That half is the whole left or right of the card and it swaps four times a second under the sway, which reads as a card that ignores a click until a second or third one lands on a phase where the half clicked happens to be the one turned forward.
+
+**The sway runs on `.flip-card-front`, never on `.flip-card-inner`** - the element whose `transform` the turn transitions. A CSS animation overrides a transition on the same property of the same element, and the pointer is on the card by definition at the moment it is clicked: a sway there swallows every turn the card is ever asked for, which snaps it to its back with no rotation at all rather than rotating it. Two elements, two transforms, no contest - and the face being inside the perspective, the sway keeps its depth. `FlipCardAccessibilityTest` locks the separation.
+
 Four things make the fold usable by more than a mouse, all locked by `FlipCardAccessibilityTest`:
 
-- **The fold is an enhancement.** The stylesheet stacks the two faces in one grid cell only under `.flip-card--js`, added by `assets/js/flip-card.js` on connect. A page whose JS never ran shows both faces in normal flow, one under the other - everything the block holds stays readable, rather than a back face hidden behind a rotation nothing can undo. The buttons that would turn nothing stay `hidden` until the controller unhides them.
+- **The fold is the stylesheet's, and the `<noscript>` undoes it.** The two faces are stacked in one grid cell by `sass/_flip-card.scss` itself, so the card is painted in shape rather than collapsing into it a moment after load - which is what waiting for a class the controller adds on connect used to cost: a flash of every verso on the page. The one case that needs the fold undone is a browser running no JS at all, where the toggles below stay `hidden` and the back face would sit behind a rotation nothing can undo: the `<noscript>` the component carries puts the two faces back into normal flow, one under the other, and everything the block holds stays readable. That fallback covers the absence of JS, not a module that fails to load - a page running JS whose `flip-card.js` never arrives (broken importmap, network, CSP) keeps the fold with no toggle to undo it, the same as every other Stimulus-driven part of the page in that situation. The buttons that would turn nothing stay `hidden` until the controller unhides them.
 - **The face turned away is `inert`.** `backface-visibility` hides it from the eye and from nothing else: its buttons and links stay in the tab order and in the accessibility tree without that.
-- **Focus follows the face that just came up.** Turning the card makes the focused button inert, so a keyboard user would otherwise be dropped back to the top of the document. Landing on the revealed face's own toggle also reads its label out - "Voir le recto" / "Voir le verso" say which side is up between them, which is why the block carries no `aria-expanded`/`aria-pressed` state for a screen reader to reconcile with a rotation it cannot see. Each toggle's `aria-label` repeats that visible label before naming the card, WCAG's *Label in Name* asking that the accessible name contain the visible one rather than replace it.
+- **Focus follows the face that just came up.** Turning the card makes the focused button inert, so a keyboard user would otherwise be dropped back to the top of the document. Landing on the revealed face's own toggle also reads its accessible name out - "Voir le recto" / "Voir le verso" say which side is up between them, which is why the block carries no `aria-expanded`/`aria-pressed` state for a screen reader to reconcile with a rotation it cannot see. The toggle shows no text of its own where the face has a title, so that name is where the wording lives, and it goes on to name the card: *"Voir le verso : Chef de projet"*.
 - **The turn is dropped under `prefers-reduced-motion`.** The faces still swap, they just stop spinning to get there.
 
 Grid, not absolute positioning, for the stack: both faces share one cell, so the card is as tall as its tallest face whatever an editor typed in either, where the fixed height absolute positioning needs would clip the longer one.
@@ -554,6 +570,17 @@ Then have the component match the stored value against the known variants before
 
 ---
 
+## The `.cards` row
+
+Consecutive `card` and `flip_card` blocks are wrapped in one `.cards` flex row (`Blocks.html.twig`), which is also what a `section_cards` container renders its slots into. The row lines its cards up on one top edge and one height, and both halves of that rest on rules easy to break without noticing:
+
+- **A card only drops its own `1em` margin if the reset actually reaches it.** A block is rendered inside wrappers that are `display: contents` — `.block-animation` for its entrance effect, `.block-editable` for the editor's overlay, and both at once for an editor looking at an animated block. They generate no box, so the card stays the flex item the row addresses; but they stay *nodes in the DOM*, which is what a selector is read against. `.cards > .card` therefore missed exactly the cards carrying an animation, which kept their margin and sat a step below the row they belong to — visibly so on a row where only one card was animated. The resets are written as descendants (`.cards .card`, `.cards .flip-card`) for that reason.
+- **A flip card is only painted on the box the row stretched if its inner fills that box.** `.cards` stretches its items, but `.flip-card-inner` is a block child taking its own content height, so a row was as tall as its longest card while every shorter one painted a box of its own — one card whose title wrapped to a second line and its two neighbours read as three different shapes, each hanging over empty space. `.flip-card` is a grid for that reason, which stretches the inner, and the two faces inside it, to the card's full height.
+
+`CardRowAlignmentTest` locks both, and the `display: contents` on the two wrappers they depend on.
+
+---
+
 ## Card accents
 
 A `card` can be marked with one of twelve fixed hues, which colors its header band and its own outline — red, orange, yellow, lime, green, teal, cyan, blue, indigo, violet, pink, grey (`BlockAccentChoiceType`). The field is optional and an unset value leaves the header on `--primary` and the border on `--input-border-color`, which is what every card stored before it existed shows. A card with no header still carries the accent on its outline.
@@ -588,6 +615,38 @@ Another kind offers the same picker with one line, `->add('accent', BlockAccentC
 
 ---
 
+## Card surface: rounded corners and shadow
+
+A `card` and a `flip_card` each carry two more fields shaping their own surface — **Coins arrondis** (`BlockRadiusChoiceType`) and **Ombre** (`BlockShadowChoiceType`) — on the same closed scale: *Thème*, *Aucun*, *Léger*, *Moyen*, *Prononcé*. Both are optional, and **Thème** is the placeholder rather than a choice: an unset value writes no class at all, so every block stored before the fields existed renders exactly as it did.
+
+The two kinds share one vocabulary on purpose. A `.cards` row commonly mixes them, and one design decision — "these cards are square-cornered and flat" — has to read the same on both sides of that row. So the classes are `block-radius-*` / `block-shadow-*`, not `card-*` and `flip-card-*`, and they live in `sass/_block-surface.scss` rather than in either kind's own sheet.
+
+They are steps, not lengths, for the reason the accents are hues rather than colors: a free value would put arbitrary CSS in the database and freeze one card's shape against every other one on the page. Each step is a `--block-radius-*` / `--block-shadow-*` token defaulted in `sass/_tokens.scss`, so a site retunes the whole scale from its own `theme.css` and every block set on that step follows, whichever kind it is:
+
+```css
+:root {
+    --block-radius-large: 40px;
+    --block-shadow-small: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+}
+```
+
+Each class does nothing but point a generic token at its own step; **what paints is the kind**, reading that token through a default of its own — which is what lets "Thème" mean something different on each without the field knowing about it:
+
+| | Corner on *Thème* | Shadow on *Thème* |
+|---|---|---|
+| `card` | `var(--block-radius, var(--radius-card))` | none at all — a card is a flat panel until a step is picked |
+| `flip_card` | `var(--block-radius, var(--flip-card-radius))` | `var(--block-shadow, var(--box-shadow))` — it has always been shadowed, so a step *retunes* that shadow |
+
+Three details worth knowing before touching those rules:
+
+- **The card's shadow is stated on two classes** (`.card:is(.block-shadow-none, …)`), not as a `var(--block-shadow, none)` on the bare `.card`. A card may also carry SiteBundle's `.box-shadow` utility from its **classes CSS** field, and both sheets are contributed at the same priority — a single-class rule here would win or lose on whichever order they happen to be concatenated in. Two classes settle it whatever that order.
+- **`--block-radius` and `--block-shadow` are not in the scaffolded theme**, being set per variant like `--card-accent` and `--flip-card-ratio`. The scale behind them is what a design retunes, and that *is* offered.
+- **The corner is read through a sass variable** in both sheets (`$radius`), the header band curving one pixel inside the card's own corner and a flip card's illustration and focus ring one border-width inside the face's: the values drifting apart is what shows a card's background through its top corners as a white sliver.
+
+`BlockSurfaceTest` locks every step to a rule and both kinds to their own default.
+
+---
+
 ## Registering a custom block kind
 
 Run `bin/console c975l:ui:block:create` (requires `symfony/maker-bundle` in `require-dev`) to scaffold the FormType, template and test below for a new kind - it prints the `services.yaml` snippet to add once it's done. The rest of this section describes what that snippet means and the manual steps if you'd rather write them yourself.
@@ -615,6 +674,20 @@ services:
 ```
 
 Create the form type to define the `data` sub-fields, and the Twig template to render the block on the front end. The form data is stored as JSON in the `Block::$data` column.
+
+Two conventions of the shared form theme (`templates/form/block_theme.html.twig`, on the `ui_block_data` block prefix) are open to any kind, so the EasyAdmin screen and the fragment the kind picker loads lay a kind's fields out identically:
+
+- **`data-block-fieldset` on a field's `row_attr`** groups consecutive fields carrying the same value into a `<fieldset>` legended with it — a translation key, in the `ui` domain. A kind holding several faces or several sides of one thing (`flip_card`'s recto and verso) is otherwise one flat run of inputs where only the labels say which is which. A real `<fieldset>`/`<legend>`, so the group is named for a screen reader too.
+- **`media_after` on the view** names the field the block's own media collection is rendered after, instead of under everything:
+
+```php
+public function buildView(FormView $view, FormInterface $form, array $options): void
+{
+    $view->vars['media_after'] = 'content';
+}
+```
+
+On `flip_card` that puts the illustrations inside the "recto" fieldset, next to the face the first one is shown on. Leave it unset and the collection keeps its usual place at the bottom.
 
 `pickable` and `cacheable` don't have a functional default in practice - declare both explicitly on every kind, so the behavior is readable in `services.yaml` without having to check `BlockRegistryPass`'s fallback logic.
 
@@ -1553,9 +1626,18 @@ The index shows one button per graphic still missing: each opens the upload form
 
 The site's colors, fonts and light/dark mode are admin-editable config keys of the `theme` group, declared here because the `--c975l-*` custom properties they compile to are the ones this bundle's own CSS reads: `theme-color-primary`, `theme-color-secondary`, their two `-dark-mode` counterparts, `theme-color-background`, `theme-color-text`, `theme-font-family-title`/`-body`/`-accent` and `theme-mode` (`auto`/`light`/`dark`).
 
+The four base colors and the three families are **loaded with the very value SiteBundle's stylesheet falls
+back on** — `#0a2d6b`, `#0a7ba3`, `#fbfcff`, `#04122c`, then `sans-serif`, `sans-serif` and `monospace` — so
+the back office states the site's palette and type rather than showing seven empty fields (see ConfigBundle's
+[seeded defaults](https://github.com/975L/CoreBundle/blob/main/ConfigBundle/README.md#seeded-defaults)).
+A generic family matches no uploaded font, so it is written to `site-theme.css` as it stands and preloads
+nothing. The two `-dark-mode` keys stay empty on purpose: their fallback is not a color but the light key
+beside them (`var(--c975l-color-primary, …)`), so a site that sets no dark accent keeps its own, which a
+value written in would freeze.
+
 `Listener\ThemeVariablesCssListener` compiles them into `public/bundles/build/site-theme.css` on every change — a Doctrine listener on the `Config` entity, and a `CacheWarmerInterface` too, so a fresh file exists after a deploy even without an admin re-saving anything. The mapping is mechanical (`theme-color-primary` → `--c975l-color-primary`), so a new key needs no lookup table; a bare custom font name is quoted and gets a generic fallback appended (`"Cormorant Garamond latin 400", serif`) in case the `@font-face` fails to load, a value already holding a comma being a full stack the admin wrote and left alone. The quoting is what makes an uploaded family usable at all: unquoted, a name carrying a digit is not a valid `<custom-ident>` sequence, so every `font-family` reading that token is invalid at computed-value time and the text silently falls back to the browser's default.
 
-What it compiles is every config whose **slug** starts with `theme-`, whatever its group (`ConfigRepository::findBySlugPrefix()`) — `theme-mode` excepted, being a choice rather than a CSS value. A satellite bundle declaring colors of its own therefore keeps them in its own back-office group next to its other settings, rather than scattering them into the site's `theme` screen: `c975l/gallery-bundle` ships its ten `theme-color-gallery-*` in its `gallery` group, and each of its tokens reads the compiled `--c975l-color-gallery-*` with the bundle's own default as fallback. ConfigBundle's `theme-color-*` validation (a plausible CSS color, so a value cannot break out of its declaration) keys on the same prefix, group-independent too.
+What it compiles is every config whose **slug** starts with `theme-`, whatever its group (`ConfigRepository::findBySlugPrefix()`) — `theme-mode` excepted, being a choice rather than a CSS value. A satellite bundle declaring colors of its own therefore keeps them in its own back-office group next to its other settings, rather than scattering them into the site's `theme` screen: `c975l/gallery-bundle` ships its eleven `theme-color-gallery-*` in its `gallery` group, and each of its tokens reads the compiled `--c975l-color-gallery-*` with the bundle's own default as fallback. ConfigBundle's `theme-color-*` validation (a plausible CSS color, so a value cannot break out of its declaration) keys on the same prefix, group-independent too.
 
 `Service\ThemeVariablesStylesheetProvider` contributes that file at **priority `0`**: after every bundle's compiled defaults (tagged 100) and before an app's own `assets/styles/themes/*.css` (auto-tagged at -100). That is what makes the admin's values win over the bundles and lose to a token the site took back.
 
@@ -1795,7 +1877,9 @@ Local paths are resolved to absolute versioned URLs via Symfony's asset package.
 Nothing in this bundle's front and management templates carries one any more, and no script writes one. Two forms are authorized in their place:
 
 - **A class**, for anything that isn't computed at render time — that is, nearly everything. `sass/management/_block-collection.scss` and `sass/management/_form-fields.scss` hold the rules the back-office scripts used to write themselves.
-- **A `<style>` element carrying the nonce**, for a value only the instance knows. In Twig, the pattern is `components/Banner/Title.html.twig`: an id on the element, the rule next to it, the value run through `|e('css')`. In JS, `assets/js/nonced-style-element.js` builds that element (ES modules never populate `document.currentScript`, so it copies the nonce off any nonce'd element the page already carries) — `assets/js/block-edit-overlay.js` uses it to place a button on measured coordinates.
+- **A `<style>` element carrying the nonce**, for a value only the instance knows. In Twig, the pattern is `components/Banner/Title.html.twig`: an id on the element, the rule next to it, the value run through `|e('css')`. In JS, `assets/js/nonced-style-element.js` builds that element — `assets/js/block-edit-overlay.js` uses it to place a button on measured coordinates.
+
+  ES modules never populate `document.currentScript`, the usual way to read one's own nonce, so that helper reads the `<meta name="csp-nonce">` the layout writes. It has to be that one and not the first nonce'd element found: the browser enforces the CSP header of the response the *document* was built from, Turbo never builds a new one, and every element a navigation brings into the swapped `<body>` carries the *next* response's nonce instead — which is rejected. The meta is the one Turbo leaves in place. Element lookups stay as a fallback for a layout writing no meta at all.
 
 Emails are the exception and keep their inline styles: no CSP applies to them, and mail clients strip everything else.
 

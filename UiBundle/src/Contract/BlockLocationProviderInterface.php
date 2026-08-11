@@ -12,9 +12,7 @@ namespace c975L\UiBundle\Contract;
 
 use c975L\UiBundle\Entity\Block;
 
-/**
- * Lets any bundle owning blocks say where a given Block sits, for the screens listing blocks across the whole site rather than within one owner's form (see LegalModelController and LegalModelDriftHealthCheckProvider). UiBundle itself knows nothing of pages: without a provider the block is simply listed with no location, which is exactly what an app installing ShopBundle without SiteBundle gets. Implement this and the service is auto-discovered by BlockLocationProviderPass - see Readme.
- */
+// Lets any bundle owning blocks say where a given Block sits, for the screens listing blocks across the whole site rather than within one owner's form (see LegalModelController and LegalModelDriftHealthCheckProvider). UiBundle itself knows nothing of pages: without a provider the block is simply listed with no location, which is exactly what an app installing ShopBundle without SiteBundle gets. Implement this and the service is auto-discovered by BlockLocationProviderPass - see Readme.
 interface BlockLocationProviderInterface
 {
     /**

@@ -48,4 +48,19 @@ class RedirectRepository extends ServiceEntityRepository
     {
         return $this->findBy(['toUrl' => $toUrl]);
     }
+
+    // Every row sitting below a path - what sweeps the rows an url tree leaves behind once the tree itself is gone, a single wildcard row covering it from then on (see GalleryBundle's GalleryUrlRedirector, which deletes a whole category that way)
+    // The LIKE wildcards are escaped rather than trusted: a "_" in the prefix would match any character in its place, and these rows are removed, not merely read
+    /**
+     * @return Redirect[]
+     */
+    public function findByFromPathPrefix(string $prefix): array
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.fromPath LIKE :prefix')
+            ->setParameter('prefix', addcslashes($prefix, '%_') . '%')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

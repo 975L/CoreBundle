@@ -70,8 +70,7 @@ class BackupOffsiteCommandTest extends TestCase
         );
     }
 
-    // Records what rclone would have been asked instead of asking it: what is under test is the arguments this command
-    // builds, and a host that happens to have a real rclone would otherwise try to reach a Storage Box
+    // Records what rclone would have been asked instead of asking it: what is under test is the arguments this command builds, and a host that happens to have a real rclone would otherwise try to reach a Storage Box
     private function createRecordingSynchronizer(
         ConfigServiceInterface $configService,
         ParameterBagInterface $parameterBag,
@@ -141,9 +140,7 @@ class BackupOffsiteCommandTest extends TestCase
         $this->assertNull((new OffsiteState())->read($this->projectDir));
     }
 
-    // The folder --backup-dir fills and the folder the purge empties have to be the same one. Renaming one and leaving
-    // the other aims the purge at a folder that doesn't exist: the previous versions then pile up offsite for good,
-    // while every run goes on reporting success - which is why the name is asserted here rather than read twice
+    // The folder --backup-dir fills and the folder the purge empties have to be the same one. Renaming one and leaving the other aims the purge at a folder that doesn't exist: the previous versions then pile up offsite for good, while every run goes on reporting success - which is why the name is asserted here rather than read twice
     public function testTheBackupDirAndThePurgeNameTheSameFolder(): void
     {
         mkdir($this->projectDir . '/public/medias', 0775, true);

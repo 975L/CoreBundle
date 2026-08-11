@@ -12,15 +12,10 @@ namespace c975L\UiBundle\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 
-// The site's identity inside a legal model. The models read it through the legal_var() Twig function, which
-// normally resolves it on the spot - so a model rendered any way at all, a block or a plain {% include %} in
-// an app's own template, reads correctly with no post-processing.
+// The site's identity inside a legal model. The models read it through the legal_var() Twig function, which normally resolves it on the spot - so a model rendered any way at all, a block or a plain {% include %} in an app's own template, reads correctly with no post-processing.
 //
-// Under withMarkers() it writes %site-name% instead. Only unit extraction needs that (see
-// LegalModelRenderer::units()): the customization screen has to show the marker for the client to keep using
-// it in their own wording, and a unit's fingerprint must not move just because the site was renamed.
-// LegalModelRenderer::render() then substitutes what is left over the finished document, which is what keeps
-// a section the client rewrote resolving its config values instead of freezing them.
+// Under withMarkers() it writes %site-name% instead. Only unit extraction needs that (see LegalModelRenderer::units()): the customization screen has to show the marker for the client to keep using it in their own wording, and a unit's fingerprint must not move just because the site was renamed.
+// LegalModelRenderer::render() then substitutes what is left over the finished document, which is what keeps a section the client rewrote resolving its config values instead of freezing them.
 //
 // Deliberately NOT a general "any config slug" mechanism: only the keys below are substitutable, so a stored
 // %some-other-key% stays inert text and no back-office text can read a config value the models never showed.
@@ -83,8 +78,7 @@ class LegalModelPlaceholders
         return array_keys(self::VARS);
     }
 
-    // Replaces every known marker by its current config value. Runs on the finished document, bundle text and
-    // client-authored overrides alike
+    // Replaces every known marker by its current config value. Runs on the finished document, bundle text and client-authored overrides alike
     public function substitute(string $html): string
     {
         $map = [];

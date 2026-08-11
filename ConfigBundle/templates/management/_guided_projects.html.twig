@@ -1,5 +1,4 @@
-{# Renders the guided-projects list only; the panel walking one lives in assets/js/guided-project.js
- # Every button starts out saying "Start", the browser's own storage filling in resume and badge #}
+{# Renders the guided-projects list only; the panel walking one lives in assets/js/guided-project.js Every button starts out saying "Start", the browser's own storage filling in resume and badge #}
 {% if projects|length > 0 %}
     <div data-guided-project-list hidden>
         <h2>{{ 'label.guided_projects'|trans({}, 'config') }}</h2>

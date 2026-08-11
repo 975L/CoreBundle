@@ -1,9 +1,6 @@
 /* CONTACT DETAILS */
 
-// A panel, laid out on the width it is given: the fields flow as an auto-fit grid rather than as one
-// narrow label/value column, so the block fills a full-width slot and folds down to one column in a
-// flex_columns cell. Every color reads a --section-* token first, so the panel inverts by itself when
-// it is dropped inside a colored flat (see sass/_page-sections.scss), and its own neutral otherwise.
+// A panel, laid out on the width it is given: the fields flow as an auto-fit grid rather than as one narrow label/value column, so the block fills a full-width slot and folds down to one column in a flex_columns cell. Every color reads a --section-* token first, so the panel inverts by itself when it is dropped inside a colored flat (see sass/_page-sections.scss), and its own neutral otherwise.
 .contact-details {
     // Restated for UiBundle alone, as .section-wrap does: without it the padding adds to the width and the panel overflows its slot
     box-sizing: border-box;
@@ -14,11 +11,9 @@
     background-color: var(--section-overlay, var(--card-background));
 }
 
-// A bare "contact_details" block hangs straight under ".blocks", with no ".section-wrap" to measure it,
-// so it ran the full page width while every section around it stopped at the shared measure
+// A bare "contact_details" block hangs straight under ".blocks", with no ".section-wrap" to measure it, so it ran the full page width while every section around it stopped at the shared measure
 // Mobile first: the panel takes the room it is given and only stops growing once it reaches that measure
-// Gutters as margins, not padding: the panel paints a border and a background, which stay inside them,
-// and the calc() takes them off the measure so the fields line up with a neighbouring ".section-wrap"
+// Gutters as margins, not padding: the panel paints a border and a background, which stay inside them, and the calc() takes them off the measure so the fields line up with a neighbouring ".section-wrap"
 .blocks > .contact-details,
 .block-animation > .contact-details,
 .block-editable > .contact-details {
@@ -72,8 +67,7 @@
     color: var(--section-text-soft, var(--label-color));
 }
 
-// Underlined rather than recolored: the panel inverts inside a colored flat, where the theme's own
-// link color may not read at all, and an underline holds whatever the surrounding text is painted
+// Underlined rather than recolored: the panel inverts inside a colored flat, where the theme's own link color may not read at all, and an underline holds whatever the surrounding text is painted
 // The theme's own "a:hover" has the very same specificity, so the hover state is restated here too
 .contact-details__description a,
 .contact-details__description a:hover {
@@ -81,10 +75,7 @@
     text-decoration: underline;
 }
 
-// auto-fit, so the same markup is a row of fields on a full-width slot and a single column in a narrow one
-// min() so the track never asks for more than the panel has, which would push the grid past its own box
-// --contact-details-col-min, the smallest a field column may get before the grid drops one, is read
-// rather than declared, so a site setting it in :root from its own theme is what applies
+// auto-fit, so the same markup is a row of fields on a full-width slot and a single column in a narrow one min() so the track never asks for more than the panel has, which would push the grid past its own box --contact-details-col-min, the smallest a field column may get before the grid drops one, is read rather than declared, so a site setting it in :root from its own theme is what applies
 .contact-details__list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--contact-details-col-min, 210px)), 1fr));
@@ -132,8 +123,7 @@
     gap: 0 clamp(24px, 4vw, 48px);
 }
 
-// wrap so the times drop under the days on a phone rather than push the row past the panel: the times
-// are held on one line by "white-space: nowrap" below, which leaves the row nothing else to give
+// wrap so the times drop under the days on a phone rather than push the row past the panel: the times are held on one line by "white-space: nowrap" below, which leaves the row nothing else to give
 .contact-details__item--hours {
     display: flex;
     flex-wrap: wrap;

@@ -52,9 +52,7 @@ class FlexColumnWidthMarkupTest extends TestCase
         $this->assertSame(FlexColumnType::WIDTHS, $whitelisted);
     }
 
-    // Same rule as the width above: the alignment comes from stored block data and may only build a class it was
-    // matched against first. "top" is deliberately absent - it is the row's own default and writes nothing, which
-    // is also what every row stored before the field existed renders as
+    // Same rule as the width above: the alignment comes from stored block data and may only build a class it was matched against first. "top" is deliberately absent - it is the row's own default and writes nothing, which is also what every row stored before the field existed renders as
     public function testTheRowWhitelistsTheStoredAlignmentBeforeBuildingTheClass(): void
     {
         $twig = $this->template();

@@ -43,8 +43,7 @@ class FlexColumnsTypeTest extends TestCase
         }
     }
 
-    // Two columns saying one thing between them are set against each other's middle, where the default suits a
-    // row of parallel items; "top" carries no placeholder, an unset value having to keep meaning exactly that
+    // Two columns saying one thing between them are set against each other's middle, where the default suits a row of parallel items; "top" carries no placeholder, an unset value having to keep meaning exactly that
     public function testVerticalAlignOffersTheThreeAlignmentsWithoutAPlaceholder(): void
     {
         $added = $this->buildAddedFields();

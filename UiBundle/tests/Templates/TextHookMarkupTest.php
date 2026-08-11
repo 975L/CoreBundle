@@ -28,8 +28,7 @@ class TextHookMarkupTest extends TestCase
         $this->assertStringContainsString('<div>Une accroche</div>', $html);
     }
 
-    // Standing on its own, the block takes the same gutter as every other section-level block, else its
-    // bar sits flat against the viewport's left edge. In a column ".flex-columns__col .section-wrap" undoes it
+    // Standing on its own, the block takes the same gutter as every other section-level block, else its bar sits flat against the viewport's left edge. In a column ".flex-columns__col .section-wrap" undoes it
     public function testTheStandaloneHookSitsInsideASectionWrap(): void
     {
         $html = trim($this->render('components/Text/Hook.html.twig', ['text' => 'Une accroche']));
@@ -45,9 +44,7 @@ class TextHookMarkupTest extends TestCase
         $this->assertStringContainsString('Un <strong>mot</strong> en gras', $html);
     }
 
-    // An article's own hook shares the base class - same size, same rhythm - but wears its own modifier
-    // in place of the standalone one: the block on its own needs a bar to be read against nothing, an
-    // article's hook is already framed by the title above it and is marked out by its color instead
+    // An article's own hook shares the base class - same size, same rhythm - but wears its own modifier in place of the standalone one: the block on its own needs a bar to be read against nothing, an article's hook is already framed by the title above it and is marked out by its color instead
     public function testAnArticleHookWearsTheArticleModifierAndNotTheStandaloneOne(): void
     {
         $html = $this->render('components/Article/Article.html.twig', [

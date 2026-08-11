@@ -12,9 +12,7 @@ namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 
-/**
- * To add advice for one or more HealthCheckProviderInterface kinds, implement this interface (eg. SiteBundle's PageHealthCheckAdviceBuilder) - ConfigBundle merges every registered provider's advice (see HealthCheckAdviceBuilder) so the dashboard "Health check" page and any CRUD's own "Health check" tab (eg. SiteBundle's Page edit screen) render advice through the exact same shared table (health_check/_table.html.twig).
- */
+// To add advice for one or more HealthCheckProviderInterface kinds, implement this interface (eg. SiteBundle's PageHealthCheckAdviceBuilder) - ConfigBundle merges every registered provider's advice (see HealthCheckAdviceBuilder) so the dashboard "Health check" page and any CRUD's own "Health check" tab (eg. SiteBundle's Page edit screen) render advice through the exact same shared table (health_check/_table.html.twig).
 interface HealthCheckAdviceProviderInterface
 {
     /**

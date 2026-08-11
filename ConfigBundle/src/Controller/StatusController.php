@@ -21,13 +21,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 // Hands this site's status report to whoever holds its key, so a console can ask rather than wait.
 //
-// A site that pushes can only ever say what was true when it last spoke, and cannot say it is down - the
-// receiver has to infer that from a silence, which takes days to become certain and reads as stale data in
-// the meantime. Asked instead, the answer is true at the moment it is read, and no answer at all is itself
-// the answer. Nothing is sent on its own anymore: this route is the whole of what leaves the site.
+// A site that pushes can only ever say what was true when it last spoke, and cannot say it is down - the receiver has to infer that from a silence, which takes days to become certain and reads as stale data in the meantime. Asked instead, the answer is true at the moment it is read, and no answer at all is itself the answer. Nothing is sent on its own anymore: this route is the whole of what leaves the site.
 //
-// Read-only and side-effect free, StatusReportBuilder being built that way - it can be asked as often as
-// wanted, and asking it twice costs twice nothing.
+// Read-only and side-effect free, StatusReportBuilder being built that way - it can be asked as often as wanted, and asking it twice costs twice nothing.
 class StatusController extends AbstractController
 {
     // The key travels in a header, never in the query string: an url ends up in the access log and in the Referer of anything the site serves, a header does not
@@ -51,9 +47,7 @@ class StatusController extends AbstractController
         $key = trim((string) $this->configService->get('site-status-key'));
         $given = trim((string) $request->headers->get(self::KEY_HEADER));
 
-        // No usable key configured, no key given, wrong key - all the same answer, and none of them says which. An
-        // empty configured key is the default state and a legitimate one: installing the bundle must never
-        // make a site answer to a stranger, so it opts out by having nothing to compare rather than by a flag
+        // No usable key configured, no key given, wrong key - all the same answer, and none of them says which. An empty configured key is the default state and a legitimate one: installing the bundle must never make a site answer to a stranger, so it opts out by having nothing to compare rather than by a flag
         if (\strlen($key) < self::MIN_KEY_LENGTH || '' === $given || !hash_equals($key, $given)) {
             // The caller is told nothing, but the site's own log is where a campaign of attempts becomes visible to a fail2ban or a supervision - and where an admin finds out their key is simply too short to ever work.
             // Only a presented key is logged: a bare request is any scanner walking urls, and logging those would bury the attempts that mean something under the noise

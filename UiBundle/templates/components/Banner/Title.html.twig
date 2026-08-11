@@ -1,4 +1,5 @@
 {# <twig:c975LUi:Banner:Title title="Title" [level="h2"] [src="your-path/file.ext"] [alt=""] [maxHeight=""]/> #}
+{# Rendered through render_block() only, so through its own block kind: the <style> below carries a nonce marker that BlockExtension alone substitutes, and calling the component directly ships that marker inert - the style-src then rejects the element, and the image and the height with it #}
 {% set level = level|default('h2') %}
 {% set imgSrc = src is defined and src ? asset(src) : '' %}
 
@@ -6,12 +7,9 @@
 {% if imgSrc %}{% set styles = styles|merge(["background-image:url('" ~ imgSrc|e('css') ~ "')"]) %}{% endif %}
 {% if maxHeight is defined and maxHeight %}{% set styles = styles|merge(['max-height:' ~ maxHeight|e('css') ~ 'px']) %}{% endif %}
 {% set bannerId = 'banner-title-' ~ random(100000, 999999) %}
-{# The image and the height belong to the instance: no class can carry them, and a style="" attribute is
-   never authorized by a nonce - only a <style> element is (the same reason as assets/js/nonced-style-element.js
-   on the JS side). The values are escaped for CSS then output raw: the HTML autoescape would turn the
-   apostrophes into entities, which the browser does not decode here #}
+{# The image and the height belong to the instance: no class can carry them, and a style="" attribute is never authorized by a nonce - only a <style> element is (the same reason as assets/js/nonced-style-element.js on the JS side). The values are escaped for CSS then output raw: the HTML autoescape would turn the apostrophes into entities, which the browser does not decode here. "data-ui-nonce" rather than the nonce itself: this markup is cached verbatim by BlockExtension, which swaps the marker for the nonce of the response actually being built (see BlockExtension::applyNonce) #}
 {%- if styles %}
-<style nonce="{{ csp_nonce('style') }}">#{{ bannerId }} { {{ styles|join(';')|raw }} }</style>
+<style data-ui-nonce>#{{ bannerId }} { {{ styles|join(';')|raw }} }</style>
 {%- endif %}
 <div{% if styles %} id="{{ bannerId }}"{% endif %} class="banner-title"{% if alt is defined and alt %} role="img" aria-label="{{ alt }}"{% endif %}>
     <div class="banner-title-overlay">

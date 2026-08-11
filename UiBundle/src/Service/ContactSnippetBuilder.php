@@ -11,9 +11,7 @@
 namespace c975L\UiBundle\Service;
 
 // Builds the schema.org graph a "contact_details" block publishes as JSON-LD, out of the very fields it displays.
-// Display and structured data are rendered apart on purpose: microdata would pin every itemprop to a displayed
-// element, so a field left empty - and they are all optional here - would leave an empty node behind. A graph
-// assembled here instead simply drops what wasn't filled in, and can carry what isn't displayed (geo, image URL).
+// Display and structured data are rendered apart on purpose: microdata would pin every itemprop to a displayed element, so a field left empty - and they are all optional here - would leave an empty node behind. A graph assembled here instead simply drops what wasn't filled in, and can carry what isn't displayed (geo, image URL).
 class ContactSnippetBuilder
 {
     // Offered by ContactDetailsType; all of them are LocalBusiness/Organization subtypes accepting the properties below
@@ -139,8 +137,7 @@ class ContactSnippetBuilder
         return $specifications;
     }
 
-    // The form hands over "HH:MM" already (a native time picker, see ContactHoursType); anything else - hand-edited
-    // data, an import - is dropped rather than guessed at, a misread "6pm" publishing a closing hour before the opening one
+    // The form hands over "HH:MM" already (a native time picker, see ContactHoursType); anything else - hand-edited data, an import - is dropped rather than guessed at, a misread "6pm" publishing a closing hour before the opening one
     private function time(mixed $value): string
     {
         if (!preg_match('/^(\d{1,2}):(\d{2})(?::\d{2})?$/', trim((string) $value), $matches)) {

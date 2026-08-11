@@ -13,8 +13,7 @@ namespace c975L\UiBundle\Tests\Assets;
 use c975L\UiBundle\Form\BlockType;
 use PHPUnit\Framework\TestCase;
 
-// The crossfade's keyframes cannot read the slide count, so every turn is a hand-written rule: raising
-// the form's cap without writing them leaves the extra images colliding with an earlier slide's timing
+// The crossfade's keyframes cannot read the slide count, so every turn is a hand-written rule: raising the form's cap without writing them leaves the extra images colliding with an earlier slide's timing
 class HeroSlideshowTimingTest extends TestCase
 {
     /**
@@ -70,8 +69,7 @@ class HeroSlideshowTimingTest extends TestCase
         $this->assertStringNotContainsString(sprintf('@keyframeshero-slide-fade-%d', $past), $css);
     }
 
-    // The table above only says when a turn starts: a slide held opaque longer than its own share of the
-    // cycle stays stacked over the next ones, and the last one in the DOM then wins for good
+    // The table above only says when a turn starts: a slide held opaque longer than its own share of the cycle stays stacked over the next ones, and the last one in the DOM then wins for good
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testNoSlideStaysOpaquePastItsOwnShareOfTheCycle(string $file): void
     {

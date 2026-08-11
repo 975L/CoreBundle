@@ -94,8 +94,7 @@ export default class extends Controller {
         }
     }
 
-    // Consent is no longer in the way - what happens next depends on whether there is a poster to hand the decision to the visitor with
-    // With one, the player waits for a click: it is ~1 MB of third-party JavaScript, and a grid of six of them would otherwise pull all six as they scroll past. Without one, there is nothing to look at but an empty box, so it loads on approach as it always has
+    // Consent is no longer in the way - what happens next depends on whether there is a poster to hand the decision to the visitor with With one, the player waits for a click: it is ~1 MB of third-party JavaScript, and a grid of six of them would otherwise pull all six as they scroll past. Without one, there is nothing to look at but an empty box, so it loads on approach as it always has
     onConsentSettled() {
         if (!this.hasPlayTarget) {
             this.scheduleIframe();

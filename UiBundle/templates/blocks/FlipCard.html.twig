@@ -1,6 +1,9 @@
 {# Adapter mapping Block data to the FlipCard component; medias are ordered, first = front face, second = back face #}
 {# Matched against the twelve hues, not interpolated: the value comes from stored block data and must not write any class name (same rule as "background" in the section components). See BlockAccentChoiceType #}
-{# "card--accent-*" and not a flip-card-specific class on purpose: those twelve classes only point --card-accent at a token and paint nothing themselves (see sass/_cards.scss), and a custom property set here is inherited by the two ".card" faces inside #}
-{% set accentClass = accent|default('') in ['red', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'indigo', 'violet', 'pink', 'grey'] ? 'card--accent-' ~ accent : '' %}
-{% set classes = (class|default([])|join(' ') ~ ' ' ~ accentClass)|trim %}
+{# "flip-card--accent-*" and not the card's own classes: a flip card is not a card (see sass/_flip-card.scss), and its accent lands on the outline and the two titles rather than on a filled header band #}
+{% set accentClass = accent|default('') in ['red', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'indigo', 'violet', 'pink', 'grey'] ? 'flip-card--accent-' ~ accent : '' %}
+{# Matched against the closed steps for the same reason, and shared with the plain card rather than prefixed "flip-card-": both kinds read the very same token off these classes (see sass/_block-surface.scss). Unset writes none at all, and the card keeps whatever this site's theme gives it. See BlockRadiusChoiceType / BlockShadowChoiceType #}
+{% set radiusClass = radius|default('') in ['none', 'small', 'medium', 'large'] ? 'block-radius-' ~ radius : '' %}
+{% set shadowClass = shadow|default('') in ['none', 'small', 'medium', 'large'] ? 'block-shadow-' ~ shadow : '' %}
+{% set classes = [class|default([])|join(' '), accentClass, radiusClass, shadowClass]|filter(name => name)|join(' ') %}
 <twig:c975LUi:FlipCard:FlipCard id="{{ id|default('') }}" title="{{ title|default('') }}" level="{{ level|default('') }}" content="{{ content|default('') }}" backTitle="{{ backTitle|default('') }}" backContent="{{ backContent|default('') }}" media="{{ block.media }}" ratio="{{ ratio|default('free') }}" class="{{ classes }}"/>

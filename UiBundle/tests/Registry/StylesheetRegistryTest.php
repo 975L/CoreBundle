@@ -60,8 +60,7 @@ class StylesheetRegistryTest extends TestCase
         $this->assertFalse(StylesheetRegistry::isExternal('bundles/c975lui/css/styles.min.css'));
     }
 
-    // An app asset is read from the project root, a bundle's compiled sheet from public/, so both callers
-    // (the cache warmer and the Twig extension) have to agree on which of the two a path names
+    // An app asset is read from the project root, a bundle's compiled sheet from public/, so both callers (the cache warmer and the Twig extension) have to agree on which of the two a path names
     public function testIsAppAssetIsTrueForAPathUnderAssets(): void
     {
         $this->assertTrue(StylesheetRegistry::isAppAsset('assets/styles/themes/ui.css'));

@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Implement to feed a block showcase (see BlockFixtureRegistry) with sample data for the block kinds a bundle registers via the "ui.block" tag, letting satellite bundles show their own kinds there without UiBundle knowing about them.
- */
+// Implement to feed a block showcase (see BlockFixtureRegistry) with sample data for the block kinds a bundle registers via the "ui.block" tag, letting satellite bundles show their own kinds there without UiBundle knowing about them.
 interface BlockFixtureProviderInterface
 {
     /**

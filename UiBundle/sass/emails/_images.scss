@@ -1,7 +1,6 @@
 /* EMAIL IMAGES */
 
-// No object-fit/aspect-ratio counterpart to the page's own rules: neither is supported widely enough in
-// mail clients to be relied on, and a picture that ignores them collapses rather than degrades
+// No object-fit/aspect-ratio counterpart to the page's own rules: neither is supported widely enough in mail clients to be relied on, and a picture that ignores them collapses rather than degrades
 .img-responsive {
     display: block;
     max-width: 100%;

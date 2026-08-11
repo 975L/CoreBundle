@@ -26,8 +26,7 @@ class BlockGroupType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // A group is a line of blocks by default, which is what makes it worth having in a footer: the whole
-        // point is to keep several blocks together on one line and push the next group below them
+        // A group is a line of blocks by default, which is what makes it worth having in a footer: the whole point is to keep several blocks together on one line and push the next group below them
         $builder
             ->add('direction', ChoiceType::class, [
                 'label' => 'label.group_direction',

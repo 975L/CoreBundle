@@ -25,9 +25,7 @@ class TemplateExists extends AbstractExtension
         return [new TwigFunction('template_exists', $this->templateExists(...))];
     }
 
-    /**
-     * Checks if the template exists.
-     */
+    // Checks if the template exists.
     public function templateExists($template)
     {
         $root = $this->configService->getContainerParameter('kernel.project_dir');

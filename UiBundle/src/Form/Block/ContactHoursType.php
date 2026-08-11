@@ -17,8 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// One entry of ContactDetailsType's "hours" collection - one row per time range, not per day, a business closing for
-// lunch needing two ranges over the same days ("Mo-Fr 9:00-12:00" then "Mo-Fr 14:00-18:00"). A day no row names is closed.
+// One entry of ContactDetailsType's "hours" collection - one row per time range, not per day, a business closing for lunch needing two ranges over the same days ("Mo-Fr 9:00-12:00" then "Mo-Fr 14:00-18:00"). A day no row names is closed.
 class ContactHoursType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -35,8 +34,7 @@ class ContactHoursType extends AbstractType
                 'expanded' => true,
                 'required' => false,
             ])
-            // A native time picker rather than free text: the value is stored straight into the block's JSON data,
-            // in the very "HH:MM" schema.org publishes, so no typed-in "9h"/"6pm" ever has to be guessed at
+            // A native time picker rather than free text: the value is stored straight into the block's JSON data, in the very "HH:MM" schema.org publishes, so no typed-in "9h"/"6pm" ever has to be guessed at
             ->add('opens', TimeType::class, $this->timeOptions('label.opens'))
             ->add('closes', TimeType::class, $this->timeOptions('label.closes'));
     }

@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Opts an uploaded image into being proportionally resized on upload (see VichImageResizeListener), the resized file replacing the entity's own stored one.
- */
+// Opts an uploaded image into being proportionally resized on upload (see VichImageResizeListener), the resized file replacing the entity's own stored one.
 interface VichImageResizableInterface
 {
     /**

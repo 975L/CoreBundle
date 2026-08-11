@@ -13,12 +13,7 @@ namespace c975L\UiBundle\Tests\Assets;
 use c975L\UiBundle\Form\BlockAccentChoiceType;
 use PHPUnit\Framework\TestCase;
 
-/*
- * A card's accent colors its header band and the card's own outline: each ".card--accent-<hue>" class only
- * points --card-accent at its own token, and ".card"/".card-header" are what paint it. A card with no header
- * therefore shows the accent on its outline alone, and an unaccented one stays on --primary and on the
- * neutral border, which is what every card stored before the field existed holds.
- */
+// A card's accent colors its header band and the card's own outline: each ".card--accent-<hue>" class only points --card-accent at its own token, and ".card"/".card-header" are what paint it. A card with no header therefore shows the accent on its outline alone, and an unaccented one stays on --primary and on the neutral border, which is what every card stored before the field existed holds.
 class CardAccentTest extends TestCase
 {
     // White falls under 4.5:1 on these four, so they carry dark text and stop the icon's inversion with it
@@ -67,10 +62,7 @@ class CardAccentTest extends TestCase
         );
     }
 
-    // The outline and the band's own separator take the accent too, so an accented card reads as one colored
-    // object rather than a colored patch inside a grey box. Both keep the neutral border as their fallback,
-    // which is what an unaccented card - and the ".card-header" the management accordion reuses outside any
-    // card, where --card-accent is never set - has always shown
+    // The outline and the band's own separator take the accent too, so an accented card reads as one colored object rather than a colored patch inside a grey box. Both keep the neutral border as their fallback, which is what an unaccented card - and the ".card-header" the management accordion reuses outside any card, where --card-accent is never set - has always shown
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testTheOutlineAndTheBandSeparatorTakeTheAccent(string $file): void
     {

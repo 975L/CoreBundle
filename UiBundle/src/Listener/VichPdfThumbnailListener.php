@@ -43,7 +43,7 @@ class VichPdfThumbnailListener
     {
         $entity = $event->getObject();
 
-        // Pas de thumbnail pour les fichiers privés (simple lien de téléchargement, ex. ShopBundle)
+        // No thumbnail for private files, which are a plain download link (e.g. ShopBundle)
         if ($entity instanceof VichPrivateFileInterface) {
             return;
         }
@@ -82,7 +82,7 @@ class VichPdfThumbnailListener
 
     private function generateThumbnail(string $pdfPath, int $width): void
     {
-        // exec() est désactivé sur certains hébergements mutualisés (ex. Infomaniak) : pas de thumbnail plutôt qu'un crash
+        // exec() is disabled on some shared hostings (e.g. Infomaniak): no thumbnail rather than a crash
         if (!function_exists('exec')) {
             return;
         }

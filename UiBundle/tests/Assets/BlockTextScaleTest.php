@@ -13,11 +13,8 @@ namespace c975L\UiBundle\Tests\Assets;
 use PHPUnit\Framework\TestCase;
 
 // Three typographic scales live in the block layer, and the font a rule is set in is what decides between them.
-// Everything set in the body font is sized in em, so it follows SiteBundle's --font-size-body and one value
-// retunes the reading of the whole page. A title and an eyebrow are the design's own marks and must not be
-// dragged along by it, so they keep their own lengths, each multiplied by the factor of its own family.
-// A rule on the wrong side of the split is what this test is for: nothing renders wrong, the text simply stops
-// answering the one setting meant to size it - or moves with a setting that was never meant to reach it
+// Everything set in the body font is sized in em, so it follows SiteBundle's --font-size-body and one value retunes the reading of the whole page. A title and an eyebrow are the design's own marks and must not be dragged along by it, so they keep their own lengths, each multiplied by the factor of its own family.
+// A rule on the wrong side of the split is what this test is for: nothing renders wrong, the text simply stops answering the one setting meant to size it - or moves with a setting that was never meant to reach it
 class BlockTextScaleTest extends TestCase
 {
     private const STYLESHEET = 'sass/_page-sections.scss';
@@ -58,8 +55,7 @@ class BlockTextScaleTest extends TestCase
         $this->assertGreaterThan(5, $checked, 'No body-font rule was checked at all - the stylesheet parser is not finding them any more.');
     }
 
-    // The design's marks are the other half of the split, and they must not drift into em either: sized against
-    // the body copy, a title would grow with it, which is exactly what keeping them in their own lengths prevents
+    // The design's marks are the other half of the split, and they must not drift into em either: sized against the body copy, a title would grow with it, which is exactly what keeping them in their own lengths prevents
     public function testEveryTitleAndEyebrowInTheBlockLayerStaysPinned(): void
     {
         foreach ($this->leafRules() as [$selector, $body]) {
@@ -75,8 +71,7 @@ class BlockTextScaleTest extends TestCase
         }
     }
 
-    // Those lengths are a hierarchy, so the family moves by a factor rather than by one shared size. A rule left
-    // out of it is the one that stops when every other title does not, which is worse than none of them moving
+    // Those lengths are a hierarchy, so the family moves by a factor rather than by one shared size. A rule left out of it is the one that stops when every other title does not, which is worse than none of them moving
     public function testEveryTitleAndEyebrowCarriesTheScaleOfItsFamily(): void
     {
         $checked = 0;

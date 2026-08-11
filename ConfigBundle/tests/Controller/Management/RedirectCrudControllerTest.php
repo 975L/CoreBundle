@@ -170,11 +170,12 @@ class RedirectCrudControllerTest extends TestCase
         $this->assertSame('ROLE_EDITOR', $crud->getAsDto()->getEntityPermission());
     }
 
-    public function testConfigureFiltersOffersBothPathColumns(): void
+    // "gone" filters out the rows a satellite bundle writes for its own deleted pages, which would otherwise bury the redirects an admin maintains by hand
+    public function testConfigureFiltersOffersBothPathColumnsAndTheGoneFlag(): void
     {
         $filters = $this->createController()->configureFilters(Filters::new());
 
-        $this->assertSame(['fromPath', 'toUrl'], array_keys($filters->getAsDto()->all()));
+        $this->assertSame(['fromPath', 'toUrl', 'gone'], array_keys($filters->getAsDto()->all()));
     }
 
     public function testExportCsvDelegatesToTheExporterWithTheRedirectRows(): void

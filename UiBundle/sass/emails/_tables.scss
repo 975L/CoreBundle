@@ -1,8 +1,6 @@
 /* EMAIL TABLES */
 
-// An email is laid out in tables, so these have to stay conservative: the blocks under
-// templates/emails/blocks build their structure out of <table>/<tr>/<td> and must not inherit the
-// decorated look the page's own data tables get
+// An email is laid out in tables, so these have to stay conservative: the blocks under templates/emails/blocks build their structure out of <table>/<tr>/<td> and must not inherit the decorated look the page's own data tables get
 table {
     width: auto;
     border-collapse: collapse;

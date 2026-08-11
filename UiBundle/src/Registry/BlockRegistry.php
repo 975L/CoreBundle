@@ -229,15 +229,10 @@ class BlockRegistry
             return false;
         }
 
-        // Any context a registered container builds its slots with, not just this bundle's own: a satellite
-        // bundle declaring a slot_context of its own (SiteBundle's "menu_slot") gets the same depth guard,
-        // without this registry ever having to know that context's name
+        // Any context a registered container builds its slots with, not just this bundle's own: a satellite bundle declaring a slot_context of its own (SiteBundle's "menu_slot") gets the same depth guard, without this registry ever having to know that context's name
         $isSlotContext = in_array($context, $this->slotContexts(), true);
 
-        // A menu joins them: its own kinds ("menu_link") only ever opt into the slot context of the container
-        // meant for them (SiteBundle's "menu_group"), so a generic container picked in a menu would be a group
-        // no link can be put into - the picker offers it, then refuses every drop, which is exactly what the
-        // editor cannot make sense of. Containers only, a menu otherwise taking any kind on purpose
+        // A menu joins them: its own kinds ("menu_link") only ever opt into the slot context of the container meant for them (SiteBundle's "menu_group"), so a generic container picked in a menu would be a group no link can be put into - the picker offers it, then refuses every drop, which is exactly what the editor cannot make sense of. Containers only, a menu otherwise taking any kind on purpose
         $isContainerOnlyOnOptIn = $isSlotContext || self::MENU_CONTEXT === $context;
 
         return !($isContainerOnlyOnOptIn && $config['container'] && !in_array($context, $config['contexts'], true));

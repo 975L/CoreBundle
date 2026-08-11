@@ -289,8 +289,7 @@ a.ea-sidebar-item-link[target="_blank"]::after {
 
 /* FAILED MESSAGES TABLE (management/messenger_failed_index.html.twig) */
 
-// Widths of the truncated cells: EasyAdmin's layout calls csp_nonce('style'), which makes
-// 'unsafe-inline' a no-op on style-src - a style="" attribute is therefore never applied
+// Widths of the truncated cells: EasyAdmin's layout calls csp_nonce('style'), which makes 'unsafe-inline' a no-op on style-src - a style="" attribute is therefore never applied
 .failed-message-cell {
     max-width: 12rem;
 }

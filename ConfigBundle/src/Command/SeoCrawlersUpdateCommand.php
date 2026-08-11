@@ -44,7 +44,7 @@ class SeoCrawlersUpdateCommand extends Command
         $comparison = $this->aiCrawlerListUpdater->compare();
 
         if (null === $comparison['source']) {
-            $io->note('The "seo-robots-ai-crawlers-source" config is empty, so this site keeps its list by hand - nothing to do.');
+            $io->note('The "seo-robots-ai-crawlers-source" config names no source, so this site keeps its list by hand - nothing to do.');
 
             return Command::SUCCESS;
         }

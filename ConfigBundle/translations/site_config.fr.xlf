@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="EUyn9gj">
                 <source>description.seo_robots_ai_crawlers_source</source>
-                <target>La liste communautaire à laquelle le bilan de santé mensuel compare la vôtre, et depuis laquelle le raccourci « Mettre à jour les robots IA » complète. Laissez vide pour tenir votre liste à la main : rien n'est alors téléchargé.</target>
+                <target>La liste communautaire à laquelle le bilan de santé mensuel compare la vôtre, et depuis laquelle le raccourci « Mettre à jour les robots IA » complète. Mettez « none » pour tenir votre liste à la main : rien n'est alors téléchargé. Laissée vide, l'entrée est réécrite avec la source par défaut au prochain chargement des configurations.</target>
             </trans-unit>
             <trans-unit id="lIc9kKR">
                 <source>description.seo_robots_block_ai</source>

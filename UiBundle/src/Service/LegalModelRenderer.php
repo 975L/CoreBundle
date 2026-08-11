@@ -14,14 +14,9 @@ use Twig\Environment;
 
 // Renders a legal model, then applies the block's customization on top of it.
 //
-// The bundle's template stays the source of truth: what the client never touched keeps arriving with every
-// composer update, and keeps its live %config% markers. Only what they explicitly hid, rewrote, moved or
-// added is stored - a sparse delta, never a copy of the whole document. A block with no delta at all skips
-// the DOM pass entirely and renders byte-for-byte what it rendered before this existed.
+// The bundle's template stays the source of truth: what the client never touched keeps arriving with every composer update, and keeps its live %config% markers. Only what they explicitly hid, rewrote, moved or added is stored - a sparse delta, never a copy of the whole document. A block with no delta at all skips the DOM pass entirely and renders byte-for-byte what it rendered before this existed.
 //
-// Units are identified by the "data-legal-id" attribute the models carry, slugified from their English
-// headings so an identifier means the same thing in all three locales. Two levels: a <section> (and any
-// tagged top-level <div>/<p>), and, inside it, an <h3> with everything up to the next one.
+// Units are identified by the "data-legal-id" attribute the models carry, slugified from their English headings so an identifier means the same thing in all three locales. Two levels: a <section> (and any tagged top-level <div>/<p>), and, inside it, an <h3> with everything up to the next one.
 class LegalModelRenderer
 {
     public function __construct(
@@ -43,9 +38,7 @@ class LegalModelRenderer
         return $this->placeholders->substitute($html);
     }
 
-    // The model's units as the bundle currently ships them, in document order - what the customization screen
-    // lists and what the drift check hashes. Markers left unresolved on purpose: a hash must not move just
-    // because the site was renamed.
+    // The model's units as the bundle currently ships them, in document order - what the customization screen lists and what the drift check hashes. Markers left unresolved on purpose: a hash must not move just because the site was renamed.
     public function units(string $model, string $locale): array
     {
         // Markers, not values: the screen shows them to the client and the hashes must not move with the config
@@ -72,20 +65,13 @@ class LegalModelRenderer
         return $units;
     }
 
-    // Fingerprint of a unit's body as the bundle ships it, stored next to an override so the drift check can
-    // tell whether the text that override replaced has since moved. Whitespace-insensitive: re-indenting a
-    // template is not a change of wording.
+    // Fingerprint of a unit's body as the bundle ships it, stored next to an override so the drift check can tell whether the text that override replaced has since moved. Whitespace-insensitive: re-indenting a template is not a change of wording.
     public static function hash(string $html): string
     {
         return hash('xxh128', trim((string) preg_replace('/\s+/u', ' ', $html)));
     }
 
-    // What "did the client actually change this?" is decided on. The customization screen hands Trix the
-    // bundle's own text, and Trix re-serializes whatever it is given - it drops the class attributes the
-    // models carry, among others. Comparing raw HTML would therefore mark every single section as rewritten
-    // the first time the screen is saved, freezing the whole document, which is the exact opposite of the
-    // point. Only class/style are stripped, deliberately: an href or an alt the client edited is a real
-    // change and must still register.
+    // What "did the client actually change this?" is decided on. The customization screen hands Trix the bundle's own text, and Trix re-serializes whatever it is given - it drops the class attributes the models carry, among others. Comparing raw HTML would therefore mark every single section as rewritten the first time the screen is saved, freezing the whole document, which is the exact opposite of the point. Only class/style are stripped, deliberately: an href or an alt the client edited is a real change and must still register.
     public static function comparable(string $html): string
     {
         $html = (string) preg_replace('/\s+(class|style)="[^"]*"/i', '', $html);
@@ -114,8 +100,7 @@ class LegalModelRenderer
         return $this->twig->render($this->templatePath($model, $locale), ['latestUpdate' => $latestUpdate]);
     }
 
-    // A locale with no template of its own falls back on the one the models are authored in, rather than
-    // throwing: a site adding a language shows its legal pages in French until someone translates them
+    // A locale with no template of its own falls back on the one the models are authored in, rather than throwing: a site adding a language shows its legal pages in French until someone translates them
     private function templatePath(string $model, string $locale): string
     {
         $path = sprintf('@c975LUi/models/%s.%s.html.twig', $model, $locale);
@@ -172,8 +157,7 @@ class LegalModelRenderer
         return $this->serialize($root);
     }
 
-    // Dom\Element::$outerHTML only exists since PHP 8.5, and the bundle runs on 8.4: the owning document
-    // serializes the node instead, which answers exactly the same HTML
+    // Dom\Element::$outerHTML only exists since PHP 8.5, and the bundle runs on 8.4: the owning document serializes the node instead, which answers exactly the same HTML
     private function serialize(\Dom\Node $node): string
     {
         $document = $node->ownerDocument;
@@ -181,8 +165,7 @@ class LegalModelRenderer
         return $document instanceof \Dom\HTMLDocument ? $document->saveHtml($node) : '';
     }
 
-    // A section's own lead (what sits between its <h2> and its first <h3>) plus everything that happens
-    // inside it: hidden, rewritten, moved and added sub-sections
+    // A section's own lead (what sits between its <h2> and its first <h3>) plus everything that happens inside it: hidden, rewritten, moved and added sub-sections
     private function customizeSection(\Dom\Element $section, string $id, array $hidden, array $overrides, array $positions, array $extra): void
     {
         $this->overrideNodes($this->sectionLead($section), $overrides[$id] ?? null, $section->querySelector('h2'));
@@ -205,8 +188,7 @@ class LegalModelRenderer
     }
 
     // A headingless unit given a title gets an <h2> created for it, the way an added top-level section does.
-    // The customization screen counts that title as a real edit, so dropping it would freeze the unit against
-    // an override that renders nothing
+    // The customization screen counts that title as a real edit, so dropping it would freeze the unit against an override that renders nothing
     private function openHeading(\Dom\Element $element, ?array $override): ?\Dom\Element
     {
         if ('' === trim((string) ($override['title'] ?? ''))) {
@@ -219,8 +201,7 @@ class LegalModelRenderer
         return $heading;
     }
 
-    // Replaces a run of nodes by the client's own HTML, and the heading's wording when they retitled it. A
-    // null override, or one with neither a title nor content, leaves the bundle's text alone
+    // Replaces a run of nodes by the client's own HTML, and the heading's wording when they retitled it. A null override, or one with neither a title nor content, leaves the bundle's text alone
     private function overrideNodes(array $nodes, ?array $override, ?\Dom\Element $heading): void
     {
         $title = trim((string) ($override['title'] ?? ''));
@@ -281,9 +262,7 @@ class LegalModelRenderer
         return $units;
     }
 
-    // The same runs in the {id, nodes} shape reorder() works on, walked here rather than derived from
-    // subUnits(): a section the client added is a tagged wrapper of its own, not an <h3> opening a run, and
-    // folding it into the preceding sub-unit would make it travel with that one instead of taking its position
+    // The same runs in the {id, nodes} shape reorder() works on, walked here rather than derived from subUnits(): a section the client added is a tagged wrapper of its own, not an <h3> opening a run, and folding it into the preceding sub-unit would make it travel with that one instead of taking its position
     private function subUnitGroups(\Dom\Element $section): array
     {
         $groups = [];
@@ -312,8 +291,7 @@ class LegalModelRenderer
         );
     }
 
-    // Dom\Element::getAttribute() answers null, not '', for an attribute that isn't there - and a null
-    // array key is both a deprecation and a silent match against every untagged node
+    // Dom\Element::getAttribute() answers null, not '', for an attribute that isn't there - and a null array key is both a deprecation and a silent match against every untagged node
     private function identifier(\Dom\Element $element): string
     {
         return (string) $element->getAttribute('data-legal-id');
@@ -326,8 +304,7 @@ class LegalModelRenderer
             && $node->hasAttribute('data-legal-id');
     }
 
-    // The client's own sections, appended to the scope they belong to - reorder() then slots them in at the
-    // position they were given
+    // The client's own sections, appended to the scope they belong to - reorder() then slots them in at the position they were given
     private function addExtra(\Dom\Element $container, string $parentId, array $extra): void
     {
         foreach ($extra as $index => $section) {
@@ -352,8 +329,7 @@ class LegalModelRenderer
         }
     }
 
-    // A sub-level addition is an <h3> and its content wrapped together, a top-level one a <section> of its
-    // own - or a plain <div> when the client gave it no heading, a headingless <section> being invalid HTML
+    // A sub-level addition is an <h3> and its content wrapped together, a top-level one a <section> of its own - or a plain <div> when the client gave it no heading, a headingless <section> being invalid HTML
     private function buildExtra(\Dom\Document $doc, string $id, string $title, string $content, bool $isSubLevel): \Dom\Element
     {
         $wrapper = $doc->createElement($isSubLevel || '' === $title ? 'div' : 'section');
@@ -372,9 +348,7 @@ class LegalModelRenderer
         return $wrapper;
     }
 
-    // Re-appends a scope's units in the client's order. Units keep their natural rank unless one was given an
-    // explicit position, and anything untagged (the "latest update" paragraph) never moves: it stays where the
-    // template put it, ahead of the first unit. No position set anywhere in the scope, nothing is touched.
+    // Re-appends a scope's units in the client's order. Units keep their natural rank unless one was given an explicit position, and anything untagged (the "latest update" paragraph) never moves: it stays where the template put it, ahead of the first unit. No position set anywhere in the scope, nothing is touched.
     private function reorder(\Dom\Element $container, array $units, array $positions): void
     {
         if ([] === $units || [] === array_intersect_key($positions, array_flip(array_column($units, 'id')))) {
@@ -401,8 +375,7 @@ class LegalModelRenderer
         }
     }
 
-    // Element children carrying an identifier, as a plain array: the caller detaches and moves them, which a
-    // live HTMLCollection would not survive
+    // Element children carrying an identifier, as a plain array: the caller detaches and moves them, which a live HTMLCollection would not survive
     private function taggedChildren(\Dom\Element $root): array
     {
         $tagged = [];

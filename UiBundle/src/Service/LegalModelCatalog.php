@@ -10,10 +10,7 @@
 
 namespace c975L\UiBundle\Service;
 
-// The legal models the bundle ships, shared by the block's form (the "Model" choices), the renderer (which
-// refuses any identifier not listed here, so nothing from the database can ever reach a template path) and
-// the drift check. Adding a country means adding its templates under templates/models/{country}/ and its
-// entry here - nothing else.
+// The legal models the bundle ships, shared by the block's form (the "Model" choices), the renderer (which refuses any identifier not listed here, so nothing from the database can ever reach a template path) and the drift check. Adding a country means adding its templates under templates/models/{country}/ and its entry here - nothing else.
 class LegalModelCatalog
 {
     // Locale the models are authored in, served whenever the request locale has no template of its own

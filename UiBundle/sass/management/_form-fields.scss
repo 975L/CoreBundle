@@ -1,17 +1,53 @@
 /* FORM FIELDS (assets/js/form-field-template.js, plus .ui-field-locked for the scripts consuming it) */
 
-// These rules used to be written from JS as element.style.x: EasyAdmin's layout calls csp_nonce('style'),
-// which makes 'unsafe-inline' a no-op on style-src, and a nonce never covers an inline style written
-// from JS. A class to toggle is the only form that survives
+// These rules used to be written from JS as element.style.x: EasyAdmin's layout calls csp_nonce('style'), which makes 'unsafe-inline' a no-op on style-src, and a nonce never covers an inline style written from JS. A class to toggle is the only form that survives
 .ui-form-field-template-picker {
     display: inline-block;
     width: auto;
     margin-left: .5rem;
 }
 
-// A neutralized form row: a shared utility, used by SiteBundle for the sitemap fields a checkbox locks
-// (assets/js/sitemap-fields.js)
+// A neutralized form row: a shared utility, used by SiteBundle for the sitemap fields a checkbox locks (assets/js/sitemap-fields.js)
 .ui-field-locked {
     pointer-events: none;
     opacity: .5;
+}
+
+// A label wrapping its own box, the whole bar being the click target rather than the box alone - used by GalleryBundle's media grid
+.ui-check-label {
+    cursor: pointer;
+}
+
+// The box inside such a label, enlarged to a comfortable touch target - EasyAdmin's own .form-check-input is 1rem
+.ui-check-lg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+// The "clear" cross of a searchable select (TomSelect, see ChoiceAutocompleteExtension), shown as soon as the field holds a value rather than on hover/focus alone, which is how EasyAdmin ships it (assets/css/easyadmin-theme/autocomplete.css). The widget drops the empty "none" option from its own list, so that cross is the only way back to no value at all
+.ts-wrapper.plugin-clear_button.has-items .clear-button {
+    opacity: 1;
+}
+
+// A group of consecutive fields inside a block's data form, legended with what the group is (see templates/form/block.html.twig). A kind holding several faces of one thing - flip_card's recto and verso - is otherwise one flat run of inputs where only the labels say which is which.
+// A real <fieldset>/<legend>, not a styled <div>: it is what names the group for a screen reader too
+.block-fieldset {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: .5rem;
+    padding: .5rem 1rem 0;
+    margin: 0 0 1.5rem;
+    // A fieldset is min-width:auto by default, which lets a wide child (a Trix editor, a file input) push it past its column instead of wrapping inside it
+    min-width: 0;
+}
+
+.block-fieldset-legend {
+    float: none;
+    width: auto;
+    padding: 0 .5rem;
+    margin: 0;
+    font-size: .9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--bs-secondary-color, #6c757d);
 }

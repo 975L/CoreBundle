@@ -13,10 +13,7 @@ namespace c975L\UiBundle\Service;
 use c975L\UiBundle\Contract\BlockCacheTagProviderInterface;
 use c975L\UiBundle\Entity\Block;
 
-// A legal_model's cached render has the site's own identity baked into it: LegalModelPlaceholders::substitute()
-// resolves %site-name%, %site-contact-email%... inside the cached callback, and a Config save fires no
-// Block/Media event for BlockCacheInvalidationListener to catch. This extra tag is what
-// LegalPlaceholderCacheListener invalidates when one of those configs changes.
+// A legal_model's cached render has the site's own identity baked into it: LegalModelPlaceholders::substitute() resolves %site-name%, %site-contact-email%... inside the cached callback, and a Config save fires no Block/Media event for BlockCacheInvalidationListener to catch. This extra tag is what LegalPlaceholderCacheListener invalidates when one of those configs changes.
 class LegalModelCacheTagProvider implements BlockCacheTagProviderInterface
 {
     public const CACHE_TAG = 'legal_placeholders';

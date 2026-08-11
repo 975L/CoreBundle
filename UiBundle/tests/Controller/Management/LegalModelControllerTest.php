@@ -102,8 +102,7 @@ class LegalModelControllerTest extends TestCase
         return $form;
     }
 
-    // The two screens render through a real Twig printing only what is asserted, so the parameters the
-    // controller builds are checked rather than the shipped templates' markup
+    // The two screens render through a real Twig printing only what is asserted, so the parameters the controller builds are checked rather than the shipped templates' markup
     private function createTwig(): Environment
     {
         return new Environment(new ArrayLoader([

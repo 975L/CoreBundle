@@ -1,5 +1,97 @@
 # ChangeLog
 
+## v1.8.0
+
+The flip card divorces the card, and both pick their own surface
+
+### ConfigBundle
+
+- `c975l:config:load-all` seeds a row holding nothing with the value its declaration carries (11/08/2026)
+- A stored value is still never rewritten, empty being the only state written to (11/08/2026)
+- A value seeded into a `sensitive` entry is encrypted on the way in (11/08/2026)
+- `createConfig()` and the seeding share one `storableValue()` for that encryption (11/08/2026)
+- `seo-robots-ai-crawlers-source` reads `none` as "keep this list by hand" (11/08/2026)
+- An emptied source row is reseeded with its declared url by the next load-all (11/08/2026)
+- Added `AiCrawlerListUpdater::NO_SOURCE` (11/08/2026)
+- Added `RedirectRepository::findByFromPathPrefix()`, which sweeps the rows an url tree left behind (11/08/2026)
+- Its LIKE wildcards are escaped rather than trusted, these rows being removed and not read (11/08/2026)
+- README documents the seeded defaults and what an entry whose emptiness means something must do (11/08/2026)
+- Added the `ConfigServiceTest` seeding cases and the `AiCrawlerListUpdaterTest` provider (11/08/2026)
+
+### UiBundle
+
+- `flip_card` is an object of its own: it reuses none of `.card`'s markup or rules (11/08/2026) [BC-Break]
+- Its faces are outlined and rounded, and its title sits inside the face instead of a header band (11/08/2026)
+- The card *is* the control: clicking it anywhere turns it, the toggle filling the whole face (11/08/2026)
+- The content is lifted over the toggle and made pointer-transparent, its own links excepted (11/08/2026)
+- The sway moved to `.flip-card-front`: on `.flip-card-inner` it swallowed every turn (11/08/2026)
+- The accent moved to `flip-card--accent-*`, painting the outline and the two titles (11/08/2026) [BC-Break]
+- Added `--flip-card-radius`, `-border-width`, `-front-background`, `-back-background` (11/08/2026)
+- Added `--flip-card-title-size`, `--flip-card-text-size` and `--flip-card-media-max-width` (11/08/2026)
+- A list on a face clears `list-style` whole, SiteBundle pointing every `ul` at an image (11/08/2026)
+- `FlipCardAccessibilityTest` locks the title-as-control, its focus ring and the `.card` divorce (11/08/2026)
+- The fold is the stylesheet's own: the card is painted in shape instead of flashing both faces (11/08/2026)
+- A `<noscript>` undoes it for a browser running no JS, where the toggles never appear (11/08/2026)
+- The illustration takes the card's own ratio instead of a fixed 3/2 (11/08/2026)
+- `flip_card`'s edit form groups its fields into a "Recto" and a "Verso" fieldset (11/08/2026)
+- A FormType groups its fields through `row_attr`'s `data-block-fieldset`, any kind may (11/08/2026)
+- A FormType hoists the block's media collection through `media_after`, any kind may (11/08/2026)
+- Both are themed on the shared `ui_block_data` block prefix (11/08/2026)
+- So the EasyAdmin screen and the fragment the kind picker loads lay a kind's fields out identically (11/08/2026)
+- Added `BlockDataThemePrefixTest`, which locks that prefix on both entry points (11/08/2026)
+- `flip_card` drops its bulk file input: it takes two images, each belonging to a named face (11/08/2026)
+- Added `.block-fieldset` / `.block-fieldset-legend`, and `label.face_front` / `label.face_back` (11/08/2026)
+- `card` and `flip_card` offer a "Coins arrondis" and an "Ombre" field, on one shared scale (11/08/2026)
+- Added `BlockRadiusChoiceType` and `BlockShadowChoiceType`: theme / none / small / medium / large (11/08/2026)
+- "Thème" is the placeholder, not a choice, so a block stored before the fields renders unchanged (11/08/2026)
+- Added `sass/_block-surface.scss`, whose `block-radius-*` / `block-shadow-*` classes only set a token (11/08/2026)
+- Added `--block-radius-small`, `-medium`, `-large` and `--block-shadow-small`, `-medium`, `-large` (11/08/2026)
+- Each kind reads those through a default of its own, so "Thème" keeps the look it always had (11/08/2026)
+- A card carries no shadow until a step is picked, where a flip card's step retunes the one it had (11/08/2026)
+- The card's shadow is stated on two classes, so it never loses to `.box-shadow` on sheet order (11/08/2026)
+- Added `BlockSurfaceTest` and `BlockSurfaceChoiceTypeTest` (11/08/2026)
+- A `.cards` row resets a card's own margin as a descendant, not through the child combinator (11/08/2026)
+- The `display: contents` wrappers keep the card the flex item but stay nodes a `>` is read against (11/08/2026)
+- So an animated card kept its `1em` and sat a step below the row it belongs to (11/08/2026)
+- `.flip-card` is a grid, so its inner fills the height the row gave the card (11/08/2026)
+- Without it a row painted as many box heights as it held contents, one title wrapping being enough (11/08/2026)
+- Added `CardRowAlignmentTest`, which also locks the two wrappers' `display: contents` (11/08/2026)
+- Added `ChoiceAutocompleteExtension`, which decides on list length alone whether a choice field searches (11/08/2026)
+- Below ten options a native `<select>` is rendered, at or above it EasyAdmin's TomSelect widget (11/08/2026)
+- A `multiple` field always gets the widget, however short its list (11/08/2026)
+- It overrides EasyAdmin, which handed the widget to every non-expanded choice field there is (11/08/2026)
+- An expanded field and a list fed by an endpoint stay exempt, neither being countable (11/08/2026)
+- The four block FormTypes writing `data-ea-widget` by hand drop it, the rule being one place now (11/08/2026)
+- The widget's clear cross shows as soon as the field holds a value, not on hover alone (11/08/2026)
+- Added `ChoiceAutocompleteExtensionTest` (11/08/2026)
+- `CspNonceProvider` is wired on `nelmio_security.csp_listener`, the only id that listener is registered under (11/08/2026)
+- Left to autowiring, it brought a consuming app's whole container down on its first `cache:clear` (11/08/2026)
+- It takes that listener optionally, so a site that configured no `csp:` section still compiles (11/08/2026)
+- A block's nonce marker is dropped altogether when there is no nonce, rather than left as `nonce=""` (11/08/2026)
+- That marker is only substituted on a `<style>` tag, the string in a rich text field no longer nonced (11/08/2026)
+- Added `CspNonceProviderTest`, and `c975LUiBundleTest` guards the wiring (11/08/2026)
+- `createNoncedStyleElement()` copies the nonce off a stylesheet `<link>`, not off the first `[nonce]` (11/08/2026)
+- That first one is importmap's own `<script>`, whose nonce style-src does not carry (11/08/2026)
+- So every `<style>` the sliders, the image comparison, the video sizing and the overlay build was rejected (11/08/2026)
+- `block-edit-overlay.js` gives up on a rejected element instead of throwing on its null sheet (11/08/2026)
+- Its button measures past every transparent wrapper stacked around a block, not one fixed child (11/08/2026)
+- The honeypot hides itself with `.ui-field-aside`, not a `style` attribute a nonce cannot cover (11/08/2026) [BC-Break]
+- That class name states nothing: it ships in the stylesheet, where a telling one is a grep away (11/08/2026)
+- It was being shown to every visitor as a "Department" field on any page with a nonced style-src (11/08/2026)
+- Added `NoncedStyleSrcTest` coverage for the carrier, the overlay guard and the honeypot (11/08/2026)
+- A slot's entrance animation plays: the wrapper moved from `Blocks:Block` to `renderBlock()` (11/08/2026)
+- A slot of any container kind is rendered by `render_block()` straight, never through that component (11/08/2026)
+- So its animation was stored, offered on the edit screen and read by nothing (11/08/2026)
+- `recaptcha3-score-threshold` falls back on the 0.05 it is seeded with, instead of Google's 0.5 (11/08/2026)
+- `site-form-delay` is seeded with the 7 seconds `FormBotProtection` falls back on, instead of 3 (11/08/2026)
+- The four base `theme-color-*` ship with the color their fallback paints (11/08/2026)
+- The three `theme-font-family-*` ship with the generic family their fallback names (11/08/2026)
+- The two `-dark-mode` keys stay empty, their fallback being the light key rather than a color (11/08/2026)
+- README documents the seeded palette and type, and why the dark-mode keys are not (11/08/2026)
+- README documents the `.cards` row, the surface scale and the choice widget rule (11/08/2026)
+- Prose comments spread over several lines are collapsed to one, across both bundles (11/08/2026)
+- UPGRADE.md documents the `.card` divorce and the honeypot class a site theme has to pass on (11/08/2026)
+
 ## v1.7.0
 
 The layout nonces style-src, and every inline style gives way

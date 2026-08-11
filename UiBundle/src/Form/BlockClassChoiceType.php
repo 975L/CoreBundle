@@ -46,8 +46,6 @@ class BlockClassChoiceType extends AbstractType
             'expanded' => false,
             'required' => false,
             'translation_domain' => 'ui',
-            // Renders as a removable-tags selector (same widget as BookBundle's Serie autocomplete) instead of a plain multi-select
-            'attr' => ['data-ea-widget' => 'ea-autocomplete'],
         ]);
     }
 }

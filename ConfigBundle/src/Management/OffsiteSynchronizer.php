@@ -17,14 +17,9 @@ use Symfony\Component\Process\Process;
 
 // Sends what the backup produced to wherever the install keeps its offsite copy, through rclone.
 //
-// What this class deliberately does not hold: credentials. site-backup-offsite-target names a remote
-// ("storagebox:975l.com"), nothing more - the secrets stay in rclone's own configuration, outside the
-// application and outside the database. Nor is the binary's location configurable: a free-form path read
-// from a back-office entry is an arbitrary code execution offered to any admin account that gets
-// compromised, which is not something a public bundle does.
+// What this class deliberately does not hold: credentials. site-backup-offsite-target names a remote ("storagebox:975l.com"), nothing more - the secrets stay in rclone's own configuration, outside the application and outside the database. Nor is the binary's location configurable: a free-form path read from a back-office entry is an arbitrary code execution offered to any admin account that gets compromised, which is not something a public bundle does.
 //
-// An install that would rather have an outside machine pull its backups leaves the entry empty: nothing is
-// sent, and c975l:config:backup:offsite --ack is what that machine calls to say the files did leave.
+// An install that would rather have an outside machine pull its backups leaves the entry empty: nothing is sent, and c975l:config:backup:offsite --ack is what that machine calls to say the files did leave.
 class OffsiteSynchronizer
 {
     // A remote name as rclone spells it, then an optional path under it - letters, digits and the handful of separators a path needs, so nothing reaching Process can be read as an option or as another command
@@ -66,10 +61,7 @@ class OffsiteSynchronizer
         return $this->run(['copy', $localPath, $this->remote($remoteSubPath)], $timeout);
     }
 
-    // The mirrored folders: synced, so a destination that has diverged comes back in line - but never destructively.
-    // --backup-dir moves what would be overwritten or deleted into a dated folder instead of losing it, which is the
-    // protection against the failure that actually happens: a gallery emptied by mistake, propagated within hours.
-    // --max-delete aborts the run outright past that many deletions, so the mistake doesn't even reach the backup-dir
+    // The mirrored folders: synced, so a destination that has diverged comes back in line - but never destructively. --backup-dir moves what would be overwritten or deleted into a dated folder instead of losing it, which is the protection against the failure that actually happens: a gallery emptied by mistake, propagated within hours. --max-delete aborts the run outright past that many deletions, so the mistake doesn't even reach the backup-dir
     public function sync(string $localPath, string $remoteSubPath, string $backupDirSubPath, int $maxDelete, int $timeout = 3600): array
     {
         return $this->run([
@@ -101,10 +93,7 @@ class OffsiteSynchronizer
             'delete', '--rmdirs', '--min-age', sprintf('%dd', $keepDays), $this->remote($remoteSubPath),
         ], $timeout);
 
-        // A destination where nothing has ever been overwritten or deleted has no previous/ folder at all, which rclone
-        // reports as an error. There is nothing to purge, and it is not a failure: left as one it warns on the very
-        // first run, then every night for as long as the site's files don't change - a permanent warning being how a
-        // real one goes unnoticed
+        // A destination where nothing has ever been overwritten or deleted has no previous/ folder at all, which rclone reports as an error. There is nothing to purge, and it is not a failure: left as one it warns on the very first run, then every night for as long as the site's files don't change - a permanent warning being how a real one goes unnoticed
         return !$result['ok'] && str_contains((string) $result['error'], 'directory not found')
             ? ['ok' => true, 'error' => null, 'output' => '']
             : $result;
@@ -144,17 +133,11 @@ class OffsiteSynchronizer
 
     // rclone.conf at the root of the project when the install has one, rclone's own default otherwise.
     //
-    // Left to itself, rclone reads ~/.config/rclone/rclone.conf - which resolves in an interactive SSH session and
-    // may not under a task scheduler, where HOME is often absent or different. rclone then starts with no remote
-    // configured at all and reports the target as unknown, a failure that reads exactly like "rclone doesn't work on
-    // this host". A path under the project depends on nothing but the project.
+    // Left to itself, rclone reads ~/.config/rclone/rclone.conf - which resolves in an interactive SSH session and may not under a task scheduler, where HOME is often absent or different. rclone then starts with no remote configured at all and reports the target as unknown, a failure that reads exactly like "rclone doesn't work on this host". A path under the project depends on nothing but the project.
     //
-    // The root rather than var/: var/ is a runtime scratch folder nobody writes to by hand, and the local backup
-    // scripts that skip it would skip this file too - the one file whose loss stops the backups from leaving. At the
-    // root it sits with the other tool configuration an operator maintains, still outside the document root.
+    // The root rather than var/: var/ is a runtime scratch folder nobody writes to by hand, and the local backup scripts that skip it would skip this file too - the one file whose loss stops the backups from leaving. At the root it sits with the other tool configuration an operator maintains, still outside the document root.
     //
-    // It is a location, not a setting: nothing in the database points here, so no back-office entry can aim rclone at
-    // a file of someone else's choosing. The scaffold adds it to .gitignore, credentials never being committed
+    // It is a location, not a setting: nothing in the database points here, so no back-office entry can aim rclone at a file of someone else's choosing. The scaffold adds it to .gitignore, credentials never being committed
     public function getConfigFile(): ?string
     {
         $file = $this->parameterBag->get('kernel.project_dir') . '/rclone.conf';

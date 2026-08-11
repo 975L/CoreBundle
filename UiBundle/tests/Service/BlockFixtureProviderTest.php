@@ -112,9 +112,7 @@ class BlockFixtureProviderTest extends TestCase
         $this->assertSame('freeflow', $fixtures['slider']['freeflow']['layout']);
     }
 
-    // hero shows its ordinary layout alongside the background video, which fills the section and drops everything
-    // laid out beside the text - two looks of one kind, the same as the slider's above. The variant carries no field
-    // of its own: what tells them apart is the video BlockFixtureMediaAttacher attaches to this one only
+    // hero shows its ordinary layout alongside the background video, which fills the section and drops everything laid out beside the text - two looks of one kind, the same as the slider's above. The variant carries no field of its own: what tells them apart is the video BlockFixtureMediaAttacher attaches to this one only
     public function testHeroFixtureCoversTheOrdinaryLayoutAndTheBackgroundVideo(): void
     {
         $fixtures = (new BlockFixtureProvider())->getFixtures();

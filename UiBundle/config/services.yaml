@@ -6,15 +6,10 @@ services:
 
     c975L\UiBundle\:
         resource: '../src/'
-        # Maker/ excluded: it extends symfony/maker-bundle's AbstractMaker, a dev-only dependency -
-        # registered separately in services_maker.yaml, imported only when that class is available
-        # (see c975LUiBundle::loadExtension()), so a plain resource-glob scan never autoloads it in prod
-        # Model/ excluded: plain value objects (e.g. CollectionItem) built by application code, not services -
-        # autowiring one fails on its first scalar constructor argument
-        # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same
-        # stylesheet analysis over their own sheets, never instantiated by the application itself
-        # Video/ excluded: an enum and the value object it builds, read statically by whoever needs them -
-        # autowiring ResolvedVideo fails on the enum the container refuses to instantiate
+        # Maker/ excluded: it extends symfony/maker-bundle's AbstractMaker, a dev-only dependency - registered separately in services_maker.yaml, imported only when that class is available (see c975LUiBundle::loadExtension()), so a plain resource-glob scan never autoloads it in prod
+        # Model/ excluded: plain value objects (e.g. CollectionItem) built by application code, not services - autowiring one fails on its first scalar constructor argument
+        # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same stylesheet analysis over their own sheets, never instantiated by the application itself
+        # Video/ excluded: an enum and the value object it builds, read statically by whoever needs them - autowiring ResolvedVideo fails on the enum the container refuses to instantiate
         exclude: '../src/{DependencyInjection,Entity,Maker,Model,Testing,Video}'
 
     c975L\UiBundle\Service\StylesheetProvider:
@@ -35,6 +30,12 @@ services:
     c975L\UiBundle\Controller\FormController:
         arguments:
             $formLimiterFactory: '@?limiter.ui_form'
+
+    # NelmioSecurityBundle registers its CSP listener under its own service id alone, aliasing nothing on the class - so CspNonceProvider, which type-hints that class, is not autowirable in a consuming app and brings the whole container down on the first cache:clear
+    # Wired here rather than aliased: the listener only exists once a site has configured a csp section, and a site that has not is one whose pages carry no nonce at all - it gets an empty one rather than a container that refuses to compile (see CspNonceProvider::styleNonce)
+    c975L\UiBundle\Service\CspNonceProvider:
+        arguments:
+            $listener: '@?nelmio_security.csp_listener'
 
     # Ui Blocks
     ui.block.article:
@@ -129,8 +130,7 @@ services:
               pickable: true
               cacheable: true
 
-    # Never offered in the block picker (pickable: false) - only ever built transiently by
-    # CollectionExtension::renderItems(), one per "collection" block item, see CollectionItemType
+    # Never offered in the block picker (pickable: false) - only ever built transiently by CollectionExtension::renderItems(), one per "collection" block item, see CollectionItemType
     ui.block.collection_item:
         class: stdClass
         tags:
@@ -176,9 +176,7 @@ services:
               pickable: true
               cacheable: true
 
-    # Two faces of one card, turned by a button (see assets/js/flip-card.js). Its medias are ordered like
-    # image_compare's: the first is the front face's image, the second the back's - hence multi upload, an
-    # editor picking both in one go
+    # Two faces of one card, turned by a button (see assets/js/flip-card.js). Its medias are ordered like image_compare's: the first is the front face's image, the second the back's - hence multi upload, an editor picking both in one go
     ui.block.flip_card:
         class: stdClass
         tags:
@@ -190,7 +188,7 @@ services:
               template: '@c975LUi/blocks/FlipCard.html.twig'
               category: 'label.category_elements'
               media_types: 'image/*'
-              media_multi_upload: true
+              # No multi-upload here, unlike the other kinds taking more than one image: this one takes two at most, each belonging to a named face, and a bulk file input beside the collection that already adds them one by one only asked the editor which of the two to use
               media_help: 'label.flip_card_media_help'
               # Right under "card" (100), the kind an editor reaching for this one just looked at
               priority: 99
@@ -382,9 +380,7 @@ services:
               pickable: true
               cacheable: true
 
-    # Slots are real nested Block rows (see Block::$slots), each picked/edited through the normal
-    # kind form - not cacheable itself: a slot's own cache invalidation doesn't propagate to this
-    # block's cache key, same reasoning as "collection" above. Each slot still caches independently.
+    # Slots are real nested Block rows (see Block::$slots), each picked/edited through the normal kind form - not cacheable itself: a slot's own cache invalidation doesn't propagate to this block's cache key, same reasoning as "collection" above. Each slot still caches independently.
     ui.block.flex_columns:
         class: stdClass
         tags:
@@ -401,16 +397,9 @@ services:
               container: true
               slot_context: 'flex_columns_slot'
 
-    # A single flex_columns column, itself grouping several other blocks (its own "slots") - only ever
-    # meant to be picked as a flex_columns row's own slot (contexts restricts it to
-    # BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT, which is exclusive, so it is also the ONLY kind offered there).
-    # Every real picker passes a context (PageCrudController 'page', MenuCrudController 'menu',
-    # BlockFormController the container's own slot context), so this kind only ever shows up in a
-    # flex_columns row's slots - a context-less caller would still list it, harmless if it ever happens,
-    # it just renders its slots with no wrapper of its own.
-    # Its priority only ever ranks it in such a context-less picker, never in a row's slots, where the
-    # exclusive context already leaves it alone in the list - so it stays where every other kind of the
-    # "sections" category puts it, rather than opening one it has no business opening.
+    # A single flex_columns column, itself grouping several other blocks (its own "slots") - only ever meant to be picked as a flex_columns row's own slot (contexts restricts it to BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT, which is exclusive, so it is also the ONLY kind offered there).
+    # Every real picker passes a context (PageCrudController 'page', MenuCrudController 'menu', BlockFormController the container's own slot context), so this kind only ever shows up in a flex_columns row's slots - a context-less caller would still list it, harmless if it ever happens, it just renders its slots with no wrapper of its own.
+    # Its priority only ever ranks it in such a context-less picker, never in a row's slots, where the exclusive context already leaves it alone in the list - so it stays where every other kind of the "sections" category puts it, rather than opening one it has no business opening.
     ui.block.flex_column:
         class: stdClass
         tags:
@@ -428,10 +417,8 @@ services:
               contexts: 'flex_columns_slot'
               slot_context: 'flex_slot_nested'
 
-    # The one container with no chrome of its own: a bare row (or stack) around blocks that would otherwise
-    # sit side by side at the top level, e.g. a footer menu's social links on their own line above its links.
-    # No slot_context of its own, so its slots take BlockRegistry::SLOT_CONTEXT, where containers are excluded -
-    # a group can't hold another group, which is the depth guard a chromeless wrapper would otherwise miss.
+    # The one container with no chrome of its own: a bare row (or stack) around blocks that would otherwise sit side by side at the top level, e.g. a footer menu's social links on their own line above its links.
+    # No slot_context of its own, so its slots take BlockRegistry::SLOT_CONTEXT, where containers are excluded - a group can't hold another group, which is the depth guard a chromeless wrapper would otherwise miss.
     ui.block.block_group:
         class: stdClass
         tags:
@@ -447,11 +434,7 @@ services:
               cacheable: false
               container: true
 
-    # A stack of full "card" blocks (or any other kind) with a section-level eyebrow/title/anchor - same
-    # container mechanism as flex_columns above, but its slots render inside ".cards" (see
-    # components/Section/Cards.html.twig), the same fixed-width flex row used when "card" blocks are placed
-    # bare and consecutively in the page flow (see Blocks.html.twig) - giving that exact look plus an anchor
-    # and section head, which bare consecutive "card" blocks can't have on their own.
+    # A stack of full "card" blocks (or any other kind) with a section-level eyebrow/title/anchor - same container mechanism as flex_columns above, but its slots render inside ".cards" (see components/Section/Cards.html.twig), the same fixed-width flex row used when "card" blocks are placed bare and consecutively in the page flow (see Blocks.html.twig) - giving that exact look plus an anchor and section head, which bare consecutive "card" blocks can't have on their own.
     ui.block.section_cards:
         class: stdClass
         tags:
@@ -511,11 +494,7 @@ services:
               pickable: true
               cacheable: true
 
-    # A grid of whole blocks under a section head, same container mechanism as flex_columns/section_cards above,
-    # and like section_cards it declares no slot_context: any kind can fill a cell, "video_iframe" and "video"
-    # being what it is for. Slots rather than a media collection of its own precisely so a grid of platform
-    # players inherits the consent dance (nocookie rewrite, banner contract, click-to-play, poster import) from
-    # the block that already carries it, instead of implementing it a second time
+    # A grid of whole blocks under a section head, same container mechanism as flex_columns/section_cards above, and like section_cards it declares no slot_context: any kind can fill a cell, "video_iframe" and "video" being what it is for. Slots rather than a media collection of its own precisely so a grid of platform players inherits the consent dance (nocookie rewrite, banner contract, click-to-play, poster import) from the block that already carries it, instead of implementing it a second time
     ui.block.video_grid:
         class: stdClass
         tags:
@@ -528,14 +507,11 @@ services:
               category: 'label.category_sections'
               priority: 56
               pickable: true
-              # Same as the other containers (flex_columns, section_cards): what it renders is its slots, each with
-              # its own cacheability, so the row itself is not cached over them
+              # Same as the other containers (flex_columns, section_cards): what it renders is its slots, each with its own cacheability, so the row itself is not cached over them
               cacheable: false
               container: true
 
-    # Not cacheable: its items come from another bundle's own entity (see CollectionSourceProviderInterface),
-    # which BlockCacheInvalidationListener has no way to invalidate on - see BlockCacheTagProviderInterface
-    # (Phase 0) for the pattern used to make a referenced-data block cacheable, not applied here for now
+    # Not cacheable: its items come from another bundle's own entity (see CollectionSourceProviderInterface), which BlockCacheInvalidationListener has no way to invalidate on - see BlockCacheTagProviderInterface (Phase 0) for the pattern used to make a referenced-data block cacheable, not applied here for now
     ui.block.collection:
         class: stdClass
         tags:

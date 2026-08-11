@@ -15,8 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// The whole "customize this legal model" screen: one fixed row per unit the bundle ships, plus as many
-// client-authored sections as they want to add
+// The whole "customize this legal model" screen: one fixed row per unit the bundle ships, plus as many client-authored sections as they want to add
 class LegalModelCustomizationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

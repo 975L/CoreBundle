@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Implement to tell where a named Form is really reachable on the front end, when it is displayed by something richer than this bundle's bare "ui_form_submit" route - SiteBundle answers with the Page carrying a "form" Block pointing at it, an admin-editable per-locale slug. Consumed by the "form_url" Twig function, which falls back on the bare route when no provider knows the name.
- */
+// Implement to tell where a named Form is really reachable on the front end, when it is displayed by something richer than this bundle's bare "ui_form_submit" route - SiteBundle answers with the Page carrying a "form" Block pointing at it, an admin-editable per-locale slug. Consumed by the "form_url" Twig function, which falls back on the bare route when no provider knows the name.
 interface FormPageUrlProviderInterface
 {
     /**

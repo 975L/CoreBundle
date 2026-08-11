@@ -52,7 +52,7 @@
             </trans-unit>
             <trans-unit id="EUyn9gj">
                 <source>description.seo_robots_ai_crawlers_source</source>
-                <target>La lista comunitaria con la que el chequeo mensual compara la suya, y desde la que el acceso directo «Actualizar los robots de IA» la completa. Déjelo vacío para mantener su lista a mano: entonces no se descarga nada.</target>
+                <target>La lista comunitaria con la que el chequeo mensual compara la suya, y desde la que el acceso directo «Actualizar los robots de IA» la completa. Póngalo en «none» para mantener su lista a mano: entonces no se descarga nada. Si se deja vacío, la entrada se reescribe con la fuente por defecto en la próxima carga de configuraciones.</target>
             </trans-unit>
             <trans-unit id="lIc9kKR">
                 <source>description.seo_robots_block_ai</source>

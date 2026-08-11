@@ -37,7 +37,7 @@ class FlipCardTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['id', 'title', 'level', 'content', 'backTitle', 'backContent', 'ratio', 'class', 'accent'] as $field) {
+        foreach (['id', 'title', 'level', 'content', 'backTitle', 'backContent', 'ratio', 'radius', 'shadow', 'class', 'accent'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the FlipCard form");
         }
     }

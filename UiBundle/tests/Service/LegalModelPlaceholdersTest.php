@@ -16,8 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class LegalModelPlaceholdersTest extends TestCase
 {
-    // The default: a model rendered any way at all, including a plain {% include %} in an app's own template,
-    // prints the value and never a marker
+    // The default: a model rendered any way at all, including a plain {% include %} in an app's own template, prints the value and never a marker
     public function testValueIsResolvedOnTheSpot(): void
     {
         $this->assertSame('Acme &amp; Co', $this->placeholders()->value('site-name'));

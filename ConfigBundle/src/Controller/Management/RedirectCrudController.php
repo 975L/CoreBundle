@@ -27,6 +27,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -123,11 +124,13 @@ class RedirectCrudController extends AbstractCrudController
         ;
     }
 
+    // "gone" is worth a filter of its own: the rows a satellite bundle writes when it removes a page are all of that kind (see GalleryBundle, one per deleted media), and they would otherwise bury the handful of redirects an admin actually maintains by hand
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
             ->add('fromPath')
             ->add('toUrl')
+            ->add(BooleanFilter::new('gone')->setLabel(t('label.gone', [], 'config')))
         ;
     }
 

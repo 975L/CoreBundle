@@ -82,8 +82,7 @@ class StylesheetExtensionTest extends TestCase
         );
     }
 
-    // An app's own sheet is registered with its project-root path, but AssetMapper's root is the assets/
-    // directory itself: asking it for the prefixed path resolves nothing at all
+    // An app's own sheet is registered with its project-root path, but AssetMapper's root is the assets/ directory itself: asking it for the prefixed path resolves nothing at all
     public function testGetBundleStylesheetsDropsTheAssetsPrefixOfAnAppAssetInDebug(): void
     {
         $registry = $this->createStub(StylesheetRegistry::class);

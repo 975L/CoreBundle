@@ -20,8 +20,9 @@ class CaptchaVerifier
 {
     private const VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
-    // Google's own recommended starting point, and what karser defaulted to - kept so an app upgrading without setting "recaptcha3-score-threshold" behaves exactly as before
-    private const DEFAULT_SCORE_THRESHOLD = 0.5;
+    // The very value config/configs.json seeds "recaptcha3-score-threshold" with, restated here for the two cases that never read a row: an app whose configs were never loaded, and a field emptied at the back office
+    // It was Google's own 0.5 and karser's before it, which no site running this bundle has ever been scored on - a loaded config has always answered 0.05 instead - so the constant only ever named a threshold nobody used, and named it ten times stricter than the one they did
+    private const DEFAULT_SCORE_THRESHOLD = 0.05;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,

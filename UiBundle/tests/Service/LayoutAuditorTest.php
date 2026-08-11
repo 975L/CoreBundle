@@ -28,11 +28,7 @@ class LayoutAuditorTest extends TestCase
         }
     }
 
-    /*
-     * The one thing the browser layer knows that the sass tests do not is which rule meant to centre what.
-     * Read off the element instead, a centering already lost computes to "0px" and reports a clean page -
-     * which is precisely how this check first failed to see the slider.
-     */
+    // The one thing the browser layer knows that the sass tests do not is which rule meant to centre what. Read off the element instead, a centering already lost computes to "0px" and reports a clean page - which is precisely how this check first failed to see the slider.
     public function testCenteringIsReadFromTheStylesheetRatherThanTheElement(): void
     {
         $script = $this->script();

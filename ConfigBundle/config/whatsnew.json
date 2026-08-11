@@ -11,6 +11,16 @@
                 "en": "In the failed-messages screen, a long message or a long error no longer stretches the table past the width of the screen",
                 "fr": "Dans l'écran des messages en échec, un message ou une erreur de grande longueur n'étire plus le tableau au-delà de la largeur de l'écran",
                 "es": "En la pantalla de mensajes fallidos, un mensaje o un error muy largo ya no estira la tabla más allá del ancho de la pantalla"
+            },
+            {
+                "en": "A setting left empty now shows the value the site actually runs on, instead of a blank field whose real answer was hidden away",
+                "fr": "Un réglage laissé vide affiche désormais la valeur sur laquelle le site fonctionne réellement, au lieu d'un champ vide dont la vraie réponse était cachée",
+                "es": "Un ajuste dejado vacío muestra ahora el valor con el que el sitio funciona realmente, en lugar de un campo vacío cuya respuesta real estaba oculta"
+            },
+            {
+                "en": "To keep your AI crawler list by hand, set its source to \"none\" — emptying the field no longer holds, it gets filled back in",
+                "fr": "Pour tenir votre liste de robots IA à la main, réglez sa source sur « none » : vider le champ ne tient plus, il est de nouveau renseigné",
+                "es": "Para mantener su lista de rastreadores de IA a mano, ponga su fuente en «none»: vaciar el campo ya no basta, se vuelve a rellenar"
             }
         ]
     },

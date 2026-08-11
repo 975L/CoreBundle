@@ -34,8 +34,7 @@
 
 /* STYLES THAT USED TO BE WRITTEN FROM JS (block-toolbar.js, ea-sortable.js, media-preview.js) */
 
-// EasyAdmin's layout calls csp_nonce('style'), which makes 'unsafe-inline' a no-op on style-src: no
-// nonce ever covers a style written from JS, and a class is the only form that survives
+// EasyAdmin's layout calls csp_nonce('style'), which makes 'unsafe-inline' a no-op on style-src: no nonce ever covers a style written from JS, and a class is the only form that survives
 .ui-row-header-flex {
     display: flex;
     align-items: center;
@@ -60,8 +59,7 @@
 .ui-toolbar-btn {
     flex-shrink: 0;
     padding: 0 .25rem;
-    // Fallback for a button whose order has no --order-* class of its own: it sits in the middle of the
-    // bar rather than in front of the handle, where the default 0 would put it
+    // Fallback for a button whose order has no --order-* class of its own: it sits in the middle of the bar rather than in front of the handle, where the default 0 would put it
     order: 2;
 }
 
@@ -94,14 +92,12 @@
     margin-bottom: .5rem;
 }
 
-// A touch-enabled grab zone: without touch-action the browser claims the gesture and not one
-// pointermove ever reaches us (pointer-sort.js)
+// A touch-enabled grab zone: without touch-action the browser claims the gesture and not one pointermove ever reaches us (pointer-sort.js)
 .ui-sort-zone-touch {
     touch-action: none;
 }
 
-// The element being dragged: taken out of hit-testing so that what sits under the pointer is the drop
-// target and not itself, the way a native drag image was
+// The element being dragged: taken out of hit-testing so that what sits under the pointer is the drop target and not itself, the way a native drag image was
 .ui-dragging {
     pointer-events: none;
 }
@@ -111,10 +107,7 @@
     user-select: none;
 }
 
-// At the finger, the handle is the only place a row can be picked up from (ea-sortable.js keeps the
-// rest of the header to the mouse, a touchable header being a header the page can no longer be
-// scrolled from), and the bare icon is well under a comfortable touch target. Declared at the end of
-// the file to win on the cascade over .ui-toolbar-btn's padding, at equal specificity
+// At the finger, the handle is the only place a row can be picked up from (ea-sortable.js keeps the rest of the header to the mouse, a touchable header being a header the page can no longer be scrolled from), and the bare icon is well under a comfortable touch target. Declared at the end of the file to win on the cascade over .ui-toolbar-btn's padding, at equal specificity
 @media (pointer: coarse) {
     .ui-sort-handle {
         padding-block: .5rem;

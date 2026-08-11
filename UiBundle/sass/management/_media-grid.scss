@@ -22,6 +22,11 @@
     border-radius: 4px;
 }
 
+// Crops instead of fitting, for a grid whose originals all share an aspect ratio (GalleryBundle) - the base rule stays "contain" for media_index, where arbitrary-aspect originals must not be cropped
+.management-media-grid__thumb--cover {
+    object-fit: cover;
+}
+
 .management-media-grid__placeholder {
     width: 150px;
     height: 150px;
@@ -34,4 +39,11 @@
     text-align: center;
     padding: .25rem;
     overflow-wrap: anywhere;
+}
+
+// The same placeholder shrunk to a list row's own thumbnail size (GalleryBundle's category index column)
+.management-media-grid__placeholder--sm {
+    width: 60px;
+    height: 60px;
+    font-size: .65rem;
 }

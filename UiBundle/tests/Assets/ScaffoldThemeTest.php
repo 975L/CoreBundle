@@ -12,9 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// The scaffolded ui.css is a hand-maintained copy of the token defaults, so it drifts on its own. SiteBundle
-// has the same test over its own scaffold, but it reads this one through vendor/ and skips when absent -
-// which is how three wrong values and three missing tokens shipped here unnoticed. This one needs no vendor
+// The scaffolded ui.css is a hand-maintained copy of the token defaults, so it drifts on its own. SiteBundle has the same test over its own scaffold, but it reads this one through vendor/ and skips when absent - which is how three wrong values and three missing tokens shipped here unnoticed. This one needs no vendor
 class ScaffoldThemeTest extends TestCase
 {
     // Admin-editable from the backoffice, so listing them would hand the palette to this file's editor
@@ -34,11 +32,12 @@ class ScaffoldThemeTest extends TestCase
         '--slider-freeflow-vw',
     ];
 
-    // Read, but never off :root either: the "--c975l-" ones are what the backoffice compiles into
-    // site-theme.css, and the "--bs-" ones belong to EasyAdmin
+    // Read, but never off :root either: the "--c975l-" ones are what the backoffice compiles into site-theme.css, and the "--bs-" ones belong to EasyAdmin
     private const NOT_THEMABLE = [
+        '--bs-border-color',
         '--bs-primary',
         '--bs-secondary-bg',
+        '--bs-secondary-color',
         '--bs-tertiary-bg',
         '--c975l-color-background',
         '--c975l-color-primary',
@@ -49,17 +48,7 @@ class ScaffoldThemeTest extends TestCase
         '--c975l-font-family-title',
     ];
 
-    // Set inside the rules of each variant - .section--bg-* for the flats, .card--accent-* for the twelve
-    // card hues - so one value in :root would collapse every variant into a single look (the scaffold's
-    // own header says as much). A design retunes the tokens those rules point at instead: --section-bg-*
-    // for the flats, --block-accent-* for the hues, both of which the scaffold does offer.
-    // --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange,
-    // yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A
-    // site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule -
-    // see the "Card accents" section of the README.
-    // --flip-card-ratio is the same shape one step further: only the eight .flip-card-ratio-* classes set it,
-    // one per shape an editor picks per card, and a card left on "free" declares none at all - a value in
-    // :root would give every flip card on the site one shape, which is the field's whole point undone
+    // Set inside the rules of each variant - .section--bg-* for the flats, .card--accent-* for the twelve card hues - so one value in :root would collapse every variant into a single look (the scaffold's own header says as much). A design retunes the tokens those rules point at instead: --section-bg-* for the flats, --block-accent-* for the hues, both of which the scaffold does offer. --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange, yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule - see the "Card accents" section of the README. --flip-card-ratio is the same shape one step further: only the eight .flip-card-ratio-* classes set it, one per shape an editor picks per card, and a card left on "free" declares none at all - a value in :root would give every flip card on the site one shape, which is the field's whole point undone. --block-radius and --block-shadow are that same shape again, one per step of the "rounded corners" and "shadow" fields (.block-radius-* / .block-shadow-*): the scale behind them is what a design retunes, and the scaffold does offer it as --block-radius-* / --block-shadow-*
     private const PER_VARIANT = [
         '--section-background',
         '--section-text',
@@ -70,12 +59,13 @@ class ScaffoldThemeTest extends TestCase
         '--card-accent',
         '--card-accent-color',
         '--card-accent-invert',
+        '--flip-card-accent',
         '--flip-card-ratio',
+        '--block-radius',
+        '--block-shadow',
     ];
 
-    // SiteBundle restates these three in its own unlayered :root, which beats this bundle's @layer
-    // ui-defaults whatever the load order. The scaffold therefore shows SiteBundle's value, the one a site
-    // running it actually gets. Empty this list the day SiteBundle stops redeclaring them
+    // SiteBundle restates these three in its own unlayered :root, which beats this bundle's @layer ui-defaults whatever the load order. The scaffold therefore shows SiteBundle's value, the one a site running it actually gets. Empty this list the day SiteBundle stops redeclaring them
     private const SITE_BUNDLE_OVERRIDES = [
         '--button-background-primary',
         '--button-background-secondary',
@@ -131,8 +121,7 @@ class ScaffoldThemeTest extends TestCase
         ));
     }
 
-    // D. A token read with an inline fallback never reaches :root, so test A above is blind to it - and
-    // that is exactly how --contact-details-col-min stayed out of the scaffold for a release
+    // D. A token read with an inline fallback never reaches :root, so test A above is blind to it - and that is exactly how --contact-details-col-min stayed out of the scaffold for a release
     public function testScaffoldOffersEveryTokenReadWithAnInlineFallback(): void
     {
         $missing = array_values(array_diff(

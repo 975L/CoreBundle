@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Marker a FormActionInterface provider can implement when its form makes no sense for an already-authenticated visitor (e.g. "register", "reset_password_request") - FormController checks for this before rendering/handling and shows an "already authenticated" notice instead of the form.
- */
+// Marker a FormActionInterface provider can implement when its form makes no sense for an already-authenticated visitor (e.g. "register", "reset_password_request") - FormController checks for this before rendering/handling and shows an "already authenticated" notice instead of the form.
 interface RequiresAnonymousInterface
 {
 }

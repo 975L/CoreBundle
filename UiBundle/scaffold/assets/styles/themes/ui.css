@@ -12,42 +12,30 @@
     /* --font-title-weight: normal; */
     /* --font-body-weight: normal; */
 
-    /* Titles and eyebrows keep their own lengths - they are the design's marks, and SiteBundle's
-       --font-size-body must not drag them along - so each is multiplied by the factor of its family.
-       A factor and not one shared size: those lengths are a hierarchy, from a 66px hero title down to
-       a 19px card title, and one value for all of them would flatten it. Raise one when the picked face
-       reads small at the size a wider one reads right, which is a matter of its x-height, not of its size */
+    /* Titles and eyebrows keep their own lengths - they are the design's marks, and SiteBundle's --font-size-body must not drag them along - so each is multiplied by the factor of its family. A factor and not one shared size: those lengths are a hierarchy, from a 66px hero title down to a 19px card title, and one value for all of them would flatten it. Raise one when the picked face reads small at the size a wider one reads right, which is a matter of its x-height, not of its size */
     /* --font-size-title-scale: 1; */
     /* --font-size-eyebrow-scale: 1; */
 
-    /* Measure of the page and of a section's content, plus the gutter keeping it off the viewport edges.
-       --section-wrap-max-width defaults to --body-max-width: set it only for sections narrower than the page */
+    /* Measure of the page and of a section's content, plus the gutter keeping it off the viewport edges. --section-wrap-max-width defaults to --body-max-width: set it only for sections narrower than the page */
     /* --body-max-width: 1440px; */
     /* --section-wrap-max-width: var(--body-max-width); */
     /* --section-wrap-gutter: clamp(20px, 5vw, 64px); */
 
-    /* The measure body copy is laid out on - an article, a "text" block, a legal page, and the sliders
-       and comparisons sharing that column. Well under --body-max-width, which frames the page and never
-       carries a line of text. Set it in "ch" rather than "px" for a measure that follows the body font */
+    /* The measure body copy is laid out on - an article, a "text" block, a legal page, and the sliders and comparisons sharing that column. Well under --body-max-width, which frames the page and never carries a line of text. Set it in "ch" rather than "px" for a measure that follows the body font */
     /* --reading-max-width: min(75ch, 90vw); */
 
-    /* Gap left above an anchor target, so a sticky navbar doesn't cover it - match the navbar's height.
-       Read by both bundles (a legal document's sections here, an article and a "text" block in SiteBundle) */
+    /* Gap left above an anchor target, so a sticky navbar doesn't cover it - match the navbar's height. Read by both bundles (a legal document's sections here, an article and a "text" block in SiteBundle) */
     /* --scroll-offset: 80px; */
 
-    /* The page's vertical rhythm: the one step parting any two section-level blocks, declared on the top edge
-       of each so a pair is never parted by two. The tight one is the "text" block's, which commonly opens a
-       page right under its own <h1>. Retuning these two retunes every gap on every page at once */
+    /* The page's vertical rhythm: the one step parting any two section-level blocks, declared on the top edge of each so a pair is never parted by two. The tight one is the "text" block's, which commonly opens a page right under its own <h1>. Retuning these two retunes every gap on every page at once */
     /* --section-space: clamp(48px, 8vw, 84px); */
     /* --section-space-tight: clamp(24px, 4vw, 48px); */
 
-    /* The room kept above and below a slider and a comparison, the two block kinds laying out their own
-       vertical rhythm rather than taking the one the section-level blocks share */
+    /* The room kept above and below a slider and a comparison, the two block kinds laying out their own vertical rhythm rather than taking the one the section-level blocks share */
     /* --slider-margin-block: 3em; */
     /* --image-compare-margin-block: 3em; */
 
-    /* What parts two blocks grouped in a "block_group" - the row gap first, which only shows once the group
-       wraps. It is the gap of a footer's own items too, a group being what puts a footer's links on a line */
+    /* What parts two blocks grouped in a "block_group" - the row gap first, which only shows once the group wraps. It is the gap of a footer's own items too, a group being what puts a footer's links on a line */
     /* --blocks-group-gap: 0.5rem 1.5rem; */
 
     /* The measures of the section-level blocks */
@@ -58,8 +46,7 @@
     /* --hero-media-max-width: 520px; */
     /* --cta-band-text-max-width: 560px; */
     /* --alert-max-width: 700px; */
-    /* The narrowest a contact_details field column may get before its grid drops one - raise it for a
-       design whose labels wrap, lower it to keep more fields on a line */
+    /* The narrowest a contact_details field column may get before its grid drops one - raise it for a design whose labels wrap, lower it to keep more fields on a line */
     /* --contact-details-col-min: 210px; */
 
     /* Hero block - its own typographic scale, independent from the page's headings */
@@ -68,14 +55,11 @@
     /* --hero-title-line-height: 1.03; */
     /* --hero-sub-size: 19px; */
     /* --hero-sub-max-width: 480px; */
-    /* Inset of each mark inside its tile, on a hero laying its medias out as a grid. Kept narrow:
-       a logo carries a margin of its own inside its viewBox, a photo has none. Raise it for bare glyphs */
+    /* Inset of each mark inside its tile, on a hero laying its medias out as a grid. Kept narrow: a logo carries a margin of its own inside its viewBox, a photo has none. Raise it for bare glyphs */
     /* --hero-media-grid-padding: 5%; */
-    /* The opaque plate each mark is read against, so its own colors never mix into the hero background -
-       repaint it for marks drawn for a dark ground */
+    /* The opaque plate each mark is read against, so its own colors never mix into the hero background - repaint it for marks drawn for a dark ground */
     /* --hero-media-grid-background: #fff; */
-    /* The room a hero opening on a background video gives it: the shot is cropped to the section's height,
-       which would otherwise be that of the text alone. Only read when a video is attached */
+    /* The room a hero opening on a background video gives it: the shot is cropped to the section's height, which would otherwise be that of the text alone. Only read when a video is attached */
     /* --hero-video-min-height: 70vh; */
 
     /* Text hook - the lead-in phrase of the "text_hook" block and of an article */
@@ -93,24 +77,18 @@
     /* --text-hook-article-max-width: none; */
     /* --text-hook-article-margin: 24px; */
 
-    /* The "secondary" presentation of the "text_section" block - a section standing beside a louder one,
-       the companion paragraph of a hook in the column next to it, rather than carrying the page on its own */
+    /* The "secondary" presentation of the "text_section" block - a section standing beside a louder one, the companion paragraph of a hook in the column next to it, rather than carrying the page on its own */
     /* --text-section-secondary-size: clamp(17px, 1.5vw, 21px); */
     /* --text-section-secondary-line-height: 1.7; */
     /* --text-section-secondary-color: var(--section-text, var(--label-color)); */
 
-    /* The three flats a page section can be painted with, when an editor sets its "background" field.
-       Only the background is set here: the text, dividers and translucent chips of each variant are mixed
-       back into it automatically, so retuning one line retunes the whole variant. "muted" is mixed out of
-       --primary rather than pointing at --surface-alt's neutral grey, so the band reads as a paler shade
-       of the site instead of as an absence of color */
+    /* The three flats a page section can be painted with, when an editor sets its "background" field. Only the background is set here: the text, dividers and translucent chips of each variant are mixed back into it automatically, so retuning one line retunes the whole variant. "muted" is mixed out of --primary rather than pointing at --surface-alt's neutral grey, so the band reads as a paler shade of the site instead of as an absence of color */
     /* --section-bg-muted: color-mix(in srgb, var(--background) 94%, var(--primary)); */
     /* --section-bg-primary: var(--primary); */
     /* --section-bg-dark: var(--text); */
     /* Label of a primary button sitting on the "primary" or "dark" flat, where the button turns white */
     /* --section-btn-color: var(--primary); */
-    /* A flat bleeds full-viewport-width, past --body-max-width - set these to auto/auto/0 for a design
-       that frames the page, so the flats stay inside the frame like the navbar and footer in site.css */
+    /* A flat bleeds full-viewport-width, past --body-max-width - set these to auto/auto/0 for a design that frames the page, so the flats stay inside the frame like the navbar and footer in site.css */
     /* --section-flat-offset: 50%; */
     /* --section-flat-width: 100vw; */
     /* --section-flat-margin-x: -50vw; */
@@ -123,11 +101,22 @@
     /* Lines shown before a "read more" block clamps its text */
     /* --readmore-lines: 5; */
 
-    /* The twelve hues a card's "accent" field offers, painting the card's header band. Point one at this
-       site's own palette to fold that hue into the design - the value stored on a card is the color's
-       name, not a meaning, so it never has to change when the hue does.
-       The header writes white on them: keep any value here above 3:1 against white, or retune
-       --card-accent's companion text color in this site's own app.css */
+    /* The two-sided card. Its own shape and its own surfaces, sharing nothing with the plain card above: a
+       flip card is an object a visitor reaches for - outlined, rounded, titled - where a card is a panel to
+       read, so retuning one here never moves the other. The back is what the turn reveals, hence a surface
+       of its own rather than the front's; mixed out of the palette, so it follows the admin's colors. Its
+       outline and its two titles take the accent an editor picks, or --primary when there is none - where a
+       card's accent paints a header band instead, see --block-accent-* below, shared by both */
+    /* --flip-card-radius: 25px; */
+    /* --flip-card-border-width: 3px; */
+    /* --flip-card-front-background: var(--white); */
+    /* --flip-card-back-background: color-mix(in srgb, var(--secondary) 30%, var(--background)); */
+    /* --flip-card-title-size: 2rem; */
+    /* --flip-card-text-size: 0.9rem; */
+    /* The measure of the illustration inside a face, which is centered and never fills it edge to edge */
+    /* --flip-card-media-max-width: 250px; */
+
+    /* The twelve hues the "accent" field offers, painting a card's header band and a flip card's outline and titles. Point one at this site's own palette to fold that hue into the design - the value stored on a block is the color's name, not a meaning, so it never has to change when the hue does. The card header writes white on them: keep any value here above 3:1 against white, or retune --card-accent's companion text color in this site's own app.css */
     /* --block-accent-red: #b23a2f; */
     /* --block-accent-orange: #c96a50; */
     /* --block-accent-yellow: #dda43a; */
@@ -141,35 +130,37 @@
     /* --block-accent-pink: #a6486a; */
     /* --block-accent-grey: #26333f; */
 
-    /* Surfaces and rules mixed out of the admin's own palette - they follow it automatically when the
-       colors are retuned in the backoffice, which a hardcoded value here would stop. */
+    /* The three steps the "rounded corners" and "shadow" fields offer on a card and on a flip card, on top of
+       the "theme" default each kind keeps for itself (--radius-card / --flip-card-radius above, --box-shadow
+       for a flip card's faces). Retune a step here and every block set on it follows, whichever kind it is -
+       what a block stores is the step, never the length. The "none" step writes 0 / none and has no token */
+    /* --block-radius-small: 6px; */
+    /* --block-radius-medium: 14px; */
+    /* --block-radius-large: 28px; */
+    /* --block-shadow-small: 0 1px 3px 0 rgba(0, 0, 0, 0.2); */
+    /* --block-shadow-medium: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
+    /* --block-shadow-large: 0 12px 28px 0 rgba(0, 0, 0, 0.55); */
+
+    /* Surfaces and rules mixed out of the admin's own palette - they follow it automatically when the colors are retuned in the backoffice, which a hardcoded value here would stop. */
     /* --surface-accent: color-mix(in srgb, var(--primary) 12%, var(--background)); */
     /* --surface-alt: color-mix(in srgb, var(--background) 94%, var(--text)); */
     /* --border-color: color-mix(in srgb, var(--text) 12%, var(--background)); */
     /* --border-accent: color-mix(in srgb, var(--primary) 35%, var(--background)); */
     /* --surface-inverse: #232323; */
     /* --text-on-inverse: #d8d8d8; */
-    /* What shows beside the page once the viewport is wider than --body-max-width, and the surface an
-       email is read on. Follows the admin's background by default, so a value here parts the two */
+    /* What shows beside the page once the viewport is wider than --body-max-width, and the surface an email is read on. Follows the admin's background by default, so a value here parts the two */
     /* --frame-background: var(--background); */
 
-    /* Black and white are swapped in dark mode (--white becomes #1e1e1e, --black #e0e0e0), which is how
-       every token pointing at them flips along. Uncommenting them here keeps that flip, the dark-mode
-       block having the higher specificity - but a design wanting fixed values should use its own tokens. */
+    /* Black and white are swapped in dark mode (--white becomes #1e1e1e, --black #e0e0e0), which is how every token pointing at them flips along. Uncommenting them here keeps that flip, the dark-mode block having the higher specificity - but a design wanting fixed values should use its own tokens. */
     /* --black: #000; */
     /* --white: #fff; */
 
-    /* Buttons - the primary/secondary pair follows the admin's palette through color-mix, the status
-       three are fixed by convention (red danger, green success). */
+    /* Buttons - the primary/secondary pair follows the admin's palette through color-mix, the status three are fixed by convention (red danger, green success). */
     /* --button-color: #fff; */
     /* --button-secondary-color: #fff; */
     /* --button-link-color: #fff; */
     /* --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
-    /* The two below are the fallbacks --primary and --secondary read when the admin sets no color, so
-       uncommenting one repaints the whole site, not just its buttons - retune the palette in the backoffice
-       instead, unless the design really means to take those two hues away from it. The values shown are
-       SiteBundle's, which restates these three and loads after this bundle: a site without SiteBundle gets
-       sass/_tokens.scss's own rgb(11, 55, 178) / rgb(218, 126, 57) / #000 instead. */
+    /* The two below are the fallbacks --primary and --secondary read when the admin sets no color, so uncommenting one repaints the whole site, not just its buttons - retune the palette in the backoffice instead, unless the design really means to take those two hues away from it. The values shown are SiteBundle's, which restates these three and loads after this bundle: a site without SiteBundle gets sass/_tokens.scss's own rgb(11, 55, 178) / rgb(218, 126, 57) / #000 instead. */
     /* --button-background-primary: #0a2d6b; */
     /* --button-background-primary-dark: color-mix(in srgb, var(--primary) 85%, black); */
     /* --button-background-primary-light: color-mix(in srgb, var(--primary) 50%, white); */
@@ -180,9 +171,7 @@
     /* --button-background-danger: rgb(220, 53, 69); */
     /* --button-background-danger-dark: rgb(220, 53, 69, 0.9); */
 
-    /* Alerts - conventional status tints, readable whatever the site's own palette. The four backgrounds
-       and the two text colors are all restated in dark mode (SiteBundle's sass/_theme-dark.scss), where
-       each tint is mixed into the page background: a value uncommented here applies to both. */
+    /* Alerts - conventional status tints, readable whatever the site's own palette. The four backgrounds and the two text colors are all restated in dark mode (SiteBundle's sass/_theme-dark.scss), where each tint is mixed into the page background: a value uncommented here applies to both. */
     /* --alert-color: #000; */
     /* --alert-danger-color: #9c3a44; */
     /* --alert-danger-background: #f2dede; */
@@ -190,41 +179,31 @@
     /* --alert-success-background: #d0e9c6; */
     /* --alert-warning-background: #f9dba7; */
 
-    /* Form inputs. Every one of these is restated in dark mode - a value uncommented here applies to both,
-       so a design wanting a different dark field needs its own :root[data-theme="dark"] block. */
+    /* Form inputs. Every one of these is restated in dark mode - a value uncommented here applies to both, so a design wanting a different dark field needs its own :root[data-theme="dark"] block. */
     /* Measure every form is laid out on */
     /* --form-width: min(70vw, 1000px); */
     /* --form-input-color: #555; */
-    /* Ink of a form label. Defaults to --black, so it follows the page into dark mode on its own -
-       set it here rather than --black for a design whose labels alone read differently, --black
-       also carrying .lead and the --navbar-text default */
+    /* Ink of a form label. Defaults to --black, so it follows the page into dark mode on its own - set it here rather than --black for a design whose labels alone read differently, --black also carrying .lead and the --navbar-text default */
     /* --form-label-color: var(--black); */
     /* --input-border-color: #4d4d4d; */
     /* --input-border-bottom-color: #bfbfbf; */
     /* --input-shadow-color: #4d4d4d; */
     /* --input-focus-border-color: rgb(24, 115, 200); */
     /* --input-focus-shadow-color: rgb(66, 130, 189); */
-    /* Surface of the field. Transparent, i.e. the page shows through - dark mode washes it faintly
-       instead, a field being otherwise indistinguishable from the page behind it */
+    /* Surface of the field. Transparent, i.e. the page shows through - dark mode washes it faintly instead, a field being otherwise indistinguishable from the page behind it */
     /* --input-background: transparent; */
-    /* Room above and below a field - a box-shadow takes no space, so the validation ring would
-       otherwise be drawn over the label above it and the field below */
+    /* Room above and below a field - a box-shadow takes no space, so the validation ring would otherwise be drawn over the label above it and the field below */
     /* --input-margin-block: 0.4em 1em; */
-    /* Distance from the bottom of a field's wrapper to its validation glyph - retune it for a form
-       theme putting anything after the input */
+    /* Distance from the bottom of a field's wrapper to its validation glyph - retune it for a form theme putting anything after the input */
     /* --input-glyph-offset: 9.5px; */
-    /* Green/red replacing the blue focus ring once the field has been judged, by the browser's own
-       constraint validation or by the password controller. Pointed at the button status colors so one
-       palette covers the site - give them their own values for a design where green/red read differently */
+    /* Green/red replacing the blue focus ring once the field has been judged, by the browser's own constraint validation or by the password controller. Pointed at the button status colors so one palette covers the site - give them their own values for a design where green/red read differently */
     /* --input-valid-border-color: var(--button-background-success); */
     /* --input-valid-shadow-color: var(--button-background-success); */
     /* --input-invalid-border-color: var(--button-background-danger); */
     /* --input-invalid-shadow-color: var(--button-background-danger); */
-    /* Text of the message under an invalid field, kept apart from the border: the same red reads at
-       4.53:1 on a white page but 4.14:1 on the dark one, under the 4.5:1 WCAG AA asks of body text */
+    /* Text of the message under an invalid field, kept apart from the border: the same red reads at 4.53:1 on a white page but 4.14:1 on the dark one, under the 4.5:1 WCAG AA asks of body text */
     /* --input-invalid-text-color: var(--button-background-danger); */
-    /* Applied to the show/hide eye the password controller injects - it is an <img>, out of reach of
-       currentColor, so dark mode inverts the black shape rather than recoloring it */
+    /* Applied to the show/hide eye the password controller injects - it is an <img>, out of reach of currentColor, so dark mode inverts the black shape rather than recoloring it */
     /* --input-icon-filter: none; */
     /* --required-color: #000; */
     /* --disabled: #808080; */

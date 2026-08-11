@@ -12,15 +12,10 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// Sass writes a UTF-8 BOM into any --style=compressed output holding a non-ASCII byte. A browser drops a
-// BOM sitting at the very start of a stylesheet, so it costs nothing while each file is served on its own
-// <link> - which is why it went unnoticed. Concatenated by StylesheetCacheWarmer into bundles/build/site.css
-// (what every non-debug app is served), every BOM but the first lands mid-file, where it is a stray
-// character that turns the rule following it into a parse error: the whole rule is thrown away. Here that
-// rule was "@layer ui-defaults", i.e. every token default at once.
+// Sass writes a UTF-8 BOM into any --style=compressed output holding a non-ASCII byte. A browser drops a BOM sitting at the very start of a stylesheet, so it costs nothing while each file is served on its own
+// <link> - which is why it went unnoticed. Concatenated by StylesheetCacheWarmer into bundles/build/site.css (what every non-debug app is served), every BOM but the first lands mid-file, where it is a stray character that turns the rule following it into a parse error: the whole rule is thrown away. Here that rule was "@layer ui-defaults", i.e. every token default at once.
 //
-// Two guards, because either alone would be enough only until the next stylesheet is added: the compiled
-// files carry no BOM, and the warmer strips one anyway.
+// Two guards, because either alone would be enough only until the next stylesheet is added: the compiled files carry no BOM, and the warmer strips one anyway.
 class StylesheetByteOrderMarkTest extends TestCase
 {
     private const BOM = "\u{FEFF}";

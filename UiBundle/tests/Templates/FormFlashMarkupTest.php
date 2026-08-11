@@ -17,12 +17,10 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFunction;
 
-// The form component renders the flash bag itself, for the standalone re-render a failed submission goes
-// through - no site layout has consumed it there. Both rules below were once broken at the same spot
+// The form component renders the flash bag itself, for the standalone re-render a failed submission goes through - no site layout has consumed it there. Both rules below were once broken at the same spot
 class FormFlashMarkupTest extends TestCase
 {
-    // FormController flashes "warning" when the rate limiter trips (see submit()), and the visitor is
-    // redirected: a type the component does not read makes that message silently disappear
+    // FormController flashes "warning" when the rate limiter trips (see submit()), and the visitor is redirected: a type the component does not read makes that message silently disappear
     public function testTheComponentRendersEveryFlashTypeTheControllerPuts(): void
     {
         $html = $this->render([
@@ -36,8 +34,7 @@ class FormFlashMarkupTest extends TestCase
         $this->assertStringContainsString('<div class="alert alert-warning">Trop de tentatives</div>', $html);
     }
 
-    // The bag is shared with every other bundle and app, and this component is rendered on the public
-    // front: a flash interpolating request data must not reach the page as markup
+    // The bag is shared with every other bundle and app, and this component is rendered on the public front: a flash interpolating request data must not reach the page as markup
     public function testAFlashIsEscaped(): void
     {
         $html = $this->render(['danger' => ['<script>alert(1)</script>']]);

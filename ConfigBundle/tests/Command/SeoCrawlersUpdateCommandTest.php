@@ -82,6 +82,6 @@ class SeoCrawlersUpdateCommandTest extends TestCase
         $commandTester = new CommandTester(new SeoCrawlersUpdateCommand($updater));
 
         $this->assertSame(Command::SUCCESS, $commandTester->execute([]));
-        $this->assertStringContainsString('nothing to do', $commandTester->getDisplay());
+        $this->assertStringContainsString('keeps its list by hand', $commandTester->getDisplay());
     }
 }

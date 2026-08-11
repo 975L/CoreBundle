@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Implement to serve the placeholder media a block showcase stands in with (see PlaceholderMediaRegistry), so those demo files can live on the site actually hosting the showcase instead of being shipped by - and downloaded with - UiBundle itself.
- */
+// Implement to serve the placeholder media a block showcase stands in with (see PlaceholderMediaRegistry), so those demo files can live on the site actually hosting the showcase instead of being shipped by - and downloaded with - UiBundle itself.
 interface PlaceholderMediaProviderInterface
 {
     /**

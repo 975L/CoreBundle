@@ -17,9 +17,7 @@ use Twig\TwigFunction;
 class RouteExists extends AbstractExtension
 {
     public function __construct(
-        /**
-         * Stores Router.
-         */
+        // Stores Router.
         private readonly RouterInterface $router,
     ) {
     }

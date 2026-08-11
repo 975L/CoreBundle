@@ -12,6 +12,8 @@ namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Form\BlockAccentChoiceType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
+use c975L\UiBundle\Form\BlockRadiusChoiceType;
+use c975L\UiBundle\Form\BlockShadowChoiceType;
 use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -61,6 +63,9 @@ class CardType extends AbstractType
                 'help' => 'label.button_label_help',
                 'required' => false,
             ])
+            // The card's surface, shared with the flip card so one design decision reads the same on a row mixing the two kinds
+            ->add('radius', BlockRadiusChoiceType::class)
+            ->add('shadow', BlockShadowChoiceType::class)
             ->add('class', BlockClassChoiceType::class)
             ->add('accent', BlockAccentChoiceType::class);
     }

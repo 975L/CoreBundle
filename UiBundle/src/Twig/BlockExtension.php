@@ -14,6 +14,7 @@ use c975L\UiBundle\Registry\BlockCacheTagRegistry;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
+use c975L\UiBundle\Service\CspNonceProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -23,6 +24,9 @@ use Twig\TwigFunction;
 
 class BlockExtension extends AbstractExtension
 {
+    // Written by the block templates, replaced by the real nonce at serve time (see applyNonce)
+    private const NONCE_MARKER = 'data-ui-nonce';
+
     public function __construct(
         private BlockRegistry $registry,
         private Environment $twig,
@@ -30,6 +34,7 @@ class BlockExtension extends AbstractExtension
         private RequestStack $requestStack,
         private BlockCacheTagRegistry $cacheTagRegistry,
         private BlockEditUrlRegistry $blockEditUrlRegistry,
+        private CspNonceProvider $cspNonceProvider,
     ) {
     }
 
@@ -47,13 +52,34 @@ class BlockExtension extends AbstractExtension
         return $this->blockEditUrlRegistry->getEditUrls(is_array($blocks) ? $blocks : iterator_to_array($blocks));
     }
 
+    // Every path goes through applyNonce, the early returns below included: a block rendered without being cached (no id, a kind the registry declares uncacheable, a render outside any request) ships the same marker and would otherwise leak it raw into the page
     public function renderBlock(Block $block): string
+    {
+        return $this->applyNonce($this->wrapInAnimation($block, $this->renderHtml($block)));
+    }
+
+    // The entrance effect belongs to the block, not to the place it happens to be rendered from - hence here rather than in components/Blocks/Block.html.twig, which only ever wraps the blocks of a page's own run. A slot of a container kind (a card in a "section_cards", a block in a "flex_column", a video in a "video_grid") goes through render_block() straight, so its animation was stored, offered on the edit screen, and read by nothing at all.
+    // Outside the cache renderHtml() writes to: the wrapper is two attributes computed from the block itself, where the cache entry is the kind's whole template
+    private function wrapInAnimation(Block $block, string $html): string
+    {
+        $animation = (string) $block->getAnimation();
+        if ('' === $animation) {
+            return $html;
+        }
+
+        // "hidden" is added by animate-scroll.js on connect, so nothing is ever hidden if that script fails to load. The wrapper is "display: contents" (sass/_animations-media.scss), so it never becomes the flex/grid item the layout around it addresses
+        return sprintf(
+            '<div class="block-animation scroll" data-animation="%s">%s</div>',
+            htmlspecialchars($animation, \ENT_QUOTES),
+            $html
+        );
+    }
+
+    private function renderHtml(Block $block): string
     {
         $kind = $block->getKind();
 
-        // A slot added with "+" but saved without a kind, CollectionType letting the entry through - or a kind
-        // no longer registered (a satellite bundle removed, a kind dropped): the row outlives its own kind, so it
-        // is skipped rather than left to throw "Unknown block" out of the registry and 500 the page holding it
+        // A slot added with "+" but saved without a kind, CollectionType letting the entry through - or a kind no longer registered (a satellite bundle removed, a kind dropped): the row outlives its own kind, so it is skipped rather than left to throw "Unknown block" out of the registry and 500 the page holding it
         if (null === $kind || !$this->registry->has($kind)) {
             return '';
         }
@@ -85,6 +111,27 @@ class BlockExtension extends AbstractExtension
 
                 return $this->doRender($block);
             }
+        );
+    }
+
+    // A block that has to ship a <style> of its own (per-instance values a class cannot carry - see components/Banner/Title.html.twig) writes a bare "data-ui-nonce" marker rather than the nonce itself: the rendered html above is cached verbatim, so a real nonce would freeze into the entry and match nothing on every later request, which is exactly what the note on $request warns about.
+    // Substituting it here happens on the cache hit as well as on the miss, so the nonce is always the one of the response being built
+    private function applyNonce(string $html): string
+    {
+        if (!str_contains($html, self::NONCE_MARKER)) {
+            return $html;
+        }
+
+        $nonce = $this->cspNonceProvider->styleNonce();
+
+        // Only a marker carried by a <style> opening tag is substituted: the plain string replacement this used to be also reached the rich text a block renders raw, so a "<style data-ui-nonce>" pasted into a Trix field came back out holding a nonce the policy trusts - an editor writing his own authorized style through the block
+        // A site with no csp section has no nonce to write, and an empty one would be a nonce="" no policy ever matches - the marker goes away with the space that separates it from the attribute before it
+        return (string) preg_replace_callback(
+            '/(<style(?:\s[^>]*?)?)\s' . self::NONCE_MARKER . '(?=[\s>])/',
+            static fn (array $matches): string => '' === $nonce
+                ? $matches[1]
+                : $matches[1] . sprintf(' nonce="%s"', htmlspecialchars($nonce, \ENT_QUOTES)),
+            $html
         );
     }
 

@@ -12,9 +12,7 @@ namespace c975L\UiBundle\Contract;
 
 use c975L\UiBundle\Entity\Media;
 
-/**
- * Lets any bundle declare where its own entities use a given Media (e.g. SiteBundle knows a Media is a Page's og-image or a site-wide graphic role, UiBundle only knows a Media is attached to a Block). Implement this and the service is auto-discovered by MediaUsageProviderPass - see Readme.
- */
+// Lets any bundle declare where its own entities use a given Media (e.g. SiteBundle knows a Media is a Page's og-image or a site-wide graphic role, UiBundle only knows a Media is attached to a Block). Implement this and the service is auto-discovered by MediaUsageProviderPass - see Readme.
 interface MediaUsageProviderInterface
 {
     /**

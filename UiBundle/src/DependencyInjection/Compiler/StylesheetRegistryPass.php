@@ -18,8 +18,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class StylesheetRegistryPass implements CompilerPassInterface
 {
-    // Below any priority a bundle would give itself, so an auto-tagged provider lands last whatever the
-    // bundles around it declare - rather than relying on 0 happening to be the floor of their range
+    // Below any priority a bundle would give itself, so an auto-tagged provider lands last whatever the bundles around it declare - rather than relying on 0 happening to be the floor of their range
     private const AUTO_TAG_PRIORITY = -100;
 
     public function process(ContainerBuilder $container): void
@@ -45,10 +44,7 @@ class StylesheetRegistryPass implements CompilerPassInterface
         }
     }
 
-    // A bundle tags its own provider in services.yaml, with a priority saying where its sheet belongs in
-    // the cascade. An app can't: its services.yaml is its own file, which no scaffold may edit - so a
-    // service merely implementing the interface is tagged here, below every bundle's range. That is
-    // exactly where a site's theme has to load, so the two facts agree by construction
+    // A bundle tags its own provider in services.yaml, with a priority saying where its sheet belongs in the cascade. An app can't: its services.yaml is its own file, which no scaffold may edit - so a service merely implementing the interface is tagged here, below every bundle's range. That is exactly where a site's theme has to load, so the two facts agree by construction
     private function tagUntaggedProviders(ContainerBuilder $container): void
     {
         foreach ($container->getDefinitions() as $definition) {

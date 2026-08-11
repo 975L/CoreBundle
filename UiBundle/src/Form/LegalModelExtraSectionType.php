@@ -17,8 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// A section the client adds to a legal model: their own wording, at the level they choose, appended at the
-// end of it. Never overwritten by a bundle update, since the bundle knows nothing about it
+// A section the client adds to a legal model: their own wording, at the level they choose, appended at the end of it. Never overwritten by a bundle update, since the bundle knows nothing about it
 class LegalModelExtraSectionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

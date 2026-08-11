@@ -7,8 +7,7 @@
     align-items: stretch;
     justify-content: center;
     gap: 20px;
-    // The rhythm's rule, at this block's own scale: the room above belongs to the block, nothing is declared
-    // below it - a bottom margin would be added to the next block's top one and part that pair by two
+    // The rhythm's rule, at this block's own scale: the room above belongs to the block, nothing is declared below it - a bottom margin would be added to the next block's top one and part that pair by two
     margin-top: 1em;
     margin-bottom: 0;
 }
@@ -35,8 +34,7 @@
 .document-download:hover,
 .document-download:focus-visible {
     border-color: var(--primary);
-    // A glow, not a drop shadow: no offset, so it spreads evenly all around, and in the theme's own hue -
-    // an offset black shadow would sink into a dark flat instead of lifting the card off it
+    // A glow, not a drop shadow: no offset, so it spreads evenly all around, and in the theme's own hue - an offset black shadow would sink into a dark flat instead of lifting the card off it
     box-shadow: 0 0 16px 2px color-mix(in srgb, var(--primary) 35%, transparent);
     color: inherit;
     text-decoration: none;
@@ -47,9 +45,7 @@
     background-color: var(--button-background-primary-dark);
 }
 
-// A4-ish box, its ratio fixed so every card of a multi-document block stays aligned. "contain" rather than "cover":
-// a portrait A4 fills it either way (1:1.414 is the box's own ratio), but a landscape document would be
-// cropped down to a vertical strip of its left edge by "cover" - letterboxed, its first page stays readable
+// A4-ish box, its ratio fixed so every card of a multi-document block stays aligned. "contain" rather than "cover": a portrait A4 fills it either way (1:1.414 is the box's own ratio), but a landscape document would be cropped down to a vertical strip of its left edge by "cover" - letterboxed, its first page stays readable
 .document-download__thumb {
     width: 100%;
     height: auto;

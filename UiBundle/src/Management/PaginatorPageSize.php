@@ -12,16 +12,7 @@ namespace c975L\UiBundle\Management;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 
-/*
- * EasyAdmin fixes how many rows a list shows server-side (Crud::setPaginatorPageSize) and ships no way for an
- * admin to change it - 20 rows are plenty for a table of redirects, far too few for a gallery of media. This
- * reads that choice from a "pageSize" query parameter instead, which management/paginator.html.twig offers as
- * plain links under the paginator. Wired once for every CRUD of every c975L bundle in ConfigBundle's
- * DashboardController::configureCrud(), the single Crud config each controller's own inherits from.
- *
- * Nothing else has to carry the choice around: AdminUrlGenerator rebuilds every admin url from the current
- * request's query parameters, so the pagination, sorting and filtering links keep it on their own.
- */
+// EasyAdmin fixes how many rows a list shows server-side (Crud::setPaginatorPageSize) and ships no way for an admin to change it - 20 rows are plenty for a table of redirects, far too few for a gallery of media. This reads that choice from a "pageSize" query parameter instead, which management/paginator.html.twig offers as plain links under the paginator. Wired once for every CRUD of every c975L bundle in ConfigBundle's DashboardController::configureCrud(), the single Crud config each controller's own inherits from. Nothing else has to carry the choice around: AdminUrlGenerator rebuilds every admin url from the current request's query parameters, so the pagination, sorting and filtering links keep it on their own.
 class PaginatorPageSize
 {
     // A whitelist, not a range: "pageSize" comes straight from the url, where anyone could otherwise ask for a LIMIT of a million rows

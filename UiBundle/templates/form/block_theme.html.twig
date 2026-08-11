@@ -33,8 +33,7 @@
     {% set ea_field = form.vars.ea_vars.field|default(null) %}
     {% set is_block_collection = ea_field and 'c975L\\UiBundle\\Form\\BlockType' == ea_field.customOptions.get('entryType') %}
 
-    {# the "is iterable" check is needed because if an object implements __toString() and
-               returns an empty string, "is empty" returns true even if it's not a collection #}
+    {# the "is iterable" check is needed because if an object implements __toString() and returns an empty string, "is empty" returns true even if it's not a collection #}
     {% set isEmptyCollection = value is null or (value is iterable and value is empty) %}
     {% set is_array_field = 'EasyCorp\\Bundle\\EasyAdminBundle\\Field\\ArrayField' == form.vars.ea_vars.field.fieldFqcn|default(false) %}
 
@@ -61,3 +60,36 @@
         </button>
     {% endif %}
 {% endblock collection_widget %}
+
+{# The layout of any block kind's own data sub-form, themed once for all of them through the shared "ui_block_data" block prefix BlockType gives it (the edit screen is rendered by EasyAdmin, which knows nothing of form/block.html.twig - that one only renders the fragment the kind picker loads over AJAX).
+   Two things a kind's FormType can ask of it, both optional and both declarative:
+   - "data-block-fieldset" on a field's row_attr groups consecutive fields carrying the same value into a <fieldset> legended with it (a translation key, in the "ui" domain). A kind holding several faces or several sides of one thing - flip_card's recto and verso - is otherwise one flat run of fields where only the labels say which is which.
+   - "media_after" on this view names the field the block's own media collection is rendered after, instead of under everything. On flip_card that puts the illustrations inside the "recto" fieldset, next to the face the first one is shown on. The collection is a sibling of this sub-form, hence the reach through form.parent - and Symfony's own "form_rows" skips a child already rendered, so the outer loop does not render it a second time.
+   The groups are read into a list up front: Twig scopes a "set" to one iteration of a "for", so the running state a straight loop would need cannot survive from one field to the next #}
+{% block ui_block_data_widget %}
+    {% set fieldsets = form|map(child => child.vars.row_attr['data-block-fieldset']|default('')) %}
+    {% set names = fieldsets|keys %}
+    {% set mediaAfter = media_after|default('') %}
+
+    {% for child in form %}
+        {% set fieldset = fieldsets[child.vars.name] %}
+        {% set previous = loop.first ? '' : fieldsets[names[loop.index0 - 1]] %}
+
+        {% if fieldset != previous %}
+            {% if previous != '' %}</fieldset>{% endif %}
+            {% if fieldset != '' %}
+                <fieldset class="block-fieldset">
+                    <legend class="block-fieldset-legend">{{ fieldset|trans({}, 'ui') }}</legend>
+            {% endif %}
+        {% endif %}
+
+        {{ form_row(child) }}
+
+        {% if mediaAfter != '' and child.vars.name == mediaAfter and form.parent is not null %}
+            {% if form.parent.medias is defined %}{{ form_row(form.parent.medias) }}{% endif %}
+            {% if form.parent.mediaUpload is defined %}{{ form_row(form.parent.mediaUpload) }}{% endif %}
+        {% endif %}
+
+        {% if loop.last and fieldset != '' %}</fieldset>{% endif %}
+    {% endfor %}
+{% endblock %}

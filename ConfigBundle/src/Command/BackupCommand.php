@@ -300,8 +300,7 @@ class BackupCommand extends Command
         return $this->verifyArchive($this->finalFolder . '/' . $archiveName);
     }
 
-    // Reads the archive back and checks its integrity, rather than trusting tar's exit code: a truncated or
-    // corrupted archive is exactly the kind of backup that looks fine for months and fails the day it's needed.
+    // Reads the archive back and checks its integrity, rather than trusting tar's exit code: a truncated or corrupted archive is exactly the kind of backup that looks fine for months and fails the day it's needed.
     // Returns the archive size, which is also what tells an empty dump from a real one
     private function verifyArchive(string $path): int
     {
@@ -328,9 +327,7 @@ class BackupCommand extends Command
         return $bytes;
     }
 
-    // The files declared in "archive" mode: small, neither in git nor in the database, and dated on every run so
-    // their history is kept. .env.local is the case that matters - a restored server with every photo and no
-    // APP_SECRET does not start, and that is the discovery nobody wants to make on the day of the incident
+    // The files declared in "archive" mode: small, neither in git nor in the database, and dated on every run so their history is kept. .env.local is the case that matters - a restored server with every photo and no APP_SECRET does not start, and that is the discovery nobody wants to make on the day of the incident
     private function backupFiles(): void
     {
         $this->report .= sprintf("\nFiles backup for \"%s\": %s\n", $this->subjectLabel(), $this->startedAt->format('Y-m-d H:i:s'));
@@ -347,9 +344,7 @@ class BackupCommand extends Command
             $this->filesCount += $this->countFiles($this->projectDir . '/' . $path);
         }
 
-        // -C changes into the project so archive members are relative ('./.env.local'), which is where a restore
-        // has to put them back. Handed absolute paths, tar stores home/…/.env.local and an extraction lands it
-        // in a home/ folder of its own instead of overwriting the file it was meant to replace
+        // -C changes into the project so archive members are relative ('./.env.local'), which is where a restore has to put them back. Handed absolute paths, tar stores home/…/.env.local and an extraction lands it in a home/ folder of its own instead of overwriting the file it was meant to replace
         $archive = sprintf(
             '%s/FILES_-_%s_-_%s.tar.bz2',
             $this->finalFolder,
@@ -373,9 +368,7 @@ class BackupCommand extends Command
         $this->filesBytes = $this->verifyArchive($archive);
     }
 
-    // What is mirrored rather than archived, published for whoever copies this server offsite - a puller that
-    // reads it stops having to know the site's layout, and a bundle installed tomorrow brings its own folders
-    // along without a single line changed on the machine that does the copying
+    // What is mirrored rather than archived, published for whoever copies this server offsite - a puller that reads it stops having to know the site's layout, and a bundle installed tomorrow brings its own folders along without a single line changed on the machine that does the copying
     private function writeManifest(): void
     {
         $this->mirrorPaths = $this->pathCollector->getPaths(BackupPath::MODE_MIRROR);
@@ -395,9 +388,7 @@ class BackupCommand extends Command
             : sprintf("\nMirrored, not archived (see c975l:config:backup:offsite): %s\n", implode(', ', $this->mirrorPaths));
     }
 
-    // The archives, copied rather than synced: they are added to here and purged on the local retention window,
-    // and a sync would carry that purge over to the offsite copy - which is exactly the history it exists to keep
-    // longer. An install that has an outside machine pull instead leaves the target empty and says so with --ack
+    // The archives, copied rather than synced: they are added to here and purged on the local retention window, and a sync would carry that purge over to the offsite copy - which is exactly the history it exists to keep longer. An install that has an outside machine pull instead leaves the target empty and says so with --ack
     private function sendArchivesOffsite(): void
     {
         $this->offsite['target'] = $this->offsiteSynchronizer->getTarget();
@@ -414,14 +405,12 @@ class BackupCommand extends Command
             }
         }
 
-        // Read back whichever wrote it, this run or the machine that pulls: a backup that ran perfectly and never
-        // left the server is not a backup, and until now nothing in the report or on the dashboard said so
+        // Read back whichever wrote it, this run or the machine that pulls: a backup that ran perfectly and never left the server is not a backup, and until now nothing in the report or on the dashboard said so
         $hours = $this->offsiteState->hoursSince($this->projectDir);
         $maxAge = $this->offsiteMaxAgeHours();
         $state = $this->offsiteState->read($this->projectDir) ?? [];
 
-        // What the last mirror run counted at the destination, so the row says how much is held offsite rather than
-        // leaving the mirrored folders as a silent hole - the whole point of declaring them instead of excluding them
+        // What the last mirror run counted at the destination, so the row says how much is held offsite rather than leaving the mirrored folders as a silent hole - the whole point of declaring them instead of excluding them
         $this->offsite['mirrorFiles'] = $state['files'] ?? null;
         $this->offsite['mirrorBytes'] = $state['bytes'] ?? null;
         $this->offsite['hours'] = $hours;
@@ -461,8 +450,7 @@ class BackupCommand extends Command
 
     private function cleanup(): void
     {
-        // An archive small enough to land here holds nothing usable, so it goes - but it goes on the record too:
-        // deleting it silently is how a table that dumped empty used to disappear without leaving any sign it had
+        // An archive small enough to land here holds nothing usable, so it goes - but it goes on the record too: deleting it silently is how a table that dumped empty used to disappear without leaving any sign it had
         foreach ((new Finder())->files()->in($this->finalFolder)->size('< 50') as $file) {
             $this->warnings[] = sprintf('Discarded empty file %s (%d bytes).', $file->getFilename(), $file->getSize());
             $this->report .= sprintf("DISCARDED empty file: %s (%d bytes)\n", $file->getFilename(), $file->getSize());
@@ -522,8 +510,7 @@ class BackupCommand extends Command
         try {
             $this->resultRecorder->record($this->outcome());
         } catch (\Throwable $e) {
-            // A backup that ran fine must not be reported as failed because its bookkeeping row couldn't be
-            // written - but the failure is worth an error report of its own, the dashboard now being blind
+            // A backup that ran fine must not be reported as failed because its bookkeeping row couldn't be written - but the failure is worth an error report of its own, the dashboard now being blind
             $this->errors[] = 'Recording the backup result failed: ' . $e->getMessage();
         }
     }

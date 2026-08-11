@@ -30,8 +30,7 @@ class LegalModelType extends AbstractType
             ->add('model', ChoiceType::class, [
                 'label' => 'label.model',
                 'choices' => $this->catalog->choices(),
-                // Section by section customization lives on its own screen (see LegalModelController): the
-                // rows depend on which model is picked here, which the block's ajax sub-form never knows
+                // Section by section customization lives on its own screen (see LegalModelController): the rows depend on which model is picked here, which the block's ajax sub-form never knows
                 'help' => 'label.legal_customize_help',
             ])
             ->add('latestUpdate', DateType::class, [

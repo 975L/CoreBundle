@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\AiCrawlerListClient;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class AiCrawlerListUpdaterTest extends TestCase
@@ -104,20 +105,30 @@ class AiCrawlerListUpdaterTest extends TestCase
         $this->assertSame([], $updater->compare()['missing']);
     }
 
-    // An empty source is how a site keeps its list by hand: nothing is fetched, and nothing is ever reported
-    public function testCompareFetchesNothingWithoutASource(): void
+    // "none" is how a site keeps its list by hand: nothing is fetched, and nothing is ever reported
+    // An empty source says the same, but only until the next c975l:config:load-all writes the declared url back into the row - which is why the word exists at all, and why it is checked whatever its case
+    #[DataProvider('provideSourcesNamingNothing')]
+    public function testCompareFetchesNothingWithoutASource(string $source): void
     {
         $client = $this->createMock(AiCrawlerListClient::class);
         $client->expects($this->never())->method('fetch');
 
         $updater = new AiCrawlerListUpdater(
-            $this->createConfigService(['GPTBot'], ''),
+            $this->createConfigService(['GPTBot'], $source),
             $client,
             $this->createStub(ConfigRepository::class),
             $this->createStub(EntityManagerInterface::class)
         );
 
         $this->assertSame(['missing' => [], 'answerEngines' => [], 'source' => null], $updater->compare());
+    }
+
+    public static function provideSourcesNamingNothing(): iterable
+    {
+        yield 'empty' => [''];
+        yield 'whitespace' => ['   '];
+        yield 'none' => [AiCrawlerListUpdater::NO_SOURCE];
+        yield 'none, as typed' => ['  None  '];
     }
 
     // The config is free-form until an admin saves something else in it, and a list that stopped being one must not take the check down

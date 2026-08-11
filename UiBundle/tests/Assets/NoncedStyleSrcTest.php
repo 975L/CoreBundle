@@ -80,13 +80,59 @@ class NoncedStyleSrcTest extends TestCase
         $this->assertStringContainsString('this.positionRule = null', $js, 'The rule is kept across a disconnect, so the next connect mutates a detached one.');
     }
 
-    // ES modules never populate document.currentScript, the usual way to read one's own nonce, so it is copied off any nonce'd element the page already carries
+    // ES modules never populate document.currentScript, the usual way to read one's own nonce, so it is copied off an element the page already carries
     public function testTheHelperCopiesTheNonceThePageAlreadyCarries(): void
     {
         $js = $this->js('nonced-style-element.js');
 
         $this->assertStringContainsString("querySelector('[nonce]')", $js, 'The helper no longer reads the page nonce, so its element is dropped by the browser.');
         $this->assertStringContainsString('style.nonce = nonce', $js, 'The nonce is read but never carried by the element.');
+    }
+
+    // NelmioSecurityBundle mints one nonce value per response and shares it between the directives (ContentSecurityPolicyListener::doGetNonce memoizes it); what getNonce('style') decides is whether that value is declared in style-src at all.
+    // So the nonce read off importmap()'s <script> - the first [nonce] on one of these pages - is a value style-src may well not list, which is what got the <style> blocked. A style-src carrier has to be preferred: a stylesheet <link>, or an earlier <style>, both of which only exist because style-src was asked for its nonce
+    public function testTheHelperPrefersACarrierStyleSrcItselfAuthorized(): void
+    {
+        $js = $this->js('nonced-style-element.js');
+
+        $this->assertStringContainsString('link[rel~="stylesheet"][nonce], style[nonce]', $js, 'The helper copies the nonce off the first [nonce] element, which is a <script>: style-src does not carry that one.');
+        $this->assertLessThan(
+            strpos($js, "querySelector('[nonce]')"),
+            strpos($js, 'link[rel~="stylesheet"][nonce]'),
+            'The plain [nonce] lookup must stay the fallback, not the first choice.'
+        );
+    }
+
+    // Turbo swaps the <body> and leaves the <meta> the layout wrote alone, so it is the one nonce still matching the CSP header the document was served with - every element the new body brings in carries the next response's, which the browser blocks. Reading one of those left an editor's hover button unplaced from the first navigation on, and would do the same to a slider or an image comparison
+    public function testTheHelperReadsTheNonceOfTheDocumentRatherThanOfTheLastResponse(): void
+    {
+        $js = $this->js('nonced-style-element.js');
+
+        $this->assertStringContainsString('meta[name="csp-nonce"]', $js, 'The helper no longer reads the document\'s own nonce, which is the only one its CSP authorizes after a Turbo navigation.');
+        $this->assertLessThan(
+            strpos($js, 'link[rel~="stylesheet"][nonce]'),
+            strpos($js, 'meta[name="csp-nonce"]'),
+            'The element lookup must stay the fallback: those carry the nonce of the response that brought them in, not the document\'s.'
+        );
+    }
+
+    // The decoy field hid itself with a "style" attribute, which a nonce can never authorize: the rules were dropped and every visitor was shown a field asking for a "Department" - a bot trap turned into a form field
+    public function testTheHoneypotIsTakenOffScreenByAClassRatherThanAStyleAttribute(): void
+    {
+        $php = (string) file_get_contents(\dirname(__DIR__, 2) . '/src/Service/FormBotProtection.php');
+
+        $this->assertStringNotContainsString("'style' =>", $php, 'The honeypot hides itself with a style attribute, which a nonce-based style-src drops.');
+        $this->assertStringContainsString("'class' => 'ui-field-aside'", $php);
+        $this->assertMatchesRegularExpression('/\.ui-field-aside \{[^}]*position: absolute;/s', (string) file_get_contents(\dirname(__DIR__, 2) . '/sass/_forms.scss'));
+    }
+
+    // A rejected element exposes no sheet at all: reading through it throws out of a pointer handler and takes the page's other controllers down with it
+    public function testTheOverlayGivesUpRatherThanThrowingOnARejectedElement(): void
+    {
+        $js = $this->js('block-edit-overlay.js');
+
+        $this->assertStringContainsString('if (this.positionStyle.sheet)', $js, 'The overlay writes into the sheet of an element the CSP may have rejected, with no guard.');
+        $this->assertStringContainsString('this.positionUnavailable = true', $js, 'Nothing remembers the rejection, so one dead <style> is appended per pointer move.');
     }
 
     // Comments stripped: they spell out the very forms being forbidden, and would answer for the code

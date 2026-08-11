@@ -70,8 +70,7 @@ class LegalModelCustomizerTest extends TestCase
         $this->assertSame([], $customizer->toCustomization($customizer->toFormData($units, []), $units, 'fr'));
     }
 
-    // The one that decides whether any of this works: Trix hands back its own serialization, class attributes
-    // dropped. Taking that for a rewrite would freeze every section of every model on its first save.
+    // The one that decides whether any of this works: Trix hands back its own serialization, class attributes dropped. Taking that for a rewrite would freeze every section of every model on its first save.
     public function testTrixStrippingTheTemplateClassesIsNotAnEdit(): void
     {
         $customizer = $this->customizer(self::TEMPLATE);
@@ -126,8 +125,7 @@ class LegalModelCustomizerTest extends TestCase
         $this->assertArrayNotHasKey('overrides', $delta);
     }
 
-    // Positions come from the drag handle, which numbers every row of a scope - untouched, that numbering is
-    // the natural order and must not be stored
+    // Positions come from the drag handle, which numbers every row of a scope - untouched, that numbering is the natural order and must not be stored
     public function testDraggingNothingStoresNoPosition(): void
     {
         $customizer = $this->customizer(self::TEMPLATE);
@@ -186,8 +184,7 @@ class LegalModelCustomizerTest extends TestCase
         $this->assertSame(['one', 'two', 'two.a', 'two.b'], array_column($ordered, 'id'));
     }
 
-    // Saving the screen untouched must leave the block exactly as it was found - not carrying an empty
-    // "customization" key it did not have before
+    // Saving the screen untouched must leave the block exactly as it was found - not carrying an empty "customization" key it did not have before
     public function testApplyingAnEmptyDeltaLeavesTheBlockDataUntouched(): void
     {
         $data = ['model' => self::MODEL, 'latestUpdate' => '2026-07-27'];

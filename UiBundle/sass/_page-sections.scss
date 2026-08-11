@@ -10,19 +10,12 @@ $page-section-bp-sm: 621px;
 $page-section-bp-md: 861px;
 $page-section-bp-lg: 1025px;
 
-// The one vertical step of the whole page, written once here and read through --section-space everywhere, so a
-// site retunes the entire rhythm from its own theme.css instead of chasing the value down every kind's rule
+// The one vertical step of the whole page, written once here and read through --section-space everywhere, so a site retunes the entire rhythm from its own theme.css instead of chasing the value down every kind's rule
 $section-space: clamp(48px, 8vw, 84px);
 $section-space-tight: clamp(24px, 4vw, 48px);
 
 // Three typographic scales live in this file, and which one a rule belongs to is decided by the font it is set in.
-// Everything set in the body font - an item's text, a band's paragraph, a caption, a button's label - is sized in
-// em, so it follows SiteBundle's --font-size-body and one value retunes the reading of the whole page. A title
-// (--font-family-title) and an eyebrow (--font-family-accent) are the design's own marks and must not be dragged
-// along by that value, so they keep their own lengths - each multiplied by --font-size-title-scale, resp.
-// --font-size-eyebrow-scale, both 1 by default. A factor rather than one shared size: these lengths are a
-// hierarchy, from a 66px hero title down to a 19px card title, and one value for all of them would flatten it -
-// where a factor moves the whole family at once and leaves every proportion inside it where the design put it.
+// Everything set in the body font - an item's text, a band's paragraph, a caption, a button's label - is sized in em, so it follows SiteBundle's --font-size-body and one value retunes the reading of the whole page. A title (--font-family-title) and an eyebrow (--font-family-accent) are the design's own marks and must not be dragged along by that value, so they keep their own lengths - each multiplied by --font-size-title-scale, resp. --font-size-eyebrow-scale, both 1 by default. A factor rather than one shared size: these lengths are a hierarchy, from a 66px hero title down to a 19px card title, and one value for all of them would flatten it - where a factor moves the whole family at once and leaves every proportion inside it where the design put it.
 // A face with a small x-height reads small at the size a wider one reads right, which is what these two answer
 // BlockTextScaleTest locks the three-way split
 // One measure for the whole page: --body-max-width, declared by SiteBundle, restated for UiBundle alone
@@ -35,9 +28,7 @@ $section-space-tight: clamp(24px, 4vw, 48px);
     padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
 }
 
-// font-weight pinned: with no title the eyebrow becomes the section's <h2> and would come out bold
-// text-align stated for the same reason: SiteBundle centers every h1-h6, and a head is laid out flush left
-// against its section - the ones meaning to center say so on their own container (.hero, .cta-band__inner)
+// font-weight pinned: with no title the eyebrow becomes the section's <h2> and would come out bold text-align stated for the same reason: SiteBundle centers every h1-h6, and a head is laid out flush left against its section - the ones meaning to center say so on their own container (.hero, .cta-band__inner)
 .section-eyebrow {
     font-family: var(--font-family-accent);
     font-weight: 400;
@@ -57,12 +48,9 @@ $section-space-tight: clamp(24px, 4vw, 48px);
     line-height: 1.1;
     margin: 0 0 48px;
     color: var(--text);
-    // Same as the eyebrow above: inherited, an <h2> comes out centered inside a head wider than its own text -
-    // invisible where that head shrinks to fit (portfolio_grid), plain to see in the 640px .section-head
+    // Same as the eyebrow above: inherited, an <h2> comes out centered inside a head wider than its own text - invisible where that head shrinks to fit (portfolio_grid), plain to see in the 640px .section-head
     text-align: start;
-    // The staircase the eyebrow and its title read as: the eyebrow holds the section's edge, the title starts
-    // one step in. A padding, not a margin: the box keeps the head's measure and the second line of a wrapped
-    // title lands on the same step as the first. Set --section-head-indent to 0 to line the two up again
+    // The staircase the eyebrow and its title read as: the eyebrow holds the section's edge, the title starts one step in. A padding, not a margin: the box keeps the head's measure and the second line of a wrapped title lands on the same step as the first. Set --section-head-indent to 0 to line the two up again
     padding-inline-start: var(--section-head-indent, 32px);
 }
 
@@ -71,13 +59,8 @@ $section-space-tight: clamp(24px, 4vw, 48px);
 }
 
 // Cancels SiteBundle's page-wide "section { margin: 1em auto }", which parts two flats meant to touch
-// By class, not by the bare "section" element: a slider is a <section> too, and matching it stripped
-// the vertical room it sets for itself, leaving it flush against the block above and below
-// Vertical only: the shorthand's "0" would also drop the horizontal "auto" a centered section reads,
-// and beat the negative margins the colored flats and .hero--has-bg break out of the measure with
-// .feature-bar is left out: it is the one kind whose step has to be a margin (see its own rule further down),
-// which this reset would strip - it zeroes its own bottom margin instead, SiteBundle's rule reaching it as
-// soon as a head is typed on it and it renders as a <section> rather than a <div>
+// By class, not by the bare "section" element: a slider is a <section> too, and matching it stripped the vertical room it sets for itself, leaving it flush against the block above and below
+// Vertical only: the shorthand's "0" would also drop the horizontal "auto" a centered section reads, and beat the negative margins the colored flats and .hero--has-bg break out of the measure with .feature-bar is left out: it is the one kind whose step has to be a margin (see its own rule further down), which this reset would strip - it zeroes its own bottom margin instead, SiteBundle's rule reaching it as soon as a head is typed on it and it renders as a <section> rather than a <div>
 main :is(.blocks, .block-animation, .block-editable) > :is(
     .hero,
     .text-section,
@@ -94,9 +77,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     margin-block: 0;
 }
 
-// The shared rhythm, on the top edge only: a block owns the room above it and declares nothing below, so any
-// two blocks are parted by exactly one step whichever pair they are. A bottom padding anywhere here would be
-// added to the next block's top one and part that pair by two, which is what .hero and .cta-band used to do
+// The shared rhythm, on the top edge only: a block owns the room above it and declares nothing below, so any two blocks are parted by exactly one step whichever pair they are. A bottom padding anywhere here would be added to the next block's top one and part that pair by two, which is what .hero and .cta-band used to do
 .section-features-section,
 .section-cards-section,
 .expertise-banner,
@@ -114,26 +95,19 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding-top: var(--section-space-tight, #{$section-space-tight});
 }
 
-// A section standing beside a louder one - the companion paragraph of a "text_hook" in the column next to it -
-// rather than carrying the page on its own. A step above body copy, so it still reads as a paragraph and not as
-// a caption, and quieter, so it does not compete with what it answers to. Every value overridable and none read
-// without a fallback, same as .text-hook's own scale; --section-text first, so a secondary section inside a
-// colored flat follows that flat's inverted text rather than the page's own quiet grey
+// A section standing beside a louder one - the companion paragraph of a "text_hook" in the column next to it - rather than carrying the page on its own. A step above body copy, so it still reads as a paragraph and not as a caption, and quieter, so it does not compete with what it answers to. Every value overridable and none read without a fallback, same as .text-hook's own scale; --section-text first, so a secondary section inside a colored flat follows that flat's inverted text rather than the page's own quiet grey
 .text-section--secondary {
     font-size: var(--text-section-secondary-size, clamp(17px, 1.5vw, 21px));
     line-height: var(--text-section-secondary-line-height, 1.7);
     color: var(--text-section-secondary-color, var(--section-text, var(--label-color)));
 }
 
-// A bare run of "card" blocks is a page-level row too (Blocks.html.twig wraps it itself), and the one that
-// carried no step: its cards drop their own margin inside the row, so it sat flush against the block above -
-// visibly so under a colored flat, whose background then ran straight into the first card
+// A bare run of "card" blocks is a page-level row too (Blocks.html.twig wraps it itself), and the one that carried no step: its cards drop their own margin inside the row, so it sat flush against the block above - visibly so under a colored flat, whose background then ran straight into the first card
 .blocks > .cards {
     padding-top: var(--section-space, #{$section-space});
 }
 
-// Only on a flat: the step above a block belongs to the block itself, but a colored band paints down to its
-// own edge, and without a bottom padding of its own the text would sit flush against that edge
+// Only on a flat: the step above a block belongs to the block itself, but a colored band paints down to its own edge, and without a bottom padding of its own the text would sit flush against that edge
 .text-section.section--bg-muted,
 .text-section.section--bg-primary,
 .text-section.section--bg-dark {
@@ -159,8 +133,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     margin-block-start: 0;
 }
 
-// A container left with nothing to lay out renders no row at all (see Section/Cards.html.twig and its two
-// siblings), which makes the head the last thing in the wrap - and its own bottom margin trailing space.
+// A container left with nothing to lay out renders no row at all (see Section/Cards.html.twig and its two siblings), which makes the head the last thing in the wrap - and its own bottom margin trailing space.
 // The head's last line, whichever it is: the title, or the eyebrow when it is the one standing as the <h2>
 .section-wrap > .section-head:last-child > :last-child {
     margin-bottom: 0;
@@ -322,14 +295,12 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding-top: var(--section-space, #{$section-space});
 }
 
-// The stat card hangs 26px below the grid it is positioned against; without that room back it eats a third
-// of the step the next block declares, and the hero ends up closer to it than any other pair on the page
+// The stat card hangs 26px below the grid it is positioned against; without that room back it eats a third of the step the next block declares, and the hero ends up closer to it than any other pair on the page
 .hero:has(.hero__stat) .section-wrap {
     padding-bottom: 26px;
 }
 
-// A hero carrying a flat - an image or a color - paints down to its own edge, so its step goes inside it
-// rather than after it. Last of the three, all on equal specificity, and the only one a flat should read
+// A hero carrying a flat - an image or a color - paints down to its own edge, so its step goes inside it rather than after it. Last of the three, all on equal specificity, and the only one a flat should read
 .hero:is(.hero--has-bg, .section--bg-muted, .section--bg-primary, .section--bg-dark) .section-wrap {
     padding-bottom: var(--section-space, #{$section-space});
 }
@@ -422,8 +393,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     opacity: 0;
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
-    // Fallback for a count past $hero-slide-max, which only a static twig usage can reach: the narrowest
-    // window declared, so the extra slides overlap an earlier turn rather than sitting opaque for good
+    // Fallback for a count past $hero-slide-max, which only a static twig usage can reach: the narrowest window declared, so the extra slides overlap an earlier turn rather than sitting opaque for good
     animation-name: hero-slide-fade-#{$hero-slide-max};
     animation-duration: #{$hero-slide-max * $hero-slide-seconds}s;
 }
@@ -434,8 +404,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     }
 }
 
-// One duration and one keyframe per count: the visible window is a slide's own share of the cycle, so
-// with a single shared keyframe every slide but the last would still be opaque when its turn is over.
+// One duration and one keyframe per count: the visible window is a slide's own share of the cycle, so with a single shared keyframe every slide but the last would still be opaque when its turn is over.
 // From 2, the component only building a slideshow once a second media is attached
 @for $count from 2 through $hero-slide-max {
     // The cycle a single slide owns, its neighbours fading over the 12% on either side of it
@@ -463,25 +432,19 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     gap: 12px;
 }
 
-// Square tiles, not the framed 4/3.2 screenshots the slideshow shows: these are marks, and a mark is
-// drawn for one background - laid straight on the flat, its own colors mix into whatever tone the hero
-// carries. So the tile paints its own opaque plate rather than taking the section's chip tones, and it
-// has no :hover of any kind: these are not links, and lighting one up on hover reads as if they were
+// Square tiles, not the framed 4/3.2 screenshots the slideshow shows: these are marks, and a mark is drawn for one background - laid straight on the flat, its own colors mix into whatever tone the hero carries. So the tile paints its own opaque plate rather than taking the section's chip tones, and it has no :hover of any kind: these are not links, and lighting one up on hover reads as if they were
 .hero__media--grid img {
     aspect-ratio: 1;
-    // Mandatory next to the aspect-ratio above, same as .hero__media img: the img's height attribute is
-    // a presentational hint that would otherwise beat it (ImageAspectRatioHeightTest)
+    // Mandatory next to the aspect-ratio above, same as .hero__media img: the img's height attribute is a presentational hint that would otherwise beat it (ImageAspectRatioHeightTest)
     height: auto;
-    // Inset of the mark inside its tile, kept narrow: a logo already carries a margin of its own inside
-    // its viewBox, and a photo has none to spare at all - just enough to keep the mark off the border.
+    // Inset of the mark inside its tile, kept narrow: a logo already carries a margin of its own inside its viewBox, and a photo has none to spare at all - just enough to keep the mark off the border.
     // A token, for a bare glyph needing more room drawn around it - the one measure of this grid a site redoes
     padding: var(--hero-media-grid-padding, 5%);
     box-sizing: border-box;
     object-fit: contain;
     border: 1px solid var(--section-border, var(--border-color));
     border-radius: 14px;
-    // The plate the mark is read against. A token, so a site whose marks are drawn for a dark ground
-    // repaints it rather than having to redeclare the whole rule
+    // The plate the mark is read against. A token, so a site whose marks are drawn for a dark ground repaints it rather than having to redeclare the whole rule
     background: var(--hero-media-grid-background, #fff);
     box-shadow: none;
 }
@@ -539,12 +502,8 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     --section-overlay: rgba(255, 255, 255, .15);
 }
 
-// A background video is a shot, not a texture: cropped to the height of whatever text the section holds, a hero
-// with a short title - or none at all - leaves a strip of it rather than a picture. Room of its own is the fix,
-// and the text is then centered in it, the section becoming the column its .section-wrap is the one item of.
-// A token declared nowhere, so a design opening on a taller or shorter shot retunes it from its own theme.css
-// rather than restating the rule. Left to the video alone: a background image reads fine at any height, and
-// every hero already carrying one must go on rendering exactly as it did
+// A background video is a shot, not a texture: cropped to the height of whatever text the section holds, a hero with a short title - or none at all - leaves a strip of it rather than a picture. Room of its own is the fix, and the text is then centered in it, the section becoming the column its .section-wrap is the one item of.
+// A token declared nowhere, so a design opening on a taller or shorter shot retunes it from its own theme.css rather than restating the rule. Left to the video alone: a background image reads fine at any height, and every hero already carrying one must go on rendering exactly as it did
 .hero.hero--has-bg:has(.hero__bg--video) {
     display: flex;
     flex-direction: column;
@@ -598,13 +557,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 /* ---- feature_bar ---- */
-// The one kind whose step is a margin: the band paints its own background between its own hairlines, and a
-// padding would part those hairlines from the items instead of parting the band from the block above it.
+// The one kind whose step is a margin: the band paints its own background between its own hairlines, and a padding would part those hairlines from the items instead of parting the band from the block above it.
 // Left out of the margin reset above for exactly that reason
 .feature-bar {
     margin-block-start: var(--section-space, #{$section-space});
-    // The band renders as a <section> as soon as a head is typed, and SiteBundle's page-wide
-    // "section { margin: 1em auto }" would then hang a bottom margin under it that no other kind carries
+    // The band renders as a <section> as soon as a head is typed, and SiteBundle's page-wide "section { margin: 1em auto }" would then hang a bottom margin under it that no other kind carries
     margin-block-end: 0;
     background: var(--section-background, var(--surface-alt));
     border-top: 1px solid var(--section-border, var(--border-color));
@@ -626,9 +583,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     margin: 0 auto;
 }
 
-// The optional head, when one is typed: inside the band so it shares its flat, padded off the top hairline and
-// off the row below. The gap is the wrap's own padding, the head being the last thing in it and its title's
-// bottom margin therefore already zeroed further up; 24px, the head introducing a band a few lines tall
+// The optional head, when one is typed: inside the band so it shares its flat, padded off the top hairline and off the row below. The gap is the wrap's own padding, the head being the last thing in it and its title's bottom margin therefore already zeroed further up; 24px, the head introducing a band a few lines tall
 .feature-bar > .section-wrap {
     padding-top: var(--section-space-tight, #{$section-space-tight});
     padding-bottom: 24px;
@@ -689,8 +644,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     gap: var(--flex-columns-gap);
 }
 
-// Set against each other rather than hanging from the top of the row: two columns saying one thing between them -
-// a lead and the paragraph answering it - read as one statement, where the default suits a row of parallel items
+// Set against each other rather than hanging from the top of the row: two columns saying one thing between them - a lead and the paragraph answering it - read as one statement, where the default suits a row of parallel items
 .flex-columns--middle {
     align-items: center;
 }
@@ -707,8 +661,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     gap: 20px;
 }
 
-// A column ends where its content ends: a slot rendering a bare <p> - the image kind does - would otherwise
-// hand the theme's own paragraph margin to the row, and the section below it would sit that much lower
+// A column ends where its content ends: a slot rendering a bare <p> - the image kind does - would otherwise hand the theme's own paragraph margin to the row, and the section below it would sit that much lower
 .flex-columns__col > :last-child {
     margin-bottom: 0;
 }
@@ -807,9 +760,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 /* ---- portfolio_grid / video_grid ---- */
-// The head and the grid are the same pair for both kinds - a section title with a "see it all elsewhere" link
-// beside it, over a one-to-three column grid. What differs is only what a cell holds: a project card of its own
-// making for one, a whole nested block (a player and its consent) for the other
+// The head and the grid are the same pair for both kinds - a section title with a "see it all elsewhere" link beside it, over a one-to-three column grid. What differs is only what a cell holds: a project card of its own making for one, a whole nested block (a player and its consent) for the other
 .portfolio-grid__head,
 .video-grid__head {
     display: flex;
@@ -837,8 +788,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     gap: 24px;
 }
 
-// A slot renders the block it is, untouched - the cell only has to stop the player from keeping its own
-// standalone max-width (see sass/_iframe.scss), which would leave it narrower than the cell it sits in
+// A slot renders the block it is, untouched - the cell only has to stop the player from keeping its own standalone max-width (see sass/_iframe.scss), which would leave it narrower than the cell it sits in
 .video-grid__item iframe {
     width: 100%;
     max-width: 100%;
@@ -916,8 +866,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 /* ---- cta_band ---- */
-// Its vertical room comes from the shared rhythm at the top of this file: the panel below is what carries the
-// color, the section itself is transparent, so it has no edge of its own to pad against
+// Its vertical room comes from the shared rhythm at the top of this file: the panel below is what carries the color, the section itself is transparent, so it has no edge of its own to pad against
 .cta-band__inner {
     background: var(--primary);
     border-radius: var(--radius-panel);

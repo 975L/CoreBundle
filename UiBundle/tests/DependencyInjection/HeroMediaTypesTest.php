@@ -13,8 +13,7 @@ namespace c975L\UiBundle\Tests\DependencyInjection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
 
-// The kind's declared media types are what the upload is validated against (BlockType::addMediaSubForm): a hero
-// template handling a background video is unreachable if the form refuses the file in the first place
+// The kind's declared media types are what the upload is validated against (BlockType::addMediaSubForm): a hero template handling a background video is unreachable if the form refuses the file in the first place
 class HeroMediaTypesTest extends TestCase
 {
     public function testTheHeroAcceptsTheSameVideoFormatsAsTheVideoKind(): void

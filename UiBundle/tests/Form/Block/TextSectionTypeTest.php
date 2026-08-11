@@ -74,8 +74,7 @@ class TextSectionTypeTest extends TestCase
         }
     }
 
-    // "secondary" is for a section standing beside a louder one; "normal" carries no placeholder, an unset value
-    // having to keep meaning exactly that - which is what every section stored before the field existed is
+    // "secondary" is for a section standing beside a louder one; "normal" carries no placeholder, an unset value having to keep meaning exactly that - which is what every section stored before the field existed is
     public function testToneOffersNormalAndSecondaryWithoutAPlaceholder(): void
     {
         $added = $this->buildAddedFields();

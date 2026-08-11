@@ -39,8 +39,7 @@ class BlockType extends AbstractType
     // "hero"'s pure-CSS crossfade slideshow only has :nth-child/[data-count] rules for up to this many images (see .hero__media--slideshow in sass/_page-sections.scss) - beyond it, extra images would silently collide with an earlier slide's animation timing instead of taking their own turn. The cap is shared with the "grid" mediaLayout, which has no timing to collide with: one number covering both is worth more than a validation branch reading a sibling field from inside this form's PRE_SUBMIT dance
     private const HERO_MEDIA_MAX = 9;
 
-    // Unmapped marker rendered beside a container's "slots" collection, and read back before anything is pruned:
-    // it is what tells "the editor removed the last slot" apart from "this form never carried the collection".
+    // Unmapped marker rendered beside a container's "slots" collection, and read back before anything is pruned: it is what tells "the editor removed the last slot" apart from "this form never carried the collection".
     // Outside the collection's own rows on purpose, so deleting every one of them leaves it standing
     public const SLOTS_RENDERED = 'slotsRendered';
 
@@ -149,18 +148,7 @@ class BlockType extends AbstractType
         );
     }
 
-    /*
-     * "slots" absent from the submission means one of two very different things: the editor removed the last slot
-     * - an HTML form cannot represent an empty array, only an absent key, same as "medias" - or this form never
-     * carried the collection at all. A kind just switched to a container client-side, a body PHP truncated at
-     * max_input_vars, a DOM something rewrote: all three arrive as that same absent key. Read as the first, the
-     * second deletes every slot, cascaded and orphan-removed, with nothing left to say it ever happened - which is
-     * how a live page lost the cards of a section_cards block.
-     *
-     * The marker is what tells the two apart. The submitted collection itself counts as its own proof: an edit page
-     * opened before the marker existed still carries its slots, and must go on saving rather than fail as an extra
-     * field. "Neither", and a body PHP cut short, both mean nothing submitted says what the editor removed.
-     */
+    // "slots" absent from the submission means one of two very different things: the editor removed the last slot - an HTML form cannot represent an empty array, only an absent key, same as "medias" - or this form never carried the collection at all. A kind just switched to a container client-side, a body PHP truncated at max_input_vars, a DOM something rewrote: all three arrive as that same absent key. Read as the first, the second deletes every slot, cascaded and orphan-removed, with nothing left to say it ever happened - which is how a live page lost the cards of a section_cards block. The marker is what tells the two apart. The submitted collection itself counts as its own proof: an edit page opened before the marker existed still carries its slots, and must go on saving rather than fail as an extra field. "Neither", and a body PHP cut short, both mean nothing submitted says what the editor removed.
     private function applySubmittedSlots(FormEvent $event, string $kind): void
     {
         $submitted = $event->getData();
@@ -170,14 +158,7 @@ class BlockType extends AbstractType
         $rendered = isset($submitted[self::SLOTS_RENDERED]) || isset($submitted['slots']);
         $complete = $rendered && !$this->isTruncatedSubmission();
 
-        /*
-         * Leaving the collection untouched means taking it off the form: PRE_SET_DATA already added it, and an
-         * absent key does not make Symfony skip a declared child - it submits it with null, which
-         * CollectionType's ResizeFormListener reads as "every row removed", the mapper then empties the collection
-         * and orphanRemoval deletes the rows at flush. Whatever partial rows a truncated body carried are dropped
-         * with it, so the submission fails on its own errors rather than on an extra field, and PageCrudController
-         * is what refuses it outright. The marker is put back on its own, being no proof of anything by itself
-         */
+        // Leaving the collection untouched means taking it off the form: PRE_SET_DATA already added it, and an absent key does not make Symfony skip a declared child - it submits it with null, which CollectionType's ResizeFormListener reads as "every row removed", the mapper then empties the collection and orphanRemoval deletes the rows at flush. Whatever partial rows a truncated body carried are dropped with it, so the submission fails on its own errors rather than on an extra field, and PageCrudController is what refuses it outright. The marker is put back on its own, being no proof of anything by itself
         if (!$complete) {
             $form->remove('slots');
             unset($submitted['slots']);
@@ -227,7 +208,6 @@ class BlockType extends AbstractType
                 'data-controller' => 'block',
                 'data-block-kind-url-value' => $this->router->generate('ui_block_data_form'),
                 'data-action' => 'change->block#loadData',
-                'data-ea-widget' => 'ea-autocomplete',
             ],
             'row_attr' => ['data-kind-row' => ''],
         ]);
@@ -245,6 +225,8 @@ class BlockType extends AbstractType
         $form->add('data', $this->registry->getFormClass($kind), [
             'label' => false,
             'row_attr' => ['class' => 'block-data-form'],
+            // One prefix shared by every kind's own FormType, so the layout below can be themed once for all of them rather than per kind (see form/block_theme.html.twig, "ui_block_data_widget"). Themed rather than written in form/block.html.twig, which only ever renders the fragment the kind picker loads over AJAX - the edit screen itself is rendered by EasyAdmin, which knows nothing of that template
+            'block_prefix' => 'ui_block_data',
         ]);
     }
 

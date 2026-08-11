@@ -12,14 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-/*
- * SiteBundle's typography centers every h1-h6 and paints it --primary, and its blanket "*" rule hands every
- * other element the body font. A block title inheriting any of that is styled by the theme rather than by its
- * own kind: the defect only shows where the box is wider than the text (a section title floated to the middle
- * of the 640px .section-head while the eyebrow right above it stayed left) and hides itself everywhere else.
- * So every title states its own family and alignment - unless a container centers the whole block on purpose,
- * which then has to state that centering itself.
- */
+// SiteBundle's typography centers every h1-h6 and paints it --primary, and its blanket "*" rule hands every other element the body font. A block title inheriting any of that is styled by the theme rather than by its own kind: the defect only shows where the box is wider than the text (a section title floated to the middle of the 640px .section-head while the eyebrow right above it stayed left) and hides itself everywhere else. So every title states its own family and alignment - unless a container centers the whole block on purpose, which then has to state that centering itself.
 class SectionHeadAlignmentTest extends TestCase
 {
     // Laid out flush against their section: they state "start" rather than inheriting the theme's centering

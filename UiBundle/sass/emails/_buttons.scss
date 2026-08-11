@@ -1,8 +1,6 @@
 /* EMAIL BUTTONS */
 
-// The call to action of templates/emails/blocks/button.html.twig. Kept to the flat variants the email
-// templates actually use: no :hover pair, a mail client having no hover to offer, and no box-shadow,
-// which Outlook drops and the others render inconsistently around a table cell
+// The call to action of templates/emails/blocks/button.html.twig. Kept to the flat variants the email templates actually use: no :hover pair, a mail client having no hover to offer, and no box-shadow, which Outlook drops and the others render inconsistently around a table cell
 .btn {
     display: inline-block;
     border-radius: var(--radius-btn);

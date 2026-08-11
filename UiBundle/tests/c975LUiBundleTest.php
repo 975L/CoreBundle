@@ -34,8 +34,7 @@ class c975LUiBundleTest extends TestCase
         $this->assertSame(['@c975LUi/form/captcha_theme.html.twig'], $config[0]['form_themes']);
     }
 
-    // An email carries no <link>, so its stylesheet has to travel inside the message: the namespace is what
-    // lets a bundle's own email layout source() the compiled emails.min.css before inlining it
+    // An email carries no <link>, so its stylesheet has to travel inside the message: the namespace is what lets a bundle's own email layout source() the compiled emails.min.css before inlining it
     public function testPrependExtensionRegistersTheCompiledCssNamespace(): void
     {
         $container = new ContainerBuilder();
@@ -97,6 +96,17 @@ class c975LUiBundleTest extends TestCase
             '@?limiter.ui_form',
             file_get_contents(__DIR__ . '/../config/services.yaml'),
             'FormController no longer asks for limiter.ui_form, which is the name prepended here.'
+        );
+    }
+
+    // NelmioSecurityBundle registers its CSP listener under its own service id and aliases nothing on the class, so CspNonceProvider - which type-hints that class - cannot be autowired: a consuming app compiled a container until its first cache:clear, then died on "no such service exists"
+    // Optional on top of explicit: that listener only exists once a site has configured a csp section, and a site without one must still boot
+    public function testTheCspNonceProviderIsWiredOnNelmiosOwnServiceId(): void
+    {
+        $this->assertStringContainsString(
+            "\$listener: '@?nelmio_security.csp_listener'",
+            (string) file_get_contents(__DIR__ . '/../config/services.yaml'),
+            'CspNonceProvider is left to autowiring again, which cannot resolve NelmioSecurityBundle\'s listener class.'
         );
     }
 

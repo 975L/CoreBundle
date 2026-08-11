@@ -24,8 +24,7 @@ class CssVariableExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            // Applied to the whole <style> of an email layout, before inline_css: the CSS inliner copies
-            // declarations verbatim into style="" attributes, and no mail client resolves a custom property
+            // Applied to the whole <style> of an email layout, before inline_css: the CSS inliner copies declarations verbatim into style="" attributes, and no mail client resolves a custom property
             new TwigFilter('resolve_css_variables', [$this, 'resolve'], ['is_safe' => ['html']]),
         ];
     }

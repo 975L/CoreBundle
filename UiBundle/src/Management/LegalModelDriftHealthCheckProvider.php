@@ -20,17 +20,11 @@ use c975L\UiBundle\Service\LegalModelCustomizer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Tells the site's owner when the bundle has reworded a passage they had already rewritten themselves, for
-// ConfigBundle's "Health check" dashboard page.
+// Tells the site's owner when the bundle has reworded a passage they had already rewritten themselves, for ConfigBundle's "Health check" dashboard page.
 //
-// Deliberately informational: the row is reported as STATUS_OK, which never feeds the dashboard alerts nor
-// the digest email. A legal text the client took over is theirs, and our having improved our own canvas is
-// news, not a fault - they read the new wording and decide. Nothing is ever merged for them.
+// Deliberately informational: the row is reported as STATUS_OK, which never feeds the dashboard alerts nor the digest email. A legal text the client took over is theirs, and our having improved our own canvas is news, not a fault - they read the new wording and decide. Nothing is ever merged for them.
 //
-// Only documents that actually drifted produce a row: a site whose legal pages are untouched (the common case,
-// and the one where updates flow in on their own) reports nothing at all. A row needs the public url the
-// document answers at, which only the bundle owning the block can tell (see BlockLocationProviderInterface),
-// so a legal block no bundle claims is left out rather than reported against an address that doesn't exist.
+// Only documents that actually drifted produce a row: a site whose legal pages are untouched (the common case, and the one where updates flow in on their own) reports nothing at all. A row needs the public url the document answers at, which only the bundle owning the block can tell (see BlockLocationProviderInterface), so a legal block no bundle claims is left out rather than reported against an address that doesn't exist.
 class LegalModelDriftHealthCheckProvider implements HealthCheckProviderInterface
 {
     public function __construct(
@@ -73,8 +67,7 @@ class LegalModelDriftHealthCheckProvider implements HealthCheckProviderInterface
                 continue;
             }
 
-            // The drifted sections are named in the summary rather than in "details": one line says all there
-            // is to say here, and the row stays readable straight from the Health check table
+            // The drifted sections are named in the summary rather than in "details": one line says all there is to say here, and the row stays readable straight from the Health check table
             $results[] = [
                 'url' => $location['url'],
                 'label' => $location['label'],

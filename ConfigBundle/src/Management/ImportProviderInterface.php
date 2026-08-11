@@ -10,14 +10,10 @@
 
 namespace c975L\ConfigBundle\Management;
 
-/**
- * To add an ImportProvider, you need to: add the Management Folder in the src/ folder of your bundle; create a class implementing ImportProviderInterface; ConfigBundle will automatically detect it and route to it any content_import upload whose "kind" it supports. Each provider owns its own upsert logic (matching a natural key like slug/name, never a raw autoincrement id - the whole point is that dev and prod ids never need to match, see ContentExporter).
- */
+// To add an ImportProvider, you need to: add the Management Folder in the src/ folder of your bundle; create a class implementing ImportProviderInterface; ConfigBundle will automatically detect it and route to it any content_import upload whose "kind" it supports. Each provider owns its own upsert logic (matching a natural key like slug/name, never a raw autoincrement id - the whole point is that dev and prod ids never need to match, see ContentExporter).
 interface ImportProviderInterface
 {
-    /**
-     * $kind is the string embedded in the export payload (see ContentExporter::export()), stable across dev/prod (eg. "site_page").
-     */
+    // $kind is the string embedded in the export payload (see ContentExporter::export()), stable across dev/prod (eg. "site_page").
     public function supportsImport(string $kind): bool;
 
     /**

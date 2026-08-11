@@ -1,0 +1,34 @@
+/* BLOCK SURFACE */
+// The corners and the shadow an editor picks per block, from the closed steps BlockRadiusChoiceType and
+// BlockShadowChoiceType offer. Each class only points a generic token at one of the steps defaulted in
+// sass/_tokens.scss and paints nothing itself - what paints is the kind, which reads that token through its
+// own default, so a block left on "theme" (no class at all) renders exactly as it did before the fields
+// existed. Their own file rather than _cards.scss or _flip-card.scss: the two kinds share them, and a third
+// one wanting them has nothing to move.
+// Written out rather than looped over the three step names: an interpolated var(--block-radius-#{$step}) reads
+// as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
+.block-radius-none {
+    --block-radius: 0;
+}
+.block-radius-small {
+    --block-radius: var(--block-radius-small);
+}
+.block-radius-medium {
+    --block-radius: var(--block-radius-medium);
+}
+.block-radius-large {
+    --block-radius: var(--block-radius-large);
+}
+
+.block-shadow-none {
+    --block-shadow: none;
+}
+.block-shadow-small {
+    --block-shadow: var(--block-shadow-small);
+}
+.block-shadow-medium {
+    --block-shadow: var(--block-shadow-medium);
+}
+.block-shadow-large {
+    --block-shadow: var(--block-shadow-large);
+}

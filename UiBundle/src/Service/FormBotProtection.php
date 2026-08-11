@@ -73,7 +73,7 @@ class FormBotProtection
         );
     }
 
-    // Honeypot, hidden inline so it needs no CSS framework: a non-empty value means a bot filled everything
+    // Honeypot, taken off-screen by a class: a non-empty value means a bot filled everything
     // $request is nullable, a caller outside a live HTTP request skipping the honeypot rather than crashing
     public function addHoneypotField(FormBuilderInterface $builder, ?Request $request): void
     {
@@ -81,18 +81,19 @@ class FormBotProtection
             return;
         }
 
-        $offscreen = 'position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;';
         $label = $this->honeypotLabel($request);
 
         $builder->add($this->honeypotFieldName($request), null, [
             'label' => $label,
             // The label is a decoy picked at random from HONEYPOT_LABELS, never seen by a human and meaningless to translate - without this, the form theme hands it to the translator, which reports one missing key per label the honeypot happens to pick (see ConfigBundle's c975l:dev-profile:run, which is what surfaced it)
             'translation_domain' => false,
-            'label_attr' => ['style' => $offscreen],
+            // A class, never the "style" attribute it used to be: a nonce-based style-src makes 'unsafe-inline' a no-op, and no nonce can ever authorize an attribute - the two rules were dropped and the decoy field showed up in the middle of the form, asking every visitor for a "Department" (see sass/_forms.scss).
+            // The class name says nothing on purpose - it travels in the compiled stylesheet, where "honeypot" would be one grep away for the very scripts this is meant to catch, and the field's own name and label are already drawn at random per session
+            'label_attr' => ['class' => 'ui-field-aside'],
             'required' => false,
             'mapped' => false,
             'data' => '',
-            'row_attr' => ['style' => $offscreen],
+            'row_attr' => ['class' => 'ui-field-aside'],
             'attr' => [
                 'placeholder' => $label,
                 'autocomplete' => 'off',

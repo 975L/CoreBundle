@@ -12,9 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// A hero's background video autoplays with no control of any kind printed beside it, so a visitor asking for reduced
-// motion has no way out of it but this controller (WCAG 2.2.2) - and it only has that say because the markup hands
-// the decision over to it instead of writing an "autoplay" attribute no script can take back
+// A hero's background video autoplays with no control of any kind printed beside it, so a visitor asking for reduced motion has no way out of it but this controller (WCAG 2.2.2) - and it only has that say because the markup hands the decision over to it instead of writing an "autoplay" attribute no script can take back
 class HeroVideoMotionTest extends TestCase
 {
     private const CONTROLLER_JS = 'assets/js/hero-video.js';
@@ -36,8 +34,7 @@ class HeroVideoMotionTest extends TestCase
 
         $this->assertStringContainsString('matchMedia("(prefers-reduced-motion: reduce)")', $script);
         $this->assertStringContainsString('.pause()', $script);
-        // Paused, never taken off the page: the frame it stops on goes on filling the section, where hiding the
-        // video would bare the overlay under it whenever the editor uploaded no image beside it
+        // Paused, never taken off the page: the frame it stops on goes on filling the section, where hiding the video would bare the overlay under it whenever the editor uploaded no image beside it
         $this->assertStringNotContainsString('style.display', $script);
         $this->assertStringNotContainsString('classList', $script);
     }
@@ -68,8 +65,7 @@ class HeroVideoMotionTest extends TestCase
         }
     }
 
-    // object-fit: cover crops the shot to whatever height the section ends up with, and a hero holding a short
-    // title - or none at all - is only as tall as its own paddings, leaving a strip of video instead of a picture
+    // object-fit: cover crops the shot to whatever height the section ends up with, and a hero holding a short title - or none at all - is only as tall as its own paddings, leaving a strip of video instead of a picture
     public function testTheSectionIsGivenAHeightOfItsOwnToShowTheVideoIn(): void
     {
         foreach (['styles.css', 'styles.min.css'] as $file) {

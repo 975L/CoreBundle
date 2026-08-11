@@ -1,9 +1,7 @@
 /* BLOCKS GROUP */
 
 // The "block_group" container kind (see config/services.yaml): no look of its own, only how its slots line up.
-// A row by default, so the blocks an editor drops in it stay on one line and whatever follows the group goes
-// below them - which is the whole reason to reach for it where the surrounding markup is itself a flex row
-// (a footer menu's ".blocks", see SiteBundle's sass/_footer.scss, where the group is also given its full width)
+// A row by default, so the blocks an editor drops in it stay on one line and whatever follows the group goes below them - which is the whole reason to reach for it where the surrounding markup is itself a flex row (a footer menu's ".blocks", see SiteBundle's sass/_footer.scss, where the group is also given its full width)
 .blocks-group {
     display: flex;
     flex-direction: row;
@@ -17,8 +15,7 @@
     flex-direction: column;
 }
 
-// "center" is the group's own default above and writes no class, which is also what every group stored before
-// this field existed renders as
+// "center" is the group's own default above and writes no class, which is also what every group stored before this field existed renders as
 .blocks-group--start {
     justify-content: flex-start;
 }

@@ -12,8 +12,7 @@ use <?= $repository_full_name ?>;
 use c975L\UiBundle\Doctrine\VectorType;
 use Doctrine\ORM\Mapping as ORM;
 
-// Answer cache: an exact-hash hit skips the LLM, a miss tries a semantic match first
-// contextVersion pins an answer to its context, a stale one counting as a miss
+// Answer cache: an exact-hash hit skips the LLM, a miss tries a semantic match first contextVersion pins an answer to its context, a stale one counting as a miss
 #[ORM\Entity(repositoryClass: <?= $repository_short_name ?>::class)]
 class <?= $class_name ?>
 {

@@ -16,8 +16,7 @@ use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-// An attached video fills the whole section, so it decides the hero's layout on its own - and it plays unattended,
-// which is what the muting, the still under it and the reduced-motion way out all answer for
+// An attached video fills the whole section, so it decides the hero's layout on its own - and it plays unattended, which is what the muting, the still under it and the reduced-motion way out all answer for
 class HeroVideoBackgroundTest extends TestCase
 {
     // Neither the checkbox nor a flat background has any say once a video is attached: it fills the section
@@ -41,8 +40,7 @@ class HeroVideoBackgroundTest extends TestCase
         $this->assertStringNotContainsString('controls', $html);
     }
 
-    // The video weighs megabytes and paints nothing until it downloads: the image uploaded beside it is the same
-    // background as any other hero's, and it is what the page has as its LCP element in the meantime
+    // The video weighs megabytes and paints nothing until it downloads: the image uploaded beside it is the same background as any other hero's, and it is what the page has as its LCP element in the meantime
     public function testAnImageUploadedBesideTheVideoIsPaintedUnderItAsTheStill(): void
     {
         $html = $this->render(['videoSrc' => '/media/generique.mp4', 'videoType' => 'video/mp4', 'src' => '/media/still.webp']);
@@ -72,8 +70,7 @@ class HeroVideoBackgroundTest extends TestCase
     }
 
     // A background video's own footage commonly carries the title already, leaving the hero nothing to say over it.
-    // Printed all the same, the heading would take the page's <h1> away from whatever does title it, and leave a
-    // screen reader announcing a heading with nothing to read
+    // Printed all the same, the heading would take the page's <h1> away from whatever does title it, and leave a screen reader announcing a heading with nothing to read
     public function testATitlelessHeroPrintsNoHeadingAtAll(): void
     {
         $html = $this->render(['videoSrc' => '/media/generique.mp4', 'videoType' => 'video/mp4', 'title' => '']);

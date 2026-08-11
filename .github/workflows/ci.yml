@@ -5,7 +5,7 @@ on:
         branches: [main, dev]
     pull_request:
 
-# Sans ce bloc, le GITHUB_TOKEN du workflow hérite des permissions par défaut du dépôt, en écriture. Seul le checkout en a besoin, et en lecture : l'envoi de la couverture passe par le secret Codacy, pas par le jeton GitHub
+# Without this block, the workflow's GITHUB_TOKEN inherits the repository's default permissions, which are write. Only the checkout needs it, and only to read: the coverage upload goes through the Codacy secret, not through the GitHub token
 permissions:
     contents: read
 
@@ -13,29 +13,28 @@ jobs:
     quality:
         runs-on: ubuntu-latest
 
-        # Au niveau du job et non de l'étape : le contexte `env` d'une étape ne contient pas son propre bloc `env:`
+        # At job level rather than step level: a step's `env` context does not hold its own `env:` block
         env:
             CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
-        # Plus de COMPOSER_ROOT_VERSION ici : il ne servait qu'à satisfaire la contrainte croisée que
-        # ConfigBundle et UiBundle avaient l'un sur l'autre. Ce paquet ne dépend d'aucun bundle c975L.
+        # No more COMPOSER_ROOT_VERSION here: it only served to satisfy the cross constraint ConfigBundle and UiBundle had on each other. This package depends on no c975L bundle.
 
         steps:
             - uses: actions/checkout@v5
 
-            # pcov mesure la couverture, que la machine de développement n'a pas ; les outils qualité sont installés ici plutôt qu'en require-dev, pour ne pas alourdir le bundle de 17 paquets transitifs
+            # pcov measures the coverage, which the development machine does not have; the quality tools are installed here rather than in require-dev, so as not to weigh the bundle down with 17 transitive packages
             - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
               with:
                   php-version: '8.4'
                   coverage: pcov
                   tools: phpcs, phpstan, php-cs-fixer
 
-            # update et non install : le composer.lock n'est pas versionné
+            # update rather than install: composer.lock is not versioned
             - name: Dépendances
               run: composer update --no-interaction --no-progress
 
-            # Les étapes ci-dessous appellent les scripts de composer.json plutôt que les commandes elles-mêmes : la liste des contrôles vit à un seul endroit, que `composer qa` et bin/ci.sh rejouent à l'identique en local. Elles restent séparées pour lire dans l'interface laquelle a échoué
-            # En premier, car c'est le contrôle le moins cher et il porte sur les dépendances que l'étape précédente vient de résoudre
+            # The steps below call composer.json's scripts rather than the commands themselves: the list of checks lives in one place, replayed identically by `composer qa` and bin/ci.sh locally. They stay separate so the interface shows which one failed
+            # First, being the cheapest check and the one bearing on the dependencies the previous step has just resolved
             - name: Avis de sécurité des dépendances
               run: composer audit-deps
 
@@ -51,11 +50,11 @@ jobs:
             - name: Analyse statique du scaffold
               run: composer stan-scaffold
 
-            # Une seule passe pour les deux bundles : c'est elle qui attrape les cassures croisées Config <-> Ui que les deux CI séparées ne voyaient pas
+            # One single pass for both bundles: it is what catches the cross Config <-> Ui breakages the two separate CIs could not see
             - name: Tests
               run: composer test -- --coverage-clover clover.xml
 
-            # Sans le secret, l'envoi est sauté plutôt que de faire échouer la CI
+            # Without the secret, the upload is skipped rather than failing the CI
             - name: Couverture vers Codacy
               if: env.CODACY_PROJECT_TOKEN != ''
               uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0

@@ -51,9 +51,19 @@ class SectionMarginResetTest extends TestCase
         }
     }
 
-    // Block axis only: on the inline axis the reset outranks every section laying itself out there, whether it centers
-    // itself through "margin: … auto" (the slider) or breaks out of the measure through a negative margin (the hero
-    // with a background, the colored flats) - which is what the "margin: 0" shorthand silently did until v1.12.3
+    // Those wrappers stack around one block - .block-editable, then .block-animation - and each measures as a zero rect, so the edit button descends until something painted is measured rather than reading one fixed child
+    public function testTheEditOverlayMeasuresPastEveryTransparentWrapper(): void
+    {
+        $js = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/block-edit-overlay.js');
+
+        $this->assertStringContainsString(
+            'while (0 === rect.width && 0 === rect.height && measured.firstElementChild)',
+            $js,
+            'The overlay measures a fixed child, so a block under two stacked transparent wrappers gets its button at 0,0.'
+        );
+    }
+
+    // Block axis only: on the inline axis the reset outranks every section laying itself out there, whether it centers itself through "margin: … auto" (the slider) or breaks out of the measure through a negative margin (the hero with a background, the colored flats) - which is what the "margin: 0" shorthand silently did until v1.12.3
     public function testTheResetNeverWritesTheInlineAxis(): void
     {
         foreach (['styles.css', 'styles.min.css'] as $file) {
@@ -69,11 +79,7 @@ class SectionMarginResetTest extends TestCase
         }
     }
 
-    /*
-     * The reset names its kinds one by one rather than matching "section", which would strip the vertical room
-     * the slider sets for itself. A kind added later and left out of that list keeps SiteBundle's page-wide
-     * "1em", parting two flats meant to touch - with nothing in this bundle's sass to show why.
-     */
+    // The reset names its kinds one by one rather than matching "section", which would strip the vertical room the slider sets for itself. A kind added later and left out of that list keeps SiteBundle's page-wide "1em", parting two flats meant to touch - with nothing in this bundle's sass to show why.
     public function testEverySectionKindIsNamedByTheReset(): void
     {
         $root = dirname(__DIR__, 2);
@@ -94,9 +100,7 @@ class SectionMarginResetTest extends TestCase
         }
     }
 
-    // Its own vertical rhythm is a deliberate opt-out of the reset, which is how the slider keeps its
-    // --slider-margin-block, and how .feature-bar keeps the margin its step is made of. Both edges have to be
-    // settled: SiteBundle's shorthand writes them both, so a kind stating one only still takes "1em" on the other
+    // Its own vertical rhythm is a deliberate opt-out of the reset, which is how the slider keeps its --slider-margin-block, and how .feature-bar keeps the margin its step is made of. Both edges have to be settled: SiteBundle's shorthand writes them both, so a kind stating one only still takes "1em" on the other
     private function setsItsOwnBlockMargin(StylesheetCascade $cascade, string $class): bool
     {
         $edges = [];

@@ -13,9 +13,7 @@ namespace c975L\UiBundle\Tests\Templates;
 use c975L\UiBundle\Form\Block\TextSectionType;
 use PHPUnit\Framework\TestCase;
 
-// The "secondary" presentation of a "text_section" - a section standing beside a louder one rather than carrying
-// the page on its own. It spans a form, a block adapter, a component and the stylesheet, and only holds together
-// if the four agree on the one value that writes a class
+// The "secondary" presentation of a "text_section" - a section standing beside a louder one rather than carrying the page on its own. It spans a form, a block adapter, a component and the stylesheet, and only holds together if the four agree on the one value that writes a class
 class TextSectionToneTest extends TestCase
 {
     private function read(string $path): string
@@ -51,8 +49,7 @@ class TextSectionToneTest extends TestCase
         $this->assertStringContainsString('tone="{{ tone|default(\'\') }}"', $this->template('blocks/TextSection.html.twig'));
     }
 
-    // "normal" writes no class on purpose - it is the block's own default, and what every section stored before
-    // the field existed renders as. The form offering a third tone would silently render as "normal"
+    // "normal" writes no class on purpose - it is the block's own default, and what every section stored before the field existed renders as. The form offering a third tone would silently render as "normal"
     public function testTheFormOffersExactlyTheOneToneTheStylesheetStyles(): void
     {
         $this->assertSame(['normal', 'secondary'], TextSectionType::TONES);

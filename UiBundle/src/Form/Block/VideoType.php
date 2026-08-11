@@ -36,7 +36,6 @@ class VideoType extends AbstractType
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
-                'attr' => ['data-ea-widget' => 'ea-autocomplete'],
             ])
             ->add('title', TextType::class, [
                 'label' => 'label.title',

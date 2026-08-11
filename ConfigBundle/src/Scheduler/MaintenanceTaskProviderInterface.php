@@ -10,9 +10,7 @@
 
 namespace c975L\ConfigBundle\Scheduler;
 
-/**
- * Implement this to have your bundle's own commands scheduled by the site, without the app having to list them by hand in its MaintenanceSchedule - collected by MaintenanceScheduleBuilder, see readme. It's what keeps the scaffolded schedule identical from one site to the next, so a bundle upgrade can be propagated to them all rather than merged into each: a site that installs your bundle gets your tasks, one that removes it stops running them, and neither has anything to edit.
- */
+// Implement this to have your bundle's own commands scheduled by the site, without the app having to list them by hand in its MaintenanceSchedule - collected by MaintenanceScheduleBuilder, see readme. It's what keeps the scaffolded schedule identical from one site to the next, so a bundle upgrade can be propagated to them all rather than merged into each: a site that installs your bundle gets your tasks, one that removes it stops running them, and neither has anything to edit.
 interface MaintenanceTaskProviderInterface
 {
     /**

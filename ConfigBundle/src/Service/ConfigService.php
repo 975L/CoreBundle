@@ -142,6 +142,8 @@ class ConfigService implements ConfigServiceInterface
 
             if ($existing) {
                 $this->syncMetadata($existing, $configData);
+                // After syncMetadata(), so a value seeded into a row whose sensitive flag just flipped is encrypted or not according to the flag it ends the run with
+                $this->syncSeededValue($existing, $configData);
 
                 continue;
             }
@@ -152,6 +154,34 @@ class ConfigService implements ConfigServiceInterface
         $this->manager->flush();
 
         $this->invalidateCache();
+    }
+
+    // Fills a row that holds nothing with the value its bundle declares, so an entry reads in the back office as the value the site is actually served - a color, a delay, a retention - instead of as an empty field whose real answer lives in a fallback the admin cannot see. What a fresh install is created with, given to sites installed before the entry gained a default too
+    // Only an empty row: anything an admin typed is production state and is never touched, here no more than in syncMetadata()
+    // Which is what an entry whose emptiness carries a meaning has to reckon with - "keep every archive", "review this list by hand". Emptying a field writes null, the very state this reads as "never filled in", so such an entry names its meaning with a value of its own: 0 for the retentions, "none" for seo-robots-ai-crawlers-source. An entry with nothing sensible to seed simply declares no value and is left alone
+    private function syncSeededValue(Config $config, array $configData): void
+    {
+        $current = $config->getValue();
+        $declared = $configData['value'] ?? null;
+
+        if ((null !== $current && '' !== $current) || null === $declared || '' === $declared) {
+            return;
+        }
+
+        $config->setValue($this->storableValue($declared, (bool) ($configData['sensitive'] ?? false)));
+        $config->setModification(new \DateTime());
+
+        $this->manager->persist($config);
+    }
+
+    // A declared value as it is stored: encrypted when the entry is sensitive and a vault key is defined, left as it stands otherwise - a sensitive value kept in clear for want of a key is what c975l:config:load-all warns about and c975l:config:encrypt-sensitive picks up later
+    private function storableValue(mixed $value, bool $isSensitive): mixed
+    {
+        if (!$isSensitive || null === $value || '' === $value || !$this->vaultEncryptor->isKeyDefined()) {
+            return $value;
+        }
+
+        return $this->vaultEncryptor->encrypt($value);
     }
 
     // Label/kind/choices/group/description/severity/isRestricted/isSensitive are metadata fixed by the bundle author (not user data), so they're kept in sync even on existing configs; only the value carries production state and is never overwritten here - except when the sensitive flag itself changes, see syncSensitive()
@@ -267,11 +297,8 @@ class ConfigService implements ConfigServiceInterface
         $config->setCreation(new \DateTime());
         $config->setModification(new \DateTime());
 
-        // Encrypt non-empty sensitive values on import
-        if ($isSensitive && null !== $rawValue && '' !== $rawValue && $this->vaultEncryptor->isKeyDefined()) {
-            $rawValue = $this->vaultEncryptor->encrypt($rawValue);
-        }
-        $config->setValue($rawValue);
+        // Encrypt non-empty sensitive values on import, the same way syncSeededValue() does for a row that already exists
+        $config->setValue($this->storableValue($rawValue, (bool) $isSensitive));
 
         $this->manager->persist($config);
     }

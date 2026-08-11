@@ -64,11 +64,7 @@ final class ComponentCenteringAnalyzer
         return array_map('array_keys', $tags);
     }
 
-    /**
-     * The tags an element is rendered as. Half the sections pick theirs at runtime ("<{{ tag }}"), so the
-     * literals of the expression are what names them - the whole of the page-section family is invisible to
-     * a reading that only takes a written-out tag.
-     */
+    // The tags an element is rendered as. Half the sections pick theirs at runtime ("<{{ tag }}"), so the literals of the expression are what names them - the whole of the page-section family is invisible to a reading that only takes a written-out tag.
     private static function tagNames(string $tag, string $twig, int $offset): array
     {
         if (!str_starts_with($tag, '{{')) {
@@ -177,14 +173,7 @@ final class ComponentCenteringAnalyzer
         );
     }
 
-    /**
-     * The rules laying a component out past what holds it, through a negative inline margin - the full-bleed
-     * flats and the hero with a background. Read off the cascade, not off the templates: those classes are
-     * written by a Twig expression, so nothing in the markup names them literally.
-     *
-     * Only a selector made of classes alone: a contextual one is somebody's deliberate cancelling of the
-     * breakout, which is how a flat used as a column slot paints its column instead of the page.
-     */
+    // The rules laying a component out past what holds it, through a negative inline margin - the full-bleed flats and the hero with a background. Read off the cascade, not off the templates: those classes are written by a Twig expression, so nothing in the markup names them literally. Only a selector made of classes alone: a contextual one is somebody's deliberate cancelling of the breakout, which is how a flat used as a column slot paints its column instead of the page.
     private function breakoutRules(array $rules, array $tagsByClass): array
     {
         $breakouts = [];

@@ -93,9 +93,7 @@ class OffsiteSynchronizerTest extends TestCase
         $this->assertNull($this->createSynchronizer('storagebox:975l.com')->getConfigFile());
     }
 
-    // The failure this guards against: rclone resolves HOME, which an interactive SSH session has and a task
-    // scheduler often hasn't, and starts with no remote configured at all - reported as an unknown target, which
-    // reads exactly like "rclone doesn't work on this host"
+    // The failure this guards against: rclone resolves HOME, which an interactive SSH session has and a task scheduler often hasn't, and starts with no remote configured at all - reported as an unknown target, which reads exactly like "rclone doesn't work on this host"
     public function testTheProjectsOwnConfigFileIsUsedWhenPresent(): void
     {
         touch($this->projectDir . '/rclone.conf');
@@ -106,8 +104,7 @@ class OffsiteSynchronizerTest extends TestCase
         );
     }
 
-    // var/ is a runtime scratch folder, and the local backup scripts that skip it would skip this file too - a copy
-    // left there after the move must not silently keep working, or the two locations diverge without anyone noticing
+    // var/ is a runtime scratch folder, and the local backup scripts that skip it would skip this file too - a copy left there after the move must not silently keep working, or the two locations diverge without anyone noticing
     public function testAConfigFileLeftUnderVarIsNotPickedUp(): void
     {
         touch($this->projectDir . '/var/rclone.conf');
@@ -115,9 +112,7 @@ class OffsiteSynchronizerTest extends TestCase
         $this->assertNull($this->createSynchronizer('storagebox:975l.com')->getConfigFile());
     }
 
-    // The first run of every install: nothing has been overwritten yet, so there is no previous/ folder to purge and
-    // rclone says so as an error. Reported as a failure it warns that first night and then every night a site's files
-    // don't change, which is how the warning that matters goes unread
+    // The first run of every install: nothing has been overwritten yet, so there is no previous/ folder to purge and rclone says so as an error. Reported as a failure it warns that first night and then every night a site's files don't change, which is how the warning that matters goes unread
     public function testAMissingPreviousFolderIsNothingToPurgeRatherThanAFailure(): void
     {
         $result = $this->createSynchronizerReturning(
@@ -128,8 +123,7 @@ class OffsiteSynchronizerTest extends TestCase
         $this->assertNull($result['error']);
     }
 
-    // The tolerance is that one message and nothing more: credentials rclone won't take, or a destination out of
-    // space, are exactly what the run must still report
+    // The tolerance is that one message and nothing more: credentials rclone won't take, or a destination out of space, are exactly what the run must still report
     public function testAnyOtherPurgeFailureIsStillReported(): void
     {
         $result = $this->createSynchronizerReturning(
@@ -140,8 +134,7 @@ class OffsiteSynchronizerTest extends TestCase
         $this->assertStringContainsString('unable to authenticate', $result['error']);
     }
 
-    // What rclone is asked, checked once here: the purge is aimed at the dated folders under the target and bounded by
-    // the retention window, a --min-age dropped along the way deleting the whole history instead of its oldest part
+    // What rclone is asked, checked once here: the purge is aimed at the dated folders under the target and bounded by the retention window, a --min-age dropped along the way deleting the whole history instead of its oldest part
     public function testThePurgeIsBoundedByTheRetentionWindow(): void
     {
         $captured = new \ArrayObject();
@@ -154,8 +147,7 @@ class OffsiteSynchronizerTest extends TestCase
         );
     }
 
-    // Overriding the run rather than putting a fake binary on the PATH: what is under test is what this class makes of
-    // an exit code and a message, and a host that happens to have a real rclone would otherwise answer instead
+    // Overriding the run rather than putting a fake binary on the PATH: what is under test is what this class makes of an exit code and a message, and a host that happens to have a real rclone would otherwise answer instead
     private function createSynchronizerReturning(array $result, ?\ArrayObject $captured = null): OffsiteSynchronizer
     {
         $configService = $this->createStub(ConfigServiceInterface::class);

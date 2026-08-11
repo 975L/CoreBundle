@@ -200,8 +200,7 @@ class ImageWatermarker
         return $percentage > 0 || ($zeroAllowed && 0.0 === $percentage) ? $percentage : $default;
     }
 
-    // Kept for the whole request: a batch upload calls prepare() once per photo, and the two signatures it looks up are the same two files every time - fifty photos used to mean a hundred queries and a hundred image opens
-    // stamp() pastes a copy() of what it finds here rather than the instance itself, so nothing a photo does to its logo reaches the next one
+    // Kept for the whole request: a batch upload calls prepare() once per photo, and the two signatures it looks up are the same two files every time - fifty photos used to mean a hundred queries and a hundred image opens stamp() pastes a copy() of what it finds here rather than the instance itself, so nothing a photo does to its logo reaches the next one
     private function logo(string $role): ?ImageInterface
     {
         if (!array_key_exists($role, $this->logos)) {

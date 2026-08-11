@@ -44,7 +44,6 @@ class AnimationChoiceType extends AbstractType
             'required' => false,
             'placeholder' => 'label.animation_none',
             'translation_domain' => 'ui',
-            'attr' => ['data-ea-widget' => 'ea-autocomplete'],
         ]);
     }
 }

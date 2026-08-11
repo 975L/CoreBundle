@@ -61,9 +61,7 @@ class BlockFixtureMediaAttacher
             }
 
             // Skipped for "freeflow", already busy demonstrating its own layout with more images, see imageCount().
-            // For "hero" a video is not one more media but a whole other look - it fills the section by itself and
-            // drops everything laid out beside the text - so it belongs to that kind's own "video" variant alone,
-            // the default one going on showing the ordinary hero (see BlockFixtureProvider)
+            // For "hero" a video is not one more media but a whole other look - it fills the section by itself and drops everything laid out beside the text - so it belongs to that kind's own "video" variant alone, the default one going on showing the ordinary hero (see BlockFixtureProvider)
             if ('freeflow' !== $variant && ('hero' !== $kind || 'video' === $variant) && !$videoAttached && str_starts_with($mediaType, 'video/')) {
                 $video = $this->placeholderVideo();
                 if (null !== $video) {
@@ -99,7 +97,8 @@ class BlockFixtureMediaAttacher
             return 5;
         }
 
-        if ('image_compare' === $kind) {
+        // A fixed pair each - before/after, recto/verso - so neither offers the bulk upload the generic count below reads
+        if ('image_compare' === $kind || 'flip_card' === $kind) {
             return 2;
         }
 

@@ -10,15 +10,9 @@
 
 namespace c975L\UiBundle\Service;
 
-// Replaces every var() in a stylesheet by the value it resolves to, then drops the :root blocks that fed
-// it. Meant for emails: a CSS inliner copies declarations into style="" attributes verbatim, so a
-// "background-color: var(--primary)" reaches the recipient as-is - and Gmail, Outlook and most mobile
-// clients resolve no custom property, dropping the declaration entirely. Colors simply did not apply there.
+// Replaces every var() in a stylesheet by the value it resolves to, then drops the :root blocks that fed it. Meant for emails: a CSS inliner copies declarations into style="" attributes verbatim, so a "background-color: var(--primary)" reaches the recipient as-is - and Gmail, Outlook and most mobile clients resolve no custom property, dropping the declaration entirely. Colors simply did not apply there.
 //
-// Done here rather than at sass compile time on purpose: --primary reads
-// "var(--c975l-color-primary, var(--button-background-primary))", and --c975l-color-primary is written at
-// runtime by the app's own theme config (ThemeVariablesCssListener). A literal baked by sass
-// would freeze every site on the bundle's default palette instead of the one its admin picked.
+// Done here rather than at sass compile time on purpose: --primary reads "var(--c975l-color-primary, var(--button-background-primary))", and --c975l-color-primary is written at runtime by the app's own theme config (ThemeVariablesCssListener). A literal baked by sass would freeze every site on the bundle's default palette instead of the one its admin picked.
 class CssVariableResolver
 {
     // A var() chain deeper than this is a cycle the CSS itself would treat as invalid
@@ -36,15 +30,10 @@ class CssVariableResolver
         return $this->stripRootBlocks($this->evaluateColorMix($this->substitute($css, $resolved, true)));
     }
 
-    // Computes the "color-mix(in srgb, <color> <p>%, <color>)" a resolved token can still hold - the footer's
-    // own border and link hover are mixed out of its background. Resolving the var() inside is not enough:
-    // color-mix is no better supported than a custom property in a mail client, so the declaration would be
-    // dropped all the same. Only the srgb form is evaluated, the only one these stylesheets use; anything
-    // else is left untouched rather than approximated in the wrong color space.
+    // Computes the "color-mix(in srgb, <color> <p>%, <color>)" a resolved token can still hold - the footer's own border and link hover are mixed out of its background. Resolving the var() inside is not enough: color-mix is no better supported than a custom property in a mail client, so the declaration would be dropped all the same. Only the srgb form is evaluated, the only one these stylesheets use; anything else is left untouched rather than approximated in the wrong color space.
     private function evaluateColorMix(string $css): string
     {
-        // Each color is either a function call or a bare token: an "rgb(11, 55, 178)" holds commas of its
-        // own, which a plain "everything up to the comma" capture cuts in half
+        // Each color is either a function call or a bare token: an "rgb(11, 55, 178)" holds commas of its own, which a plain "everything up to the comma" capture cuts in half
         $color = '(rgba?\([^()]*\)|[^,()\s]+)';
         $pattern = '/color-mix\(\s*in\s+srgb\s*,\s*' . $color . '\s+([\d.]+)%\s*,\s*' . $color . '\s*\)/i';
 
@@ -168,8 +157,7 @@ class CssVariableResolver
             } elseif (null !== $fallback) {
                 $out .= $fallback;
             } else {
-                // Undeclared and no fallback: the declaration is invalid anyway, so the var() is left in
-                // place rather than replaced by something that would silently paint the wrong thing
+                // Undeclared and no fallback: the declaration is invalid anyway, so the var() is left in place rather than replaced by something that would silently paint the wrong thing
                 $out .= substr($css, $start, $end - $start + 1);
             }
 
@@ -218,9 +206,7 @@ class CssVariableResolver
         return null;
     }
 
-    // Once every var() is resolved the :root blocks carry nothing a recipient can use, and an inliner has
-    // no element to attach them to anyway. The @layer wrapping them goes too, being both empty afterwards
-    // and unknown to most mail clients
+    // Once every var() is resolved the :root blocks carry nothing a recipient can use, and an inliner has no element to attach them to anyway. The @layer wrapping them goes too, being both empty afterwards and unknown to most mail clients
     private function stripRootBlocks(string $css): string
     {
         $css = (string) preg_replace('/:root[^{}]*\{[^{}]*\}/', '', $css);

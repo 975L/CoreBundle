@@ -10,9 +10,7 @@
 
 namespace c975L\UiBundle\Contract;
 
-/**
- * Lets an entity decide the name its uploaded file is stored under, instead of Vich's default (see UiMediaNamer).
- */
+// Lets an entity decide the name its uploaded file is stored under, instead of Vich's default (see UiMediaNamer).
 interface VichMediaNamableInterface
 {
     /**

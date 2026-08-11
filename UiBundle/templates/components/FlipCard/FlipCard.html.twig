@@ -1,4 +1,4 @@
-{# Static usage: <twig:c975LUi:FlipCard:FlipCard [id=""] [title=""] [level="h2"] [content=""] [backTitle=""] [backContent=""] [media="{{ [frontMedia, backMedia] }}"] [ratio="free"] [class=""] /> #}
+{# <twig:c975LUi:FlipCard:FlipCard [id=""] [title=""] [level="h2"] [content=""] [backTitle=""] [backContent=""] [media="{{ [frontMedia, backMedia] }}"] [ratio="free"] [class=""] /> #}
 {# "media" is an ordered collection/array holding at most two images: the first is the front face's, the second the back's #}
 {% set level = level|default('h2') %}
 {# Matched against the closed list, not interpolated: the value comes from stored block data and must not write any class name (same rule as the accent in blocks/FlipCard.html.twig). "free" declares none, and the card keeps the height of its tallest face. See SliderType::RATIO_CHOICES, whose values these are #}
@@ -6,39 +6,38 @@
 {% set mediaList = media|default([]) %}
 {% set frontMedia = mediaList[0]|default(null) %}
 {% set backMedia = mediaList[1]|default(null) %}
-{# Two faces are what makes this kind: with nothing at all on the back there is nothing to turn to, so it renders as the plain card it actually is rather than as a card with a button revealing an empty side #}
+{# Two faces are what makes this kind: with nothing at all on the back there is nothing to turn to, so it renders as the plain card it actually is rather than as a card with a control revealing an empty side #}
 {% set hasBack = backTitle|default('') or backContent|default('') or backMedia %}
-{# The turn is a decoration the eye follows, so it is announced by the label of the button that did it, not by an aria-state on a container: "Voir le verso" and "Voir le recto" say which side is up between them, and focus follows the face that just came up (see flip-card.js) #}
+{# The turn is a decoration the eye follows, so it is announced by the accessible name of the control that did it, not by an aria-state on a container: "Voir le verso" and "Voir le recto" say which side is up between them, and focus follows the face that just came up (see flip-card.js) #}
+{% set showBack = 'label.flip_card_show_back'|trans({}, 'ui') %}
+{% set showFront = 'label.flip_card_show_front'|trans({}, 'ui') %}
+{# The fold is the stylesheet's, so the card is painted in shape rather than collapsing into it once the module has loaded, and the one case needing it undone - no JS at all, where the toggles below stay hidden and the back face would sit behind a rotation nothing can undo - is undone from that same stylesheet, under "@media (scripting: none)" (see sass/_flip-card.scss). It used to be a style element wrapped in a noscript and written here, which no validator accepts: a style element is metadata content, invalid anywhere but the head, and this markup is rendered mid-page #}
 <div class="flip-card {{ ratioClass }} {{ class|default('') }}"{% if id|default('') %} id="{{ id }}"{% endif %}{% if hasBack %} data-controller="flipCard"{% endif %}>
     <div class="flip-card-inner">
-        <div class="card flip-card-face flip-card-front" data-flipCard-target="face">
-            {% if title|default('') %}<{{ level }} class="card-header">{{ title }}</{{ level }}>{% endif %}
-            <div class="card-body">
+        <div class="flip-card-face flip-card-front" data-flipCard-target="face">
+            {% if title|default('') %}<{{ level }} class="flip-card-title">{{ title }}</{{ level }}>{% endif %}
+            <div class="flip-card-body">
                 {% if frontMedia %}
-                    <img src="{{ vich_uploader_asset(frontMedia) }}" alt="{{ frontMedia.alt }}" class="flip-card-img {{ frontMedia.cssClasses|join(' ') }}"{% if frontMedia.intrinsicWidth %} width="{{ frontMedia.intrinsicWidth }}"{% endif %}{% if frontMedia.intrinsicHeight %} height="{{ frontMedia.intrinsicHeight }}"{% endif %} loading="lazy">
+                    <p class="flip-card-media"><img src="{{ vich_uploader_asset(frontMedia) }}" alt="{{ frontMedia.alt }}" class="flip-card-img {{ frontMedia.cssClasses|join(' ') }}"{% if frontMedia.intrinsicWidth %} width="{{ frontMedia.intrinsicWidth }}"{% endif %}{% if frontMedia.intrinsicHeight %} height="{{ frontMedia.intrinsicHeight }}"{% endif %} loading="lazy"></p>
                 {% endif %}
                 {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
                 {% if content|default('') %}<div class="flip-card-text">{{ content|raw|nl2br }}</div>{% endif %}
-                {% if hasBack %}
-                    {# Hidden until flip-card.js takes over: without it the two faces stay in normal flow, one under the other, and a button turning nothing would be a dead control #}
-                    <div class="card-data">
-                        <button type="button" class="btn btn-primary flip-card-toggle" data-action="flipCard#toggle" aria-label="{{ 'label.flip_card_show_back'|trans({}, 'ui') }}{% if title|default('') %} : {{ title }}{% endif %}" hidden>{{ 'label.flip_card_show_back'|trans({}, 'ui') }}</button>
-                    </div>
-                {% endif %}
             </div>
+            {% if hasBack %}
+                {# The whole face is the control: this fills it, under the content, which is pointer-transparent so a click anywhere lands here - see sass/_flip-card.scss. Hidden until flip-card.js takes over: without it the two faces stay in normal flow, one under the other, and a control turning nothing would be a dead one #}
+                <button type="button" class="flip-card-toggle" data-action="flipCard#toggle" aria-label="{{ showBack }}{% if title|default('') %} : {{ title }}{% endif %}" hidden></button>
+            {% endif %}
         </div>
         {% if hasBack %}
-            <div class="card flip-card-face flip-card-back" data-flipCard-target="face">
-                {% if backTitle|default('') %}<{{ level }} class="card-header">{{ backTitle }}</{{ level }}>{% endif %}
-                <div class="card-body">
+            <div class="flip-card-face flip-card-back" data-flipCard-target="face">
+                {% if backTitle|default('') %}<{{ level }} class="flip-card-title">{{ backTitle }}</{{ level }}>{% endif %}
+                <div class="flip-card-body">
                     {% if backMedia %}
-                        <img src="{{ vich_uploader_asset(backMedia) }}" alt="{{ backMedia.alt }}" class="flip-card-img {{ backMedia.cssClasses|join(' ') }}"{% if backMedia.intrinsicWidth %} width="{{ backMedia.intrinsicWidth }}"{% endif %}{% if backMedia.intrinsicHeight %} height="{{ backMedia.intrinsicHeight }}"{% endif %} loading="lazy">
+                        <p class="flip-card-media"><img src="{{ vich_uploader_asset(backMedia) }}" alt="{{ backMedia.alt }}" class="flip-card-img {{ backMedia.cssClasses|join(' ') }}"{% if backMedia.intrinsicWidth %} width="{{ backMedia.intrinsicWidth }}"{% endif %}{% if backMedia.intrinsicHeight %} height="{{ backMedia.intrinsicHeight }}"{% endif %} loading="lazy"></p>
                     {% endif %}
                     {% if backContent|default('') %}<div class="flip-card-text">{{ backContent|raw|nl2br }}</div>{% endif %}
-                    <div class="card-data">
-                        <button type="button" class="btn btn-primary flip-card-toggle" data-action="flipCard#toggle" aria-label="{{ 'label.flip_card_show_front'|trans({}, 'ui') }}{% if backTitle|default('') %} : {{ backTitle }}{% endif %}" hidden>{{ 'label.flip_card_show_front'|trans({}, 'ui') }}</button>
-                    </div>
                 </div>
+                <button type="button" class="flip-card-toggle" data-action="flipCard#toggle" aria-label="{{ showFront }}{% if backTitle|default('') %} : {{ backTitle }}{% endif %}" hidden></button>
             </div>
         {% endif %}
     </div>

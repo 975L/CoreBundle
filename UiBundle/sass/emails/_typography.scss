@@ -1,17 +1,12 @@
 /* EMAIL TYPOGRAPHY */
 
-// Every element is colored directly rather than letting it inherit, same as on the page: a mail
-// client applying its own default text color would otherwise win inside the body fragment. The color
-// is fixed rather than themed, to stay coherent with the white background set in _base.scss: a site
-// with a dark palette would otherwise resolve --text to a light color and send white on white
+// Every element is colored directly rather than letting it inherit, same as on the page: a mail client applying its own default text color would otherwise win inside the body fragment. The color is fixed rather than themed, to stay coherent with the white background set in _base.scss: a site with a dark palette would otherwise resolve --text to a light color and send white on white
 * {
     font-family: var(--font-family-body);
     color: #000;
 }
 
-// 0.25em rather than the page's 0.5em: an email section holds a few short lines, and the page-level
-// spacing left it airy to the point of pushing the content below the fold. This is the rule SiteBundle
-// used to restate in its own _email-overrides.scss, folded in here so nothing has to override anything
+// 0.25em rather than the page's 0.5em: an email section holds a few short lines, and the page-level spacing left it airy to the point of pushing the content below the fold. This is the rule SiteBundle used to restate in its own _email-overrides.scss, folded in here so nothing has to override anything
 h1,
 h2,
 h3,

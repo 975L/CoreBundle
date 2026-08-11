@@ -13,9 +13,7 @@ namespace c975L\UiBundle\Contract;
 use c975L\UiBundle\Entity\Block;
 use Doctrine\Common\Collections\Collection;
 
-/**
- * Each entity that owns blocks must implement this interface (see Readme).
- */
+// Each entity that owns blocks must implement this interface (see Readme).
 interface HasBlocksInterface
 {
     /**
@@ -27,13 +25,9 @@ interface HasBlocksInterface
 
     public function removeBlock(Block $block): static;
 
-    /**
-     * Same as removeBlock() but never queues the block for deletion, for relocating it elsewhere.
-     */
+    // Same as removeBlock() but never queues the block for deletion, for relocating it elsewhere.
     public function detachBlock(Block $block): static;
 
-    /**
-     * Renumbers the remaining blocks from 0, called by BlockRelocator after a detach - HasBlocksTrait implements it, an entity writing its own has to as well.
-     */
+    // Renumbers the remaining blocks from 0, called by BlockRelocator after a detach - HasBlocksTrait implements it, an entity writing its own has to as well.
     public function reorderBlocks(): void;
 }

@@ -50,9 +50,7 @@ class HeroTypeTest extends TestCase
         }
     }
 
-    // Nothing is required: a hero with no call to action is a legitimate composition, and so is one saying
-    // nothing at all over a background video whose own footage carries the title (see Hero.html.twig, which
-    // then prints no heading rather than an empty one)
+    // Nothing is required: a hero with no call to action is a legitimate composition, and so is one saying nothing at all over a background video whose own footage carries the title (see Hero.html.twig, which then prints no heading rather than an empty one)
     public function testNoFieldIsRequired(): void
     {
         $added = $this->buildAddedFields();
@@ -69,8 +67,7 @@ class HeroTypeTest extends TestCase
         $this->assertFalse($added['statLabel']['required']);
     }
 
-    // The layout picker offers exactly the two the component matches on, and carries no placeholder: an
-    // unset value has to keep meaning "slideshow", which is what every hero stored before it existed is
+    // The layout picker offers exactly the two the component matches on, and carries no placeholder: an unset value has to keep meaning "slideshow", which is what every hero stored before it existed is
     public function testMediaLayoutOffersSlideshowAndGridWithoutAPlaceholder(): void
     {
         $added = $this->buildAddedFields();

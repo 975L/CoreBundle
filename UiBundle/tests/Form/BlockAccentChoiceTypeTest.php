@@ -30,8 +30,7 @@ class BlockAccentChoiceTypeTest extends TestCase
         $this->assertSame(ChoiceType::class, (new BlockAccentChoiceType())->getParent());
     }
 
-    // Not optional and not placeholdered would make "no accent" unreachable, which is what every card
-    // stored before this field existed holds
+    // Not optional and not placeholdered would make "no accent" unreachable, which is what every card stored before this field existed holds
     public function testAnAccentIsOptionalAndHasANoneplaceholder(): void
     {
         $options = $this->options();
@@ -47,8 +46,7 @@ class BlockAccentChoiceTypeTest extends TestCase
         $this->assertSame(BlockAccentChoiceType::CHOICES, $this->options()['choices']);
     }
 
-    // Each stored value lands in a "card--accent-<hue>" class and reads a "--block-accent-<hue>" token,
-    // so nothing a class name or a custom property can't hold may be offered here
+    // Each stored value lands in a "card--accent-<hue>" class and reads a "--block-accent-<hue>" token, so nothing a class name or a custom property can't hold may be offered here
     public function testEveryStoredValueIsClassNameSafe(): void
     {
         foreach (BlockAccentChoiceType::CHOICES as $label => $hue) {

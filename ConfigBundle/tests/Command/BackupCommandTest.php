@@ -166,8 +166,7 @@ class BackupCommandTest extends TestCase
         $this->assertContains('c975l:site:backup', $this->createCommand()->getAliases());
     }
 
-    // Only what a bundle declared is archived - not a root walked whole. public/ and private/ used to be tarred
-    // entirely, which made this command's business to know where every other bundle stores things
+    // Only what a bundle declared is archived - not a root walked whole. public/ and private/ used to be tarred entirely, which made this command's business to know where every other bundle stores things
     public function testOnlyTheDeclaredArchivePathsAreTarred(): void
     {
         file_put_contents($this->projectDir . '/.env.local', 'APP_SECRET=secret');

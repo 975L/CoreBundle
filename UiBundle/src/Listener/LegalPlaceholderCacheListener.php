@@ -21,9 +21,7 @@ use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-// Drops the cached legal_model renders when one of the configs they resolve inside themselves changes -
-// BlockCacheInvalidationListener only ever sees Block/Media, so without this an edited contact email would
-// never reach an already published legal notice
+// Drops the cached legal_model renders when one of the configs they resolve inside themselves changes - BlockCacheInvalidationListener only ever sees Block/Media, so without this an edited contact email would never reach an already published legal notice
 #[AsDoctrineListener(event: Events::postPersist)]
 #[AsDoctrineListener(event: Events::postUpdate)]
 #[AsDoctrineListener(event: Events::postRemove)]

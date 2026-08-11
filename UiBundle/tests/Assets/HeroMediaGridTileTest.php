@@ -12,11 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-/*
- * A hero laying its medias out as a grid shows marks - logos, icons - and a mark is drawn for one
- * background: laid straight on the section's flat, its own colors mix into whatever tone the hero carries.
- * So the tile paints its own opaque plate, and carries no :hover, these tiles not being links.
- */
+// A hero laying its medias out as a grid shows marks - logos, icons - and a mark is drawn for one background: laid straight on the section's flat, its own colors mix into whatever tone the hero carries. So the tile paints its own opaque plate, and carries no :hover, these tiles not being links.
 class HeroMediaGridTileTest extends TestCase
 {
     /**

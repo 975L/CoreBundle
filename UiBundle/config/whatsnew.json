@@ -11,6 +11,36 @@
                 "en": "On those same sites, a banner's background image and its height are applied again, instead of the banner showing bare",
                 "fr": "Sur ces mêmes sites, l'image de fond d'une bannière et sa hauteur s'appliquent de nouveau, au lieu que la bannière s'affiche nue",
                 "es": "En esos mismos sitios, la imagen de fondo de un banner y su altura se aplican de nuevo, en lugar de mostrarse el banner desnudo"
+            },
+            {
+                "en": "Flip cards have a look of their own: outlined, rounded, the title on the face, and a click anywhere on the card turns it over",
+                "fr": "Les cartes retournables ont désormais leur propre allure : bordées, arrondies, le titre sur la face, et un clic n'importe où sur la carte la retourne",
+                "es": "Las tarjetas giratorias tienen ahora su propio aspecto: con borde, redondeadas, el título en la cara, y un clic en cualquier punto de la tarjeta la gira"
+            },
+            {
+                "en": "A row of cards now lines up on one height and one top edge, where an animated card used to sit a step below its neighbours",
+                "fr": "Une ligne de cartes s'aligne désormais sur une seule hauteur et un même bord haut, là où une carte animée se retrouvait décalée sous ses voisines",
+                "es": "Una fila de tarjetas se alinea ahora a una sola altura y un mismo borde superior, donde una tarjeta animada quedaba desplazada bajo sus vecinas"
+            },
+            {
+                "en": "Cards and flip cards each offer a rounded-corners and a shadow setting, from none to pronounced, or left to the site's own style",
+                "fr": "Les cartes et les cartes retournables proposent chacune un réglage de coins arrondis et d'ombre, d'aucun à prononcé, ou laissé au style du site",
+                "es": "Las tarjetas y las tarjetas giratorias ofrecen cada una un ajuste de esquinas redondeadas y de sombra, de ninguno a pronunciado, o dejado al estilo del sitio"
+            },
+            {
+                "en": "A stray \"Department\" field no longer shows up in the middle of your forms on a site with a strict security policy",
+                "fr": "Un champ « Département » parasite ne s'affiche plus au milieu de vos formulaires sur un site à politique de sécurité stricte",
+                "es": "Un campo «Departamento» parásito ya no aparece en medio de sus formularios en un sitio con una política de seguridad estricta"
+            },
+            {
+                "en": "Drop-down lists are consistent everywhere: a short list is a plain list, and only a long one comes with a search box",
+                "fr": "Les listes déroulantes sont cohérentes partout : une liste courte est une simple liste, et seule une liste longue s'accompagne d'une recherche",
+                "es": "Las listas desplegables son coherentes en todas partes: una lista corta es una lista simple, y solo una lista larga viene con un buscador"
+            },
+            {
+                "en": "The site's colors and fonts are shown filled in with what the site actually uses, instead of seven empty fields",
+                "fr": "Les couleurs et les polices du site s'affichent renseignées avec ce que le site utilise réellement, au lieu de sept champs vides",
+                "es": "Los colores y las tipografías del sitio se muestran rellenados con lo que el sitio usa realmente, en lugar de siete campos vacíos"
             }
         ]
     },

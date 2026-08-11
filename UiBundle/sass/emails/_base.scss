@@ -5,12 +5,7 @@
     box-sizing: border-box;
 }
 
-// Deliberately NOT var(--background)/var(--frame-background) like the page does: those hold the site's
-// own page background, which the admin's theme resolves into the message right before it is inlined, and
-// the whole email then arrived painted in the site's color. A message is read inside a client's own
-// reading pane, against its own chrome - it keeps the plain white a mail is expected to have, and a
-// bundle or site wanting otherwise restates the rule in the stylesheet it sources afterwards (see
-// SiteBundle's emails/fullLayout.html.twig)
+// Deliberately NOT var(--background)/var(--frame-background) like the page does: those hold the site's own page background, which the admin's theme resolves into the message right before it is inlined, and the whole email then arrived painted in the site's color. A message is read inside a client's own reading pane, against its own chrome - it keeps the plain white a mail is expected to have, and a bundle or site wanting otherwise restates the rule in the stylesheet it sources afterwards (see SiteBundle's emails/fullLayout.html.twig)
 body {
     max-width: var(--body-max-width);
     margin: 0 auto;
@@ -18,8 +13,7 @@ body {
     font-weight: var(--font-body-weight);
 }
 
-// No "scroll-behavior"/"overflow-x" counterpart to the page's html rule: neither means anything in a
-// mail client, which renders the document inside its own reading pane
+// No "scroll-behavior"/"overflow-x" counterpart to the page's html rule: neither means anything in a mail client, which renders the document inside its own reading pane
 html {
     background-color: #fff;
 }

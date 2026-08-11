@@ -48,9 +48,7 @@ class BackupPathCollector
         return $this->dropNested($paths);
     }
 
-    // A folder already covered by a declared ancestor is dropped. Deduplicating equal paths isn't enough: an app
-    // declaring public/medias while GalleryBundle declares public/medias/gallery would have the gallery mirrored
-    // twice, to two different places at the destination - and counted twice in what the run reports holding
+    // A folder already covered by a declared ancestor is dropped. Deduplicating equal paths isn't enough: an app declaring public/medias while GalleryBundle declares public/medias/gallery would have the gallery mirrored twice, to two different places at the destination - and counted twice in what the run reports holding
     /** @param string[] $paths sorted, so an ancestor always precedes what it covers */
     private function dropNested(array $paths): array
     {

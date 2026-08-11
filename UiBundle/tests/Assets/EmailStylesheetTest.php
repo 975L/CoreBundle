@@ -12,11 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// An email carries no <link>: its CSS travels inside the message, sourced and inlined by the sending
-// bundle's own layout. Nothing there falls back to a page stylesheet, so a token this file reads without
-// declaring is simply an invalid declaration the client throws away - which is how the footer briefly
-// lost every one of its --footer-* rules when the base moved here. The page has TokenDefaultsTest for the
-// same reason; this is its email counterpart, and it only checks what UiBundle ships on its own.
+// An email carries no <link>: its CSS travels inside the message, sourced and inlined by the sending bundle's own layout. Nothing there falls back to a page stylesheet, so a token this file reads without declaring is simply an invalid declaration the client throws away - which is how the footer briefly lost every one of its --footer-* rules when the base moved here. The page has TokenDefaultsTest for the same reason; this is its email counterpart, and it only checks what UiBundle ships on its own.
 class EmailStylesheetTest extends TestCase
 {
     public function testEveryTokenTheRulesReadIsDeclared(): void
@@ -34,16 +30,13 @@ class EmailStylesheetTest extends TestCase
         ));
     }
 
-    // A mail client resolves no custom property of its own and applies no page stylesheet, so the :root
-    // block has to travel with the rules that read it
+    // A mail client resolves no custom property of its own and applies no page stylesheet, so the :root block has to travel with the rules that read it
     public function testTheStylesheetCarriesItsOwnRootBlock(): void
     {
         $this->assertStringContainsString(':root', $this->compiled(), 'The compiled email stylesheet declares no :root, so every token it reads resolves to nothing.');
     }
 
-    // The background is plain white (see emails/_base.scss), and CssVariableResolver resolves every var()
-    // with the site's own theme right before inlining: a "color: var(--text)" on the blanket rule would
-    // send white on white to any site with a dark palette, which is why that one color is fixed too
+    // The background is plain white (see emails/_base.scss), and CssVariableResolver resolves every var() with the site's own theme right before inlining: a "color: var(--text)" on the blanket rule would send white on white to any site with a dark palette, which is why that one color is fixed too
     public function testTheBlanketTextColorIsFixedRatherThanThemed(): void
     {
         // The blanket rule alone, not the "*, *::before, *::after" one setting box-sizing
@@ -57,8 +50,7 @@ class EmailStylesheetTest extends TestCase
         );
     }
 
-    // The page layer has no place here: an email is laid out in tables, and a client that ignores these
-    // collapses the layout rather than degrading it
+    // The page layer has no place here: an email is laid out in tables, and a client that ignores these collapses the layout rather than degrading it
     public function testTheStylesheetAvoidsWhatMailClientsDrop(): void
     {
         $css = $this->compiled();
@@ -77,9 +69,7 @@ class EmailStylesheetTest extends TestCase
     }
 
     // Read outside a :root block, i.e. by a rule that paints something rather than by another token's value.
-    // Only the reads with no fallback: "var(--alert-max-width, 700px)" is a deliberate override hook - the
-    // declaration stays valid with the token undeclared, and CssVariableResolver substitutes the fallback
-    // before the message is inlined
+    // Only the reads with no fallback: "var(--alert-max-width, 700px)" is a deliberate override hook - the declaration stays valid with the token undeclared, and CssVariableResolver substitutes the fallback before the message is inlined
     /** @return string[] */
     private function tokensReadByRules(string $css): array
     {

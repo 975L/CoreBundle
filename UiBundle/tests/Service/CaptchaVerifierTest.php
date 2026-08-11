@@ -68,10 +68,10 @@ class CaptchaVerifierTest extends TestCase
         $this->assertNull($this->createVerifier([])->getSiteKey());
     }
 
-    // Google's own recommended default, and what karser/karser-recaptcha3-bundle used before it
-    public function testScoreThresholdDefaultsToHalf(): void
+    // The same threshold config/configs.json seeds, so a site whose configs were never loaded is scored exactly as one whose were
+    public function testScoreThresholdDefaultsToTheSeededValue(): void
     {
-        $this->assertSame(0.5, $this->createVerifier(self::KEYS)->getScoreThreshold());
+        $this->assertSame(0.05, $this->createVerifier(self::KEYS)->getScoreThreshold());
     }
 
     // 0 is a deliberate, valid threshold (accept everything), not "unset"
@@ -89,17 +89,18 @@ class CaptchaVerifierTest extends TestCase
 
     public function testVerifyRejectsATokenScoringBelowTheThreshold(): void
     {
-        $verifier = $this->createVerifier(self::KEYS, $this->createClient(['success' => true, 'score' => 0.2]));
+        $verifier = $this->createVerifier(self::KEYS, $this->createClient(['success' => true, 'score' => 0.01]));
 
         $this->assertFalse($verifier->verify('token'));
     }
 
+    // Scored against a threshold stricter than the seeded one, so the assertion says the configured value was read and not merely that 0.2 clears 0.05 on its own
     public function testVerifyHonoursAConfiguredThreshold(): void
     {
-        $config = [...self::KEYS, 'recaptcha3-score-threshold' => '0.1'];
+        $config = [...self::KEYS, 'recaptcha3-score-threshold' => '0.5'];
         $verifier = $this->createVerifier($config, $this->createClient(['success' => true, 'score' => 0.2]));
 
-        $this->assertTrue($verifier->verify('token'));
+        $this->assertFalse($verifier->verify('token'));
     }
 
     public function testVerifyRejectsAnUnsuccessfulToken(): void

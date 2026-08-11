@@ -24,16 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-/*
- * A container's slots are cascade-removed and orphan-removed, so anything that reads them as "gone" deletes them
- * for good. An absent "slots" key used to be read exactly that way, whatever had made it absent - which is how a
- * live page lost the cards of a section_cards block.
- *
- * Driven over a real form, not over a stub of it, because the deletion happens inside Symfony rather than in
- * BlockType: PRE_SET_DATA has already declared the "slots" child, and a declared child whose key is absent is
- * submitted with null, which CollectionType's own resize listener reads as "every row removed". Skipping
- * BlockType's pruning keeps nothing; only taking the child off the form does.
- */
+// A container's slots are cascade-removed and orphan-removed, so anything that reads them as "gone" deletes them for good. An absent "slots" key used to be read exactly that way, whatever had made it absent - which is how a live page lost the cards of a section_cards block. Driven over a real form, not over a stub of it, because the deletion happens inside Symfony rather than in BlockType: PRE_SET_DATA has already declared the "slots" child, and a declared child whose key is absent is submitted with null, which CollectionType's own resize listener reads as "every row removed". Skipping BlockType's pruning keeps nothing; only taking the child off the form does.
 class BlockSlotsGuardTest extends TestCase
 {
     public function testSlotsSurviveASubmissionThatNeverCarriedTheCollection(): void

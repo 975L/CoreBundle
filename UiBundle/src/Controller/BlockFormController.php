@@ -54,7 +54,8 @@ class BlockFormController extends AbstractController
                 'csrf_protection' => false,
                 'validation_groups' => false,
             ])
-            ->add('data', $this->registry->getFormClass($kind), ['label' => false]);
+            // Same prefix BlockType gives its own "data" sub-form, so the fragment this returns is laid out by the very block that lays out the edit screen (see form/block_theme.html.twig, "ui_block_data_widget") - the two would otherwise disagree the moment a kind groups its fields
+            ->add('data', $this->registry->getFormClass($kind), ['label' => false, 'block_prefix' => 'ui_block_data']);
 
         if ($this->registry->hasMediaTypes($kind)) {
             $accept = implode(',', $this->registry->getMediaTypes($kind));

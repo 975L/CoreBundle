@@ -12,14 +12,12 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// A slider and a comparison sit in the same column as the body copy, so they read the measure SiteBundle
-// declares for it - through a fallback, this bundle standing on its own without SiteBundle
+// A slider and a comparison sit in the same column as the body copy, so they read the measure SiteBundle declares for it - through a fallback, this bundle standing on its own without SiteBundle
 class ReadingMeasureTest extends TestCase
 {
     private const MEASURE = 'max-width: var(--reading-max-width, min(75ch, 90vw))';
 
-    // ".legal" carries it for the whole document, headings included: "ch" is read against the font of the element
-    // the max-width is written on, so a heading stating its own would read a measure its body copy never does
+    // ".legal" carries it for the whole document, headings included: "ch" is read against the font of the element the max-width is written on, so a heading stating its own would read a measure its body copy never does
     private const MEASURED_RULES = ['.slider', '.slider-single', '.image-compare', '.readmore', '.legal'];
 
     /**
@@ -62,11 +60,7 @@ class ReadingMeasureTest extends TestCase
         }
     }
 
-    /*
-     * The same three blocks opt out of the section margin reset by setting their own vertical room, so that room
-     * has to be symmetric: the former "1em auto 3em" left a slider all but flush against the block introducing it.
-     * The "auto" is what centers them on the measure above, so the shorthand keeps carrying it.
-     */
+    // The same three blocks opt out of the section margin reset by setting their own vertical room, so that room has to be symmetric: the former "1em auto 3em" left a slider all but flush against the block introducing it. The "auto" is what centers them on the measure above, so the shorthand keeps carrying it.
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testEveryColumnWideRuleKeepsSymmetricRoomAroundIt(string $file): void
     {

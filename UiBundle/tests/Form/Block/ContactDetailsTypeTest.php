@@ -69,8 +69,7 @@ class ContactDetailsTypeTest extends TestCase
         $this->assertSame(ContactSnippetBuilder::TYPES, array_keys($choices));
     }
 
-    // A bare "example.com" would render as a relative href - resolved against SiteBundle's sitewide <base href> -
-    // and reach the graph non-absolute, so the protocol is prepended on submit and a broken value is refused outright
+    // A bare "example.com" would render as a relative href - resolved against SiteBundle's sitewide <base href> - and reach the graph non-absolute, so the protocol is prepended on submit and a broken value is refused outright
     public function testUrlsAreStoredAbsoluteAndValidated(): void
     {
         $added = $this->buildAddedFields();

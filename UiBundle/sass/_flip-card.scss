@@ -1,30 +1,176 @@
 /* FLIP CARD */
-// The perspective lives on the outer box, not on the element that rotates: a rotateY on the element also
-// carrying its own perspective is projected from that element's centre and reads flat, with no depth at all
+// The corner an editor picked (sass/_block-surface.scss), or this kind's own token when they left it on "theme". A sass variable rather than three hand-written var() calls: the illustration and the focus ring are both drawn one border-width inside the face and have to follow the very same value, a curve tighter
+$radius: var(--block-radius, var(--flip-card-radius));
+
+// An object of its own, sharing nothing with ".card" but the ".cards" row it lines up in: both faces are painted, measured and spaced here, so retuning a card never moves a flip card and the other way round.
+// A flip card is something a visitor reaches for - it is outlined, rounded and titled to say so - where a card is a panel to read.
 .flip-card {
+    // The perspective lives on the outer box, not on the element that rotates: a rotateY on the element also carrying its own perspective is projected from that element's centre and reads flat, with no depth at all
     perspective: 1200px;
     // Same measure as ".card": a flip card dropped in a ".cards" row lines up with the plain cards around it
     width: clamp(300px, 380px, 90vw);
     margin: 1em auto;
+    // The box the ".cards" row stretched has to be the box the card is *painted* on, so the inner - and the two faces stretched inside it - fills it rather than shrinking back to its own content. Without it a row is as tall as its longest card while every shorter one paints a box of its own height (see LayoutAudit "flip-card-row-heights")
+    display: grid;
 }
 
 // ".cards" already spaces its children with "gap" - the same reset ".card" gets there, for the same reason.
-// "margin-block", not the shorthand: the inline "auto" above is what centers the card, and writing the
-// shorthand over it drops that silently (see ComponentCenteringTest)
-.cards > .flip-card {
+// Descendant, not the child combinator: a block is rendered inside wrappers that are "display: contents" (".block-animation" for its entrance effect, ".block-editable" for the editor's overlay), which leaves the card the flex item of the row while making it a grandchild in the DOM - and a combinator reading the DOM misses exactly the cards carrying an animation.
+// "margin-block", not the shorthand: the inline "auto" above is what centers the card, and writing the shorthand over it drops that silently (see ComponentCenteringTest)
+.cards .flip-card {
     margin-block: 0;
 }
 
-// A face is a real ".card", so the accent band, the body padding and the tail alignment all come from
-// _cards.scss - only the box holding the two faces is described here
-.flip-card > .flip-card-inner > .card {
-    margin-block: 0;
+// The twelve hues BlockAccentChoiceType offers, each pointing --flip-card-accent at its own token and painting nothing itself - the outline and the two titles are what show it. Its own classes and its own token, not ".card"'s: the accent lands on an outline here and on a filled header band there.
+// Written out rather than looped over the twelve names: an interpolated var(--block-accent-#{$hue}) reads as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
+.flip-card--accent-red {
+    --flip-card-accent: var(--block-accent-red);
+}
+.flip-card--accent-orange {
+    --flip-card-accent: var(--block-accent-orange);
+}
+.flip-card--accent-yellow {
+    --flip-card-accent: var(--block-accent-yellow);
+}
+.flip-card--accent-lime {
+    --flip-card-accent: var(--block-accent-lime);
+}
+.flip-card--accent-green {
+    --flip-card-accent: var(--block-accent-green);
+}
+.flip-card--accent-teal {
+    --flip-card-accent: var(--block-accent-teal);
+}
+.flip-card--accent-cyan {
+    --flip-card-accent: var(--block-accent-cyan);
+}
+.flip-card--accent-blue {
+    --flip-card-accent: var(--block-accent-blue);
+}
+.flip-card--accent-indigo {
+    --flip-card-accent: var(--block-accent-indigo);
+}
+.flip-card--accent-violet {
+    --flip-card-accent: var(--block-accent-violet);
+}
+.flip-card--accent-pink {
+    --flip-card-accent: var(--block-accent-pink);
+}
+.flip-card--accent-grey {
+    --flip-card-accent: var(--block-accent-grey);
+}
+
+// The two faces are the same box, told apart by their surface alone: the outline, the corners and the shadow are what make the object, and a turn that changed any of the three would read as a swap, not as a rotation
+.flip-card-face {
+    // Positioning context for the toggle below, which fills the whole face
+    position: relative;
+    border: var(--flip-card-border-width) solid var(--flip-card-accent, var(--primary));
+    border-radius: $radius;
+    background-color: var(--flip-card-front-background);
+    // Unlike a card, a flip card has always been shadowed: the field retunes that shadow, so "theme" is --box-shadow and not "none" - a card stored before the field existed goes on looking as it did
+    box-shadow: var(--block-shadow, var(--box-shadow));
+    padding-bottom: 1em;
+    // Both faces read left, whatever the page's own alignment: their content is a list or a paragraph, and only the title and the image below are centered - each on its own rule
+    text-align: start;
+}
+
+.flip-card-back {
+    background-color: var(--flip-card-back-background);
+}
+
+// Stated rather than inherited from the theme's own h1-h6 rule: the level is an editor's choice (h2/h3/h4) and the title of a flip card has one size on all three, being the face's own mark rather than a step in the page outline
+.flip-card-title {
+    font-family: var(--font-family-title);
+    font-size: var(--flip-card-title-size);
+    font-weight: var(--font-title-weight);
+    color: var(--flip-card-accent, var(--primary));
+    text-align: center;
+    margin: 0.5rem auto;
+    padding: 0 0.5em;
+}
+
+// The whole face is the control: a visitor clicks the card - anywhere on it - and it turns, which is the one gesture this block asks for. Transparent and borderless, and deliberately not a ".btn": it must inherit nothing from the button family, whose padding, shadow and background would all draw a control over the face
+.flip-card-toggle {
+    position: absolute;
+    inset: 0;
+    // Under the content rather than over it, so the title and the image stay selectable and a link stays a link
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+// The content sits above the toggle but lets the pointer through to it, which is what makes the whole face clickable without wrapping anything in a button - a heading and a rich text are not phrasing content, and a <button> holding either is invalid where this is merely layered
+.flip-card-title,
+.flip-card-body {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
+
+// ...except for what is itself a control: a verso commonly holds the links and buttons the card exists to offer, and they take the pointer back rather than turning the card over on their own click
+.flip-card-title a,
+.flip-card-body a,
+.flip-card-body button,
+.flip-card-body input,
+.flip-card-body summary {
+    pointer-events: auto;
+}
+
+// The control is invisible by design, so the ring is the only thing telling a keyboard where it stands. Drawn inside the face, the toggle being flush with a border the outline would otherwise be hidden under
+.flip-card-toggle:focus-visible {
+    outline: 3px solid var(--flip-card-accent, var(--primary));
+    outline-offset: -6px;
+    border-radius: calc(#{$radius} - var(--flip-card-border-width));
+}
+
+.flip-card-media {
+    width: min(70vw, var(--flip-card-media-max-width));
+    margin: 1rem auto;
+}
+
+// "height: auto" is not decoration: the width/height attributes the template writes are presentational hints on both properties, and a rule shaping the image without settling its height leaves the attribute in charge and the aspect-ratio below ignored (see ImageAspectRatioHeightTest)
+// The illustration takes the shape the card was given, so the image and the box it sits in read as one object. "free" declares no --flip-card-ratio at all, and 3/2 is then what an illustration falls back to
+.flip-card-img {
+    display: block;
     width: 100%;
+    height: auto;
+    aspect-ratio: var(--flip-card-ratio, 3 / 2);
+    object-fit: cover;
+    // One pixel of curve tighter than the face's own, the image sitting inside its border
+    border-radius: calc(#{$radius} - var(--flip-card-border-width));
+    // The illustration keeps its own lift whatever the face was given: the field shapes the card, and an image flattened with it would read as a print on the face rather than as a picture laid on it
+    box-shadow: var(--box-shadow);
 }
 
-// The very ratios a slider offers (see SliderType::RATIO_CHOICES), each naming its own value and nothing
-// else: what reads it is the folded stack below, which only exists once the controller ran. "free" declares
-// no class at all, and the card keeps the height of its tallest face
+.flip-card-body {
+    padding: 0 1em;
+}
+
+.flip-card-text {
+    font-size: var(--flip-card-text-size);
+}
+
+// The theme's "*" rule matches these directly and beats anything inherited from the block above, hence restated
+.flip-card-text p,
+.flip-card-text li {
+    font-size: var(--flip-card-text-size);
+    padding: 2px 0;
+}
+
+// A list on a card is a run of facts, not an enumeration to be counted through: the markers would triple the left gutter of every line for nothing.
+// The shorthand, not "list-style-type": SiteBundle points every ul at an angle-right image through the very same shorthand, and clearing the type alone leaves that image drawn
+.flip-card-text ul {
+    list-style: none;
+    padding-left: 10px;
+}
+
+// The very ratios a slider offers (see SliderType::RATIO_CHOICES), each naming its own value and nothing else. "free" declares no class at all, and the card keeps the height of its tallest face
 .flip-card-ratio-2-3 {
     --flip-card-ratio: 2 / 3;
 }
@@ -50,31 +196,18 @@
     --flip-card-ratio: 21 / 9;
 }
 
-.flip-card-img {
-    display: block;
-    width: 100%;
-    height: auto;
-    // One pixel under --radius-card for the same reason as ".card-header" - the image sits inside the face's
-    // own 1px border, where the curve is that much tighter
-    border-radius: calc(var(--radius-card) - 1px);
-}
-
-// Everything below is scoped to ".flip-card--js", added by flip-card.js on connect (see assets/js/flip-card.js).
-// Without it - no JS at all, or the controller not loaded yet - the two faces stay in normal flow, one under
-// the other: everything the block holds stays readable, just not folded. Stacking them without a working
-// toggle would leave the back face hidden behind a rotation nothing could undo
-.flip-card--js .flip-card-inner {
-    // Grid rather than absolute positioning: both faces share one cell, so the card is as tall as its tallest
-    // face whatever an editor typed in either, where the fixed height absolute positioning needs would clip it
+// The fold is the card's own shape, declared here rather than keyed on a class the controller adds on connect, which flashed the whole verso on every load.
+// The one case that needs it undone - a browser running no JS at all, where the toggles stay hidden and the back face would be unreachable - is undone at the end of this file, under "@media (scripting: none)".
+// That fallback covers the absence of JS, not a module that fails to load: a page whose flip-card.js never arrives keeps the fold with no toggle to undo it, as every other Stimulus-driven part of the page would
+.flip-card-inner {
+    // Grid rather than absolute positioning: both faces share one cell, so the card is as tall as its tallest face whatever an editor typed in either, where the fixed height absolute positioning needs would clip it
     display: grid;
     transform-style: preserve-3d;
     transition: transform 0.7s;
 }
 
-// A ratio is a floor under the card's shape, not a crop: an empty cell-mate sized by it holds the row open,
-// and a face holding more than that simply grows past it - so a row of cards lines up on one shape without a
-// long content ever being clipped or pushed behind a scrollbar. Nothing declared and it collapses to nothing
-.flip-card--js .flip-card-inner::before {
+// A ratio is a floor under the card's shape, not a crop: an empty cell-mate sized by it holds the row open, and a face holding more than that simply grows past it. Nothing declared and it collapses to nothing
+.flip-card-inner::before {
     content: "";
     grid-area: 1 / 1;
     // Not stretched like the faces are: a stretched item takes the row's height instead of giving it
@@ -82,39 +215,61 @@
     aspect-ratio: var(--flip-card-ratio, auto);
 }
 
-.flip-card--js .flip-card-face {
+// The inner takes no pointer at all, and each face takes it back: inside "preserve-3d" the inner's own box - and the spacer above, drawn on it - sit flat at z=0 while the swaying front face has half of itself turned *behind* that plane, and the half behind loses every hit to the box in front of it. That half swaps four times a second under the sway, so a click on the card simply did nothing
+.flip-card-inner {
+    pointer-events: none;
+}
+
+.flip-card-face {
     grid-area: 1 / 1;
-    // What hides the face turned away from the eye. It hides it from the eye *only*, which is why the
-    // controller also marks it "inert" - its buttons and links stay in the tab order without that
+    pointer-events: auto;
+    // What hides the face turned away from the eye. It hides it from the eye *only*, which is why the controller also marks it "inert" - its buttons and links stay in the tab order without that
     backface-visibility: hidden;
 }
 
-.flip-card--js .flip-card-back {
+.flip-card-back {
     transform: rotateY(180deg);
 }
 
-.flip-card--js.is-flipped .flip-card-inner {
+.flip-card.is-flipped .flip-card-inner {
     transform: rotateY(180deg);
 }
 
-// The card sways under the pointer to say it can be turned - the catalogue's own "rotateY5deg", the very
-// keyframes ".animation.rotate-y5deg" runs (see sass/_animations.scss, compiled into animations.css, which
-// StylesheetProvider loads before this sheet). The whole stack sways rather than the front face alone: that
-// is what a visitor sees anyway, only the face up being visible.
-// Kept off the turned card, where these keyframes' own transform would write over the rotateY(180deg)
-// holding the back face up and drop it back to the front at every cycle
-.flip-card--js:not(.is-flipped):hover .flip-card-inner {
+// The card sways under the pointer to say it can be turned - the catalogue's own "rotateY5deg", the very keyframes ".animation.rotate-y5deg" runs (see sass/_animations.scss, compiled into animations.css, which StylesheetProvider loads before this sheet).
+// The *front face* sways, never ".flip-card-inner": an animation overrides a transition on the same property of the same element, so a sway running under the pointer swallowed the very turn the click then asked for. Two elements, two transforms, no contest - and the face is still inside the perspective, so the sway keeps its depth.
+// Kept off the turned card and off the back face, whose own rotateY(180deg) holds it away from the eye - these keyframes write the whole transform and would drop it back to the front at every cycle
+.flip-card:not(.is-flipped):hover .flip-card-front {
     animation: rotateY5deg 0.5s infinite ease-in-out;
 }
 
-// Both moves are decoration, not information: the faces still swap, the card still says it can be turned -
-// through the pointer's own cursor rather than through a sway nobody asked for
+// Both moves are decoration, not information: the faces still swap, the card still says it can be turned - through the pointer's own cursor rather than through a sway nobody asked for
 @media (prefers-reduced-motion: reduce) {
-    .flip-card--js .flip-card-inner {
+    .flip-card-inner {
         transition: none;
     }
 
-    .flip-card--js:not(.is-flipped):hover .flip-card-inner {
+    .flip-card:not(.is-flipped):hover .flip-card-front {
         animation: none;
+    }
+}
+
+// The fold undone for a browser running no JS at all: the toggles above stay hidden there, and the back face would sit behind a rotation nothing can undo - so the two faces go back into normal flow, one under the other, and everything the block holds stays readable.
+// A media query rather than the <noscript><style> the component used to carry: a style element is metadata content, invalid anywhere but the head, and a component rendered mid-page cannot put one there - the query says the very same thing from the stylesheet, with no nonce to substitute and no CSP to satisfy.
+// Last in the file on purpose: these rules beat the ones above on source order alone, a media query adding no specificity of its own
+@media (scripting: none) {
+    .flip-card-inner {
+        display: block;
+    }
+
+    .flip-card-inner::before {
+        content: none;
+    }
+
+    .flip-card-face {
+        backface-visibility: visible;
+    }
+
+    .flip-card-back {
+        transform: none;
     }
 }

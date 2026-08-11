@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ "label.maintenance"|trans({}, 'config') }}</title>
-    {# Deliberately self-contained page (no external asset: it has to render with the site cut off), hence
-       this local <style>. The nonce is required: as soon as one is present on style-src, 'unsafe-inline'
-       becomes a no-op and a <style> element is authorized by the nonce alone. It is put under a guard
-       because csp_nonce() only exists once a csp: section is configured: without one, the page has to
-       render a bare <style> rather than break at the very moment the site is down #}
+    {# Deliberately self-contained page (no external asset: it has to render with the site cut off), hence this local <style>. The nonce is required: as soon as one is present on style-src, 'unsafe-inline' becomes a no-op and a <style> element is authorized by the nonce alone. It is put under a guard because csp_nonce() only exists once a csp: section is configured: without one, the page has to render a bare <style> rather than break at the very moment the site is down #}
     <style {% guard function csp_nonce %}nonce="{{ csp_nonce('style') }}"{% endguard %}>
         body { font-family: sans-serif; display: flex; align-items: center;
                justify-content: center; min-height: 100vh; margin: 0; background: #f5f5f5;

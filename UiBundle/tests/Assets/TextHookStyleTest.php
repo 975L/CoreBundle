@@ -38,8 +38,7 @@ class TextHookStyleTest extends TestCase
         );
     }
 
-    // What the standalone block has and an article's hook has not: the bar marking it out where nothing
-    // around it does. Its own rule, so the base one stays shared instead of being split in two
+    // What the standalone block has and an article's hook has not: the bar marking it out where nothing around it does. Its own rule, so the base one stays shared instead of being split in two
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
     public function testTheStandaloneModifierCarriesTheBar(string $file): void
     {

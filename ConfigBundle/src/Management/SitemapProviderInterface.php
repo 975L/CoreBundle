@@ -10,14 +10,10 @@
 
 namespace c975L\ConfigBundle\Management;
 
-/**
- * Implement this to have your bundle's own urls written to public/sitemap-<getSitemapName()>.xml and declared in the site's sitemap-index.xml, without the app having to list your sitemap command by hand - collected by SitemapWriter, run by the c975l:sitemaps:create command and the "Create sitemaps" dashboard shortcut, see readme. Both this contract and the writer live here rather than in SiteBundle so any combination of bundles gets its sitemaps and its index, SiteBundle installed or not.
- */
+// Implement this to have your bundle's own urls written to public/sitemap-<getSitemapName()>.xml and declared in the site's sitemap-index.xml, without the app having to list your sitemap command by hand - collected by SitemapWriter, run by the c975l:sitemaps:create command and the "Create sitemaps" dashboard shortcut, see readme. Both this contract and the writer live here rather than in SiteBundle so any combination of bundles gets its sitemaps and its index, SiteBundle installed or not.
 interface SitemapProviderInterface
 {
-    /**
-     * Name identifying the sub-sitemap, used as-is for the file name: 'book' gives public/sitemap-book.xml. Keep it short and stable, it ends up in a public url.
-     */
+    // Name identifying the sub-sitemap, used as-is for the file name: 'book' gives public/sitemap-book.xml. Keep it short and stable, it ends up in a public url.
     public function getSitemapName(): string;
 
     /**

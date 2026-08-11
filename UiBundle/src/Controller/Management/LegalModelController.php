@@ -27,9 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Customizing a legal model is deliberately its own screen rather than a few more fields on the block's form:
-// the rows depend on which model the block points at, and BlockFormController's ajax sub-form only ever knows
-// a block's kind, never its data
+// Customizing a legal model is deliberately its own screen rather than a few more fields on the block's form: the rows depend on which model the block points at, and BlockFormController's ajax sub-form only ever knows a block's kind, never its data
 class LegalModelController extends AbstractController
 {
     // EasyAdmin prefixes this with the Dashboard's own route name, giving management_XXX
@@ -49,10 +47,7 @@ class LegalModelController extends AbstractController
     ) {
     }
 
-    // Every legal document of the site, with how far each one has drifted from the bundle's own wording. Walked
-    // block by block rather than page by page: the bundle owning the pages (SiteBundle) is only asked where each
-    // one sits, through BlockLocationProviderInterface, so a site holding legal documents without it still lists
-    // them - it simply lists them without a location
+    // Every legal document of the site, with how far each one has drifted from the bundle's own wording. Walked block by block rather than page by page: the bundle owning the pages (SiteBundle) is only asked where each one sits, through BlockLocationProviderInterface, so a site holding legal documents without it still lists them - it simply lists them without a location
     #[AdminRoute(
         path: '/ui/legal-models',
         name: 'ui_legal_models',
@@ -147,9 +142,7 @@ class LegalModelController extends AbstractController
         return $this->redirectToRoute(self::CUSTOMIZE_ROUTE, ['block' => $block->getId()]);
     }
 
-    // The flat unit list nested back into the two levels the screen renders, each carrying the index of its
-    // own row in the form's "units" collection. Sub-sections are drawn inside their section's card, which is
-    // also what scopes the drag and drop: ea-sortable only ever reorders within one collection container
+    // The flat unit list nested back into the two levels the screen renders, each carrying the index of its own row in the form's "units" collection. Sub-sections are drawn inside their section's card, which is also what scopes the drag and drop: ea-sortable only ever reorders within one collection container
     private function tree(array $ordered): array
     {
         $tree = [];

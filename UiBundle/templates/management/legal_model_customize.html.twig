@@ -2,9 +2,7 @@
 
 {% form_theme form '@c975LUi/form/block_theme.html.twig' %}
 
-{# One unit's card. The markup mirrors an EasyAdmin collection row on purpose - ea-sortable.js (reused from
-   the block collections) looks for .field-collection-item inside .ea-form-collection-items, and writes the
-   row's new index into its [position] field #}
+{# One unit's card. The markup mirrors an EasyAdmin collection row on purpose - ea-sortable.js (reused from the block collections) looks for .field-collection-item inside .ea-form-collection-items, and writes the row's new index into its [position] field #}
 {% macro unit_card(rows, node, drifted) %}
     {# A macro sees no ambient context: the rows collection and the recursion's own import both come in here #}
     {% import _self as macros %}

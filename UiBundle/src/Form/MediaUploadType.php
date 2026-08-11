@@ -29,10 +29,7 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MediaUploadType extends AbstractType
 {
-    // Symfony validates against the type guessed from the file's own bytes, not the label the browser sent, and the two
-    // disagree on names the "accept" lists are written with: a real .wav is guessed "audio/x-wav", so declaring
-    // "audio/wav" rejected every .wav upload. Kept here rather than in the kinds' media_types, which the file dialog's
-    // own list is built from and has no use for the aliases
+    // Symfony validates against the type guessed from the file's own bytes, not the label the browser sent, and the two disagree on names the "accept" lists are written with: a real .wav is guessed "audio/x-wav", so declaring "audio/wav" rejected every .wav upload. Kept here rather than in the kinds' media_types, which the file dialog's own list is built from and has no use for the aliases
     private const MIME_ALIASES = [
         'audio/wav' => ['audio/x-wav', 'audio/wave', 'audio/vnd.wave'],
         'audio/ogg' => ['application/ogg'],

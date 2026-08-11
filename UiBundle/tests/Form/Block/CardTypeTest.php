@@ -36,7 +36,7 @@ class CardTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['id', 'title', 'level', 'content', 'url', 'target', 'buttonLabel', 'class', 'accent'] as $field) {
+        foreach (['id', 'title', 'level', 'content', 'url', 'target', 'buttonLabel', 'radius', 'shadow', 'class', 'accent'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the Card form");
         }
     }

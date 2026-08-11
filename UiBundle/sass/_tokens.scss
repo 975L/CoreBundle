@@ -14,11 +14,7 @@
         --alert-warning-background: #f9dba7;
         --background: var(--c975l-color-background, #fff);
         --black: #000;
-        // The twelve card hues, in the c975L logo palette rather than a generic bright ramp: muted, of an
-        // even weight, so a row of accented cards reads as one set. Eight are a bundle logo's own color,
-        // the four left over are mixed to sit between their neighbors on the wheel. A hue names itself
-        // and nothing more - a site retunes any of them from its own themes/ui.css, and the value stored
-        // against a card never changes with it.
+        // The twelve card hues, in the c975L logo palette rather than a generic bright ramp: muted, of an even weight, so a row of accented cards reads as one set. Eight are a bundle logo's own color, the four left over are mixed to sit between their neighbors on the wheel. A hue names itself and nothing more - a site retunes any of them from its own themes/ui.css, and the value stored against a card never changes with it.
         // All but --block-accent-yellow clear 3:1 against the white a .card-header writes on them
         --block-accent-blue: #2b5d8a;
         --block-accent-cyan: #2e7c9a;
@@ -32,6 +28,13 @@
         --block-accent-teal: #2f8f83;
         --block-accent-violet: #7a4e8f;
         --block-accent-yellow: #dda43a;
+        // The three steps the "rounded corners" and "shadow" fields offer, on top of the "theme" default each kind keeps for itself (--radius-card for a card, --flip-card-radius for a flip card, --box-shadow for its faces). Shared by both kinds so one design decision reads the same on a row mixing them, the value stored against a block being a step and not a length. "none" writes 0 / none straight and needs no token
+        --block-radius-large: 28px;
+        --block-radius-medium: 14px;
+        --block-radius-small: 6px;
+        --block-shadow-large: 0 12px 28px 0 rgba(0, 0, 0, 0.55);
+        --block-shadow-medium: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
+        --block-shadow-small: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
         --body-max-width: 1440px;
         --border-accent: color-mix(in srgb, var(--primary) 35%, var(--background));
         --border-color: color-mix(in srgb, var(--text) 12%, var(--background));
@@ -51,6 +54,15 @@
         --button-secondary-color: #000;
         --card-background: #fff;
         --disabled: #808080;
+        // The flip card's own shape and surfaces - deliberately apart from the card's: the two kinds are different objects (see sass/_flip-card.scss), and a design retuning one must not move the other.
+        // The back is mixed out of the palette rather than pointed at --card-background: it is what the turn reveals, so it has to read as another surface than the front, and than any card sitting beside it
+        --flip-card-back-background: color-mix(in srgb, var(--secondary) 30%, var(--background));
+        --flip-card-border-width: 3px;
+        --flip-card-front-background: var(--white);
+        --flip-card-media-max-width: 250px;
+        --flip-card-radius: 25px;
+        --flip-card-text-size: 0.9rem;
+        --flip-card-title-size: 2rem;
         --font-body-weight: normal;
         --font-family-accent: var(--c975l-font-family-accent, monospace);
         --font-family-body: var(--c975l-font-family-body, sans-serif);
