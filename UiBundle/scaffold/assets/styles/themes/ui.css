@@ -49,6 +49,17 @@
     /* The narrowest a contact_details field column may get before its grid drops one - raise it for a design whose labels wrap, lower it to keep more fields on a line */
     /* --contact-details-col-min: 210px; */
 
+    /* One segment of a "progress_tracker" - a plain bar of the border color, filled with the brand one. The clip is what turns it into something else: a diamond with polygon(50% 0, 100% 50%, 50% 100%, 0 50%), a chevron, a tally. The segments share the row's width whatever their number, so only their height is set here */
+    /* --tracker-segment-height: 22px; */
+    /* --tracker-segment-clip: none; */
+    /* --tracker-segment-on: var(--primary); */
+    /* --tracker-segment-off: var(--border-color); */
+
+    /* The star rating - the score in the secondary color, the rest of the row a quarter of the page ink. Two colors rather than one and an opacity: a faded accent reads as a disabled control where a neutral reads as "not yet earned". The size is in em, so a row of stars follows the type size of wherever it is dropped */
+    /* --rating-on: var(--secondary); */
+    /* --rating-off: color-mix(in srgb, var(--text) 25%, var(--background)); */
+    /* --rating-size: 1.1em; */
+
     /* Hero block - its own typographic scale, independent from the page's headings */
     /* --hero-title-size: clamp(40px, 6vw, 66px); */
     /* --hero-title-letter-spacing: -0.01em; */
@@ -97,6 +108,14 @@
     /* --link-color: var(--primary); */
     /* --label-color: #808080; */
     /* --card-background: #fff; */
+    /* The eyebrow above a card's title - the page's own ink by default, an eyebrow being set small enough that an accent rarely holds the 4.5:1 a 12px text asks for. Set the accent here once it has been checked that it does */
+    /* --card-eyebrow-color: var(--text); */
+    /* The measure of a card, and of the compact one a dense row uses. 380px and not 400: three cards plus their two gutters have to fit the 1312px of ".section-wrap", the compact one being half of that measure so six line up on it */
+    /* --card-width: clamp(300px, 380px, 90vw); */
+    /* --card-width-compact: clamp(150px, 190px, 45vw); */
+    /* The card title's own size, stated rather than inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact card steps down once more */
+    /* --card-title-size: calc(19px * var(--font-size-title-scale, 1)); */
+    /* --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1)); */
     /* --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
     /* Lines shown before a "read more" block clamps its text */
     /* --readmore-lines: 5; */

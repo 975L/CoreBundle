@@ -1,0 +1,12 @@
+{# <twig:c975LUi:Progress:Rating value="4" [max="5"] [label=""]/> - a score read as a row of stars, next to Progress:Bar's continuous measure #}
+{# The stars are empty elements painted by sass/_progress.scss: the glyph is a mask there, not an <img>, so it takes the theme's accent - an <img> would paint the file's own fill and no CSS would reach it #}
+{# Clamped the way Progress:Tracker clamps its total: a 0 would make "1..max" count backwards and print two stars for an empty scale, a 500 would push the row off a phone #}
+{% set max = max(1, min(10, max|default(5)|round)) %}
+{# Clamped rather than trusted: the value comes from an entity or from stored block data, and a 7 out of 5 would print seven stars #}
+{% set value = min(max, max(0, value|default(0)|round)) %}
+{# One image with one label, not "max" glyphs a screen reader would read out one by one - each star is decorative on its own #}
+<p class="rating" role="img" aria-label="{{ label|default(value ~ '/' ~ max) }}">
+    {% for i in 1..max %}
+        <span class="rating-star{{ i <= value ? ' rating-star--on' : '' }}" aria-hidden="true"></span>
+    {% endfor %}
+</p>

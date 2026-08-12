@@ -714,6 +714,14 @@
                 <source>label.block_progress_bar_description</source>
                 <target>Barre de progression affichant un pourcentage</target>
             </trans-unit>
+            <trans-unit id="M0Fj3qE">
+                <source>label.block_progress_tracker</source>
+                <target>Compteur segmenté</target>
+            </trans-unit>
+            <trans-unit id="jGV.8Z6">
+                <source>label.block_progress_tracker_description</source>
+                <target>Décompte segmenté sur un total connu, avec sa note</target>
+            </trans-unit>
             <trans-unit id="lfFkpqd">
                 <source>label.block_section_cards</source>
                 <target>Grille de cartes</target>
@@ -937,6 +945,10 @@
             <trans-unit id="jfLIJSU">
                 <source>label.compare_position</source>
                 <target>Position du curseur de comparaison</target>
+            </trans-unit>
+            <trans-unit id="gkqTa5z">
+                <source>label.completed</source>
+                <target>Acquis</target>
             </trans-unit>
             <trans-unit id="f2Yr2j4">
                 <source>label.contact_details_name_help</source>
@@ -1958,6 +1970,10 @@
                 <source>label.not_used_anywhere</source>
                 <target>Pas encore utilisé</target>
             </trans-unit>
+            <trans-unit id="h0y_G6B">
+                <source>label.note</source>
+                <target>Note</target>
+            </trans-unit>
             <trans-unit id="GJNimRX">
                 <source>label.og_image</source>
                 <target>Image Open Graph</target>
@@ -2377,6 +2393,10 @@
             <trans-unit id="EE5wbzn">
                 <source>label.title_level</source>
                 <target>Niveau de titre</target>
+            </trans-unit>
+            <trans-unit id="wPJiQJ5">
+                <source>label.total</source>
+                <target>Total</target>
             </trans-unit>
             <trans-unit id="CooV25J">
                 <source>label.tuesday</source>

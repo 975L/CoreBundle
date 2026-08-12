@@ -1,5 +1,37 @@
 # ChangeLog
 
+## v1.9.1
+
+A segmented tracker counts what the progress bar could only measure
+
+### UiBundle
+
+- Added the `progress_tracker` block kind, a segmented count against a known total (12/08/2026)
+- Its eyebrow, title and note are optional, the two figures are not (12/08/2026)
+- Both the form and the template clamp the count to `ProgressTrackerType::MAX_SEGMENTS` (12/08/2026)
+- The segment is rectangular by default, retuned through `--tracker-segment-clip`, `--tracker-segment-on` and `--tracker-segment-off` (12/08/2026)
+- Added the `Progress:Rating` component, a score read as a row of stars (12/08/2026)
+- Its star is masked rather than served as an `<img>`, so it takes the theme's accent (12/08/2026)
+- The row is retuned through `--rating-on`, `--rating-off` and `--rating-size` (12/08/2026)
+- Added `public/icons/star.svg`, the same glyph as a file an editor can pick (12/08/2026)
+- `Card:Card` takes a "stat" variant, opened by any of `src`, `eyebrow`, `rating` or `stats` (12/08/2026)
+- A `rating` of `0` opens it too, an empty field being what means "not rated" (12/08/2026)
+- The card's picture is linked to its own `titleUrl` when it has one (12/08/2026)
+- The two figures of one line meet in the middle, the column being written on the cell by the component (12/08/2026)
+- A figure marked `wide` takes the whole line and restarts the columns behind it (12/08/2026)
+- A card nesting nothing no longer raises on its undefined `content` (12/08/2026)
+- The eyebrow reads `--card-eyebrow-color` as a fallback, never as a `:root` token (12/08/2026)
+- The card's width and title size move to `--card-width` and `--card-title-size` (12/08/2026)
+- Added `.card--compact`, the same card at `--card-width-compact` (12/08/2026)
+- The `.card-header` states its own `font-size` rather than inheriting the theme's `h1`-`h6` (12/08/2026)
+- The `ThemeStylesheetProvider` the README hands a site contributes a sheet through its `.min.css` twin when one exists (12/08/2026)
+- `Video:Video` now sets `playsinline`, as `Hero` and `Slider` already did (12/08/2026)
+- Added the `progress_tracker` fixture to `BlockFixtureProvider` (12/08/2026)
+- Added `ProgressTrackerTypeTest` and `TrackerSegmentsTest`, which lock the two clamps against each other (12/08/2026)
+- Added `RatingScaleTest`, locking both ends of the star scale (12/08/2026)
+- Added `CardStatVariantTest`, locking what opens the variant and what a plain card still renders (12/08/2026)
+- Added `VideoPlaysInlineTest`, locking `playsinline` on every `<video>` this bundle writes (12/08/2026)
+
 ## v1.9.0
 
 Rector joins the quality gate, and both bundles catch up

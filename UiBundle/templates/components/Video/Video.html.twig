@@ -8,7 +8,8 @@
 {# Same <figure>/title/description structure as Video:Iframe, so both video kinds are captioned identically #}
 <figure class="video-figure">
     {% if caption and title is defined and title %}<h3 class="video-title">{{ title }}</h3>{% endif %}
-    <video controls class="img img-responsive {{ class|default([])|join(' ') }}" {% if poster != '' %} poster="{{ poster }}" {% endif %} {% if autoplay %} autoplay {% endif %} {% if muted %} muted {% endif %} {% if loop %} loop {% endif %}  {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %}>
+    {# "playsinline" always set, as on Hero's and Slider's <video>: without it iOS Safari takes playback fullscreen, breaking any layout counting on the video where it sits - and an autoplay there becomes a takeover of the screen #}
+    <video controls playsinline class="img img-responsive {{ class|default([])|join(' ') }}" {% if poster != '' %} poster="{{ poster }}" {% endif %} {% if autoplay %} autoplay {% endif %} {% if muted %} muted {% endif %} {% if loop %} loop {% endif %}  {% if width is defined and width != "" %} width="{{ width }}" {% endif %} {% if height is defined and height != "" %} height="{{ height }}" {% endif %}>
         <source src="{{ src }}" type="{{ type }}">
         <p>{{ 'label.video_not_supported'|trans({}, "ui") }} <a href="{{ src }}">{{ 'label.download'|trans({}, "ui") }}</a></p>
     </video>

@@ -240,6 +240,20 @@ services:
               pickable: true
               cacheable: true
 
+    ui.block.progress_tracker:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: progress_tracker
+              label: "label.block_progress_tracker"
+              description: "label.block_progress_tracker_description"
+              form: c975L\UiBundle\Form\Block\ProgressTrackerType
+              template: '@c975LUi/blocks/ProgressTracker.html.twig'
+              category: 'label.category_elements'
+              priority: 59
+              pickable: true
+              cacheable: true
+
     ui.block.slider:
         class: stdClass
         tags:

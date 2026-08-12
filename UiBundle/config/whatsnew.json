@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-12",
+        "description": [
+            {
+                "en": "A new block counts in segments what a progress bar only measured: three volumes out of eight, four episodes out of twelve, with its own heading and a note under it",
+                "fr": "Un nouveau block compte en segments ce qu'une barre de progression ne faisait que mesurer : trois tomes sur huit, quatre épisodes sur douze, avec son propre titre et une note en dessous",
+                "es": "Un nuevo bloque cuenta en segmentos lo que una barra de progreso solo medía: tres tomos de ocho, cuatro episodios de doce, con su propio título y una nota debajo"
+            },
+            {
+                "en": "A card can now show a picture, a qualifying line, a score in stars and a row of key figures, on top of the text it always carried",
+                "fr": "Une carte peut désormais afficher une image, une ligne de qualification, une note en étoiles et une série de chiffres clés, en plus du texte qu'elle portait déjà",
+                "es": "Una tarjeta puede mostrar ahora una imagen, una línea de calificación, una puntuación en estrellas y una serie de cifras clave, además del texto que ya llevaba"
+            },
+            {
+                "en": "On an iPhone, a video now plays where it sits on the page instead of taking over the whole screen",
+                "fr": "Sur un iPhone, une vidéo se lit désormais à sa place dans la page au lieu de prendre tout l'écran",
+                "es": "En un iPhone, un vídeo se reproduce ahora en su lugar en la página en lugar de ocupar toda la pantalla"
+            }
+        ]
+    },
+    {
         "date": "2026-08-11",
         "description": [
             {

@@ -23,7 +23,7 @@ class BlockFixtureProviderTest extends TestCase
         $fixtures = new BlockFixtureProvider()->getFixtures();
 
         $this->assertSame(
-            ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'flip_card', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band', 'legal_model'],
+            ['alert', 'audio', 'article', 'banner_title', 'button', 'card', 'document_download', 'flip_card', 'form', 'image', 'image_compare', 'progress_bar', 'progress_tracker', 'contact_details', 'slider', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'hero', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band', 'legal_model'],
             array_keys($fixtures)
         );
     }
@@ -107,7 +107,7 @@ class BlockFixtureProviderTest extends TestCase
     {
         $fixtures = new BlockFixtureProvider()->getFixtures();
 
-        foreach (['audio', 'article', 'banner_title', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
+        foreach (['audio', 'article', 'banner_title', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'progress_tracker', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
             $this->assertSame([''], array_keys($fixtures[$kind]), "Kind \"{$kind}\" should have a single unlabelled variant");
         }
     }

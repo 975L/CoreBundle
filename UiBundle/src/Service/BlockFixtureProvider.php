@@ -131,6 +131,15 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'text' => true,
                 ],
             ],
+            'progress_tracker' => [
+                '' => [
+                    'eyebrow' => 'Collection',
+                    'title' => 'Tomes parus',
+                    'total' => 8,
+                    'completed' => 3,
+                    'note' => 'Trois volumes disponibles, le quatrième est en préparation.',
+                ],
+            ],
             // Two hour rows over the same days, the shape a business closing for lunch needs (see ContactHoursType)
             'contact_details' => [
                 '' => [

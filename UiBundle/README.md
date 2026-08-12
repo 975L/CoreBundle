@@ -336,6 +336,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `portfolio_grid` | Page sections | `PortfolioGridType` | `blocks/PortfolioGrid.html.twig` |
 | `process_steps` | Page sections | `ProcessStepsType` | `blocks/ProcessSteps.html.twig` |
 | `progress_bar` | Elements | `ProgressBarType` | `blocks/ProgressBar.html.twig` |
+| `progress_tracker` | Elements | `ProgressTrackerType` | `blocks/ProgressTracker.html.twig` |
 | `flex_column` | Page sections | `FlexColumnType` | `blocks/FlexColumn.html.twig` |
 | `flex_columns` | Page sections | `FlexColumnsType` | `blocks/FlexColumns.html.twig` |
 | `section_cards` | Page sections | `SectionCardsType` | `blocks/SectionCards.html.twig` |
@@ -1215,6 +1216,8 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Portfolio:Grid>` | Grid of project cards sourced from a block's own medias |
 | `<twig:c975LUi:Process:Steps>` | Section title followed by numbered steps |
 | `<twig:c975LUi:Progress:Bar>` | Progress bar |
+| `<twig:c975LUi:Progress:Rating>` | Score read as a row of stars |
+| `<twig:c975LUi:Progress:Tracker>` | Segmented count of items obtained out of a total |
 | `<twig:c975LUi:Section:Cards>` | Section title followed by a stack of full Card blocks (`.cards` row) |
 | `<twig:c975LUi:Section:Features>` | Section title followed by a grid of features (icon/title/text) |
 | `<twig:c975LUi:Slider:Slider>` | Image/media slider |
@@ -1280,6 +1283,34 @@ component doesn't know or care where `items` comes from; each entry must expose:
     url: path('book_show', {slug: book.slug}),
 }) }}" />
 ```
+
+### The stat card
+
+`Card:Card` takes four more props — `src` (plus `alt`/`width`/`height`), `eyebrow`, `rating` and
+`stats` — and any one of them opens its **stat variant**: a picture kept square, then a qualifying line,
+a score read as a row of stars (`Progress:Rating`) and a two-column row of key figures, whatever is
+nested coming after them. A card given none of the four is exactly the card it always was, so there is
+no `variant` string to keep in step with the props.
+
+```twig
+<twig:c975LUi:Card:Card title="Nom" titleUrl="{{ path('character_show', {slug: character.slug}) }}"
+    src="{{ character.image }}" eyebrow="Chaos" rating="{{ character.stars }}"
+    stats="{{ [{label: 'Int.', value: 900}, {label: 'Chance', value: 40}] }}" />
+```
+
+A `rating` of `0` is a real score — the field left empty is what means "not rated". The picture is
+linked to the card's own `titleUrl` when it has one, so it is not a dead zone in the middle of a
+clickable card.
+
+The figures sit two per line and meet in the middle, the column being written on each cell by the
+component — no selector can tell which column a cell falls in. One entry marked `wide: true` takes the
+whole line and restarts the columns behind it, for a value spelled out in words that half a column
+would break under its own label.
+
+Passing `class="card--compact"` gives the same card at the width of a thumbnail (`--card-width-compact`,
+half the full measure, so six line up where three do), with its title stepped down to match — for what a
+set of cards shows in the background, an accessory beside its bearer, where the full width would have
+every item read as a subject of its own.
 
 ### Collection: a live grid sourced from another bundle
 
@@ -1859,16 +1890,40 @@ class ThemeStylesheetProvider implements BundleStylesheetProviderInterface
     public function getStylesheets(): array
     {
         $stylesheets = [
-            ...glob($this->projectDir . '/assets/styles/*.css') ?: [],
-            ...glob($this->projectDir . '/assets/styles/themes/*.css') ?: [],
+            ...$this->sheetsIn('/assets/styles'),
+            ...$this->sheetsIn('/assets/styles/themes'),
         ];
 
         return array_map(fn (string $path): string => substr($path, \strlen($this->projectDir) + 1), $stylesheets);
+    }
+
+    // A sheet is contributed through its minified twin when one sits beside it, and the source is then skipped rather than sent along with it: the two hold the same rules, and site.css would carry every one of them twice
+    private function sheetsIn(string $directory): array
+    {
+        $sheets = [];
+        foreach (glob($this->projectDir . $directory . '/*.css') ?: [] as $path) {
+            if (str_ends_with($path, '.min.css')) {
+                continue;
+            }
+
+            $minified = substr($path, 0, -\strlen('.css')) . '.min.css';
+            $sheets[] = is_file($minified) ? $minified : $path;
+        }
+
+        return $sheets;
     }
 }
 ```
 
 Globbing both directories rather than listing files means a sheet added to `assets/styles/` is contributed without touching the provider — and, `assets/styles/app.css` being one of them, that its `import './styles/app.css'` in `assets/app.js` can go: what the provider returns is what the compiled `bundles/build/site.css` holds.
+
+**The minified twin is optional and generated, never hand-written.** A site that produces none contributes its sources exactly as before. One that does gets its theme through a real CSS parser instead of through the compiled sheet's comment stripper — which matters because a theme file is deliberately almost all comments, and because a `/*` inside a quoted value is a thing a regex cannot see and a parser can. Sass compiles a plain `.css` file, so no new tool is involved:
+
+```bash
+sass --no-charset --style=compressed --no-source-map assets/styles/themes/ui.css assets/styles/themes/ui.min.css
+```
+
+Generate it wherever the site's other build steps run, and commit the twin alongside its source: what ships has to be the pair, or the compiled sheet serves yesterday's tokens.
 
 Nothing to add to `config/services.yaml` — autowiring registers the class, and the compiler pass does the rest. Do **not** copy the tagged snippet above into an app: any priority a bundle also uses puts the site's theme ahead of that bundle's sheet, which then overrides the theme rather than the other way round.
 

@@ -20,10 +20,9 @@ $radius: var(--block-radius, var(--radius-card));
     padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
 }
 
-// 380px, not 400px: three cards plus two gaps must fit ".section-wrap"'s 1312px content measure
 .card {
     margin: 1em auto;
-    width: clamp(300px, 380px, 90vw);
+    width: var(--card-width);
     // The accented card is outlined in its own hue, so the header band reads as the top of one colored object rather than as a patch sitting inside a grey box. An unaccented card keeps the neutral border
     border: 1px solid var(--card-accent, var(--input-border-color));
     border-radius: $radius;
@@ -102,8 +101,9 @@ $radius: var(--block-radius, var(--radius-card));
 // The band takes the card's own accent, so a card marked "red" is not headed with a --primary blue. The fallback is what an unaccented card has always shown - and what the ".card-header" the management accordion reuses outside any card shows, --card-accent being set by the twelve classes above and by nothing else
 .card-header,
 h2.card-header {
-    // Family and alignment stated, not inherited: the band holds an <h2> on a card and a <div> on an accordion, and the theme's own h1-h6 rule would center the first while the second stayed flush left
+    // Family, size and alignment stated, not inherited: the band holds an <h2> on a card and a <div> on an accordion, and the theme's own h1-h6 rule would center the first while the second stayed flush left - and size it as a page heading, which on a card is out of all proportion. The size is the card title's own, whatever the "level" prop picks for the heading's rank, semantics and scale being two different questions
     font-family: var(--font-family-title);
+    font-size: var(--card-title-size);
     text-align: start;
     background-color: var(--card-accent, var(--primary));
     // White stated, not read from --white: the band is one of the twelve accents in both color modes, and dark mode swaps that token with --black (SiteBundle's sass/_theme-dark.scss), which turned every header near-black on its own hue. The four light hues still darken their own title through --card-accent-color, which is the way to give a band another ink
@@ -153,4 +153,84 @@ h2.card-header {
 .card-data {
     margin-top: auto;
     padding-top: 1em;
+}
+
+/* STAT CARD */
+
+// The body a card's "stat" variant builds - a qualifying line, a score, a row of key figures - where a plain card's body is whatever was nested in it (see templates/components/Card/Card.html.twig)
+.card--stat .card-data {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    align-items: center;
+}
+
+// The card's own eyebrow, set like a section's rather than like its title: it qualifies the card, it does not name it
+.card-eyebrow {
+    margin: 0;
+    font-family: var(--font-family-accent);
+    font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    // A fallback, not a token declared on :root: a custom property citing another resolves where it is declared, so once and for all with the page's ink - a scope switching --text, a card of one side dropped on another's page, would have no hold on it. Written as a fallback, --text is substituted on the card itself
+    color: var(--card-eyebrow-color, var(--text));
+}
+
+// A grid, not a wrapping flex row: a flow breaks on each pair's rendered width, so neighbouring cards broke 3+2 and 4+1 on values of similar length, where two fixed columns break every card at the same place. "minmax(0, 1fr)" and not "1fr", a grid column's minimum being its content, which a long value would widen at the other column's expense
+.card-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.4em 1.2em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+// A single figure has no neighbour to line up with: it takes the whole width and stays centered like the rest of the card
+.card-stats:has(> :only-child) {
+    grid-template-columns: 1fr;
+}
+
+.card-stats:has(> :only-child) .card-stats-item {
+    justify-content: center;
+}
+
+// Centered, unlike the figures sitting in a column: alone on its line, a pair flushed left opens a gap on the right that nothing balances
+.card-stats-item--wide {
+    grid-column: 1 / -1;
+    justify-content: center;
+}
+
+.card-stats-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+}
+
+// The two figures of one line meet in the middle, the left one flushed right and the right one left at the inner edge: both flushed left, they opened a gap on the right that nothing filled and the line read off-center under an otherwise centered card. The column is written on the cell by the component, CSS having no way to tell which one a cell falls in
+.card-stats-item--end {
+    justify-content: end;
+}
+
+.card-stats-label {
+    color: var(--label-color);
+}
+
+// The picture fills the card and keeps a square, so a row of stat cards lines up whatever ratio each file has - where a plain card leaves its images at whatever size the markup gave them
+.card--stat .card-body img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+// A reduced card: the same card, at the width of a thumbnail. For what a set of cards shows in the background - an accessory beside its bearer, a part beside the whole - where the full width would have every item read as a subject of its own
+.card--compact {
+    width: var(--card-width-compact);
+}
+
+// The title follows the card: at full size it runs to two or three lines inside a reduced one, and the name stops being read at a glance
+.card--compact .card-header,
+.card--compact h2.card-header {
+    font-size: var(--card-title-size-compact);
 }

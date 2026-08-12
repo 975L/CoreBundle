@@ -1,0 +1,19 @@
+{# <twig:c975LUi:Progress:Tracker total="12" completed="3" [eyebrow="Collection"] [title="Tomes parus"] [note="…"] [id=""]/> #}
+{# Clamped here and not only in ProgressTrackerType: a fixture, an import or a hand-edited Block::$data reaches this template without ever passing through that form #}
+{% set total = max(1, min(60, total|default(1)|round)) %}
+{% set completed = max(0, min(total, completed|default(0)|round)) %}
+<div class="tracker"{% if id|default('') %} id="{{ id }}"{% endif %}>
+    <div class="tracker-head">
+        {% if eyebrow|default('') %}<span class="tracker-eyebrow">{{ eyebrow }}</span>{% endif %}
+        {% if title|default('') %}<span class="tracker-title">{{ title }}</span>{% endif %}
+        {# Zero-padded, so "03 / 12" keeps its column where "3 / 12" would shift the moment the count reaches ten. Two digits is enough, the total being clamped to 60 just above #}
+        <span class="tracker-count">{{ '%02d'|format(completed) }} / {{ '%02d'|format(total) }}</span>
+    </div>
+    {# Decoration only: the segments say exactly what the count above already says, so a screen reader is told the figure once rather than being walked through sixty spans #}
+    <div class="tracker-segments" aria-hidden="true">
+        {% for i in 1..total %}
+            <span class="tracker-segment tracker-segment--{{ i <= completed ? 'on' : 'off' }}"></span>
+        {% endfor %}
+    </div>
+    {% if note|default('') %}<p class="tracker-note">{{ note }}</p>{% endif %}
+</div>

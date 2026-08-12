@@ -714,6 +714,14 @@
                 <source>label.block_progress_bar_description</source>
                 <target>Barra de progreso que muestra un porcentaje</target>
             </trans-unit>
+            <trans-unit id="M0Fj3qE">
+                <source>label.block_progress_tracker</source>
+                <target>Contador segmentado</target>
+            </trans-unit>
+            <trans-unit id="jGV.8Z6">
+                <source>label.block_progress_tracker_description</source>
+                <target>Recuento segmentado sobre un total conocido, con su nota</target>
+            </trans-unit>
             <trans-unit id="lfFkpqd">
                 <source>label.block_section_cards</source>
                 <target>Cuadrícula de tarjetas</target>
@@ -937,6 +945,10 @@
             <trans-unit id="jfLIJSU">
                 <source>label.compare_position</source>
                 <target>Posición del control de comparación</target>
+            </trans-unit>
+            <trans-unit id="gkqTa5z">
+                <source>label.completed</source>
+                <target>Conseguido</target>
             </trans-unit>
             <trans-unit id="f2Yr2j4">
                 <source>label.contact_details_name_help</source>
@@ -1958,6 +1970,10 @@
                 <source>label.not_used_anywhere</source>
                 <target>Aún no utilizado</target>
             </trans-unit>
+            <trans-unit id="h0y_G6B">
+                <source>label.note</source>
+                <target>Nota</target>
+            </trans-unit>
             <trans-unit id="GJNimRX">
                 <source>label.og_image</source>
                 <target>Imagen Open Graph</target>
@@ -2377,6 +2393,10 @@
             <trans-unit id="EE5wbzn">
                 <source>label.title_level</source>
                 <target>Nivel de título</target>
+            </trans-unit>
+            <trans-unit id="wPJiQJ5">
+                <source>label.total</source>
+                <target>Total</target>
             </trans-unit>
             <trans-unit id="CooV25J">
                 <source>label.tuesday</source>
