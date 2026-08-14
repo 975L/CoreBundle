@@ -14,14 +14,17 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\MediaRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\RequestContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Registry\AdminControllerRegistryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Router\AdminRouteGeneratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -51,17 +54,22 @@ class SiteGraphicCrudControllerTest extends TestCase
         return $mediaRepository;
     }
 
-    // An admin context carrying the role a clicked button/alert asks the "new" form to pre-fill
-    private function createAdminContextProvider(?string $requestedRole = null): AdminContextProvider
+    // An admin context carrying the role a clicked button/alert asks the "new" form to pre-fill, and the row an edit screen is opened on
+    private function createAdminContextProvider(?string $requestedRole = null, ?Media $editedMedia = null): AdminContextProvider
     {
         $request = new Request();
         if (null !== $requestedRole) {
             $request->query->set(SiteGraphicCrudController::ROLE_PARAMETER, $requestedRole);
         }
 
+        $crudContext = null === $editedMedia
+            ? null
+            : CrudContext::forTesting(entityDto: new EntityDto(Media::class, new ClassMetadata(Media::class), null, $editedMedia));
+
         $adminRequest = new Request();
         $adminRequest->attributes->set('easyadmin_context', AdminContext::forTesting(
-            requestContext: RequestContext::forTesting($request)
+            requestContext: RequestContext::forTesting($request),
+            crudContext: $crudContext,
         ));
 
         $requestStack = new RequestStack([$adminRequest]);
@@ -92,7 +100,7 @@ class SiteGraphicCrudControllerTest extends TestCase
         );
     }
 
-    private function createController(array $usedRoles = [], ?string $requestedRole = null): SiteGraphicCrudController
+    private function createController(array $usedRoles = [], ?string $requestedRole = null, ?Media $editedMedia = null): SiteGraphicCrudController
     {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
@@ -104,7 +112,7 @@ class SiteGraphicCrudControllerTest extends TestCase
             $configService,
             $this->createMediaRepositoryReturning($usedRoles),
             $translator,
-            $this->createAdminContextProvider($requestedRole),
+            $this->createAdminContextProvider($requestedRole, $editedMedia),
             $this->createAdminUrlGenerator(),
         );
     }
@@ -165,6 +173,50 @@ class SiteGraphicCrudControllerTest extends TestCase
         $role = $this->findFieldByProperty($this->createController()->configureFields(Crud::PAGE_EDIT), 'role');
 
         $this->assertTrue($role->getAsDto()->getFormTypeOptions()['disabled'] ?? null);
+    }
+
+    // The alternative text goes with the share image alone - what a network reads out where it cannot show the thumbnail (see the layouts' og:image:alt)
+    public function testConfigureFieldsOffersTheAlternativeTextForTheOgImage(): void
+    {
+        $controller = $this->createController(requestedRole: Media::ROLE_OG_IMAGE);
+
+        $this->assertNotNull($this->findFieldByProperty($controller->configureFields(Crud::PAGE_NEW), 'alt'));
+    }
+
+    // A favicon or a watermark is decoration a share never carries: an alternative text would be a field to fill for nothing
+    public function testConfigureFieldsLeavesTheAlternativeTextOutOfTheOtherGraphics(): void
+    {
+        $controller = $this->createController(requestedRole: Media::ROLE_LOGO);
+
+        $this->assertNull($this->findFieldByProperty($controller->configureFields(Crud::PAGE_NEW), 'alt'));
+    }
+
+    // The role is picked at creation and never submitted again, so the edit screen reads it off the row itself
+    public function testConfigureFieldsOffersTheAlternativeTextWhenEditingTheOgImage(): void
+    {
+        $media = new Media();
+        $media->setRole(Media::ROLE_OG_IMAGE);
+        $controller = $this->createController(editedMedia: $media);
+
+        $this->assertNotNull($this->findFieldByProperty($controller->configureFields(Crud::PAGE_EDIT), 'alt'));
+    }
+
+    public function testConfigureFieldsLeavesTheAlternativeTextOutWhenEditingAnotherGraphic(): void
+    {
+        $media = new Media();
+        $media->setRole(Media::ROLE_FAVICON);
+        $controller = $this->createController(editedMedia: $media);
+
+        $this->assertNull($this->findFieldByProperty($controller->configureFields(Crud::PAGE_EDIT), 'alt'));
+    }
+
+    // The fields are legitimately configured with no entity in the context, where getEntity() throws rather than answering null - the alt field is simply not offered then
+    public function testConfigureFieldsSurvivesAContextCarryingNoRow(): void
+    {
+        $fields = $this->createController()->configureFields(Crud::PAGE_EDIT);
+
+        $this->assertNull($this->findFieldByProperty($fields, 'alt'));
+        $this->assertNotNull($this->findFieldByProperty($fields, 'role'));
     }
 
     // Arriving from a button/alert, the role is already picked: nothing left to choose, only the file to upload

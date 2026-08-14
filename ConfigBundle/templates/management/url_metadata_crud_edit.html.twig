@@ -3,5 +3,8 @@
 {% block main %}
     <p>{{ ('label.info_url_metadata'|trans({}, 'config')) }}</p>
 
+    {# The row is written for one url and holds that url's share image, which is exactly what the debugger is handed #}
+    {{ include('@c975LConfig/management/_sharing_debugger.html.twig', {url: entity.instance.path}) }}
+
     {{ parent() }}
 {% endblock main %}

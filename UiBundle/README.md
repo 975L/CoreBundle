@@ -659,7 +659,7 @@ They are steps, not lengths, for the reason the accents are hues rather than col
 Each class does nothing but point a generic token at its own step; **what paints is the kind**, reading that token through a default of its own — which is what lets "Thème" mean something different on each without the field knowing about it:
 
 | | Corner on *Thème* | Shadow on *Thème* |
-|---|---|---|
+| --- | --- | --- |
 | `card` | `var(--block-radius, var(--radius-card))` | none at all — a card is a flat panel until a step is picked |
 | `flip_card` | `var(--block-radius, var(--flip-card-radius))` | `var(--block-shadow, var(--box-shadow))` — it has always been shadowed, so a step *retunes* that shadow |
 
@@ -1858,7 +1858,9 @@ The index shows one button per graphic still missing: each opens the upload form
 
 `SiteGraphicExportProvider`/`SiteGraphicImportProvider` plug them into ConfigBundle's **Export sync (everything)** shortcut and **Import content** screen: a singleton role matches by its own role on import, while the repeatable `error-image` pool is replaced wholesale (no natural key of its own to match against). `SiteGraphicMediaUsageProvider` is what makes the Media library say "this one is the favicon".
 
-`Form\OgImageType` embeds a single `Media` upload, for an entity of your own carrying a share image.
+The `og-image` role is the one graphic offered an **alternative text** on that screen, the others being decoration a share never carries. `@c975LUi/layout.html.twig` writes it as `og:image:alt`, alongside the `og:image:width`/`og:image:height` the media library already holds as columns — stated only when known, a network reading them reserving the thumbnail's room before it loads. A template setting `ogImage` itself is the only one knowing what that image shows, so it says it next to it, in `ogImageAlt`.
+
+`Form\OgImageType` embeds a single `Media` upload and its alternative text, for an entity of your own carrying a share image (SiteBundle's `Page`, ConfigBundle's `UrlMetadata`).
 
 ---
 

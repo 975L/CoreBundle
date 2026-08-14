@@ -9,7 +9,7 @@
     {% set appleTouchIcon = absolute_url(asset('/' ~ site_media('apple-touch-icon').filename)) ~ (site_media('apple-touch-icon').updatedAt ? '?v=' ~ site_media('apple-touch-icon').updatedAt.timestamp : '') %}
 {% endif %}
 
-{# What the url says of itself when no entity carries it - a listing, a filtered listing, a tool page (see ConfigBundle's UrlMetadata). Read only for what the rendering template left unsaid: a book, a product, a photo state their own from their entity, and that always wins. Placed above the ogImage chain below, so a row's own share image counts as "set by the template" and the site-wide default only applies after it #}
+{# What the url says of itself when no entity carries it - a listing, a filtered listing, a tool page (see ConfigBundle's UrlMetadata). Read only for what the rendering template left unsaid: a book, a product, a photo state their own from their entity, and that always wins #}
 {% set urlMetadata = url_metadata() %}
 {% if urlMetadata is not null %}
     {% if title is not defined or title == '' %}
@@ -18,17 +18,23 @@
     {% if summarySocialNetwork is not defined or summarySocialNetwork is empty %}
         {% set summarySocialNetwork = urlMetadata.summarySocialNetwork %}
     {% endif %}
-    {% if (ogImage is not defined or ogImage == null) and urlMetadata.ogImage is not null %}
-        {% set ogImage = absolute_url(asset('/' ~ urlMetadata.ogImage.filename)) ~ (urlMetadata.ogImage.updatedAt ? '?v=' ~ urlMetadata.ogImage.updatedAt.timestamp : '') %}
-    {% endif %}
 {% endif %}
 
-{# ogImage: whatever the rendering template set, then the site's default og-image, then the logo - same order as SiteBundle's layout, minus the per-Page override it has and this one can't #}
+{# ogImage: whatever the rendering template set, then the url's own row, then the site's default og-image, then the logo - same order as SiteBundle's layout, minus the per-Page override it has and this one can't #}
+{# The media is kept alongside the url, the dimensions and the alternative text being columns of the media library - null when the rendering template set the image itself, which then says what it shows under "ogImageAlt" #}
+{% set ogImageMedia = null %}
 {% if ogImage is not defined or ogImage == null %}
-    {% if site_media('og-image') is not null %}
-        {% set ogImage = absolute_url(asset('/' ~ site_media('og-image').filename)) ~ (site_media('og-image').updatedAt ? '?v=' ~ site_media('og-image').updatedAt.timestamp : '') %}
-    {% elseif logo is defined %}
-        {% set ogImage = logo %}
+    {% if urlMetadata is not null and urlMetadata.ogImage is not null %}
+        {% set ogImageMedia = urlMetadata.ogImage %}
+    {% elseif site_media('og-image') is not null %}
+        {% set ogImageMedia = site_media('og-image') %}
+    {% elseif site_media('logo') is not null %}
+        {% set ogImageMedia = site_media('logo') %}
+    {% endif %}
+
+    {# The url written once for the three of them, where each branch used to repeat it #}
+    {% if ogImageMedia is not null %}
+        {% set ogImage = absolute_url(asset('/' ~ ogImageMedia.filename)) ~ (ogImageMedia.updatedAt ? '?v=' ~ ogImageMedia.updatedAt.timestamp : '') %}
     {% endif %}
 {% endif %}
 
@@ -71,6 +77,16 @@
                 {% endif %}
                 {% if ogImage is defined %}
                     <meta property="og:image" content="{{ ogImage }}">
+{# Stated only where they are known - the media library holds them as columns: a network reading them keeps the thumbnail's room before it is loaded, and guessing them would be worse than saying nothing #}
+                    {% if ogImageMedia is not null and ogImageMedia.width and ogImageMedia.height %}
+                        <meta property="og:image:width" content="{{ ogImageMedia.width }}">
+                        <meta property="og:image:height" content="{{ ogImageMedia.height }}">
+                    {% endif %}
+{# What the image shows, for whoever is read the share rather than shown it. The template that set the image itself is the only one that knows, hence the "ogImageAlt" it may set next to it - otherwise it is the media's own alternative text #}
+                    {% set ogImageAltText = ogImageAlt is defined and ogImageAlt is not empty ? ogImageAlt : (ogImageMedia is not null ? ogImageMedia.alt : null) %}
+                    {% if ogImageAltText %}
+                        <meta property="og:image:alt" content="{{ ogImageAltText }}">
+                    {% endif %}
                 {% endif %}
 
                 {% set canonicalUrl = canonical_url() %}

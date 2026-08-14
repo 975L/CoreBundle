@@ -1,0 +1,9 @@
+{# The note for every screen where an admin picks what a page shows when shared: a network caches that preview under the page's url, so an image chosen later is only picked up by a re-scrape #}
+{# Facebook alone has to be asked and alone offers a tool for it, LinkedIn and X letting theirs lapse after about a week #}
+{# "url" is a path, as path() returns one: made absolute here, so no caller has to remember to #}
+{% if url is defined and url is not empty %}
+    <p class="small text-muted">
+        {{ ('label.sharing_debugger_help'|trans({}, 'config')) }}
+        <a href="https://developers.facebook.com/tools/debug/?q={{ absolute_url(url)|url_encode }}" target="_blank" rel="noopener">{{ ('label.sharing_debugger_link'|trans({}, 'config')) }}</a>
+    </p>
+{% endif %}

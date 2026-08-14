@@ -16,12 +16,16 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\VichImageOptions;
 use c975L\UiBundle\Repository\MediaRepository;
 use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -72,9 +76,9 @@ class SiteGraphicCrudController extends AbstractCrudController
     }
 
     #[\Override]
-    public function createIndexQueryBuilder(...$args): QueryBuilder
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
     {
-        return parent::createIndexQueryBuilder(...$args)
+        return parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters)
             ->andWhere('entity.role IS NOT NULL')
         ;
     }
@@ -137,7 +141,10 @@ class SiteGraphicCrudController extends AbstractCrudController
             $roleChoices[$roleSlug] = t($labelKey, [], 'ui');
         }
 
-        return [
+        // What the image shows, written as "og:image:alt" by both layouts (see SiteBundle's and this bundle's layout.html.twig). Offered on the og-image alone: it is the only site graphic a network ever reads out, the others being decoration a share never carries
+        $isOgImage = Media::ROLE_OG_IMAGE === ($isNew ? $requestedRole : $this->editedRole());
+
+        return array_values(array_filter([
             IdField::new('id')->onlyOnIndex(),
 
             ChoiceField::new('role')
@@ -154,10 +161,27 @@ class SiteGraphicCrudController extends AbstractCrudController
                 ->setFormTypeOptions(VichImageOptions::default('2M', $isNew))
                 ->onlyOnForms(),
 
+            $isOgImage ? TextField::new('alt')
+                ->setLabel(t('label.alt_text', [], 'ui'))
+                ->setRequired(false)
+                ->onlyOnForms() : null,
+
             TextField::new('filename')
                 ->setLabel(t('label.file', [], 'ui'))
                 ->onlyOnIndex(),
-        ];
+        ]));
+    }
+
+    // The role of the row being edited, which configureFields() is not handed - null on the "new" screen and whenever getEntity() throws for want of an entity in the context
+    private function editedRole(): ?string
+    {
+        try {
+            $media = $this->adminContextProvider->getContext()?->getEntity()->getInstance();
+        } catch (\LogicException) {
+            return null;
+        }
+
+        return $media instanceof Media ? $media->getRole() : null;
     }
 
     // Hands the index template the graphics still missing, each rendered as its own button opening the upload form with the role already picked (see site_graphic_crud_index.html.twig)

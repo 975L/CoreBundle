@@ -1334,6 +1334,12 @@ In a template needing the text itself, `url_metadata()` hands back the row of th
 
 Nothing is ever typed by hand there: the rows come from what the bundles declare, so `Action::NEW` is disabled and the path is shown read-only.
 
+The edit screen carries a note on the cache a network keeps of a page's preview from the first share on, with a link opening Facebook's debugger on that very url — an image chosen afterwards only ever shows up after a re-scrape. `templates/management/_sharing_debugger.html.twig` is that note, taking the `url` to check as a path, so any other screen deciding a share image can include it:
+
+```twig
+{{ include('@c975LConfig/management/_sharing_debugger.html.twig', {url: entity.instance.path}) }}
+```
+
 ### Contributing urls to describe from other bundles
 
 Implement `UrlMetadataProviderInterface` — no manual service tagging needed, same `TaggedInterfacePass` mechanism as `MenuProviderInterface` above:

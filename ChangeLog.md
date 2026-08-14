@@ -1,5 +1,29 @@
 # ChangeLog
 
+## v1.11.4
+
+A share image says what it shows, and its thumbnail keeps its room
+
+### UiBundle
+
+- `layout.html.twig` writes `og:image:alt`, from the media's own alternative text or from the template's `ogImageAlt` (14/08/2026)
+- It writes `og:image:width`/`og:image:height` for a media holding both (14/08/2026)
+- The og-image chain keeps the media it picked, the url being written once for its three branches (14/08/2026)
+- `SiteGraphicCrudController` offers an alternative text on the `og-image` role alone (14/08/2026)
+- `OgImageType` embeds that alternative text beside the upload (14/08/2026)
+- `MinimalLayoutTest` reads the three tags and the order of the chain (14/08/2026)
+- `SiteGraphicCrudControllerTest` reads the field on the og-image, its absence elsewhere, and an edit context carrying no row (14/08/2026)
+- Added `OgImageTypeTest` (14/08/2026)
+- The README states what the layout writes beside `og:image` (14/08/2026)
+
+### ConfigBundle
+
+- Added `_sharing_debugger.html.twig`, the note on the preview a network caches from the first share on (14/08/2026)
+- The url metadata edit screen carries it, linking Facebook's debugger on the row's own url (14/08/2026)
+- Added `label.sharing_debugger_help` and `label.sharing_debugger_link` in the three locales (14/08/2026)
+- Added `SharingDebuggerTest` (14/08/2026)
+- The README states how another screen includes that note (14/08/2026)
+
 ## v1.11.3
 
 A card's key figures stay centered when they come in an odd number

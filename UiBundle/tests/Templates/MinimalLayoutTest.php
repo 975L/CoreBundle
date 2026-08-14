@@ -57,6 +57,39 @@ class MinimalLayoutTest extends TestCase
         $this->assertStringContainsString('<link rel="canonical"', $layout);
     }
 
+    // A share read out rather than displayed has only this to go on, and the media library already holds it as a column - the template that set the image itself says it under "ogImageAlt"
+    public function testTheShareImageStatesWhatItShows(): void
+    {
+        $layout = $this->layout();
+
+        $this->assertStringContainsString('<meta property="og:image:alt"', $layout);
+        $this->assertStringContainsString('ogImageAlt', $layout);
+        $this->assertStringContainsString('ogImageMedia.alt', $layout);
+    }
+
+    // A network reading them keeps the thumbnail's room before the file loads - written only for a media holding both, a guessed size being worse than none
+    public function testTheShareImageStatesItsDimensionsWhenTheyAreKnown(): void
+    {
+        $layout = $this->layout();
+
+        $this->assertStringContainsString('<meta property="og:image:width" content="{{ ogImageMedia.width }}">', $layout);
+        $this->assertStringContainsString('<meta property="og:image:height" content="{{ ogImageMedia.height }}">', $layout);
+        $this->assertStringContainsString('ogImageMedia is not null and ogImageMedia.width and ogImageMedia.height', $layout);
+    }
+
+    // The three fallbacks are picked as medias and turned into an url once, so the alt and the dimensions above are read off whichever one won
+    public function testTheShareImageFallbackChainKeepsTheMediaItPicked(): void
+    {
+        $layout = $this->layout();
+
+        $this->assertSame(1, substr_count($layout, "{% set ogImage = absolute_url(asset('/' ~ ogImageMedia.filename))"), 'the url is written once for the whole chain');
+        $this->assertLessThan(
+            strpos($layout, "site_media('og-image')"),
+            strpos($layout, 'urlMetadata.ogImage is not null'),
+            'an url describing itself must win over the site-wide default'
+        );
+    }
+
     // The summary a template states often comes from a rich-text column (a Page's, a gallery category's), so a raw one would publish escaped markup as the page's description - SiteBundle's layout has always reduced it, and the two being interchangeable this one has to as well
     public function testTheSummaryIsReducedToPlainTextInTheMetas(): void
     {

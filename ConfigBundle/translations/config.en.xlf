@@ -1630,6 +1630,14 @@
                 <source>label.severity_warning</source>
                 <target>Warning</target>
             </trans-unit>
+            <trans-unit id="Fwysuw.">
+                <source>label.sharing_debugger_help</source>
+                <target>A social network caches a page's preview from the first share on and never reads the page again: an image chosen afterwards will not show up there. To have it read the page again:</target>
+            </trans-unit>
+            <trans-unit id="Z2uTmwy">
+                <source>label.sharing_debugger_link</source>
+                <target>check the sharing preview</target>
+            </trans-unit>
             <trans-unit id="6b0IH3c">
                 <source>label.shortcuts</source>
                 <target>Shortcuts</target>

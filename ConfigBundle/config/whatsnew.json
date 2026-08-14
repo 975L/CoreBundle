@@ -21,6 +21,11 @@
                 "en": "A step-by-step guide walks you through describing one of your listing pages, from the screen to the save",
                 "fr": "Un guide pas à pas vous accompagne pour décrire une de vos pages de listes, de l'écran jusqu'à l'enregistrement",
                 "es": "Una guía paso a paso le acompaña para describir una de sus páginas de listado, desde la pantalla hasta el guardado"
+            },
+            {
+                "en": "Describing one of your urls now says why a preview stays the same after you change its image, with a link to have the page read again",
+                "fr": "Décrire une de vos urls explique désormais pourquoi un aperçu reste identique après le changement de son image, avec un lien pour faire relire la page",
+                "es": "Describir una de sus urls ahora explica por qué una vista previa sigue igual tras cambiar su imagen, con un enlace para hacer que la página se vuelva a leer"
             }
         ]
     },

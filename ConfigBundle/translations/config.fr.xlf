@@ -1630,6 +1630,14 @@
                 <source>label.severity_warning</source>
                 <target>Avertissement</target>
             </trans-unit>
+            <trans-unit id="Fwysuw.">
+                <source>label.sharing_debugger_help</source>
+                <target>Un réseau social garde en mémoire l'aperçu d'une page dès le premier partage et ne relit plus la page : une image choisie ensuite n'y apparaîtra pas. Pour la lui faire relire :</target>
+            </trans-unit>
+            <trans-unit id="Z2uTmwy">
+                <source>label.sharing_debugger_link</source>
+                <target>vérifier l'aperçu de partage</target>
+            </trans-unit>
             <trans-unit id="6b0IH3c">
                 <source>label.shortcuts</source>
                 <target>Raccourcis</target>

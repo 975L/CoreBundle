@@ -1630,6 +1630,14 @@
                 <source>label.severity_warning</source>
                 <target>Advertencia</target>
             </trans-unit>
+            <trans-unit id="Fwysuw.">
+                <source>label.sharing_debugger_help</source>
+                <target>Una red social guarda en caché la vista previa de una página desde que se comparte por primera vez y ya no vuelve a leerla: una imagen elegida después no aparecerá. Para que vuelva a leerla:</target>
+            </trans-unit>
+            <trans-unit id="Z2uTmwy">
+                <source>label.sharing_debugger_link</source>
+                <target>comprobar la vista previa de compartición</target>
+            </trans-unit>
             <trans-unit id="6b0IH3c">
                 <source>label.shortcuts</source>
                 <target>Atajos</target>
