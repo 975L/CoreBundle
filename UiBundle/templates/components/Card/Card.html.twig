@@ -47,8 +47,10 @@
                         {% for stat in stats %}
                             {% set wide = stat.wide|default(false) %}
                             {% set column = wide ? 0 : (1 == column ? 2 : 1) %}
+                            {# A figure with no neighbour to share its line - the last one, or the one a wide figure follows - takes the line whole, an odd count otherwise reading off-center #}
+                            {% set alone = 1 == column and (loop.last or stats[loop.index].wide|default(false)) %}
                             {# "wide" on a figure spelled out in words: it takes the whole line, half a column breaking a long word under its own label #}
-                            <li class="card-stats-item{{ wide ? ' card-stats-item--wide' : (1 == column ? ' card-stats-item--end' : '') }}">
+                            <li class="card-stats-item{{ wide or alone ? ' card-stats-item--wide' : (1 == column ? ' card-stats-item--end' : '') }}">
                                 <span class="card-stats-label">{{ stat.label }}</span>
                                 <strong class="card-stats-value">{{ stat.value }}</strong>
                             </li>

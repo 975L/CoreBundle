@@ -57,18 +57,37 @@ class CardStatVariantTest extends TestCase
     // The column is written on the cell by the component, CSS having no way to tell which one a cell falls in
     public function testTheFiguresOfOneLineAreMarkedSoTheyMeetInTheMiddle(): void
     {
-        $html = $this->render(['title' => 'Title', 'stats' => [['label' => 'Int.', 'value' => 900], ['label' => 'Chance', 'value' => 40], ['label' => 'Force', 'value' => 60]]]);
+        $html = $this->render(['title' => 'Title', 'stats' => [['label' => 'Int.', 'value' => 900], ['label' => 'Chance', 'value' => 40], ['label' => 'Force', 'value' => 60], ['label' => 'Agilité', 'value' => 20]]]);
 
         $this->assertSame(2, substr_count($html, 'card-stats-item--end'));
+        $this->assertStringNotContainsString('card-stats-item--wide', $html);
     }
 
     // A full-width figure opens a fresh line, so the counter restarts behind it and the next one falls back on the left
     public function testAWideFigureTakesTheWholeLineAndRestartsTheColumns(): void
     {
-        $html = $this->render(['title' => 'Title', 'stats' => [['label' => 'Int.', 'value' => 900], ['label' => 'Signe', 'value' => 'Chaos', 'wide' => true], ['label' => 'Force', 'value' => 60]]]);
+        $html = $this->render(['title' => 'Title', 'stats' => [['label' => 'Int.', 'value' => 900], ['label' => 'Chance', 'value' => 40], ['label' => 'Signe', 'value' => 'Chaos', 'wide' => true], ['label' => 'Force', 'value' => 60], ['label' => 'Agilité', 'value' => 20]]]);
 
         $this->assertSame(1, substr_count($html, 'card-stats-item--wide'));
         $this->assertSame(2, substr_count($html, 'card-stats-item--end'));
+    }
+
+    // A figure with no neighbour to share its line takes it whole, flushing right otherwise reading off-center under a centered card
+    public function testTheLastFigureOfAnOddRowTakesTheWholeLine(): void
+    {
+        $html = $this->render(['title' => 'Title', 'stats' => [['label' => 'Int.', 'value' => 900], ['label' => 'Chance', 'value' => 40], ['label' => 'Force', 'value' => 60]]]);
+
+        $this->assertSame(1, substr_count($html, 'card-stats-item--wide'));
+        $this->assertSame(1, substr_count($html, 'card-stats-item--end'));
+    }
+
+    // Same case one line up: a figure followed by a wide one has no neighbour either, as on an artefact card - damage, then its value
+    public function testAFigureFollowedByAWideOneTakesTheWholeLineToo(): void
+    {
+        $html = $this->render(['title' => 'Title', 'stats' => [['label' => 'Dégâts', 'value' => 10], ['label' => 'Valeur', 'value' => '120 Mirians', 'wide' => true]]]);
+
+        $this->assertSame(2, substr_count($html, 'card-stats-item--wide'));
+        $this->assertStringNotContainsString('card-stats-item--end', $html);
     }
 
     // The picture is linked to the card's own destination, so it is not a dead zone in the middle of a clickable card

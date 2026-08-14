@@ -1376,7 +1376,9 @@ clickable card.
 The figures sit two per line and meet in the middle, the column being written on each cell by the
 component — no selector can tell which column a cell falls in. One entry marked `wide: true` takes the
 whole line and restarts the columns behind it, for a value spelled out in words that half a column
-would break under its own label.
+would break under its own label. A figure with no neighbour to share its line — the last one of an odd
+count, or the one a `wide` entry follows — takes the line whole as well, rather than flushing right
+against a neighbour it does not have and reading off-center under an otherwise centered card.
 
 Passing `class="card--compact"` gives the same card at the width of a thumbnail (`--card-width-compact`,
 read off the page measure so six line up where three do — see "The `.cards` row" above), with its title

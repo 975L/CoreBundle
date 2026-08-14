@@ -46,6 +46,11 @@
                 "en": "A card carrying a picture or a link shows its text again, where it had come out holding nothing but its title",
                 "fr": "Une carte portant une image ou un lien affiche de nouveau son texte, là où elle ne ressortait qu'avec son titre",
                 "es": "Una tarjeta con una imagen o un enlace vuelve a mostrar su texto, donde salía solo con su título"
+            },
+            {
+                "en": "A card whose key figures come in an odd number stays balanced: the figure left on its own is now centered instead of being pushed to the right",
+                "fr": "Une carte dont les chiffres clés sont en nombre impair reste équilibrée : celui qui reste seul est désormais centré au lieu d'être poussé à droite",
+                "es": "Una tarjeta cuyas cifras clave están en número impar se mantiene equilibrada: la que queda sola ahora se centra en lugar de quedar empujada a la derecha"
             }
         ]
     },

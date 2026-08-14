@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.11.3
+
+A card's key figures stay centered when they come in an odd number
+
+### UiBundle
+
+- `Card.html.twig` gives a figure with no neighbour on its line the whole line (14/08/2026)
+- The last figure of an odd count, and the one a `wide` entry follows, no longer flush right (14/08/2026)
+- `CardStatVariantTest` reads both cases, and the even rows that must keep their two columns (14/08/2026)
+- The README states which figures take the whole line on their own (14/08/2026)
+
 ## v1.11.2
 
 A features section whose card carries no icon renders again
