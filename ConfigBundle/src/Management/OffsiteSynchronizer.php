@@ -152,8 +152,9 @@ class OffsiteSynchronizer
         return null === $file ? [] : ['--config', $file];
     }
 
-    // The PATH first, then the project's own bin/ - where a host that ships no rclone takes the single static binary its own admin put there. Never a path read from configuration
-    private function findRclone(): ?string
+    // The PATH first, then the project's own bin/ - where a host that ships no rclone takes the single static binary its own admin put there. Never a path read from configuration.
+    // Protected rather than private for the same reason as run(): a test that checks which arguments a command builds must not depend on the machine running it having rclone installed
+    protected function findRclone(): ?string
     {
         $local = $this->parameterBag->get('kernel.project_dir') . '/bin/rclone';
 

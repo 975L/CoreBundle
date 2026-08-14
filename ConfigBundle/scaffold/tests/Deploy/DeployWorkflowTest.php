@@ -7,18 +7,13 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 
 // A deployment workflow calls its console commands as plain strings inside YAML, which none of this project's gates ever reads - php-cs-fixer, PHPStan and the rest of this suite all stop at PHP. A command a bundle renamed, or one written against a version composer.lock does not carry yet, is then discovered by a deployment that stops halfway through: workers already restarted, remaining steps skipped, and a server left in a state nobody chose. These two tests are what puts .github/workflows/ under the same suite as the code.
-// Both are no-ops where there is no site to check (no workflow to read, no vendor/ to look at), so this file also travels in the bundle's own scaffold suite, where no application kernel exists.
+// Both answer for a deployed site - its workflows, its vendor/ - so the bundle's own scaffold suite leaves this directory out rather than running them against a repository that holds neither.
 class DeployWorkflowTest extends KernelTestCase
 {
     // Every "bin/console <command>" of every workflow has to be a command this site actually has. Resolved exactly as the console itself resolves it, through find() rather than has(): a workflow legitimately calls doctrine:migration:migrate, which is no registered name at all but an unambiguous abbreviation of doctrine:migrations:migrate. An abbreviation that several commands answer to throws here too, and rightly so - it would stop the deployment the same way a missing command does.
     public function testEveryCommandTheWorkflowsCallIsInstalled(): void
     {
         $workflows = glob(self::projectDir() . '/.github/workflows/*.y*ml') ?: [];
-
-        if ([] === $workflows) {
-            $this->markTestSkipped('This project has no GitHub Actions workflow to check.');
-        }
-
         $application = new Application(self::bootKernel());
 
         $missing = [];

@@ -91,6 +91,12 @@ class BackupOffsiteCommandTest extends TestCase
 
                 return ['ok' => true, 'error' => null, 'output' => '{"count":1,"bytes":2}'];
             }
+
+            // The binary is never run here, but the command refuses to send anything when it can't be found - so a host without rclone, CI being one, would see this test assert on a command that was never built
+            protected function findRclone(): ?string
+            {
+                return '/usr/bin/rclone';
+            }
         };
     }
 

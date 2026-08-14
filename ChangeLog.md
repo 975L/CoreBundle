@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.10.1
+
+The suite runs the same on any machine, and skips nothing
+
+### The package
+
+- The scaffold suite leaves `tests/Deploy` out, its two tests answering for a deployed site rather than for this repository (14/08/2026)
+
+### ConfigBundle
+
+- `OffsiteSynchronizer::findRclone()` is `protected`, as `run()` already was (14/08/2026)
+- `BackupOffsiteCommandTest` overrides it, a host without rclone no longer asserting on a command the guard clause never built (14/08/2026)
+- `DeployWorkflowTest` drops its skip, the site it runs in always having a kernel to read the workflows with (14/08/2026)
+
 ## v1.10.0
 
 The block cache reaches the containers and the collections
