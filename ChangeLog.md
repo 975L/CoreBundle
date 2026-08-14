@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.11.2
+
+A features section whose card carries no icon renders again
+
+### UiBundle
+
+- `Card.html.twig` reads its `icon` prop as a list, an empty one being no icon (14/08/2026)
+- A card nested by `Section:Features` without an icon no longer reads `icon[0]` on an empty list (14/08/2026)
+- Added `CardIconTest`, reading the card against `[]`, `""` and the four values of a real icon (14/08/2026)
+
 ## v1.11.1
 
 A card with an image or a link shows its text again

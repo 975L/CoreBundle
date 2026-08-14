@@ -24,7 +24,8 @@
 {# The variant declares itself by its own props, no "variant" string to keep in step with them #}
 {% set isStat = src or eyebrow or rating != "" or stats|length %}
 <div class="card box-shadow{{ isStat ? " card--stat" : "" }} {{ class }}"{% if id %} id="{{ id }}"{% endif %}{% if dataAnimation %} data-animation="{{ dataAnimation }}"{% endif %}{% if lang %} lang="{{ lang }}"{% endif %}{{ attributes }}>
-    {% if icon != "" %}
+    {# "length" and not != "": an empty icon reaches the card as [] as often as "" (Section:Features passes [] when its card has no icon), and [] != "" is true in Twig, which sent the card reading icon[0] on an empty array #}
+    {% if icon|length %}
         <{{ level|default('h2') }} class="card-header"><twig:c975LUi:Image:Icon src="{{ icon[0] }}" class="{{ icon[1] }}" width="{{ icon[2] }}" height="{{ icon[3] }}"/> {% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
     {% else %}
         <{{ level|default('h2') }} class="card-header">{% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
