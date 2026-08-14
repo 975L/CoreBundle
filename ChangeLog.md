@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.11.1
+
+A card with an image or a link shows its text again
+
+### UiBundle
+
+- `Card.html.twig` and `CollectionItem.html.twig` read their content under a name of their own (14/08/2026)
+- The nested card's own empty `content` prop used to take its place, the card coming out with nothing but its title (14/08/2026)
+- Added `BlockAdapterNestedContextTest`, reading what every block adapter nests against what the card declares (14/08/2026)
+- The README states that a nested component's props shadow the caller's variables of the same name (14/08/2026)
+
 ## v1.11.0
 
 Matomo lives where its legal text is written

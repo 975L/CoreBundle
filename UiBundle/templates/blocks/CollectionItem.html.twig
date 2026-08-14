@@ -19,6 +19,8 @@
     </{{ tag }}>
 {% else %}
     {% set resolvedImageUrl = imageUrl|default(null) %}
+    {# Read under its own name because the two nesting branches below happen inside the component's context, where the card's own "content" prop - empty, nothing being passed to it - takes the place of the item's description #}
+    {% set itemContent = content|default('') %}
     {# A source may hand back anything its own item has to say (see CollectionItem::$data); these four are the ones the Card already knows how to draw, and they open its "stat" variant - a portrait, a qualifying line, a score and a row of key figures, exactly the card an app renders itself when it holds the entity rather than a collection item #}
     {% set cardClass = class|default('') %}
     {% set cardClass = cardClass is iterable ? cardClass|join(' ') : cardClass %}
@@ -36,7 +38,7 @@
             class="{{ cardClass }}"
         >
             {# No wrapper of its own here, unlike the teaser below: the stat card already carries its own alignment (see "class"), and what a source nests under its figures - a link, a line of navigation - is markup it wrote itself, which has to come out as the app's own components render it #}
-            {% if content %}{{ content|raw|nl2br }}{% endif %}
+            {% if itemContent %}{{ itemContent|raw|nl2br }}{% endif %}
         </twig:c975LUi:Card:Card>
     {% elseif resolvedImageUrl or url %}
         <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ cardClass }}">
@@ -47,7 +49,7 @@
             {% endif %}
             <div class="card-data">
                 {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
-                {% if content %}<div class="text-center">{{ content|raw|nl2br }}</div>{% endif %}
+                {% if itemContent %}<div class="text-center">{{ itemContent|raw|nl2br }}</div>{% endif %}
                 {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
             </div>
         </twig:c975LUi:Card:Card>

@@ -7,6 +7,8 @@
 {% set radiusClass = radius|default('') in ['none', 'small', 'medium', 'large'] ? 'block-radius-' ~ radius : '' %}
 {% set shadowClass = shadow|default('') in ['none', 'small', 'medium', 'large'] ? 'block-shadow-' ~ shadow : '' %}
 {% set classes = [class|default([])|join(' '), accentClass, radiusClass, shadowClass]|filter(name => name)|join(' ') %}
+{# Read under its own name because the nesting below happens inside the component's context, where the card's own "content" prop - empty, nothing being passed to it - takes the place of this block's data #}
+{% set blockContent = content|default('') %}
 {% if resolvedImageUrl or url %}
     <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" level="{{ level|default('') }}" class="{{ classes }}">
         {% if resolvedImageUrl %}
@@ -15,7 +17,7 @@
         {% endif %}
         <div class="card-data">
             {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
-            {% if content %}<div class="text-center">{{ content|raw|nl2br }}</div>{% endif %}
+            {% if blockContent %}<div class="text-center">{{ blockContent|raw|nl2br }}</div>{% endif %}
             {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
         </div>
     </twig:c975LUi:Card:Card>

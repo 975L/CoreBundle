@@ -41,6 +41,11 @@
                 "en": "Three more step-by-step guides: giving a picture its description and its credits, adjusting one of your legal documents, and trying out the rewriting assistant before using it on real content",
                 "fr": "Trois guides pas à pas de plus : donner à une image sa description et ses crédits, ajuster un de vos documents légaux, et essayer l'assistant de reformulation avant de l'utiliser sur un vrai contenu",
                 "es": "Tres guías paso a paso más: dar a una imagen su descripción y sus créditos, ajustar uno de sus documentos legales, y probar el asistente de reformulación antes de usarlo en contenido real"
+            },
+            {
+                "en": "A card carrying a picture or a link shows its text again, where it had come out holding nothing but its title",
+                "fr": "Une carte portant une image ou un lien affiche de nouveau son texte, là où elle ne ressortait qu'avec son titre",
+                "es": "Una tarjeta con una imagen o un enlace vuelve a mostrar su texto, donde salía solo con su título"
             }
         ]
     },

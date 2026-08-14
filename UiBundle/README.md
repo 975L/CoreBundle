@@ -1294,6 +1294,8 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 
 Props match the Twig variables used inside each template — see `templates/components/<Group>/<Name>.html.twig` for the exact list.
 
+Whatever you nest inside a component is rendered from **that component's** context, props included: a prop the call leaves out is its own default taking the place of your variable of the same name, silently. So a block adapter nesting its data inside `<twig:c975LUi:Card:Card>` reads that data under a name of its own (`{% set blockContent = content|default('') %}`) rather than under `content`, which the card declares itself — otherwise the card comes out with nothing in it. `BlockAdapterNestedContextTest` locks that for every adapter in `templates/blocks/`.
+
 Two filters go with them, both from `Twig\TrixExtension`: **`trix_inline`** drops Trix's block-level `<div>` wrappers where only phrasing content is allowed, joining the lines with `<br>`; **`plain_text`** reduces editor HTML to the text a caption, an `aria-label` or a `<meta>` can hold. `plain_text` decodes the entities `striptags` leaves behind — without that a `&amp;` reaches the page as `&amp;amp;`, Twig having escaped it a second time. `Image:Link` uses it for its fallback accessible name.
 
 > **Maintenance note:** update this table whenever a component is added, renamed, or removed in `templates/components/`.
