@@ -1,29 +1,45 @@
 {# Static usage: <twig:c975LUi:Card:Card id="id" title="Title" [titleUrl=""] [level="h2"] [icon="{{ ['file.ext', 'css-classes', width, height] }}"] [lang=""]>Your content</twig:c975LUi:Card:Card> #}
 {# "stat" variant: add any of [src=""] [alt=""] [eyebrow=""] [rating=""] [stats="{{ [{label: 'Int.', value: 900}] }}"] and the card opens on a picture, then a qualifying line, a score and a row of key figures, whatever is nested coming after them. A card given none of the five is exactly the card it always was #}
-{% set icon = icon | default("") %}
-{% set lang = lang | default("") %}
-{% set titleUrl = titleUrl | default("") %}
-{% set id = id | default("") %}
+{# Every attribute the card reads is declared here, so what is left in "attributes" is what the caller added on top - data-theme first of all, which opens a second color ambiance on this card alone (sass/_tokens.scss declares the tokens on ":root, [data-theme]") #}
+{# Declared rather than rendered through attributes.defaults(): id/class/lang keep the hand-written conditions below, an empty id="" passed by a caller being invalid HTML the component has always dropped #}
+{% props
+    title,
+    id = "",
+    titleUrl = "",
+    level = "",
+    icon = "",
+    lang = "",
+    class = "",
+    dataAnimation = "",
+    content = "",
+    src = "",
+    alt = "",
+    width = "",
+    height = "",
+    eyebrow = "",
+    rating = "",
+    stats = []
+%}
 {# id/data-animation only written when actually set, same as every other component here - an empty id="" is invalid HTML (and every card after the first a "duplicate ID" on top of it), and animate-scroll.js reads data-animation as the class name to add, so an empty one is nothing to animate anyway #}
 {# The variant declares itself by its own props, no "variant" string to keep in step with them #}
-{% set isStat = src|default("") or eyebrow|default("") or rating|default("") != "" or stats|default([])|length %}
-<div class="card box-shadow{{ isStat ? " card--stat" : "" }} {{ class|default("") }}"{% if id %} id="{{ id }}"{% endif %}{% if dataAnimation|default("") %} data-animation="{{ dataAnimation }}"{% endif %}{% if lang %} lang="{{ lang }}"{% endif %}>
+{% set isStat = src or eyebrow or rating != "" or stats|length %}
+<div class="card box-shadow{{ isStat ? " card--stat" : "" }} {{ class }}"{% if id %} id="{{ id }}"{% endif %}{% if dataAnimation %} data-animation="{{ dataAnimation }}"{% endif %}{% if lang %} lang="{{ lang }}"{% endif %}{{ attributes }}>
     {% if icon != "" %}
         <{{ level|default('h2') }} class="card-header"><twig:c975LUi:Image:Icon src="{{ icon[0] }}" class="{{ icon[1] }}" width="{{ icon[2] }}" height="{{ icon[3] }}"/> {% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
     {% else %}
         <{{ level|default('h2') }} class="card-header">{% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
     {% endif %}
     <div class="card-body">
-        {% if src|default("") %}
+        {% if src %}
             {# Linked to the card's own destination when it has one, so the picture is not a dead zone in the middle of a clickable card #}
-            <twig:c975LUi:Image:Link src="{{ src }}" url="{{ titleUrl }}" alt="{{ alt|default(title) }}" width="{{ width|default('') }}" height="{{ height|default('') }}"/>
+            <twig:c975LUi:Image:Link src="{{ src }}" url="{{ titleUrl }}" alt="{{ alt|default(title) }}" width="{{ width }}" height="{{ height }}"/>
         {% endif %}
         {% if isStat %}
             <div class="card-data">
-                {% if eyebrow|default("") %}<p class="card-eyebrow">{{ eyebrow }}</p>{% endif %}
+                {% if eyebrow %}<p class="card-eyebrow">{{ eyebrow }}</p>{% endif %}
                 {# "" and not null: a rating of 0 is a real score - "not rated" is the field left empty #}
-                {% if rating|default("") != "" %}<twig:c975LUi:Progress:Rating value="{{ rating }}"/>{% endif %}
-                {% if stats|default([])|length %}
+                {% if rating != "" %}<twig:c975LUi:Progress:Rating value="{{ rating }}"/>{% endif %}
+                {% if stats|length %}
                     <ul class="card-stats">
                         {# The column is counted here rather than read in CSS, no selector telling which column a cell falls in: a full-width figure always opens a fresh line, so the counter restarts behind it and the next one falls back on the left #}
                         {% set column = 0 %}
@@ -40,7 +56,7 @@
                 {% endif %}
             </div>
         {% endif %}
-        {# "default" rather than a bare "content": a card called self-closing nests nothing, so the variable does not exist at all - which raised an error where a card reduced to its title is a perfectly legitimate call #}
-        {% block content %}{{ content|default('')|raw|nl2br }}{% endblock %}
+        {# Declared as a prop rather than left to exist or not: a card called self-closing nests nothing, and a bare "content" raised an error where a card reduced to its title is a perfectly legitimate call #}
+        {% block content %}{{ content|raw|nl2br }}{% endblock %}
     </div>
 </div>

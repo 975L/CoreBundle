@@ -64,8 +64,7 @@ class SiteGraphicCrudControllerTest extends TestCase
             requestContext: RequestContext::forTesting($request)
         ));
 
-        $requestStack = new RequestStack();
-        $requestStack->push($adminRequest);
+        $requestStack = new RequestStack([$adminRequest]);
 
         return new AdminContextProvider($requestStack);
     }

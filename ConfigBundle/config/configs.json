@@ -286,6 +286,17 @@
         "description": "description.email_reply_to_name"
     },
     {
+        "label": "label.user_creation_notification",
+        "slug": "user-creation-notification",
+        "sensitive": false,
+        "restricted": false,
+        "value": "true",
+        "kind": "bool",
+        "group": "email",
+        "severity": null,
+        "description": "description.user_creation_notification"
+    },
+    {
         "label": "label.site_name",
         "slug": "site-name",
         "sensitive": false,

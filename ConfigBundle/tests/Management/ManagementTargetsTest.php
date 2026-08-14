@@ -13,7 +13,9 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Management\ConfigEssentialActionProvider;
 use c975L\ConfigBundle\Management\ConfigGuidedProjectProvider;
 use c975L\ConfigBundle\Management\ConfigShortcutProvider;
+use c975L\ConfigBundle\Management\LinkableRouteProvider;
 use c975L\ConfigBundle\Management\MenuProvider;
+use c975L\ConfigBundle\Management\SocialMenuProvider;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
 use c975L\UiBundle\Repository\FormRepository;
@@ -29,6 +31,8 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
             new ConfigShortcutProvider($this->createTranslator(), $this->createConfigService(), $this->createStub(FormRepository::class)),
             new ConfigEssentialActionProvider($this->createConfigService(), $this->adminUrlGenerator()),
             new ConfigGuidedProjectProvider($this->adminUrlGenerator(), $this->urlGenerator()),
+            new SocialMenuProvider(),
+            new LinkableRouteProvider(),
         ];
     }
 

@@ -19,8 +19,27 @@
     </{{ tag }}>
 {% else %}
     {% set resolvedImageUrl = imageUrl|default(null) %}
-    {% if resolvedImageUrl or url %}
-        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ class|default([])|join(' ') }}">
+    {# A source may hand back anything its own item has to say (see CollectionItem::$data); these four are the ones the Card already knows how to draw, and they open its "stat" variant - a portrait, a qualifying line, a score and a row of key figures, exactly the card an app renders itself when it holds the entity rather than a collection item #}
+    {% set cardClass = class|default('') %}
+    {% set cardClass = cardClass is iterable ? cardClass|join(' ') : cardClass %}
+    {% if eyebrow|default('') or rating|default('') != '' or stats|default([])|length %}
+        <twig:c975LUi:Card:Card
+            id="{{ id|default('') }}"
+            title="{{ title }}"
+            titleUrl="{{ detailUrl|default('') ?: url|default('') }}"
+            level="{{ level|default('') }}"
+            src="{{ resolvedImageUrl }}"
+            alt="{{ title }}"
+            eyebrow="{{ eyebrow|default('') }}"
+            rating="{{ rating|default('') }}"
+            stats="{{ stats|default([]) }}"
+            class="{{ cardClass }}"
+        >
+            {# No wrapper of its own here, unlike the teaser below: the stat card already carries its own alignment (see "class"), and what a source nests under its figures - a link, a line of navigation - is markup it wrote itself, which has to come out as the app's own components render it #}
+            {% if content %}{{ content|raw|nl2br }}{% endif %}
+        </twig:c975LUi:Card:Card>
+    {% elseif resolvedImageUrl or url %}
+        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ cardClass }}">
             {% if resolvedImageUrl %}
                 {# Pixel size so the card reserves its image's box; nothing when the image is a bare string #}
                 {% set cardMedia = block.media|length > 0 ? block.media|first : null %}
@@ -33,6 +52,6 @@
             </div>
         </twig:c975LUi:Card:Card>
     {% else %}
-        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" content="{{ content }}" class="{{ class|default([])|join(' ') }}"/>
+        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" content="{{ content }}" class="{{ cardClass }}"/>
     {% endif %}
 {% endif %}

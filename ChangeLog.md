@@ -1,5 +1,124 @@
 # ChangeLog
 
+## v1.10.0
+
+The block cache reaches the containers and the collections
+
+### The package
+
+- `require` declares `symfony/twig-bundle`, `twig/twig` and `symfony/ux-twig-component`, until now only transitive (13/08/2026)
+- Twig extensions declare their functions and filters with `#[AsTwigFunction]`/`#[AsTwigFilter]`, no `AbstractExtension` left (13/08/2026) [BC-Break]
+- A site extending one of them to add a function of its own carries `getFunctions()`/`getFilters()` no longer, and declares its addition with the same attributes (13/08/2026)
+- Their tests read what TwigBundle assembles, through `AttributeExtension` (13/08/2026)
+- `#[Autowire]` names a container parameter with `param:` rather than with a `%…%` string (13/08/2026)
+- A command's `setHelp()` moves into `#[AsCommand(help: …)]` (13/08/2026)
+- A repository declares the entity it manages, `@extends ServiceEntityRepository<…>` (13/08/2026)
+- `rector.php` binds its Symfony rules with `withComposerBased()`, the versioned sets being gone since Rector 2.6.2 (13/08/2026)
+- Rector caches in `.rector.cache`, inside the repository rather than in the directory shared by every repository on the machine (13/08/2026)
+- The `rector` script drops `--clear-cache`, `bin/ci.sh` leaving that cache out of its copy instead (13/08/2026)
+- `bin/ci.sh` installs the four quality tools fresh, in the latest release the CI always takes (13/08/2026)
+- It prints the versions it ran with, and runs on a private `TMPDIR` (13/08/2026)
+- The README states that those tools are installed rather than borrowed from the machine (13/08/2026)
+- `eslint.config.mjs` declares the `ResizeObserver` global (13/08/2026)
+
+### ConfigBundle
+
+- A `Redirect` whose `fromPath` and `toUrl` both end with `*` carries the end of the url over, `/character/*` → `/personnages/*` sending `/character/tuor` to `/personnages/tuor` (13/08/2026)
+- A destination without the `*` keeps folding the whole tree onto one url, the two being what a renamed tree and a removed one respectively need (13/08/2026)
+- A renamed url tree is a handful of rows rather than a redirecting route per old url, and it is edited in the back-office rather than deployed (13/08/2026)
+- The help of "Chemin source" and "URL de destination" states the pairing, in the three catalogues (13/08/2026)
+- Added five cases to `RedirectSubscriberTest`, the tail carried over, folded, left alone on an exact row, and the row requested as written (13/08/2026)
+
+- Added `UrlMetadata`, what an url says of itself when no entity carries it — a listing, a filtered listing, a tool page (13/08/2026) [DB-Migration]
+- Keyed by the path and not by the route name, one route serving many listings with different things to say (13/08/2026)
+- Holds the `title`, the `summarySocialNetwork` and the `ogImage` a `Page` already holds, under the same names (13/08/2026)
+- Added `UrlMetadataResolver`, which reads the whole table on the first lookup of a request rather than one query per path (13/08/2026)
+- A table not created yet resolves to nothing rather than failing, a site updated before it migrates keeping its pages (13/08/2026)
+- Added the `url_metadata()` Twig function, the row of the page being rendered or of a path stated explicitly (13/08/2026)
+- Added `UrlMetadataCrudController`, listed under "Social" beside the social links rather than under "Gestion" (13/08/2026)
+- No row is ever created by hand there: `Action::NEW` is disabled and the path is shown but not editable (13/08/2026)
+- Added `UrlMetadataProviderInterface`, which a bundle implements to have its own urls listed, ready to be described (13/08/2026)
+- What it declares is which urls exist and never what they say: the paths are structure, the sentences are content and live in the base (13/08/2026)
+- Added `UrlMetadataSynchronizer` and the `c975l:url-metadata:sync` command, to run at deployment beside `c975l:sitemaps:create` (13/08/2026)
+- It only ever creates empty rows, and a row whose url is no longer declared is reported rather than deleted (13/08/2026)
+- Added `SocialMenuProvider`, which declares that section here too so it exists on an app running without SocialBundle (13/08/2026)
+- Ships `label.social` in a `social` catalogue of its own for that case, SocialBundle's merging with it when installed (13/08/2026)
+- Ships `label.management` in a `site` catalogue of its own too: the section it has always declared was named by SiteBundle alone, and showed as a raw key on an app running without it (13/08/2026)
+- The layout fills only what the rendering template left unsaid, so an entity always speaks first (13/08/2026)
+- Added `UrlMetadataExportProvider` and `UrlMetadataImportProvider`, so the rows travel with "export sync all" as the redirects do (13/08/2026)
+- A row is matched on its path and never on an id, and its share image is carried into the archive beside it (13/08/2026)
+- Added `UrlMetadataTest`, `UrlMetadataResolverTest`, `UrlMetadataSynchronizerTest`, `UrlMetadataExportProviderTest`, `UrlMetadataImportProviderTest`, `UrlMetadataCrudControllerTest` and `SocialMenuProviderTest` (13/08/2026)
+- Added `UrlMetadataExtensionTest` and `UrlMetadataCrudControllerTest` (13/08/2026)
+- Added the `config-url-metadata` guided project, one url's description walked from the screen to the save (14/08/2026)
+- It highlights `.action-edit` and never `.action-new`, no row being created by hand there (14/08/2026)
+- `ManagementTargetsTest` reads `SocialMenuProvider` and `LinkableRouteProvider` too (14/08/2026)
+- The README states the `*` pairing, the `site_url_metadata` rows and `UrlMetadataProviderInterface` (14/08/2026)
+
+- Added `UserCreationNotifier`, a plain-text notice to the site's own `email-to` whenever an account is created (13/08/2026)
+- It is written in `kernel.default_locale`, the owner reading it rather than the visitor (13/08/2026)
+- Its subject carries the site name, several sites otherwise sending one inbox the same line (13/08/2026)
+- Added the `user-creation-notification` config, `bool` of the `email` group, on by default (13/08/2026)
+- A notification that fails never fails the registration, its result being dropped (13/08/2026)
+- Added `UserCreationNotifierTest`, and `UserRegistrarTest` covers the new call (13/08/2026)
+
+### UiBundle
+
+- `layout.html.twig` reads `summarySocialNetwork` where it read `description`, the name SiteBundle's own layout and `Page` column use (13/08/2026) [BC-Break]
+- The two layouts being interchangeable, a template posing the old name lost its `<meta name="description">` and its `og:description` under one of them and kept them under the other, silently (13/08/2026)
+- It falls back on the url's own `UrlMetadata` row for the title, the summary and the share image (13/08/2026)
+- It reduces the summary with `plain_text` before writing the two metas, as SiteBundle's layout does (13/08/2026)
+- Added the `MinimalLayoutTest` case pinning that reduction (13/08/2026)
+
+- A `text_section` lays its copy on `--text-section-max-width`, the page's measure by default, a site whose sections are prose pointing it at `--reading-max-width` (13/08/2026)
+- A `progress_tracker` takes the page's measure and the step above it, where it ran the full frame and sat flush against its neighbours (13/08/2026)
+- `collection_entry` takes that same step, and drops it as a column slot like every other section-level kind (13/08/2026)
+
+- Added the `collection_entry` kind, one item of a source under its own section head (13/08/2026)
+- Its item is picked `first`, `last`, or by the slug it carries (13/08/2026)
+- Nothing at all is rendered when nothing answers, a head standing over no item otherwise (13/08/2026)
+- A source declares its own total with `count`, read into the `limit` field's help rather than built item by item (13/08/2026)
+- A source names the template drawing its items with `itemTemplate`, the built-in card being the default (13/08/2026)
+- That path renders live, the named template answering for its own caching (13/08/2026)
+- A source declares the tags its items are cached under with `cacheTags`, none meaning rendered live (13/08/2026)
+- `flex_columns`, `flex_column`, `block_group`, `section_cards`, `video_grid`, `collection` and `collection_item` are cacheable (13/08/2026)
+- Added `BlockCacheTagResolver`, the one place answering whether a block is cached and under which tags (13/08/2026)
+- A container's entry carries every slot's own `block_{id}`, its html holding theirs verbatim (13/08/2026)
+- A slot that cannot be cached takes its whole container out of the cache with it (13/08/2026)
+- `BlockCacheInvalidationListener` walks up the chain, a changed slot reaching every container above it (13/08/2026)
+- Added `CollectionBlockCacheTagProvider`, vetoing a `collection` whose source declares no tag or whose block carries a `detailPage` (13/08/2026)
+- Added `BlockRenderContext`, which takes a whole render out of the cache - an editor's preview (13/08/2026)
+- `CollectionItem` takes a free `data` array, merged into the rendered item's own block data (13/08/2026)
+- The runtime's own keys win over it, a source being unable to displace `title`, `detailUrl` or `variant` (13/08/2026)
+- `CollectionItem.html.twig` opens the card's stat variant on `eyebrow`, `rating`, `stats` and `class` (13/08/2026)
+- A stat card nests its item's own content bare, the card already carrying its alignment (13/08/2026)
+- `_flip-card.scss` declares `.flip-card-face`, `.flip-card-back` and `.flip-card-inner` once each (13/08/2026)
+- Added the `readmore` controller, taking the "read more" link away when the text ends inside the folded measure (13/08/2026)
+- Added `.readmore--complete`, the class it adds after measure, and the `ReadmoreStyleTest` case locking it (13/08/2026)
+- `Readmore.html.twig` carries that controller and its two targets, the fold itself staying the stylesheet's (13/08/2026)
+- `BlockExtension` substitutes the csp nonce on the outermost render only, a slot's marker travelling into its container's cache entry intact (13/08/2026)
+- Its cache tags are resolved inside the cache callback, so a hit no longer hydrates the whole slot subtree (13/08/2026)
+- A block vetoed by `BlockCacheTagResolver` is rendered with `$save = false` rather than before the pool is reached (13/08/2026)
+- `BlockCacheTagResolver` skips a slot already met on the way down, a cycle no longer spinning until the fatal (13/08/2026)
+- `Card:Card` declares its props, what a caller writes on top reaching the card's own element through `attributes` (13/08/2026)
+- `sass/_tokens.scss` declares its defaults on `:root, [data-theme]`, a derived token otherwise descending already computed (13/08/2026)
+- The scaffolded `themes/ui.css` opens on that same pair, a value set on `:root` alone losing to the bundle's default (13/08/2026)
+- A card carrying `data-theme` therefore opens a color ambiance of its own (13/08/2026)
+- The block edit overlay is a round icon button, its translated label moving to `aria-label` (13/08/2026)
+- Added `SvgFontsHealthCheckAdviceProvider`, naming the menu entry that vectorizes an SVG's text (13/08/2026)
+- Added `LegalModelDriftHealthCheckAdviceProvider`, saying that a drifted document waits for a decision nobody takes in the reader's place (13/08/2026)
+- `GalleryShowcaseProvider` shows the new kind, its own item drawn from the showcase's fixtures (13/08/2026)
+- Added `ReadmoreControllerTest`, locking the barrel, the two targets and the class the controller alone adds (13/08/2026)
+- Added `CollectionItemStatVariantTest` and `CollectionEntryMarkupTest` (13/08/2026)
+- Added `CardAttributesTest`, `CollectionEntryTypeTest` and the two advice providers' own cases (13/08/2026)
+- Added `BlockCacheTagResolverTest`, `CollectionBlockCacheTagProviderTest` and `BlockRenderContextTest` (13/08/2026)
+- `CollectionSourceRegistryTest` covers `count()` and `cacheTags()`, `CollectionTypeTest` the total in the help, `BlockCacheTagRegistryTest` the resolver's veto (13/08/2026)
+- Added `CacheInvalidatorInterface`, an app's own cache emptied along with the block render cache (14/08/2026)
+- One failing invalidator no longer keeps the others from running, the failures being reported at the end (14/08/2026)
+- The `ui-media` guided project becomes `ui-site-graphic`, the favicon and the logos being what nothing else puts in place (14/08/2026)
+- Its second step highlights the button of the graphic still missing, `.action-new` pointing at the form that screen spares the user (14/08/2026)
+- Added the `ui-font` guided project, the bulk import of a whole family (14/08/2026)
+- `UiGuidedProjectProviderTest` reads the actions this bundle's own controllers declare too (14/08/2026)
+
 ## v1.9.1
 
 A segmented tracker counts what the progress bar could only measure

@@ -143,7 +143,7 @@ class DeclaredUrlsHealthCheckPassTest extends TestCase
             ->setArguments([new TaggedIteratorArgument('c975l.health_check_provider')]));
 
         new DeclaredUrlsHealthCheckPass()->process($container);
-        $container->compile();
+        $container->compile(true);
 
         $this->assertCount(1, $this->healthCheckDefinitions($container));
     }

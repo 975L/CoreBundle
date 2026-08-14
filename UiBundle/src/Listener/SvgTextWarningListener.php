@@ -26,7 +26,7 @@ class SvgTextWarningListener
         private readonly SvgTextDetector $svgTextDetector,
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }

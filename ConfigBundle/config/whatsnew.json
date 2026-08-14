@@ -1,5 +1,35 @@
 [
     {
+        "date": "2026-08-14",
+        "description": [
+            {
+                "en": "A whole renamed section of your site is redirected with a single row, each old address landing on its own new one instead of everything piling onto one page",
+                "fr": "Toute une section renommée de votre site se redirige avec une seule ligne, chaque ancienne adresse arrivant sur sa nouvelle plutôt que tout n'atterrisse sur une seule page",
+                "es": "Toda una sección renombrada de su sitio se redirige con una sola línea, y cada dirección antigua llega a la suya nueva en lugar de amontonarse todo en una sola página"
+            },
+            {
+                "en": "A step-by-step guide walks you through describing one of your listing pages, from the screen to the save",
+                "fr": "Un guide pas à pas vous accompagne pour décrire une de vos pages de listes, de l'écran jusqu'à l'enregistrement",
+                "es": "Una guía paso a paso le acompaña para describir una de sus páginas de listado, desde la pantalla hasta el guardado"
+            }
+        ]
+    },
+    {
+        "date": "2026-08-13",
+        "description": [
+            {
+                "en": "Your listing pages — an index, a filtered listing, a tool page — can at last carry a title and a description of their own, typed in the back office instead of being written into the code: the new Url descriptions screen holds them",
+                "fr": "Vos pages de listes — un index, une liste filtrée, une page d'outil — peuvent enfin porter leur propre titre et leur propre description, saisis depuis le back-office au lieu d'être écrits dans le code : le nouvel écran Descriptions d'urls les rassemble",
+                "es": "Sus páginas de listado — un índice, un listado filtrado, una página de herramienta — pueden por fin llevar su propio título y su propia descripción, introducidos desde el back-office en lugar de estar escritos en el código: la nueva pantalla Descripciones de urls los reúne"
+            },
+            {
+                "en": "You are now told by email each time an account is created on your site, without having to watch the users screen — a setting turns it off",
+                "fr": "Vous êtes désormais prévenu par courriel à chaque création de compte sur votre site, sans avoir à surveiller l'écran des utilisateurs : un réglage permet de le désactiver",
+                "es": "Ahora se le avisa por correo cada vez que se crea una cuenta en su sitio, sin tener que vigilar la pantalla de usuarios: un ajuste permite desactivarlo"
+            }
+        ]
+    },
+    {
         "date": "2026-08-11",
         "description": [
             {

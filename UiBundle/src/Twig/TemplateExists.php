@@ -11,22 +11,16 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class TemplateExists extends AbstractExtension
+class TemplateExists
 {
     public function __construct(private readonly ConfigServiceInterface $configService)
     {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [new TwigFunction('template_exists', $this->templateExists(...))];
-    }
-
     // Checks if the template exists.
+    #[AsTwigFunction('template_exists')]
     public function templateExists($template)
     {
         $root = $this->configService->getContainerParameter('kernel.project_dir');

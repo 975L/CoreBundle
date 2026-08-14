@@ -100,6 +100,66 @@ class CollectionSourceRegistryTest extends TestCase
         $this->assertTrue($registry->has('book.all'));
     }
 
+    // The total is what a source can answer without building a single item, and a source declaring none simply says nothing about how many it holds
+    public function testCountIsTheSourcesOwnTotalOrNothing(): void
+    {
+        $built = false;
+        $registry = new CollectionSourceRegistry();
+        $registry->addProvider($this->createProvider([
+            'book.all' => [
+                'label' => 'Books',
+                'count' => fn (): int => 128,
+                'items' => function () use (&$built) {
+                    $built = true;
+
+                    return [];
+                },
+            ],
+            'site.collection.projects' => ['label' => 'Projects', 'items' => fn () => []],
+        ]));
+
+        $this->assertSame(128, $registry->count('book.all'));
+        $this->assertNull($registry->count('site.collection.projects'));
+        $this->assertNull($registry->count('unknown.source'));
+        $this->assertFalse($built, 'The total must be asked for without building the source\'s items.');
+    }
+
+    public function testCacheTagsReturnsWhatTheSourceDeclared(): void
+    {
+        $registry = new CollectionSourceRegistry();
+        $registry->addProvider($this->createProvider([
+            'book.all' => ['label' => 'Books', 'items' => fn () => [], 'cacheTags' => ['book_books']],
+        ]));
+
+        $this->assertSame(['book_books'], $registry->cacheTags('book.all'));
+    }
+
+    // No tag is a source saying it cannot tell when its items change, which is what makes them rendered live rather than cached forever
+    public function testCacheTagsIsEmptyForASourceDeclaringNoneAndForAnUnknownOne(): void
+    {
+        $registry = new CollectionSourceRegistry();
+        $registry->addProvider($this->createProvider([
+            'site.collection.projects' => ['label' => 'Projects', 'items' => fn () => []],
+        ]));
+
+        $this->assertSame([], $registry->cacheTags('site.collection.projects'));
+        $this->assertSame([], $registry->cacheTags('book.all'));
+    }
+
+    // A source whose items are not what the built-in card draws names the template that draws them; declaring none keeps that card, which is every source that has ever existed
+    public function testItemTemplateIsTheSourcesOwnOrNothing(): void
+    {
+        $registry = new CollectionSourceRegistry();
+        $registry->addProvider($this->createProvider([
+            'guild.albums' => ['label' => 'Albums', 'items' => fn () => [], 'itemTemplate' => 'components/Album/AlbumCard.html.twig'],
+            'site.collection.projects' => ['label' => 'Projects', 'items' => fn () => []],
+        ]));
+
+        $this->assertSame('components/Album/AlbumCard.html.twig', $registry->itemTemplate('guild.albums'));
+        $this->assertNull($registry->itemTemplate('site.collection.projects'));
+        $this->assertNull($registry->itemTemplate('unknown.source'));
+    }
+
     public function testItemsPassesTheLimitToTheSourcesCallable(): void
     {
         $registry = new CollectionSourceRegistry();

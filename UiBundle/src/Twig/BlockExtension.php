@@ -10,53 +10,60 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Entity\Block;
-use c975L\UiBundle\Registry\BlockCacheTagRegistry;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
+use c975L\UiBundle\Service\BlockCacheTagResolver;
+use c975L\UiBundle\Service\BlockRenderContext;
 use c975L\UiBundle\Service\CspNonceProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Twig\Attribute\AsTwigFunction;
 use Twig\Environment;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
 
-class BlockExtension extends AbstractExtension
+class BlockExtension
 {
     // Written by the block templates, replaced by the real nonce at serve time (see applyNonce)
     private const string NONCE_MARKER = 'data-ui-nonce';
+
+    // How many render_block() calls are currently open, a container's slots being rendered from inside its own template (see renderBlock)
+    private int $renderDepth = 0;
 
     public function __construct(
         private readonly BlockRegistry $registry,
         private readonly Environment $twig,
         private readonly TagAwareCacheInterface $cache,
         private readonly RequestStack $requestStack,
-        private readonly BlockCacheTagRegistry $cacheTagRegistry,
+        private readonly BlockCacheTagResolver $cacheTagResolver,
         private readonly BlockEditUrlRegistry $blockEditUrlRegistry,
         private readonly CspNonceProvider $cspNonceProvider,
+        private readonly BlockRenderContext $renderContext,
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('render_block', $this->renderBlock(...), ['is_safe' => ['html']]),
-            new TwigFunction('block_edit_urls', $this->getBlockEditUrls(...)),
-        ];
-    }
-
     // Resolved once for the whole collection (not per block) to avoid a query per block - see BlockEditUrlRegistry
+    #[AsTwigFunction('block_edit_urls')]
     public function getBlockEditUrls(iterable $blocks): array
     {
         return $this->blockEditUrlRegistry->getEditUrls(is_array($blocks) ? $blocks : iterator_to_array($blocks));
     }
 
     // Every path goes through applyNonce, the early returns below included: a block rendered without being cached (no id, a kind the registry declares uncacheable, a render outside any request) ships the same marker and would otherwise leak it raw into the page
-    public function renderBlock(Block $block): string
+    // $cacheKey/$cacheTags are for the never-persisted blocks a caller builds itself and can identify better than an id could (see CollectionRuntime, whose items are transient by design but named by their source's own slug) - left out by every Twig caller, "render_block" only ever taking the block
+    #[AsTwigFunction('render_block', isSafe: ['html'])]
+    public function renderBlock(Block $block, ?string $cacheKey = null, array $cacheTags = []): string
     {
-        return $this->applyNonce($this->wrapInAnimation($block, $this->renderHtml($block)));
+        ++$this->renderDepth;
+
+        try {
+            $html = $this->wrapInAnimation($block, $this->renderHtml($block, $cacheKey, $cacheTags));
+        } finally {
+            --$this->renderDepth;
+        }
+
+        // A slot's html is stored verbatim in its container's cache entry, so the marker stays put until the outermost render - the only one that happens on every request, and the only one whose nonce is the one of the response being built
+        return 0 === $this->renderDepth ? $this->applyNonce($html) : $html;
     }
 
     // The entrance effect belongs to the block, not to the place it happens to be rendered from - hence here rather than in components/Blocks/Block.html.twig, which only ever wraps the blocks of a page's own run. A slot of a container kind (a card in a "section_cards", a block in a "flex_column", a video in a "video_grid") goes through render_block() straight, so its animation was stored, offered on the edit screen, and read by nothing at all.
@@ -76,7 +83,7 @@ class BlockExtension extends AbstractExtension
         );
     }
 
-    private function renderHtml(Block $block): string
+    private function renderHtml(Block $block, ?string $cacheKey, array $cacheTags): string
     {
         $kind = $block->getKind();
 
@@ -85,8 +92,14 @@ class BlockExtension extends AbstractExtension
             return '';
         }
 
-        // A never-persisted block (e.g. a block showcase's in-memory fixture previews, see BlockFixtureRegistry) has no id - caching it by id would collapse every such block onto the same "block_render_0_..." key, silently serving one block's rendered HTML for every other one
-        if (null === $block->getId() || !$this->registry->isCacheable($kind)) {
+        // A never-persisted block (e.g. a block showcase's in-memory fixture previews, see BlockFixtureRegistry) has no id - caching it by id would collapse every such block onto the same "block_render_0_..." key, silently serving one block's rendered HTML for every other one. Only a caller handing its own key gets such a block cached, having named it itself
+        $key = null !== $block->getId() ? 'block_render_' . $block->getId() : $cacheKey;
+        if (null === $key) {
+            return $this->doRender($block);
+        }
+
+        // An editor's preview: fresh output, and none of it written where the public site would read it - see BlockRenderContext
+        if ($this->renderContext->isCacheDisabled()) {
             return $this->doRender($block);
         }
 
@@ -100,15 +113,23 @@ class BlockExtension extends AbstractExtension
         // Locale is part of the key: some templates (e.g. legal_model) render different content per app.request.locale, not just per Block::$data
         $locale = $request->getLocale();
 
+        // Resolved inside the callback rather than before the get(): for a container it walks the whole slot subtree, hydrating it from the database, and on a hit that work would be thrown away along with the tags it computed
         return $this->cache->get(
-            sprintf('block_render_%d_%s', $block->getId(), $locale),
-            function (ItemInterface $item) use ($block): string {
+            $key . '_' . $locale,
+            function (ItemInterface $item, bool &$save) use ($block, $cacheTags): string {
+                // The kind's own "cacheable", plus whatever its instance has to say about it and the tags that go with it - a container's slots included, its html holding theirs (see BlockCacheTagResolver). Null is the veto, and $save is how the contract says "render this one, store nothing"
+                $extraTags = $this->cacheTagResolver->resolve($block);
+                if (null === $extraTags) {
+                    $save = false;
+
+                    return $this->doRender($block);
+                }
+
                 $item->expiresAfter(null);
-                $item->tag([
-                    'block_' . $block->getId(),
-                    BlockCacheInvalidator::CACHE_TAG_ALL,
-                    ...$this->cacheTagRegistry->getExtraTags($block),
-                ]);
+
+                // No "block_{id}" for a transient block, which has none - what reaches its entry is the tags its caller declared instead
+                $own = null !== $block->getId() ? ['block_' . $block->getId()] : [];
+                $item->tag([...$own, BlockCacheInvalidator::CACHE_TAG_ALL, ...$extraTags, ...$cacheTags]);
 
                 return $this->doRender($block);
             }

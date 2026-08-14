@@ -11,22 +11,14 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Video\VideoPlatform;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class VideoExtension extends AbstractExtension
+class VideoExtension
 {
-    #[\Override]
-    public function getFilters(): array
-    {
-        return [
-            new TwigFilter('privacy_embed_url', $this->toPrivacyEmbedUrl(...)),
-        ];
-    }
-
     // Turns whatever an editor pasted into the canonical embed url of the platform it belongs to - the address bar's own "/watch?v=", a share link, an embed url already, all carrying the same id (see VideoPlatform::resolve())
     // Privacy is what the canonical url buys: YouTube lands on youtube-nocookie.com, Vimeo carries "dnt=1". A url belonging to no declared platform is left exactly as it was, which is what keeps this filter safe to apply to anything
     // Player parameters on an already-formed embed url ("?autoplay=1", "?start=30") do not survive the rewrite: only the id is read back. The same was already true of the "/watch?t=42s" urls this filter was written for, and an embed's options belong to the block's own form rather than to a url pasted into it
+    #[AsTwigFilter('privacy_embed_url')]
     public function toPrivacyEmbedUrl(?string $url): ?string
     {
         return VideoPlatform::resolve($url)?->embedUrl() ?? $url;

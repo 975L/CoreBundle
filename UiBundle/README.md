@@ -322,6 +322,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `button` | Elements | `ButtonType` | `blocks/Button.html.twig` |
 | `card` | Elements | `CardType` | `blocks/Card.html.twig` |
 | `collection` | Page sections | `CollectionType` | `blocks/Collection.html.twig` |
+| `collection_entry` | Page sections | `CollectionEntryType` | `blocks/CollectionEntry.html.twig` |
 | `contact_details` | Elements | `ContactDetailsType` | `blocks/ContactDetails.html.twig` |
 | `cta_band` | Page sections | `CtaBandType` | `blocks/CtaBand.html.twig` |
 | `document_download` | Elements | `DocumentDownloadType` | `blocks/DocumentDownload.html.twig` |
@@ -414,6 +415,20 @@ The paragraph *answering* a hook is the other half of the same problem, and it i
 
 ---
 
+### The folded text (`text_readmore`)
+
+`text_readmore` - and the `<twig:c975LUi:Text:Readmore>` behind it - folds a long text to `--readmore-lines` (`5`) and opens it on a click. The fold is `sass/_readmore.scss`'s alone, a checkbox and the `~` rules keyed on it: no script has to run for the text to be folded, or for the link to open it.
+
+What the `readmore` controller adds is the one thing a stylesheet cannot ask - **whether the clamp clamped anything**. `-webkit-line-clamp` cuts at the fifth line when there is a sixth and does nothing when there isn't, and no selector tells the two apart, so the link used to sit under every folded block, including the short ones where it opened nothing. The controller measures the clamped box against its content and adds `readmore--complete` when the whole text is already on screen, which is what takes the link away.
+
+It is written that way round on purpose - link visible in the markup, hidden after measure - so a browser reaching no JS keeps a link that costs at most a click turning nothing. Hiding it by default and showing it from the controller would fold a long text behind a link that never appears.
+
+The measure is redone on every resize of the text box (`ResizeObserver`) and once web fonts have landed, both of which change how many lines the text takes. While the text is open the measure is skipped: the box then holds all of it, and reading that as "complete" would take the link away with no way back. `ReadmoreStyleTest` locks the rule in the compiled stylesheets.
+
+Nothing is folded that fits: a short text renders as plain body copy with no link under it, so the component can be dropped on a field whose length isn't known - a description, a lore, an editor's paragraph - without a caller having to count its characters first.
+
+---
+
 ## Container kinds (blocks made of other blocks)
 
 `flex_columns` is a **container** kind: instead of holding plain data, its "slots" are real, independently-editable `Block` rows (`Block::$slots`, a self-referencing relation - `Block::$parentBlock` on the child side), each picked through the exact same kind-picker + form + media upload as any top-level block. Use it whenever a design lays several existing blocks (a paragraph, a `document_download` card, a `progress_bar`...) side by side, instead of inventing a one-off kind per layout.
@@ -423,7 +438,7 @@ The paragraph *answering* a hook is the other half of the same problem, and it i
 - The row picks how its columns sit against each other vertically (`verticalAlign`, `FlexColumnsType::VERTICAL_ALIGNMENTS`): **top** hangs them from the row's own top, which is what a row of parallel items wants and what every row stored before the field existed goes on rendering as - it writes no class at all; **middle** and **bottom** write `.flex-columns--middle`/`--bottom` (`sass/_page-sections.scss`). Middle is for a row saying one thing between its columns - a lead and the paragraph answering it - where two unequal heights read as one statement rather than as two items.
 - A slot saved before that restriction existed holds a kind the picker no longer lists. It is put back in that one slot's own choices, carrying a help text telling the editor to move it into a `flex_column` - without it `ChoiceType` would render the select unselected and reject the value on submit, locking them out of a page they can still see.
 - Nesting is bounded to exactly this: a `flex_columns` slot can't be another `flex_columns`, and a `flex_column` slot can't be another `flex_column` (or a `flex_columns`) - see `BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT`/`SLOT_CONTEXT`/`NESTED_SLOT_CONTEXT` and `getSlotContext()` below.
-- Not cacheable itself (`cacheable: false`, same for `flex_column`): each leaf slot still caches independently through its own `render_block()` call (see "Block render cache" below) - only the wrapper(s) are re-rendered every time, which is cheap.
+- Cacheable like any other kind (`cacheable: true`, same for `flex_column`): a container's entry holds its slots' rendered html verbatim, so `BlockCacheTagResolver` puts every slot's own `block_{id}` on it, and `BlockCacheInvalidationListener` walks back up the chain whenever one of them changes - adding, editing, removing or reordering a slot all reach the containers above it. A slot whose kind can't be cached (a `form` and its csrf token, a `twig_content` varying with the collection item being rendered) takes the whole container out of the cache with it, its html being held there verbatim - see "Block render cache" below.
 - To make your own kind a container, tag it `container: true` in its `ui.block` service tag, and mirror `FlexColumnsType`/`FlexColumns.html.twig` (or `FlexColumnType`/`FlexColumn.html.twig` for a chrome-less nested one) - the "slots" field itself is added automatically by `BlockType`, not by your kind's own form. By default its slots are offered every OTHER container kind's own choices too, minus containers (`BlockRegistry::SLOT_CONTEXT`); to let your container nest one level inside another specific container instead (like `flex_column` does inside `flex_columns`), declare `contexts: 'that_containers_slot_context'` and give your own slots a distinct `slot_context: 'something_else'` so nothing can nest inside *it* in turn.
 - A `contexts`-restricted kind is only hidden from pickers that actually pass a context, which every real one does (`PageCrudController` passes `'page'`, `MenuCrudController` `'menu'`, `BlockFormController` the container's own slot context) - so `flex_column` never leaks into a page's or a menu's own picker. A context-less caller would still list it: harmless, it just renders its slots with no wrapper when picked directly.
 
@@ -1030,6 +1045,44 @@ class ArticlesSliderCacheTagProvider implements BlockCacheTagProviderInterface
 
 SiteBundle's own `ArticlesSliderCacheTagProvider` is a real example: `articles_slider` resolves another `Page`'s own `article` blocks live at render time, so its listener tags the render with `articles_slider_{pageId}` and invalidates that tag whenever one of that page's articles changes.
 
+A resolver may also return **`null`**, which means "don't cache *this* block at all". `cacheable` is declared once per kind, while the answer sometimes belongs to the instance: `CollectionBlockCacheTagProvider` returns null for a `collection` whose source declared no cache tag, and for one configured with a `detailPage`. The veto propagates upwards - a container holding such a block as one of its slots isn't cached either, since its own html would hold that block's.
+
+### Containers, and how their tags are built
+
+`BlockCacheTagResolver` is what composes the whole decision: the kind's `cacheable`, the per-kind resolver above (tags, or the veto), and - for a `container: true` kind - a walk through its slots, whose rendered html its entry holds verbatim. Each slot contributes its own `block_{id}` plus whatever its kind added, recursively for a nested container; any slot that can't be cached (an uncacheable kind, an instance veto, a row not flushed yet and therefore without an id) takes the container down with it.
+
+The other half is in `BlockCacheInvalidationListener`, which walks the other way: a changed block invalidates its own `block_{id}` **and** every container above it (`Block::$parentBlock`, falling back to the unit-of-work snapshot when the PHP-side relation was already nulled by `Block::removeSlot()`). Adding a slot is what makes that necessary rather than merely tidy - the new row's id was never a tag of its container's entry, so nothing else would ever reach it.
+
+### Emptying a cache of your own along with the blocks
+
+The dashboard's **"Clear the render cache"** tile, a legal model being customized, and every `bin/console cache:clear` all funnel through `BlockCacheInvalidator::invalidateAll()`. An app or a satellite bundle plugs its own caches into that one gesture by implementing `CacheInvalidatorInterface` — auto-discovered like every other provider here, no tag needed:
+
+```php
+use c975L\UiBundle\Contract\CacheInvalidatorInterface;
+
+class SheetCacheInvalidator implements CacheInvalidatorInterface
+{
+    public function __construct(
+        private CacheItemPoolInterface $twigCache,
+        private EntityManagerInterface $entityManager,
+    ) {}
+
+    public function invalidate(): void
+    {
+        $this->twigCache->clear();
+        $this->entityManager->getConfiguration()->getResultCache()?->clear();
+    }
+}
+```
+
+What belongs here is any cache holding rendered output or query results whose key carries **no version of the code that produced it** — a Twig `{% cache %}` fragment around an app's own component, a Doctrine result cache on the lists an index shows. Those go stale on a release that changed nothing in the database, which is exactly what the tile and `cache:clear` exist to settle. Per-entity invalidation is a different job and stays where it belongs, on the Doctrine events.
+
+The blocks are emptied first, so the tile does what it is named after even if a satellite's invalidator throws; the failures are collected and raised once every invalidator has had its turn. An implementation must not reach back into `BlockCacheInvalidator`, which is the service calling it.
+
+### Skipping the cache for a whole render
+
+`BlockRenderContext` is a request-scoped flag: call `disableCache()` and nothing rendered afterwards is read from, or written to, the cache. SiteBundle's `PageController::preview()` arms it - an editor's preview has to show what was just saved, and its own html is not the public one (a `collection` block there builds its items' links against the preview route, which would otherwise be served to every later visitor).
+
 ---
 
 ## Legal models
@@ -1172,7 +1225,7 @@ screen then shows the new wording next to the section, and nothing else happens.
 legal text is not something a bundle gets to decide: the page is the site owner's responsibility, and the
 update is offered, never applied.
 
-A site that never customized anything reports nothing at all — it simply keeps receiving the updates.
+A site that never customized anything reports nothing at all — it simply keeps receiving the updates. Each row carries an advice line (`LegalModelDriftHealthCheckAdviceProvider`) saying that much: the decision is the reader's, and a row left alone stays as it is.
 
 ---
 
@@ -1298,6 +1351,10 @@ no `variant` string to keep in step with the props.
     stats="{{ [{label: 'Int.', value: 900}, {label: 'Chance', value: 40}] }}" />
 ```
 
+Every prop the card reads is declared in its `{% props %}` block, so anything else a caller writes lands
+in `attributes` and is rendered on the card's own element — `data-theme` first of all, which opens a
+second color ambiance on that one card (see "Token defaults" below). `CardAttributesTest` locks it.
+
 A `rating` of `0` is a real score — the field left empty is what means "not rated". The picture is
 linked to the card's own `titleUrl` when it has one, so it is not a dead zone in the middle of a
 clickable card.
@@ -1320,8 +1377,19 @@ entered on the block itself, only which source to pull from (`source`), how many
 the surrounding section heading/link. Each item is resolved live at render time and rendered through
 `collection_item`, a `card`-based kind reserved for this use (never offered in the block picker - see
 `pickable: false` in `config/services.yaml`), so it looks the same as a manually placed `card`.
-Not cacheable (`cacheable: false` in `config/services.yaml`) — its content depends on another bundle's
-own entities, which `BlockCacheInvalidationListener` has no way to invalidate on.
+Cacheable, but only as far as its source lets it be: its content depends on another bundle's own
+entities, which `BlockCacheInvalidationListener` knows nothing about, so the **source** declares the
+cache tags its items are stored under (`cacheTags`, see below) and its own bundle invalidates them.
+A source declaring none is rendered live on every request, exactly as this whole kind used to be.
+Two things are cached, on the same tags:
+
+- **each item**, keyed by its source and its own slug rather than by the block listing it — so one
+  character's card is a single entry, hit by the `collection` block on one page *and* by the one on
+  another, whichever block was rendered first having filled it;
+- **the block itself**, unless it was given a `detailPage`: its items then carry links built from the
+  page currently being rendered (`CollectionRuntime::buildDetailUrl()`), and one entry per block would
+  freeze one page's links into another's html. The items stay cached either way, their own key holding
+  the detail url they were built with — all that is given up is the grid wrapper around them.
 
 A bundle exposes its entities to this block by implementing `CollectionSourceProviderInterface`
 (auto-discovered the same way as `BlockFixtureProviderInterface` — no tag needed):
@@ -1360,6 +1428,49 @@ responsible for resolving its own image storage before handing it back. A source
 `collection` block was configured (e.g. its owning bundle uninstalled) doesn't break the page it's
 still referenced from, it just renders an empty grid.
 
+#### Letting a source be cached
+
+Add `cacheTags` to a source and everything built from it is cached until you say otherwise:
+
+```php
+'book.collection.books' => [
+    'label' => 'Books',
+    'items' => function (?int $limit): iterable { /* ... */ },
+    'cacheTags' => ['book_books'],
+],
+```
+
+Then invalidate that tag wherever the entities behind the source actually change — a Doctrine listener
+on `Book`, exactly like `BlockCacheInvalidationListener` does for `Block`/`Media`:
+
+```php
+#[AsDoctrineListener(event: Events::postPersist)]
+#[AsDoctrineListener(event: Events::postUpdate)]
+#[AsDoctrineListener(event: Events::preRemove)]
+class BookCacheInvalidationListener extends AbstractBlockCacheInvalidationListener
+{
+    public function __construct(private readonly TagAwareCacheInterface $cache) {}
+
+    protected function invalidate(object $entity): void
+    {
+        if ($entity instanceof Book) {
+            $this->cache->invalidateTags(['book_books']);
+        }
+    }
+}
+```
+
+Declaring **no** `cacheTags` is not a failure — it is a source saying it cannot tell when its items
+change, and it is then rendered live on every request, which is the safe reading of "no way to
+invalidate". Nothing forbids several sources sharing one tag, and sources cut out of the same entity
+normally should: a "books" source and a "books of one series" source go stale on the same edit.
+
+Reuse that tag for anything else your app renders from the same entity — a Twig `{% cache %}` around
+your own card component, keyed by the entity and tagged the same way, makes one listener invalidate
+both the site's own cards and the ones this block draws. Watch the pool, though: `{% cache %}` writes
+to `twig.cache`, which `twig/extra-bundle` declares apart from the `cache.app.taggable` this bundle
+uses — invalidate both, or the other one keeps serving the previous version.
+
 `CollectionItem` also takes `buttonLabel` (defaults to the raw `url` when empty) and `buttonIcon` (a
 `c975L\UiBundle\Image\Icon` component `src`, e.g. an icon path from `social_link_icon()`) — both flow
 straight into the transient `collection_item` Block's own teaser button, so a collection item's
@@ -1368,6 +1479,85 @@ call-to-action reads the same as a manually placed `card`'s.
 The `collection` block's own **Presentation** field (`variant`) switches every item's markup at once,
 without an app-level template override: `''` (default) renders each item as a `card`, `'portfolio'`
 reuses `portfolio_grid`'s own markup/CSS instead (see `CollectionItem.html.twig`).
+
+#### Richer items
+
+Anything else a source has to say about an item goes into `data`, merged into the transient
+`collection_item` Block's own data exactly as a stored Block carries its editor's input — which is what
+keeps this model from growing one property per prop the underlying `card` accepts:
+
+```php
+yield new CollectionItem(
+    title: $character->getName(),
+    imageUrl: $character->getThumbnailUrl(),
+    slug: $character->getSlug(),
+    data: [
+        'eyebrow' => 'Seigneur · Guerrier',
+        'rating' => 5,
+        'stats' => [['label' => 'Force', 'value' => '1 000'], ['label' => 'Int.', 'value' => '900']],
+        'class' => 'faction-guilde',
+    ],
+);
+```
+
+Those four keys are the ones `CollectionItem.html.twig` already knows: any of them opens the `card`
+component's own **stat variant** (portrait, qualifying line, score, row of key figures — see
+`Card/Card.html.twig`), so an item drawn from a source reads exactly like the card an app renders itself
+when it holds the entity rather than a collection item. Other keys are simply carried, for an app that
+overrides the template. The fixed constructor arguments always win over a `data` key of the same name,
+so a source can't take the place of the `title`, `detailUrl` or `variant` the runtime computes.
+
+#### Telling how many there are
+
+A source may also declare `count`, its own total, asked for without building a single item:
+
+```php
+'book.all' => [
+    'label' => 'Books',
+    'count' => fn (): int => $this->books->count([]),
+    'items' => function (?int $limit): iterable { /* ... */ },
+],
+```
+
+It is read once, when the block's form is opened, and lands in the help under the **Limit** field:
+"leave empty to show everything" then says how many that is. A source declaring none keeps the plain
+wording — the field itself works the same either way.
+
+#### Items a card cannot draw
+
+Some items are not cards at all: a comic album with its cover in portrait beside its text and two
+buttons, a panel of its own. A source says so by naming the template that draws its items, and hands its
+entity over in `data` for that template to read:
+
+```php
+'guild.albums' => [
+    'label' => 'Albums',
+    'items' => fn (?int $limit): iterable => /* ... */ yield new CollectionItem(
+        title: $album->getTitle(),
+        slug: $album->getSlug(),
+        data: ['album' => $album],
+    ),
+    'itemTemplate' => 'components/Album/AlbumCard.html.twig',
+],
+```
+
+The template is included with the item's whole data (its own `data` keys first, then
+`title`/`content`/`url`/`imageUrl`/`detailUrl`/`variant`), so the example above renders
+`<twig:Album:AlbumCard album="…">` — a component of the app that owns both the entity and its markup,
+which is what lets a back-office page hold a rendering this bundle knows nothing about. Declaring no
+`itemTemplate` keeps the `collection_item` card every source has always been drawn by.
+
+A source naming a template answers for its caching too: that path bypasses the per-item cache entry,
+the template being free to hold its own `{% cache %}` against the very entity it draws.
+
+#### One item rather than a listing
+
+The `collection_entry` kind is the singular of `collection`: same sources, same rendering (the built-in
+card, or the source's own `itemTemplate`), but a single item — an album put forward on a home page, a
+member of the month. Its `pick` field names which one: `first`, `last` (both read the source's own
+order, so a source ordered by date puts its latest at one end) or `slug`, which names one item and holds
+whatever the source may reorder afterwards. Nothing answering — an empty source, a slug matching none —
+renders nothing at all rather than a heading standing over a hole.
 
 #### Item detail pages
 
@@ -1630,7 +1820,7 @@ That rasterizing goes through `ext-imagick`, a Composer **suggest** rather than 
 
 An SVG served through an `<img>` is rendered as an isolated document: it reaches neither the page's `@font-face` rules nor its stylesheet. So an `<svg>` still drawing its text with a `<text>` element needs that font on the **visitor's own machine**, and falls back to whatever the renderer picks otherwise — the same story server-side, where `SvgRasterizer` flattens an icon role with the fonts the server happens to carry. Self-hosting the font on the site changes nothing; converting the text to paths (Inkscape: *Path > Object to Path*) is the fix.
 
-It is the one defect an author cannot see, their own machine being the one that has the font, so `Service\SvgTextDetector` looks for it and `Listener\SvgTextWarningListener` flashes a warning on the upload itself — hooked on `vich_uploader.post_upload` rather than on a CRUD controller, so a site graphic, a block's media and a gallery photo are all covered at once. A **flash, not a validation error**: the file is perfectly storable, it just won't look the same to everyone. The detector decides on content and never on the name (an icon role's stored file already carries the role's `.ico`/`.png` while still holding the uploaded markup), names the families each `<text>` depends on, and is what the `svg-fonts` health check reuses to report the files already in place.
+It is the one defect an author cannot see, their own machine being the one that has the font, so `Service\SvgTextDetector` looks for it and `Listener\SvgTextWarningListener` flashes a warning on the upload itself — hooked on `vich_uploader.post_upload` rather than on a CRUD controller, so a site graphic, a block's media and a gallery photo are all covered at once. A **flash, not a validation error**: the file is perfectly storable, it just won't look the same to everyone. The detector decides on content and never on the name (an icon role's stored file already carries the role's `.ico`/`.png` while still holding the uploaded markup), names the families each `<text>` depends on, and is what the `svg-fonts` health check reuses to report the files already in place. Each of those rows carries its way out as advice (`SvgFontsHealthCheckAdviceProvider`): the menu entry that vectorizes the text, and why an SVG served as an image is worse off than the row says.
 
 Retrieve it anywhere in Twig with the `site_media()` function, which returns `null` if none was uploaded yet:
 
@@ -1824,6 +2014,8 @@ A field turns green or red as soon as it has been judged, replacing the blue foc
 `sass/_tokens.scss` declares a default for every custom property this bundle reads but does not own — SiteBundle's whole theme contract. It exists because an unresolved `var()` with no fallback makes its entire declaration invalid, so a missing token is a card with *no* border rather than a slightly off one, and eight c975L bundles require `c975l/ui-bundle` while none requires `c975l/site-bundle`.
 
 They sit in `@layer ui-defaults`, and that layer is the point: a layered rule always loses to an unlayered one whatever the source order, so SiteBundle's `:root`, the admin's compiled `bundles/build/site-theme.css` and a site's own `theme.css` all win without anything having to be sequenced — the two bundles' stylesheet providers share `priority: 100`, so their relative order is not something either can rely on. Nothing else in this bundle is layered, and `TokenDefaultsTest` fails if a token is read without a default, if a default is declared for a token nothing reads, or if a second layer appears.
+
+They are declared on `:root, [data-theme]`, never on `:root` alone — and a site's own theme file has to declare on that same pair, which is how `scaffold/assets/styles/themes/ui.css` ships. A `var()` written inside a custom property's value is substituted where that declaration sits, not where the token is finally read, so a derived token (`--surface-alt`, `--border-color`, the `--section-bg-*` family) would otherwise resolve once against the root palette and descend already computed. Declared on both, any element carrying `data-theme` recomputes the whole chain against the palette in scope — which is what lets a single card or a single section open a second color ambiance below the root.
 
 Values are light-mode only. Dark mode is SiteBundle's (`sass/_theme-dark.scss`); with that bundle absent there is no dark theme to follow.
 

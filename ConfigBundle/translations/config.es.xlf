@@ -78,6 +78,10 @@
                 <source>description.guided_project_config_settings</source>
                 <target>Encontrar un ajuste, modificarlo y entender qué hace el panel con él</target>
             </trans-unit>
+            <trans-unit id="SvaL.3Z">
+                <source>description.guided_project_config_url_metadata</source>
+                <target>Dar un título, un resumen y una imagen para compartir a las páginas que ninguno de sus contenidos lleva.</target>
+            </trans-unit>
             <trans-unit id="w22XwFU">
                 <source>description.guided_step_config_health_check_again</source>
                 <target>Tras la corrección, vuelva a lanzarlo: la curva de tendencia en la parte superior muestra si el sitio mejora.</target>
@@ -137,6 +141,30 @@
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
                 <target>Una entrada marcada como sensible se cifra en la base de datos y nunca vuelve a mostrarse en claro.</target>
+            </trans-unit>
+            <trans-unit id="ig3vWoA">
+                <source>description.guided_step_config_url_metadata_done</source>
+                <target>El control de calidad de los contenidos deja de señalar esta url, y un enlace hacia ella lleva ahora un título en lugar de una dirección desnuda.</target>
+            </trans-unit>
+            <trans-unit id="4N_rrDu">
+                <source>description.guided_step_config_url_metadata_edit</source>
+                <target>Las filas las declaran los bundles que sirven esas urls, así que ninguna se añade a mano: solo lo que dicen le corresponde a usted.</target>
+            </trans-unit>
+            <trans-unit id="g3fx2V0">
+                <source>description.guided_step_config_url_metadata_image</source>
+                <target>Sin ella, una red social recurre a la imagen por defecto del sitio, que describe el sitio y nunca esta url en concreto.</target>
+            </trans-unit>
+            <trans-unit id="bUrnAxC">
+                <source>description.guided_step_config_url_metadata_open</source>
+                <target>Una fila por cada url servida por un listado y no por un contenido propio: un índice de blog, una galería, una página de búsqueda.</target>
+            </trans-unit>
+            <trans-unit id="zZ_yPq.">
+                <source>description.guided_step_config_url_metadata_summary</source>
+                <target>Dos frases como máximo: es lo que aparece bajo el título en un resultado de búsqueda, y junto al enlace cuando se comparte la página.</target>
+            </trans-unit>
+            <trans-unit id="GFKzUI0">
+                <source>description.guided_step_config_url_metadata_title</source>
+                <target>Es la línea que un buscador muestra encima de la url, y la que lleva la pestaña del navegador.</target>
             </trans-unit>
             <trans-unit id="sXfnWsf">
                 <source>description.health_check</source>
@@ -524,7 +552,7 @@
             </trans-unit>
             <trans-unit id="GnuqUyG">
                 <source>label.from_path_help</source>
-                <target>Ruta URL con la / inicial (ej: /la-guilde-des-seigneurs)</target>
+                <target>Ruta URL con la / inicial (ej: /la-guilde-des-seigneurs). Un * final cubre toda una carpeta (ej: /personnage/*)</target>
             </trans-unit>
             <trans-unit id="qrvRsVy">
                 <source>label.gone</source>
@@ -617,6 +645,10 @@
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
                 <target>Ajustar la configuración del sitio</target>
+            </trans-unit>
+            <trans-unit id="iJUtTyq">
+                <source>label.guided_project_config_url_metadata</source>
+                <target>Hacer que una página de listado hable por sí misma</target>
             </trans-unit>
             <trans-unit id="bw6vzfK">
                 <source>label.guided_project_done</source>
@@ -717,6 +749,34 @@
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>
                 <target>Introducir el valor</target>
+            </trans-unit>
+            <trans-unit id="ApkY5XD">
+                <source>label.guided_step_config_url_metadata_done</source>
+                <target>Ver lo que eso cambia</target>
+            </trans-unit>
+            <trans-unit id="F7NKdZB">
+                <source>label.guided_step_config_url_metadata_edit</source>
+                <target>Elegir una url que describir</target>
+            </trans-unit>
+            <trans-unit id="s_iSwmp">
+                <source>label.guided_step_config_url_metadata_image</source>
+                <target>Añadir la imagen para compartir</target>
+            </trans-unit>
+            <trans-unit id="FmcQtw2">
+                <source>label.guided_step_config_url_metadata_open</source>
+                <target>Abrir las descripciones de urls</target>
+            </trans-unit>
+            <trans-unit id="CL_fU.J">
+                <source>label.guided_step_config_url_metadata_save</source>
+                <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="rOpKXFa">
+                <source>label.guided_step_config_url_metadata_summary</source>
+                <target>Escribir el resumen</target>
+            </trans-unit>
+            <trans-unit id="2BqVoTR">
+                <source>label.guided_step_config_url_metadata_title</source>
+                <target>Escribir el título</target>
             </trans-unit>
             <trans-unit id="RXDF6wx">
                 <source>label.health_check</source>
@@ -1282,6 +1342,10 @@
                 <source>label.info_theme</source>
                 <target>Colores, fuentes, modo claro/oscuro. Edición manual reservada a ROLE_SUPER_ADMIN; presets disponibles desde editor.</target>
             </trans-unit>
+            <trans-unit id="JWFxVz2">
+                <source>label.info_url_metadata</source>
+                <target>Título y descripción de las páginas que ninguna ficha describe: listados, listados filtrados, páginas de herramienta. Una página respaldada por una ficha, un producto o una foto ya dice lo que es y no debe figurar aquí. Escriba la ruta tal como aparece en la barra de direcciones, por ejemplo /animales.</target>
+            </trans-unit>
             <trans-unit id="14MwZnc">
                 <source>label.info_user</source>
                 <target>Lista de los usuarios del sitio. Puede modificar los roles de un usuario o eliminarlo; tenga cuidado, cambiar los roles modifica de inmediato sus derechos de acceso al back-office.</target>
@@ -1636,7 +1700,7 @@
             </trans-unit>
             <trans-unit id="AVZ1p4W">
                 <source>label.to_url_help</source>
-                <target>URL completa (https://...) o ruta absoluta (/serie/la-guilde)</target>
+                <target>URL completa (https://...) o ruta absoluta (/serie/la-guilde). Si la ruta de origen termina en *, un * final aquí traslada el final de la url (/personnage/* a /personnages/* envía /personnage/tuor a /personnages/tuor); sin *, toda la carpeta aterriza en esta única url</target>
             </trans-unit>
             <trans-unit id="sS6ch7.">
                 <source>label.true</source>
@@ -1646,9 +1710,45 @@
                 <source>label.url</source>
                 <target>URL</target>
             </trans-unit>
+            <trans-unit id="0SMI4yM">
+                <source>label.url_metadata</source>
+                <target>Descripciones de urls</target>
+            </trans-unit>
+            <trans-unit id="cIyQYC7">
+                <source>label.url_metadata_og_image</source>
+                <target>Imagen para compartir</target>
+            </trans-unit>
+            <trans-unit id="ZjZddIm">
+                <source>label.url_metadata_og_image_help</source>
+                <target>La imagen mostrada al compartir la página en una red social. Si se deja vacía, se usa la imagen por defecto del sitio.</target>
+            </trans-unit>
+            <trans-unit id="0olbUUV">
+                <source>label.url_metadata_path</source>
+                <target>Ruta</target>
+            </trans-unit>
+            <trans-unit id="N_lh5o_">
+                <source>label.url_metadata_path_help</source>
+                <target>La ruta de la página, sin el nombre de dominio, por ejemplo /animales o /caste/guerrero. Una fila por página: dos listados filtrados servidos por la misma ruta dicen dos cosas distintas.</target>
+            </trans-unit>
+            <trans-unit id="26r6ZWK">
+                <source>label.url_metadata_summary_help</source>
+                <target>La frase mostrada bajo el título en los resultados de búsqueda y al compartir la página. Entre 50 y 160 caracteres.</target>
+            </trans-unit>
+            <trans-unit id="Vj0O6lb">
+                <source>label.url_metadata_title</source>
+                <target>Título</target>
+            </trans-unit>
+            <trans-unit id="ZmviGeK">
+                <source>label.url_metadata_title_help</source>
+                <target>El título mostrado en la pestaña del navegador y en los resultados de búsqueda. Si se deja vacío, la página conserva el título que le da su plantilla.</target>
+            </trans-unit>
             <trans-unit id="ExAFOiH">
                 <source>label.user</source>
                 <target>Usuario</target>
+            </trans-unit>
+            <trans-unit id="78Hfnqr">
+                <source>label.user_created</source>
+                <target>Nueva cuenta de usuario</target>
             </trans-unit>
             <trans-unit id="hKJPguf">
                 <source>label.user_registration_disable</source>
@@ -1685,6 +1785,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>Has iniciado sesión como %user%,</target>
+            </trans-unit>
+            <trans-unit id="g6ka9K.">
+                <source>text.user_created</source>
+                <target>Se acaba de crear una nueva cuenta de usuario en el sitio con la dirección de correo %email%.</target>
             </trans-unit>
         </body>
     </file>

@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Environment;
+use Twig\Extension\AttributeExtension;
 use Twig\Loader\ArrayLoader;
 
 class LegalModelExtensionTest extends TestCase
@@ -64,7 +65,7 @@ class LegalModelExtensionTest extends TestCase
 
     public function testGetFunctionsExposesEveryFunctionAsHtmlSafe(): void
     {
-        $functions = $this->createExtension('fr')->getFunctions();
+        $functions = new AttributeExtension(LegalModelExtension::class)->getFunctions();
         $names = array_map(static fn ($function): string => $function->getName(), $functions);
 
         $this->assertSame(['legal_var', 'legal_model', 'legal_model_html'], $names);

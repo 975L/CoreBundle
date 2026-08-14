@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Twig\VideoExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 // The url forms themselves are covered by Tests\Video\VideoPlatformTest - what is checked here is only what the filter adds on top of the registry: rewriting what resolves, leaving alone what doesn't
 class VideoExtensionTest extends TestCase
@@ -97,8 +98,7 @@ class VideoExtensionTest extends TestCase
 
     public function testGetFiltersRegistersPrivacyEmbedUrlFilter(): void
     {
-        $extension = new VideoExtension();
-        $filters = $extension->getFilters();
+        $filters = new AttributeExtension(VideoExtension::class)->getFilters();
 
         $this->assertCount(1, $filters);
         $this->assertSame('privacy_embed_url', $filters[0]->getName());

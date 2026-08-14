@@ -37,7 +37,7 @@ class CheckImportmapCommand extends Command
         private readonly ImportMapConfigReader $configReader,
         #[Autowire(service: 'asset_mapper.repository')]
         private readonly AssetMapperRepository $assetMapperRepository,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
         parent::__construct();

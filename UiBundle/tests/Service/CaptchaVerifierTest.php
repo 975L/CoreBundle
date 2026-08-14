@@ -29,8 +29,7 @@ class CaptchaVerifierTest extends TestCase
         $configService->method('hasParameter')->willReturnCallback(static fn (string $key) => array_key_exists($key, $configValues));
         $configService->method('get')->willReturnCallback(static fn (string $key) => $configValues[$key] ?? null);
 
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request(server: ['REMOTE_ADDR' => $clientIp]));
+        $requestStack = new RequestStack([new Request(server: ['REMOTE_ADDR' => $clientIp])]);
 
         return new CaptchaVerifier($httpClient ?? new MockHttpClient(), $configService, $requestStack);
     }

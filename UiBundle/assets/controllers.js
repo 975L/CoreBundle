@@ -20,6 +20,7 @@ const LAZY_CONTROLLERS = {
     imageCompare: () => import('./js/image-compare.js'),
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
     password: () => import('./js/password.js'),
+    readmore: () => import('./js/readmore.js'),
     slider: () => import('./js/slider.js'),
     videoIframe: () => import('./js/video-iframe.js'),
 };

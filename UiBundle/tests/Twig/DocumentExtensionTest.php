@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Twig\DocumentExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class DocumentExtensionTest extends TestCase
 {
@@ -75,7 +76,7 @@ class DocumentExtensionTest extends TestCase
     public function testGetFunctionsRegistersDocumentThumbnailPathFunction(): void
     {
         $extension = new DocumentExtension($this->projectDir);
-        $names = array_map(fn ($f) => $f->getName(), $extension->getFunctions());
+        $names = array_map(fn ($f) => $f->getName(), new AttributeExtension(DocumentExtension::class)->getFunctions());
 
         $this->assertSame(['document_thumbnail_path'], $names);
     }

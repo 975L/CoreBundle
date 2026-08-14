@@ -17,6 +17,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 // Each item comes from the chosen source, rendered as a never-persisted "collection_item" Block - see Collection.html.twig. No item is entered here: source/limit only pick which external collection to pull from and how many of its items to show
@@ -43,11 +45,7 @@ class CollectionType extends AbstractType
                 // No bundle implementing CollectionSourceProviderInterface yet (fresh install) means an empty select with nothing to pick - a disabled placeholder explains why instead of leaving the editor facing a blank dropdown with no clue what's wrong
                 'placeholder' => [] === $choices ? 'label.no_collection_source_available' : null,
             ])
-            ->add('limit', IntegerType::class, [
-                'label' => 'label.limit',
-                'help' => 'label.collection_limit_help',
-                'required' => false,
-            ])
+            ->add('limit', IntegerType::class, $this->limitOptions(null))
             ->add('eyebrow', TextType::class, [
                 'label' => 'label.eyebrow',
                 'required' => false,
@@ -81,6 +79,27 @@ class CollectionType extends AbstractType
                     'label.variant_portfolio' => 'portfolio',
                 ],
             ]);
+
+        // "Leave empty to show everything" says nothing about how many that is, and whoever types a limit is exactly the one who would like to know. Resolved here rather than above: the block's stored data - which names the source - only reaches this form when it is set, well after the fields are declared
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $data = $event->getData();
+            $total = \is_array($data) ? $this->sourceRegistry->count($data['source'] ?? '') : null;
+
+            if (null !== $total) {
+                $event->getForm()->add('limit', IntegerType::class, $this->limitOptions($total));
+            }
+        });
+    }
+
+    // The same field either way, its help carrying the source's own total when that source can give it
+    private function limitOptions(?int $total): array
+    {
+        return [
+            'label' => 'label.limit',
+            'help' => null === $total ? 'label.collection_limit_help' : 'label.collection_limit_help_total',
+            'help_translation_parameters' => null === $total ? [] : ['%total%' => $total],
+            'required' => false,
+        ];
     }
 
     public function configureOptions(OptionsResolver $resolver): void

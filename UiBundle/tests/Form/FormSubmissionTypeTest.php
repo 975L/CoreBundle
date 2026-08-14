@@ -75,8 +75,7 @@ class FormSubmissionTypeTest extends TestCase
 
         $request = new Request();
         $request->setSession(new Session(new MockArraySessionStorage()));
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
+        $requestStack = new RequestStack([$request]);
 
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturn('read');

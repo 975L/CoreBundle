@@ -218,6 +218,10 @@
                 <source>description.url_terms_of_use</source>
                 <target>URL de condiciones de uso, ej. https://example.com/pages/terms-of-use</target>
             </trans-unit>
+            <trans-unit id="Cni6boK">
+                <source>description.user_creation_notification</source>
+                <target>Enviar un correo al sitio (dirección «Correo destinatario») cada vez que se crea una cuenta de usuario</target>
+            </trans-unit>
             <trans-unit id="hDOR3CX">
                 <source>description.user_roles_available</source>
                 <target>Roles adicionales seleccionables (además de ROLE_USER), array JSON, ej. ["ROLE_ADMIN","ROLE_EDITOR"]</target>
@@ -437,6 +441,10 @@
             <trans-unit id="jkiAkco">
                 <source>label.url_terms_of_use</source>
                 <target>URL de las condiciones de uso</target>
+            </trans-unit>
+            <trans-unit id="zbfbI32">
+                <source>label.user_creation_notification</source>
+                <target>Notificación de creación de cuenta</target>
             </trans-unit>
             <trans-unit id="CPUCRXd">
                 <source>label.user_roles_available</source>

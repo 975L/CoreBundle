@@ -56,9 +56,9 @@ class DashboardController extends AbstractDashboardController
         private readonly PaginatorPageSize $paginatorPageSize,
         private readonly TranslatorInterface $translator,
         private readonly Packages $packages,
-        #[Autowire('%kernel.debug%')]
+        #[Autowire(param: 'kernel.debug')]
         private readonly bool $debug,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }

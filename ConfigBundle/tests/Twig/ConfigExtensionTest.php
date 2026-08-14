@@ -13,15 +13,14 @@ namespace c975L\ConfigBundle\Tests\Twig;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Twig\ConfigExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 use Twig\TwigFunction;
 
 class ConfigExtensionTest extends TestCase
 {
     public function testGetFunctionsExposesAConfigTwigFunction(): void
     {
-        $extension = new ConfigExtension($this->createStub(ConfigServiceInterface::class));
-
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(ConfigExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertInstanceOf(TwigFunction::class, $functions[0]);

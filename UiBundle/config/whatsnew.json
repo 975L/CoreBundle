@@ -1,5 +1,45 @@
 [
     {
+        "date": "2026-08-14",
+        "description": [
+            {
+                "en": "A step-by-step guide walks you through putting your favicon, your logo and your share image in place, the images every visitor notices when they are missing",
+                "fr": "Un guide pas à pas vous accompagne pour mettre en place votre favicon, votre logo et votre image de partage, celles que tout visiteur remarque quand elles manquent",
+                "es": "Una guía paso a paso le acompaña para colocar su favicon, su logotipo y su imagen para compartir, las que todo visitante nota cuando faltan"
+            },
+            {
+                "en": "Another one shows how to bring in a whole font family in one upload, instead of adding one line per weight",
+                "fr": "Un autre vous montre comment importer toute une famille de polices en un seul envoi, au lieu d'ajouter une ligne par graisse",
+                "es": "Otra le muestra cómo importar toda una familia de fuentes en un solo envío, en lugar de añadir una línea por grosor"
+            }
+        ]
+    },
+    {
+        "date": "2026-08-13",
+        "description": [
+            {
+                "en": "A new block puts a single entry forward — the latest album, one book, one member — pulled from the same lists a collection shows whole, and kept in step with them on its own",
+                "fr": "Un nouveau block met une seule entrée en avant — le dernier album, un livre, un membre — puisée dans les mêmes listes qu'une collection affiche en entier, et qui reste à jour toute seule",
+                "es": "Un nuevo bloque destaca una sola entrada —el último álbum, un libro, un miembro—, tomada de las mismas listas que una colección muestra por completo, y que se mantiene al día por sí sola"
+            },
+            {
+                "en": "The entries of a list can now show a picture, a qualifying line, a score and key figures, exactly like the cards you place by hand",
+                "fr": "Les entrées d'une liste peuvent désormais afficher une image, une ligne de qualification, une note et des chiffres clés, exactement comme les cartes que vous placez à la main",
+                "es": "Las entradas de una lista pueden mostrar ahora una imagen, una línea de calificación, una puntuación y cifras clave, exactamente como las tarjetas que coloca a mano"
+            },
+            {
+                "en": "A \"read more\" link no longer sits under a text short enough to be read whole",
+                "fr": "Un lien « lire la suite » ne reste plus sous un texte assez court pour être lu en entier",
+                "es": "Un enlace «leer más» ya no permanece bajo un texto lo bastante corto como para leerse entero"
+            },
+            {
+                "en": "Pages holding rows of columns, card sections or lists drawn from your other content are served faster, their result being kept until you change it",
+                "fr": "Les pages contenant des rangées de colonnes, des sections de cartes ou des listes tirées de vos autres contenus s'affichent plus vite, leur résultat étant conservé jusqu'à ce que vous le modifiiez",
+                "es": "Las páginas con filas de columnas, secciones de tarjetas o listas extraídas de sus otros contenidos se muestran más rápido, ya que su resultado se conserva hasta que usted lo modifique"
+            }
+        ]
+    },
+    {
         "date": "2026-08-12",
         "description": [
             {

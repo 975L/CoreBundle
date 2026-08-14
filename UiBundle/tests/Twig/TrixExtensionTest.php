@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Twig;
 
 use c975L\UiBundle\Twig\TrixExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class TrixExtensionTest extends TestCase
 {
@@ -122,20 +123,31 @@ class TrixExtensionTest extends TestCase
 
     public function testGetFiltersRegistersTrixInlineFilterAsHtmlSafe(): void
     {
-        $extension = new TrixExtension();
-        $filters = $extension->getFilters();
+        $filters = $this->filtersByName();
 
-        $this->assertCount(2, $filters);
-        $this->assertSame('trix_inline', $filters[0]->getName());
-        $this->assertSame(['html'], $filters[0]->getSafe(new \Twig\Node\TextNode('', 0)));
+        // Indexed by name rather than read in order: the attributes are collected in the methods' declaration order, which is no part of the contract
+        $names = array_keys($filters);
+        sort($names);
+        $this->assertSame(['plain_text', 'trix_inline'], $names);
+        $this->assertSame(['html'], $filters['trix_inline']->getSafe(new \Twig\Node\TextNode('', 0)));
     }
 
     public function testGetFiltersRegistersPlainTextFilterAsEscapable(): void
     {
-        $extension = new TrixExtension();
-        $filters = $extension->getFilters();
+        $filters = $this->filtersByName();
 
-        $this->assertSame('plain_text', $filters[1]->getName());
-        $this->assertSame([], $filters[1]->getSafe(new \Twig\Node\TextNode('', 0)));
+        $this->assertArrayHasKey('plain_text', $filters);
+        $this->assertSame([], $filters['plain_text']->getSafe(new \Twig\Node\TextNode('', 0)));
+    }
+
+    // What TwigBundle reads from the #[AsTwigFilter] attributes, keyed by the name each one declares
+    private function filtersByName(): array
+    {
+        $filters = [];
+        foreach (new AttributeExtension(TrixExtension::class)->getFilters() as $filter) {
+            $filters[$filter->getName()] = $filter;
+        }
+
+        return $filters;
     }
 }

@@ -14,6 +14,9 @@ use c975L\ConfigBundle\Entity\HealthCheckResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends \Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository<\c975L\ConfigBundle\Entity\HealthCheckResult>
+ */
 class HealthCheckResultRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

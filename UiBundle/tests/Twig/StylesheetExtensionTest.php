@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Twig\Extension\AttributeExtension;
 
 class StylesheetExtensionTest extends TestCase
 {
@@ -333,14 +334,7 @@ class StylesheetExtensionTest extends TestCase
 
     public function testGetFunctionsRegistersBundleStylesheetsFunction(): void
     {
-        $extension = new StylesheetExtension(
-            $this->createStub(StylesheetRegistry::class),
-            $this->createStub(Packages::class),
-            $this->createRequestStack(null),
-            true,
-            $this->projectDir
-        );
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(StylesheetExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertSame('bundle_stylesheets', $functions[0]->getName());

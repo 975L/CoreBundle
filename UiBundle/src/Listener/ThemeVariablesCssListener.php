@@ -53,7 +53,7 @@ class ThemeVariablesCssListener implements CacheWarmerInterface
     public function __construct(
         private readonly ConfigRepository $configRepository,
         private readonly StylesheetCacheWarmer $stylesheetCacheWarmer,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
         private readonly CacheInterface $cache,
     ) {

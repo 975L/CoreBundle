@@ -32,6 +32,7 @@ export default [
                 navigator: "readonly",
                 Node: "readonly",
                 requestAnimationFrame: "readonly",
+                ResizeObserver: "readonly",
                 screen: "readonly",
                 setInterval: "readonly",
                 setTimeout: "readonly",

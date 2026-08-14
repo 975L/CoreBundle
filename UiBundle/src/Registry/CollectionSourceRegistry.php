@@ -59,6 +59,26 @@ class CollectionSourceRegistry
         return $choices;
     }
 
+    // How many items this source holds, asked for without building a single one - null when it declares no "count", which is every source until its own bundle adds one (see CollectionSourceProviderInterface)
+    public function count(string $source): ?int
+    {
+        $count = $this->sources()[$source]['count'] ?? null;
+
+        return null === $count ? null : $count();
+    }
+
+    // The cache tags this source's items are stored under, empty when the provider declared none - which is how a source says its items must be rendered live, see CollectionSourceProviderInterface; @return string[]
+    public function cacheTags(string $source): array
+    {
+        return $this->sources()[$source]['cacheTags'] ?? [];
+    }
+
+    // The template this source's items are drawn by, null when it declared none - which is every source that is content with the built-in card, see CollectionSourceProviderInterface
+    public function itemTemplate(string $source): ?string
+    {
+        return $this->sources()[$source]['itemTemplate'] ?? null;
+    }
+
     // @return CollectionItem[]
     public function items(string $source, ?int $limit): array
     {

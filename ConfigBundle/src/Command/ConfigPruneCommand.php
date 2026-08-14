@@ -21,10 +21,17 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(
-    name: 'c975l:config:prune',
-    description: 'Deletes config entries no configs*.json declares anymore. Lists them without deleting unless --force is given.'
-)]
+#[AsCommand(name: 'c975l:config:prune', description: 'Deletes config entries no configs*.json declares anymore. Lists them without deleting unless --force is given.', help: <<<'TXT'
+Lists the entries left in database that no bundle - nor the application itself - declares anymore:
+
+  <info>php %command.full_name%</info>
+
+Deletes them, after confirmation:
+
+  <info>php %command.full_name% --force</info>
+
+Deletion is irreversible and takes the stored value with it, so export your configs beforehand if in doubt.
+TXT)]
 class ConfigPruneCommand extends Command
 {
     public function __construct(
@@ -40,17 +47,6 @@ class ConfigPruneCommand extends Command
     {
         $this
             ->addOption('force', null, InputOption::VALUE_NONE, 'Actually delete the entries (without it, they are only listed)')
-            ->setHelp(<<<'HELP'
-                Lists the entries left in database that no bundle - nor the application itself - declares anymore:
-
-                  <info>php %command.full_name%</info>
-
-                Deletes them, after confirmation:
-
-                  <info>php %command.full_name% --force</info>
-
-                Deletion is irreversible and takes the stored value with it, so export your configs beforehand if in doubt.
-                HELP)
         ;
     }
 

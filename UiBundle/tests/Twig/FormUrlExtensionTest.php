@@ -15,6 +15,7 @@ use c975L\UiBundle\Registry\FormPageUrlRegistry;
 use c975L\UiBundle\Twig\FormUrlExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Extension\AttributeExtension;
 
 class FormUrlExtensionTest extends TestCase
 {
@@ -22,7 +23,7 @@ class FormUrlExtensionTest extends TestCase
     {
         $extension = new FormUrlExtension(new FormPageUrlRegistry(), $this->createStub(UrlGeneratorInterface::class));
 
-        $names = array_map(static fn ($function): string => $function->getName(), $extension->getFunctions());
+        $names = array_map(static fn ($function): string => $function->getName(), new AttributeExtension(FormUrlExtension::class)->getFunctions());
 
         $this->assertSame(['form_url'], $names);
     }

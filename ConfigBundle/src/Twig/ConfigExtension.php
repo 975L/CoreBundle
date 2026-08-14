@@ -11,24 +11,16 @@
 namespace c975L\ConfigBundle\Twig;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class ConfigExtension extends AbstractExtension
+class ConfigExtension
 {
     public function __construct(
         private readonly ConfigServiceInterface $configService,
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('config', $this->getConfig(...)),
-        ];
-    }
-
+    #[AsTwigFunction('config')]
     public function getConfig(string $slug): mixed
     {
         return $this->configService->get($slug);

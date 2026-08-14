@@ -72,10 +72,18 @@ $radius: var(--block-radius, var(--flip-card-radius));
     padding-bottom: 0.5em;
     // Both faces read left, whatever the page's own alignment: their content is a list or a paragraph, and only the title and the image below are centered - each on its own rule
     text-align: start;
+    // Both faces sit in the single cell the inner lays out below, one behind the other
+    grid-area: 1 / 1;
+    // The inner takes no pointer at all (see below) and each face takes it back: inside "preserve-3d" the swaying front face has half of itself turned *behind* the inner's own flat box, and the half behind loses every hit to it. That half swaps four times a second under the sway, so a click on the card simply did nothing
+    pointer-events: auto;
+    // What hides the face turned away from the eye. It hides it from the eye *only*, which is why the controller also marks it "inert" - its buttons and links stay in the tab order without that
+    backface-visibility: hidden;
 }
 
 .flip-card-back {
     background-color: var(--flip-card-back-background);
+    // The half-turn that holds the verso away from the eye, the inner's own turn under ".is-flipped" being what brings it round. Undone at the end of this file, under "@media (scripting: none)"
+    transform: rotateY(180deg);
 }
 
 // Stated rather than inherited from the theme's own h1-h6 rule: the level is an editor's choice (h2/h3/h4) and the title of a flip card has one size on all three, being the face's own mark rather than a step in the page outline
@@ -196,7 +204,7 @@ $radius: var(--block-radius, var(--flip-card-radius));
     --flip-card-ratio: 21 / 9;
 }
 
-// The fold is the card's own shape, declared here rather than keyed on a class the controller adds on connect, which flashed the whole verso on every load.
+// The fold is the card's own shape - this "preserve-3d" and the verso's own rotateY above - declared in the sheet rather than keyed on a class the controller adds on connect, which flashed the whole verso on every load.
 // The one case that needs it undone - a browser running no JS at all, where the toggles stay hidden and the back face would be unreachable - is undone at the end of this file, under "@media (scripting: none)".
 // That fallback covers the absence of JS, not a module that fails to load: a page whose flip-card.js never arrives keeps the fold with no toggle to undo it, as every other Stimulus-driven part of the page would
 .flip-card-inner {
@@ -204,6 +212,8 @@ $radius: var(--block-radius, var(--flip-card-radius));
     display: grid;
     transform-style: preserve-3d;
     transition: transform 0.7s;
+    // No pointer on the inner's own box - and on the spacer below, drawn on it: both sit flat at z=0, where the two faces take the pointer back
+    pointer-events: none;
 }
 
 // A ratio is a floor under the card's shape, not a crop: an empty cell-mate sized by it holds the row open, and a face holding more than that simply grows past it. Nothing declared and it collapses to nothing
@@ -213,22 +223,6 @@ $radius: var(--block-radius, var(--flip-card-radius));
     // Not stretched like the faces are: a stretched item takes the row's height instead of giving it
     align-self: start;
     aspect-ratio: var(--flip-card-ratio, auto);
-}
-
-// The inner takes no pointer at all, and each face takes it back: inside "preserve-3d" the inner's own box - and the spacer above, drawn on it - sit flat at z=0 while the swaying front face has half of itself turned *behind* that plane, and the half behind loses every hit to the box in front of it. That half swaps four times a second under the sway, so a click on the card simply did nothing
-.flip-card-inner {
-    pointer-events: none;
-}
-
-.flip-card-face {
-    grid-area: 1 / 1;
-    pointer-events: auto;
-    // What hides the face turned away from the eye. It hides it from the eye *only*, which is why the controller also marks it "inert" - its buttons and links stay in the tab order without that
-    backface-visibility: hidden;
-}
-
-.flip-card-back {
-    transform: rotateY(180deg);
 }
 
 .flip-card.is-flipped .flip-card-inner {

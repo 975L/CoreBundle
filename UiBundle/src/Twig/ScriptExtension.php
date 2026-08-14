@@ -11,23 +11,15 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Registry\ScriptRegistry;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class ScriptExtension extends AbstractExtension
+class ScriptExtension
 {
     public function __construct(private readonly ScriptRegistry $registry)
     {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('bundle_scripts', $this->getBundleScripts(...)),
-        ];
-    }
-
+    #[AsTwigFunction('bundle_scripts')]
     public function getBundleScripts(): array
     {
         return $this->registry->all();

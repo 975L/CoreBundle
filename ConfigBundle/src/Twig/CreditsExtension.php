@@ -11,11 +11,10 @@
 namespace c975L\ConfigBundle\Twig;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
 // What the "Made by"/"Hosted by" credits of a footer show - "display-made-by" and "display-hosted-by" are a choice between the four modes below, read through here rather than directly so the legacy value a site upgraded from the bool era still holds is understood in one place
-class CreditsExtension extends AbstractExtension
+class CreditsExtension
 {
     public const MODE_NONE = 'none';
     public const MODE_LOGO = 'logo';
@@ -35,15 +34,8 @@ class CreditsExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('credits_mode', $this->getCreditsMode(...)),
-        ];
-    }
-
     // The mode a "display-*-by" config asks for, always one of MODES
+    #[AsTwigFunction('credits_mode')]
     public function getCreditsMode(string $slug): string
     {
         $value = $this->configService->get($slug);

@@ -16,6 +16,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\BlockFixtureProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockLocationProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockOwnerResolverPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
+use c975L\UiBundle\DependencyInjection\Compiler\CacheInvalidatorPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailLayoutProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FontProviderPass;
@@ -47,6 +48,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new PlaceholderMediaProviderPass());
         $container->addCompilerPass(new BlockOwnerResolverPass());
         $container->addCompilerPass(new BlockCacheTagProviderPass());
+        $container->addCompilerPass(new CacheInvalidatorPass());
         $container->addCompilerPass(new CollectionSourceProviderPass());
         $container->addCompilerPass(new GalleryShowcaseProviderPass());
         $container->addCompilerPass(new StylesheetRegistryPass());

@@ -13,13 +13,13 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Service\CssVariableResolver;
 use c975L\UiBundle\Twig\CssVariableExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class CssVariableExtensionTest extends TestCase
 {
     public function testGetFiltersRegistersTheResolveFilterAsHtmlSafe(): void
     {
-        $extension = new CssVariableExtension(new CssVariableResolver());
-        $filters = $extension->getFilters();
+        $filters = new AttributeExtension(CssVariableExtension::class)->getFilters();
 
         $this->assertCount(1, $filters);
         $this->assertSame('resolve_css_variables', $filters[0]->getName());

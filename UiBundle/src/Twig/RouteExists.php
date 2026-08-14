@@ -11,10 +11,9 @@
 namespace c975L\UiBundle\Twig;
 
 use Symfony\Component\Routing\RouterInterface;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class RouteExists extends AbstractExtension
+class RouteExists
 {
     public function __construct(
         // Stores Router.
@@ -22,12 +21,7 @@ class RouteExists extends AbstractExtension
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [new TwigFunction('route_exists', $this->routeExists(...))];
-    }
-
+    #[AsTwigFunction('route_exists')]
     public function routeExists($route)
     {
         return $this->router->getRouteCollection()->get($route);

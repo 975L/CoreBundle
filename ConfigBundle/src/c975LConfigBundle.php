@@ -31,6 +31,7 @@ use c975L\ConfigBundle\Management\ProcedureProviderInterface;
 use c975L\ConfigBundle\Management\ShortcutProviderInterface;
 use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Management\StatusProviderInterface;
+use c975L\ConfigBundle\Management\UrlMetadataProviderInterface;
 use c975L\ConfigBundle\Management\WhatsNewProviderInterface;
 use c975L\ConfigBundle\Scheduler\MaintenanceTaskProviderInterface;
 use Nelmio\SecurityBundle\ContentSecurityPolicy\NonceGeneratorInterface;
@@ -80,6 +81,7 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(HealthCheckAdviceProviderInterface::class, 'c975l.health_check_advice_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(ImportmapProviderInterface::class, 'c975l.importmap_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(SitemapProviderInterface::class, 'c975l.sitemap_provider'));
+        $container->addCompilerPass(new TaggedInterfacePass(UrlMetadataProviderInterface::class, 'c975l.url_metadata_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(ContentOffenceLocatorInterface::class, 'c975l.content_offence_locator'));
         $container->addCompilerPass(new TaggedInterfacePass(StatusProviderInterface::class, 'c975l.status_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(MaintenanceTaskProviderInterface::class, 'c975l.maintenance_task_provider'));

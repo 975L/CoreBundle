@@ -29,7 +29,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
 - **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled)
 - **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows)
-- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
+- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
 
 ## Features
 
@@ -53,7 +53,8 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
 - `c975l:seo:files:create`, writing `robots.txt`, `humans.txt` and `llms.txt` from the `seo` configs and from the urls those same providers declare, with a monthly check reporting the AI crawlers that appeared in the community list
-- Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router
+- Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router, a `*` on both sides renaming a whole url tree
+- Url descriptions for the pages no entity carries (`site_url_metadata` table, EasyAdmin CRUD, export/import), read by the layouts, listed by `c975l:url-metadata:sync` from what each bundle declares via `UrlMetadataProviderInterface`
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps and the two cross-checked, redirect chains, deployment, and the content quality of every url any bundle declares
 - A Turbo-safe CSP nonce generator, and the `site_copyright()` Twig function
 - `/status/report`, serving what a site runs (versions, installed bundles, health check summary) to whoever presents its key — answers nobody unless configured, extensible via `StatusProviderInterface`, dumped locally by `c975l:status:dump`
@@ -541,6 +542,18 @@ security:
 ```
 
 This lets you disable a user from the backoffice (`isEnabled` isn't readonly, unlike `isVerified`) to lock them out without deleting their account — a verified user with `isEnabled = false` still can't log in.
+
+### Being notified of new accounts
+
+Every account created through `UserRegistrar` also sends a short plain-text notification to the site itself, so the owner knows their site is being signed up to without having to watch the User screen. It goes to the site-wide `email-to` address (the one every other c975L email already goes to, see UiBundle's `EmailService`) — there's no separate address to keep in sync — and it's written in `kernel.default_locale`, not in whatever language the visitor was browsing in.
+
+Uncheck the `user-creation-notification` config (`bool`, default `true`, `email` group) to turn it off:
+
+```bash
+php bin/console c975l:config:set user-creation-notification false
+```
+
+It never gets in the way of the registration itself: notification off, `email-from`/`email-to` not seeded yet, mailer down — the account is created and the visitor gets their confirmation email regardless. Only accounts created by the registration flow are announced, not the bootstrap admin `c975l:config:user-create`/`c975l:site:create` build (you're at the console when it happens).
 
 ---
 
@@ -1273,9 +1286,61 @@ A url that changed needs a redirect whether it was a page's or a product's, and 
 
 - **`gone`** answers `410 Gone` instead of redirecting — for content removed with no equivalent to send anyone to. Search engines drop a 410 far faster than the plain 404 the same url would otherwise return. `toUrl` is required on every other row, a conditional constraint on the entity rather than a form-level one.
 - **`fromPath` accepts a trailing `*`**: `/apidoc/*` covers every url below it, however deep. An exact row always wins over a prefix covering it, and among prefixes the longest one wins — so `/apidoc/c975L/*` still beats a broader `/apidoc/*`. A convention resolved in `RedirectSubscriber`, not a SQL wildcard.
+- **`toUrl` accepts one too, and that pairing is what renames a tree**: `/character/*` → `/personnages/*` carries the tail over, sending `/character/tuor` to `/personnages/tuor`. A destination *without* the `*` keeps folding the whole tree onto that single url, which is what a tree removed rather than renamed needs — both are wanted, and the `*` is what tells them apart. So a renamed url tree is a handful of rows edited in the back office, not a redirecting route per old url deployed with the code. A `*` on the destination of an exact row means nothing and is left alone.
 - **The site root is left alone** by design.
 
 `RedirectChainHealthCheckProvider` walks the rows for chains and loops, from the database alone.
+
+## Url metadata — what a listing says of itself
+
+A book, a product, a photo, a page each states its own title and summary from its columns. The urls **no entity carries** — a listing, a filtered listing, a tool page — had nowhere to state theirs, so a search result or a shared link showed the url and nothing more, unless the site wrote the sentences into its templates.
+
+`Entity\UrlMetadata` (table `site_url_metadata`) holds them: `title`, `summarySocialNetwork` and `ogImage`, the same three names a `Page` already carries. Managed from *Management → Social → Descriptions d'urls*, exported/imported through the **Export sync (everything)** shortcut and the **Import content** screen (matched by `path`, its share image travelling in the archive beside it).
+
+- **Keyed by the path, not by the route name.** `/caste/{caste}` is one route and twelve listings with twelve different things to say, so each of them gets its own row — same shape, and same reason, as `Redirect::$fromPath`. Paths are normalised on the way in and on lookup (`/animaux/` and `animaux` both being `/animaux`).
+- **A row only ever fills a silence.** Both layouts (`@c975LUi/layout.html.twig` and SiteBundle's) read it last, for whatever the rendering template left unset — an entity always speaks first.
+- **Every field is nullable.** A site describes its listings as it writes them, and an url with no row emits exactly what it emitted before.
+- **The table is created by the app**, like `site_redirect` (`doctrine:migrations:diff` then `migrate`). A site that updates without migrating keeps its pages: the rows resolve to nothing rather than failing.
+
+In a template needing the text itself, `url_metadata()` hands back the row of the page being rendered, or of the path given to it — for a template serving several urls where only one is described:
+
+```twig
+{{ url_metadata().title }}
+{{ url_metadata(path('my_listing', {caste: 'guerrier'})).summarySocialNetwork }}
+```
+
+Nothing is ever typed by hand there: the rows come from what the bundles declare, so `Action::NEW` is disabled and the path is shown read-only.
+
+### Contributing urls to describe from other bundles
+
+Implement `UrlMetadataProviderInterface` — no manual service tagging needed, same `TaggedInterfacePass` mechanism as `MenuProviderInterface` above:
+
+```php
+namespace c975L\MyBundle\Management;
+
+use c975L\ConfigBundle\Management\UrlMetadataProviderInterface;
+
+class MyUrlMetadataProvider implements UrlMetadataProviderInterface
+{
+    // Paths absolute from the site root, one per page and not per route
+    public function getUrlMetadataPaths(): array
+    {
+        return ['/animaux', '/caste/guerrier', '/caste/mage'];
+    }
+}
+```
+
+Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
+
+What a provider declares is **which urls exist, never what they say**: the paths are structure and live in the code, the sentences are content and live in the database. Only urls no entity carries belong here — for the others, the entity answers and a row would never be read.
+
+`c975l:url-metadata:sync` turns those declarations into empty rows waiting to be described — run it at deployment, beside `c975l:sitemaps:create`:
+
+```bash
+php bin/console c975l:url-metadata:sync
+```
+
+It only ever **creates**: a row already written is left untouched, and a row whose url no longer appears in any declaration is reported rather than deleted — an url can leave a listing for one release and come back, and the sentence written for it is work no synchronisation may throw away. Remove those from the screen, by hand, once they are gone for good. Two bundles declaring the same url (one serving the listing, the other linking to it) produce a single row.
 
 ---
 

@@ -22,13 +22,17 @@
                 <source>description.guided_project_ui_email_template</source>
                 <target>Rework the content of an e-mail the site sends, the same way a page is reworked</target>
             </trans-unit>
+            <trans-unit id="0CAtPRI">
+                <source>description.guided_project_ui_font</source>
+                <target>Upload the whole family at once and let the site compile its own stylesheet from it - no deploy involved.</target>
+            </trans-unit>
             <trans-unit id="mdUTrNv">
                 <source>description.guided_project_ui_form</source>
                 <target>Build a form field by field, then drop it into a page</target>
             </trans-unit>
-            <trans-unit id="uJW0NPA">
-                <source>description.guided_project_ui_media</source>
-                <target>Put an image in the media library once and for all, and reuse it everywhere</target>
+            <trans-unit id="GHBZCNG">
+                <source>description.guided_project_ui_site_graphic</source>
+                <target>Favicon, logo, share image: the handful of files a site is recognised by, uploaded once and for all.</target>
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
@@ -41,6 +45,30 @@
             <trans-unit id="Qj7imei">
                 <source>description.guided_step_ui_email_template_open</source>
                 <target>The e-mails the site sends are made of blocks, exactly like a page.</target>
+            </trans-unit>
+            <trans-unit id="VOmfaZ1">
+                <source>description.guided_step_ui_font_bulk</source>
+                <target>Adding a family one row at a time is the slow way round; this button takes every file at once.</target>
+            </trans-unit>
+            <trans-unit id="O395Bnw">
+                <source>description.guided_step_ui_font_done</source>
+                <target>The stylesheet is rebuilt from the rows on their own, and the family becomes selectable wherever the site names a font.</target>
+            </trans-unit>
+            <trans-unit id="nsljI7H">
+                <source>description.guided_step_ui_font_files</source>
+                <target>Ttf, woff or woff2, up to 5 MB each: pick the whole folder's worth in one selection.</target>
+            </trans-unit>
+            <trans-unit id="OStSoZT">
+                <source>description.guided_step_ui_font_fix</source>
+                <target>A filename saying nothing useful lands as a regular upright weight; the row is edited like any other.</target>
+            </trans-unit>
+            <trans-unit id="4RVha5S">
+                <source>description.guided_step_ui_font_import</source>
+                <target>Each filename is read to guess its name, its weight and its style; a file that is not a usable font is reported and left out rather than failing the batch.</target>
+            </trans-unit>
+            <trans-unit id="_00q9bj">
+                <source>description.guided_step_ui_font_open</source>
+                <target>One row per file: a family is as many rows as it has weights and styles.</target>
             </trans-unit>
             <trans-unit id="WdMcqav">
                 <source>description.guided_step_ui_form_action</source>
@@ -62,21 +90,21 @@
                 <source>description.guided_step_ui_form_place</source>
                 <target>Add a form block to a page, and pick the one you have just created.</target>
             </trans-unit>
-            <trans-unit id="RDmEru5">
-                <source>description.guided_step_ui_media_alt</source>
-                <target>The alternative text is what screen readers read, and what the health check reports when it is missing.</target>
+            <trans-unit id="fqjZMNb">
+                <source>description.guided_step_ui_site_graphic_done</source>
+                <target>The favicon shows in the browser tab, the share image when a page is posted on a social network - both may need a forced refresh before they appear.</target>
             </trans-unit>
-            <trans-unit id="c8dJg4g">
-                <source>description.guided_step_ui_media_file</source>
-                <target>The image is resized and renamed on save: no need to prepare it beforehand.</target>
+            <trans-unit id="C0Xr_VY">
+                <source>description.guided_step_ui_site_graphic_file</source>
+                <target>The role is already picked, only the image is left to choose: it is renamed on save and kept at the fixed address the site serves it from.</target>
             </trans-unit>
-            <trans-unit id=".imAjIX">
-                <source>description.guided_step_ui_media_open</source>
-                <target>Every image of the site in one place: an image uploaded once serves in as many blocks as you like.</target>
+            <trans-unit id="KKAGjbc">
+                <source>description.guided_step_ui_site_graphic_open</source>
+                <target>These images belong to the site itself rather than to any one page, which is why they live apart from the media library.</target>
             </trans-unit>
-            <trans-unit id="rZ020hF">
-                <source>description.guided_step_ui_media_reuse</source>
-                <target>In a page's block, pick it from the media library rather than uploading it again.</target>
+            <trans-unit id="3m_c5Tb">
+                <source>description.guided_step_ui_site_graphic_pick</source>
+                <target>One button per graphic the site does not have yet, opening the upload form with its role already picked. All of them in place already? Edit the one you want to replace instead.</target>
             </trans-unit>
             <trans-unit id="emqi7.W">
                 <source>description.legal_customize</source>
@@ -96,7 +124,7 @@
             </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
-                <target>Blocks cache cleared</target>
+                <target>Render cache cleared</target>
             </trans-unit>
             <trans-unit id="nUlFj1t">
                 <source>flash.block_move_failed</source>
@@ -568,7 +596,7 @@
             </trans-unit>
             <trans-unit id="As0wFKi">
                 <source>label.block_clear_cache</source>
-                <target>Clear blocks cache</target>
+                <target>Clear the render cache</target>
             </trans-unit>
             <trans-unit id="oNRe7ra">
                 <source>label.block_collection</source>
@@ -577,6 +605,14 @@
             <trans-unit id="3Jvr6rD">
                 <source>label.block_collection_description</source>
                 <target>Items from an external collection (books, products, projects...)</target>
+            </trans-unit>
+            <trans-unit id="7Ttubh4">
+                <source>label.block_collection_entry</source>
+                <target>Collection entry</target>
+            </trans-unit>
+            <trans-unit id="8Imy6vE">
+                <source>label.block_collection_entry_description</source>
+                <target>A single item of an external collection, put forward</target>
             </trans-unit>
             <trans-unit id="5bLnE9a">
                 <source>label.block_contact_details</source>
@@ -878,9 +914,37 @@
                 <source>label.closes</source>
                 <target>Closing</target>
             </trans-unit>
+            <trans-unit id="FdGqWMg">
+                <source>label.collection_entry_pick</source>
+                <target>Item</target>
+            </trans-unit>
+            <trans-unit id="vGMNmp2">
+                <source>label.collection_entry_pick_first</source>
+                <target>The first one</target>
+            </trans-unit>
+            <trans-unit id="Aq.LLm2">
+                <source>label.collection_entry_pick_help</source>
+                <target>Which item of the source to show, in the order it hands them back</target>
+            </trans-unit>
+            <trans-unit id="XeYvPm_">
+                <source>label.collection_entry_pick_last</source>
+                <target>The last one</target>
+            </trans-unit>
+            <trans-unit id="kCKrUDX">
+                <source>label.collection_entry_pick_slug</source>
+                <target>The one with the given identifier</target>
+            </trans-unit>
+            <trans-unit id="8pHG3oe">
+                <source>label.collection_entry_slug_help</source>
+                <target>Only when the item is named by its identifier</target>
+            </trans-unit>
             <trans-unit id="Z2OPJRi">
                 <source>label.collection_limit_help</source>
                 <target>Leave empty to show everything</target>
+            </trans-unit>
+            <trans-unit id="El_DpQM">
+                <source>label.collection_limit_help_total</source>
+                <target>Leave empty to show everything - this source holds %total%</target>
             </trans-unit>
             <trans-unit id="6A6G2AK">
                 <source>label.column_width</source>
@@ -1502,6 +1566,14 @@
                 <source>label.gallery_showcase_collection_description</source>
                 <target>The entries of an external source, as a grid of cards or as a portfolio.</target>
             </trans-unit>
+            <trans-unit id="LHXeb0q">
+                <source>label.gallery_showcase_collection_entry</source>
+                <target>Collection entry</target>
+            </trans-unit>
+            <trans-unit id="OBsdO_d">
+                <source>label.gallery_showcase_collection_entry_description</source>
+                <target>A single item of a source, under its own section head</target>
+            </trans-unit>
             <trans-unit id="nWcg5Ou">
                 <source>label.gallery_showcase_flex_columns</source>
                 <target>Flexible columns</target>
@@ -1558,13 +1630,17 @@
                 <source>label.guided_project_ui_email_template</source>
                 <target>Tailor an e-mail</target>
             </trans-unit>
+            <trans-unit id="mYWYLXS">
+                <source>label.guided_project_ui_font</source>
+                <target>Install a font family</target>
+            </trans-unit>
             <trans-unit id="3Fft64_">
                 <source>label.guided_project_ui_form</source>
                 <target>Create a form</target>
             </trans-unit>
-            <trans-unit id="FtKKNNJ">
-                <source>label.guided_project_ui_media</source>
-                <target>Upload an image</target>
+            <trans-unit id="42UrnqR">
+                <source>label.guided_project_ui_site_graphic</source>
+                <target>Put the site's own graphics in place</target>
             </trans-unit>
             <trans-unit id="PB512zY">
                 <source>label.guided_step_ui_email_template_blocks</source>
@@ -1585,6 +1661,30 @@
             <trans-unit id="Z9rpyhM">
                 <source>label.guided_step_ui_email_template_save</source>
                 <target>Save</target>
+            </trans-unit>
+            <trans-unit id="mxL8QHX">
+                <source>label.guided_step_ui_font_bulk</source>
+                <target>Import them in one go</target>
+            </trans-unit>
+            <trans-unit id="4HWKaK7">
+                <source>label.guided_step_ui_font_done</source>
+                <target>Use it in the theme</target>
+            </trans-unit>
+            <trans-unit id="zFtCozH">
+                <source>label.guided_step_ui_font_files</source>
+                <target>Select every file</target>
+            </trans-unit>
+            <trans-unit id="EdB_SN8">
+                <source>label.guided_step_ui_font_fix</source>
+                <target>Correct a wrong guess</target>
+            </trans-unit>
+            <trans-unit id="u.H1Et9">
+                <source>label.guided_step_ui_font_import</source>
+                <target>Send them</target>
+            </trans-unit>
+            <trans-unit id="FBm8APX">
+                <source>label.guided_step_ui_font_open</source>
+                <target>Open the fonts</target>
             </trans-unit>
             <trans-unit id="L0azB6X">
                 <source>label.guided_step_ui_form_action</source>
@@ -1614,29 +1714,37 @@
                 <source>label.guided_step_ui_form_save</source>
                 <target>Save</target>
             </trans-unit>
-            <trans-unit id="p04wYUK">
-                <source>label.guided_step_ui_media_alt</source>
-                <target>Describe the image</target>
+            <trans-unit id="9vn1gPZ">
+                <source>label.guided_step_ui_site_graphic_done</source>
+                <target>Check it on the site</target>
             </trans-unit>
-            <trans-unit id="djlrG7S">
-                <source>label.guided_step_ui_media_file</source>
-                <target>Pick the file</target>
+            <trans-unit id="icvgb8x">
+                <source>label.guided_step_ui_site_graphic_file</source>
+                <target>Choose the file</target>
             </trans-unit>
-            <trans-unit id="NuH7Bc_">
-                <source>label.guided_step_ui_media_new</source>
-                <target>Upload an image</target>
+            <trans-unit id="aH_2kID">
+                <source>label.guided_step_ui_site_graphic_open</source>
+                <target>Open the site graphics</target>
             </trans-unit>
-            <trans-unit id="r.hPN1d">
-                <source>label.guided_step_ui_media_open</source>
-                <target>Open the media library</target>
+            <trans-unit id="RvvY0lg">
+                <source>label.guided_step_ui_site_graphic_pick</source>
+                <target>Pick the one still missing</target>
             </trans-unit>
-            <trans-unit id="i9J5GNX">
-                <source>label.guided_step_ui_media_reuse</source>
-                <target>Reuse it</target>
-            </trans-unit>
-            <trans-unit id="Sr6aDii">
-                <source>label.guided_step_ui_media_save</source>
+            <trans-unit id="bKv1nui">
+                <source>label.guided_step_ui_site_graphic_save</source>
                 <target>Save</target>
+            </trans-unit>
+            <trans-unit id="njHadGB">
+                <source>label.health_check_advice_legal_model_drift</source>
+                <target>Open the customization screen to compare your own wording with the model's new one, section by section: nothing is ever merged for you - you keep yours, or you take the model's back.</target>
+            </trans-unit>
+            <trans-unit id="BQd6Dw2">
+                <source>label.health_check_advice_svg_fonts_served_as_image</source>
+                <target>An SVG served as an image draws with the reader's own fonts alone: even a font this site loads is never applied to it.</target>
+            </trans-unit>
+            <trans-unit id="0qyUpF5">
+                <source>label.health_check_advice_svg_fonts_vectorize</source>
+                <target>Reopen the file in your drawing tool and convert its text to paths (Inkscape: Path &gt; Object to Path; Illustrator: Type &gt; Create Outlines), then upload it again on this media.</target>
             </trans-unit>
             <trans-unit id="epZIsrh">
                 <source>label.health_check_legal_model_drift</source>

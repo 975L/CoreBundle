@@ -139,4 +139,71 @@ class BlockCacheInvalidationListenerTest extends TestCase
         new BlockCacheInvalidationListener($cache)
             ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
     }
+
+    // A container's cached html holds its slots' verbatim (see BlockCacheTagResolver), so a slot that changed leaves every container above it holding stale output
+    public function testPostUpdateInvalidatesEveryContainerAboveTheChangedSlot(): void
+    {
+        $outer = $this->createBlockWithId(100);
+        $inner = $this->createBlockWithId(101)->setParentBlock($outer);
+        $slot = $this->createBlockWithId(102)->setParentBlock($inner);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_102', 'block_101', 'block_100']);
+
+        new BlockCacheInvalidationListener($cache)
+            ->postUpdate(new PostUpdateEventArgs($slot, $this->createEntityManager()));
+    }
+
+    // Adding a slot is what makes the propagation necessary rather than merely tidy: the new row's id was never a tag of its container's entry, so nothing else would ever reach it
+    public function testPostPersistInvalidatesTheContainerOfABrandNewSlot(): void
+    {
+        $container = $this->createBlockWithId(200);
+        $slot = $this->createBlockWithId(201)->setParentBlock($container);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_201', 'block_200']);
+
+        new BlockCacheInvalidationListener($cache)
+            ->postPersist(new PostPersistEventArgs($slot, $this->createEntityManager()));
+    }
+
+    // Block::removeSlot() nulls the owning side well before flush() runs, exactly as removeMedia() does - the pre-flush snapshot is what still holds the container the slot was taken out of
+    public function testPreRemoveResolvesTheContainerFromTheUnitOfWorkSnapshot(): void
+    {
+        $container = $this->createBlockWithId(300);
+        $slot = $this->createBlockWithId(301);
+
+        $unitOfWork = $this->createStub(UnitOfWork::class);
+        $unitOfWork->method('getOriginalEntityData')->willReturnCallback(
+            static fn (object $entity): array => $entity === $slot ? ['parentBlock' => $container] : []
+        );
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_301', 'block_300']);
+
+        new BlockCacheInvalidationListener($cache)
+            ->preRemove(new PreRemoveEventArgs($slot, $this->createEntityManager($unitOfWork)));
+    }
+
+    // A container and one of its own slots pointing back at each other would otherwise spin forever up the chain
+    public function testACycleUpTheChainStopsInsteadOfLoopingForever(): void
+    {
+        $first = $this->createBlockWithId(400);
+        $second = $this->createBlockWithId(401)->setParentBlock($first);
+        $first->setParentBlock($second);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_401', 'block_400']);
+
+        new BlockCacheInvalidationListener($cache)
+            ->postUpdate(new PostUpdateEventArgs($second, $this->createEntityManager()));
+    }
+
+    private function createBlockWithId(int $id): Block
+    {
+        $block = new Block();
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, $id);
+
+        return $block;
+    }
 }

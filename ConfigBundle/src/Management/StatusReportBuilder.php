@@ -30,7 +30,7 @@ class StatusReportBuilder
         private readonly iterable $statusProviders,
         private readonly ConfigServiceInterface $configService,
         private readonly HealthCheckResultRepository $healthCheckResultRepository,
-        #[Autowire('%kernel.environment%')]
+        #[Autowire(param: 'kernel.environment')]
         private readonly string $environment,
     ) {
     }

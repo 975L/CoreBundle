@@ -15,13 +15,14 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-// Hashes+persists a freshly built user and sends its verification email - the "what happens once a registration form is valid" step, extracted out of the app-copied scaffold's RegistrationController (see UPGRADE.md) so it's shared, tested bundle code. The caller (still in scaffold, App\Entity\User being app-space) builds $user itself from the submitted "register" c975L\UiBundle\Entity\Form data; every other concern (route, honeypot, rate-limiting, email uniqueness, CGU/GDPR checkboxes) deliberately stays there, unrelated to what happens on success.
+// Hashes+persists a freshly built user, sends its verification email and notifies the site of the new account (see UserCreationNotifier) - the "what happens once a registration form is valid" step, extracted out of the app-copied scaffold's RegistrationController (see UPGRADE.md) so it's shared, tested bundle code. The caller (still in scaffold, App\Entity\User being app-space) builds $user itself from the submitted "register" c975L\UiBundle\Entity\Form data; every other concern (route, honeypot, rate-limiting, email uniqueness, CGU/GDPR checkboxes) deliberately stays there, unrelated to what happens on success.
 class UserRegistrar
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly EntityManagerInterface $entityManager,
         private readonly EmailVerifier $emailVerifier,
+        private readonly UserCreationNotifier $userCreationNotifier,
     ) {
     }
 
@@ -45,6 +46,11 @@ class UserRegistrar
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return $this->emailVerifier->sendEmailConfirmation($verifyEmailRouteName, $user, $subject, $to);
+        $confirmationSent = $this->emailVerifier->sendEmailConfirmation($verifyEmailRouteName, $user, $subject, $to);
+
+        // Sent whatever happened to the confirmation email, the account existing either way - and its own result is dropped on purpose, a notification the visitor knows nothing about having no business turning their registration into a failure
+        $this->userCreationNotifier->notify($user);
+
+        return $confirmationSent;
     }
 }

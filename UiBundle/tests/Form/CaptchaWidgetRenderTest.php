@@ -47,8 +47,7 @@ class CaptchaWidgetRenderTest extends FormIntegrationTestCase
         $configService->method('hasParameter')->willReturnCallback(static fn (string $key) => array_key_exists($key, $configValues));
         $configService->method('get')->willReturnCallback(static fn (string $key) => $configValues[$key] ?? null);
 
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         return [new CaptchaType(new CaptchaVerifier(new MockHttpClient(), $configService, $requestStack))];
     }

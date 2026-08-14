@@ -14,10 +14,9 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\MediaRepository;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class MediaExtension extends AbstractExtension
+class MediaExtension
 {
     // Shared with BlockCacheInvalidationListener, which invalidates this same tag on a singleton-role Media save/removal
     public const MEDIA_SINGLETONS_CACHE_TAG = 'media_singletons';
@@ -32,15 +31,7 @@ class MediaExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('site_media', $this->getSiteMedia(...)),
-            new TwigFunction('site_random_media', $this->getRandomSiteMedia(...)),
-        ];
-    }
-
+    #[AsTwigFunction('site_media')]
     public function getSiteMedia(string $role): ?Media
     {
         $this->preloadSingletonRoles();
@@ -77,6 +68,7 @@ class MediaExtension extends AbstractExtension
         }
     }
 
+    #[AsTwigFunction('site_random_media')]
     public function getRandomSiteMedia(string $role): ?Media
     {
         return $this->mediaRepository->findRandomByRole($role);

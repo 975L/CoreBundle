@@ -14,11 +14,10 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Font;
 use c975L\UiBundle\Repository\FontRepository;
 use Symfony\Contracts\Cache\CacheInterface;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
 // Preloads the uploaded fonts, whose @font-face rules the browser would otherwise only discover after parsing the stylesheet
-class FontPreloadExtension extends AbstractExtension
+class FontPreloadExtension
 {
     // Cached under this key, deleted by the two listeners that already fire on the changes that matter
     public const CACHE_KEY = 'c975l_site.font_preloads';
@@ -48,19 +47,12 @@ class FontPreloadExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('font_preloads', $this->getFontPreloads(...)),
-        ];
-    }
-
     /**
      * @return array<array{path: string, type: string}> Public path (no leading slash) and MIME type of each
      *                                                  font to preload - a "type" not matching what the server
      *                                                  sends makes the browser drop the preload altogether
      */
+    #[AsTwigFunction('font_preloads')]
     public function getFontPreloads(): array
     {
         // Cached rather than re-queried per family, this renders in the <head> of every front-end page

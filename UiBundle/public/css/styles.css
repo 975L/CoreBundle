@@ -7,7 +7,7 @@
  */
 /* TOKEN DEFAULTS */
 @layer ui-defaults {
-  :root {
+  :root, [data-theme] {
     --alert-color: #000;
     --alert-danger-background: #f2dede;
     --alert-danger-color: #9c3a44;
@@ -308,15 +308,12 @@
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  justify-content: center;
+  padding: 8px;
   border-radius: 999px;
   background-color: var(--primary, #000);
   color: var(--button-color);
-  font-size: 13px;
-  font-weight: 500;
   line-height: 1;
-  white-space: nowrap;
   text-decoration: none;
   opacity: 0;
   pointer-events: none;
@@ -1008,10 +1005,14 @@ label[for=contact_form_username],
   box-shadow: var(--block-shadow, var(--box-shadow));
   padding-bottom: 0.5em;
   text-align: start;
+  grid-area: 1/1;
+  pointer-events: auto;
+  backface-visibility: hidden;
 }
 
 .flip-card-back {
   background-color: var(--flip-card-back-background);
+  transform: rotateY(180deg);
 }
 
 .flip-card-title {
@@ -1129,6 +1130,7 @@ label[for=contact_form_username],
   display: grid;
   transform-style: preserve-3d;
   transition: transform 0.7s;
+  pointer-events: none;
 }
 
 .flip-card-inner::before {
@@ -1136,20 +1138,6 @@ label[for=contact_form_username],
   grid-area: 1/1;
   align-self: start;
   aspect-ratio: var(--flip-card-ratio, auto);
-}
-
-.flip-card-inner {
-  pointer-events: none;
-}
-
-.flip-card-face {
-  grid-area: 1/1;
-  pointer-events: auto;
-  backface-visibility: hidden;
-}
-
-.flip-card-back {
-  transform: rotateY(180deg);
 }
 
 .flip-card.is-flipped .flip-card-inner {
@@ -1722,6 +1710,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .portfolio-grid,
 .video-grid,
 .collection-grid,
+.collection-entry,
 .cta-band,
 .flex-columns-section) {
   margin-block: 0;
@@ -1734,6 +1723,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .portfolio-grid,
 .video-grid,
 .collection-grid,
+.collection-entry,
 .flex-columns-section,
 .cta-band {
   padding-top: var(--section-space, clamp(48px, 8vw, 84px));
@@ -1743,6 +1733,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   padding-top: var(--section-space-tight, clamp(24px, 4vw, 48px));
 }
 
+.text-section > .section-wrap {
+  max-width: var(--text-section-max-width, var(--section-wrap-max-width, var(--body-max-width, 1440px)));
+}
+
 .text-section--secondary {
   font-size: var(--text-section-secondary-size, clamp(17px, 1.5vw, 21px));
   line-height: var(--text-section-secondary-line-height, 1.7);
@@ -1750,6 +1744,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 .blocks > .cards {
+  padding-top: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
+.blocks > .tracker {
   padding-top: var(--section-space, clamp(48px, 8vw, 84px));
 }
 
@@ -1766,6 +1764,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .flex-columns__col > .portfolio-grid,
 .flex-columns__col > .video-grid,
 .flex-columns__col > .collection-grid,
+.flex-columns__col > .collection-entry,
 .flex-columns__col > .flex-columns-section,
 .flex-columns__col > .cta-band,
 .flex-columns__col > .text-section {
@@ -3289,6 +3288,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 /* PROGRESS TRACKER */
+.blocks > .tracker {
+  box-sizing: border-box;
+  max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
+  margin: 0 auto;
+  padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+  padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+}
+
 .tracker-head {
   display: flex;
   flex-wrap: wrap;
@@ -3425,6 +3432,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 .readmore-toggle-label:hover {
   color: color-mix(in srgb, var(--link-color, #007bff) 85%, black);
+}
+
+.readmore--complete .readmore-toggle-label {
+  display: none;
 }
 
 /* RICH TEXT */

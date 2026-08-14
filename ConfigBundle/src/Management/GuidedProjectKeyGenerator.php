@@ -20,7 +20,7 @@ class GuidedProjectKeyGenerator
 
     public function __construct(
         private readonly Security $security,
-        #[Autowire('%kernel.secret%')]
+        #[Autowire(param: 'kernel.secret')]
         private readonly string $secret,
     ) {
     }

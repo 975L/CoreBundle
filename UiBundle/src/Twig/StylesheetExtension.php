@@ -14,31 +14,23 @@ use c975L\UiBundle\Registry\StylesheetRegistry;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class StylesheetExtension extends AbstractExtension
+class StylesheetExtension
 {
     public function __construct(
         private readonly StylesheetRegistry $registry,
         private readonly Packages $packages,
         private readonly RequestStack $requestStack,
-        #[Autowire('%kernel.debug%')]
+        #[Autowire(param: 'kernel.debug')]
         private readonly bool $debug,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('bundle_stylesheets', $this->getBundleStylesheets(...)),
-        ];
-    }
-
     /** @return string[] */
+    #[AsTwigFunction('bundle_stylesheets')]
     public function getBundleStylesheets(): array
     {
         $request = $this->requestStack->getCurrentRequest();

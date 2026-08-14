@@ -11,21 +11,13 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Management\PaginatorPageSize;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
 // Hands management/paginator.html.twig the sizes it offers, so the list an admin clicks and the list PaginatorPageSize accepts stay the same one
-class PageSizeExtension extends AbstractExtension
+class PageSizeExtension
 {
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('page_sizes', $this->getSizes(...)),
-        ];
-    }
-
     /** @return int[] */
+    #[AsTwigFunction('page_sizes')]
     public function getSizes(): array
     {
         return PaginatorPageSize::SIZES;

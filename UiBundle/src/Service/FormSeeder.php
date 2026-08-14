@@ -26,7 +26,7 @@ class FormSeeder
         private readonly EntityManagerInterface $entityManager,
         private readonly FormRepository $formRepository,
         private readonly EmailTemplateRepository $emailTemplateRepository,
-        #[Autowire('%kernel.default_locale%')]
+        #[Autowire(param: 'kernel.default_locale')]
         private readonly string $defaultLocale,
     ) {
     }

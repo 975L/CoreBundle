@@ -10,21 +10,12 @@
 
 namespace c975L\UiBundle\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class TrixExtension extends AbstractExtension
+class TrixExtension
 {
-    #[\Override]
-    public function getFilters(): array
-    {
-        return [
-            new TwigFilter('trix_inline', $this->trixInline(...), ['is_safe' => ['html']]),
-            new TwigFilter('plain_text', $this->plainText(...)),
-        ];
-    }
-
     // Reduces editor HTML to the text a caption or a meta tag can hold - the entities are decoded, else Twig would escape them a second time
+    #[AsTwigFilter('plain_text')]
     public function plainText(?string $html): string
     {
         if (!$html) {
@@ -39,6 +30,7 @@ class TrixExtension extends AbstractExtension
     }
 
     // Drops Trix's block-level <div> wrappers, invalid where only phrasing content is allowed, joining lines with <br>
+    #[AsTwigFilter('trix_inline', isSafe: ['html'])]
     public function trixInline(?string $html): string
     {
         if (!$html) {

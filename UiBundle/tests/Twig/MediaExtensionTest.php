@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Twig\Extension\AttributeExtension;
 
 class MediaExtensionTest extends TestCase
 {
@@ -123,7 +124,7 @@ class MediaExtensionTest extends TestCase
     public function testGetFunctionsRegistersSiteMediaFunctions(): void
     {
         $extension = new MediaExtension($this->createStub(MediaRepository::class), $this->createCache());
-        $names = array_map(fn ($function) => $function->getName(), $extension->getFunctions());
+        $names = array_map(fn ($function) => $function->getName(), new AttributeExtension(MediaExtension::class)->getFunctions());
 
         $this->assertSame(['site_media', 'site_random_media'], $names);
     }

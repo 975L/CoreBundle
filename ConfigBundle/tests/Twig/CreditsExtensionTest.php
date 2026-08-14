@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Twig;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Twig\CreditsExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 use Twig\TwigFunction;
 
 class CreditsExtensionTest extends TestCase
@@ -31,7 +32,7 @@ class CreditsExtensionTest extends TestCase
 
     public function testGetFunctionsExposesACreditsModeTwigFunction(): void
     {
-        $functions = $this->createExtension(null)->getFunctions();
+        $functions = new AttributeExtension(CreditsExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertInstanceOf(TwigFunction::class, $functions[0]);

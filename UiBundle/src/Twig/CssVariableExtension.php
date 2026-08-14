@@ -11,25 +11,16 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Service\CssVariableResolver;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class CssVariableExtension extends AbstractExtension
+class CssVariableExtension
 {
     public function __construct(
         private readonly CssVariableResolver $resolver,
     ) {
     }
 
-    #[\Override]
-    public function getFilters(): array
-    {
-        return [
-            // Applied to the whole <style> of an email layout, before inline_css: the CSS inliner copies declarations verbatim into style="" attributes, and no mail client resolves a custom property
-            new TwigFilter('resolve_css_variables', $this->resolve(...), ['is_safe' => ['html']]),
-        ];
-    }
-
+    #[AsTwigFilter('resolve_css_variables', isSafe: ['html'])]
     public function resolve(string $css): string
     {
         return $this->resolver->resolve($css);

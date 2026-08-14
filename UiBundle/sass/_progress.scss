@@ -38,6 +38,15 @@
 }
 
 /* PROGRESS TRACKER */
+// A "progress_tracker" block hangs straight under ".blocks" with no ".section-wrap" around it, so it restates the page measure here - unbounded it ran the full page frame and touched the viewport edges while every section around it stopped at the shared measure. Same case, and same answer, as a bare run of cards (see sass/_cards.scss); the step above it is in sass/_page-sections.scss, where the whole page's rhythm is written
+.blocks > .tracker {
+    box-sizing: border-box;
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
+    margin: 0 auto;
+    padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+}
+
 .tracker-head {
     display: flex;
     flex-wrap: wrap;

@@ -13,12 +13,13 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Twig\PageSizeExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class PageSizeExtensionTest extends TestCase
 {
     public function testGetFunctionsRegistersPageSizesFunction(): void
     {
-        $functions = new PageSizeExtension()->getFunctions();
+        $functions = new AttributeExtension(PageSizeExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertSame('page_sizes', $functions[0]->getName());

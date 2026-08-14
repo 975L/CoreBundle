@@ -1,0 +1,18 @@
+{# One item of a source, never stored on this block: it is pulled live from "source" and drawn either by that source's own template or by the "collection_item" card, exactly as a listing's items are #}
+{% set entry = collection_render_entry(source, pick|default(null), slug|default(null), detailPage|default(null)) %}
+{# Nothing to show - an empty source, a slug matching none - renders nothing at all rather than an empty heading standing over a hole #}
+{% if entry|trim %}
+    {# A headingless <section> is invalid HTML, same rule as the Collection grid's #}
+    {% set tag = title|default('') ? 'section' : 'div' %}
+    <{{ tag }} class="collection-entry"{% if anchor_id %} id="{{ anchor_id }}"{% endif %}>
+        <div class="section-wrap">
+            {% if title|default('') %}
+                {% if eyebrow|default('') %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+                <h2 class="section-title">{{ title }}</h2>
+            {% elseif eyebrow|default('') %}
+                <p class="section-eyebrow">{{ eyebrow }}</p>
+            {% endif %}
+            {{ entry|raw }}
+        </div>
+    </{{ tag }}>
+{% endif %}

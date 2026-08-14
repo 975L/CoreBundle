@@ -28,7 +28,7 @@ class MediaDimensionsCommand extends Command
         private readonly EntityManagerInterface $entityManager,
         private readonly MediaRepository $mediaRepository,
         private readonly ImageDimensionsReader $imageDimensionsReader,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
         parent::__construct();

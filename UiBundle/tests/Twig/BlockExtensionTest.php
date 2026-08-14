@@ -15,6 +15,8 @@ use c975L\UiBundle\Registry\BlockCacheTagRegistry;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
+use c975L\UiBundle\Service\BlockCacheTagResolver;
+use c975L\UiBundle\Service\BlockRenderContext;
 use c975L\UiBundle\Service\CspNonceProvider;
 use c975L\UiBundle\Twig\BlockExtension;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +25,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Twig\Environment;
+use Twig\Extension\AttributeExtension;
 
 class BlockExtensionTest extends TestCase
 {
@@ -38,8 +41,8 @@ class BlockExtensionTest extends TestCase
         return $block;
     }
 
-    // Non-cacheable kinds (e.g. embedding a form with its own CSRF token) must render fresh every time, bypassing the cache pool entirely
-    public function testRenderBlockRendersDirectlyWithoutCachingWhenKindIsNotCacheable(): void
+    // Non-cacheable kinds (e.g. embedding a form with its own CSRF token) must render fresh every time - the veto is read inside the cache callback, which renders and asks for nothing to be stored
+    public function testRenderBlockRendersWithoutStoringWhenKindIsNotCacheable(): void
     {
         $block = $this->createBlock('contact_form');
 
@@ -54,12 +57,44 @@ class BlockExtensionTest extends TestCase
             ->with('contact.html.twig', ['block' => $block, 'anchor_id' => '', 'title' => 'Hello'])
             ->willReturn('<p>rendered</p>');
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->never())->method('get');
+        $item = $this->createMock(ItemInterface::class);
+        $item->expects($this->never())->method('tag');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $saved = true;
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())
+            ->method('get')
+            ->willReturnCallback(function (string $key, callable $callback) use ($item, &$saved): string {
+                $save = true;
+                $html = $callback($item, $save);
+                $saved = $save;
+
+                return $html;
+            });
+
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack([Request::create('/')]), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('<p>rendered</p>', $extension->renderBlock($block));
+        $this->assertFalse($saved, 'A vetoed block would otherwise be stored under its own key and served to everyone afterwards.');
+    }
+
+    // The tags of a container are its whole slot subtree, hydrated from the database to be computed - asking for them before the get() would pay that price on every hit, where the entry is already there
+    public function testTheCacheTagsAreNotResolvedOnAHit(): void
+    {
+        $block = $this->createBlock('flex_columns', 42);
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+
+        $resolver = $this->createMock(BlockCacheTagResolver::class);
+        $resolver->expects($this->never())->method('resolve');
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('get')->willReturn('<div>from the cache</div>');
+
+        $extension = new BlockExtension($registry, $this->createStub(Environment::class), $cache, new RequestStack([Request::create('/')]), $resolver, new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
+
+        $this->assertSame('<div>from the cache</div>', $extension->renderBlock($block));
     }
 
     // A slot saved before a kind was picked has none, and must render as nothing instead of crashing
@@ -79,7 +114,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('', $extension->renderBlock($block));
     }
@@ -100,7 +135,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('', $extension->renderBlock($block));
     }
@@ -124,7 +159,7 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('<article>fresh</article>', $extension->renderBlock($block));
     }
@@ -150,7 +185,7 @@ class BlockExtensionTest extends TestCase
 
         $cache = $this->createStub(TagAwareCacheInterface::class);
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('<section id="services-42"></section>', $extension->renderBlock($block));
     }
@@ -174,7 +209,7 @@ class BlockExtensionTest extends TestCase
 
         $cache = $this->createStub(TagAwareCacheInterface::class);
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('<section id="services-"></section>', $extension->renderBlock($block));
     }
@@ -192,10 +227,9 @@ class BlockExtensionTest extends TestCase
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturn('<article>cached content</article>');
 
-        $requestStack = new RequestStack();
         $request = Request::create('/');
         $request->setLocale('en');
-        $requestStack->push($request);
+        $requestStack = new RequestStack([$request]);
 
         $item = $this->createMock(ItemInterface::class);
         $item->expects($this->once())->method('tag')->with(['block_42', BlockCacheInvalidator::CACHE_TAG_ALL]);
@@ -204,9 +238,13 @@ class BlockExtensionTest extends TestCase
         $cache->expects($this->once())
             ->method('get')
             ->with('block_render_42_en', $this->isCallable())
-            ->willReturnCallback(fn (string $key, callable $callback) => $callback($item));
+            ->willReturnCallback(function (string $key, callable $callback) use ($item): string {
+                $save = true;
 
-        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+                return $callback($item, $save);
+            });
+
+        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('<article>cached content</article>', $extension->renderBlock($block));
     }
@@ -235,14 +273,77 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->once())
             ->method('get')
-            ->willReturnCallback(fn (string $key, callable $callback) => $callback($item));
+            ->willReturnCallback(function (string $key, callable $callback) use ($item): string {
+                $save = true;
 
-        $requestStack = new RequestStack();
-        $requestStack->push(Request::create('/'));
+                return $callback($item, $save);
+            });
 
-        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, $cacheTagRegistry, new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $requestStack = new RequestStack([Request::create('/')]);
+
+        $extension = new BlockExtension($registry, $twig, $cache, $requestStack, new BlockCacheTagResolver($registry, $cacheTagRegistry), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $extension->renderBlock($block);
+    }
+
+    // A never-persisted block whose caller names it itself (see CollectionRuntime, whose items are transient by design but identified by their source's own slug) - cached under that key, with the caller's own tags and no "block_{id}" it has none of
+    public function testATransientBlockIsCachedUnderTheKeyItsCallerHandsIn(): void
+    {
+        $block = $this->createBlock('collection_item', null);
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('isCacheable')->willReturn(true);
+        $registry->method('getTemplate')->willReturn('collection_item.html.twig');
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn('<div>card</div>');
+
+        $item = $this->createMock(ItemInterface::class);
+        $item->expects($this->once())
+            ->method('tag')
+            ->with([BlockCacheInvalidator::CACHE_TAG_ALL, 'guild_character']);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())
+            ->method('get')
+            ->with('collection_item_abc_en', $this->isCallable())
+            ->willReturnCallback(function (string $key, callable $callback) use ($item): string {
+                $save = true;
+
+                return $callback($item, $save);
+            });
+
+        $request = Request::create('/');
+        $request->setLocale('en');
+
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack([$request]), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
+
+        $this->assertSame('<div>card</div>', $extension->renderBlock($block, 'collection_item_abc', ['guild_character']));
+    }
+
+    // An editor's preview has to show what was just saved, and its own html is not the public one - see BlockRenderContext, armed by SiteBundle's PageController::preview()
+    public function testNothingIsReadFromNorWrittenToTheCacheWhileTheRenderContextDisablesIt(): void
+    {
+        $block = $this->createBlock('article', 42);
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('isCacheable')->willReturn(true);
+        $registry->method('getTemplate')->willReturn('article.html.twig');
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn('<article>fresh</article>');
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('get');
+
+        $renderContext = new BlockRenderContext();
+        $renderContext->disableCache();
+
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack([Request::create('/')]), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), $renderContext);
+
+        $this->assertSame('<article>fresh</article>', $extension->renderBlock($block));
     }
 
     // Without a current request (e.g. CLI/message consumer context), the render is never cached: the RequestContext then answers "http://localhost" to anything host-dependent, and that entry would afterwards be served to every visitor
@@ -261,28 +362,23 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class));
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
 
         $this->assertSame('content', $extension->renderBlock($block));
     }
 
     public function testGetFunctionsRegistersRenderBlockAsHtmlSafe(): void
     {
-        $extension = new BlockExtension(
-            $this->createStub(BlockRegistry::class),
-            $this->createStub(Environment::class),
-            $this->createStub(TagAwareCacheInterface::class),
-            new RequestStack(),
-            new BlockCacheTagRegistry(),
-            new BlockEditUrlRegistry(),
-            $this->createStub(CspNonceProvider::class)
-        );
-        $functions = $extension->getFunctions();
+        $functions = [];
+        foreach (new AttributeExtension(BlockExtension::class)->getFunctions() as $function) {
+            $functions[$function->getName()] = $function;
+        }
 
-        $this->assertCount(2, $functions);
-        $this->assertSame('render_block', $functions[0]->getName());
-        $this->assertSame(['html'], $functions[0]->getSafe(new \Twig\Node\TextNode('', 0)));
-        $this->assertSame('block_edit_urls', $functions[1]->getName());
+        // Indexed by name rather than read in order: the attributes are collected in the methods' declaration order, which is no part of the contract
+        $names = array_keys($functions);
+        sort($names);
+        $this->assertSame(['block_edit_urls', 'render_block'], $names);
+        $this->assertSame(['html'], $functions['render_block']->getSafe(new \Twig\Node\TextNode('', 0)));
     }
 
     // Resolved once for the whole collection, not once per block - avoids a query per block (see BlockEditUrlRegistry)
@@ -298,9 +394,10 @@ class BlockExtensionTest extends TestCase
             $this->createStub(Environment::class),
             $this->createStub(TagAwareCacheInterface::class),
             new RequestStack(),
-            new BlockCacheTagRegistry(),
+            $this->createStub(BlockCacheTagResolver::class),
             $registry,
-            $this->createStub(CspNonceProvider::class)
+            $this->createStub(CspNonceProvider::class),
+            new BlockRenderContext()
         );
 
         $this->assertSame([5 => '/admin/edit'], $extension->getBlockEditUrls([$block]));
@@ -331,9 +428,43 @@ class BlockExtensionTest extends TestCase
         $cache = $this->createMock(TagAwareCacheInterface::class);
         $cache->expects($this->never())->method('get');
 
-        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $nonces);
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $nonces, new BlockRenderContext());
 
         $this->assertSame('<style nonce="def456">#a{color:red}</style>', $extension->renderBlock($this->createBlock('banner', 7)));
+    }
+
+    // A slot's html is stored verbatim in its container's cache entry, so a nonce substituted while rendering the slot would freeze into that entry and match nothing on every later request - the marker is left for the outermost render, the only one that happens on every request
+    public function testTheMarkerOfASlotIsLeftForTheOutermostRender(): void
+    {
+        $slot = $this->createBlock('banner', 8);
+        $container = $this->createBlock('flex_columns', 7);
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('isCacheable')->willReturn(false);
+        $registry->method('getTemplate')->willReturn('block.html.twig');
+
+        $nonces = $this->createMock(CspNonceProvider::class);
+        $nonces->expects($this->once())->method('styleNonce')->willReturn('abc123');
+
+        $extension = null;
+        $slotHtml = null;
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturnCallback(function (string $template, array $context) use ($slot, &$extension, &$slotHtml): string {
+            if ($context['block'] === $slot) {
+                return '<style data-ui-nonce>#a{color:red}</style>';
+            }
+
+            $slotHtml = $extension->renderBlock($slot);
+
+            return '<div>' . $slotHtml . '</div>';
+        });
+
+        $extension = new BlockExtension($registry, $twig, $this->createStub(TagAwareCacheInterface::class), new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $nonces, new BlockRenderContext());
+
+        $this->assertSame('<div><style nonce="abc123">#a{color:red}</style></div>', $extension->renderBlock($container));
+        $this->assertSame('<style data-ui-nonce>#a{color:red}</style>', $slotHtml, 'What goes into the container is what its cache entry keeps, so it has to still hold the marker.');
     }
 
     // Every other block pays nothing for the feature: no marker, no nonce asked for, and asking is what would put one in the response's style-src
@@ -377,7 +508,7 @@ class BlockExtensionTest extends TestCase
         $nonces = $this->createMock(CspNonceProvider::class);
         $nonces->expects($nonceCalls)->method('styleNonce')->willReturn($nonce);
 
-        return new BlockExtension($registry, $twig, $this->createStub(TagAwareCacheInterface::class), new RequestStack(), new BlockCacheTagRegistry(), new BlockEditUrlRegistry(), $nonces);
+        return new BlockExtension($registry, $twig, $this->createStub(TagAwareCacheInterface::class), new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $nonces, new BlockRenderContext());
     }
 
     // Twig collections (Doctrine PersistentCollection/ArrayCollection) are iterable but not necessarily arrays
@@ -393,9 +524,10 @@ class BlockExtensionTest extends TestCase
             $this->createStub(Environment::class),
             $this->createStub(TagAwareCacheInterface::class),
             new RequestStack(),
-            new BlockCacheTagRegistry(),
+            $this->createStub(BlockCacheTagResolver::class),
             $registry,
-            $this->createStub(CspNonceProvider::class)
+            $this->createStub(CspNonceProvider::class),
+            new BlockRenderContext()
         );
 
         $extension->getBlockEditUrls((function () use ($block) {

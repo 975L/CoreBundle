@@ -29,10 +29,25 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author Laurent Marquet <laurent.marquet@laposte.net>
  * @copyright 2026 975L <contact@975l.com>
  */
-#[AsCommand(
-    name: 'c975l:config:get',
-    description: 'Displays the value of one or more config entries'
-)]
+#[AsCommand(name: 'c975l:config:get', description: 'Displays the value of one or more config entries', help: <<<'TXT'
+Reads a single entry:
+
+  <info>php %command.full_name% site-name</info>
+
+Reads every entry of a family, the trailing * matching any end of slug and the quotes
+keeping the shell from expanding it against the current directory:
+
+  <info>php %command.full_name% 'site-backup-offsite*'</info>
+
+Feeds a shell variable, the value being printed alone:
+
+  <info>SITE=$(php %command.full_name% site-name --raw)</info>
+
+Sensitive entries are masked unless --show-sensitive is passed, which decrypts them
+with C975L_VAULT_KEY. An unknown slug, or a prefix matching nothing, exits in failure.
+So does --raw on an entry it would have to mask: the mask would be captured as if it
+were the value, where a failure stops the script.
+TXT)]
 class ConfigGetCommand extends Command
 {
     // What a sensitive value shows instead of itself, of a length telling nothing about the secret's own
@@ -51,25 +66,6 @@ class ConfigGetCommand extends Command
             ->addArgument('slug', InputArgument::REQUIRED, 'Slug of the config entry to read, or a prefix ending with * (e.g. site-backup-offsite*)')
             ->addOption('show-sensitive', null, InputOption::VALUE_NONE, 'Displays sensitive values in clear text instead of masking them')
             ->addOption('raw', null, InputOption::VALUE_NONE, 'Prints the values alone, one per line, without table nor decoration')
-            ->setHelp(<<<'HELP'
-                Reads a single entry:
-
-                  <info>php %command.full_name% site-name</info>
-
-                Reads every entry of a family, the trailing * matching any end of slug and the quotes
-                keeping the shell from expanding it against the current directory:
-
-                  <info>php %command.full_name% 'site-backup-offsite*'</info>
-
-                Feeds a shell variable, the value being printed alone:
-
-                  <info>SITE=$(php %command.full_name% site-name --raw)</info>
-
-                Sensitive entries are masked unless --show-sensitive is passed, which decrypts them
-                with C975L_VAULT_KEY. An unknown slug, or a prefix matching nothing, exits in failure.
-                So does --raw on an entry it would have to mask: the mask would be captured as if it
-                were the value, where a failure stops the script.
-                HELP)
         ;
     }
 

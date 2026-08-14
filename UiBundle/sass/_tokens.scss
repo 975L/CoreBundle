@@ -4,8 +4,10 @@
 // Declared once rather than as ~180 inline fallbacks, which would drift the day SiteBundle retunes one
 // The @layer is what makes that safe, a layered rule always losing to an unlayered one whatever the order
 // Light values only, dark mode being SiteBundle's; nothing else in this bundle is layered
+// "[data-theme]" alongside ":root" is what makes a second ambiance possible below the root: a var() written in a custom property's value is substituted on the element carrying the declaration, not where the token is read, so the derived tokens (--surface-alt, --border-color, --section-bg-*) would otherwise resolve once on the root palette and descend already computed. Any element carrying data-theme now redeclares the whole chain against the palette in scope
+// The contract that follows: a token is declared on ":root, [data-theme]", never on ":root" alone - a site's own themes/*.css included, scaffold/assets/styles/themes/ui.css being written that way
 @layer ui-defaults {
-    :root {
+    :root, [data-theme] {
         --alert-color: #000;
         --alert-danger-background: #f2dede;
         --alert-danger-color: #9c3a44;

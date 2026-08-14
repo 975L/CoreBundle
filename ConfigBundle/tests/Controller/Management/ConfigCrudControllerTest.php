@@ -94,8 +94,7 @@ class ConfigCrudControllerTest extends TestCase
     {
         $request = new Request(null !== $group ? ['group' => $group] : []);
 
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
+        $requestStack = new RequestStack([$request]);
 
         return $requestStack;
     }
@@ -195,8 +194,7 @@ class ConfigCrudControllerTest extends TestCase
 
     public function testShowGroupsScreenIsTrueWithNoGroupAndNoQuery(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         $controller = $this->createController(requestStack: $requestStack);
 
@@ -213,8 +211,7 @@ class ConfigCrudControllerTest extends TestCase
     // A search query typed on the "pick a group" screen (which displays the search box but previously never read it) now bypasses it, searching across every group at once
     public function testShowGroupsScreenIsFalseWhenASearchQueryIsPresent(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request(['query' => 'ai-help']));
+        $requestStack = new RequestStack([new Request(['query' => 'ai-help'])]);
 
         $controller = $this->createController(requestStack: $requestStack);
 
@@ -223,8 +220,7 @@ class ConfigCrudControllerTest extends TestCase
 
     public function testShowGroupsScreenIsTrueWhenQueryParamIsBlank(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request(['query' => '']));
+        $requestStack = new RequestStack([new Request(['query' => ''])]);
 
         $controller = $this->createController(requestStack: $requestStack);
 
@@ -738,8 +734,7 @@ class ConfigCrudControllerTest extends TestCase
 
     public function testConfigureActionsBuildsWithoutError(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         $controller = $this->createController(requestStack: $requestStack);
 
@@ -755,8 +750,7 @@ class ConfigCrudControllerTest extends TestCase
     // Index-page row action becomes icon-only (see EasyAdminActionHelper::toIconOnly()), the label moving to the hover "title" instead
     public function testConfigureActionsSetsEditIconOnlyOnIndexPage(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         $controller = $this->createController(requestStack: $requestStack);
 
@@ -775,8 +769,7 @@ class ConfigCrudControllerTest extends TestCase
     // Detail adds no information beyond what edit already shows (sensitive values are revealed there too) - disabled entirely, alongside new/delete since configs are fixed by the bundles' import json
     public function testConfigureActionsDisablesNewDeleteAndDetail(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         $controller = $this->createController(requestStack: $requestStack);
 
@@ -794,8 +787,7 @@ class ConfigCrudControllerTest extends TestCase
     // A "Cancel" action on the edit page lets the admin back out without saving, linking back to the index like EasyAdmin's own built-in actions do
     public function testConfigureActionsAddsCancelActionOnEditPageLinkingToIndex(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         $controller = $this->createController(requestStack: $requestStack);
 
@@ -813,8 +805,7 @@ class ConfigCrudControllerTest extends TestCase
     // The "SQL + secrets" export hands over decryptable secrets: its permission must stay stricter than the other exports', whose role is configurable
     public function testConfigureActionsRestrictsTheSqlWithSensitiveExportToSuperAdmin(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         $controller = $this->createController(requestStack: $requestStack);
 

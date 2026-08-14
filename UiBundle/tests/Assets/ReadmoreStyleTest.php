@@ -49,6 +49,17 @@ class ReadmoreStyleTest extends TestCase
         );
     }
 
+    // The link is written visible and taken away after measure, never the reverse: a browser reaching no JS has to keep it, or a folded text would sit behind a link never shown
+    #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
+    public function testTheToggleIsHiddenOnlyWhenNothingIsFolded(string $file): void
+    {
+        $this->assertStringContainsString(
+            '.readmore--complete.readmore-toggle-label{display:none',
+            $this->normalize($file),
+            sprintf('"%s" no longer takes the toggle away when the text ends inside the folded measure.', $file)
+        );
+    }
+
     // Strips comments and collapses whitespace, so the same assertions hold on the minified sheet
     private function normalize(string $file): string
     {

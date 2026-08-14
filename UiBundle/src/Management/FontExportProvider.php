@@ -21,7 +21,7 @@ class FontExportProvider implements ExportProviderInterface
 {
     public function __construct(
         private readonly FontRepository $fontRepository,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }

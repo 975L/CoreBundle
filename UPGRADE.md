@@ -1,5 +1,48 @@
 # UPGRADE
 
+## From `v1.9.1` to `v1.10.0`
+
+### UiBundle's layout reads `summarySocialNetwork`, no longer `description`
+
+The two layouts a site can run under — `@c975LUi/layout.html.twig` when only Config+Ui are installed,
+`@c975LSite/layout.html.twig` as soon as SiteBundle is — are interchangeable: the scaffolded
+`templates/layout.html.twig` extends whichever exists. They did not read the same variable. SiteBundle's has
+read `summarySocialNetwork` since the `Page` column was renamed to it (10/07/2026); UiBundle's still asked for
+`description`.
+
+A template posing `description` therefore emitted its `<meta name="description">` and its `og:description`
+under one layout and **lost both under the other, with no error and no warning** — the whole of a site's
+`<meta name="description">` could be missing without anything saying so. Both now read
+`summarySocialNetwork`, and nothing reads `description` any more.
+
+On each site:
+
+```bash
+grep -rn '{% set description' templates/
+```
+
+Rename what it finds to `summarySocialNetwork`. The variable means exactly the same thing and goes to the same
+two tags — only the name changes. The `description` a `Video`, an `Audio` or an `Iframe` component takes is a
+caption and has nothing to do with this: leave those alone.
+
+Nothing to re-enter anywhere: a `Page` carries its summary in its own column and is untouched.
+
+### A listing can now say what it is, from the back office
+
+New in this release rather than a break, but it is what the rename above opens onto: an url no entity carries —
+a listing, a filtered listing, a tool page — had nowhere to state its title and its summary, so sites ended up
+writing them into their templates. **Descriptions d'urls** in the back office now holds them, keyed by path, and
+both layouts read a row for whatever the rendering template left unsaid. An entity still speaks first.
+
+The table is created by the app, like `site_redirect`:
+
+```bash
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
+```
+
+A site that updates without migrating keeps working — the rows simply resolve to nothing.
+
 ## From `v1.7` to `v1.8`
 
 ### A `flip_card` is no longer a `.card`

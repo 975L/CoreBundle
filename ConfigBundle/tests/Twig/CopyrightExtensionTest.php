@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Twig\CopyrightExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Extension\AttributeExtension;
 
 class CopyrightExtensionTest extends TestCase
 {
@@ -99,9 +100,7 @@ class CopyrightExtensionTest extends TestCase
 
     public function testGetFunctionsRegistersSiteCopyrightFunction(): void
     {
-        $extension = $this->createExtension(null, null);
-
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(CopyrightExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertSame('site_copyright', $functions[0]->getName());

@@ -65,11 +65,9 @@ export default class extends Controller {
         button.rel = "noopener";
         button.tabIndex = -1;
         button.setAttribute("aria-hidden", "true");
+        // The pencil says it on its own over the block it sits on, so the translated label is the button's name rather than a word painted next to the icon
+        button.setAttribute("aria-label", this.element.dataset.editLabel || "Edit");
         button.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-
-        const label = document.createElement("span");
-        label.textContent = this.element.dataset.editLabel || "Edit";
-        button.append(label);
 
         return button;
     }
@@ -170,7 +168,7 @@ export default class extends Controller {
         }
 
         // The rule is mutated through the CSSOM rather than rewritten: this runs on every scroll event, and rewriting textContent would re-parse the sheet each time. The <style> element stays the same one, so the nonce still covers it
-        // The block's right edge; CSS translateX(-100%) right-aligns the varying label width
+        // The block's right edge; CSS translateX(-100%) right-aligns the button on it
         this.positionRule.style.setProperty("top", `${Math.max(rect.top, 0) + 8}px`);
         this.positionRule.style.setProperty("left", `${rect.right - 8}px`);
     }

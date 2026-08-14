@@ -39,7 +39,7 @@ class FontCssListener implements CacheWarmerInterface
     public function __construct(
         private readonly FontRepository $fontRepository,
         private readonly StylesheetCacheWarmer $stylesheetCacheWarmer,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
         private readonly CacheInterface $cache,
     ) {

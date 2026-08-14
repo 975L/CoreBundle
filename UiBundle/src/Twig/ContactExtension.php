@@ -11,26 +11,16 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Service\ContactSnippetBuilder;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class ContactExtension extends AbstractExtension
+class ContactExtension
 {
     public function __construct(private readonly ContactSnippetBuilder $snippetBuilder)
     {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            // Already encoded here, hence "is_safe": the builder escapes every tag-opening character itself, which Twig's own json_encode filter would then escape a second time
-            new TwigFunction('contact_json_ld', $this->jsonLd(...), ['is_safe' => ['html']]),
-            new TwigFunction('contact_day_runs', $this->dayRuns(...)),
-        ];
-    }
-
     // Splits the days of one opening range into runs of consecutive days, so a template can print "Monday - Friday" rather than the five of them; a lone day comes back as a one-entry run, and the week order is the stored one
+    #[AsTwigFunction('contact_day_runs')]
     public function dayRuns(array $days): array
     {
         $ordered = array_values(array_intersect(ContactSnippetBuilder::DAYS, $days));
@@ -54,6 +44,7 @@ class ContactExtension extends AbstractExtension
     }
 
     // Returns the <script type="application/ld+json"> payload for a "contact_details" block, empty when there is nothing to publish
+    #[AsTwigFunction('contact_json_ld', isSafe: ['html'])]
     public function jsonLd(array $data, ?string $imageUrl = null): string
     {
         return $this->snippetBuilder->buildJson($data, $imageUrl);

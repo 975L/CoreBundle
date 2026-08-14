@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class ContactExtensionTest extends TestCase
 {
@@ -24,17 +25,23 @@ class ContactExtensionTest extends TestCase
     // Names locked: templates/components/Contact/Details.html.twig calls both, and a rename would fail there silently
     public function testExposesTheFunctionsTheContactComponentCalls(): void
     {
-        $names = array_map(static fn ($function) => $function->getName(), $this->extension()->getFunctions());
+        // Sorted rather than read in order: the attributes are collected in the methods' declaration order, which is no part of the contract
+        $names = array_map(static fn ($function) => $function->getName(), new AttributeExtension(ContactExtension::class)->getFunctions());
+        sort($names);
 
-        $this->assertSame(['contact_json_ld', 'contact_day_runs'], $names);
+        $this->assertSame(['contact_day_runs', 'contact_json_ld'], $names);
     }
 
     // The payload is escaped by the builder, so it is printed as-is rather than re-escaped by Twig
     public function testJsonLdIsMarkedHtmlSafe(): void
     {
-        $function = $this->extension()->getFunctions()[0];
+        $functions = [];
+        foreach (new AttributeExtension(ContactExtension::class)->getFunctions() as $function) {
+            $functions[$function->getName()] = $function;
+        }
 
-        $this->assertContains('html', $function->getSafe(new \Twig\Node\EmptyNode()));
+        $this->assertArrayHasKey('contact_json_ld', $functions);
+        $this->assertContains('html', $functions['contact_json_ld']->getSafe(new \Twig\Node\EmptyNode()));
     }
 
     public function testJsonLdReturnsTheEncodedGraph(): void

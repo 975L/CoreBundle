@@ -121,6 +121,12 @@ class ScaffoldThemeTest extends TestCase
         ));
     }
 
+    // C bis. The scaffold declares on the same selector as the bundle: inside an element carrying data-theme, a value set on ":root" alone would lose to the bundle's own default, declared on that very element by sass/_tokens.scss
+    public function testScaffoldDeclaresOnTheSameSelectorAsTheBundle(): void
+    {
+        $this->assertStringContainsString(':root, [data-theme] {', $this->scaffoldSource(), 'The scaffolded ui.css must open on ":root, [data-theme]", the selector sass/_tokens.scss declares its defaults on.');
+    }
+
     // D. A token read with an inline fallback never reaches :root, so test A above is blind to it - and that is exactly how --contact-details-col-min stayed out of the scaffold for a release
     public function testScaffoldOffersEveryTokenReadWithAnInlineFallback(): void
     {
@@ -150,7 +156,7 @@ class ScaffoldThemeTest extends TestCase
     {
         $css = (string) file_get_contents(dirname(__DIR__, 2) . '/public/css/styles.css');
 
-        $this->assertSame(1, preg_match('/@layer ui-defaults \{\s*:root \{(.*?)\n  \}/s', $css, $block), 'public/css/styles.css no longer opens with a "@layer ui-defaults" :root block: recompile the sass, or update this test to the new shape.');
+        $this->assertSame(1, preg_match('/@layer ui-defaults \{\s*:root, \[data-theme\] \{(.*?)\n  \}/s', $css, $block), 'public/css/styles.css no longer opens with a "@layer ui-defaults" ":root, [data-theme]" block: recompile the sass, or update this test to the new shape.');
 
         preg_match_all('/(--[a-z0-9-]+):\s*(.+?);/', $block[1], $matches, PREG_SET_ORDER);
 

@@ -11,8 +11,11 @@
 namespace c975L\UiBundle\Tests\Templates;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\UX\TwigComponent\ComponentAttributes;
+use Symfony\UX\TwigComponent\Twig\PropsTokenParser;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\Runtime\EscaperRuntime;
 
 // The variant declares itself by its own props, so a card given none of the five stays exactly the card it always was
 class CardStatVariantTest extends TestCase
@@ -85,10 +88,21 @@ class CardStatVariantTest extends TestCase
         $this->assertStringContainsString('<div class="card-body">', $html);
     }
 
-    private function render(array $context): string
+    /**
+     * The bare environment the component renderer would otherwise bring: the "props" tag and the "attributes" it empties, without which the template no longer parses.
+     *
+     * @param array<string, mixed>       $context
+     * @param array<string, string|bool> $attributes what a caller wrote on top of the declared props
+     */
+    private function render(array $context, array $attributes = []): string
     {
         $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
+        $twig->addTokenParser(new PropsTokenParser());
+        // What TwigEnvironmentConfigurator does in the application: without it the rendered attributes come back escaped, quotes included
+        $twig->getRuntime(EscaperRuntime::class)->addSafeClass(ComponentAttributes::class, ['html']);
 
-        return $twig->render('components/Card/Card.html.twig', $context);
+        return $twig->render('components/Card/Card.html.twig', $context + [
+            'attributes' => new ComponentAttributes($attributes, $twig->getRuntime(EscaperRuntime::class)),
+        ]);
     }
 }

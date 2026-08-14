@@ -154,10 +154,8 @@ class BlockSlotsGuardTest extends TestCase
     // A body already at the limit is what a truncated one looks like from PHP's side: everything past it is simply not there
     private function requestStack(bool $truncated): RequestStack
     {
-        $stack = new RequestStack();
         $limit = (int) ini_get('max_input_vars');
-        $stack->push(new Request(request: $truncated ? array_fill(0, max($limit, 1), 'x') : ['title' => 'Home']));
 
-        return $stack;
+        return new RequestStack([new Request(request: $truncated ? array_fill(0, max($limit, 1), 'x') : ['title' => 'Home'])]);
     }
 }

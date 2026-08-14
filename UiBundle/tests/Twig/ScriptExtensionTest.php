@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Registry\ScriptRegistry;
 use c975L\UiBundle\Twig\ScriptExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class ScriptExtensionTest extends TestCase
 {
@@ -28,8 +29,7 @@ class ScriptExtensionTest extends TestCase
 
     public function testGetFunctionsRegistersBundleScriptsFunction(): void
     {
-        $extension = new ScriptExtension($this->createStub(ScriptRegistry::class));
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(ScriptExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertSame('bundle_scripts', $functions[0]->getName());

@@ -54,6 +54,11 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
                 'kind' => 'collection',
                 'variants' => $this->collectionVariants(),
             ],
+            $this->translator->trans('label.gallery_showcase_collection_entry', [], 'ui') => [
+                'description' => $this->translator->trans('label.gallery_showcase_collection_entry_description', [], 'ui'),
+                'kind' => 'collection_entry',
+                'variants' => ['' => $this->renderCollectionEntry()],
+            ],
         ];
     }
 
@@ -125,6 +130,27 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
             'variant' => $variant ?? '',
             'id' => '',
         ]);
+    }
+
+    // One entry under its own section head, the block's own markup: its template would call collection_render_entry(), i.e. query a source a showcase has no reason to have. A source drawing its items by a template of its own would show that template here instead - which is precisely what no showcase can fabricate
+    private function renderCollectionEntry(): string
+    {
+        $item = $this->blockExtension->renderBlock(
+            new Block()->setKind('collection_item')->setData(self::COLLECTION_ITEMS[0] + [
+                'url' => '',
+                'imageUrl' => '',
+                'buttonLabel' => '',
+                'buttonIcon' => '',
+                'detailUrl' => null,
+                'variant' => null,
+            ])
+        );
+
+        return '<div class="collection-entry"><div class="section-wrap">'
+            . '<p class="section-eyebrow">Surtitre de la section</p>'
+            . '<h2 class="section-title">Une seule entrée, mise en avant</h2>'
+            . $item
+            . '</div></div>';
     }
 
     // The section goes through BlockExtension::renderBlock() like any block: never persisted, it has no id, so nothing of this is cached (see renderBlock())

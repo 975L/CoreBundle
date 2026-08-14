@@ -23,8 +23,8 @@ class BlockCacheTagRegistry
         $this->resolvers = array_merge($this->resolvers, $provider->getCacheTagResolvers());
     }
 
-    // Extra cache tags for this block's kind, empty when none was registered for it
-    public function getExtraTags(Block $block): array
+    // Extra cache tags for this block's kind, empty when none was registered for it - null when the kind's own resolver declines to have this particular block cached at all (see BlockCacheTagProviderInterface)
+    public function getExtraTags(Block $block): ?array
     {
         $resolver = $this->resolvers[$block->getKind()] ?? null;
 

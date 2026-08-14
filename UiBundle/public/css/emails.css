@@ -7,7 +7,7 @@
  */
 /* TOKEN DEFAULTS */
 @layer ui-defaults {
-  :root {
+  :root, [data-theme] {
     --alert-color: #000;
     --alert-danger-background: #f2dede;
     --alert-danger-color: #9c3a44;

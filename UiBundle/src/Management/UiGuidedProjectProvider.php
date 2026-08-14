@@ -12,8 +12,9 @@ namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
+use c975L\UiBundle\Controller\Management\FontCrudController;
 use c975L\UiBundle\Controller\Management\FormCrudController;
-use c975L\UiBundle\Controller\Management\MediaCrudController;
+use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 
@@ -28,48 +29,46 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
     public function getGuidedProjects(): array
     {
         return [
-            $this->mediaProject(),
+            $this->siteGraphicProject(),
             $this->formProject(),
             $this->emailTemplateProject(),
+            $this->fontProject(),
         ];
     }
 
-    // One image, uploaded once, used everywhere - the alternative being the same photo re-uploaded per block
-    private function mediaProject(): array
+    // The handful of images a site is recognised by, which nothing else puts in place - a favicon missing is noticed by every visitor and by no error log
+    private function siteGraphicProject(): array
     {
         return [
-            'slug' => 'ui-media',
-            'label' => 'label.guided_project_ui_media',
-            'description' => 'description.guided_project_ui_media',
+            'slug' => 'ui-site-graphic',
+            'label' => 'label.guided_project_ui_site_graphic',
+            'description' => 'description.guided_project_ui_site_graphic',
             'translation_domain' => 'ui',
             'order' => 90,
             'steps' => [
                 [
-                    'label' => 'label.guided_step_ui_media_open',
-                    'description' => 'description.guided_step_ui_media_open',
-                    'url' => $this->indexUrl(MediaCrudController::class),
+                    'label' => 'label.guided_step_ui_site_graphic_open',
+                    'description' => 'description.guided_step_ui_site_graphic_open',
+                    'url' => $this->indexUrl(SiteGraphicCrudController::class),
                 ],
                 [
-                    'label' => 'label.guided_step_ui_media_new',
-                    'highlight' => '.action-new',
+                    // The index renders one button per graphic still missing, each opening the upload form with its role pre-picked through SiteGraphicCrudController::ROLE_PARAMETER - a plainer ".action-new" would point at the generic form the screen precisely spares the user (see site_graphic_crud_index.html.twig)
+                    'label' => 'label.guided_step_ui_site_graphic_pick',
+                    'description' => 'description.guided_step_ui_site_graphic_pick',
+                    'highlight' => 'a[href*="' . SiteGraphicCrudController::ROLE_PARAMETER . '"]',
                 ],
                 [
-                    'label' => 'label.guided_step_ui_media_file',
-                    'description' => 'description.guided_step_ui_media_file',
+                    'label' => 'label.guided_step_ui_site_graphic_file',
+                    'description' => 'description.guided_step_ui_site_graphic_file',
                     'highlight' => 'input[type="file"]',
                 ],
                 [
-                    'label' => 'label.guided_step_ui_media_alt',
-                    'description' => 'description.guided_step_ui_media_alt',
-                    'highlight' => '#Media_alt',
-                ],
-                [
-                    'label' => 'label.guided_step_ui_media_save',
+                    'label' => 'label.guided_step_ui_site_graphic_save',
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
-                    'label' => 'label.guided_step_ui_media_reuse',
-                    'description' => 'description.guided_step_ui_media_reuse',
+                    'label' => 'label.guided_step_ui_site_graphic_done',
+                    'description' => 'description.guided_step_ui_site_graphic_done',
                 ],
             ],
         ];
@@ -152,6 +151,51 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_ui_email_template_check',
                     'description' => 'description.guided_step_ui_email_template_check',
+                ],
+            ],
+        ];
+    }
+
+    // A whole font family lands in one upload rather than one row typed per weight - the part of the screen nobody finds on their own
+    private function fontProject(): array
+    {
+        return [
+            'slug' => 'ui-font',
+            'label' => 'label.guided_project_ui_font',
+            'description' => 'description.guided_project_ui_font',
+            'translation_domain' => 'ui',
+            'order' => 120,
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_font_open',
+                    'description' => 'description.guided_step_ui_font_open',
+                    'url' => $this->indexUrl(FontCrudController::class),
+                ],
+                [
+                    // A custom action, so EasyAdmin names its button after it just the same (see ActionFactory) - the toolbar button FontCrudController adds for FontBulkImportController
+                    'label' => 'label.guided_step_ui_font_bulk',
+                    'description' => 'description.guided_step_ui_font_bulk',
+                    'highlight' => '.action-bulkImport',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_font_files',
+                    'description' => 'description.guided_step_ui_font_files',
+                    'highlight' => 'input[type="file"][multiple]',
+                ],
+                [
+                    // The bulk import screen is a plain form of its own, not an EasyAdmin CRUD page: no ".action-" button to name here (see font_bulk_import.html.twig)
+                    'label' => 'label.guided_step_ui_font_import',
+                    'description' => 'description.guided_step_ui_font_import',
+                    'highlight' => 'form[enctype="multipart/form-data"] button[type="submit"]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_font_fix',
+                    'description' => 'description.guided_step_ui_font_fix',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_font_done',
+                    'description' => 'description.guided_step_ui_font_done',
                 ],
             ],
         ];

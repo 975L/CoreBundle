@@ -76,6 +76,8 @@ A development machine's `vendor/` symlinks the sibling repositories, which expos
 bin/ci.sh
 ```
 
+The quality tools themselves are not dependencies of the bundle: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the four versions it ran with — a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
+
 ## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
 
 See [UPGRADE.md](UPGRADE.md). In short: replace the two requirements with `c975l/core-bundle`. **No PHP `use`, no `@c975LUi/…` template reference, no translation key and no `bundles.php` entry changes** — the namespaces are the same ones.

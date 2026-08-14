@@ -58,8 +58,21 @@ class RedirectSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $toUrl = $this->applyTail($path, (string) $redirect->getFromPath(), $toUrl);
+
         $status = $redirect->isPermanent() ? 301 : 302;
         $event->setResponse(new RedirectResponse($toUrl, $status));
+    }
+
+    // A "*" on both sides carries the tail of the path over to the destination: "/character/*" -> "/personnages/*" sends "/character/tuor" to "/personnages/tuor", which is what a renamed url tree needs. A destination without it keeps sending the whole tree to one url, which is what a tree folded into a single page needs - both are wanted, and the "*" is what tells them apart
+    private function applyTail(string $path, string $fromPath, string $toUrl): string
+    {
+        if (!str_ends_with($fromPath, '*') || !str_ends_with($toUrl, '*')) {
+            return $toUrl;
+        }
+
+        // A row matched on its literal path ("/character/*" requested as such, which resolve() treats as an exact match) carries its own star over as the tail, landing on "/personnages/*" - the destination the row states, which is what makes such a row checkable by requesting it as written
+        return rtrim($toUrl, '*') . substr($path, \strlen(rtrim($fromPath, '*')));
     }
 
     // An exact fromPath always wins, so a single "/apidoc/*" row can cover a whole tree of removed urls while one of them keeps its own specific answer. Among prefixes the longest one wins, so "/apidoc/c975L/*" still beats a broader "/apidoc/*" covering it

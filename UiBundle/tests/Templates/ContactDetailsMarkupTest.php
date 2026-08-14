@@ -16,7 +16,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\IdentityTranslator;
 use Twig\Environment;
+use Twig\Extension\AttributeExtension;
 use Twig\Loader\FilesystemLoader;
+use Twig\RuntimeLoader\FactoryRuntimeLoader;
 
 class ContactDetailsMarkupTest extends TestCase
 {
@@ -112,7 +114,11 @@ class ContactDetailsMarkupTest extends TestCase
         $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
         // Untranslated keys come back as-is, which is what the assertions above read
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
-        $twig->addExtension(new ContactExtension(new ContactSnippetBuilder()));
+        // What TwigBundle assembles from the #[AsTwigFunction] attributes: the extension reads them, the runtime loader hands over the instance the callables are called on
+        $twig->addExtension(new AttributeExtension(ContactExtension::class));
+        $twig->addRuntimeLoader(new FactoryRuntimeLoader([
+            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder()),
+        ]));
 
         return $twig->render('components/Contact/Details.html.twig', $context);
     }

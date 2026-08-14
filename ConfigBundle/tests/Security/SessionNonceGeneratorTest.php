@@ -92,8 +92,7 @@ class SessionNonceGeneratorTest extends TestCase
             $request->attributes->set('exception', new NotFoundHttpException());
         }
 
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
+        $requestStack = new RequestStack([$request]);
 
         return $requestStack;
     }

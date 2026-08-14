@@ -18,7 +18,7 @@ class MediaDimensionsFiller
 {
     public function __construct(
         private readonly ImageDimensionsReader $imageDimensionsReader,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }

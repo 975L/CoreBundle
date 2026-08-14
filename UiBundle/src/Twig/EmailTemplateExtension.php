@@ -12,11 +12,10 @@ namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
 // Embeds a named EmailTemplate's compiled body inside an app's own email layout
-class EmailTemplateExtension extends AbstractExtension
+class EmailTemplateExtension
 {
     public function __construct(
         private readonly EmailTemplateRepository $emailTemplateRepository,
@@ -24,15 +23,8 @@ class EmailTemplateExtension extends AbstractExtension
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('email_template_body', $this->renderEmailTemplateBody(...), ['is_safe' => ['html']]),
-        ];
-    }
-
     // Renders nothing when unknown: a renamed template must leave a section blank, never break the email
+    #[AsTwigFunction('email_template_body', isSafe: ['html'])]
     public function renderEmailTemplateBody(string $name, array $variables = []): string
     {
         $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name]);

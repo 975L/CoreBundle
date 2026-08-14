@@ -54,10 +54,10 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $projects = $this->createProvider()->getGuidedProjects();
 
         $this->assertSame(
-            ['config-settings', 'config-health-check', 'config-maintenance'],
+            ['config-settings', 'config-health-check', 'config-maintenance', 'config-url-metadata'],
             array_column($projects, 'slug')
         );
-        $this->assertSame([10, 20, 30], array_column($projects, 'order'));
+        $this->assertSame([10, 20, 30, 40], array_column($projects, 'order'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void

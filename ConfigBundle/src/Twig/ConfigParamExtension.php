@@ -11,24 +11,16 @@
 namespace c975L\ConfigBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
-class ConfigParamExtension extends AbstractExtension
+class ConfigParamExtension
 {
     public function __construct(
         private readonly ParameterBagInterface $params,
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('configParam', $this->getConfigParam(...)),
-        ];
-    }
-
+    #[AsTwigFunction('configParam')]
     public function getConfigParam(string $slug): mixed
     {
         return $this->params->get($slug);

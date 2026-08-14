@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
+use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -30,6 +31,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->settingsProject(),
             $this->healthCheckProject(),
             $this->maintenanceProject(),
+            $this->urlMetadataProject(),
         ];
     }
 
@@ -46,11 +48,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_config_settings_open',
                     'description' => 'description.guided_step_config_settings_open',
-                    'url' => $this->adminUrlGenerator
-                        ->unsetAll()
-                        ->setController(ConfigCrudController::class)
-                        ->setAction(Action::INDEX)
-                        ->generateUrl(),
+                    'url' => $this->indexUrl(ConfigCrudController::class),
                 ],
                 [
                     'label' => 'label.guided_step_config_settings_group',
@@ -151,5 +149,62 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 ],
             ],
         ];
+    }
+
+    // The listings no entity carries speak for themselves nowhere else: left empty, a search result or a shared link shows the url and nothing more
+    private function urlMetadataProject(): array
+    {
+        return [
+            'slug' => 'config-url-metadata',
+            'label' => 'label.guided_project_config_url_metadata',
+            'description' => 'description.guided_project_config_url_metadata',
+            'translation_domain' => 'config',
+            'order' => 40,
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_url_metadata_open',
+                    'description' => 'description.guided_step_config_url_metadata_open',
+                    'url' => $this->indexUrl(UrlMetadataCrudController::class),
+                ],
+                [
+                    // Edit and not new: the rows are created by the c975l:url-metadata:sync command from what the bundles declare, Action::NEW being disabled on purpose (see UrlMetadataCrudController::configureActions())
+                    'label' => 'label.guided_step_config_url_metadata_edit',
+                    'description' => 'description.guided_step_config_url_metadata_edit',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_config_url_metadata_title',
+                    'description' => 'description.guided_step_config_url_metadata_title',
+                    'highlight' => '#UrlMetadata_title',
+                ],
+                [
+                    'label' => 'label.guided_step_config_url_metadata_summary',
+                    'description' => 'description.guided_step_config_url_metadata_summary',
+                    'highlight' => '#UrlMetadata_summarySocialNetwork',
+                ],
+                [
+                    'label' => 'label.guided_step_config_url_metadata_image',
+                    'description' => 'description.guided_step_config_url_metadata_image',
+                    'highlight' => '#UrlMetadata_ogImage',
+                ],
+                [
+                    'label' => 'label.guided_step_config_url_metadata_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_config_url_metadata_done',
+                    'description' => 'description.guided_step_config_url_metadata_done',
+                ],
+            ],
+        ];
+    }
+
+    private function indexUrl(string $controllerFqcn): string
+    {
+        return $this->adminUrlGenerator
+            ->unsetAll()
+            ->setController($controllerFqcn)
+            ->setAction(Action::INDEX)
+            ->generateUrl();
     }
 }

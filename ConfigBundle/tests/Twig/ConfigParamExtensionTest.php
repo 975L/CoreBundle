@@ -13,15 +13,14 @@ namespace c975L\ConfigBundle\Tests\Twig;
 use c975L\ConfigBundle\Twig\ConfigParamExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Twig\Extension\AttributeExtension;
 use Twig\TwigFunction;
 
 class ConfigParamExtensionTest extends TestCase
 {
     public function testGetFunctionsExposesAConfigParamTwigFunction(): void
     {
-        $extension = new ConfigParamExtension($this->createStub(ParameterBagInterface::class));
-
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(ConfigParamExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertInstanceOf(TwigFunction::class, $functions[0]);

@@ -47,11 +47,14 @@
         "symfony/scheduler": "^8.0",
         "symfony/security-bundle": "^8.0",
         "symfony/serializer": "^8.0",
+        "symfony/twig-bundle": "^8.0",
         "symfony/ux-chartjs": "^3.3",
+        "symfony/ux-twig-component": "^3.4",
         "symfony/yaml": "^8.0",
         "symfonycasts/reset-password-bundle": "^1.25",
         "symfonycasts/verify-email-bundle": "^1.18",
         "twig/intl-extra": "^3.26",
+        "twig/twig": "^3.21",
         "vich/uploader-bundle": "^2.9"
     },
     "require-dev": {

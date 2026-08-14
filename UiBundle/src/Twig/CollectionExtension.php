@@ -21,6 +21,7 @@ class CollectionExtension extends AbstractExtension
     {
         return [
             new TwigFunction('collection_render_items', [CollectionRuntime::class, 'renderItems']),
+            new TwigFunction('collection_render_entry', [CollectionRuntime::class, 'renderEntry']),
         ];
     }
 }

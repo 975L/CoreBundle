@@ -71,6 +71,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     .portfolio-grid,
     .video-grid,
     .collection-grid,
+    .collection-entry,
     .cta-band,
     .flex-columns-section
 ) {
@@ -85,6 +86,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 .portfolio-grid,
 .video-grid,
 .collection-grid,
+.collection-entry,
 .flex-columns-section,
 .cta-band {
     padding-top: var(--section-space, #{$section-space});
@@ -93,6 +95,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 // Lighter than the sections above: text_section commonly opens a page, right under its own <h1>
 .text-section {
     padding-top: var(--section-space-tight, #{$section-space-tight});
+}
+
+// The measure this kind lays its copy on. The page's own by default, so nothing moves for a section holding more than prose - a table, a media, a row of links. A site whose text sections are prose points this at --reading-max-width, and their lines then stop where a "text" block's, a legal page's and a readmore's already do, instead of running the whole frame right under one of them
+.text-section > .section-wrap {
+    max-width: var(--text-section-max-width, var(--section-wrap-max-width, var(--body-max-width, 1440px)));
 }
 
 // A section standing beside a louder one - the companion paragraph of a "text_hook" in the column next to it - rather than carrying the page on its own. A step above body copy, so it still reads as a paragraph and not as a caption, and quieter, so it does not compete with what it answers to. Every value overridable and none read without a fallback, same as .text-hook's own scale; --section-text first, so a secondary section inside a colored flat follows that flat's inverted text rather than the page's own quiet grey
@@ -104,6 +111,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 // A bare run of "card" blocks is a page-level row too (Blocks.html.twig wraps it itself), and the one that carried no step: its cards drop their own margin inside the row, so it sat flush against the block above - visibly so under a colored flat, whose background then ran straight into the first card
 .blocks > .cards {
+    padding-top: var(--section-space, #{$section-space});
+}
+
+// Same case as the row above: a "progress_tracker" is a bare component with no section of its own, so it took no step and sat flush against its neighbours. Scoped to a page's own run of blocks, a tracker written by hand inside a template laying out its own rhythm keeping the room that template gives it. Its measure is restated in sass/_progress.scss, for the same reason
+.blocks > .tracker {
     padding-top: var(--section-space, #{$section-space});
 }
 
@@ -122,6 +134,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 .flex-columns__col > .portfolio-grid,
 .flex-columns__col > .video-grid,
 .flex-columns__col > .collection-grid,
+.flex-columns__col > .collection-entry,
 .flex-columns__col > .flex-columns-section,
 .flex-columns__col > .cta-band,
 .flex-columns__col > .text-section {

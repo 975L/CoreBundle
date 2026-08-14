@@ -16,9 +16,9 @@ use c975L\UiBundle\Entity\Block;
 interface BlockCacheTagProviderInterface
 {
     /**
-     * One entry per covered kind, each resolver returning the extra cache tags to apply on top of the default "block_{id}"/"blocks_all" ones.
+     * One entry per covered kind, each resolver returning the extra cache tags to apply on top of the default "block_{id}"/"blocks_all" ones - or null when that particular block must not be cached at all, "cacheable" being declared once per kind while the answer sometimes belongs to the instance (a "collection" whose source declares no tag to invalidate its entry on). BlockCacheTagResolver is what reads that veto, and what propagates it up a container holding such a block as one of its slots.
      *
-     * @return array<string, callable(Block): string[]> block kind => resolver
+     * @return array<string, callable(Block): ?string[]> block kind => resolver
      */
     public function getCacheTagResolvers(): array;
 }

@@ -42,8 +42,8 @@ class UiGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-form', 'ui-email-template'], array_column($projects, 'slug'));
-        $this->assertSame([90, 100, 110], array_column($projects, 'order'));
+        $this->assertSame(['ui-site-graphic', 'ui-form', 'ui-email-template', 'ui-font'], array_column($projects, 'slug'));
+        $this->assertSame([90, 100, 110, 120], array_column($projects, 'order'));
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void
@@ -93,7 +93,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['MediaCrudController', 'FormCrudController', 'EmailTemplateCrudController'],
+            ['SiteGraphicCrudController', 'FormCrudController', 'EmailTemplateCrudController', 'FontCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }
@@ -133,6 +133,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->assertSame(['.action-saveAndReturn', '.action-saveAndReturn', '.action-saveAndReturn'], $highlights);
     }
 
+    // EasyAdmin's own actions, plus the ones this bundle's controllers declare themselves: ActionFactory names a button "action-" . the action's name either way, so a custom action is just as legitimate a target as a built-in one - what stays caught is a name no one declares at all
     private function easyAdminActionNames(): array
     {
         $names = [];
@@ -140,6 +141,11 @@ class UiGuidedProjectProviderTest extends TestCase
             if (!str_starts_with($name, 'TYPE_')) {
                 $names[] = $value;
             }
+        }
+
+        foreach (glob(\dirname(__DIR__, 2) . '/src/Controller/Management/*.php') ?: [] as $controller) {
+            preg_match_all("/Action::new\(\s*'([^']+)'/", file_get_contents($controller) ?: '', $matches);
+            $names = [...$names, ...$matches[1]];
         }
 
         return $names;

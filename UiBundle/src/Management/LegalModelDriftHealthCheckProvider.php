@@ -27,6 +27,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Only documents that actually drifted produce a row: a site whose legal pages are untouched (the common case, and the one where updates flow in on their own) reports nothing at all. A row needs the public url the document answers at, which only the bundle owning the block can tell (see BlockLocationProviderInterface), so a legal block no bundle claims is left out rather than reported against an address that doesn't exist.
 class LegalModelDriftHealthCheckProvider implements HealthCheckProviderInterface
 {
+    // Named here rather than restated as a literal wherever a row of this kind is picked out - LegalModelDriftHealthCheckAdviceProvider does exactly that. Same string as the block kind it reads, which is not a coincidence to break
+    public const string KIND = 'legal_model';
+
     public function __construct(
         private readonly BlockRepository $blockRepository,
         private readonly BlockLocationRegistry $blockLocationRegistry,
@@ -39,7 +42,7 @@ class LegalModelDriftHealthCheckProvider implements HealthCheckProviderInterface
 
     public function getKind(): string
     {
-        return 'legal_model';
+        return self::KIND;
     }
 
     public function runChecks(): array

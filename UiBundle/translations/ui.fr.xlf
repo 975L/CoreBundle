@@ -22,13 +22,17 @@
                 <source>description.guided_project_ui_email_template</source>
                 <target>Reprendre le contenu d'un e-mail que le site envoie, comme on reprend une page</target>
             </trans-unit>
+            <trans-unit id="0CAtPRI">
+                <source>description.guided_project_ui_font</source>
+                <target>Déposer la famille entière d'un coup et laisser le site en compiler sa feuille de style — sans aucun déploiement.</target>
+            </trans-unit>
             <trans-unit id="mdUTrNv">
                 <source>description.guided_project_ui_form</source>
                 <target>Construire un formulaire champ par champ, puis le poser dans une page</target>
             </trans-unit>
-            <trans-unit id="uJW0NPA">
-                <source>description.guided_project_ui_media</source>
-                <target>Mettre une image dans la médiathèque une bonne fois, et la réutiliser partout</target>
+            <trans-unit id="GHBZCNG">
+                <source>description.guided_project_ui_site_graphic</source>
+                <target>Favicon, logo, image de partage : la poignée de fichiers auxquels on reconnaît un site, déposés une fois pour toutes.</target>
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
@@ -41,6 +45,30 @@
             <trans-unit id="Qj7imei">
                 <source>description.guided_step_ui_email_template_open</source>
                 <target>Les e-mails que le site envoie sont composés de blocks, exactement comme une page.</target>
+            </trans-unit>
+            <trans-unit id="VOmfaZ1">
+                <source>description.guided_step_ui_font_bulk</source>
+                <target>Ajouter une famille ligne par ligne est le chemin long ; ce bouton prend tous les fichiers d'un coup.</target>
+            </trans-unit>
+            <trans-unit id="O395Bnw">
+                <source>description.guided_step_ui_font_done</source>
+                <target>La feuille de style est reconstruite à partir des lignes toute seule, et la famille devient sélectionnable partout où le site nomme une police.</target>
+            </trans-unit>
+            <trans-unit id="nsljI7H">
+                <source>description.guided_step_ui_font_files</source>
+                <target>Ttf, woff ou woff2, 5 Mo au plus chacun : prenez tout le contenu du dossier en une seule sélection.</target>
+            </trans-unit>
+            <trans-unit id="OStSoZT">
+                <source>description.guided_step_ui_font_fix</source>
+                <target>Un nom de fichier ne disant rien d'utile arrive en graisse normale et style romain ; la ligne se modifie comme une autre.</target>
+            </trans-unit>
+            <trans-unit id="4RVha5S">
+                <source>description.guided_step_ui_font_import</source>
+                <target>Chaque nom de fichier est lu pour en deviner le nom, la graisse et le style ; un fichier qui n'est pas une police exploitable est signalé et écarté plutôt que de faire échouer le lot.</target>
+            </trans-unit>
+            <trans-unit id="_00q9bj">
+                <source>description.guided_step_ui_font_open</source>
+                <target>Une ligne par fichier : une famille compte autant de lignes qu'elle a de graisses et de styles.</target>
             </trans-unit>
             <trans-unit id="WdMcqav">
                 <source>description.guided_step_ui_form_action</source>
@@ -62,21 +90,21 @@
                 <source>description.guided_step_ui_form_place</source>
                 <target>Ajoutez un block de formulaire à une page, et choisissez celui que vous venez de créer.</target>
             </trans-unit>
-            <trans-unit id="RDmEru5">
-                <source>description.guided_step_ui_media_alt</source>
-                <target>Le texte alternatif est ce que lisent les lecteurs d'écran, et ce que le bilan de santé signale quand il manque.</target>
+            <trans-unit id="fqjZMNb">
+                <source>description.guided_step_ui_site_graphic_done</source>
+                <target>Le favicon apparaît dans l'onglet du navigateur, l'image de partage lorsqu'une page est publiée sur un réseau social — les deux peuvent demander un rafraîchissement forcé avant de s'afficher.</target>
             </trans-unit>
-            <trans-unit id="c8dJg4g">
-                <source>description.guided_step_ui_media_file</source>
-                <target>L'image est redimensionnée et renommée à l'enregistrement : inutile de la préparer avant.</target>
+            <trans-unit id="C0Xr_VY">
+                <source>description.guided_step_ui_site_graphic_file</source>
+                <target>Le rôle est déjà choisi, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert.</target>
             </trans-unit>
-            <trans-unit id=".imAjIX">
-                <source>description.guided_step_ui_media_open</source>
-                <target>Toutes les images du site en un seul endroit : une image téléversée une fois sert dans autant de blocks qu'on veut.</target>
+            <trans-unit id="KKAGjbc">
+                <source>description.guided_step_ui_site_graphic_open</source>
+                <target>Ces images appartiennent au site lui-même plutôt qu'à une page, d'où leur écran distinct de la médiathèque.</target>
             </trans-unit>
-            <trans-unit id="rZ020hF">
-                <source>description.guided_step_ui_media_reuse</source>
-                <target>Dans le block d'une page, choisissez-la dans la médiathèque plutôt que de la téléverser à nouveau.</target>
+            <trans-unit id="3m_c5Tb">
+                <source>description.guided_step_ui_site_graphic_pick</source>
+                <target>Un bouton par graphique dont le site ne dispose pas encore, qui ouvre le formulaire de dépôt avec son rôle déjà choisi. Tous déjà en place ? Modifiez plutôt celui que vous voulez remplacer.</target>
             </trans-unit>
             <trans-unit id="emqi7.W">
                 <source>description.legal_customize</source>
@@ -96,7 +124,7 @@
             </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
-                <target>Cache des blocks vidé</target>
+                <target>Cache de rendu vidé</target>
             </trans-unit>
             <trans-unit id="nUlFj1t">
                 <source>flash.block_move_failed</source>
@@ -568,7 +596,7 @@
             </trans-unit>
             <trans-unit id="As0wFKi">
                 <source>label.block_clear_cache</source>
-                <target>Vider le cache des blocks</target>
+                <target>Vider le cache de rendu</target>
             </trans-unit>
             <trans-unit id="oNRe7ra">
                 <source>label.block_collection</source>
@@ -577,6 +605,14 @@
             <trans-unit id="3Jvr6rD">
                 <source>label.block_collection_description</source>
                 <target>Éléments d'une collection externe (livres, produits, projets...)</target>
+            </trans-unit>
+            <trans-unit id="7Ttubh4">
+                <source>label.block_collection_entry</source>
+                <target>Entrée de collection</target>
+            </trans-unit>
+            <trans-unit id="8Imy6vE">
+                <source>label.block_collection_entry_description</source>
+                <target>Un seul élément d'une collection externe, mis en avant</target>
             </trans-unit>
             <trans-unit id="5bLnE9a">
                 <source>label.block_contact_details</source>
@@ -878,9 +914,37 @@
                 <source>label.closes</source>
                 <target>Fermeture</target>
             </trans-unit>
+            <trans-unit id="FdGqWMg">
+                <source>label.collection_entry_pick</source>
+                <target>Élément</target>
+            </trans-unit>
+            <trans-unit id="vGMNmp2">
+                <source>label.collection_entry_pick_first</source>
+                <target>Le premier</target>
+            </trans-unit>
+            <trans-unit id="Aq.LLm2">
+                <source>label.collection_entry_pick_help</source>
+                <target>Quel élément de la source afficher, dans l'ordre où elle les donne</target>
+            </trans-unit>
+            <trans-unit id="XeYvPm_">
+                <source>label.collection_entry_pick_last</source>
+                <target>Le dernier</target>
+            </trans-unit>
+            <trans-unit id="kCKrUDX">
+                <source>label.collection_entry_pick_slug</source>
+                <target>Celui dont l'identifiant est indiqué</target>
+            </trans-unit>
+            <trans-unit id="8pHG3oe">
+                <source>label.collection_entry_slug_help</source>
+                <target>Uniquement si l'élément est désigné par son identifiant</target>
+            </trans-unit>
             <trans-unit id="Z2OPJRi">
                 <source>label.collection_limit_help</source>
                 <target>Laisser vide pour tout afficher</target>
+            </trans-unit>
+            <trans-unit id="El_DpQM">
+                <source>label.collection_limit_help_total</source>
+                <target>Laisser vide pour tout afficher - cette source en contient %total%</target>
             </trans-unit>
             <trans-unit id="6A6G2AK">
                 <source>label.column_width</source>
@@ -1502,6 +1566,14 @@
                 <source>label.gallery_showcase_collection_description</source>
                 <target>Les entrées d'une source externe, en grille de cartes ou en portfolio.</target>
             </trans-unit>
+            <trans-unit id="LHXeb0q">
+                <source>label.gallery_showcase_collection_entry</source>
+                <target>Entrée de collection</target>
+            </trans-unit>
+            <trans-unit id="OBsdO_d">
+                <source>label.gallery_showcase_collection_entry_description</source>
+                <target>Un seul élément d'une source, sous son propre titre de section</target>
+            </trans-unit>
             <trans-unit id="nWcg5Ou">
                 <source>label.gallery_showcase_flex_columns</source>
                 <target>Colonnes flexibles</target>
@@ -1558,13 +1630,17 @@
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personnaliser un e-mail</target>
             </trans-unit>
+            <trans-unit id="mYWYLXS">
+                <source>label.guided_project_ui_font</source>
+                <target>Installer une famille de polices</target>
+            </trans-unit>
             <trans-unit id="3Fft64_">
                 <source>label.guided_project_ui_form</source>
                 <target>Créer un formulaire</target>
             </trans-unit>
-            <trans-unit id="FtKKNNJ">
-                <source>label.guided_project_ui_media</source>
-                <target>Téléverser une image</target>
+            <trans-unit id="42UrnqR">
+                <source>label.guided_project_ui_site_graphic</source>
+                <target>Mettre en place les graphiques du site</target>
             </trans-unit>
             <trans-unit id="PB512zY">
                 <source>label.guided_step_ui_email_template_blocks</source>
@@ -1585,6 +1661,30 @@
             <trans-unit id="Z9rpyhM">
                 <source>label.guided_step_ui_email_template_save</source>
                 <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="mxL8QHX">
+                <source>label.guided_step_ui_font_bulk</source>
+                <target>Les importer en une fois</target>
+            </trans-unit>
+            <trans-unit id="4HWKaK7">
+                <source>label.guided_step_ui_font_done</source>
+                <target>L'utiliser dans le thème</target>
+            </trans-unit>
+            <trans-unit id="zFtCozH">
+                <source>label.guided_step_ui_font_files</source>
+                <target>Sélectionner tous les fichiers</target>
+            </trans-unit>
+            <trans-unit id="EdB_SN8">
+                <source>label.guided_step_ui_font_fix</source>
+                <target>Corriger une déduction fausse</target>
+            </trans-unit>
+            <trans-unit id="u.H1Et9">
+                <source>label.guided_step_ui_font_import</source>
+                <target>Les envoyer</target>
+            </trans-unit>
+            <trans-unit id="FBm8APX">
+                <source>label.guided_step_ui_font_open</source>
+                <target>Ouvrir les polices</target>
             </trans-unit>
             <trans-unit id="L0azB6X">
                 <source>label.guided_step_ui_form_action</source>
@@ -1614,29 +1714,37 @@
                 <source>label.guided_step_ui_form_save</source>
                 <target>Enregistrer</target>
             </trans-unit>
-            <trans-unit id="p04wYUK">
-                <source>label.guided_step_ui_media_alt</source>
-                <target>Décrire l'image</target>
+            <trans-unit id="9vn1gPZ">
+                <source>label.guided_step_ui_site_graphic_done</source>
+                <target>Vérifier sur le site</target>
             </trans-unit>
-            <trans-unit id="djlrG7S">
-                <source>label.guided_step_ui_media_file</source>
+            <trans-unit id="icvgb8x">
+                <source>label.guided_step_ui_site_graphic_file</source>
                 <target>Choisir le fichier</target>
             </trans-unit>
-            <trans-unit id="NuH7Bc_">
-                <source>label.guided_step_ui_media_new</source>
-                <target>Téléverser une image</target>
+            <trans-unit id="aH_2kID">
+                <source>label.guided_step_ui_site_graphic_open</source>
+                <target>Ouvrir les graphiques du site</target>
             </trans-unit>
-            <trans-unit id="r.hPN1d">
-                <source>label.guided_step_ui_media_open</source>
-                <target>Ouvrir la médiathèque</target>
+            <trans-unit id="RvvY0lg">
+                <source>label.guided_step_ui_site_graphic_pick</source>
+                <target>Choisir celui qui manque encore</target>
             </trans-unit>
-            <trans-unit id="i9J5GNX">
-                <source>label.guided_step_ui_media_reuse</source>
-                <target>La réutiliser</target>
-            </trans-unit>
-            <trans-unit id="Sr6aDii">
-                <source>label.guided_step_ui_media_save</source>
+            <trans-unit id="bKv1nui">
+                <source>label.guided_step_ui_site_graphic_save</source>
                 <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="njHadGB">
+                <source>label.health_check_advice_legal_model_drift</source>
+                <target>Ouvrez l'écran de personnalisation pour comparer votre rédaction à la nouvelle du modèle, section par section : rien n'est jamais fusionné à votre place - vous gardez la vôtre, ou vous reprenez celle du modèle.</target>
+            </trans-unit>
+            <trans-unit id="BQd6Dw2">
+                <source>label.health_check_advice_svg_fonts_served_as_image</source>
+                <target>Un SVG servi comme image ne dessine qu'avec les polices du lecteur : même une police que ce site charge ne s'y applique jamais.</target>
+            </trans-unit>
+            <trans-unit id="0qyUpF5">
+                <source>label.health_check_advice_svg_fonts_vectorize</source>
+                <target>Rouvrez le fichier dans votre outil de dessin et convertissez son texte en tracés (Inkscape : Chemin &gt; Objet en chemin ; Illustrator : Texte &gt; Vectoriser), puis réimportez-le sur ce média.</target>
             </trans-unit>
             <trans-unit id="epZIsrh">
                 <source>label.health_check_legal_model_drift</source>

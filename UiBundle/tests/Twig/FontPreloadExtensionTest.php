@@ -16,6 +16,7 @@ use c975L\UiBundle\Repository\FontRepository;
 use c975L\UiBundle\Twig\FontPreloadExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Twig\Extension\AttributeExtension;
 
 class FontPreloadExtensionTest extends TestCase
 {
@@ -194,9 +195,7 @@ class FontPreloadExtensionTest extends TestCase
 
     public function testGetFunctionsRegistersFontPreloadsFunction(): void
     {
-        $extension = $this->createExtension([], []);
-
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(FontPreloadExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertSame('font_preloads', $functions[0]->getName());

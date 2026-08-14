@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Twig;
 
 use c975L\UiBundle\Twig\ThemeVariablesExtension;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class ThemeVariablesExtensionTest extends TestCase
 {
@@ -65,9 +66,7 @@ class ThemeVariablesExtensionTest extends TestCase
 
     public function testGetFunctionsRegistersThemeVariablesCssFunctionAsHtmlSafe(): void
     {
-        $extension = new ThemeVariablesExtension($this->projectDir);
-
-        $functions = $extension->getFunctions();
+        $functions = new AttributeExtension(ThemeVariablesExtension::class)->getFunctions();
 
         $this->assertCount(1, $functions);
         $this->assertSame('theme_variables_css', $functions[0]->getName());

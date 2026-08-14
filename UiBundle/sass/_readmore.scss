@@ -45,3 +45,8 @@
 .readmore-toggle-label:hover {
     color: color-mix(in srgb, var(--link-color, #007bff) 85%, black);
 }
+
+// A text ending inside the folded measure has nothing the link could open, and no selector can ask whether the clamp above clamped anything: readmore.js measures the box and adds this class, which is why the label is written visible and hidden after rather than the other way round - a browser running no JS keeps a link that costs at most a click turning nothing, where the reverse would fold a long text behind a link never shown
+.readmore--complete .readmore-toggle-label {
+    display: none;
+}

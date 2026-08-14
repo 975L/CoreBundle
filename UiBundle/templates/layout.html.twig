@@ -9,6 +9,20 @@
     {% set appleTouchIcon = absolute_url(asset('/' ~ site_media('apple-touch-icon').filename)) ~ (site_media('apple-touch-icon').updatedAt ? '?v=' ~ site_media('apple-touch-icon').updatedAt.timestamp : '') %}
 {% endif %}
 
+{# What the url says of itself when no entity carries it - a listing, a filtered listing, a tool page (see ConfigBundle's UrlMetadata). Read only for what the rendering template left unsaid: a book, a product, a photo state their own from their entity, and that always wins. Placed above the ogImage chain below, so a row's own share image counts as "set by the template" and the site-wide default only applies after it #}
+{% set urlMetadata = url_metadata() %}
+{% if urlMetadata is not null %}
+    {% if title is not defined or title == '' %}
+        {% set title = urlMetadata.title %}
+    {% endif %}
+    {% if summarySocialNetwork is not defined or summarySocialNetwork is empty %}
+        {% set summarySocialNetwork = urlMetadata.summarySocialNetwork %}
+    {% endif %}
+    {% if (ogImage is not defined or ogImage == null) and urlMetadata.ogImage is not null %}
+        {% set ogImage = absolute_url(asset('/' ~ urlMetadata.ogImage.filename)) ~ (urlMetadata.ogImage.updatedAt ? '?v=' ~ urlMetadata.ogImage.updatedAt.timestamp : '') %}
+    {% endif %}
+{% endif %}
+
 {# ogImage: whatever the rendering template set, then the site's default og-image, then the logo - same order as SiteBundle's layout, minus the per-Page override it has and this one can't #}
 {% if ogImage is not defined or ogImage == null %}
     {% if site_media('og-image') is not null %}
@@ -49,9 +63,11 @@
                     <meta name="author" content="{{ config('site-author') }}">
                 {% endif %}
                 <meta name="copyright" content="{{ site_copyright() }}">
-                {% if description is defined and description is not empty %}
-                    <meta name="description" content="{{ description }}">
-                    <meta property="og:description" content="{{ description|slice(0, 150) }}">
+{# The page's own summary, stated by the template rendering it, under the very name SiteBundle's Page column and its own layout use. The two layouts are interchangeable - the scaffolded templates/layout.html.twig extends whichever exists - so they have to read the same variable: this one asked for "description" until 08/2026, and a site with SiteBundle installed lost the tag without a word. Nothing to do with the "description" the Video/Audio/Iframe components take, which is a caption #}
+{# Reduced to plain text here, as SiteBundle's layout does: the summary comes from a rich-text column often enough (a Page's, a gallery category's) that a template feeding one raw would publish escaped markup as its description, and the filter leaves a summary already plain untouched #}
+                {% if summarySocialNetwork is defined and summarySocialNetwork is not empty %}
+                    <meta name="description" content="{{ summarySocialNetwork|plain_text }}">
+                    <meta property="og:description" content="{{ summarySocialNetwork|plain_text|slice(0, 150) }}">
                 {% endif %}
                 {% if ogImage is defined %}
                     <meta property="og:image" content="{{ ogImage }}">

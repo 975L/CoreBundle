@@ -21,7 +21,7 @@ class StylesheetCacheWarmer implements CacheWarmerInterface
     public function __construct(
         private readonly StylesheetRegistry $stylesheetRegistry,
         private readonly StylesheetManagementRegistry $stylesheetManagementRegistry,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
         // Optional so an app running without AssetMapper still gets a compiled sheet: only the url() of its own assets/ files then stay as written (see resolveAssetPath)
         private readonly ?AssetMapperInterface $assetMapper = null,

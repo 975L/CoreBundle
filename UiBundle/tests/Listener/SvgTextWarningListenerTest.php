@@ -65,12 +65,11 @@ class SvgTextWarningListenerTest extends TestCase
 
     private function createListener(bool $withSession = true): SvgTextWarningListener
     {
-        $requestStack = new RequestStack();
         $request = new Request();
         if ($withSession) {
             $request->setSession($this->session);
         }
-        $requestStack->push($request);
+        $requestStack = new RequestStack([$request]);
 
         $translator = $this->createStub(TranslatorInterface::class);
         // Echoes the parameters back, so the assertions can read what the message would have carried

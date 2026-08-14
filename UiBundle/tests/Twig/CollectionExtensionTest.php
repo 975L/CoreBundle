@@ -16,13 +16,14 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionExtensionTest extends TestCase
 {
-    // The actual rendering logic lives in CollectionRuntime (see CollectionRuntimeTest) - this extension only declares the function, pointing Twig at the runtime's method so it stays uninstantiated until a template actually calls collection_render_items()
+    // The actual rendering logic lives in CollectionRuntime (see CollectionRuntimeTest) - this extension only declares the functions, pointing Twig at the runtime's methods so it stays uninstantiated until a template actually calls one of them
     public function testGetFunctionsRegistersCollectionFunctionPointingAtRuntime(): void
     {
         $functions = new CollectionExtension()->getFunctions();
         $names = array_map(fn ($f) => $f->getName(), $functions);
 
-        $this->assertSame(['collection_render_items'], $names);
+        $this->assertSame(['collection_render_items', 'collection_render_entry'], $names);
         $this->assertSame([CollectionRuntime::class, 'renderItems'], $functions[0]->getCallable());
+        $this->assertSame([CollectionRuntime::class, 'renderEntry'], $functions[1]->getCallable());
     }
 }

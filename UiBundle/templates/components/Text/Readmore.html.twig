@@ -1,8 +1,9 @@
 {# Static usage: <twig:c975LUi:Text:Readmore text="{{ text }}" id="{{ id }}"/> #}
 {# The wrapper carries the reading measure; the three stay siblings inside it, the checked-state rules matching on "~" #}
-<div class="readmore">
-    <input type="checkbox" id="readmore-toggle-{{ id }}" class="readmore-toggle" hidden>
-    <div class="readmore-content">{{ text|raw|nl2br }}</div>
+{# "readmore" only takes the link away when the text ends inside the folded measure - the fold is the stylesheet's, and holds without it #}
+<div class="readmore" data-controller="readmore">
+    <input type="checkbox" id="readmore-toggle-{{ id }}" class="readmore-toggle" data-readmore-target="toggle" hidden>
+    <div class="readmore-content" data-readmore-target="content">{{ text|raw|nl2br }}</div>
     <label for="readmore-toggle-{{ id }}" class="readmore-toggle-label">
         <span class="read-more">{{ 'label.readmore'|trans({}, 'ui') }}</span>
         <span class="read-less">{{ 'label.readless'|trans({}, 'ui') }}</span>

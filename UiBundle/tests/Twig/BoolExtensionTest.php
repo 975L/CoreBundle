@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Twig\BoolExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Twig\Extension\AttributeExtension;
 
 class BoolExtensionTest extends TestCase
 {
@@ -53,8 +54,7 @@ class BoolExtensionTest extends TestCase
 
     public function testGetFiltersRegistersToBoolFilter(): void
     {
-        $extension = new BoolExtension();
-        $filters = $extension->getFilters();
+        $filters = new AttributeExtension(BoolExtension::class)->getFilters();
 
         $this->assertCount(1, $filters);
         $this->assertSame('to_bool', $filters[0]->getName());

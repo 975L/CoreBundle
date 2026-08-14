@@ -23,10 +23,23 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(
-    name: 'c975l:config:set',
-    description: 'Sets the value of one or more config entries, from the command line or a JSON file'
-)]
+#[AsCommand(name: 'c975l:config:set', description: 'Sets the value of one or more config entries, from the command line or a JSON file', help: <<<'TXT'
+Sets a single entry:
+
+  <info>php %command.full_name% site-name "My Site"</info>
+
+Sets every entry of a JSON file, without overwriting what is already filled in:
+
+  <info>php %command.full_name% --file=values.json --if-empty</info>
+
+Sets every entry of a file shared by several sites, where a slug can belong to a bundle
+this one doesn't install:
+
+  <info>php %command.full_name% --file=values.json --if-empty --ignore-unknown</info>
+
+An empty value is always skipped, so an incomplete file never blanks out a live setting.
+Sensitive entries are encrypted with C975L_VAULT_KEY, exactly as the back-office does.
+TXT)]
 class ConfigSetCommand extends Command
 {
     public function __construct(
@@ -47,23 +60,6 @@ class ConfigSetCommand extends Command
             ->addOption('if-empty', null, InputOption::VALUE_NONE, 'Only fill entries whose value is still empty, never overwrite an existing one')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Show what would be changed without writing anything')
             ->addOption('ignore-unknown', null, InputOption::VALUE_NONE, 'Skip the slugs no installed bundle declares, instead of failing on them')
-            ->setHelp(<<<'HELP'
-                Sets a single entry:
-
-                  <info>php %command.full_name% site-name "My Site"</info>
-
-                Sets every entry of a JSON file, without overwriting what is already filled in:
-
-                  <info>php %command.full_name% --file=values.json --if-empty</info>
-
-                Sets every entry of a file shared by several sites, where a slug can belong to a bundle
-                this one doesn't install:
-
-                  <info>php %command.full_name% --file=values.json --if-empty --ignore-unknown</info>
-
-                An empty value is always skipped, so an incomplete file never blanks out a live setting.
-                Sensitive entries are encrypted with C975L_VAULT_KEY, exactly as the back-office does.
-                HELP)
         ;
     }
 

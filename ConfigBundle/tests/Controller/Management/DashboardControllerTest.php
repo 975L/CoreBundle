@@ -233,8 +233,7 @@ class DashboardControllerTest extends TestCase
     // The size an admin clicked in the paginator, read from the url by PaginatorPageSize
     public function testConfigureCrudAppliesThePageSizeAskedForInTheRequest(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request(['pageSize' => '100']));
+        $requestStack = new RequestStack([new Request(['pageSize' => '100'])]);
 
         $crudDto = $this->createController(false, [], [], '', new PaginatorPageSize($requestStack))->configureCrud()->getAsDto();
 

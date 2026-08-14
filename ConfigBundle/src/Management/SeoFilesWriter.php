@@ -35,9 +35,9 @@ class SeoFilesWriter
         private readonly Environment $environment,
         // Every SitemapProviderInterface implementation, whatever the bundle it comes from - the same iterator SitemapWriter gets, llms.txt being built from urls that are already declared rather than from a second contract each bundle would have to implement
         private readonly iterable $sitemapProviders,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         string $projectDir,
-        #[Autowire('%kernel.default_locale%')]
+        #[Autowire(param: 'kernel.default_locale')]
         private readonly string $defaultLocale,
     ) {
         $this->publicFolder = $projectDir . '/public';

@@ -16,9 +16,11 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\IdentityTranslator;
 use Twig\Environment;
+use Twig\Extension\AttributeExtension;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
+use Twig\RuntimeLoader\FactoryRuntimeLoader;
 use Twig\TwigFunction;
 
 // This template replaces EasyAdmin's own paginator for every CRUD at once (see ConfigBundle's DashboardController::configureCrud), so the links it writes are the only way an admin ever reaches another page size
@@ -58,7 +60,11 @@ class PaginatorPageSizeMarkupTest extends TestCase
         ]));
         // Untranslated keys come back as-is, which is enough for the links read above
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
-        $twig->addExtension(new PageSizeExtension());
+        // What TwigBundle assembles from the #[AsTwigFunction] attributes: the extension reads them, the runtime loader hands over the instance the callables are called on
+        $twig->addExtension(new AttributeExtension(PageSizeExtension::class));
+        $twig->addRuntimeLoader(new FactoryRuntimeLoader([
+            PageSizeExtension::class => static fn (): PageSizeExtension => new PageSizeExtension(),
+        ]));
         $twig->addFunction(new TwigFunction('ea_url', static fn (array $parameters = []): string => '/management?' . http_build_query($parameters)));
 
         return $twig->render('management/paginator.html.twig', [

@@ -57,6 +57,15 @@ class MinimalLayoutTest extends TestCase
         $this->assertStringContainsString('<link rel="canonical"', $layout);
     }
 
+    // The summary a template states often comes from a rich-text column (a Page's, a gallery category's), so a raw one would publish escaped markup as the page's description - SiteBundle's layout has always reduced it, and the two being interchangeable this one has to as well
+    public function testTheSummaryIsReducedToPlainTextInTheMetas(): void
+    {
+        $layout = $this->layout();
+
+        $this->assertStringContainsString('<meta name="description" content="{{ summarySocialNetwork|plain_text }}">', $layout);
+        $this->assertStringContainsString('<meta property="og:description" content="{{ summarySocialNetwork|plain_text|slice(0, 150) }}">', $layout);
+    }
+
     // A GDPR banner is not something a shop-only site may go without - the component carries its own enabled/disabled guard, so the layout only has to render it
     public function testTheCookieBannerIsRendered(): void
     {

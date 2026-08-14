@@ -131,6 +131,7 @@ services:
               cacheable: true
 
     # Never offered in the block picker (pickable: false) - only ever built transiently by CollectionExtension::renderItems(), one per "collection" block item, see CollectionItemType
+    # Cacheable, though it has no id to be keyed on: CollectionRuntime names each item after its source and its own slug instead, so one character's card is a single entry every "collection" block pointing at that source hits, on whichever page it sits. A transient item built by anything that does NOT hand such a key (a showcase's fixtures, see GalleryShowcaseProvider) simply isn't cached, there being nothing to identify it by
     ui.block.collection_item:
         class: stdClass
         tags:
@@ -141,7 +142,7 @@ services:
               template: '@c975LUi/blocks/CollectionItem.html.twig'
               category: 'label.category_elements'
               pickable: false
-              cacheable: false
+              cacheable: true
 
     ui.block.contact_details:
         class: stdClass
@@ -394,7 +395,7 @@ services:
               pickable: true
               cacheable: true
 
-    # Slots are real nested Block rows (see Block::$slots), each picked/edited through the normal kind form - not cacheable itself: a slot's own cache invalidation doesn't propagate to this block's cache key, same reasoning as "collection" above. Each slot still caches independently.
+    # Slots are real nested Block rows (see Block::$slots), each picked/edited through the normal kind form - cacheable like any other kind since BlockCacheTagResolver puts every slot's own "block_{id}" on this block's entry, and BlockCacheInvalidationListener walks back up to it whenever one of them changes. A slot of a kind that can't be cached (a form, a twig_content) takes the whole container out of the cache with it, its html being held here verbatim.
     ui.block.flex_columns:
         class: stdClass
         tags:
@@ -407,7 +408,7 @@ services:
               category: 'label.category_sections'
               priority: 75
               pickable: true
-              cacheable: false
+              cacheable: true
               container: true
               slot_context: 'flex_columns_slot'
 
@@ -426,7 +427,7 @@ services:
               category: 'label.category_sections'
               priority: 74
               pickable: true
-              cacheable: false
+              cacheable: true
               container: true
               contexts: 'flex_columns_slot'
               slot_context: 'flex_slot_nested'
@@ -445,7 +446,7 @@ services:
               category: 'label.category_sections'
               priority: 73
               pickable: true
-              cacheable: false
+              cacheable: true
               container: true
 
     # A stack of full "card" blocks (or any other kind) with a section-level eyebrow/title/anchor - same container mechanism as flex_columns above, but its slots render inside ".cards" (see components/Section/Cards.html.twig), the same fixed-width flex row used when "card" blocks are placed bare and consecutively in the page flow (see Blocks.html.twig) - giving that exact look plus an anchor and section head, which bare consecutive "card" blocks can't have on their own.
@@ -461,7 +462,7 @@ services:
               category: 'label.category_sections'
               priority: 79
               pickable: true
-              cacheable: false
+              cacheable: true
               container: true
 
     ui.block.expertise_banner:
@@ -521,11 +522,11 @@ services:
               category: 'label.category_sections'
               priority: 56
               pickable: true
-              # Same as the other containers (flex_columns, section_cards): what it renders is its slots, each with its own cacheability, so the row itself is not cached over them
-              cacheable: false
+              # Cacheable like flex_columns/section_cards: BlockCacheTagResolver puts every slot's own "block_{id}" on this row's entry, and a slot that can't be cached takes the whole grid out of the cache with it
+              cacheable: true
               container: true
 
-    # Not cacheable: its items come from another bundle's own entity (see CollectionSourceProviderInterface), which BlockCacheInvalidationListener has no way to invalidate on - see BlockCacheTagProviderInterface (Phase 0) for the pattern used to make a referenced-data block cacheable, not applied here for now
+    # Its items come from another bundle's own entity (see CollectionSourceProviderInterface), which BlockCacheInvalidationListener knows nothing about - so the source is the one declaring the tags its items are cached under, and its own bundle the one invalidating them. A source declaring none is still rendered live, CollectionBlockCacheTagProvider vetoing the entry rather than letting it go stale forever
     ui.block.collection:
         class: stdClass
         tags:
@@ -538,7 +539,22 @@ services:
               category: 'label.category_sections'
               priority: 54
               pickable: true
-              cacheable: false
+              cacheable: true
+
+    # The singular of "collection": one item of the same sources, for a page putting a single entity forward. Cached on the same terms, see CollectionBlockCacheTagProvider
+    ui.block.collection_entry:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: collection_entry
+              label: "label.block_collection_entry"
+              description: "label.block_collection_entry_description"
+              form: c975L\UiBundle\Form\Block\CollectionEntryType
+              template: '@c975LUi/blocks/CollectionEntry.html.twig'
+              category: 'label.category_sections'
+              priority: 53
+              pickable: true
+              cacheable: true
 
     ui.block.cta_band:
         class: stdClass

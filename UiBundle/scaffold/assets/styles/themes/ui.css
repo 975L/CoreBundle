@@ -3,7 +3,8 @@
 /* One file per bundle - this one travels with UiBundle, so a site without SiteBundle keeps its whole surface */
 /* Colors and fonts are absent on purpose: admin-editable, compiled into bundles/build/site-theme.css */
 /* So are --section-text/-accent/-border/-overlay, mixed per flat in .section--bg-* - retune --section-bg-* below */
-:root {
+/* ":root, [data-theme]" and not ":root" alone: the bundle declares its defaults on both, so inside an element carrying data-theme a value set here only on the root would lose to the bundle's default declared on that very element */
+:root, [data-theme] {
     /* --radius-btn: 5px; */
     /* --radius-card: 10px; */
     /* --radius-panel: 16px; */
@@ -87,6 +88,9 @@
     /* --text-hook-article-color: var(--section-accent, var(--primary)); */
     /* --text-hook-article-max-width: none; */
     /* --text-hook-article-margin: 24px; */
+
+    /* The measure a "text_section" lays its copy on - the page's own by default, so a section holding more than prose keeps the full width. Point it at --reading-max-width for a site whose text sections are prose, and their lines stop where a "text" block's and a readmore's already do */
+    /* --text-section-max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px)); */
 
     /* The "secondary" presentation of the "text_section" block - a section standing beside a louder one, the companion paragraph of a hook in the column next to it, rather than carrying the page on its own */
     /* --text-section-secondary-size: clamp(17px, 1.5vw, 21px); */

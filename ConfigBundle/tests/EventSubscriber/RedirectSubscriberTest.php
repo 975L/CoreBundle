@@ -162,6 +162,61 @@ class RedirectSubscriberTest extends TestCase
         $this->assertSame('/pages/bundles', $event->getResponse()->getTargetUrl());
     }
 
+    // A "*" on both sides renames a whole url tree: what follows the prefix is carried over to the destination
+    public function testOnKernelRequestCarriesTheTailOverToAStarredDestination(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/character/*')->setToUrl('/personnages/*')->setPermanent(true));
+        $event = $this->createEvent('/character/tuor');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/personnages/tuor', $event->getResponse()->getTargetUrl());
+    }
+
+    // The tail is whatever follows the prefix, however deep
+    public function testOnKernelRequestCarriesADeepTailOverToAStarredDestination(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/old/*')->setToUrl('https://example.org/new/*')->setPermanent(true));
+        $event = $this->createEvent('/old/a/b/c.html');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('https://example.org/new/a/b/c.html', $event->getResponse()->getTargetUrl());
+    }
+
+    // A destination without a "*" keeps folding the whole tree onto one url, which is the other half of what a prefix row is for
+    public function testOnKernelRequestFoldsAPrefixRowOntoADestinationWithoutAStar(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/character/*')->setToUrl('/personnages')->setPermanent(true));
+        $event = $this->createEvent('/character/tuor');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/personnages', $event->getResponse()->getTargetUrl());
+    }
+
+    // A "*" on the destination of an exact row means nothing and is left alone: the pairing only applies to a prefix row
+    public function testOnKernelRequestLeavesAStarredDestinationOfAnExactRowAlone(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/old')->setToUrl('/new/*')->setPermanent(true));
+        $event = $this->createEvent('/old');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/new/*', $event->getResponse()->getTargetUrl());
+    }
+
+    // Requesting a prefix row on its literal path lands on the destination it states, which is what lets such a row be checked as written (see the site-side ContentAccessTest, which walks every stored row)
+    public function testOnKernelRequestAnswersAStarredRowRequestedAsWritten(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/character/*')->setToUrl('/personnages/*')->setPermanent(true));
+        $event = $this->createEvent('/character/*');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/personnages/*', $event->getResponse()->getTargetUrl());
+    }
+
     // The homepage ('/') is never looked up, avoiding a pointless query on the hottest path
     public function testOnKernelRequestSkipsHomepage(): void
     {

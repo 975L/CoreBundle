@@ -10,19 +10,11 @@
 
 namespace c975L\UiBundle\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class BoolExtension extends AbstractExtension
+class BoolExtension
 {
-    #[\Override]
-    public function getFilters(): array
-    {
-        return [
-            new TwigFilter('to_bool', $this->toBool(...)),
-        ];
-    }
-
+    #[AsTwigFilter('to_bool')]
     public function toBool(mixed $value): bool
     {
         return !\in_array($value, [false, 'false', '0', 0, ''], true);

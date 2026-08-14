@@ -78,6 +78,10 @@
                 <source>description.guided_project_config_settings</source>
                 <target>Find a setting, change it, and understand what the dashboard makes of it</target>
             </trans-unit>
+            <trans-unit id="SvaL.3Z">
+                <source>description.guided_project_config_url_metadata</source>
+                <target>Give a title, a summary and a share image to the pages no content of yours carries.</target>
+            </trans-unit>
             <trans-unit id="w22XwFU">
                 <source>description.guided_step_config_health_check_again</source>
                 <target>Once corrected, run it again: the trend chart at the top of the page shows whether the site is improving.</target>
@@ -137,6 +141,30 @@
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
                 <target>An entry marked sensitive is encrypted in the database and never shown in clear again.</target>
+            </trans-unit>
+            <trans-unit id="ig3vWoA">
+                <source>description.guided_step_config_url_metadata_done</source>
+                <target>The content quality health check stops reporting this url, and a link to it now carries a title instead of a bare address.</target>
+            </trans-unit>
+            <trans-unit id="4N_rrDu">
+                <source>description.guided_step_config_url_metadata_edit</source>
+                <target>The rows are listed by the bundles that serve these urls, so none is ever added by hand: only what they say is yours to write.</target>
+            </trans-unit>
+            <trans-unit id="g3fx2V0">
+                <source>description.guided_step_config_url_metadata_image</source>
+                <target>Without one, a social network falls back on the site's default image - which describes the site, never this particular url.</target>
+            </trans-unit>
+            <trans-unit id="bUrnAxC">
+                <source>description.guided_step_config_url_metadata_open</source>
+                <target>One row per url served by a listing rather than by a content of its own: a blog index, a gallery, a search page.</target>
+            </trans-unit>
+            <trans-unit id="zZ_yPq.">
+                <source>description.guided_step_config_url_metadata_summary</source>
+                <target>Two sentences at most: it is what appears under the title in a search result, and next to the link when the page is shared.</target>
+            </trans-unit>
+            <trans-unit id="GFKzUI0">
+                <source>description.guided_step_config_url_metadata_title</source>
+                <target>This is the line a search engine shows above the url, and the one a browser tab carries.</target>
             </trans-unit>
             <trans-unit id="sXfnWsf">
                 <source>description.health_check</source>
@@ -524,7 +552,7 @@
             </trans-unit>
             <trans-unit id="GnuqUyG">
                 <source>label.from_path_help</source>
-                <target>URL path with leading / (e.g. /la-guilde-des-seigneurs)</target>
+                <target>URL path with leading / (e.g. /la-guilde-des-seigneurs). A trailing * covers a whole folder (e.g. /personnage/*)</target>
             </trans-unit>
             <trans-unit id="qrvRsVy">
                 <source>label.gone</source>
@@ -617,6 +645,10 @@
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
                 <target>Set the site's configuration</target>
+            </trans-unit>
+            <trans-unit id="iJUtTyq">
+                <source>label.guided_project_config_url_metadata</source>
+                <target>Make a listing speak for itself</target>
             </trans-unit>
             <trans-unit id="bw6vzfK">
                 <source>label.guided_project_done</source>
@@ -717,6 +749,34 @@
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>
                 <target>Fill the value in</target>
+            </trans-unit>
+            <trans-unit id="ApkY5XD">
+                <source>label.guided_step_config_url_metadata_done</source>
+                <target>See what it changes</target>
+            </trans-unit>
+            <trans-unit id="F7NKdZB">
+                <source>label.guided_step_config_url_metadata_edit</source>
+                <target>Pick an url to describe</target>
+            </trans-unit>
+            <trans-unit id="s_iSwmp">
+                <source>label.guided_step_config_url_metadata_image</source>
+                <target>Add the share image</target>
+            </trans-unit>
+            <trans-unit id="FmcQtw2">
+                <source>label.guided_step_config_url_metadata_open</source>
+                <target>Open the url descriptions</target>
+            </trans-unit>
+            <trans-unit id="CL_fU.J">
+                <source>label.guided_step_config_url_metadata_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="rOpKXFa">
+                <source>label.guided_step_config_url_metadata_summary</source>
+                <target>Write the summary</target>
+            </trans-unit>
+            <trans-unit id="2BqVoTR">
+                <source>label.guided_step_config_url_metadata_title</source>
+                <target>Write the title</target>
             </trans-unit>
             <trans-unit id="RXDF6wx">
                 <source>label.health_check</source>
@@ -1282,6 +1342,10 @@
                 <source>label.info_theme</source>
                 <target>Colors, fonts, light/dark mode. Manual editing reserved to ROLE_SUPER_ADMIN; presets stay available from editor role.</target>
             </trans-unit>
+            <trans-unit id="JWFxVz2">
+                <source>label.info_url_metadata</source>
+                <target>Title and description of the pages nothing else describes: listings, filtered listings, tool pages. A page backed by a record of its own - a product, a photo, a page - already says what it is and does not belong here. Write the path exactly as it appears in the address bar, for instance /animals.</target>
+            </trans-unit>
             <trans-unit id="14MwZnc">
                 <source>label.info_user</source>
                 <target>List of the site's users. You can edit a user's roles or delete them; be careful, changing roles immediately changes their back-office access rights.</target>
@@ -1636,7 +1700,7 @@
             </trans-unit>
             <trans-unit id="AVZ1p4W">
                 <source>label.to_url_help</source>
-                <target>Full URL (https://...) or absolute path (/series/la-guilde)</target>
+                <target>Full URL (https://...) or absolute path (/series/la-guilde). When the source path ends with *, a trailing * here carries the end of the url over (/personnage/* to /personnages/* sends /personnage/tuor to /personnages/tuor); without *, the whole folder lands on this single url</target>
             </trans-unit>
             <trans-unit id="sS6ch7.">
                 <source>label.true</source>
@@ -1646,9 +1710,45 @@
                 <source>label.url</source>
                 <target>URL</target>
             </trans-unit>
+            <trans-unit id="0SMI4yM">
+                <source>label.url_metadata</source>
+                <target>Url descriptions</target>
+            </trans-unit>
+            <trans-unit id="cIyQYC7">
+                <source>label.url_metadata_og_image</source>
+                <target>Share image</target>
+            </trans-unit>
+            <trans-unit id="ZjZddIm">
+                <source>label.url_metadata_og_image_help</source>
+                <target>The image shown when the page is shared on a social network. Left empty, the site's default image is used.</target>
+            </trans-unit>
+            <trans-unit id="0olbUUV">
+                <source>label.url_metadata_path</source>
+                <target>Path</target>
+            </trans-unit>
+            <trans-unit id="N_lh5o_">
+                <source>label.url_metadata_path_help</source>
+                <target>The path of the page, without the domain name, for instance /animals or /caste/warrior. One row per page: two filtered listings served by the same route say two different things.</target>
+            </trans-unit>
+            <trans-unit id="26r6ZWK">
+                <source>label.url_metadata_summary_help</source>
+                <target>The sentence shown under the title in search results and when the page is shared. Between 50 and 160 characters.</target>
+            </trans-unit>
+            <trans-unit id="Vj0O6lb">
+                <source>label.url_metadata_title</source>
+                <target>Title</target>
+            </trans-unit>
+            <trans-unit id="ZmviGeK">
+                <source>label.url_metadata_title_help</source>
+                <target>The title shown in the browser tab and in search results. Left empty, the page keeps the title its template gives it.</target>
+            </trans-unit>
             <trans-unit id="ExAFOiH">
                 <source>label.user</source>
                 <target>User</target>
+            </trans-unit>
+            <trans-unit id="78Hfnqr">
+                <source>label.user_created</source>
+                <target>New user account</target>
             </trans-unit>
             <trans-unit id="hKJPguf">
                 <source>label.user_registration_disable</source>
@@ -1685,6 +1785,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>You are logged in as %user%,</target>
+            </trans-unit>
+            <trans-unit id="g6ka9K.">
+                <source>text.user_created</source>
+                <target>A new user account has just been created on the site with the email address %email%.</target>
             </trans-unit>
         </body>
     </file>

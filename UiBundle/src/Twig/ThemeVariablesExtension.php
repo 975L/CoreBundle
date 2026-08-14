@@ -11,26 +11,18 @@
 namespace c975L\UiBundle\Twig;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use Twig\Attribute\AsTwigFunction;
 
 // Exposes the CSS file compiled by ThemeVariablesCssListener from the admin-editable "theme" group configs, so it can be inlined in emails (no <link> possible there) instead of duplicated by hand in the previous _user-variables.css/_user-typography.css override stubs
-class ThemeVariablesExtension extends AbstractExtension
+class ThemeVariablesExtension
 {
     public function __construct(
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }
 
-    #[\Override]
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('theme_variables_css', $this->getThemeVariablesCss(...), ['is_safe' => ['html']]),
-        ];
-    }
-
+    #[AsTwigFunction('theme_variables_css', isSafe: ['html'])]
     public function getThemeVariablesCss(): string
     {
         $path = $this->projectDir . '/public/bundles/build/site-theme.css';

@@ -45,6 +45,15 @@ class BlockCacheTagRegistryTest extends TestCase
         $this->assertSame(['page_5'], $registry->getExtraTags($block));
     }
 
+    // A resolver's null is the instance's own veto ("cacheable" being declared once per kind) and has to reach BlockCacheTagResolver untouched, an empty array meaning the exact opposite
+    public function testGetExtraTagsPassesTheResolversVetoThrough(): void
+    {
+        $registry = new BlockCacheTagRegistry();
+        $registry->addProvider($this->createProvider(['collection' => fn () => null]));
+
+        $this->assertNull($registry->getExtraTags(new Block()->setKind('collection')));
+    }
+
     // Resolvers are merged across providers, same as BlockFixtureRegistry
     public function testResolversFromSeveralProvidersAreMerged(): void
     {

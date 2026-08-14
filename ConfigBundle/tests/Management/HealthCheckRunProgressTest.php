@@ -27,8 +27,7 @@ class HealthCheckRunProgressTest extends TestCase
         $request = new Request();
         $request->setSession($session);
 
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
+        $requestStack = new RequestStack([$request]);
 
         return [$requestStack, $session];
     }
@@ -108,8 +107,7 @@ class HealthCheckRunProgressTest extends TestCase
     // The queued run is followed by the admin who started it and by no one else: a console command asking a provider for its rows has no session at all
     public function testStartAndPollAreNoOpsWithoutASession(): void
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
         $runProgress = new HealthCheckRunProgress($requestStack, $this->createRepository(['pagespeed']));
 
         $runProgress->start(['pagespeed']);

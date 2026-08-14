@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\EmailVerifier;
+use c975L\ConfigBundle\Service\UserCreationNotifier;
 use c975L\ConfigBundle\Service\UserRegistrar;
 use c975L\ConfigBundle\Tests\Fixtures\UserStub;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,7 +38,10 @@ class UserRegistrarTest extends TestCase
             ->willReturn(true)
         ;
 
-        $registrar = new UserRegistrar($passwordHasher, $entityManager, $emailVerifier);
+        $userCreationNotifier = $this->createMock(UserCreationNotifier::class);
+        $userCreationNotifier->expects($this->once())->method('notify')->with($user);
+
+        $registrar = new UserRegistrar($passwordHasher, $entityManager, $emailVerifier, $userCreationNotifier);
         $result = $registrar->register($user, 'Str0ngPassword!', 'app_verify_email', 'Confirm your email', 'new-user@example.test');
 
         $this->assertTrue($result);

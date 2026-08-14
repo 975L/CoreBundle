@@ -25,20 +25,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Lists the SVG files the site serves and flags those still drawing their text with a font instead of with paths. The upload itself already warns (see UiBundle's SvgTextWarningListener), but only whoever was uploading saw it, and only from that day on - this is what surfaces the ones already in place, and the ones a content_import brought in with no session to flash to. Reads files off the disk rather than over http: they are this site's own, and an unreachable one is a different check's business (see SeoFilesHealthCheckProvider)
 class SvgFontsHealthCheckProvider implements HealthCheckProviderInterface
 {
+    // Named here rather than restated as a literal wherever a row of this kind is picked out - SvgFontsHealthCheckAdviceProvider does exactly that
+    public const string KIND = 'svg-fonts';
+
     public function __construct(
         private readonly MediaRepository $mediaRepository,
         private readonly SvgTextDetector $svgTextDetector,
         private readonly ConfigServiceInterface $configService,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly TranslatorInterface $translator,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
     }
 
     public function getKind(): string
     {
-        return 'svg-fonts';
+        return self::KIND;
     }
 
     public function runChecks(): array

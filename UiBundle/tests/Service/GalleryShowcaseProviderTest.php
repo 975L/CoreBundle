@@ -28,13 +28,13 @@ class GalleryShowcaseProviderTest extends TestCase
     /** @var array<int, array{0: string, 1: array<string, mixed>}> */
     private array $twigRenders = [];
 
-    // The three built-in kinds a BlockFixtureProvider entry can't express - two containers and one live-sourced - and no other: everything else belongs in the fixtures
-    public function testTheThreeKindsNoFixtureCanExpressAreCovered(): void
+    // The four built-in kinds a BlockFixtureProvider entry can't express - two containers and two live-sourced - and no other: everything else belongs in the fixtures
+    public function testTheFourKindsNoFixtureCanExpressAreCovered(): void
     {
         $showcases = $this->createProvider()->getShowcases();
 
         $this->assertSame(
-            ['flex_columns', 'section_cards', 'collection'],
+            ['flex_columns', 'section_cards', 'collection', 'collection_entry'],
             array_column($showcases, 'kind')
         );
     }
@@ -102,7 +102,7 @@ class GalleryShowcaseProviderTest extends TestCase
 
         $items = $this->renderedOfKind('collection_item');
 
-        $this->assertCount(6, $items, 'Three items, in each of the two variants');
+        $this->assertCount(7, $items, 'Three items in each of the two variants, plus the single one the "collection_entry" showcase puts forward');
         $this->assertSame(['@c975LUi/components/Collection/Grid.html.twig'], array_unique(array_column($this->twigRenders, 0)));
         $this->assertSame(['', 'portfolio'], array_column(array_column($this->twigRenders, 1), 'variant'));
     }
@@ -137,7 +137,8 @@ class GalleryShowcaseProviderTest extends TestCase
         );
 
         // Leading "/" so the src is a site-root path whatever page the showcase is rendered on
-        $this->assertSame(['', '', '', '/showcase/sample.webp', '/showcase/sample.webp', '/showcase/sample.webp'], $urls);
+        // The last one is the single-entry showcase, which draws the card look and so carries no image either
+        $this->assertSame(['', '', '', '/showcase/sample.webp', '/showcase/sample.webp', '/showcase/sample.webp', ''], $urls);
     }
 
     // Nothing declared: the cards show their text alone rather than a broken image

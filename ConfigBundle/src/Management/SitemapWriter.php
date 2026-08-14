@@ -33,7 +33,7 @@ class SitemapWriter
         private readonly Environment $environment,
         // Every SitemapProviderInterface implementation, whatever the bundle it comes from - tagged automatically by TaggedInterfacePass, so nothing has to be listed by hand in the app (see services.yaml)
         private readonly iterable $sitemapProviders,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         string $projectDir,
     ) {
         $this->sitemapFolder = $projectDir . '/public';
