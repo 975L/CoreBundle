@@ -18,6 +18,10 @@
                 <source>action.font_bulk_import</source>
                 <target>Import en masse</target>
             </trans-unit>
+            <trans-unit id="FczgMxS">
+                <source>description.guided_project_ui_ai_assistant</source>
+                <target>Mettre en place la clé de reformulation, puis l'essayer sur la zone de texte de l'écran avant d'appuyer sur ce bouton sous un vrai champ</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Reprendre le contenu d'un e-mail que le site envoie, comme on reprend une page</target>
@@ -30,9 +34,45 @@
                 <source>description.guided_project_ui_form</source>
                 <target>Construire un formulaire champ par champ, puis le poser dans une page</target>
             </trans-unit>
+            <trans-unit id="_2UHUq_">
+                <source>description.guided_project_ui_legal_model</source>
+                <target>Masquer, retitrer ou réécrire une section d'un document légal fourni par ce bundle, et en ajouter de votre cru, sans perdre les mises à jour qu'il continue de recevoir</target>
+            </trans-unit>
+            <trans-unit id="uJW0NPA">
+                <source>description.guided_project_ui_media</source>
+                <target>Donner à une image son texte alternatif et ses crédits, dans la bibliothèque où aboutit toute image du site, quel que soit l'écran qui l'a téléversée</target>
+            </trans-unit>
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
                 <target>Favicon, logo, image de partage : la poignée de fichiers auxquels on reconnaît un site, déposés une fois pour toutes.</target>
+            </trans-unit>
+            <trans-unit id="97DoPkG">
+                <source>description.guided_step_ui_ai_assistant_done</source>
+                <target>Blocks, pages, modèles d'e-mail - les mêmes trois commandes partout, et cet écran compte les jetons dépensés dans le mois</target>
+            </trans-unit>
+            <trans-unit id="15ku.KE">
+                <source>description.guided_step_ui_ai_assistant_length</source>
+                <target>Plus court, plus long, ou identique - une section qui doit tenir dans une carte ne se réécrit pas comme une autre qui remplit toute une page</target>
+            </trans-unit>
+            <trans-unit id="W_R1JIJ">
+                <source>description.guided_step_ui_ai_assistant_open</source>
+                <target>L'écran s'affiche même quand rien n'est encore configuré, étant l'endroit même où sa mise en place est expliquée</target>
+            </trans-unit>
+            <trans-unit id="Pv2UWnh">
+                <source>description.guided_step_ui_ai_assistant_run</source>
+                <target>La suggestion revient sous le texte, à garder ou à laisser : rien n'est écrit nulle part tant que vous ne la reprenez pas</target>
+            </trans-unit>
+            <trans-unit id="ZQSQTh7">
+                <source>description.guided_step_ui_ai_assistant_setup</source>
+                <target>Chaque entrée ouvre le réglage qu'elle nomme - au minimum le fournisseur et sa clé d'API. La liste disparaît dès qu'il ne manque plus rien, et c'est là que commence la suite de ce parcours</target>
+            </trans-unit>
+            <trans-unit id="XjiInU0">
+                <source>description.guided_step_ui_ai_assistant_style</source>
+                <target>La même liste est proposée sous chaque champ de texte du back-office, si bien que ce qui est choisi ici sera choisi là-bas</target>
+            </trans-unit>
+            <trans-unit id="yRkVSz0">
+                <source>description.guided_step_ui_ai_assistant_text</source>
+                <target>Cette zone de texte n'appartient à aucune page du site : ce qu'on y essaie est jeté, ce qui en fait l'endroit pour découvrir ce que donne la reformulation</target>
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
@@ -89,6 +129,54 @@
             <trans-unit id="d48MvaE">
                 <source>description.guided_step_ui_form_place</source>
                 <target>Ajoutez un block de formulaire à une page, et choisissez celui que vous venez de créer.</target>
+            </trans-unit>
+            <trans-unit id="UUhHZlk">
+                <source>description.guided_step_ui_legal_model_apply</source>
+                <target>La page publiée est reconstruite aussitôt, le document étant mis en cache jusque-là</target>
+            </trans-unit>
+            <trans-unit id="dnng86A">
+                <source>description.guided_step_ui_legal_model_customize</source>
+                <target>Le bouton ouvre le document section par section - seul un modèle encore fourni par ce bundle est proposé ici, un modèle inconnu étant signalé comme tel à la place</target>
+            </trans-unit>
+            <trans-unit id="2r0COs5">
+                <source>description.guided_step_ui_legal_model_done</source>
+                <target>Seul ce que vous avez modifié est enregistré : tout le reste suit le modèle, si bien qu'une mise à jour de ce bundle atteint votre page d'elle-même</target>
+            </trans-unit>
+            <trans-unit id="WKvl5GA">
+                <source>description.guided_step_ui_legal_model_extra</source>
+                <target>Pour ce que le modèle ne couvre pas - elle se place sous la section que vous choisissez, et aucune mise à jour n'y touche jamais</target>
+            </trans-unit>
+            <trans-unit id="nwU0_eO">
+                <source>description.guided_step_ui_legal_model_open</source>
+                <target>Tous les documents légaux du site sont listés ici, avec la page où ils se trouvent et l'écart pris avec le texte fourni par ce bundle</target>
+            </trans-unit>
+            <trans-unit id="75_JyJT">
+                <source>description.guided_step_ui_legal_model_reset</source>
+                <target>Ceci remet le texte du bundle dans la section, ce qu'il faut faire dès qu'une mise à jour l'a reformulé</target>
+            </trans-unit>
+            <trans-unit id="wqUYhPO">
+                <source>description.guided_step_ui_legal_model_unit</source>
+                <target>Chaque carte est une section : donnez-lui votre propre titre, réécrivez son texte, ou cochez la case qui la masque sur la page publiée</target>
+            </trans-unit>
+            <trans-unit id="RDmEru5">
+                <source>description.guided_step_ui_media_alt</source>
+                <target>Ce que montre l'image, en une phrase : il est lu par les lecteurs d'écran et affiché lorsque l'image ne se charge pas.</target>
+            </trans-unit>
+            <trans-unit id=".d0BOf5">
+                <source>description.guided_step_ui_media_credits</source>
+                <target>D'où vient l'image, si elle n'est pas de vous - un photographe, une banque d'images, une licence.</target>
+            </trans-unit>
+            <trans-unit id="tDo_284">
+                <source>description.guided_step_ui_media_done</source>
+                <target>Une image, une seule fiche : ce que vous venez d'écrire la suit dans toutes les pages et tous les blocks qui l'utilisent déjà. La fiche liste aussi où elle sert, pour savoir avant d'en supprimer une.</target>
+            </trans-unit>
+            <trans-unit id=".imAjIX">
+                <source>description.guided_step_ui_media_open</source>
+                <target>Toutes les images du site sont là, qu'elles aient été téléversées depuis une page, un block ou les graphiques du site.</target>
+            </trans-unit>
+            <trans-unit id="Q.J7GM.">
+                <source>description.guided_step_ui_media_pick</source>
+                <target>La vignette ouvre sa propre fiche. Un graphique global du site (favicon, logo…) ouvre plutôt l'écran « Graphiques du site », où ceux-là se modifient.</target>
             </trans-unit>
             <trans-unit id="fqjZMNb">
                 <source>description.guided_step_ui_site_graphic_done</source>
@@ -157,6 +245,10 @@
             <trans-unit id="oGPPygw">
                 <source>flash.legal_model_customized</source>
                 <target>Personnalisation enregistrée.</target>
+            </trans-unit>
+            <trans-unit id="qRTOhD8">
+                <source>flash.media_used_not_deleted</source>
+                <target>Ce média est utilisé ailleurs et n'a pas été supprimé. Détachez-le d'abord, la liste « Utilisé dans » de son formulaire indique où.</target>
             </trans-unit>
             <trans-unit id="pYFXZHg">
                 <source>flash.stylesheet_compiled</source>
@@ -1626,6 +1718,10 @@
                 <source>label.group_justify_start</source>
                 <target>À gauche</target>
             </trans-unit>
+            <trans-unit id="KU6CCFk">
+                <source>label.guided_project_ui_ai_assistant</source>
+                <target>Faire reformuler un texte par Donovan</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personnaliser un e-mail</target>
@@ -1638,9 +1734,45 @@
                 <source>label.guided_project_ui_form</source>
                 <target>Créer un formulaire</target>
             </trans-unit>
+            <trans-unit id="Q.ghvqg">
+                <source>label.guided_project_ui_legal_model</source>
+                <target>Ajuster un document légal</target>
+            </trans-unit>
+            <trans-unit id="FtKKNNJ">
+                <source>label.guided_project_ui_media</source>
+                <target>Corriger ce qu'une image dit d'elle-même</target>
+            </trans-unit>
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Mettre en place les graphiques du site</target>
+            </trans-unit>
+            <trans-unit id="goVER90">
+                <source>label.guided_step_ui_ai_assistant_done</source>
+                <target>Le même bouton se trouve sous chaque champ de texte</target>
+            </trans-unit>
+            <trans-unit id="CenozpF">
+                <source>label.guided_step_ui_ai_assistant_length</source>
+                <target>Choisir une longueur</target>
+            </trans-unit>
+            <trans-unit id="DB9qRe3">
+                <source>label.guided_step_ui_ai_assistant_open</source>
+                <target>Ouvrir Donovan</target>
+            </trans-unit>
+            <trans-unit id="vaZ6G9q">
+                <source>label.guided_step_ui_ai_assistant_run</source>
+                <target>Lancer la reformulation</target>
+            </trans-unit>
+            <trans-unit id="U3ZOnEG">
+                <source>label.guided_step_ui_ai_assistant_setup</source>
+                <target>Renseigner ce qui manque</target>
+            </trans-unit>
+            <trans-unit id="Mg1Mdko">
+                <source>label.guided_step_ui_ai_assistant_style</source>
+                <target>Choisir un ton</target>
+            </trans-unit>
+            <trans-unit id="eMrSX2A">
+                <source>label.guided_step_ui_ai_assistant_text</source>
+                <target>Coller un texte à reformuler</target>
             </trans-unit>
             <trans-unit id="PB512zY">
                 <source>label.guided_step_ui_email_template_blocks</source>
@@ -1713,6 +1845,58 @@
             <trans-unit id="GAmp352">
                 <source>label.guided_step_ui_form_save</source>
                 <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="XrsXRca">
+                <source>label.guided_step_ui_legal_model_apply</source>
+                <target>Appliquer vos modifications</target>
+            </trans-unit>
+            <trans-unit id="1s3MtYH">
+                <source>label.guided_step_ui_legal_model_customize</source>
+                <target>Personnaliser un document</target>
+            </trans-unit>
+            <trans-unit id="zE99DdS">
+                <source>label.guided_step_ui_legal_model_done</source>
+                <target>Le document est vôtre, et reste à jour</target>
+            </trans-unit>
+            <trans-unit id="4yYqz5e">
+                <source>label.guided_step_ui_legal_model_extra</source>
+                <target>Ajouter une section de votre cru</target>
+            </trans-unit>
+            <trans-unit id="Pap0exn">
+                <source>label.guided_step_ui_legal_model_open</source>
+                <target>Ouvrir les documents légaux</target>
+            </trans-unit>
+            <trans-unit id="EgO9rbC">
+                <source>label.guided_step_ui_legal_model_reset</source>
+                <target>Revenir au texte fourni</target>
+            </trans-unit>
+            <trans-unit id="dt2sHcE">
+                <source>label.guided_step_ui_legal_model_unit</source>
+                <target>Ajuster une section</target>
+            </trans-unit>
+            <trans-unit id="p04wYUK">
+                <source>label.guided_step_ui_media_alt</source>
+                <target>Écrire le texte alternatif</target>
+            </trans-unit>
+            <trans-unit id="pbHb6NN">
+                <source>label.guided_step_ui_media_credits</source>
+                <target>Indiquer l'auteur</target>
+            </trans-unit>
+            <trans-unit id="S9x2Vk7">
+                <source>label.guided_step_ui_media_done</source>
+                <target>Partout à la fois</target>
+            </trans-unit>
+            <trans-unit id="r.hPN1d">
+                <source>label.guided_step_ui_media_open</source>
+                <target>Ouvrir la bibliothèque de médias</target>
+            </trans-unit>
+            <trans-unit id="SFM9PMJ">
+                <source>label.guided_step_ui_media_pick</source>
+                <target>Choisir une image</target>
+            </trans-unit>
+            <trans-unit id="Sr6aDii">
+                <source>label.guided_step_ui_media_save</source>
+                <target>Enregistrer le média</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>

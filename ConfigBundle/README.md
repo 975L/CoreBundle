@@ -320,7 +320,7 @@ The trailing `*` matches any end of slug (a `%` is accepted too, being the wildc
 
 ## Encrypting sensitive values
 
-Sensitive config values can be encrypted at rest (AES-256-CBC) using a `C975L_VAULT_KEY` defined in `.env.local`. Generate a key:
+Sensitive config values can be encrypted at rest (AES-256-GCM) using a `C975L_VAULT_KEY` defined in `.env.local`. Generate a key:
 
 ```bash
 php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
@@ -337,6 +337,29 @@ Then run the following command to encrypt any sensitive value still stored in pl
 ```bash
 php bin/console c975l:config:encrypt-sensitive
 ```
+
+The same command also converts values written before AES-256-GCM, which were held in AES-256-CBC under the same
+`C975L_VAULT_KEY` and the same `C975L:` prefix. Nothing is re-keyed: the key never moves, only the algorithm
+holding the value does, so there is no key to generate and nothing to change in `.env.local`. Both formats are
+read, so a site works before it converts — but only the current one authenticates what it decrypts, which is
+what tells a wrong key from a right one instead of letting the padding decide. Conversion is therefore worth
+running once per environment, on the environment's own database:
+
+```yaml
+# .github/workflows/deploy.yml, right after c975l:config:load-all
+php bin/console c975l:config:encrypt-sensitive --no-interaction --env=prod;
+```
+
+A value the environment's key cannot read is reported and left as it stands, the command still exiting `0`: a
+secret lost to a changed key must not hold a release back.
+
+The site itself is just as forgiving at runtime: a sensitive row that cannot be decrypted is served **empty**,
+as an unfilled setting is, and the reason goes to the log (`Sensitive setting left empty, it could not be
+decrypted`, with the slug). Every sensitive value is decrypted inside one cache callback, so letting the
+failure through used to take the whole configuration down with it — a 500 on every page for a setting nothing
+on that page needed. The logged reason tells the two causes apart: nothing read at all points at
+`C975L_VAULT_KEY`, while a legacy CBC value that came back as something other than text points at the value
+itself, which no key will bring back — re-encrypt it from its source.
 
 ## EasyAdmin interface
 

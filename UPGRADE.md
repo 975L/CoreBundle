@@ -1,5 +1,46 @@
 # UPGRADE
 
+## From `v1.10.3` to `v1.10.4`
+
+### Sensitive config values are now encrypted with AES-256-GCM
+
+`VaultEncryptor` wrote `aes-256-cbc`, which authenticates nothing: a wrong key was only ever caught by the
+padding OpenSSL checks on its way out, and random bytes satisfy that padding **once in 256**. Those bytes were
+then written over the encrypted value as the setting itself, its `sensitive` flag dropped with them — a secret
+silently destroyed on a site whose `.env.local` had been recreated or whose database came from a backup.
+
+It now writes `aes-256-gcm`, whose tag is verified at decryption: a wrong key, or a value altered in the
+database, fails outright.
+
+**Nothing to do about the key.** `C975L_VAULT_KEY` is unchanged, and `.env.local` is not touched. This is not a
+key rotation — the key stays, only the algorithm holding the value changes. Stored values keep the same
+`C975L:` prefix, and both formats are read, so a site works exactly as before while still holding the old one.
+
+Converting is one command, run **on each environment's own database** — databases are not shared, so running it
+locally converts nothing in production:
+
+```bash
+php bin/console c975l:config:encrypt-sensitive
+```
+
+It is idempotent: it converts what it finds, leaves what is already converted, and writes nothing on a site
+already done. The place to put it is the deployment, right after `c975l:config:load-all`:
+
+```yaml
+# .github/workflows/deploy.yml
+php bin/console c975l:config:encrypt-sensitive --no-interaction --env=prod;
+```
+
+A value the environment's key cannot read is reported and left untouched, the command still exiting `0`.
+
+Two things to know while a site is mid-conversion:
+
+- The **SQL + secrets** export carries values still encrypted between environments sharing a
+  `C975L_VAULT_KEY`. Deploy this version everywhere before pushing a database, so the target can read what the
+  source hands it.
+- A rollback to an earlier version cannot read a converted value. It fails loudly rather than silently, but it
+  fails: convert once the version is settled.
+
 ## From `v1.9.1` to `v1.10.0`
 
 ### UiBundle's layout reads `summarySocialNetwork`, no longer `description`

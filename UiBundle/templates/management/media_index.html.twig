@@ -11,8 +11,11 @@
                 {% set thumbnailPath = media.filename ? document_thumbnail_path(media) : null %}
 
                 {# Site-wide graphics are read-only here (see MediaCrudController), so their thumbnail opens the screen that does edit them instead of EasyAdmin's default row action - which, Edit being hidden for them, fell back to a detail page showing neither the image nor a single action. No url at all for an admin who may not edit them: the thumbnail then renders as plain content rather than as a link landing on a 403 #}
-                {% set itemUrl = site_graphic_urls[media.id] ?? entity.defaultActionUrl %}
-                <a{% if itemUrl %} href="{{ itemUrl }}"{% endif %} class="management-media-grid__item">
+                {% set siteGraphicUrl = site_graphic_urls[media.id] ?? null %}
+                {% set itemUrl = siteGraphicUrl ?? entity.defaultActionUrl %}
+
+                {# The modifier says which form the thumbnail opens, the two being told apart nowhere else in the markup - the guided project walking the media library excludes it, its next steps pointing at fields only the Media form holds (see UiGuidedProjectProvider) #}
+                <a{% if itemUrl %} href="{{ itemUrl }}"{% endif %} class="management-media-grid__item{% if siteGraphicUrl %} management-media-grid__item--site-graphic{% endif %}">
                     {% if media.filename and media.mimeType starts with 'image/' %}
                         <img src="{{ vich_uploader_asset(media) }}" alt="{{ media.alt }}" width="150" height="150" class="management-media-grid__thumb">
                     {% elseif thumbnailPath %}

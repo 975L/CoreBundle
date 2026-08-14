@@ -66,6 +66,10 @@
                 <source>description.site_enable_cookie_consent</source>
                 <target>Activer l'utilisation de cookie consent</target>
             </trans-unit>
+            <trans-unit id="imDzV_g">
+                <source>description.site_enable_matomo</source>
+                <target>Active Matomo, hors bandeau cookies - à réserver au mode exempté CNIL (IP anonymisée, pas de croisement, cookie ≤13 mois, DNT respecté)</target>
+            </trans-unit>
             <trans-unit id="nZli24w">
                 <source>description.site_form_delay</source>
                 <target>Délai minimum, en secondes, entre l'affichage et l'envoi d'un formulaire public avant de le considérer comme un bot</target>
@@ -73,6 +77,14 @@
             <trans-unit id="a2s6MLC">
                 <source>description.site_form_gdpr</source>
                 <target>Ajoute une case de consentement RGPD obligatoire aux formulaires publics</target>
+            </trans-unit>
+            <trans-unit id="QbsOHOo">
+                <source>description.site_matomo_id</source>
+                <target>Identifiant du site Matomo (entier)</target>
+            </trans-unit>
+            <trans-unit id="X8T2_9z">
+                <source>description.site_matomo_url</source>
+                <target>URL de l'instance Matomo, ex. https://matomo.example.com</target>
             </trans-unit>
             <trans-unit id="Q4suaeP">
                 <source>description.site_other_cookies</source>
@@ -202,6 +214,10 @@
                 <source>label.site_enable_cookie_consent</source>
                 <target>Activer le consentement aux cookies</target>
             </trans-unit>
+            <trans-unit id="xZcUaF_">
+                <source>label.site_enable_matomo</source>
+                <target>Activer les statistiques Matomo</target>
+            </trans-unit>
             <trans-unit id="UdYcxIh">
                 <source>label.site_form_delay</source>
                 <target>Délai anti-bot des formulaires publics</target>
@@ -209,6 +225,14 @@
             <trans-unit id="jM0HrcE">
                 <source>label.site_form_gdpr</source>
                 <target>Afficher la case à cocher RGPD sur les formulaires publics</target>
+            </trans-unit>
+            <trans-unit id="EDDAHIQ">
+                <source>label.site_matomo_id</source>
+                <target>ID du site Matomo</target>
+            </trans-unit>
+            <trans-unit id="HoL37ro">
+                <source>label.site_matomo_url</source>
+                <target>URL de Matomo</target>
             </trans-unit>
             <trans-unit id="cF7QFBj">
                 <source>label.site_other_cookies</source>

@@ -8,6 +8,16 @@
                 "es": "Toda una sección renombrada de su sitio se redirige con una sola línea, y cada dirección antigua llega a la suya nueva en lugar de amontonarse todo en una sola página"
             },
             {
+                "en": "A setting kept secret can no longer be quietly replaced by unreadable characters when the site's encryption key has changed — the problem is reported instead, and the secret left untouched",
+                "fr": "Un paramètre gardé secret ne peut plus être remplacé en silence par des caractères illisibles lorsque la clé de chiffrement du site a changé : le problème est signalé et le secret laissé intact",
+                "es": "Un ajuste guardado en secreto ya no puede sustituirse en silencio por caracteres ilegibles cuando ha cambiado la clave de cifrado del sitio: el problema se señala y el secreto se deja intacto"
+            },
+            {
+                "en": "A secret your site can no longer read leaves that one setting empty and signals it, instead of bringing every page of the site down with it",
+                "fr": "Un secret que votre site ne peut plus lire laisse ce seul paramètre vide et le signale, au lieu d'emporter toutes les pages du site avec lui",
+                "es": "Un secreto que su sitio ya no puede leer deja vacío ese único ajuste y lo señala, en lugar de arrastrar consigo todas las páginas del sitio"
+            },
+            {
                 "en": "A step-by-step guide walks you through describing one of your listing pages, from the screen to the save",
                 "fr": "Un guide pas à pas vous accompagne pour décrire une de vos pages de listes, de l'écran jusqu'à l'enregistrement",
                 "es": "Una guía paso a paso le acompaña para describir una de sus páginas de listado, desde la pantalla hasta el guardado"

@@ -11,8 +11,10 @@
 namespace c975L\UiBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Contract\MediaUsageProviderInterface;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Service\ImageDimensionsReader;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,7 +32,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MediaCrudControllerTest extends TestCase
 {
-    private function createController(string $projectDir = '/tmp', bool $mayEditSiteGraphics = true): MediaCrudController
+    private function createController(string $projectDir = '/tmp', bool $mayEditSiteGraphics = true, ?MediaUsageRegistry $mediaUsageRegistry = null): MediaCrudController
     {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
@@ -54,6 +56,7 @@ class MediaCrudControllerTest extends TestCase
             $adminUrlGenerator,
             $configService,
             $security,
+            $mediaUsageRegistry ?? new MediaUsageRegistry(),
             $projectDir
         );
     }
@@ -151,6 +154,38 @@ class MediaCrudControllerTest extends TestCase
         );
 
         $this->assertSame([], $urls);
+    }
+
+    // A registry answering with the given usages, whatever media is asked for
+    private function registryReporting(array $usages): MediaUsageRegistry
+    {
+        $provider = $this->createStub(MediaUsageProviderInterface::class);
+        $provider->method('getUsages')->willReturn($usages);
+
+        $registry = new MediaUsageRegistry();
+        $registry->addProvider($provider);
+
+        return $registry;
+    }
+
+    // The counterpart of opening DELETE to the editor role: a media still attached to a block, a page or a site-wide graphic is not deletable from the library
+    public function testIsUsedReportsAMediaStillAttachedSomewhere(): void
+    {
+        $controller = $this->createController(mediaUsageRegistry: $this->registryReporting([
+            1 => [['label' => 'Home page', 'url' => '/management/block/edit']],
+        ]));
+
+        $this->assertTrue(new \ReflectionMethod($controller, 'isUsed')->invoke($controller, $this->mediaWithId(1)));
+    }
+
+    // The other side of the same guard: an orphan import stays deletable by the editor who uploaded it
+    public function testIsUsedLeavesAnUnusedMediaDeletable(): void
+    {
+        $controller = $this->createController(mediaUsageRegistry: $this->registryReporting([
+            2 => [['label' => 'Home page', 'url' => '/management/block/edit']],
+        ]));
+
+        $this->assertFalse(new \ReflectionMethod($controller, 'isUsed')->invoke($controller, $this->mediaWithId(1)));
     }
 
     private function fileFieldImageUri(MediaCrudController $controller): \Closure

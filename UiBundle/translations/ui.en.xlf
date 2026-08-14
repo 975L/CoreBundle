@@ -18,6 +18,10 @@
                 <source>action.font_bulk_import</source>
                 <target>Bulk import</target>
             </trans-unit>
+            <trans-unit id="FczgMxS">
+                <source>description.guided_project_ui_ai_assistant</source>
+                <target>Set up the rephrasing key, then try it out on the screen's own textarea before ever pressing that button under a real field</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Rework the content of an e-mail the site sends, the same way a page is reworked</target>
@@ -30,9 +34,45 @@
                 <source>description.guided_project_ui_form</source>
                 <target>Build a form field by field, then drop it into a page</target>
             </trans-unit>
+            <trans-unit id="_2UHUq_">
+                <source>description.guided_project_ui_legal_model</source>
+                <target>Hide, retitle or rewrite a section of a legal document this bundle ships, and add sections of your own, without losing the updates it keeps receiving</target>
+            </trans-unit>
+            <trans-unit id="uJW0NPA">
+                <source>description.guided_project_ui_media</source>
+                <target>Give an image its alternative text and its credits in the library where every picture of the site ends up, whatever screen uploaded it</target>
+            </trans-unit>
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
                 <target>Favicon, logo, share image: the handful of files a site is recognised by, uploaded once and for all.</target>
+            </trans-unit>
+            <trans-unit id="97DoPkG">
+                <source>description.guided_step_ui_ai_assistant_done</source>
+                <target>Blocks, pages, e-mail templates - the same three controls everywhere, and this screen counts the tokens spent over the month</target>
+            </trans-unit>
+            <trans-unit id="15ku.KE">
+                <source>description.guided_step_ui_ai_assistant_length</source>
+                <target>Shorter, longer, or the same - a section that has to hold in a card is not rewritten like one filling a whole page</target>
+            </trans-unit>
+            <trans-unit id="W_R1JIJ">
+                <source>description.guided_step_ui_ai_assistant_open</source>
+                <target>The screen shows even when nothing is configured yet, being the very place its own setup is walked through</target>
+            </trans-unit>
+            <trans-unit id="Pv2UWnh">
+                <source>description.guided_step_ui_ai_assistant_run</source>
+                <target>The suggestion comes back under the text, to keep or to leave: nothing is written anywhere until you take it</target>
+            </trans-unit>
+            <trans-unit id="ZQSQTh7">
+                <source>description.guided_step_ui_ai_assistant_setup</source>
+                <target>Each entry opens the setting it names - the provider and its API key at the very least. The list is gone once nothing is left to fill in, and the rest of this parcours starts there</target>
+            </trans-unit>
+            <trans-unit id="XjiInU0">
+                <source>description.guided_step_ui_ai_assistant_style</source>
+                <target>The same list is offered under every text field of the back office, so what is picked here is what will be picked there</target>
+            </trans-unit>
+            <trans-unit id="yRkVSz0">
+                <source>description.guided_step_ui_ai_assistant_text</source>
+                <target>This textarea belongs to no page of the site: whatever is tried in it is thrown away, which is what makes it the place to find out what the rephrasing gives</target>
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
@@ -89,6 +129,54 @@
             <trans-unit id="d48MvaE">
                 <source>description.guided_step_ui_form_place</source>
                 <target>Add a form block to a page, and pick the one you have just created.</target>
+            </trans-unit>
+            <trans-unit id="UUhHZlk">
+                <source>description.guided_step_ui_legal_model_apply</source>
+                <target>The published page is rebuilt right away, the document being cached until then</target>
+            </trans-unit>
+            <trans-unit id="dnng86A">
+                <source>description.guided_step_ui_legal_model_customize</source>
+                <target>The button opens the document section by section - only a model this bundle still ships is offered here, an unknown one being named as such instead</target>
+            </trans-unit>
+            <trans-unit id="2r0COs5">
+                <source>description.guided_step_ui_legal_model_done</source>
+                <target>Only what you changed is stored: everything else follows the model, so an update to this bundle reaches your page on its own</target>
+            </trans-unit>
+            <trans-unit id="WKvl5GA">
+                <source>description.guided_step_ui_legal_model_extra</source>
+                <target>For what the model does not cover - it is placed under the section you pick, and no update ever touches it</target>
+            </trans-unit>
+            <trans-unit id="nwU0_eO">
+                <source>description.guided_step_ui_legal_model_open</source>
+                <target>Every legal document of the site is listed here, with the page it sits on and how far it has drifted from the wording this bundle ships</target>
+            </trans-unit>
+            <trans-unit id="75_JyJT">
+                <source>description.guided_step_ui_legal_model_reset</source>
+                <target>This puts the bundle's own text back in the section, which is what to do once an update has reworded it</target>
+            </trans-unit>
+            <trans-unit id="wqUYhPO">
+                <source>description.guided_step_ui_legal_model_unit</source>
+                <target>Each card is one section: give it a title of your own, rewrite its text, or tick the box that hides it from the published page</target>
+            </trans-unit>
+            <trans-unit id="RDmEru5">
+                <source>description.guided_step_ui_media_alt</source>
+                <target>What the picture shows, in a sentence: it is read out by screen readers and displayed when the image fails to load.</target>
+            </trans-unit>
+            <trans-unit id=".d0BOf5">
+                <source>description.guided_step_ui_media_credits</source>
+                <target>Where the picture comes from, if it is not yours - a photographer, a stock library, a licence.</target>
+            </trans-unit>
+            <trans-unit id="tDo_284">
+                <source>description.guided_step_ui_media_done</source>
+                <target>One picture, one row: what you have just written follows it into every page and every block already using it. The form also lists where it is used, so you know before deleting one.</target>
+            </trans-unit>
+            <trans-unit id=".imAjIX">
+                <source>description.guided_step_ui_media_open</source>
+                <target>Every image of the site is here, whether it was uploaded from a page, a block or the site graphics.</target>
+            </trans-unit>
+            <trans-unit id="Q.J7GM.">
+                <source>description.guided_step_ui_media_pick</source>
+                <target>The thumbnail opens its own form. A site-wide graphic (favicon, logo…) opens the "Site graphics" screen instead, which is where those are edited.</target>
             </trans-unit>
             <trans-unit id="fqjZMNb">
                 <source>description.guided_step_ui_site_graphic_done</source>
@@ -157,6 +245,10 @@
             <trans-unit id="oGPPygw">
                 <source>flash.legal_model_customized</source>
                 <target>Customization saved.</target>
+            </trans-unit>
+            <trans-unit id="qRTOhD8">
+                <source>flash.media_used_not_deleted</source>
+                <target>This media is used elsewhere and has not been deleted. Detach it first, the "Used in" list on its edit form shows where.</target>
             </trans-unit>
             <trans-unit id="pYFXZHg">
                 <source>flash.stylesheet_compiled</source>
@@ -1626,6 +1718,10 @@
                 <source>label.group_justify_start</source>
                 <target>Left</target>
             </trans-unit>
+            <trans-unit id="KU6CCFk">
+                <source>label.guided_project_ui_ai_assistant</source>
+                <target>Have Donovan rephrase a text</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Tailor an e-mail</target>
@@ -1638,9 +1734,45 @@
                 <source>label.guided_project_ui_form</source>
                 <target>Create a form</target>
             </trans-unit>
+            <trans-unit id="Q.ghvqg">
+                <source>label.guided_project_ui_legal_model</source>
+                <target>Adjust a legal document</target>
+            </trans-unit>
+            <trans-unit id="FtKKNNJ">
+                <source>label.guided_project_ui_media</source>
+                <target>Fix what a picture says about itself</target>
+            </trans-unit>
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Put the site's own graphics in place</target>
+            </trans-unit>
+            <trans-unit id="goVER90">
+                <source>label.guided_step_ui_ai_assistant_done</source>
+                <target>The same button sits under every text field</target>
+            </trans-unit>
+            <trans-unit id="CenozpF">
+                <source>label.guided_step_ui_ai_assistant_length</source>
+                <target>Pick a length</target>
+            </trans-unit>
+            <trans-unit id="DB9qRe3">
+                <source>label.guided_step_ui_ai_assistant_open</source>
+                <target>Open Donovan</target>
+            </trans-unit>
+            <trans-unit id="vaZ6G9q">
+                <source>label.guided_step_ui_ai_assistant_run</source>
+                <target>Run the rephrasing</target>
+            </trans-unit>
+            <trans-unit id="U3ZOnEG">
+                <source>label.guided_step_ui_ai_assistant_setup</source>
+                <target>Fill in what is missing</target>
+            </trans-unit>
+            <trans-unit id="Mg1Mdko">
+                <source>label.guided_step_ui_ai_assistant_style</source>
+                <target>Pick a tone</target>
+            </trans-unit>
+            <trans-unit id="eMrSX2A">
+                <source>label.guided_step_ui_ai_assistant_text</source>
+                <target>Paste a text to rephrase</target>
             </trans-unit>
             <trans-unit id="PB512zY">
                 <source>label.guided_step_ui_email_template_blocks</source>
@@ -1713,6 +1845,58 @@
             <trans-unit id="GAmp352">
                 <source>label.guided_step_ui_form_save</source>
                 <target>Save</target>
+            </trans-unit>
+            <trans-unit id="XrsXRca">
+                <source>label.guided_step_ui_legal_model_apply</source>
+                <target>Apply your changes</target>
+            </trans-unit>
+            <trans-unit id="1s3MtYH">
+                <source>label.guided_step_ui_legal_model_customize</source>
+                <target>Customize a document</target>
+            </trans-unit>
+            <trans-unit id="zE99DdS">
+                <source>label.guided_step_ui_legal_model_done</source>
+                <target>The document is yours, and still updated</target>
+            </trans-unit>
+            <trans-unit id="4yYqz5e">
+                <source>label.guided_step_ui_legal_model_extra</source>
+                <target>Add a section of your own</target>
+            </trans-unit>
+            <trans-unit id="Pap0exn">
+                <source>label.guided_step_ui_legal_model_open</source>
+                <target>Open the legal documents</target>
+            </trans-unit>
+            <trans-unit id="EgO9rbC">
+                <source>label.guided_step_ui_legal_model_reset</source>
+                <target>Go back to the shipped wording</target>
+            </trans-unit>
+            <trans-unit id="dt2sHcE">
+                <source>label.guided_step_ui_legal_model_unit</source>
+                <target>Adjust a section</target>
+            </trans-unit>
+            <trans-unit id="p04wYUK">
+                <source>label.guided_step_ui_media_alt</source>
+                <target>Write the alternative text</target>
+            </trans-unit>
+            <trans-unit id="pbHb6NN">
+                <source>label.guided_step_ui_media_credits</source>
+                <target>Name the author</target>
+            </trans-unit>
+            <trans-unit id="S9x2Vk7">
+                <source>label.guided_step_ui_media_done</source>
+                <target>Everywhere at once</target>
+            </trans-unit>
+            <trans-unit id="r.hPN1d">
+                <source>label.guided_step_ui_media_open</source>
+                <target>Open the media library</target>
+            </trans-unit>
+            <trans-unit id="SFM9PMJ">
+                <source>label.guided_step_ui_media_pick</source>
+                <target>Pick a picture</target>
+            </trans-unit>
+            <trans-unit id="Sr6aDii">
+                <source>label.guided_step_ui_media_save</source>
+                <target>Save the media</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>

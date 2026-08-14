@@ -114,9 +114,9 @@
     /* --card-background: #fff; */
     /* The eyebrow above a card's title - the page's own ink by default, an eyebrow being set small enough that an accent rarely holds the 4.5:1 a 12px text asks for. Set the accent here once it has been checked that it does */
     /* --card-eyebrow-color: var(--text); */
-    /* The measure of a card, and of the compact one a dense row uses. 380px and not 400: three cards plus their two gutters have to fit the 1312px of ".section-wrap", the compact one being half of that measure so six line up on it */
-    /* --card-width: clamp(300px, 380px, 90vw); */
-    /* --card-width-compact: clamp(150px, 190px, 45vw); */
+    /* The measure of a card, and of the compact one a dense row uses. Both are read off --section-wrap-max-width above rather than written down: three cards and their two gaps have to fit the page measure, six compact ones and their five, whatever measure this site sets - which is why neither of them has to be recalculated here after narrowing the wrap. They resolve to 380px and 190px on the default 1440px page */
+    /* --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3)); */
+    /* --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
     /* The card title's own size, stated rather than inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact card steps down once more */
     /* --card-title-size: calc(19px * var(--font-size-title-scale, 1)); */
     /* --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1)); */
@@ -138,6 +138,10 @@
     /* --flip-card-text-size: 0.9rem; */
     /* The measure of the illustration inside a face, which is centered and never fills it edge to edge */
     /* --flip-card-media-max-width: 250px; */
+    /* The corner mark naming the gesture, faded in under the pointer and gone again at rest. It takes the
+       accent like the outline does, and is painted over the face's own content rather than in a gutter held
+       open for it - so resizing it here costs a card at rest nothing */
+    /* --flip-card-hint-size: 1.5rem; */
 
     /* The twelve hues the "accent" field offers, painting a card's header band and a flip card's outline and titles. Point one at this site's own palette to fold that hue into the design - the value stored on a block is the color's name, not a meaning, so it never has to change when the hue does. The card header writes white on them: keep any value here above 3:1 against white, or retune --card-accent's companion text color in this site's own app.css */
     /* --block-accent-red: #b23a2f; */

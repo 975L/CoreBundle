@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -35,12 +36,14 @@ class ConfigService implements ConfigServiceInterface
 
     private ?array $configs = null;
 
+    // The logger is optional: an app without Monolog leaves it null and everything else works the same, only an unreadable sensitive value goes unrecorded
     public function __construct(
         private readonly ConfigRepository $configRepository,
         private readonly CacheInterface $cache,
         private readonly ParameterBagInterface $params,
         private readonly EntityManagerInterface $manager,
         private readonly VaultEncryptor $vaultEncryptor,
+        private readonly ?LoggerInterface $logger = null,
     ) {
     }
 
@@ -98,10 +101,19 @@ class ConfigService implements ConfigServiceInterface
             foreach ($this->configRepository->findAll() as $configEntry) {
                 $value = $configEntry->getValue();
 
-                // Decrypt sensitive values that have been encrypted
+                // Decrypted one row at a time: every sensitive value of the site is read inside this one callback, so a single unreadable secret used to take the whole configuration down with it - a 500 on every page for a setting nothing on that page needed. The row is left empty instead, exactly as an unfilled setting is, and the reason goes to the log
                 if ($configEntry->getIsSensitive() && null !== $value && '' !== $value) {
                     if ($this->vaultEncryptor->isEncrypted($value)) {
-                        $value = $this->vaultEncryptor->decrypt($value);
+                        try {
+                            $value = $this->vaultEncryptor->decrypt($value);
+                        } catch (\RuntimeException $exception) {
+                            $this->logger?->error('Sensitive setting left empty, it could not be decrypted', [
+                                'slug' => $configEntry->getSlug(),
+                                'reason' => $exception->getMessage(),
+                            ]);
+
+                            $value = null;
+                        }
                     }
                 }
 

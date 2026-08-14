@@ -23,6 +23,8 @@ $radius: var(--block-radius, var(--radius-card));
 .card {
     margin: 1em auto;
     width: var(--card-width);
+    // --card-width is read off the measure the *page* declares (sass/_tokens.scss), which says nothing about the box a given row sits in: a ".cards" nested in a "flex_columns" cell, in a panel or in a modal is narrower than that, and a card keeping its full width there would push its own row past the box. The width above is what a card asks for, this is what it never exceeds
+    max-width: 100%;
     // The accented card is outlined in its own hue, so the header band reads as the top of one colored object rather than as a patch sitting inside a grey box. An unaccented card keeps the neutral border
     border: 1px solid var(--card-accent, var(--input-border-color));
     border-radius: $radius;

@@ -62,15 +62,19 @@
         // The 19px this bundle's own hierarchy sets for a card title, from the hero's 66px down to here (see sass/_page-sections.scss) - never inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact one steps down once more, to the measure of its 190px
         --card-title-size: calc(19px * var(--font-size-title-scale, 1));
         --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1));
-        // 380px and not 400: three cards plus their two gutters have to fit the 1312px of ".section-wrap". The compact one is set to half of it, enough to line six up on that same measure
-        --card-width: clamp(300px, 380px, 90vw);
-        --card-width-compact: clamp(150px, 190px, 45vw);
+        // Three cards and their two gaps have to fit ".section-wrap", six compact ones and their five - the invariant these two widths exist to hold. It was held by hand until now, 380px being what fits the 1312px the *default* measure leaves, so a site framing its content tighter dropped a card off the row with nothing to say so. Read off the measure instead: at the default the two resolve to the very 380px and 190px written here before, and they follow a narrower page on their own.
+        // Taken off it: the two gutters ".section-wrap" pads with, then the gaps ".cards" puts between the cards themselves - 40px for two, 100px for five (see sass/_cards.scss). What is read is the measure a site *declares*, not the width of the box a row actually sits in: a ".cards" nested in a slot narrower than the page is held by the "max-width: 100%" of sass/_cards.scss, not here
+        // The 90vw/45vw ceilings keep a card off the edges of a phone. The 300px/150px floors the clamp carried are gone with the clamp: a floor is what made a card overflow its own wrap under a 420px viewport, where 90vw is already less than the floor
+        --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3));
+        --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
         --disabled: #808080;
         // The flip card's own shape and surfaces - deliberately apart from the card's: the two kinds are different objects (see sass/_flip-card.scss), and a design retuning one must not move the other.
         // The back is mixed out of the palette rather than pointed at --card-background: it is what the turn reveals, so it has to read as another surface than the front, and than any card sitting beside it
         --flip-card-back-background: color-mix(in srgb, var(--secondary) 30%, var(--background));
         --flip-card-border-width: 3px;
         --flip-card-front-background: var(--white);
+        // The corner mark saying the card turns. Sized in rem rather than em: it is drawn on the toggle, whose "font: inherit" makes an em there the face's own body size, and the mark has one size on both faces whatever an editor typed in either
+        --flip-card-hint-size: 1.5rem;
         --flip-card-media-max-width: 250px;
         --flip-card-radius: 25px;
         --flip-card-text-size: 0.9rem;

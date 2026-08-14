@@ -25,7 +25,7 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         return [
             new MenuProvider($this->createConfigService(), $this->createTranslator()),
             new UiShortcutProvider($this->createTranslator()),
-            new UiGuidedProjectProvider($this->adminUrlGenerator()),
+            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator()),
         ];
     }
 

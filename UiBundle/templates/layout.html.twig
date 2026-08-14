@@ -88,6 +88,14 @@
                 {% endif %}
             {% endblock %}
 
+            {# Matomo's origin, since this shell renders its snippet below: its script is fetched from a third-party host, so the DNS lookup and the TLS handshake would otherwise only start once that JS runs. Origin only, a preconnect must carry no path - and none at all when the instance is served by this very host, where the connection is already open. Gated on "site-enable-matomo" as the component itself is: a site whose tracking is off while its instance url stays filled would otherwise open a connection to a third party it never sends a measure to, which is exactly what turning the tracking off is meant to avoid. SiteBundle's own layout does the same, merging it into the "site-preconnect" list it offers on top #}
+            {% block preconnect %}
+                {% set matomoOrigin = config('site-enable-matomo') and config('site-matomo-url') ? config('site-matomo-url')|split('/')|slice(0, 3)|join('/') : '' %}
+                {% if matomoOrigin and matomoOrigin != app.request.getSchemeAndHttpHost() %}
+                    <link rel="preconnect" href="{{ matomoOrigin }}">
+                {% endif %}
+            {% endblock %}
+
             {# Before the stylesheets, the @font-face rules sitting inside them; crossorigin is required even same-origin #}
             {% block fontPreload %}
                 {% for font in font_preloads() %}
@@ -124,7 +132,8 @@
                 {% block content %}{% endblock %}
             </main>
 
-            {# Carries its own "site-enable-cookie-consent" guard, so nothing to check here #}
+            {# Both carry their own "is it enabled" guard, so nothing to check here #}
+            <twig:c975LUi:Analytics:Matomo />
             <twig:c975LUi:Cookie:Consent />
         {% endblock %}
     </body>

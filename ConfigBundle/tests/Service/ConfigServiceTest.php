@@ -180,6 +180,22 @@ class ConfigServiceTest extends TestCase
         $this->assertSame('secret-api-key', $service->get('api-key'));
     }
 
+    // Every sensitive value of the site is decrypted inside one cache callback, so a single unreadable secret used to take the whole configuration down with it - a 500 on every page for a setting nothing on that page needed. It is left empty instead, as an unfilled setting is, and the rest of the site goes on being configured
+    public function testLoadAllLeavesAnUnreadableSensitiveValueEmptyWithoutLosingTheOtherSettings(): void
+    {
+        $vaultEncryptor = new VaultEncryptor('a-test-vault-key');
+
+        $callLog = [];
+        $repository = $this->createConfigRepository([
+            $this->createConfig('api-key', new VaultEncryptor('another-key-entirely')->encrypt('secret-api-key'), Config::TYPE_TEXT, isSensitive: true),
+            $this->createConfig('site-name', 'My Site', Config::TYPE_TEXT),
+        ], $callLog);
+        $service = $this->createService($repository, vaultEncryptor: $vaultEncryptor);
+
+        $this->assertNull($service->get('api-key'));
+        $this->assertSame('My Site', $service->get('site-name'));
+    }
+
     public function testLoadAllFallsBackOnTheDefaultAdminRoleWhenMissingFromDatabase(): void
     {
         $callLog = [];

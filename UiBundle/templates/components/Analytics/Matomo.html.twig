@@ -1,0 +1,10 @@
+{# <twig:c975LUi:Analytics:Matomo/> #}
+{# Self-sufficient fragment, like the cookie banner next to it: the "is it enabled" guard lives here rather than in each layout calling it, so a site with no SiteBundle gets audience measurement from the minimal shell (see @c975LUi/layout.html.twig) without repeating the config check #}
+{# Deliberately outside the cookie banner: meant for a CNIL-exempt setup (self-hosted, anonymized IP, no cross-site tracking, cookie under 13 months, Do Not Track honored), which is what description.site_enable_matomo states. An instance configured otherwise has to be gated by the caller before the config is turned on #}
+{% if config('site-enable-matomo') %}
+    {% set matomoUrl = config('site-matomo-url') %}
+    {% set matomoId = config('site-matomo-id') %}
+    {% if matomoUrl and matomoId %}
+        <div data-controller="matomo" data-matomo-url="{{ matomoUrl }}" data-matomo-id="{{ matomoId }}"></div>
+    {% endif %}
+{% endif %}

@@ -19,6 +19,7 @@ const LAZY_CONTROLLERS = {
     heroVideo: () => import('./js/hero-video.js'),
     imageCompare: () => import('./js/image-compare.js'),
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
+    matomo: () => import('./js/matomo.js'),
     password: () => import('./js/password.js'),
     readmore: () => import('./js/readmore.js'),
     slider: () => import('./js/slider.js'),

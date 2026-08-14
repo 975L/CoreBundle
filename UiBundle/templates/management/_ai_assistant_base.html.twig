@@ -7,7 +7,8 @@
     <h2>{{ 'label.ai_rephrase_section_title'|trans({}, 'ui') }}</h2>
     {% if not rephraseEnabled %}
         <p>{{ 'label.ai_rephrase_setup_intro'|trans({}, 'ui') }}</p>
-        <ul>
+        {# What is still missing, each entry a link straight to its own setting - the guided project points at the list, which is gone once nothing is left to fill in (see UiGuidedProjectProvider) #}
+        <ul data-ai-rephrase-setup>
             {% if 'ui-ai-assistant-rephrase-provider' in missingSlugs %}
                 <li><a href="{{ configLinks['ui-ai-assistant-rephrase-provider'] }}">{{ 'label.ai_rephrase_setup_step_provider'|trans({}, 'ui') }}</a></li>
             {% endif %}

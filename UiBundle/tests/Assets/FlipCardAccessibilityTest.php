@@ -179,6 +179,47 @@ class FlipCardAccessibilityTest extends TestCase
         $this->assertStringContainsString('pointer-events: auto;', $this->declarationsOf('.flip-card-face'), 'Both faces must take the pointer back from the inner, or the toggle filling them answers nothing at all.');
     }
 
+    // The mark saying the card turns is gated on the control that turns it: a toggle is rendered only on a card that has a verso, and stays hidden until the controller has unhidden it - so the mark cannot appear on a card that would not turn, nor on a page whose module never arrived
+    public function testTheHintIsGatedOnAToggleThatIsLive(): void
+    {
+        $hint = $this->declarationsOf('.flip-card-face:has(.flip-card-toggle:not([hidden]))::after');
+
+        $this->assertStringContainsString('content: "";', $hint);
+        // Masked, not served: the shape is painted by "background-color" and follows the accent an editor picked, where a fill baked into the data URI would stay one color across the twelve
+        $this->assertStringContainsString('mask-image: $hint;', $hint);
+        $this->assertStringContainsString('background-color: var(--flip-card-accent, var(--primary));', $hint);
+        $this->assertStringNotContainsString('background-image', $hint, 'The mark is painted from the file\'s own fill, so it stops following the accent.');
+        $this->assertStringContainsString('--flip-card-hint-size:', $this->read('sass/_tokens.scss'));
+    }
+
+    // Summoned by the pointer and by nothing else - a card at rest is left exactly as it was designed. A keyboard never gets a hover, so reaching the toggle brings it up too, that focus being the same moment for a keyboard as the pointer landing is for a mouse
+    public function testTheHintIsSummonedByThePointerAndByTheFocusRing(): void
+    {
+        $this->assertStringContainsString('opacity: 0;', $this->declarationsOf('.flip-card-face:has(.flip-card-toggle:not([hidden]))::after'));
+
+        foreach (['.flip-card:hover .flip-card-face::after', '.flip-card-face:has(.flip-card-toggle:focus-visible)::after'] as $selector) {
+            $raised = false;
+            foreach ($this->declarationsByRule($this->read(self::STYLESHEET)) as $key => $declarations) {
+                if (str_contains($key, $selector) && str_contains($declarations, 'opacity: 1;')) {
+                    $raised = true;
+                }
+            }
+
+            $this->assertTrue($raised, sprintf('"%s" never brings the mark up for "%s".', self::STYLESHEET, $selector));
+        }
+    }
+
+    // Drawn on the face rather than on the toggle's own ::after, which the body would paint over: the toggle sits under the content and carries a stacking context of its own, so a mark drawn on it could only be given room by holding a gutter open under the content on every card - which is a permanent cost for something the pointer summons
+    public function testTheHintIsLiftedOverTheContentRatherThanGivenAGutter(): void
+    {
+        $hint = $this->declarationsOf('.flip-card-face:has(.flip-card-toggle:not([hidden]))::after');
+
+        $this->assertStringContainsString('z-index: 2;', $hint);
+        // Over the content, it would otherwise take the click over the one corner of the face that has to keep turning the card
+        $this->assertStringContainsString('pointer-events: none;', $hint);
+        $this->assertStringNotContainsString('padding-bottom: calc(var(--flip-card-hint-size)', $this->read(self::STYLESHEET), 'The faces hold a gutter open for a mark that is only ever painted under the pointer.');
+    }
+
     // A ratio names its own value and nothing else: what reads it holds the row open from an empty cell-mate, so a face holding more than the shape grows past it instead of being clipped or hidden behind a scrollbar
     public function testARatioIsAFloorUnderTheCardRatherThanACrop(): void
     {

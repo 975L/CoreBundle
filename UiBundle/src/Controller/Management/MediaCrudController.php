@@ -16,6 +16,7 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\ImageClassChoiceType;
 use c975L\UiBundle\Form\MediaUsagesType;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
+use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
@@ -42,9 +43,6 @@ use function Symfony\Component\Translation\t;
 // Cross-bundle media library: browses every c975L\UiBundle\Entity\Media row regardless of how it is attached (Block, Page og-image, site-wide role...) and shows where each one is used, via MediaUsageRegistry (fed by any bundle implementing MediaUsageProviderInterface). Site-wide role graphics (favicon, logo, error-image...) stay read-only here - they keep being managed in SiteGraphicCrudController, which enforces the one-row-per-singleton-role rule and its own alerts.
 class MediaCrudController extends AbstractCrudController
 {
-    // No ConfigBundle dependency here (ConfigBundle already depends on UiBundle, so UiBundle must stay standalone) - apps wanting the same dynamic role as other c975L CRUDs can override this controller
-    private const string ROLE_NEEDED = 'ROLE_ADMIN';
-
     // Kept in line with php.ini's upload_max_filesize/post_max_size - MediaUploadType (the Block-attached upload form) has no such constraint of its own and simply relies on those same ini limits
     private const string MAX_FILE_SIZE = '100M';
 
@@ -54,6 +52,7 @@ class MediaCrudController extends AbstractCrudController
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly ConfigServiceInterface $configService,
         private readonly Security $security,
+        private readonly MediaUsageRegistry $mediaUsageRegistry,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
@@ -62,6 +61,12 @@ class MediaCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Media::class;
+    }
+
+    // The same dynamic role as every other c975L CRUD, read from the config rather than hardcoded as it used to be: index() already reads "site-role-editor" off this very service for its own gallery, so the standalone-UiBundle argument the old constant carried stopped holding the day that line was written. Browsing the library and fixing an alt text is editing content; creating a Media with no Block of its own stays stricter, see Action::NEW in configureActions(), and deleting one is bounded by its usages, see delete()
+    private function roleNeeded(): string
+    {
+        return (string) $this->configService->get('site-role-editor');
     }
 
     // Hands the gallery template the edit url of each role-carrying row (see media_index.html.twig) - those are read-only here, so their thumbnail has to open the screen that does edit them, SiteGraphicCrudController
@@ -75,6 +80,25 @@ class MediaCrudController extends AbstractCrudController
         }
 
         return $responseParameters;
+    }
+
+    // The counterpart of opening DELETE to the editor role: a media still attached to a block, a page or a site-wide graphic can't be removed, whoever asks. The usages come from the very registry that feeds the "used in" list of the edit form (see MediaUsagesType), so what the editor reads there is exactly what blocks the deletion here
+    #[\Override]
+    public function delete(AdminContext $context): KeyValueStore | Response
+    {
+        $media = $context->getEntity()->getInstance();
+
+        if ($media instanceof Media && $this->isUsed($media)) {
+            $this->addFlash('danger', $this->translator->trans('flash.media_used_not_deleted', [], 'ui'));
+
+            return $this->redirect($this->adminUrlGenerator
+                ->unsetAll()
+                ->setController($context->getCrud()->getControllerFqcn())
+                ->setAction(Action::INDEX)
+                ->generateUrl());
+        }
+
+        return parent::delete($context);
     }
 
     #[\Override]
@@ -104,7 +128,7 @@ class MediaCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular(t('label.media', [], 'ui'))
             ->setEntityLabelInPlural(t('label.media_library', [], 'ui'))
-            ->setEntityPermission(self::ROLE_NEEDED)
+            ->setEntityPermission($this->roleNeeded())
             ->setDefaultSort(['id' => 'DESC'])
             ->overrideTemplate('crud/index', '@c975LUi/management/media_index.html.twig')
             ->overrideTemplate('crud/edit', '@c975LUi/management/media_crud_edit.html.twig')
@@ -123,9 +147,9 @@ class MediaCrudController extends AbstractCrudController
         return $actions
             ->add(Crud::PAGE_NEW, $cancelAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
-            ->setPermission(Action::INDEX, self::ROLE_NEEDED)
-            ->setPermission(Action::EDIT, self::ROLE_NEEDED)
-            ->setPermission(Action::DELETE, self::ROLE_NEEDED)
+            ->setPermission(Action::INDEX, $this->roleNeeded())
+            ->setPermission(Action::EDIT, $this->roleNeeded())
+            ->setPermission(Action::DELETE, $this->roleNeeded())
             // Site-wide graphics (role set) are only editable from SiteGraphicCrudController
             ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action->displayIf(static fn (Media $media): bool => null === $media->getRole()),
@@ -226,6 +250,12 @@ class MediaCrudController extends AbstractCrudController
                 ->setLabel(t('label.rights_reserved', [], 'ui'))
                 ->hideOnIndex(),
         ];
+    }
+
+    // Whether at least one provider still points at this media - a site-wide graphic role included, those rows being read-only here anyway
+    private function isUsed(Media $media): bool
+    {
+        return [] !== ($this->mediaUsageRegistry->getUsages([$media])[$media->getId()] ?? []);
     }
 
     // The url editing each role-carrying media (favicon, logo, error-image...) in SiteGraphicCrudController, keyed by media id - empty on a page holding only block medias, which keep their own Edit action here

@@ -1,5 +1,77 @@
 # ChangeLog
 
+## v1.11.0
+
+Matomo lives where its legal text is written
+
+### The package
+
+- `.gitattributes` keeps the dev-only paths out of the dist archive Composer downloads, `README.md` and `UPGRADE.md` staying in (14/08/2026)
+
+### UiBundle
+
+- `<twig:c975LUi:Analytics:Matomo />` renders the tracking snippet, carrying its own `site-enable-matomo` guard (14/08/2026)
+- The three `site-matomo-*` keys are declared here, next to `site-enable-cookie-consent` in the `analytics` group (14/08/2026)
+- The cookies model offering Matomo's opt-out link no longer reads a key declared by SiteBundle (14/08/2026)
+- `matomo` is registered as a lazy Stimulus controller (14/08/2026)
+- The minimal layout renders the component and preconnects the instance's origin, under that same `site-enable-matomo` guard (14/08/2026)
+- A flip card carries a turn mark in its corner, summoned by the pointer and by the keyboard, and only on a card whose toggle is live (14/08/2026)
+- `.flip-card` is measured off `--card-width` like `.card`, capped on its own box, instead of a width written down (14/08/2026)
+- The media library is opened to `site-role-editor`, `Action::NEW` staying at `ROLE_SUPER_ADMIN` (14/08/2026)
+- A media still used by a block, a page or a site graphic is not deleted, the flash naming the "used in" list that says where (14/08/2026)
+- The README states what refuses a media deletion, and where that list comes from (14/08/2026)
+- Added the "Corriger ce qu'une image dit d'elle-même", "Ajuster un document légal" and "Faire reformuler un texte par Donovan" guided projects (14/08/2026)
+- Each guided project states the role its own screen is gated by, so none is offered to someone its first step turns away (14/08/2026)
+- The seven guided projects are renumbered at a step of 3, leaving the range's last two values free (14/08/2026)
+- `AiAssistantController::INDEX_ROUTE` names the route `MenuProvider` and the guided project both point at (14/08/2026)
+
+### ConfigBundle
+
+- A sensitive value that cannot be decrypted is served empty and logged, instead of taking the whole configuration down with it (14/08/2026)
+- `VaultEncryptor::decrypt()` tells a wrong key from a legacy value that did not come back as text, which no key will bring back (14/08/2026)
+
+## v1.10.4
+
+Sensitive values move to authenticated encryption
+
+### ConfigBundle
+
+- `VaultEncryptor` writes `aes-256-gcm`, whose tag is verified at decryption, where `aes-256-cbc` authenticated nothing (14/08/2026)
+- A value altered in the database is refused rather than decrypted to whatever those bytes held (14/08/2026)
+- Values written before this are read as they stand, under the same `C975L:` prefix and the same key (14/08/2026)
+- The current format is tried first, the legacy one only as a fallback, a legacy payload being unable to satisfy the tag (14/08/2026)
+- Added `VaultEncryptor::isLegacyEncrypted()`, which tells the two formats apart by reading them (14/08/2026)
+- `c975l:config:encrypt-sensitive` converts a legacy value, keeping the key and the secret it holds (14/08/2026)
+- It writes nothing on a site already converted, so it belongs in a deployment rather than in a manual pass (14/08/2026)
+- A value the environment's key cannot read is reported and left alone, the command still exiting `0` (14/08/2026)
+- Its summary counts conversions apart from encryptions (14/08/2026)
+- The README states the conversion and `UPGRADE.md` what to run where, no key being generated and `.env.local` untouched (14/08/2026)
+
+## v1.10.3
+
+A wrong vault key can no longer decrypt to garbage
+
+### ConfigBundle
+
+- `VaultEncryptor::decrypt()` rejects a plain text that is not valid UTF-8, `aes-256-cbc` authenticating nothing and a wrong key satisfying its padding once in 256 (14/08/2026)
+- Until now those random bytes were written over the encrypted value as the setting itself, its `sensitive` flag falling with them (14/08/2026)
+- `VaultEncryptorTest` carries a payload picked for passing the padding under another key, the case having no other way to be reproduced (14/08/2026)
+- `ConfigServiceTest::testLoadDefaultConfigKeepsSensitiveFlagWhenValueCannotBeDecrypted` no longer fails one run in 250 (14/08/2026)
+
+## v1.10.2
+
+A card's measure follows the page it is laid on
+
+### UiBundle
+
+- `--card-width` and `--card-width-compact` are read off `--section-wrap-max-width` and `--section-wrap-gutter` rather than written down, a page framed tighter than the default still holding three cards and six compact ones (14/08/2026)
+- Both resolve to their former `380px` and `190px` on the `1440px` default measure (14/08/2026)
+- `.card` takes `max-width: 100%`, a row nested in a slot narrower than the page measure no longer pushing past it (14/08/2026)
+- A card no longer overflows its own wrap under a `420px` viewport, the floor the `clamp()` carried being gone with it (14/08/2026)
+- The scaffolded `ui.css` offers both tokens in their computed form (14/08/2026)
+- Added `CardMeasureTest`, the derivation, the gaps taken off the measure and the caps the default page still resolves to (14/08/2026)
+- The README's "The `.cards` row" states what decides how many fit on a line (14/08/2026)
+
 ## v1.10.1
 
 The suite runs the same on any machine, and skips nothing

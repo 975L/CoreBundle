@@ -10,10 +10,14 @@
 
 namespace c975L\UiBundle\Tests\Management;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Controller\Management\AiAssistantController;
+use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UiGuidedProjectProviderTest extends TestCase
 {
@@ -32,18 +36,75 @@ class UiGuidedProjectProviderTest extends TestCase
         return $generator;
     }
 
-    private function createProvider(array &$controllers = []): UiGuidedProjectProvider
+    // One value per key rather than a single one for all of them: the projects do not share a role, and a stub answering the same thing everywhere would let a project ask for the wrong one unnoticed
+    private function createConfigService(): ConfigServiceInterface
     {
-        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers));
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static fn (string $key): string => match ($key) {
+            'site-role-editor' => 'ROLE_EDITOR',
+            'site-role-admin' => 'ROLE_ADMIN',
+            default => throw new \InvalidArgumentException(sprintf('Unexpected config key "%s"', $key)),
+        });
+
+        return $configService;
     }
 
-    // Continues the sequence after ConfigBundle (10-30) and SiteBundle (50-80)
+    // The legal documents screen is reached by route name, not through EasyAdmin's generator - recorded the same way, so a renamed route shows up here too
+    private function createUrlGenerator(array &$routes = []): UrlGeneratorInterface
+    {
+        $generator = $this->createStub(UrlGeneratorInterface::class);
+        $generator->method('generate')->willReturnCallback(function (string $route) use (&$routes): string {
+            $routes[] = $route;
+
+            return '/management/' . $route;
+        });
+
+        return $generator;
+    }
+
+    private function createProvider(array &$controllers = [], array &$routes = []): UiGuidedProjectProvider
+    {
+        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes));
+    }
+
+    // Continues the sequence after ConfigBundle (10-40) and SiteBundle (50-80)
     public function testGetGuidedProjectsContinuesTheOrderSequence(): void
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-site-graphic', 'ui-form', 'ui-email-template', 'ui-font'], array_column($projects, 'slug'));
-        $this->assertSame([90, 100, 110, 120], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-email-template', 'ui-font'], array_column($projects, 'slug'));
+        $this->assertSame([90, 93, 96, 99, 102, 105, 108], array_column($projects, 'order'));
+    }
+
+    // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's range is the 90-110 SocialBundle and GalleryBundle both state as its own, SocialBundle's opening at 120
+    public function testEveryOrderStaysWithinThisBundlesReservedRange(): void
+    {
+        $orders = array_column($this->createProvider()->getGuidedProjects(), 'order', 'slug');
+
+        foreach ($orders as $slug => $order) {
+            $this->assertGreaterThanOrEqual(90, $order, sprintf('Project "%s" reaches into SiteBundle\'s range', $slug));
+            $this->assertLessThanOrEqual(110, $order, sprintf('Project "%s" reaches into SocialBundle\'s range, whose own sequence opens at 120', $slug));
+        }
+
+        $this->assertSameSize($orders, array_unique($orders), 'Two projects sharing an order leave their sequence to chance');
+    }
+
+    // A project offered to someone the screen it opens on turns away is a parcours ending on an access-denied page - GuidedProjectBuilder drops it on "role", so each one has to state the gate its own controller sets
+    public function testEveryProjectIsGatedByTheRoleItsOwnScreenNeeds(): void
+    {
+        $expected = [
+            'ui-media' => 'ROLE_EDITOR',
+            'ui-site-graphic' => 'ROLE_EDITOR',
+            'ui-legal-model' => 'ROLE_EDITOR',
+            'ui-ai-assistant' => 'ROLE_ADMIN',
+            'ui-form' => 'ROLE_ADMIN',
+            'ui-email-template' => 'ROLE_ADMIN',
+            'ui-font' => 'ROLE_EDITOR',
+        ];
+
+        foreach ($this->createProvider()->getGuidedProjects() as $project) {
+            $this->assertSame($expected[$project['slug']], $project['role'] ?? null, sprintf('Project "%s" walks a screen the current user may not reach', $project['slug']));
+        }
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void
@@ -93,9 +154,19 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['SiteGraphicCrudController', 'FormCrudController', 'EmailTemplateCrudController', 'FontCrudController'],
+            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'EmailTemplateCrudController', 'FontCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
+    }
+
+    // The two screens of this bundle a project opens on that are not CRUD ones, so EasyAdmin's generator never sees them
+    public function testTheRouteBasedProjectsOpenOnTheirOwnRoute(): void
+    {
+        $controllers = [];
+        $routes = [];
+        $this->createProvider($controllers, $routes)->getGuidedProjects();
+
+        $this->assertSame([LegalModelController::INDEX_ROUTE, AiAssistantController::INDEX_ROUTE], $routes);
     }
 
     // EasyAdmin names a button `action-` . the action's own name, so a selector naming an action it does not declare highlights nothing
@@ -118,19 +189,23 @@ class UiGuidedProjectProviderTest extends TestCase
         }
     }
 
-    // The save button of a form is `saveAndReturn`, EasyAdmin declaring no action plainly named `save`
+    // The save button of a form is `saveAndReturn`, EasyAdmin declaring no action plainly named `save`. Asserted step by step rather than against a frozen list of them: what matters is that no save step points at anything else, a count only saying how many projects there happen to be
     public function testTheSaveStepsHighlightTheSaveAndReturnButton(): void
     {
-        $highlights = [];
+        $saveSteps = 0;
+
         foreach ($this->createProvider()->getGuidedProjects() as $project) {
-            foreach ($project['steps'] as $step) {
-                if (str_ends_with($step['label'], '_save')) {
-                    $highlights[] = $step['highlight'];
+            foreach ($project['steps'] as $index => $step) {
+                if (!str_ends_with($step['label'], '_save')) {
+                    continue;
                 }
+
+                ++$saveSteps;
+                $this->assertSame('.action-saveAndReturn', $step['highlight'] ?? null, sprintf('Step %d of "%s" does not point at the save button', $index, $project['slug']));
             }
         }
 
-        $this->assertSame(['.action-saveAndReturn', '.action-saveAndReturn', '.action-saveAndReturn'], $highlights);
+        $this->assertGreaterThan(0, $saveSteps, 'No save step found at all, the assertion above would pass over an empty loop');
     }
 
     // EasyAdmin's own actions, plus the ones this bundle's controllers declare themselves: ActionFactory names a button "action-" . the action's name either way, so a custom action is just as legitimate a target as a built-in one - what stays caught is a name no one declares at all

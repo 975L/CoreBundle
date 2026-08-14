@@ -11,6 +11,36 @@
                 "en": "Another one shows how to bring in a whole font family in one upload, instead of adding one line per weight",
                 "fr": "Un autre vous montre comment importer toute une famille de polices en un seul envoi, au lieu d'ajouter une ligne par graisse",
                 "es": "Otra le muestra cómo importar toda una familia de fuentes en un solo envío, en lugar de añadir una línea por grosor"
+            },
+            {
+                "en": "A card placed inside a column or a panel now stays within it, and no longer spills off the side of a narrow phone screen",
+                "fr": "Une carte placée dans une colonne ou un panneau y reste désormais contenue, et ne déborde plus sur le côté d'un écran de téléphone étroit",
+                "es": "Una tarjeta colocada en una columna o un panel ahora se mantiene dentro, y ya no se sale por el lado de una pantalla de teléfono estrecha"
+            },
+            {
+                "en": "Audience measurement can be turned on from your settings, with your own statistics address and site number, and nothing is loaded on your pages while it stays off",
+                "fr": "La mesure d'audience s'active depuis vos paramètres, avec votre propre adresse de statistiques et votre numéro de site, et rien n'est chargé sur vos pages tant qu'elle reste désactivée",
+                "es": "La medición de audiencia se activa desde sus ajustes, con su propia dirección de estadísticas y su número de sitio, y no se carga nada en sus páginas mientras siga desactivada"
+            },
+            {
+                "en": "A card with a back side shows a small turn mark in its corner when the pointer is on it, so a visitor knows it can be turned",
+                "fr": "Une carte ayant un verso affiche un petit repère de retournement dans son coin au passage du pointeur, pour qu'un visiteur sache qu'elle peut être retournée",
+                "es": "Una tarjeta con reverso muestra una pequeña marca de giro en su esquina al pasar el puntero, para que un visitante sepa que puede girarse"
+            },
+            {
+                "en": "Your editors reach the image library themselves, and no longer need an administrator to correct what a picture says about itself",
+                "fr": "Vos éditeurs accèdent eux-mêmes à la bibliothèque d'images, et n'ont plus besoin d'un administrateur pour corriger ce qu'une image dit d'elle-même",
+                "es": "Sus editores acceden ellos mismos a la biblioteca de imágenes, y ya no necesitan a un administrador para corregir lo que una imagen dice de sí misma"
+            },
+            {
+                "en": "An image still used on a page, in a block or as one of your site graphics can no longer be deleted by mistake — where it is used is named instead",
+                "fr": "Une image encore utilisée dans une page, un block ou parmi vos graphiques de site ne peut plus être supprimée par erreur : l'endroit où elle sert est indiqué à la place",
+                "es": "Una imagen todavía usada en una página, en un bloque o entre sus gráficos del sitio ya no puede borrarse por error: en su lugar se indica dónde se utiliza"
+            },
+            {
+                "en": "Three more step-by-step guides: giving a picture its description and its credits, adjusting one of your legal documents, and trying out the rewriting assistant before using it on real content",
+                "fr": "Trois guides pas à pas de plus : donner à une image sa description et ses crédits, ajuster un de vos documents légaux, et essayer l'assistant de reformulation avant de l'utiliser sur un vrai contenu",
+                "es": "Tres guías paso a paso más: dar a una imagen su descripción y sus créditos, ajustar uno de sus documentos legales, y probar el asistente de reformulación antes de usarlo en contenido real"
             }
         ]
     },

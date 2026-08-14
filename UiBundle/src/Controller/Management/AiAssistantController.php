@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AiAssistantController extends AbstractController
 {
     // EasyAdmin prefixes these with the Dashboard's own route name
+    public const INDEX_ROUTE = 'management_ui_ai_assistant_index';
     public const ASK_ROUTE = 'management_ui_ai_assistant_ask';
     public const REPHRASE_ROUTE = 'management_ui_ai_assistant_rephrase';
 

@@ -73,6 +73,29 @@ class MinimalLayoutTest extends TestCase
         $this->assertStringNotContainsString("config('site-enable-cookie-consent')", $this->layout(), 'the guard belongs to the component, not here');
     }
 
+    // Audience measurement is no more tied to having pages than the banner above is - the component carries its own guard too, so the layout only has to render it
+    public function testTheMatomoSnippetIsRendered(): void
+    {
+        $this->assertStringContainsString('<twig:c975LUi:Analytics:Matomo />', $this->layout());
+        // Read once and once only, by the preconnect below: the snippet's own guard belongs to the component, not to whoever renders it
+        $this->assertSame(1, substr_count($this->layout(), "config('site-enable-matomo')"), 'the guard belongs to the component, not here');
+    }
+
+    // The snippet is fetched from a third-party host, so without this the DNS lookup and the TLS handshake only start once that JS runs. Never for an instance served by this very host, where the connection is already open, and never for a site that turned the tracking off with its instance url left filled - the connection would be opened to a host the page never sends a measure to
+    public function testTheMatomoOriginIsPreconnected(): void
+    {
+        $layout = $this->layout();
+
+        $this->assertStringContainsString('<link rel="preconnect" href="{{ matomoOrigin }}">', $layout);
+        $this->assertStringContainsString('matomoOrigin != app.request.getSchemeAndHttpHost()', $layout);
+        $this->assertStringContainsString("{% set matomoOrigin = config('site-enable-matomo') and config('site-matomo-url') ?", $layout, 'the preconnect must follow the very switch that decides whether the snippet is rendered');
+        $this->assertLessThan(
+            strpos($layout, 'bundle_stylesheets()'),
+            strpos($layout, 'matomoOrigin'),
+            'a preconnect emitted after the stylesheets has nothing left to save'
+        );
+    }
+
     // The @font-face rules live inside the compiled stylesheets, so the preloads have to come before them
     public function testTheFontsArePreloadedBeforeTheStylesheets(): void
     {

@@ -23,7 +23,7 @@ class MediaGalleryLinkTest extends TestCase
 
         $this->assertSame(
             1,
-            preg_match('/(\{% set itemUrl .*?<a.*?class="management-media-grid__item">)/s', $template, $matches),
+            preg_match('/(\{% set siteGraphicUrl .*?<a.*?class="management-media-grid__item.*?>)/s', $template, $matches),
             'The gallery thumbnail link is no longer written as a url set right before its own tag, this test can no longer read it.'
         );
 
@@ -44,7 +44,7 @@ class MediaGalleryLinkTest extends TestCase
             'site_graphic_urls' => [7 => '/management/site-graphic/edit?entityId=7'],
         ]);
 
-        $this->assertSame('<a href="/management/site-graphic/edit?entityId=7" class="management-media-grid__item">', $tag);
+        $this->assertSame('<a href="/management/site-graphic/edit?entityId=7" class="management-media-grid__item management-media-grid__item--site-graphic">', $tag);
     }
 
     // A block media is edited from the library itself, so it keeps EasyAdmin's own default row action
@@ -69,5 +69,21 @@ class MediaGalleryLinkTest extends TestCase
         ]);
 
         $this->assertSame('<a class="management-media-grid__item">', $tag);
+    }
+
+    // The guided project sends the user to the media library then points at "alt" and "credits", two fields SiteGraphicCrudController's form does not hold - so it excludes the thumbnails opening it, by the very modifier written above. Renaming one without the other leaves a step highlighting a link that walks away from the parcours
+    public function testTheGuidedProjectExcludesTheSiteGraphicThumbnails(): void
+    {
+        $tag = $this->render([
+            'media' => ['id' => 7],
+            'entity' => ['defaultActionUrl' => null],
+            'site_graphic_urls' => [7 => '/management/site-graphic/edit?entityId=7'],
+        ]);
+
+        $this->assertStringContainsString('management-media-grid__item--site-graphic', $tag);
+        $this->assertStringContainsString(
+            ':not(.management-media-grid__item--site-graphic)',
+            (string) file_get_contents(\dirname(__DIR__, 2) . '/src/Management/UiGuidedProjectProvider.php')
+        );
     }
 }

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Management\MenuProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
 use c975L\UiBundle\Controller\Management\FontCrudController;
 use c975L\UiBundle\Controller\Management\FormCrudController;
@@ -119,7 +120,7 @@ class MenuProvider implements MenuProviderInterface
                 ),
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-robot',
-                'name' => 'management_ui_ai_assistant_index',
+                'name' => AiAssistantController::INDEX_ROUTE,
                 // Matches the page's own minimum bar; a plain editor could act on neither section
                 'role' => $this->configService->get('site-role-admin'),
                 // Same key as _ai_assistant_base.html.twig's own subtitle, right under its <h1>

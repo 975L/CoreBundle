@@ -55,7 +55,9 @@ class EncryptSensitiveCommand extends Command
         }
 
         $encrypted = 0;
+        $converted = 0;
         $skipped = 0;
+        $unreadable = 0;
 
         foreach ($sensitiveConfigs as $config) {
             $value = $config->getValue();
@@ -67,6 +69,22 @@ class EncryptSensitiveCommand extends Command
             }
 
             if ($this->vaultEncryptor->isEncrypted($value)) {
+                // Rewritten in the format this version writes, under the very same key: nothing here rotates a key, only the algorithm the value is held in changes. A row already in that format is left alone, so a converted site stops writing at every deployment
+                if ($this->vaultEncryptor->isLegacyEncrypted($value)) {
+                    $config->setValue($this->vaultEncryptor->encrypt($this->vaultEncryptor->decrypt($value)));
+                    $this->manager->persist($config);
+                    ++$converted;
+                    $io->text('  CONVERTED: ' . $config->getSlug());
+                    continue;
+                }
+
+                // A value this key cannot read at all lands here rather than in the branch above, and is reported as such instead of stopping the run: this command is part of a deployment, and one secret lost to a changed key must not hold a site's release back
+                if (!$this->isReadable($value)) {
+                    ++$unreadable;
+                    $io->text('  SKIP (not readable with this C975L_VAULT_KEY): ' . $config->getSlug());
+                    continue;
+                }
+
                 ++$skipped;
                 $io->text('  SKIP (already encrypted): ' . $config->getSlug());
                 continue;
@@ -80,8 +98,24 @@ class EncryptSensitiveCommand extends Command
 
         $this->manager->flush();
 
-        $io->success(sprintf('%d encrypted, %d skipped.', $encrypted, $skipped));
+        $io->success(sprintf('%d encrypted, %d converted, %d skipped.', $encrypted, $converted, $skipped + $unreadable));
+
+        if ($unreadable > 0) {
+            $io->warning(sprintf('%d sensitive value(s) could not be read with this C975L_VAULT_KEY and were left untouched.', $unreadable));
+        }
 
         return Command::SUCCESS;
+    }
+
+    // Tells a row already in the current format from one this key has no answer for, the two being indistinguishable to isLegacyEncrypted()
+    private function isReadable(string $value): bool
+    {
+        try {
+            $this->vaultEncryptor->decrypt($value);
+        } catch (\RuntimeException) {
+            return false;
+        }
+
+        return true;
     }
 }

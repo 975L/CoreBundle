@@ -11,28 +11,83 @@
 namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
 use c975L\UiBundle\Controller\Management\FontCrudController;
 use c975L\UiBundle\Controller\Management\FormCrudController;
+use c975L\UiBundle\Controller\Management\LegalModelController;
+use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-30) and SiteBundle (50-80). Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-40) and SiteBundle (50-80), and running 90-110 - the range SocialBundle and GalleryBundle both state as this bundle's, SocialBundle's own opening at 120. Seven projects in it means a step of 3, not the 10 the earlier bundles use: an order shared with another provider's leaves their sequence to the order the providers happen to be registered in (see GuidedProjectBuilder), which is exactly what "order" exists to decide, and the range's last two values are left free for the next one to slot in without renumbering the lot again. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the three occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly ConfigServiceInterface $configService,
+        // The legal documents screen is a plain controller carrying an #[AdminRoute], not a CRUD one, so its url comes from the router rather than from EasyAdmin's generator
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
     public function getGuidedProjects(): array
     {
         return [
+            $this->mediaProject(),
             $this->siteGraphicProject(),
+            $this->legalModelProject(),
+            $this->aiAssistantProject(),
             $this->formProject(),
             $this->emailTemplateProject(),
             $this->fontProject(),
+        ];
+    }
+
+    // Every image the site holds ends up here whatever screen uploaded it, which is what makes this the one place to fix what a picture says about itself
+    private function mediaProject(): array
+    {
+        return [
+            'slug' => 'ui-media',
+            'label' => 'label.guided_project_ui_media',
+            'description' => 'description.guided_project_ui_media',
+            'translation_domain' => 'ui',
+            'order' => 90,
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_media_open',
+                    'description' => 'description.guided_step_ui_media_open',
+                    'url' => $this->indexUrl(MediaCrudController::class),
+                ],
+                [
+                    // The index is a thumbnail gallery, not an EasyAdmin table (see media_index.html.twig), so there is no ".action-edit" to point at - the thumbnail is itself the link to the form. A site-wide graphic opens SiteGraphicCrudController's own form instead, which holds neither of the two fields the next steps point at, so its thumbnail is left out
+                    'label' => 'label.guided_step_ui_media_pick',
+                    'description' => 'description.guided_step_ui_media_pick',
+                    'highlight' => '.management-media-grid__item:not(.management-media-grid__item--site-graphic)',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_alt',
+                    'description' => 'description.guided_step_ui_media_alt',
+                    'highlight' => '#Media_alt',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_credits',
+                    'description' => 'description.guided_step_ui_media_credits',
+                    'highlight' => '#Media_credits',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_done',
+                    'description' => 'description.guided_step_ui_media_done',
+                ],
+            ],
         ];
     }
 
@@ -44,7 +99,9 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_site_graphic',
             'description' => 'description.guided_project_ui_site_graphic',
             'translation_domain' => 'ui',
-            'order' => 90,
+            'order' => 93,
+            // Its own screen is the editor's (see SiteGraphicCrudController), the graphics being content like any other
+            'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_ui_site_graphic_open',
@@ -74,6 +131,111 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
+    // The legal documents a site owes its visitors are shipped as models it only ever adjusts, and nothing says so - an editor rewriting one from scratch loses the updates the bundle keeps making to it
+    private function legalModelProject(): array
+    {
+        return [
+            'slug' => 'ui-legal-model',
+            'label' => 'label.guided_project_ui_legal_model',
+            'description' => 'description.guided_project_ui_legal_model',
+            'translation_domain' => 'ui',
+            'order' => 96,
+            // The gate both actions of LegalModelController set on themselves
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_legal_model_open',
+                    'description' => 'description.guided_step_ui_legal_model_open',
+                    'url' => $this->urlGenerator->generate(LegalModelController::INDEX_ROUTE),
+                ],
+                [
+                    // The row's own "customize" link, which the index renders only for a model this bundle still ships - the screen 404s on any other (see legal_model_index.html.twig)
+                    'label' => 'label.guided_step_ui_legal_model_customize',
+                    'description' => 'description.guided_step_ui_legal_model_customize',
+                    'highlight' => '[data-legal-model-customize]',
+                ],
+                [
+                    // Each section of the document is a card of the same collection markup the block forms use (see legal_model_customize.html.twig)
+                    'label' => 'label.guided_step_ui_legal_model_unit',
+                    'description' => 'description.guided_step_ui_legal_model_unit',
+                    'highlight' => '.field-collection-item',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_legal_model_reset',
+                    'description' => 'description.guided_step_ui_legal_model_reset',
+                    'highlight' => '[data-action="legal-model#reset"]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_legal_model_extra',
+                    'description' => 'description.guided_step_ui_legal_model_extra',
+                    'highlight' => '[data-action="legal-model#add"]',
+                ],
+                [
+                    // A plain Symfony form on its own screen, not an EasyAdmin CRUD page: there is no "saveAndReturn" action to name here, same as the font bulk import step
+                    'label' => 'label.guided_step_ui_legal_model_apply',
+                    'description' => 'description.guided_step_ui_legal_model_apply',
+                    'highlight' => 'form button[type="submit"]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_legal_model_done',
+                    'description' => 'description.guided_step_ui_legal_model_done',
+                ],
+            ],
+        ];
+    }
+
+    // Rephrasing is offered under every text field of the back office, and nobody presses a button they have never seen work once - so the parcours walks the free-standing textarea this screen holds for exactly that
+    private function aiAssistantProject(): array
+    {
+        return [
+            'slug' => 'ui-ai-assistant',
+            'label' => 'label.guided_project_ui_ai_assistant',
+            'description' => 'description.guided_project_ui_ai_assistant',
+            'translation_domain' => 'ui',
+            'order' => 99,
+            // The bar index() sets on itself, and the one rephrase() answers to - the question/answer half of the screen asks for ROLE_SUPER_ADMIN and simply does not render below it, which is why no step points into it
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_ai_assistant_open',
+                    'description' => 'description.guided_step_ui_ai_assistant_open',
+                    'url' => $this->urlGenerator->generate(AiAssistantController::INDEX_ROUTE),
+                ],
+                [
+                    // The list of what is still missing, one link per setting, which the screen stops rendering once nothing is (see _ai_assistant_base.html.twig) - the two halves of this parcours are exclusive by design, a site yet to be set up seeing this step and the ones after it only later
+                    'label' => 'label.guided_step_ui_ai_assistant_setup',
+                    'description' => 'description.guided_step_ui_ai_assistant_setup',
+                    'highlight' => '[data-ai-rephrase-setup]',
+                ],
+                [
+                    // The screen's own textarea, tied to no content of the site: a text can be tried out here before the button is ever pressed on a real page
+                    'label' => 'label.guided_step_ui_ai_assistant_text',
+                    'description' => 'description.guided_step_ui_ai_assistant_text',
+                    'highlight' => '#ai-rephrase-freeform',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_assistant_style',
+                    'description' => 'description.guided_step_ui_ai_assistant_style',
+                    'highlight' => '.ai-rephrase__style',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_assistant_length',
+                    'description' => 'description.guided_step_ui_ai_assistant_length',
+                    'highlight' => '.ai-rephrase__length',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_assistant_run',
+                    'description' => 'description.guided_step_ui_ai_assistant_run',
+                    'highlight' => '.ai-rephrase__button',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_assistant_done',
+                    'description' => 'description.guided_step_ui_ai_assistant_done',
+                ],
+            ],
+        ];
+    }
+
     // A form is built here field by field, then dropped into a page through a block of its own
     private function formProject(): array
     {
@@ -82,7 +244,9 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_form',
             'description' => 'description.guided_project_ui_form',
             'translation_domain' => 'ui',
-            'order' => 100,
+            'order' => 102,
+            // FormCrudController is admin-only, an action key being what a form does once submitted - an editor offered this parcours would get a 403 on its very first step
+            'role' => $this->configService->get('site-role-admin'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_ui_form_open',
@@ -128,7 +292,9 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_email_template',
             'description' => 'description.guided_project_ui_email_template',
             'translation_domain' => 'ui',
-            'order' => 110,
+            'order' => 105,
+            // Same gate as FormCrudController, and for the same reason: what an e-mail template holds is sent to real people
+            'role' => $this->configService->get('site-role-admin'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_ui_email_template_open',
@@ -164,7 +330,9 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_font',
             'description' => 'description.guided_project_ui_font',
             'translation_domain' => 'ui',
-            'order' => 120,
+            'order' => 108,
+            // The screen this walks is the editor's; only its "exportSelection" is stricter, and no step here uses it (see FontCrudController)
+            'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_ui_font_open',

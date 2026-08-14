@@ -47,7 +47,7 @@
                         <td class="text-nowrap">
                             {# A block whose model this bundle no longer ships has nothing to customize: the screen 404s on it, so it is named as such rather than linked #}
                             {% if row.known %}
-                                <a href="{{ path('management_ui_legal_model_customize', {block: row.block.id}) }}" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ path('management_ui_legal_model_customize', {block: row.block.id}) }}" class="btn btn-sm btn-outline-primary" data-legal-model-customize>
                                     {{ ('label.legal_customize'|trans({}, 'ui')) }}
                                 </a>
                             {% else %}
