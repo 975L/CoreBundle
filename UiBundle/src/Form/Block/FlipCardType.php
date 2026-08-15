@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Form\BlockAccentChoiceType;
+use c975L\UiBundle\Form\BlockCardSizeChoiceType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\BlockRadiusChoiceType;
 use c975L\UiBundle\Form\BlockShadowChoiceType;
@@ -72,6 +73,7 @@ class FlipCardType extends AbstractType
                 'choices' => SliderType::RATIO_CHOICES,
             ])
             // Both faces at once, being the two sides of one object: the corner and the lift are what makes it that object, and a turn changing either would read as a swap rather than as a rotation
+            ->add('size', BlockCardSizeChoiceType::class)
             ->add('radius', BlockRadiusChoiceType::class)
             ->add('shadow', BlockShadowChoiceType::class)
             ->add('class', BlockClassChoiceType::class)

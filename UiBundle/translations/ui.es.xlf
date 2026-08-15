@@ -930,6 +930,14 @@
                 <source>label.block_video_iframe_description</source>
                 <target>Vídeo externo integrado mediante iframe (YouTube, Vimeo...)</target>
             </trans-unit>
+            <trans-unit id="kPEumMD">
+                <source>label.block_width</source>
+                <target>Ancho</target>
+            </trans-unit>
+            <trans-unit id="g6grPlL">
+                <source>label.block_width_help</source>
+                <target>Seleccione el ancho que aplicar al bloque</target>
+            </trans-unit>
             <trans-unit id="OncQEBy">
                 <source>label.blocks</source>
                 <target>Bloques</target>
@@ -953,6 +961,26 @@
             <trans-unit id="zIIun3q">
                 <source>label.caption_help</source>
                 <target>Dejar vacío si no se utiliza</target>
+            </trans-unit>
+            <trans-unit id="av.3GX7">
+                <source>label.card_size</source>
+                <target>Tamaño</target>
+            </trans-unit>
+            <trans-unit id="hzPMIG6">
+                <source>label.card_size_big</source>
+                <target>Grande (dos por fila)</target>
+            </trans-unit>
+            <trans-unit id="p6myEIl">
+                <source>label.card_size_compact</source>
+                <target>Reducida (seis por fila)</target>
+            </trans-unit>
+            <trans-unit id="OQUrC9K">
+                <source>label.card_size_default</source>
+                <target>Por defecto (tres por fila)</target>
+            </trans-unit>
+            <trans-unit id="HH1TxAI">
+                <source>label.card_size_help</source>
+                <target>Cuántas tarjetas caben en una fila: seis en reducida, tres por defecto, dos en grande</target>
             </trans-unit>
             <trans-unit id="gTzWFQi">
                 <source>label.cards</source>

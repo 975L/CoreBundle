@@ -16,6 +16,15 @@ $radius: var(--block-radius, var(--flip-card-radius));
     display: grid;
 }
 
+// The two other measures of the row, read off the very same tokens as the plain card's (sass/_cards.scss): a row mixing the two kinds holds together only if a flip card sized "big" is as wide as a card sized "big". The title is left alone where ".card" moves its own - a flip card's is drawn from --flip-card-title-size, its own token, and the face it sits in is redrawn from whatever width applies
+.flip-card--compact {
+    width: var(--card-width-compact);
+}
+
+.flip-card--big {
+    width: var(--card-width-big);
+}
+
 // ".cards" already spaces its children with "gap" - the same reset ".card" gets there, for the same reason.
 // Descendant, not the child combinator: a block is rendered inside wrappers that are "display: contents" (".block-animation" for its entrance effect, ".block-editable" for the editor's overlay), which leaves the card the flex item of the row while making it a grandchild in the DOM - and a combinator reading the DOM misses exactly the cards carrying an animation.
 // "margin-block", not the shorthand: the inline "auto" above is what centers the card, and writing the shorthand over it drops that silently (see ComponentCenteringTest)

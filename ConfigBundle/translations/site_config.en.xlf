@@ -210,6 +210,10 @@
                 <source>description.site_status_key</source>
                 <target>Shared key a console has to present to read this site's status report - at least 32 characters, e.g. "openssl rand -hex 32" (empty, or shorter, answers nobody)</target>
             </trans-unit>
+            <trans-unit id="lprOpO0">
+                <source>description.site_timezone</source>
+                <target>The timezone dates are displayed in, on the site as well as in the back-office. Dates are still stored in the server's own time</target>
+            </trans-unit>
             <trans-unit id="nInyIwr">
                 <source>description.site_url</source>
                 <target>URL of the website i.e. https://example.com</target>
@@ -433,6 +437,10 @@
             <trans-unit id="WEtCUat">
                 <source>label.site_status_key</source>
                 <target>Status report key</target>
+            </trans-unit>
+            <trans-unit id="kQSmmhp">
+                <source>label.site_timezone</source>
+                <target>Timezone</target>
             </trans-unit>
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>

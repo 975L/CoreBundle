@@ -19,6 +19,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CtaBandType extends AbstractType
 {
+    use HasCssClassesFieldTrait;
+
     use HasAnchorFieldTrait;
 
     public function __construct(private readonly BlockAnchorSlugger $anchorSlugger)
@@ -43,6 +45,9 @@ class CtaBandType extends AbstractType
             ->add('ctaUrl', TextType::class, [
                 'label' => 'label.url',
             ]);
+
+        // A band sending the visitor to the other side of a site reads better in that side's own colors than in the ones around it - a scope class the site declares, which no list in the bundle could hold
+        $this->addCssClassesField($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

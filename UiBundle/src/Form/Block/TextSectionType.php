@@ -49,8 +49,10 @@ class TextSectionType extends AbstractType
             ->add('slug', HiddenType::class, [
                 'required' => false,
             ])
+            // Optional like the title above it, and for the same reason: the component prints whichever of the two is filled in, a title alone being a section heading - which is what a page needs over a row of cards. Required, it forced a paragraph nobody wanted under every such heading
             ->add('content', TrixEditorType::class, [
                 'label' => 'label.content',
+                'required' => false,
             ])
             // Body copy is what a section standing on its own is read at. Beside a louder one - the companion paragraph of a "text_hook" in the column next to it, a note beside the text it belongs to - the same size reads as a caption dropped in the corner, hence a step above body copy and a quieter color
             ->add('tone', ChoiceType::class, [

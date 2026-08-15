@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Form\BlockAccentChoiceType;
+use c975L\UiBundle\Form\BlockCardSizeChoiceType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\BlockRadiusChoiceType;
 use c975L\UiBundle\Form\BlockShadowChoiceType;
@@ -23,6 +24,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CardType extends AbstractType
 {
+    use HasCssClassesFieldTrait;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -64,10 +67,14 @@ class CardType extends AbstractType
                 'required' => false,
             ])
             // The card's surface, shared with the flip card so one design decision reads the same on a row mixing the two kinds
+            ->add('size', BlockCardSizeChoiceType::class)
             ->add('radius', BlockRadiusChoiceType::class)
             ->add('shadow', BlockShadowChoiceType::class)
             ->add('class', BlockClassChoiceType::class)
             ->add('accent', BlockAccentChoiceType::class);
+
+        // The four fields above are the surface the bundle knows how to draw; this one is the palette it cannot know - a card standing for one of the consuming site's own scopes, which no closed list could ever hold
+        $this->addCssClassesField($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

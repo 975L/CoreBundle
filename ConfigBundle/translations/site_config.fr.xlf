@@ -210,6 +210,10 @@
                 <source>description.site_status_key</source>
                 <target>Clé partagée qu'une console doit présenter pour lire le rapport de statut de ce site - au moins 32 caractères, par ex. « openssl rand -hex 32 » (vide, ou plus courte, ne répond à personne)</target>
             </trans-unit>
+            <trans-unit id="lprOpO0">
+                <source>description.site_timezone</source>
+                <target>Fuseau dans lequel les dates sont affichées, sur le site comme dans le back-office. Les dates restent enregistrées à l'heure du serveur</target>
+            </trans-unit>
             <trans-unit id="nInyIwr">
                 <source>description.site_url</source>
                 <target>URL du site web, ex. https://example.com</target>
@@ -433,6 +437,10 @@
             <trans-unit id="WEtCUat">
                 <source>label.site_status_key</source>
                 <target>Clé du rapport de statut</target>
+            </trans-unit>
+            <trans-unit id="kQSmmhp">
+                <source>label.site_timezone</source>
+                <target>Fuseau horaire</target>
             </trans-unit>
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>

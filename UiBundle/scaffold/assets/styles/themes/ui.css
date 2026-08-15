@@ -117,9 +117,11 @@
     /* The measure of a card, and of the compact one a dense row uses. Both are read off --section-wrap-max-width above rather than written down: three cards and their two gaps have to fit the page measure, six compact ones and their five, whatever measure this site sets - which is why neither of them has to be recalculated here after narrowing the wrap. They resolve to 380px and 190px on the default 1440px page */
     /* --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3)); */
     /* --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
+    /* --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2)); */
     /* The card title's own size, stated rather than inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact card steps down once more */
     /* --card-title-size: calc(19px * var(--font-size-title-scale, 1)); */
     /* --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1)); */
+    /* --card-title-size-big: calc(23px * var(--font-size-title-scale, 1)); */
     /* --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
     /* Lines shown before a "read more" block clamps its text */
     /* --readmore-lines: 5; */

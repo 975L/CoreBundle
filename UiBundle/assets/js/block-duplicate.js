@@ -6,7 +6,7 @@
  * with this source code in the file LICENSE.
  */
 import { Controller } from "@hotwired/stimulus";
-import { loadBlockData } from "./block.js";
+import { appendBlockField, loadBlockData } from "./block.js";
 import { addToolbarButton } from "./block-toolbar.js";
 
 // No width/height here, deliberately - see the same note in ea-sortable.js: EasyAdmin's own icons rely entirely on its global ".icon svg" CSS for sizing, so this needs to too, to stay consistent.
@@ -196,22 +196,10 @@ export default class extends Controller {
                 const marker = '[data]';
                 const idx = el.name.indexOf(marker);
                 if (idx === -1) return;
-                this.appendField(params, `data${el.name.slice(idx + marker.length)}`, el);
+                appendBlockField(params, `data${el.name.slice(idx + marker.length)}`, el);
             });
 
         return params;
-    }
-
-    appendField(params, name, el) {
-        if (el.type === 'checkbox' || el.type === 'radio') {
-            if (el.checked) params.append(name, el.value);
-            return;
-        }
-        if (el.multiple) {
-            [...el.selectedOptions].forEach(opt => { params.append(name, opt.value); });
-            return;
-        }
-        params.append(name, el.value);
     }
 
     // The part of a media field's name after its own item's index bracket, e.g. "blocks][3][medias][7][alt]" -> "[alt]" - used to match "the same field" between two media rows regardless of their respective index in the collection.

@@ -21,6 +21,11 @@
                 "en": "The tile opening and closing account creation keeps working after you rename the registration form",
                 "fr": "La tuile qui ouvre et ferme la création de comptes continue de fonctionner après avoir renommé le formulaire d'inscription",
                 "es": "El mosaico que abre y cierra la creación de cuentas sigue funcionando tras renombrar el formulario de registro"
+            },
+            {
+                "en": "You now pick your timezone in the settings, and every date shows at that hour, on your site as well as in the back-office, instead of the server's own",
+                "fr": "Vous choisissez désormais votre fuseau horaire dans les réglages, et toutes les dates s'affichent à cette heure, sur votre site comme dans l'administration, au lieu de celle du serveur",
+                "es": "Ahora elige su zona horaria en los ajustes, y todas las fechas se muestran a esa hora, tanto en su sitio como en la administración, en lugar de la del servidor"
             }
         ]
     },

@@ -1,5 +1,43 @@
 # ChangeLog
 
+## v1.11.6
+
+A card is sized by how many of it a row holds
+
+### ConfigBundle
+
+- Added the `site-timezone` config entry, a select of the European identifiers plus `UTC`, defaulting to `Europe/Paris` (15/08/2026)
+- Added `TimezoneListener`, applying it to Twig on every request and console command (15/08/2026)
+- Only the reading moves, PHP going on writing in its own timezone (15/08/2026)
+- An identifier `DateTimeZone` does not know is left alone rather than thrown (15/08/2026)
+- Added the site timezone label and description in the three locales (15/08/2026)
+- Added `TimezoneListenerTest` (15/08/2026)
+- The README states the site timezone (15/08/2026)
+
+### UiBundle
+
+- Added `BlockCardSizeChoiceType`, the **Taille** field picking how many cards go to the row (15/08/2026)
+- `card` and `flip_card` carry it, both reading the very same width tokens (15/08/2026)
+- Added `--card-width-big` and `--card-title-size-big`, read off the page measure like the other two (15/08/2026)
+- Added the `.card--big`, `.flip-card--compact` and `.flip-card--big` rules measuring themselves off those tokens (15/08/2026)
+- `Card.html.twig` and `FlipCard.html.twig` match the stored size against the two named steps (15/08/2026)
+- The scaffolded theme comments the two new tokens beside the others (15/08/2026)
+- `BlockType` drops from a kind switch whatever key the new kind declares no field for, the save going through on the first try (15/08/2026)
+- It takes the medias and the slots of the kind left behind off the form too, the block keeping them (15/08/2026)
+- Added `BlockType::dropForeignEntryKeys()`, read off the collection's own prototype (15/08/2026)
+- Switching a kind posts what the shared fields hold, the new sub-form coming back filled in (15/08/2026)
+- Added `appendBlockField()` in `block.js`, `block-duplicate.js` reading it instead of its own copy (15/08/2026)
+- `BlockClassChoiceType` holds widths alone, its `box-shadow` choice having changed no pixel (15/08/2026)
+- It carries its own `label.block_width` pair rather than the media screen's (15/08/2026)
+- `card` and `cta_band` carry the free **Site CSS classes** field (15/08/2026)
+- A `text_section`'s content is optional, a title alone being a section heading (15/08/2026)
+- `BlockFixtureProvider` shows the card in its three sizes (15/08/2026)
+- Added the card size and block width labels in the three locales (15/08/2026)
+- Added `BlockCardSizeChoiceTypeTest`, `CardSizeTest` and `BlockKindSwitchTest` (15/08/2026)
+- `CardMeasureTest` reads the third width, `BlockClassChoiceTypeTest` the widths alone and its own labels (15/08/2026)
+- `CardTypeTest`, `CtaBandTypeTest`, `FlipCardTypeTest` and `TextSectionTypeTest` read the fields added to each (15/08/2026)
+- The README states the card size, the kinds carrying the site classes and the width list (15/08/2026)
+
 ## v1.11.5
 
 A site now says what an intrusion would leave behind

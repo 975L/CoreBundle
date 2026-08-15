@@ -4,9 +4,11 @@
 {# Matched against the twelve hues, not interpolated: the value comes from stored block data and must not write any class name (same rule as "background" in the section components). See BlockAccentChoiceType #}
 {% set accentClass = accent|default('') in ['red', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'indigo', 'violet', 'pink', 'grey'] ? 'card--accent-' ~ accent : '' %}
 {# Matched against the closed steps for the same reason, and shared with the flip card rather than prefixed "card-": both kinds read the very same token off these classes (see sass/_block-surface.scss). Unset writes none at all, and the card keeps whatever this site's theme gives it. See BlockRadiusChoiceType / BlockShadowChoiceType #}
+{# Matched against the two named steps for the same reason, the unset value being the row of three every card held before the field existed. See BlockCardSizeChoiceType #}
+{% set sizeClass = size|default('') in ['compact', 'big'] ? 'card--' ~ size : '' %}
 {% set radiusClass = radius|default('') in ['none', 'small', 'medium', 'large'] ? 'block-radius-' ~ radius : '' %}
 {% set shadowClass = shadow|default('') in ['none', 'small', 'medium', 'large'] ? 'block-shadow-' ~ shadow : '' %}
-{% set classes = [class|default([])|join(' '), accentClass, radiusClass, shadowClass]|filter(name => name)|join(' ') %}
+{% set classes = [class|default([])|join(' '), accentClass, sizeClass, radiusClass, shadowClass]|filter(name => name)|join(' ') %}
 {# Read under its own name because the nesting below happens inside the component's context, where the card's own "content" prop - empty, nothing being passed to it - takes the place of this block's data #}
 {% set blockContent = content|default('') %}
 {% if resolvedImageUrl or url %}

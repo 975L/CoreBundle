@@ -41,6 +41,31 @@
                 "en": "The overline and the \"see all\" link of a live grid are shown whichever presentation you picked - filling them in on the default one used to change nothing on the page",
                 "fr": "Le surtitre et le lien « Voir tout » d'une grille dynamique s'affichent quelle que soit la présentation choisie - les renseigner sur la présentation par défaut ne changeait rien sur la page",
                 "es": "El sobretítulo y el enlace «Ver todo» de una cuadrícula dinámica se muestran sea cual sea la presentación elegida: rellenarlos en la presentación por defecto no cambiaba nada en la página"
+            },
+            {
+                "en": "A card and a flip card now carry a Size, picking how many go on one line: six when compact, three by default, two when big - for the choice between two offers a page puts to its visitor",
+                "fr": "Une carte et une carte retournable portent désormais une Taille, qui choisit combien en tiennent sur une ligne : six en réduite, trois par défaut, deux en grande - pour le choix entre deux offres qu'une page pose à son visiteur",
+                "es": "Una tarjeta y una tarjeta giratoria llevan ahora un Tamaño, que elige cuántas caben en una línea: seis en reducida, tres por defecto, dos en grande - para la elección entre dos ofertas que una página plantea a su visitante"
+            },
+            {
+                "en": "Changing the type of a block saves in one go and keeps what you had already typed in the fields the two types share, instead of asking for a second save and losing it",
+                "fr": "Changer le type d'un block s'enregistre du premier coup et conserve ce que vous aviez déjà saisi dans les champs communs aux deux types, au lieu de réclamer un second enregistrement et de le perdre",
+                "es": "Cambiar el tipo de un bloque se guarda a la primera y conserva lo que ya había escrito en los campos comunes a ambos tipos, en lugar de exigir un segundo guardado y perderlo"
+            },
+            {
+                "en": "A card and a call-to-action band accept the style names of your own site's theme, so either can be dressed in the colors of the section it sends the visitor to",
+                "fr": "Une carte et une bande d'appel à l'action acceptent les noms de style du thème de votre propre site, pour habiller l'une ou l'autre aux couleurs de la section vers laquelle elle envoie le visiteur",
+                "es": "Una tarjeta y una banda de llamada a la acción aceptan los nombres de estilo del tema de su propio sitio, para vestir a cualquiera de las dos con los colores de la sección a la que envía al visitante"
+            },
+            {
+                "en": "A text section can now be a heading on its own, its paragraph no longer being required - which is what a page needs above a row of cards",
+                "fr": "Une section de texte peut désormais n'être qu'un titre, son paragraphe n'étant plus obligatoire - ce qu'il faut à une page au-dessus d'une ligne de cartes",
+                "es": "Una sección de texto puede ahora ser solo un título, ya que su párrafo deja de ser obligatorio, que es lo que necesita una página encima de una fila de tarjetas"
+            },
+            {
+                "en": "The list of block styles is now called Width and offers only that: the shadow choice it carried changed nothing on the page, the shadow being picked in its own field",
+                "fr": "La liste des styles d'un block s'appelle désormais Largeur et ne propose plus que cela : le choix d'ombre qu'elle portait ne changeait rien sur la page, l'ombre se choisissant dans son propre champ",
+                "es": "La lista de estilos de un bloque se llama ahora Anchura y solo ofrece eso: la opción de sombra que llevaba no cambiaba nada en la página, ya que la sombra se elige en su propio campo"
             }
         ]
     },

@@ -25,7 +25,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 
 ## Contents
 
-- **Config entries** — [declare](#defining-config-entries-for-your-bundle) · [load](#loading-config-entries-into-the-database) · [prune](#pruning-entries-no-longer-declared) · [set from the CLI](#setting-values-from-the-command-line) · [encrypt](#encrypting-sensitive-values) · [read in PHP/Twig](#reading-config-values)
+- **Config entries** — [declare](#defining-config-entries-for-your-bundle) · [load](#loading-config-entries-into-the-database) · [prune](#pruning-entries-no-longer-declared) · [set from the CLI](#setting-values-from-the-command-line) · [encrypt](#encrypting-sensitive-values) · [read in PHP/Twig](#reading-config-values) · [timezone](#timezone)
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
 - **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled)
 - **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows)
@@ -41,6 +41,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Zip-based content import/export for syncing nested bundle content across environments, extensible via `ImportProviderInterface`/`ExportProviderInterface`
 - Twig and PHP service to read values anywhere
 - 1-hour cache with automatic invalidation on change
+- A `site-timezone` entry setting the hour every template shows, on requests and on the console alike, PHP going on writing in its own
 - "What's new" dashboard section aggregating release notes declared by every c975L bundle
 - Dashboard alerts (danger/warning/info) aggregating what needs attention, declared by every c975L bundle
 - Dashboard "Essential actions" checklist, a permanent quick-access entry point to the handful of settings every site needs
@@ -2211,6 +2212,16 @@ entries were a `bool` before `v1.6`, and a stored value is never rewritten by `c
 holding `"true"` gets `logo` back (all a credit could show then) and `"false"` gets `none`, where `config()`
 would hand over the string `"false"`, truthy in Twig. It always answers one of the four modes, so a template
 only has to ask whether the mode holds `logo`, `name`, or both.
+
+---
+
+## Timezone
+
+The `site-timezone` entry (**Général**, defaulting to `Europe/Paris`) is the hour every template shows — a select of the European identifiers plus `UTC`. `TimezoneListener` applies it to Twig on `kernel.request` and on `console.command`, so a command or a Messenger worker naming a file after the hour reads it too, not requests alone. Without it PHP falls back on `UTC` as long as `date.timezone` is left out of its `php.ini`, and a back-office two hours behind the clock is one whose dates stop being read.
+
+**Only the reading moves.** PHP itself keeps writing in its own timezone: a date stored in base has no business depending on where the server sits, and nothing already recorded is rewritten. A site that never set the entry — one upgrading to this version — keeps reading its dates exactly as it did.
+
+An identifier `DateTimeZone` does not know is left alone rather than thrown: the value is picked from a list in the back-office, but a site restored from an older base can hold anything, and a wrong timezone is no reason to answer nothing at all.
 
 ---
 

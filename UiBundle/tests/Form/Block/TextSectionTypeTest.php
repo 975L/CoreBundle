@@ -100,6 +100,14 @@ class TextSectionTypeTest extends TestCase
         $this->assertFalse($added['eyebrow']['required']);
     }
 
+    // Optional like the title, and for the same reason: the component prints whichever of the two is filled in, a title alone being the section heading a page needs over a row of cards. Required, it forced a paragraph nobody wanted under every such heading
+    public function testContentIsOptional(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertFalse($added['content']['required']);
+    }
+
     public function testSubmitListenerDerivesSlugFromTitle(): void
     {
         $data = $this->fireSubmit(['title' => 'Des services taillé sur mesure']);

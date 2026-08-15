@@ -95,8 +95,13 @@ class BlockType extends AbstractType
                 $kind = $submitted['kind'] ?? null;
                 if ($kind && $this->registry->has($kind)) {
                     $this->addDataSubForm($event->getForm(), $kind);
+
+                    $block = $event->getForm()->getData();
+                    // Picking another kind swaps the "data" sub-form client-side (see block.js) and nothing else: whatever the previous kind rendered around it - the per-image metadata of its medias, its slots - is still in the DOM and still posted. A key no field claims fails the whole form with "This form should not contain extra fields", which is why switching a kind used to take two saves, the browser having re-rendered the form for the new kind on the failed one, losing whatever was typed in between. What the new kind cannot receive is dropped from the submission below, here rather than client-side so a submission that never went through the picker is covered too
+                    $previousKind = $block instanceof Block ? $block->getKind() : null;
+                    $kindChanged = null !== $previousKind && $previousKind !== $kind;
+
                     if ($this->registry->hasMediaTypes($kind)) {
-                        $block = $event->getForm()->getData();
                         if ($block instanceof Block) {
                             CollectionReconciler::pruneRemoved(
                                 $block->getMedias(),
@@ -117,15 +122,34 @@ class BlockType extends AbstractType
                             $submitted['medias'] = [];
                         }
                         $submitted = $this->mergeMultiUpload($submitted, $kind);
-                        $event->setData($submitted);
                         $this->addMediaSubForm($event->getForm(), $kind);
+
+                        // Each kind builds its media rows with its own set of fields (a card's teaser image has no caption, no dimensions, no credits - see MediaUploadType), so the rows left behind by the previous one carry keys the new one never declares
+                        if ($kindChanged) {
+                            $submitted['medias'] = $this->dropForeignEntryKeys($submitted['medias'], $event->getForm()->get('medias'));
+                        }
+
+                        $event->setData($submitted);
+                    } elseif ($kindChanged) {
+                        // The medias themselves are deliberately left on the block rather than removed: the new kind simply doesn't render them, and switching back brings them - their files included - straight back. Which takes both the submitted keys AND the fields PRE_SET_DATA declared for the previous kind: an absent key does not make Symfony skip a declared child, it submits it with null, and CollectionType's resize listener reads that as "every row removed" - cascade-removed and orphan-removed at flush
+                        unset($submitted['medias'], $submitted['mediaUpload']);
+                        $event->setData($submitted);
+                        $event->getForm()->remove('medias');
+                        $event->getForm()->remove('mediaUpload');
                     }
 
                     if ($this->registry->isContainer($kind)) {
                         $this->applySubmittedSlots($event, $kind);
-                    } elseif (isset($submitted[self::SLOTS_RENDERED])) {
+                    } elseif ($kindChanged || isset($submitted[self::SLOTS_RENDERED]) || isset($submitted['slots'])) {
+                        // Switched away from a container: its slots collection and the marker beside it are still posted, with no field left to claim either. Taken off the form as well as out of the submission, and the slots kept on the block, for the very same reasons as its medias just above
+                        unset($submitted['slots']);
+                        $event->setData($submitted);
+                        $event->getForm()->remove('slots');
+
                         // Added back for a kind switched away from a container, which still carries the marker: a key no field claims fails the whole form as an extra one
-                        $this->addSlotsMarker($event->getForm());
+                        if (isset($submitted[self::SLOTS_RENDERED])) {
+                            $this->addSlotsMarker($event->getForm());
+                        }
                     }
 
                     // "data" (and "medias"/"slots") were just (re)added above - move "animation" back below them, in case this is a brand new collection entry whose PRE_SET_DATA fired with no kind yet (so "animation" was added there before "data" ever existed)
@@ -183,6 +207,28 @@ class BlockType extends AbstractType
         }
 
         $this->addSlotsSubForm($form, $kind, $block instanceof Block ? $block : null);
+    }
+
+    // Drops from each submitted row whatever key the collection's entry form does not declare - see the kind-change note in PRE_SUBMIT. Read off the collection's own prototype, built from the very entry type (and options) every row is built from, so no list of field names has to be kept in sync here
+    private function dropForeignEntryKeys(array $entries, FormInterface $collection): array
+    {
+        $prototype = $collection->getConfig()->getAttribute('prototype', null);
+        if (!$prototype instanceof FormInterface) {
+            return $entries;
+        }
+
+        $allowed = [];
+        foreach ($prototype as $name => $child) {
+            $allowed[$name] = true;
+        }
+
+        foreach ($entries as $index => $entry) {
+            if (is_array($entry)) {
+                $entries[$index] = array_intersect_key($entry, $allowed);
+            }
+        }
+
+        return $entries;
     }
 
     // The kind picker, added from buildForm() and rebuilt from PRE_SET_DATA when the block already holds a kind

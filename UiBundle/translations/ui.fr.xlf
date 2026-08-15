@@ -930,6 +930,14 @@
                 <source>label.block_video_iframe_description</source>
                 <target>Vidéo externe intégrée via iframe (YouTube, Vimeo...)</target>
             </trans-unit>
+            <trans-unit id="kPEumMD">
+                <source>label.block_width</source>
+                <target>Largeur</target>
+            </trans-unit>
+            <trans-unit id="g6grPlL">
+                <source>label.block_width_help</source>
+                <target>Sélectionnez la largeur à appliquer au bloc</target>
+            </trans-unit>
             <trans-unit id="OncQEBy">
                 <source>label.blocks</source>
                 <target>Blocs</target>
@@ -953,6 +961,26 @@
             <trans-unit id="zIIun3q">
                 <source>label.caption_help</source>
                 <target>Laisser vide si non utilisé</target>
+            </trans-unit>
+            <trans-unit id="av.3GX7">
+                <source>label.card_size</source>
+                <target>Taille</target>
+            </trans-unit>
+            <trans-unit id="hzPMIG6">
+                <source>label.card_size_big</source>
+                <target>Grande (deux par ligne)</target>
+            </trans-unit>
+            <trans-unit id="p6myEIl">
+                <source>label.card_size_compact</source>
+                <target>Réduite (six par ligne)</target>
+            </trans-unit>
+            <trans-unit id="OQUrC9K">
+                <source>label.card_size_default</source>
+                <target>Par défaut (trois par ligne)</target>
+            </trans-unit>
+            <trans-unit id="HH1TxAI">
+                <source>label.card_size_help</source>
+                <target>Combien de cartes tiennent sur une ligne : six en réduite, trois par défaut, deux en grande</target>
             </trans-unit>
             <trans-unit id="gTzWFQi">
                 <source>label.cards</source>

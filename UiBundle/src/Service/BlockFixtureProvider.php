@@ -74,8 +74,9 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                 'Danger' => ['label' => 'Danger', 'url' => 'https://example.com', 'type' => 'danger', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
                 'Lien' => ['label' => 'Lien', 'url' => 'https://example.com', 'type' => 'link', 'target' => '', 'icon' => '', 'download' => false, 'inline' => false],
             ],
+            // The three sizes are three counts to the row - six, three, two - so each is shown for what it is rather than for the width it happens to resolve to (see BlockCardSizeChoiceType)
             'card' => [
-                '' => [
+                'Par défaut' => [
                     'id' => '',
                     'title' => 'Titre de la carte',
                     'level' => 'h3',
@@ -84,6 +85,28 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'target' => '',
                     'buttonLabel' => 'Découvrir',
                     'class' => [],
+                ],
+                'Réduite' => [
+                    'id' => '',
+                    'title' => 'Carte réduite',
+                    'level' => 'h3',
+                    'content' => '<p>Six par ligne.</p>',
+                    'url' => 'https://example.com',
+                    'target' => '',
+                    'buttonLabel' => '',
+                    'class' => [],
+                    'size' => 'compact',
+                ],
+                'Grande' => [
+                    'id' => '',
+                    'title' => 'Carte grande',
+                    'level' => 'h3',
+                    'content' => '<p>Deux par ligne, pour un choix que la page pose au visiteur.</p>',
+                    'url' => 'https://example.com',
+                    'target' => '',
+                    'buttonLabel' => 'Découvrir',
+                    'class' => [],
+                    'size' => 'big',
                 ],
             ],
             'document_download' => [

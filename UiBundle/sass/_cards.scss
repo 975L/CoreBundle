@@ -236,3 +236,14 @@ h2.card-header {
 .card--compact h2.card-header {
     font-size: var(--card-title-size-compact);
 }
+
+// An enlarged card: the same card, at half a row rather than a third. For the two-way choice a page puts to its visitor - one door against another, an offer against its alternative - where three to the row reads as a list and not as a decision
+.card--big {
+    width: var(--card-width-big);
+}
+
+// The title follows here too, the other way: a 19px header sits small across 570px, and the two titles are what the visitor compares
+.card--big .card-header,
+.card--big h2.card-header {
+    font-size: var(--card-title-size-big);
+}

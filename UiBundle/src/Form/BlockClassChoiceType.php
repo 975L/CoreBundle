@@ -14,11 +14,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-// Closed list of classes available for a block's own wrapper (Card/Slider/VideoIframe...), separate from ImageClassChoiceType which covers the image embedded inside a block - fill in as needed
+// Closed list of widths available for a block's own wrapper (Card/Slider/VideoIframe...), separate from ImageClassChoiceType which covers the image embedded inside a block - fill in as needed
+// Width and nothing else, since the "box-shadow" this list used to offer never did anything: the Card component writes that class on every card it renders, and BlockShadowChoiceType is where a shadow has been chosen since. An editor picking it changed no pixel, and the field read as two settings where it holds one
 class BlockClassChoiceType extends AbstractType
 {
     public const CHOICES = [
-        'label.css_class_shadow' => 'box-shadow',
         'label.css_class_width_100' => 'width-100',
         'label.css_class_width_125' => 'width-125',
         'label.css_class_width_150' => 'width-150',
@@ -40,8 +40,9 @@ class BlockClassChoiceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'label' => 'label.css_classes',
-            'help' => 'label.css_classes_help',
+            // Its own labels, not the "label.css_classes" pair ImageClassChoiceType and the media screen share: those two do hold classes of several kinds, where this one holds a width and should say so
+            'label' => 'label.block_width',
+            'help' => 'label.block_width_help',
             'choices' => self::CHOICES,
             'multiple' => true,
             'expanded' => false,

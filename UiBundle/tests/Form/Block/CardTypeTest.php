@@ -36,9 +36,18 @@ class CardTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['id', 'title', 'level', 'content', 'url', 'target', 'buttonLabel', 'radius', 'shadow', 'class', 'accent'] as $field) {
+        foreach (['id', 'title', 'level', 'content', 'url', 'target', 'buttonLabel', 'size', 'radius', 'shadow', 'class', 'accent', 'cssClasses'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the Card form");
         }
+    }
+
+    // A card carries both class fields, and the split is what they answer: the closed lists are its shape, which the bundle draws itself, where the free one is its palette - a card standing for a scope only the consuming site declares
+    public function testItCarriesBothTheClosedListsAndTheFreeSiteClasses(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame('label.css_classes_free', $added['cssClasses']['label']);
+        $this->assertFalse($added['cssClasses']['required']);
     }
 
     public function testTeaserFieldsAreOptional(): void

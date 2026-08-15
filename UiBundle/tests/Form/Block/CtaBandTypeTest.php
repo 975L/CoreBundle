@@ -38,9 +38,18 @@ class CtaBandTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['title', 'text', 'ctaLabel', 'ctaUrl', 'anchor'] as $field) {
+        foreach (['title', 'text', 'ctaLabel', 'ctaUrl', 'anchor', 'cssClasses'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the CtaBand form");
         }
+    }
+
+    // A band sending the visitor to the other side of a site reads better in that side's own colors than in the ones around it - a scope class the site declares, which no list in the bundle could hold
+    public function testItCarriesTheFreeSiteClasses(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame('label.css_classes_free', $added['cssClasses']['label']);
+        $this->assertFalse($added['cssClasses']['required']);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

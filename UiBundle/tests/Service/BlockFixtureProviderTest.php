@@ -102,12 +102,21 @@ class BlockFixtureProviderTest extends TestCase
         $this->assertSame(['danger', 'link', 'primary', 'secondary', 'success'], $types);
     }
 
+    // card has 3 sizes (compact/default/big) - three counts to the row, shown side by side in the gallery so the difference reads as a row and not as a width
+    public function testCardFixtureCoversEverySize(): void
+    {
+        $fixtures = new BlockFixtureProvider()->getFixtures();
+
+        $this->assertSame(['Par défaut', 'Réduite', 'Grande'], array_keys($fixtures['card']));
+        $this->assertSame(['compact', 'big'], [$fixtures['card']['Réduite']['size'], $fixtures['card']['Grande']['size']]);
+    }
+
     // Kinds without a meaningful style variant use '' as their single, unlabelled key
     public function testKindsWithoutStyleVariantsUseASingleUnlabelledVariant(): void
     {
         $fixtures = new BlockFixtureProvider()->getFixtures();
 
-        foreach (['audio', 'article', 'banner_title', 'card', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'progress_tracker', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
+        foreach (['audio', 'article', 'banner_title', 'document_download', 'form', 'image', 'image_compare', 'progress_bar', 'progress_tracker', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
             $this->assertSame([''], array_keys($fixtures[$kind]), "Kind \"{$kind}\" should have a single unlabelled variant");
         }
     }

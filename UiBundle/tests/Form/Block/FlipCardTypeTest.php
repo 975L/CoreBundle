@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Form\Block;
 
 use c975L\UiBundle\Form\Block\FlipCardType;
 use c975L\UiBundle\Form\Block\SliderType;
+use c975L\UiBundle\Form\BlockCardSizeChoiceType;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -37,9 +38,33 @@ class FlipCardTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['id', 'title', 'level', 'content', 'backTitle', 'backContent', 'ratio', 'radius', 'shadow', 'class', 'accent'] as $field) {
+        foreach (['id', 'title', 'level', 'content', 'backTitle', 'backContent', 'ratio', 'size', 'radius', 'shadow', 'class', 'accent'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the FlipCard form");
         }
+    }
+
+    // The size is the plain card's own field, and deliberately so: a ".cards" row mixes the two kinds, and one sized "big" has to be as wide as the other sized "big"
+    public function testTheSizeIsThePlainCardSOwnField(): void
+    {
+        $this->assertSame(BlockCardSizeChoiceType::class, $this->addedTypes()['size']);
+    }
+
+    /**
+     * @return array<string, ?string>
+     */
+    private function addedTypes(): array
+    {
+        $types = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$types, $builder) {
+            $types[$name] = $type;
+
+            return $builder;
+        });
+
+        new FlipCardType()->buildForm($builder, []);
+
+        return $types;
     }
 
     // Every face field is optional: a card with only a front is still a card, and the template renders it as a plain one rather than as a card with a button revealing nothing (see components/FlipCard/FlipCard.html.twig)

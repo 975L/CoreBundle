@@ -47,8 +47,9 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - GDPR cookie banner (`vanilla-cookieconsent` v3, self-hosted), carrying its own enabled/disabled guard
 - A minimal page layout with the theme, the site graphics, the share tags and the banner, for an app running without SiteBundle
 - Media Library in EasyAdmin: browse every `Media` regardless of how it's attached, and see where it's used
-- AJAX kind-switcher in EasyAdmin
-- Text kinds carry a free **Site CSS classes** field, so a site's own theme classes reach a block the bundle knows nothing about (filtered at render, opt-in per kind)
+- AJAX kind-switcher in EasyAdmin, saving in one go and carrying over what the fields both kinds share already held
+- Text kinds, the `card` and the `cta_band` carry a free **Site CSS classes** field, so a site's own theme classes reach a block the bundle knows nothing about (filtered at render, opt-in per kind)
+- A `card` and a `flip_card` are sized by the count they make to the row — six compact, three by default, two big — each step read off the page measure rather than written as a width
 - Extensible: register your own block kinds via a service tag
 - Automatic CSS injection: bundles declare their stylesheets via a service tag, rendered by `bundle_stylesheets()` in Twig
 - Reusable drag-and-drop sortable script for any EasyAdmin `CollectionField`, plus the touch-capable drag gesture behind it (`assets/js/pointer-sort.js`) on its own, for a bundle sorting something that isn't a collection field
@@ -597,7 +598,9 @@ Then have the component match the stored value against the known variants before
 
 ## Site CSS classes
 
-The five text kinds — `text_readmore`, `text_hook`, `text_section`, `article` and `alert` — carry an optional **Site CSS classes** field, free text where an editor types the classes of the consuming site's own theme, separated by spaces. It is the counterpart of `BlockClassChoiceType`, and the two answer different questions: that one is a closed list of the styles *the bundle ships* and is right on a `card` or a `slider`, a composition the bundle styles itself; this one is the escape hatch for a class only the site knows about — a body size, an accent color, a rule written in its own `theme.css` — which no list in the bundle could ever hold.
+Seven kinds — the five text ones (`text_readmore`, `text_hook`, `text_section`, `article` and `alert`) plus the `card` and the `cta_band` — carry an optional **Site CSS classes** field, free text where an editor types the classes of the consuming site's own theme, separated by spaces. It is the counterpart of `BlockClassChoiceType`, and the two answer different questions: that one is a closed list of widths *the bundle ships* and is right on a `slider`, a composition the bundle styles itself; this one is the escape hatch for a class only the site knows about — a body size, an accent color, a rule written in its own `theme.css` — which no list in the bundle could ever hold.
+
+The `card` and the `cta_band` carry both, and the split is what the two fields answer there. The closed list is the block's shape — its width, its corner, its shadow — which the bundle draws itself; this one is its palette, a card standing for a scope the consuming site declares (a faction, a brand, a section theme) and redefining the tokens the card reads. A site with two such scopes cannot state the second one anywhere else, and a band sending the visitor to the other side of a site reads better in that side's own colors than in the ones around it.
 
 It is offered kind by kind rather than on every block, and deliberately so: the field belongs where the block is prose the site may want to set differently, not on a closed composition whose look the bundle is answerable for. To offer it on another kind, `use HasCssClassesFieldTrait` and call `addCssClassesField($builder)` from `buildForm()`:
 
@@ -635,9 +638,23 @@ Consecutive `card` and `flip_card` blocks are wrapped in one `.cards` flex row (
 
 `CardRowAlignmentTest` locks both, and the `display: contents` on the two wrappers they depend on.
 
-**How many fit on a line is the width's business, not the row's.** The row is a plain wrapping flex row of fixed-width items — three cards and their two gaps, six compact ones and their five — and that count holds because `--card-width` / `--card-width-compact` are **read off the page measure** rather than written down (`sass/_tokens.scss`): each is the measure minus its two gutters minus the row's own gaps, divided by three or by six, capped at `380px` / `190px` and at `90vw` / `45vw`. On the default `1440px` page they resolve to exactly those caps, so nothing moves; on a site framing its content tighter — a `--section-wrap-max-width` of `1200px`, say — they narrow to `344px` / `162px` on a screen wide enough to hold the gutter at its `64px` cap, and the row still holds three and six. A hand-written `380px` did not: it was a number computed against the default measure, and every site that narrowed the wrap silently dropped a card off the line and had to recalculate the token for itself.
+**How many fit on a line is the width's business, not the row's.** The row is a plain wrapping flex row of fixed-width items — three cards and their two gaps, six compact ones and their five, two big ones and their one — and that count holds because `--card-width` / `--card-width-compact` / `--card-width-big` are **read off the page measure** rather than written down (`sass/_tokens.scss`): each is the measure minus its two gutters minus the row's own gaps, divided by three, by six or by two, capped at `380px` / `190px` / `570px` and at `90vw` / `45vw` / `90vw`. On the default `1440px` page they resolve to exactly those caps, so nothing moves; on a site framing its content tighter — a `--section-wrap-max-width` of `1200px`, say — they narrow on a screen wide enough to hold the gutter at its `64px` cap, and the row still holds three, six and two. A hand-written `380px` did not: it was a number computed against the default measure, and every site that narrowed the wrap silently dropped a card off the line and had to recalculate the token for itself.
+
+The three caps are one series rather than three values: `380 × 3`, `190 × 6` and `570 × 2` are the same `1140px` of cards. `CardMeasureTest` locks each one to its count, and that none of them carries a floor — a floor is what made a card overflow its own wrap under a `420px` viewport, where `90vw` is already less than it.
 
 What is read there is the measure the *page* declares, which says nothing about the box a given row sits in — a `.cards` nested in a `flex_columns` cell, in a panel or in a modal is narrower than that. `max-width: 100%` on `.card` is what closes it: the token is what a card asks for, that is what it never exceeds. It also ends the overflow a phone under `420px` used to show, where the old `clamp()`'s `300px` floor won over its own `90vw` ceiling.
+
+---
+
+## Card size
+
+A `card` and a `flip_card` each carry a **Taille** field (`BlockCardSizeChoiceType`) picking one of three steps: *Par défaut (trois par ligne)*, *Réduite (six par ligne)* and *Grande (deux par ligne)*. It is optional, and the default is the placeholder rather than a choice — an unset value writes no class, so every card stored before the field existed keeps its row of three.
+
+What is stored is a count, not a measurement. Each step writes `card--compact` / `card--big` (`flip-card--compact` / `flip-card--big` on the other kind), and each class does nothing but point the card at the matching `--card-width-*` token above — computed off the measure the page declares, so a site framing its content tighter keeps its row whole, which a stored length could never do. The two kinds read the very same tokens on purpose: a row mixing them holds together only if a flip card sized *Grande* is as wide as a card sized *Grande*.
+
+The title follows the width, the plain card's stepping to `--card-title-size-compact` / `--card-title-size-big`: `19px` reads large across `190px` and small across `570px`, and on a big card the two titles are what the visitor compares. A flip card's is left alone, drawn from its own `--flip-card-title-size`.
+
+This is not `BlockClassChoiceType`, which sits beside it and holds the fixed pixel widths (`width-100`, `width-125`…). That one answers "how wide is this block", this one "how many of it to the row" — and the row is what makes the answer right.
 
 ---
 
@@ -1418,7 +1435,9 @@ Passing `class="card--compact"` gives the same card at the width of a thumbnail 
 read off the page measure so six line up where three do — see "The `.cards` row" above), with its title
 stepped down to match — for what a
 set of cards shows in the background, an accessory beside its bearer, where the full width would have
-every item read as a subject of its own.
+every item read as a subject of its own. `class="card--big"` goes the other way, two to the row
+(`--card-width-big`) with the title stepped up — for the two-way choice a page puts to its visitor,
+one door against another, where three to the row reads as a list and not as a decision.
 
 ### Collection: a live grid sourced from another bundle
 

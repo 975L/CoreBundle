@@ -36,4 +36,26 @@ class BlockClassChoiceTypeTest extends TestCase
         $this->assertTrue($options['multiple']);
         $this->assertFalse($options['required']);
     }
+
+    // Widths and nothing else: the "box-shadow" this list used to offer changed no pixel, the Card component writing that class on every card it renders and BlockShadowChoiceType being where a shadow has been chosen since
+    public function testItHoldsWidthsAndNothingElse(): void
+    {
+        foreach (BlockClassChoiceType::CHOICES as $label => $class) {
+            $this->assertStringStartsWith('width-', $class);
+            $this->assertStringStartsWith('label.css_class_width_', $label);
+        }
+    }
+
+    // Its own labels, not the "label.css_classes" pair ImageClassChoiceType and the media screen share: those two do hold classes of several kinds, where this one holds a width and should say so
+    public function testItSaysItHoldsAWidth(): void
+    {
+        $type = new BlockClassChoiceType();
+        $resolver = new OptionsResolver();
+        $type->configureOptions($resolver);
+
+        $options = $resolver->resolve();
+
+        $this->assertSame('label.block_width', $options['label']);
+        $this->assertSame('label.block_width_help', $options['help']);
+    }
 }

@@ -930,6 +930,14 @@
                 <source>label.block_video_iframe_description</source>
                 <target>External video embedded via iframe (YouTube, Vimeo...)</target>
             </trans-unit>
+            <trans-unit id="kPEumMD">
+                <source>label.block_width</source>
+                <target>Width</target>
+            </trans-unit>
+            <trans-unit id="g6grPlL">
+                <source>label.block_width_help</source>
+                <target>Select the width to apply to the block</target>
+            </trans-unit>
             <trans-unit id="OncQEBy">
                 <source>label.blocks</source>
                 <target>Blocks</target>
@@ -953,6 +961,26 @@
             <trans-unit id="zIIun3q">
                 <source>label.caption_help</source>
                 <target>Leave empty if not used</target>
+            </trans-unit>
+            <trans-unit id="av.3GX7">
+                <source>label.card_size</source>
+                <target>Size</target>
+            </trans-unit>
+            <trans-unit id="hzPMIG6">
+                <source>label.card_size_big</source>
+                <target>Big (two per row)</target>
+            </trans-unit>
+            <trans-unit id="p6myEIl">
+                <source>label.card_size_compact</source>
+                <target>Compact (six per row)</target>
+            </trans-unit>
+            <trans-unit id="OQUrC9K">
+                <source>label.card_size_default</source>
+                <target>Default (three per row)</target>
+            </trans-unit>
+            <trans-unit id="HH1TxAI">
+                <source>label.card_size_help</source>
+                <target>How many cards fit one row: six when compact, three by default, two when big</target>
             </trans-unit>
             <trans-unit id="gTzWFQi">
                 <source>label.cards</source>

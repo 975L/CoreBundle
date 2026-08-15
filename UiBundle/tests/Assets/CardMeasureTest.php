@@ -13,7 +13,7 @@ namespace c975L\UiBundle\Tests\Assets;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-// Three cards fit a row and six compact ones do, whatever measure a site frames its pages on - the invariant the two width tokens exist to hold. It rests on numbers that have to keep agreeing: the gaps taken off the measure and the ones ".cards" actually puts between the cards, the divisor and the count, and the cap each token stops at against the room the default page leaves
+// Three cards fit a row, six compact ones do and two big ones do, whatever measure a site frames its pages on - the invariant the three width tokens exist to hold. It rests on numbers that have to keep agreeing: the gaps taken off the measure and the ones ".cards" actually puts between the cards, the divisor and the count, and the cap each token stops at against the room the default page leaves
 class CardMeasureTest extends TestCase
 {
     // The two chains as they read once every space is out
@@ -21,15 +21,16 @@ class CardMeasureTest extends TestCase
 
     private const string GUTTER_CHAIN = 'var(--section-wrap-gutter,clamp(20px,5vw,64px))';
 
-    // The page the two caps below were computed against, and the gutter at its own ceiling
+    // The page the three caps below were computed against, and the gutter at its own ceiling
     private const int DEFAULT_MEASURE = 1440;
 
     private const int DEFAULT_GUTTER = 64;
 
-    // Each token, the cap it stops at and how many of that card a row holds
+    // Each token, the cap it stops at and how many of that card a row holds - 380 * 3, 190 * 6 and 570 * 2 are the same 1140px of cards, which is what makes the three one series
     private const array WIDTHS = [
         '--card-width' => [380, 3],
         '--card-width-compact' => [190, 6],
+        '--card-width-big' => [570, 2],
     ];
 
     /**
@@ -45,7 +46,7 @@ class CardMeasureTest extends TestCase
 
     // Written down, a width is a number computed against the default measure: a site framing its content tighter dropped a card off the row with nothing to say so
     #[DataProvider('stylesheetProvider')]
-    public function testBothWidthsAreReadOffThePageMeasure(string $file): void
+    public function testEveryWidthIsReadOffThePageMeasure(string $file): void
     {
         $css = $this->stylesheet($file);
 
@@ -57,9 +58,9 @@ class CardMeasureTest extends TestCase
         }
     }
 
-    // A floor is what made a card overflow its own wrap under a 420px viewport, where 90vw is already less than it - so both are capped and neither is floored
+    // A floor is what made a card overflow its own wrap under a 420px viewport, where 90vw is already less than it - so all three are capped and none is floored
     #[DataProvider('stylesheetProvider')]
-    public function testNeitherWidthCarriesAFloor(string $file): void
+    public function testNoWidthCarriesAFloor(string $file): void
     {
         $css = $this->stylesheet($file);
 

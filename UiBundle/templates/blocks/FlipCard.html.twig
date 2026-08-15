@@ -3,7 +3,9 @@
 {# "flip-card--accent-*" and not the card's own classes: a flip card is not a card (see sass/_flip-card.scss), and its accent lands on the outline and the two titles rather than on a filled header band #}
 {% set accentClass = accent|default('') in ['red', 'orange', 'yellow', 'lime', 'green', 'teal', 'cyan', 'blue', 'indigo', 'violet', 'pink', 'grey'] ? 'flip-card--accent-' ~ accent : '' %}
 {# Matched against the closed steps for the same reason, and shared with the plain card rather than prefixed "flip-card-": both kinds read the very same token off these classes (see sass/_block-surface.scss). Unset writes none at all, and the card keeps whatever this site's theme gives it. See BlockRadiusChoiceType / BlockShadowChoiceType #}
+{# Matched against the two named steps, same as the card's: the flip card reads the very same width tokens so a row mixing the two kinds stays even. See BlockCardSizeChoiceType #}
+{% set sizeClass = size|default('') in ['compact', 'big'] ? 'flip-card--' ~ size : '' %}
 {% set radiusClass = radius|default('') in ['none', 'small', 'medium', 'large'] ? 'block-radius-' ~ radius : '' %}
 {% set shadowClass = shadow|default('') in ['none', 'small', 'medium', 'large'] ? 'block-shadow-' ~ shadow : '' %}
-{% set classes = [class|default([])|join(' '), accentClass, radiusClass, shadowClass]|filter(name => name)|join(' ') %}
+{% set classes = [class|default([])|join(' '), accentClass, sizeClass, radiusClass, shadowClass]|filter(name => name)|join(' ') %}
 <twig:c975LUi:FlipCard:FlipCard id="{{ id|default('') }}" title="{{ title|default('') }}" level="{{ level|default('') }}" content="{{ content|default('') }}" backTitle="{{ backTitle|default('') }}" backContent="{{ backContent|default('') }}" media="{{ block.media }}" ratio="{{ ratio|default('free') }}" class="{{ classes }}"/>
