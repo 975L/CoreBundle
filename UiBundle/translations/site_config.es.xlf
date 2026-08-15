@@ -150,37 +150,9 @@
                 <source>description.watermark_width</source>
                 <target>Ancho de la marca de agua, en porcentaje del ancho de la imagen (13.75 reproduce una firma de 330 px en una imagen de 2400 px).</target>
             </trans-unit>
-            <trans-unit id="gypr9AJ">
-                <source>label.ai_assistant_dashboard_enabled</source>
-                <target>Asistente IA del panel</target>
-            </trans-unit>
-            <trans-unit id="iSIwZ0b">
-                <source>label.ai_assistant_dashboard_endpoint</source>
-                <target>URL del backend del asistente IA</target>
-            </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>
                 <target>Asistente IA del panel no activado</target>
-            </trans-unit>
-            <trans-unit id="5eFo4.J">
-                <source>label.ai_assistant_dashboard_token</source>
-                <target>Token del backend del asistente IA</target>
-            </trans-unit>
-            <trans-unit id="Zi7s935">
-                <source>label.ai_assistant_rephrase_api_key</source>
-                <target>Clave API de la reformulación</target>
-            </trans-unit>
-            <trans-unit id="B5azLvn">
-                <source>label.ai_assistant_rephrase_base_uri</source>
-                <target>URL base de la API de reformulación</target>
-            </trans-unit>
-            <trans-unit id="6necB26">
-                <source>label.ai_assistant_rephrase_model</source>
-                <target>Modelo de reformulación</target>
-            </trans-unit>
-            <trans-unit id="jdGKvAe">
-                <source>label.ai_assistant_rephrase_provider</source>
-                <target>Proveedor IA de la reformulación</target>
             </trans-unit>
             <trans-unit id="RFJ8N8R">
                 <source>label.ai_rephrase_failure_alert</source>
@@ -189,10 +161,6 @@
             <trans-unit id="H21MUkk">
                 <source>label.ai_rephrase_not_enabled</source>
                 <target>Función de reformulación IA no activada</target>
-            </trans-unit>
-            <trans-unit id="I_GCRck">
-                <source>label.block_showcase_url</source>
-                <target>URL del escaparate de blocks</target>
             </trans-unit>
             <trans-unit id=".HY9J1w">
                 <source>label.email_debug</source>
@@ -314,21 +282,21 @@
                 <source>label.ui_block_showcase_url</source>
                 <target>Vitrina de bloques - URL</target>
             </trans-unit>
+            <trans-unit id="R1c.duO">
+                <source>label.ui_watermark_margin</source>
+                <target>Marca de agua - Margen (%)</target>
+            </trans-unit>
+            <trans-unit id="G8HJlwb">
+                <source>label.ui_watermark_position</source>
+                <target>Marca de agua - Esquina</target>
+            </trans-unit>
+            <trans-unit id="pZTMoK5">
+                <source>label.ui_watermark_width</source>
+                <target>Marca de agua - Ancho (%)</target>
+            </trans-unit>
             <trans-unit id="vSe2.fp">
                 <source>label.url_cookies_policy</source>
                 <target>URL de la política de cookies</target>
-            </trans-unit>
-            <trans-unit id="2uenlW5">
-                <source>label.watermark_margin</source>
-                <target>Marca de agua - Margen (%)</target>
-            </trans-unit>
-            <trans-unit id="tGPfaYH">
-                <source>label.watermark_position</source>
-                <target>Marca de agua - Esquina</target>
-            </trans-unit>
-            <trans-unit id="cdc16bY">
-                <source>label.watermark_width</source>
-                <target>Marca de agua - Ancho (%)</target>
             </trans-unit>
         </body>
     </file>

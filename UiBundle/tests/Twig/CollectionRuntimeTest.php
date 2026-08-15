@@ -79,6 +79,81 @@ class CollectionRuntimeTest extends TestCase
         ], $renderedBlock->getData());
     }
 
+    // The whole point of the random order: asking the source for three items straight away would shuffle the same three on every visit, so the source is asked for everything it holds and the limit is applied after the draw
+    public function testRenderItemsAsksTheSourceForEverythingBeforeDrawingAtRandom(): void
+    {
+        $items = array_map(
+            static fn (int $index): CollectionItem => new CollectionItem('Item ' . $index, slug: 'item-' . $index),
+            range(1, 8)
+        );
+
+        $askedLimit = 'untouched';
+        $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
+        $sourceRegistry->method('items')->willReturnCallback(function (string $source, ?int $limit) use ($items, &$askedLimit): array {
+            $askedLimit = $limit;
+
+            return $items;
+        });
+
+        $blockExtension = $this->createStub(BlockExtension::class);
+        $blockExtension->method('renderBlock')->willReturnCallback(
+            static fn (Block $block): string => '<div>' . $block->getData()['title'] . '</div>'
+        );
+
+        $runtime = $this->createRuntime($sourceRegistry, $blockExtension);
+        $rendered = $runtime->renderItems('guild.characters', 3, null, null, 'random');
+
+        $this->assertNull($askedLimit);
+        $this->assertCount(3, $rendered);
+        $this->assertCount(3, array_unique($rendered));
+        foreach ($rendered as $html) {
+            $this->assertMatchesRegularExpression('#^<div>Item [1-8]</div>$#', $html);
+        }
+    }
+
+    // No limit and a random order: the source is drawn whole, not cut
+    public function testRenderItemsWithNoLimitDrawsTheWholeSource(): void
+    {
+        $items = array_map(
+            static fn (int $index): CollectionItem => new CollectionItem('Item ' . $index, slug: 'item-' . $index),
+            range(1, 5)
+        );
+
+        $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
+        $sourceRegistry->method('items')->willReturn($items);
+
+        $blockExtension = $this->createStub(BlockExtension::class);
+        $blockExtension->method('renderBlock')->willReturnCallback(
+            static fn (Block $block): string => '<div>' . $block->getData()['title'] . '</div>'
+        );
+
+        $runtime = $this->createRuntime($sourceRegistry, $blockExtension);
+        $rendered = $runtime->renderItems('guild.characters', null, null, null, 'random');
+
+        $this->assertCount(5, $rendered);
+        $this->assertCount(5, array_unique($rendered));
+    }
+
+    // Anything but "random" is the source's own order, and the limit stays the source's business - the very query it runs
+    public function testRenderItemsLeavesTheLimitToTheSourceInTheDefaultOrder(): void
+    {
+        $askedLimit = 'untouched';
+        $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
+        $sourceRegistry->method('items')->willReturnCallback(function (string $source, ?int $limit) use (&$askedLimit): array {
+            $askedLimit = $limit;
+
+            return [new CollectionItem('Item 1', slug: 'item-1')];
+        });
+
+        $blockExtension = $this->createStub(BlockExtension::class);
+        $blockExtension->method('renderBlock')->willReturn('');
+
+        $runtime = $this->createRuntime($sourceRegistry, $blockExtension);
+        $runtime->renderItems('guild.characters', 3, null, null, '');
+
+        $this->assertSame(3, $askedLimit);
+    }
+
     // Whatever else a source has to say about its item travels through to the rendered block, which is what spares this model a property per prop the Card accepts
     public function testRenderItemsMergesTheItemsOwnDataIntoTheBlock(): void
     {

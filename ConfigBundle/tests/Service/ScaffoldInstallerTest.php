@@ -271,6 +271,16 @@ class ScaffoldInstallerTest extends TestCase
         }
     }
 
+    // Regenerated from this environment's own content (see SitemapWriter), and left untracked they are what makes the working-tree intrusion check warn about a site that merely built its sitemaps
+    public function testInstallGitignoresTheGeneratedSitemaps(): void
+    {
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $installer->install();
+
+        $this->assertStringContainsString('public/sitemap*', file_get_contents($this->projectDir . '/.gitignore'));
+    }
+
     // It holds the credential to the offsite copy, so it is never committed - and it is anchored to the root, the one place OffsiteSynchronizer reads it from
     public function testInstallGitignoresTheRcloneConfiguration(): void
     {

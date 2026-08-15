@@ -18,7 +18,7 @@ use HeadlessChromium\BrowserFactory;
  * see because they never lay anything out.
  *
  * Deliberately NOT a HealthCheckProviderInterface: those run from c975l:health-check:run, in cron, on the
- * Infomaniak server, which has no browser and no way to install one. This drives a local Chrome instead,
+ * production server, which has no browser and no way to install one. This drives a local Chrome instead,
  * from a command run by hand or by ComposerUpdate.sh, and reports rather than gates - a browser is never
  * deterministic enough to block a push on.
  *

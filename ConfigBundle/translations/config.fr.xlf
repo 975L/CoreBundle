@@ -1070,6 +1070,42 @@
                 <source>label.health_check_humans_stale</source>
                 <target>humans.txt n'a pas été réécrit depuis le %date%, la date qu'il indique n'est plus vraie</target>
             </trans-unit>
+            <trans-unit id="dEBDFIc">
+                <source>label.health_check_intrusion_accounts_gained</source>
+                <target>%count% compte(s) d'administration, contre %previous% à la vérification précédente : si vous n'en avez créé aucun, ce compte est à examiner tout de suite</target>
+            </trans-unit>
+            <trans-unit id="YovIVnd">
+                <source>label.health_check_intrusion_accounts_no_role</source>
+                <target>Aucun rôle d'administration n'est configuré : les comptes privilégiés n'ont pas pu être comptés</target>
+            </trans-unit>
+            <trans-unit id="fnykLtk">
+                <source>label.health_check_intrusion_accounts_stable</source>
+                <target>%count% compte(s) d'administration, inchangé depuis la vérification précédente</target>
+            </trans-unit>
+            <trans-unit id="xWEtMEL">
+                <source>label.health_check_intrusion_code_clean</source>
+                <target>Le code déployé est identique au dépôt</target>
+            </trans-unit>
+            <trans-unit id="Tzu6PJN">
+                <source>label.health_check_intrusion_code_modified</source>
+                <target>%count% fichier(s) du code modifié(s) depuis le déploiement : %files%</target>
+            </trans-unit>
+            <trans-unit id="1osmSff">
+                <source>label.health_check_intrusion_code_no_repository</source>
+                <target>Le code déployé n'est pas un dépôt git : son intégrité ne peut pas être vérifiée ici</target>
+            </trans-unit>
+            <trans-unit id="0U3AE2N">
+                <source>label.health_check_intrusion_code_unavailable</source>
+                <target>git est indisponible sur ce serveur : l'intégrité du code n'a pas pu être vérifiée</target>
+            </trans-unit>
+            <trans-unit id="cJiC6pc">
+                <source>label.health_check_intrusion_uploads_clean</source>
+                <target>Aucun fichier exécutable dans les dossiers d'envoi</target>
+            </trans-unit>
+            <trans-unit id="1mxCtvc">
+                <source>label.health_check_intrusion_uploads_executable</source>
+                <target>%count% fichier(s) exécutable(s) là où seuls des envois sont écrits : %files%</target>
+            </trans-unit>
             <trans-unit id="o3s6n4c">
                 <source>label.health_check_kind</source>
                 <target>Vérification</target>

@@ -44,6 +44,15 @@ class CollectionBlockCacheTagProviderTest extends TestCase
         $this->assertNull($this->resolve(['limit' => 3], ['guild_character']));
     }
 
+    // A cached entry would freeze one single draw until the source itself changed, i.e. exactly what asking for a random order says it does not want. The items themselves are still cached, each keyed on the item and not on the draw (see CollectionRuntime)
+    public function testABlockDrawingItsItemsAtRandomVetoesTheEntry(): void
+    {
+        $this->assertNull($this->resolve(
+            ['source' => 'guild.characters', 'limit' => 3, 'order' => 'random'],
+            ['guild_character']
+        ));
+    }
+
     // With a "detailPage", each item carries a link built from the page currently being rendered - one entry per block would freeze one page's links into another's html. The items themselves are still cached, keyed on the detail url they were built with (see CollectionRuntime)
     public function testABlockConfiguredWithADetailPageVetoesTheEntry(): void
     {

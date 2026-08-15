@@ -1038,6 +1038,22 @@
                 <source>label.collection_limit_help_total</source>
                 <target>Laisser vide pour tout afficher - cette source en contient %total%</target>
             </trans-unit>
+            <trans-unit id="vhESkvY">
+                <source>label.collection_order</source>
+                <target>Ordre d'affichage</target>
+            </trans-unit>
+            <trans-unit id="UjLwT9q">
+                <source>label.collection_order_help</source>
+                <target>Le tirage aléatoire porte sur toute la collection, la limite s'applique ensuite</target>
+            </trans-unit>
+            <trans-unit id="giBI6ms">
+                <source>label.collection_order_random</source>
+                <target>Aléatoire</target>
+            </trans-unit>
+            <trans-unit id="DEBDdwv">
+                <source>label.collection_order_source</source>
+                <target>Celui de la collection (par défaut)</target>
+            </trans-unit>
             <trans-unit id="6A6G2AK">
                 <source>label.column_width</source>
                 <target>Largeur de la colonne</target>
@@ -1217,6 +1233,14 @@
             <trans-unit id="YB09_6U">
                 <source>label.css_classes</source>
                 <target>Classes CSS</target>
+            </trans-unit>
+            <trans-unit id="l3d_RrU">
+                <source>label.css_classes_free</source>
+                <target>Classes CSS du site</target>
+            </trans-unit>
+            <trans-unit id="vhChdgp">
+                <source>label.css_classes_free_help</source>
+                <target>Classes propres au thème de ce site, séparées par des espaces (ex. « big-text accent »). Seuls les noms de classe valides sont retenus, le reste est ignoré à l'affichage.</target>
             </trans-unit>
             <trans-unit id="cZ3ULNf">
                 <source>label.css_classes_help</source>
@@ -1933,6 +1957,18 @@
             <trans-unit id="epZIsrh">
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% section(s) que vous avez réécrite(s) ont évolué dans le modèle « %model% » : %sections%</target>
+            </trans-unit>
+            <trans-unit id="9LuBQgf">
+                <source>label.health_check_pdf_thumbnail_missing</source>
+                <target>%file% n'a pas de vignette : ré-enregistrez le média ; si la vignette n'apparaît pas, ce serveur ne peut pas en générer côté web</target>
+            </trans-unit>
+            <trans-unit id="4PHwS4_">
+                <source>label.health_check_pdf_thumbnail_ok</source>
+                <target>%file% a bien sa vignette</target>
+            </trans-unit>
+            <trans-unit id="v6PBSoV">
+                <source>label.health_check_pdf_thumbnail_unavailable</source>
+                <target>%file% n'a pas de vignette et ce serveur ne peut en générer aucune : exec() est indisponible ou Ghostscript n'est pas installé</target>
             </trans-unit>
             <trans-unit id="KV_qnlv">
                 <source>label.health_check_svg_fonts_not_vectorized</source>

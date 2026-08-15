@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Controller\Management\MaintenanceShortcutController;
 use c975L\ConfigBundle\Management\ConfigShortcutProvider;
 use c975L\ConfigBundle\Management\ShortcutProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\UserFormSeeder;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Repository\FormRepository;
 use PHPUnit\Framework\TestCase;
@@ -41,12 +42,14 @@ class ConfigShortcutProviderTest extends TestCase
         return $translator;
     }
 
-    // The "register" Form's own $enabled flag drives the registration toggle - a Form not seeded yet counts as disabled
+    // The register Form's own $enabled flag drives the registration toggle - a Form not seeded yet counts as disabled. Only answers the lookup by action, the name being editable from the back-office: searching by it would lose the tile on a renamed form
     private function createFormRepository(?bool $registerEnabled = false): FormRepository
     {
         $repository = $this->createStub(FormRepository::class);
-        $repository->method('findOneBy')->willReturn(
-            null === $registerEnabled ? null : new Form()->setName('register')->setEnabled($registerEnabled)
+        $repository->method('findOneBy')->willReturnCallback(
+            static fn (array $criteria) => null !== $registerEnabled && ['action' => UserFormSeeder::REGISTER_ACTION] === $criteria
+                ? new Form()->setName('inscription')->setAction(UserFormSeeder::REGISTER_ACTION)->setEnabled($registerEnabled)
+                : null
         );
 
         return $repository;

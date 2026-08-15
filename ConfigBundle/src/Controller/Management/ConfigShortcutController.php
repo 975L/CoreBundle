@@ -17,6 +17,7 @@ use c975L\ConfigBundle\Management\SitemapWriter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ConfigSqlExporter;
 use c975L\ConfigBundle\Service\Export\SyncAllExporter;
+use c975L\ConfigBundle\Service\UserFormSeeder;
 use c975L\UiBundle\Repository\FormRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -87,7 +88,7 @@ class ConfigShortcutController extends AbstractController
         ]);
     }
 
-    // Flips the "register" c975L\UiBundle\Entity\Form's $enabled flag - same lever the scaffolded RegisterFormAction's Form is checked against by FormController before building/submitting it
+    // Flips the register c975L\UiBundle\Entity\Form's $enabled flag - same lever the scaffolded RegisterFormAction's Form is checked against by FormController before building/submitting it. Found by its action rather than by its name, the name being editable from the back-office: the tile it feeds has to keep flipping the very form the site registers people through, whatever it ends up called
     #[AdminRoute(
         path: '/config/user-registration-enabled-toggle',
         name: 'config_user_registration_enabled_toggle',
@@ -97,7 +98,7 @@ class ConfigShortcutController extends AbstractController
     {
         $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
 
-        $form = $this->formRepository->findOneBy(['name' => 'register']);
+        $form = $this->formRepository->findOneBy(['action' => UserFormSeeder::REGISTER_ACTION]);
         if (null !== $form && $this->isCsrfTokenValid(self::REGISTRATION_ENABLED_TOGGLE_ROUTE, $request->request->get('_token'))) {
             $enabled = !$form->isEnabled();
             $form->setEnabled($enabled);

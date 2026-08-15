@@ -19,8 +19,10 @@
         <div class="portfolio-grid__grid">
             {% for m in media %}
                 {# No "url" on this media: nothing to link to, so this must not render as an <a> at all - a href="#" would be a dead link that still looks clickable #}
-                {% set tag = m.url ? 'a' : 'div' %}
-                <{{ tag }} class="portfolio-grid__project"{% if m.url %} href="{{ m.url }}" target="_blank" rel="noopener"{% endif %}>
+                {# A name of its own, "tag" being the container's above: Twig's "set" is not scoped to the loop, so reusing it there closed the whole section with whatever the last project rendered #}
+                {% set projectTag = m.url ? 'a' : 'div' %}
+                {# Same reading as the "collection" block's own portfolio variant (see blocks/CollectionItem.html.twig): a tab of its own is for a link leaving the site, never for a page of this one #}
+                <{{ projectTag }} class="portfolio-grid__project"{% if m.url %} href="{{ m.url }}"{% if m.url starts with 'http' %} target="_blank" rel="noopener"{% endif %}{% endif %}>
                     <div class="portfolio-grid__project-img">
                         {# Pixel size reserves the box so the grid doesn't reflow as each image lands #}
                         <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %} loading="lazy">
@@ -29,7 +31,7 @@
                         <h3 class="portfolio-grid__project-title">{{ m.label }}</h3>
                         {% if m.description %}<p class="portfolio-grid__project-text">{{ m.description }}</p>{% endif %}
                     </div>
-                </{{ tag }}>
+                </{{ projectTag }}>
             {% endfor %}
         </div>
     </div>

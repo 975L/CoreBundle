@@ -81,6 +81,24 @@ class HealthCheckRunnerTest extends TestCase
         $this->assertSame(['w3c-html' => 0], $counts);
     }
 
+    // Rows are only flushed once every provider has run, so a provider throwing would otherwise discard what the ones before it produced and stop the ones after it from running at all
+    public function testAProviderThrowingDoesNotTakeTheRunDownWithIt(): void
+    {
+        $failing = $this->createStub(HealthCheckProviderInterface::class);
+        $failing->method('getKind')->willReturn('intrusion');
+        $failing->method('runChecks')->willThrowException(new \UnexpectedValueException('unreadable directory'));
+
+        $working = $this->createProvider('pagespeed', [['url' => 'https://example.com/', 'label' => null, 'status' => HealthCheckResult::STATUS_OK, 'summary' => 'ok', 'details' => null]]);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('persist');
+        $entityManager->expects($this->once())->method('flush');
+
+        $runner = new HealthCheckRunner([$failing, $working], $entityManager);
+
+        $this->assertSame(['pagespeed' => 1], $runner->run());
+    }
+
     public function testRunWithNoProvidersReturnsEmptyCounts(): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);

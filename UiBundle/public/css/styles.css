@@ -1779,6 +1779,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   padding-top: var(--section-space, clamp(48px, 8vw, 84px));
 }
 
+.blocks .readmore {
+  margin-block-start: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
+.flex-columns__col .readmore {
+  margin-block-start: 0;
+}
+
 .text-section.section--bg-muted,
 .text-section.section--bg-primary,
 .text-section.section--bg-dark {
@@ -2609,7 +2617,8 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 /* ---- portfolio_grid / video_grid ---- */
 .portfolio-grid__head,
-.video-grid__head {
+.video-grid__head,
+.collection-grid__head {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -2619,12 +2628,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 .portfolio-grid__head .section-eyebrow,
-.video-grid__head .section-eyebrow {
+.video-grid__head .section-eyebrow,
+.collection-grid__head .section-eyebrow {
   margin-bottom: 8px;
 }
 
 .portfolio-grid__head .section-title,
-.video-grid__head .section-title {
+.video-grid__head .section-title,
+.collection-grid__head .section-title {
   margin: 0;
 }
 
@@ -2697,14 +2708,6 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 /* ---- collection ---- */
-.collection-grid__head {
-  margin-bottom: 36px;
-}
-
-.collection-grid__head .section-title {
-  margin: 0;
-}
-
 /* ---- cta_band ---- */
 .cta-band__inner {
   background: var(--primary);

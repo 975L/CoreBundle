@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Controller\Management\ConfigPruneController;
 use c975L\ConfigBundle\Controller\Management\ConfigShortcutController;
 use c975L\ConfigBundle\Controller\Management\MaintenanceShortcutController;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\UserFormSeeder;
 use c975L\UiBundle\Repository\FormRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -31,7 +32,8 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
     public function getShortcuts(): array
     {
         $maintenanceEnabled = (bool) $this->configService->get('site-maintenance');
-        $registerForm = $this->formRepository->findOneBy(['name' => 'register']);
+        // Found by its action, the one thing an admin cannot rename from the back-office - a form renamed there would otherwise take this tile away with it, while the site kept registering people (see RegistrationStatusProvider, which reads the same field)
+        $registerForm = $this->formRepository->findOneBy(['action' => UserFormSeeder::REGISTER_ACTION]);
 
         return [
             [

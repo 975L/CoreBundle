@@ -22,6 +22,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ArticleType extends AbstractType
 {
+    use HasCssClassesFieldTrait;
+
     public function __construct(
         private readonly BlockAnchorSlugger $anchorSlugger,
     ) {
@@ -47,6 +49,8 @@ class ArticleType extends AbstractType
                 'required' => false,
             ])
         ;
+
+        $this->addCssClassesField($builder);
 
         $builder->addEventListener(
             FormEvents::SUBMIT,

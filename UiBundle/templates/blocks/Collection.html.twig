@@ -4,7 +4,7 @@
     title="{{ title|default('') }}"
     linkLabel="{{ linkLabel|default('') }}"
     linkUrl="{{ linkUrl|default('') }}"
-    items="{{ collection_render_items(source, limit|default(null), detailPage|default(null), variant|default(null)) }}"
+    items="{{ collection_render_items(source, limit|default(null), detailPage|default(null), variant|default(null), order|default(null)) }}"
     variant="{{ variant|default('') }}"
     id="{{ anchor_id }}"
 />

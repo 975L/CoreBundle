@@ -36,12 +36,12 @@ class TextHookTypeTest extends TestCase
         return $added;
     }
 
-    // A hook is one paragraph and nothing else, which is what keeps it droppable anywhere
-    public function testBuildFormAddsTheTextFieldAndNothingElse(): void
+    // A hook is one paragraph and nothing else of its own, which is what keeps it droppable anywhere - the site classes beside it style that paragraph rather than adding anything to it (see HasCssClassesFieldTrait)
+    public function testBuildFormAddsTheTextFieldAndNothingButTheSiteClasses(): void
     {
         $added = $this->buildAddedFields();
 
-        $this->assertSame(['text'], array_keys($added));
+        $this->assertSame(['text', 'cssClasses'], array_keys($added));
         $this->assertSame('label.text', $added['text']['options']['label']);
     }
 

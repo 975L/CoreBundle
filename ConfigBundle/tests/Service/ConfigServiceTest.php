@@ -312,7 +312,7 @@ class ConfigServiceTest extends TestCase
         $service = $this->createService($this->createRepositoryIndexedBySlug($config));
 
         $service->loadDefaultConfig($this->createDeclarationFile([
-            'slug' => 'ui-watermark-position', 'label' => 'label.watermark_position',
+            'slug' => 'ui-watermark-position', 'label' => 'label.ui_watermark_position',
             'kind' => Config::TYPE_CHOICE, 'choices' => ['top-left', 'bottom-right'],
         ]));
 

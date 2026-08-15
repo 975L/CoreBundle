@@ -119,6 +119,17 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding-top: var(--section-space, #{$section-space});
 }
 
+// Third of the same case, and the one that hid behind a value: a "text_readmore" is a bare component too, and the 1em of body copy it carries (sass/_readmore.scss) reads as a step where none is due - laid under a hero, the fold started all but flush against it.
+// A descendant and not a child like its two neighbours above: this kind is one an editor can dress in the site's own classes (see HasCssClassesFieldTrait), and that wrapper is a real box - being what carries a frame or a width - so it stands between the two and breaks a ">". A margin and not a padding, the fold owning its own inner space
+.blocks .readmore {
+    margin-block-start: var(--section-space, #{$section-space});
+}
+
+// As a column slot, same reason as the sections further down: the page-level step would misalign the column against its siblings. After the rule above, both being (0,2,0) - a column is inside a page's run of blocks too
+.flex-columns__col .readmore {
+    margin-block-start: 0;
+}
+
 // Only on a flat: the step above a block belongs to the block itself, but a colored band paints down to its own edge, and without a bottom padding of its own the text would sit flush against that edge
 .text-section.section--bg-muted,
 .text-section.section--bg-primary,
@@ -788,8 +799,10 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 /* ---- portfolio_grid / video_grid ---- */
 // The head and the grid are the same pair for both kinds - a section title with a "see it all elsewhere" link beside it, over a one-to-three column grid. What differs is only what a cell holds: a project card of its own making for one, a whole nested block (a player and its consent) for the other
+// The collection grid's own head joins them rather than keeping a rule of its own: it holds the very same eyebrow, title and link (see Collection/Grid.html.twig), only over .cards instead of the portfolio grid
 .portfolio-grid__head,
-.video-grid__head {
+.video-grid__head,
+.collection-grid__head {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -799,12 +812,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 .portfolio-grid__head .section-eyebrow,
-.video-grid__head .section-eyebrow {
+.video-grid__head .section-eyebrow,
+.collection-grid__head .section-eyebrow {
     margin-bottom: 8px;
 }
 
 .portfolio-grid__head .section-title,
-.video-grid__head .section-title {
+.video-grid__head .section-title,
+.collection-grid__head .section-title {
     margin: 0;
 }
 
@@ -883,14 +898,6 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 /* ---- collection ---- */
 // Default variant reuses .cards/.card; the "portfolio" variant uses .portfolio-grid__grid instead
-
-.collection-grid__head {
-    margin-bottom: 36px;
-}
-
-.collection-grid__head .section-title {
-    margin: 0;
-}
 
 /* ---- cta_band ---- */
 // Its vertical room comes from the shared rhythm at the top of this file: the panel below is what carries the color, the section itself is transparent, so it has no edge of its own to pad against

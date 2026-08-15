@@ -82,7 +82,7 @@ class VichPdfThumbnailListener
 
     private function generateThumbnail(string $pdfPath, int $width): void
     {
-        // exec() is disabled on some shared hostings (e.g. Infomaniak): no thumbnail rather than a crash
+        // exec() is disabled on some hosts: no thumbnail rather than a crash
         if (!function_exists('exec')) {
             return;
         }

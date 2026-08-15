@@ -31,15 +31,28 @@ class CollectionRuntime implements RuntimeExtensionInterface
     }
 
     // Renders each item as a never-persisted "collection_item" Block - literally the same render_block() pipeline as a real, editor-placed block, just fed with data built from the source's own CollectionItem instead of a stored Block::$data; @return string[] one rendered HTML fragment per item
-    public function renderItems(string $source, ?int $limit, ?string $detailPage, ?string $variant = null): array
+    public function renderItems(string $source, ?int $limit, ?string $detailPage, ?string $variant = null, ?string $order = null): array
     {
         $rendered = [];
 
-        foreach ($this->sourceRegistry->items($source, $limit) as $item) {
+        foreach ($this->pick($source, $limit, $order) as $item) {
             $rendered[] = $this->renderItem($source, $item, $detailPage, $variant);
         }
 
         return $rendered;
+    }
+
+    // A random order has to see the whole source before it cuts: asking it for three items straight away would shuffle the same three on every visit, so the limit is applied after the draw and not by the source. Its block is rendered live for the same reason - see CollectionBlockCacheTagProvider; @return CollectionItem[]
+    private function pick(string $source, ?int $limit, ?string $order): array
+    {
+        if ('random' !== $order) {
+            return $this->sourceRegistry->items($source, $limit);
+        }
+
+        $items = $this->sourceRegistry->items($source, null);
+        shuffle($items);
+
+        return null === $limit ? $items : array_slice($items, 0, $limit);
     }
 
     // The singular of renderItems(): one item of a source, picked by "first"/"last"/its own slug, for the "collection_entry" block - an album on a home page, a member put forward. Empty string when nothing answers (unknown source, empty source, slug that matches none), which the block renders as nothing at all rather than as a hole in the page

@@ -48,6 +48,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - A minimal page layout with the theme, the site graphics, the share tags and the banner, for an app running without SiteBundle
 - Media Library in EasyAdmin: browse every `Media` regardless of how it's attached, and see where it's used
 - AJAX kind-switcher in EasyAdmin
+- Text kinds carry a free **Site CSS classes** field, so a site's own theme classes reach a block the bundle knows nothing about (filtered at render, opt-in per kind)
 - Extensible: register your own block kinds via a service tag
 - Automatic CSS injection: bundles declare their stylesheets via a service tag, rendered by `bundle_stylesheets()` in Twig
 - Reusable drag-and-drop sortable script for any EasyAdmin `CollectionField`, plus the touch-capable drag gesture behind it (`assets/js/pointer-sort.js`) on its own, for a bundle sorting something that isn't a collection field
@@ -546,6 +547,8 @@ The **vertical rhythm** is one token, `--section-space` (`clamp(48px, 8vw, 84px)
 
 One page-level block is named by no kind: the `.cards` row `Blocks.html.twig` synthesizes around consecutive `card` blocks (`.blocks > .cards`). Its cards drop their own `margin` inside the row, so without a step of its own it sat flush against the block above it — plainly so under a colored flat, whose background ran straight into the first card, and it carries the same `--section-space` on its top edge as every other page-level block. Inside a `section_cards` container the row is not a child of `.blocks`, and the section around it owns the step instead.
 
+Two more page-level blocks are named by no kind either, and one of them hid behind a value rather than behind nothing: the `progress_tracker`, a bare component that took no step at all, and the `text_readmore`, which carries the `1em` of body copy `sass/_readmore.scss` gives it — enough to look deliberate, not enough to be the page's step, so a fold laid under a hero started all but flush against it. Both are reached by a rule of their own (`.blocks > .tracker`, `.blocks .readmore`). The fold's is written as a **descendant** and not as a child like its two neighbours: it is one of the kinds an editor can dress in the site's own classes (see [Site CSS classes](#site-css-classes) below), and that wrapper is a real box, so it stands between the run of blocks and the fold and would break a `>`. It carries the step as a margin, the fold owning its own inner space, and a fold used as a column slot takes it back the way every section does. `SectionRhythmTest` locks the step and the fact that it is not a child selector.
+
 One leak is closed alongside, a block handing the page a margin the rhythm never declared: `.flex-columns__col > :last-child` drops the theme's own bottom margin off whatever element a column ends on — a slot rendering a bare `<p>`, as the `image` kind does, would otherwise push the section below it that much lower. In the same spirit `section_cards`, `section_features` and `flex_columns` render **no row at all** rather than an empty one when they have no slot, so the heading's own bottom margin doesn't hang in the void under them.
 
 The measure every section is laid out on is two tokens read the same way: `--section-wrap-max-width` and `--section-wrap-gutter` (`clamp(20px, 5vw, 64px)`). The first falls back to the page's own frame — `--body-max-width`, declared at `1440px` by SiteBundle and restated as the same `1440px` here for UiBundle used on its own: one measure for the whole page, a section capped narrower than the body it sits in being inset inside its own page. The same chain is read by `.section-wrap`, by the bare `.blocks > .cards` row and by a flat `.feature-bar`'s grid, neither of the last two having a wrap of its own, so the three follow the same measure whatever it is set to. The gutter is read by the first two only: an uncolored `.feature-bar`'s grid has no wrap either and spans that measure edge to edge, the flat rule just putting a colored one back on the very same geometry after its full-bleed. Its optional head is the exception, and takes a `.section-wrap` of its own: a title spanning the band edge to edge would read as a stray line, where the items are cells of a divided row and carry their own padding.
@@ -589,6 +592,37 @@ Then have the component match the stored value against the known variants before
 {% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
 <section class="my-section{{ background }}">...</section>
 ```
+
+---
+
+## Site CSS classes
+
+The five text kinds — `text_readmore`, `text_hook`, `text_section`, `article` and `alert` — carry an optional **Site CSS classes** field, free text where an editor types the classes of the consuming site's own theme, separated by spaces. It is the counterpart of `BlockClassChoiceType`, and the two answer different questions: that one is a closed list of the styles *the bundle ships* and is right on a `card` or a `slider`, a composition the bundle styles itself; this one is the escape hatch for a class only the site knows about — a body size, an accent color, a rule written in its own `theme.css` — which no list in the bundle could ever hold.
+
+It is offered kind by kind rather than on every block, and deliberately so: the field belongs where the block is prose the site may want to set differently, not on a closed composition whose look the bundle is answerable for. To offer it on another kind, `use HasCssClassesFieldTrait` and call `addCssClassesField($builder)` from `buildForm()`:
+
+```php
+use c975L\UiBundle\Form\Block\HasCssClassesFieldTrait;
+
+class MyTextType extends AbstractType
+{
+    use HasCssClassesFieldTrait;
+
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $this->addCssClassesField($builder);
+        // ...your own fields...
+    }
+}
+```
+
+Nothing is needed in the kind's template: `BlockExtension` reads the stored value back and wraps the rendered block in a `<div>` carrying it, the way it already wraps a block in its entrance effect. That wrapper is added **only** when a class was actually stored, so a kind not offering the field — and a block of one that does, left empty — renders exactly as it did before the option existed. It sits *inside* the animation wrapper, that one being `display: contents` and this one having to be the box the layout around it addresses.
+
+The value is filtered at render time rather than validated on submit, and that placement is the point: a block's `data` also reaches the page through an import (see `BlockDataImporter`, which stores the array whole), and the render is the one gate both paths go past. Each space-separated name has to match `[A-Za-z][A-Za-z0-9_-]*` to survive — anything else is dropped rather than escaped into the attribute, so a value like `a" onclick="x` never lands there at all instead of being harmless only by virtue of the escaping. Names are de-duplicated, and the field's help text says as much to the editor. `BlockExtensionTest` locks the three halves: the wrapper carries what was given, keeps only valid names, and is absent when nothing was stored.
+
+One consequence is worth stating before offering the field on a new kind: that wrapper is a **real box**, and has to be — it is what carries a frame, a width or a ground. Unlike `.block-animation` and `.block-editable`, which are `display: contents` precisely so they never become the flex/grid item the layout addresses, this one does become it, and it stands between a block and its parent in every `>` selector. No rule ships broken by it today — none of the five kinds is named by a child selector — but a rule reaching a kind through `.blocks > .something` stops reaching it the moment that kind offers the field and an editor fills it in. Write such a rule as a descendant, as `.blocks .readmore` is (see [the vertical rhythm](#colored-backgrounds) above), and take it back where a container has its own say, the way `.flex-columns__col .readmore` does.
+
+A class typed here does nothing until the site's stylesheet defines it. That's the deal the field makes — it hands the site's own CSS a handle on a block, and the site is what supplies the rule.
 
 ---
 
@@ -1057,7 +1091,7 @@ class ArticlesSliderCacheTagProvider implements BlockCacheTagProviderInterface
 
 SiteBundle's own `ArticlesSliderCacheTagProvider` is a real example: `articles_slider` resolves another `Page`'s own `article` blocks live at render time, so its listener tags the render with `articles_slider_{pageId}` and invalidates that tag whenever one of that page's articles changes.
 
-A resolver may also return **`null`**, which means "don't cache *this* block at all". `cacheable` is declared once per kind, while the answer sometimes belongs to the instance: `CollectionBlockCacheTagProvider` returns null for a `collection` whose source declared no cache tag, and for one configured with a `detailPage`. The veto propagates upwards - a container holding such a block as one of its slots isn't cached either, since its own html would hold that block's.
+A resolver may also return **`null`**, which means "don't cache *this* block at all". `cacheable` is declared once per kind, while the answer sometimes belongs to the instance: `CollectionBlockCacheTagProvider` returns null for a `collection` whose source declared no cache tag, for one configured with a `detailPage`, and for one drawing its items at random. The veto propagates upwards - a container holding such a block as one of its slots isn't cached either, since its own html would hold that block's.
 
 ### Containers, and how their tags are built
 
@@ -1390,8 +1424,9 @@ every item read as a subject of its own.
 
 The `collection` kind lets an editor drop a section on a page that always shows the latest N items
 from **another bundle's own entities** (books, products, projects...) — unlike `card`, no item data is
-entered on the block itself, only which source to pull from (`source`), how many to show (`limit`) and
-the surrounding section heading/link. Each item is resolved live at render time and rendered through
+entered on the block itself, only which source to pull from (`source`), how many to show (`limit`), in
+which order (`order`) and the surrounding section heading/link. Each item is resolved live at render
+time and rendered through
 `collection_item`, a `card`-based kind reserved for this use (never offered in the block picker - see
 `pickable: false` in `config/services.yaml`), so it looks the same as a manually placed `card`.
 Cacheable, but only as far as its source lets it be: its content depends on another bundle's own
@@ -1407,6 +1442,17 @@ Two things are cached, on the same tags:
   page currently being rendered (`CollectionRuntime::buildDetailUrl()`), and one entry per block would
   freeze one page's links into another's html. The items stay cached either way, their own key holding
   the detail url they were built with — all that is given up is the grid wrapper around them.
+
+**Display order** (`order`) is the source's own by default — whatever its `items` callable hands back.
+Set it to **random** and the block draws its items over the *whole* source before applying `limit`, so
+a page putting three of twenty characters forward shows a different three on each visit rather than the
+same three forever. The draw is made at render time, which means the block itself is no longer cached
+(a cached entry would freeze one single draw until the source changed); its **items** keep their own
+entries all the same, each keyed on the item and not on the draw, so only the grid wrapper is rebuilt.
+
+The section head — eyebrow, title and the "see all" link (`linkLabel`/`linkUrl`) — is rendered the same
+way in both presentations (`variant`), the portfolio one only borrowing `portfolio-grid`'s markup so it
+matches a real `portfolio_grid` sitting on the same page.
 
 A bundle exposes its entities to this block by implementing `CollectionSourceProviderInterface`
 (auto-discovered the same way as `BlockFixtureProviderInterface` — no tag needed):
@@ -1737,11 +1783,13 @@ prevent — hence a parameter the app opts into, not a prepended config.
 When a `.pdf` file is uploaded through VichUploader on **any entity** (no interface required), the bundle automatically generates a `.webp` thumbnail of the first page next to it (`document.pdf` → `document.webp` - the extension is replaced, not appended), via Ghostscript + Imagine/GD.
 
 - **Requires Ghostscript** (`gs`) installed on the server. If missing, the thumbnail generation silently fails — the PDF upload itself is unaffected.
-- **Requires `exec()`** to be enabled. On managed hosting where it's disabled (e.g. Infomaniak), thumbnail generation is skipped the same way — the PDF upload itself is unaffected.
+- **Requires `exec()`** to be enabled. On hosts where it's disabled, thumbnail generation is skipped the same way — the PDF upload itself is unaffected.
 - **Skipped for private files** — entities implementing `VichPrivateFileInterface` (e.g. a paid download in a shop) are not thumbnailed, since there's no public preview use case for them.
 - **Thumbnail width** defaults to `400px`, or reuses `getImageWidth()` if the entity also implements `VichImageResizableInterface`.
 
 No configuration needed — handled by `VichPdfThumbnailListener`, auto-registered like the rest of the bundle's services.
+
+Because that failure is silent by design — the upload succeeds, the document downloads fine, and the block falls back to a placeholder — `Management\PdfThumbnailHealthCheckProvider` (kind `pdf-thumbnail`, on ConfigBundle's **Health check** page) lists the PDF medias whose `.webp` is missing, each row linking to that media's own edit screen. It says *why*, not just how many: whether `exec()` can be called and whether Ghostscript answers are read per run (see ConfigBundle's `Service\EnvironmentProbe`), which is what turns "this document has no thumbnail" into either "re-save it" or "this server cannot make one for any document, and no amount of re-saving will help". A site holding no PDF at all reports nothing — a server that couldn't have made a thumbnail isn't a defect until something needs one.
 
 By default an uploaded PDF is stored under an auto-generated name (`block-{kind}-{id}-{uniqid}.pdf`). Filling in the **File name** field (`Media::$name`, shown for `application/pdf` uploads) overrides this: `UiMediaNamer` slugifies it into the stored filename instead (e.g. "Rapport annuel" → `rapport-annuel-xxx.pdf`). It's distinct from **Caption** (`Media::$label`, a display string), which isn't filesystem-safe.
 
@@ -1925,7 +1973,7 @@ The gallery shows 20 thumbnails and offers **20 · 50 · 100** under its paginat
 
 UiBundle registers its **own** menu entry for it (`Management\MenuProvider`, the `media` item), the one entry of this bundle the sidebar keeps `essential`. That was not always so: the entry used to belong to SiteBundle, on the grounds that ConfigBundle owns the menu mechanism and already depends on UiBundle. It moved here because a site running Config + Ui plus a satellite bundle but no SiteBundle had no media library in its back-office at all. Being a menu entry with a `description` of its own, it also gets its step in the onboarding tour for free (see `OnboardingStepBuilder`) — nothing to declare for that.
 
-`Media::$url`/`Media::$description` back the per-project link and text of the `portfolio_grid` kind (see `MediaUploadType`'s `portfolio_grid` context) - a project card's title reuses the existing `$label` field.
+`Media::$url`/`Media::$description` back the per-project link and text of the `portfolio_grid` kind (see `MediaUploadType`'s `portfolio_grid` context) - a project card's title reuses the existing `$label` field. That link only opens a tab of its own when it leaves the site (it starts with `http`): a project just as legitimately points at a page of this very site - a real `Page` written for it, which wins over the shared detail page - and sending the visitor out of their tab for it would be wrong. The `collection` block's own `portfolio` variant reads it the same way (`blocks/CollectionItem.html.twig`).
 
 Attaching more than one `Media` to a `hero` block lays them out beside the text in one of two ways, picked with its "Media layout" field (`HeroType::$mediaLayout`). A single attached media keeps the plain static image whichever is set, and an unset value reads as `slideshow`, so every hero stored before the field existed renders exactly as before.
 
@@ -2265,6 +2313,8 @@ A set of small, dependency-free helpers every c975L bundle attaching blocks or u
 | `Service\BuildFileWriter::write($projectDir, $filename, $contents)` | The one way a listener drops a generated stylesheet into `public/bundles/build/`. Written to a temp file then `rename()`d, so a request reading it mid-rewrite never gets half a stylesheet |
 | `Form\VichImageOptions::default($maxSize, $required)` | The five Vich image-upload options (`allow_delete`, `download_uri`, `asset_helper`, the `File` size constraint…), for both an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` |
 | `Listener\AbstractBlockCacheInvalidationListener` | The Doctrine lifecycle wiring of a listener reacting to one block kind changing - `postPersist`/`postUpdate`/`preRemove` all delegate to the subclass's `invalidate()`, which only has to say which kind it filters on and which cache tag it drops |
+
+One more applies on its own rather than being called: **`Form\Extension\VichTranslationDomainExtension`** pins the two labels VichUploader ships translations for — the "delete?" checkbox and the "download" link — to the domain those translations live in. Left to their default both inherit the surrounding form's domain, which inside the admin is EasyAdmin's, so every upload field rendered `vich_uploader.form_label.delete_confirm` as-is. Written as a type extension rather than as two more entries in `VichImageOptions` because half the ecosystem's upload fields pass hand-written options and would each have had to remember them; a field naming its own domain still wins.
 
 One of them is JavaScript rather than PHP: **`assets/js/pointer-sort.js`**' `addSortGesture()` is the drag gesture the block sortable runs on, mouse and finger alike, with no idea what it is dragging - see [Reusing the gesture elsewhere](#reusing-the-gesture-elsewhere). Reach for it rather than re-hand-rolling a drag in your own bundle: a grid of thumbnails or a table of rows only has to answer where the dragged element should land, which is the part that genuinely differs.
 

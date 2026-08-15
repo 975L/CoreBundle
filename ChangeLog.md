@@ -1,5 +1,62 @@
 # ChangeLog
 
+## v1.11.5
+
+A site now says what an intrusion would leave behind
+
+### ConfigBundle
+
+- Added `IntrusionHealthCheckProvider`, the weekly check looking for the traces an intrusion leaves (15/08/2026)
+- Its uploads row reports an executable file under any directory declared for the backup (15/08/2026)
+- Its code row compares the working tree to the repository it was deployed from (15/08/2026)
+- Its accounts row counts the holders of `site-role-admin` against the previous run (15/08/2026)
+- `IntrusionHealthCheckProvider` reads the working tree with `--untracked-files=no`, what the site writes no longer reading as modified code (15/08/2026)
+- The upload directory walk now skips a sub-directory it cannot read instead of aborting (15/08/2026)
+- The uploads row caps its stored file list at 50, as the code row does (15/08/2026)
+- Added `EnvironmentProbe`, reading what the PHP process actually allows (15/08/2026)
+- Added `PrivilegedAccountCounter`, counting the accounts holding a given role (15/08/2026)
+- Added `CapabilitiesStatusProvider`, the `capabilities` section of the status report (15/08/2026)
+- Added `RegistrationStatusProvider`, the `registration` section of the status report (15/08/2026)
+- The registration shortcut and its toggle find the register `Form` by its action, not by its name (15/08/2026)
+- Added `UserFormSeeder::REGISTER_ACTION` (15/08/2026)
+- `ScaffoldInstaller` gitignores `public/sitemap*`, alongside the other files regenerated on every deployment (15/08/2026)
+- `HealthCheckRunner` isolates each provider, one throwing no longer discarding the rows of the others (15/08/2026)
+- Added `HealthCheckResultRepository::findLatestByUrlAndKind()`, read by the privileged accounts row instead of the whole table (15/08/2026)
+- No hosting provider is named in the comments anymore, a capability standing on its own (15/08/2026)
+- Added the nine intrusion check labels in the three locales (15/08/2026)
+- `ConfigsJsonTest` locks every label on the key its own slug derives (15/08/2026)
+- `ScaffoldInstallerTest` and `HealthCheckRunnerTest` read the gitignored sitemaps and the isolated provider (15/08/2026)
+- Added `IntrusionHealthCheckProviderTest`, `CapabilitiesStatusProviderTest`, `RegistrationStatusProviderTest`, `EnvironmentProbeTest` and `PrivilegedAccountCounterTest` (15/08/2026)
+- The README states the intrusion check, the two status sections and the lookup by action (15/08/2026)
+
+### UiBundle
+
+- Added `HasCssClassesFieldTrait`, the free "Site CSS classes" field a kind opts into (15/08/2026)
+- `text_readmore`, `text_hook`, `text_section`, `article` and `alert` carry it (15/08/2026)
+- `BlockExtension` wraps a block in the classes stored for it, keeping only valid names (15/08/2026)
+- A `text_readmore` laid out as a page-level block takes the page's own step (15/08/2026)
+- Added `PdfThumbnailHealthCheckProvider`, listing the PDF medias whose thumbnail is missing (15/08/2026)
+- Added `MediaRepository::findPdfs()` (15/08/2026)
+- Added `VichTranslationDomainExtension`, the Vich delete and download labels resolved in their own domain (15/08/2026)
+- `Portfolio/Grid.html.twig` names its own loop variable, the section no longer closing on the last project's tag (15/08/2026)
+- A project's link opens a tab of its own only when it leaves the site, in the grid and in the `collection` block (15/08/2026)
+- `configs.json` labels are the keys their own slugs derive, renamed in the three locales (15/08/2026)
+- `label.health_check_pdf_thumbnail_missing` no longer promises a thumbnail on a server that cannot generate one from the web, in the three locales (15/08/2026)
+- No hosting provider is named in the comments and in the README anymore (15/08/2026)
+- Added the site classes and PDF thumbnail labels in the three locales (15/08/2026)
+- `ConfigsJsonTest` locks every label on the key its own slug derives (15/08/2026)
+- `SectionRhythmTest` reads the fold's step and that it is not written as a child selector (15/08/2026)
+- `BlockExtensionTest` reads the wrapper, its filtering and its absence (15/08/2026)
+- Added `HasCssClassesFieldTraitTest`, `VichTranslationDomainExtensionTest`, `PdfThumbnailHealthCheckProviderTest` and `PortfolioLinkTargetTest` (15/08/2026)
+- The README states the site CSS classes field, the PDF thumbnail check and the link rule (15/08/2026)
+- The `collection` block prints its eyebrow and its "see all" link in both presentations, the default one no longer dropping them (15/08/2026)
+- `Collection/Grid.html.twig` heads both variants the same way, `.collection-grid__head` joining the portfolio head's own rule (15/08/2026)
+- Added the `collection` block's **Display order** field, drawing its items at random over the whole source before the limit applies (15/08/2026)
+- `CollectionBlockCacheTagProvider` vetoes the entry of a block drawing at random, its items keeping their own (15/08/2026)
+- Added the display order labels in the three locales (15/08/2026)
+- Added `CollectionGridHeadTest`, and the random draw read by `CollectionRuntimeTest` and `CollectionBlockCacheTagProviderTest` (15/08/2026)
+- The README states the display order and the head shared by both variants (15/08/2026)
+
 ## v1.11.4
 
 A share image says what it shows, and its thumbnail keeps its room

@@ -86,6 +86,14 @@ class ConfigsJsonTest extends TestCase
         }
     }
 
+    // What the backoffice displays is the translation of the key derived from the slug, not of the stored label (see ConfigLabelResolver): an entry whose label says anything else shows up as that raw key, however well translated it is
+    public function testLabelsAreTheKeyDerivedFromTheirSlug(): void
+    {
+        foreach ($this->loadConfigs() as $config) {
+            $this->assertSame('label.' . str_replace('-', '_', $config['slug']), $config['label'], sprintf('Config "%s" declares a label key its slug does not derive', $config['slug']));
+        }
+    }
+
     // Both the label and the description of every entry are translated in each shipped locale
     public function testLabelsAndDescriptionsAreTranslatedInEveryLocale(): void
     {

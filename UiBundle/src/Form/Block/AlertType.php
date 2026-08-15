@@ -18,6 +18,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AlertType extends AbstractType
 {
+    use HasCssClassesFieldTrait;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -35,6 +37,8 @@ class AlertType extends AbstractType
                 'label' => 'label.content',
                 'required' => true,
             ]);
+
+        $this->addCssClassesField($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

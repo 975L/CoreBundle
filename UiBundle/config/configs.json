@@ -1,6 +1,6 @@
 [
     {
-        "label": "label.ai_assistant_dashboard_enabled",
+        "label": "label.ui_ai_assistant_dashboard_enabled",
         "slug": "ui-ai-assistant-dashboard-enabled",
         "sensitive": false,
         "restricted": false,
@@ -11,7 +11,7 @@
         "description": "description.ai_assistant_dashboard_enabled"
     },
     {
-        "label": "label.ai_assistant_dashboard_endpoint",
+        "label": "label.ui_ai_assistant_dashboard_endpoint",
         "slug": "ui-ai-assistant-dashboard-endpoint",
         "sensitive": false,
         "restricted": true,
@@ -22,7 +22,7 @@
         "description": "description.ai_assistant_dashboard_endpoint"
     },
     {
-        "label": "label.ai_assistant_dashboard_token",
+        "label": "label.ui_ai_assistant_dashboard_token",
         "slug": "ui-ai-assistant-dashboard-token",
         "sensitive": true,
         "restricted": true,
@@ -33,7 +33,7 @@
         "description": "description.ai_assistant_dashboard_token"
     },
     {
-        "label": "label.ai_assistant_rephrase_provider",
+        "label": "label.ui_ai_assistant_rephrase_provider",
         "slug": "ui-ai-assistant-rephrase-provider",
         "sensitive": false,
         "restricted": false,
@@ -45,7 +45,7 @@
         "description": "description.ai_assistant_rephrase_provider"
     },
     {
-        "label": "label.ai_assistant_rephrase_api_key",
+        "label": "label.ui_ai_assistant_rephrase_api_key",
         "slug": "ui-ai-assistant-rephrase-api-key",
         "sensitive": true,
         "restricted": false,
@@ -56,7 +56,7 @@
         "description": "description.ai_assistant_rephrase_api_key"
     },
     {
-        "label": "label.ai_assistant_rephrase_base_uri",
+        "label": "label.ui_ai_assistant_rephrase_base_uri",
         "slug": "ui-ai-assistant-rephrase-base-uri",
         "sensitive": false,
         "restricted": false,
@@ -67,7 +67,7 @@
         "description": "description.ai_assistant_rephrase_base_uri"
     },
     {
-        "label": "label.ai_assistant_rephrase_model",
+        "label": "label.ui_ai_assistant_rephrase_model",
         "slug": "ui-ai-assistant-rephrase-model",
         "sensitive": false,
         "restricted": false,
@@ -89,7 +89,7 @@
         "description": "description.email_debug"
     },
     {
-        "label": "label.block_showcase_url",
+        "label": "label.ui_block_showcase_url",
         "slug": "ui-block-showcase-url",
         "sensitive": false,
         "restricted": true,
@@ -343,7 +343,7 @@
         "description": "description.site_enable_matomo"
     },
     {
-        "label": "label.watermark_position",
+        "label": "label.ui_watermark_position",
         "slug": "ui-watermark-position",
         "sensitive": false,
         "restricted": false,
@@ -355,7 +355,7 @@
         "description": "description.watermark_position"
     },
     {
-        "label": "label.watermark_width",
+        "label": "label.ui_watermark_width",
         "slug": "ui-watermark-width",
         "sensitive": false,
         "restricted": false,
@@ -366,7 +366,7 @@
         "description": "description.watermark_width"
     },
     {
-        "label": "label.watermark_margin",
+        "label": "label.ui_watermark_margin",
         "slug": "ui-watermark-margin",
         "sensitive": false,
         "restricted": false,

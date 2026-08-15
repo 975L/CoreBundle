@@ -55,6 +55,11 @@ services:
         arguments:
             $backupPathProviders: !tagged_iterator c975l.backup_path_provider
 
+    # Reads the same declarations as the backup above, for the opposite reason: those are the directories the site writes to, so those are the ones where an executable file has no innocent explanation
+    c975L\ConfigBundle\Management\IntrusionHealthCheckProvider:
+        arguments:
+            $backupPathProviders: !tagged_iterator c975l.backup_path_provider
+
     c975L\ConfigBundle\Management\ImportDispatcher:
         arguments:
             $importProviders: !tagged_iterator c975l.import_provider

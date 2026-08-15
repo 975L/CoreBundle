@@ -1038,6 +1038,22 @@
                 <source>label.collection_limit_help_total</source>
                 <target>Dejar vacío para mostrar todo: esta fuente contiene %total%</target>
             </trans-unit>
+            <trans-unit id="vhESkvY">
+                <source>label.collection_order</source>
+                <target>Orden de visualización</target>
+            </trans-unit>
+            <trans-unit id="UjLwT9q">
+                <source>label.collection_order_help</source>
+                <target>El sorteo aleatorio se hace sobre toda la colección, el límite se aplica después</target>
+            </trans-unit>
+            <trans-unit id="giBI6ms">
+                <source>label.collection_order_random</source>
+                <target>Aleatorio</target>
+            </trans-unit>
+            <trans-unit id="DEBDdwv">
+                <source>label.collection_order_source</source>
+                <target>El de la colección (por defecto)</target>
+            </trans-unit>
             <trans-unit id="6A6G2AK">
                 <source>label.column_width</source>
                 <target>Anchura de la columna</target>
@@ -1217,6 +1233,14 @@
             <trans-unit id="YB09_6U">
                 <source>label.css_classes</source>
                 <target>Clases CSS</target>
+            </trans-unit>
+            <trans-unit id="l3d_RrU">
+                <source>label.css_classes_free</source>
+                <target>Clases CSS del sitio</target>
+            </trans-unit>
+            <trans-unit id="vhChdgp">
+                <source>label.css_classes_free_help</source>
+                <target>Clases propias del tema de este sitio, separadas por espacios (p. ej. «big-text accent»). Solo se conservan los nombres de clase válidos, el resto se ignora al mostrarse.</target>
             </trans-unit>
             <trans-unit id="cZ3ULNf">
                 <source>label.css_classes_help</source>
@@ -1933,6 +1957,18 @@
             <trans-unit id="epZIsrh">
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% sección(es) que usted reescribió han cambiado en el modelo «%model%» : %sections%</target>
+            </trans-unit>
+            <trans-unit id="9LuBQgf">
+                <source>label.health_check_pdf_thumbnail_missing</source>
+                <target>%file% no tiene miniatura: vuelva a guardar el medio; si la miniatura no aparece, este servidor no puede generarla desde la web</target>
+            </trans-unit>
+            <trans-unit id="4PHwS4_">
+                <source>label.health_check_pdf_thumbnail_ok</source>
+                <target>%file% tiene su miniatura</target>
+            </trans-unit>
+            <trans-unit id="v6PBSoV">
+                <source>label.health_check_pdf_thumbnail_unavailable</source>
+                <target>%file% no tiene miniatura y este servidor no puede generar ninguna: exec() no está disponible o Ghostscript no está instalado</target>
             </trans-unit>
             <trans-unit id="KV_qnlv">
                 <source>label.health_check_svg_fonts_not_vectorized</source>

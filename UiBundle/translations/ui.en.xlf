@@ -1038,6 +1038,22 @@
                 <source>label.collection_limit_help_total</source>
                 <target>Leave empty to show everything - this source holds %total%</target>
             </trans-unit>
+            <trans-unit id="vhESkvY">
+                <source>label.collection_order</source>
+                <target>Display order</target>
+            </trans-unit>
+            <trans-unit id="UjLwT9q">
+                <source>label.collection_order_help</source>
+                <target>A random draw is made over the whole collection, the limit applying afterwards</target>
+            </trans-unit>
+            <trans-unit id="giBI6ms">
+                <source>label.collection_order_random</source>
+                <target>Random</target>
+            </trans-unit>
+            <trans-unit id="DEBDdwv">
+                <source>label.collection_order_source</source>
+                <target>The collection's own (default)</target>
+            </trans-unit>
             <trans-unit id="6A6G2AK">
                 <source>label.column_width</source>
                 <target>Column width</target>
@@ -1217,6 +1233,14 @@
             <trans-unit id="YB09_6U">
                 <source>label.css_classes</source>
                 <target>CSS Classes</target>
+            </trans-unit>
+            <trans-unit id="l3d_RrU">
+                <source>label.css_classes_free</source>
+                <target>Site CSS classes</target>
+            </trans-unit>
+            <trans-unit id="vhChdgp">
+                <source>label.css_classes_free_help</source>
+                <target>Classes belonging to this site's own theme, separated by spaces (e.g. "big-text accent"). Only valid class names are kept, anything else is ignored when rendering.</target>
             </trans-unit>
             <trans-unit id="cZ3ULNf">
                 <source>label.css_classes_help</source>
@@ -1933,6 +1957,18 @@
             <trans-unit id="epZIsrh">
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% section(s) you rewrote have changed in the "%model%" model: %sections%</target>
+            </trans-unit>
+            <trans-unit id="9LuBQgf">
+                <source>label.health_check_pdf_thumbnail_missing</source>
+                <target>%file% has no thumbnail: re-save the media; if the thumbnail does not appear, this server cannot generate one from the web</target>
+            </trans-unit>
+            <trans-unit id="4PHwS4_">
+                <source>label.health_check_pdf_thumbnail_ok</source>
+                <target>%file% has its thumbnail</target>
+            </trans-unit>
+            <trans-unit id="v6PBSoV">
+                <source>label.health_check_pdf_thumbnail_unavailable</source>
+                <target>%file% has no thumbnail and this server can generate none: exec() is unavailable or Ghostscript is not installed</target>
             </trans-unit>
             <trans-unit id="KV_qnlv">
                 <source>label.health_check_svg_fonts_not_vectorized</source>

@@ -46,6 +46,16 @@ class CollectionType extends AbstractType
                 'placeholder' => [] === $choices ? 'label.no_collection_source_available' : null,
             ])
             ->add('limit', IntegerType::class, $this->limitOptions(null))
+            // What a limit alone cannot say: three items out of twenty is always the same three, and a home page putting a handful of a large collection forward wants a different handful on each visit. Drawn at render time over the whole source, the limit applied after the draw - see CollectionRuntime::renderItems()
+            ->add('order', ChoiceType::class, [
+                'label' => 'label.collection_order',
+                'help' => 'label.collection_order_help',
+                'required' => false,
+                'choices' => [
+                    'label.collection_order_source' => '',
+                    'label.collection_order_random' => 'random',
+                ],
+            ])
             ->add('eyebrow', TextType::class, [
                 'label' => 'label.eyebrow',
                 'required' => false,
@@ -54,7 +64,7 @@ class CollectionType extends AbstractType
                 'label' => 'label.title',
                 'required' => false,
             ])
-            // "Voir tout" link next to the head, e.g. pointing at a fuller listing elsewhere - same pair of fields as PortfolioGridType, only rendered when the "portfolio" variant is picked (see Collection/Grid.html.twig)
+            // "Voir tout" link next to the head, e.g. pointing at a fuller listing elsewhere - same pair of fields as PortfolioGridType, rendered next to the head in either variant (see Collection/Grid.html.twig)
             ->add('linkLabel', TextType::class, [
                 'label' => 'label.link_label',
                 'required' => false,

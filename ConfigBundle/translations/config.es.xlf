@@ -1070,6 +1070,42 @@
                 <source>label.health_check_humans_stale</source>
                 <target>humans.txt no se ha reescrito desde el %date%, la fecha que indica ya no es cierta</target>
             </trans-unit>
+            <trans-unit id="dEBDFIc">
+                <source>label.health_check_intrusion_accounts_gained</source>
+                <target>%count% cuenta(s) de administración, frente a %previous% en la comprobación anterior: si no ha creado ninguna, esa cuenta debe examinarse de inmediato</target>
+            </trans-unit>
+            <trans-unit id="YovIVnd">
+                <source>label.health_check_intrusion_accounts_no_role</source>
+                <target>No hay ningún rol de administración configurado: no se han podido contar las cuentas privilegiadas</target>
+            </trans-unit>
+            <trans-unit id="fnykLtk">
+                <source>label.health_check_intrusion_accounts_stable</source>
+                <target>%count% cuenta(s) de administración, sin cambios desde la comprobación anterior</target>
+            </trans-unit>
+            <trans-unit id="xWEtMEL">
+                <source>label.health_check_intrusion_code_clean</source>
+                <target>El código desplegado es idéntico al repositorio</target>
+            </trans-unit>
+            <trans-unit id="Tzu6PJN">
+                <source>label.health_check_intrusion_code_modified</source>
+                <target>%count% archivo(s) de código modificado(s) desde el despliegue: %files%</target>
+            </trans-unit>
+            <trans-unit id="1osmSff">
+                <source>label.health_check_intrusion_code_no_repository</source>
+                <target>El código desplegado no es un repositorio git: su integridad no puede comprobarse aquí</target>
+            </trans-unit>
+            <trans-unit id="0U3AE2N">
+                <source>label.health_check_intrusion_code_unavailable</source>
+                <target>git no está disponible en este servidor: no se ha podido comprobar la integridad del código</target>
+            </trans-unit>
+            <trans-unit id="cJiC6pc">
+                <source>label.health_check_intrusion_uploads_clean</source>
+                <target>Ningún archivo ejecutable en las carpetas de envío</target>
+            </trans-unit>
+            <trans-unit id="1mxCtvc">
+                <source>label.health_check_intrusion_uploads_executable</source>
+                <target>%count% archivo(s) ejecutable(s) donde solo se escriben envíos: %files%</target>
+            </trans-unit>
             <trans-unit id="o3s6n4c">
                 <source>label.health_check_kind</source>
                 <target>Comprobación</target>

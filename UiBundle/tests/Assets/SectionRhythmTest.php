@@ -86,6 +86,27 @@ class SectionRhythmTest extends TestCase
         );
     }
 
+    // Same case as the row above, and the one that hid behind a value rather than behind nothing: a "text_readmore" carries the 1em of body copy, which reads as a step where the page's own is due
+    public function testTheFoldedTextOwnsAStep(): void
+    {
+        $this->assertMatchesRegularExpression(
+            // The descendant combinator is a space, and normalize() strips every one of them
+            $this->declarationPattern('.blocks.readmore', 'margin-block-start', [self::STEP]),
+            $this->normalize('styles.min.css'),
+            'A "text_readmore" laid out as a page-level block declares no step of its own: it sits all but flush against the block above it.'
+        );
+    }
+
+    // Written as a descendant and not as a child: the kind is one an editor can dress in the site's own classes, whose wrapper is a real box and stands between the run of blocks and the fold
+    public function testTheFoldedTextsStepSurvivesAWrapper(): void
+    {
+        $this->assertStringNotContainsString(
+            '.blocks>.readmore',
+            $this->normalize('styles.min.css'),
+            'The fold\'s step is written as a child selector: a readmore wrapped in the site\'s own classes no longer takes it.'
+        );
+    }
+
     // A value written out is a value no theme can reach: the rhythm has to stay retunable from one token
     public function testTheStepIsNeverWrittenOutBesideTheToken(): void
     {

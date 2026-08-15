@@ -150,37 +150,9 @@
                 <source>description.watermark_width</source>
                 <target>Watermark width, as a percentage of the image width (13.75 reproduces a 330px signature on a 2400px image).</target>
             </trans-unit>
-            <trans-unit id="gypr9AJ">
-                <source>label.ai_assistant_dashboard_enabled</source>
-                <target>Dashboard AI assistant</target>
-            </trans-unit>
-            <trans-unit id="iSIwZ0b">
-                <source>label.ai_assistant_dashboard_endpoint</source>
-                <target>AI assistant backend url</target>
-            </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>
                 <target>Dashboard AI assistant not enabled</target>
-            </trans-unit>
-            <trans-unit id="5eFo4.J">
-                <source>label.ai_assistant_dashboard_token</source>
-                <target>AI assistant backend token</target>
-            </trans-unit>
-            <trans-unit id="Zi7s935">
-                <source>label.ai_assistant_rephrase_api_key</source>
-                <target>Rephrase API key</target>
-            </trans-unit>
-            <trans-unit id="B5azLvn">
-                <source>label.ai_assistant_rephrase_base_uri</source>
-                <target>Rephrase API base uri</target>
-            </trans-unit>
-            <trans-unit id="6necB26">
-                <source>label.ai_assistant_rephrase_model</source>
-                <target>Rephrase model</target>
-            </trans-unit>
-            <trans-unit id="jdGKvAe">
-                <source>label.ai_assistant_rephrase_provider</source>
-                <target>Rephrase AI provider</target>
             </trans-unit>
             <trans-unit id="RFJ8N8R">
                 <source>label.ai_rephrase_failure_alert</source>
@@ -189,10 +161,6 @@
             <trans-unit id="H21MUkk">
                 <source>label.ai_rephrase_not_enabled</source>
                 <target>AI rephrase feature not enabled</target>
-            </trans-unit>
-            <trans-unit id="I_GCRck">
-                <source>label.block_showcase_url</source>
-                <target>Block showcase url</target>
             </trans-unit>
             <trans-unit id=".HY9J1w">
                 <source>label.email_debug</source>
@@ -314,21 +282,21 @@
                 <source>label.ui_block_showcase_url</source>
                 <target>Block showcase - Url</target>
             </trans-unit>
+            <trans-unit id="R1c.duO">
+                <source>label.ui_watermark_margin</source>
+                <target>Watermark - Margin (%)</target>
+            </trans-unit>
+            <trans-unit id="G8HJlwb">
+                <source>label.ui_watermark_position</source>
+                <target>Watermark - Corner</target>
+            </trans-unit>
+            <trans-unit id="pZTMoK5">
+                <source>label.ui_watermark_width</source>
+                <target>Watermark - Width (%)</target>
+            </trans-unit>
             <trans-unit id="vSe2.fp">
                 <source>label.url_cookies_policy</source>
                 <target>URL Cookies Policy</target>
-            </trans-unit>
-            <trans-unit id="2uenlW5">
-                <source>label.watermark_margin</source>
-                <target>Watermark - Margin (%)</target>
-            </trans-unit>
-            <trans-unit id="tGPfaYH">
-                <source>label.watermark_position</source>
-                <target>Watermark - Corner</target>
-            </trans-unit>
-            <trans-unit id="cdc16bY">
-                <source>label.watermark_width</source>
-                <target>Watermark - Width (%)</target>
             </trans-unit>
         </body>
     </file>

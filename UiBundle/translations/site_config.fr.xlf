@@ -150,37 +150,9 @@
                 <source>description.watermark_width</source>
                 <target>Largeur du filigrane, en pourcentage de la largeur de l'image (13.75 reproduit une signature de 330 px sur une image de 2400 px).</target>
             </trans-unit>
-            <trans-unit id="gypr9AJ">
-                <source>label.ai_assistant_dashboard_enabled</source>
-                <target>Assistant IA du tableau de bord</target>
-            </trans-unit>
-            <trans-unit id="iSIwZ0b">
-                <source>label.ai_assistant_dashboard_endpoint</source>
-                <target>URL du backend de l'assistant IA</target>
-            </trans-unit>
             <trans-unit id="Fd2PHDs">
                 <source>label.ai_assistant_dashboard_not_enabled</source>
                 <target>Assistant IA du tableau de bord non activé</target>
-            </trans-unit>
-            <trans-unit id="5eFo4.J">
-                <source>label.ai_assistant_dashboard_token</source>
-                <target>Jeton du backend de l'assistant IA</target>
-            </trans-unit>
-            <trans-unit id="Zi7s935">
-                <source>label.ai_assistant_rephrase_api_key</source>
-                <target>Clé API de la reformulation</target>
-            </trans-unit>
-            <trans-unit id="B5azLvn">
-                <source>label.ai_assistant_rephrase_base_uri</source>
-                <target>URL de base de l'API de reformulation</target>
-            </trans-unit>
-            <trans-unit id="6necB26">
-                <source>label.ai_assistant_rephrase_model</source>
-                <target>Modèle de reformulation</target>
-            </trans-unit>
-            <trans-unit id="jdGKvAe">
-                <source>label.ai_assistant_rephrase_provider</source>
-                <target>Fournisseur IA de la reformulation</target>
             </trans-unit>
             <trans-unit id="RFJ8N8R">
                 <source>label.ai_rephrase_failure_alert</source>
@@ -189,10 +161,6 @@
             <trans-unit id="H21MUkk">
                 <source>label.ai_rephrase_not_enabled</source>
                 <target>Fonction de reformulation IA non activée</target>
-            </trans-unit>
-            <trans-unit id="I_GCRck">
-                <source>label.block_showcase_url</source>
-                <target>URL de la vitrine des blocks</target>
             </trans-unit>
             <trans-unit id=".HY9J1w">
                 <source>label.email_debug</source>
@@ -314,21 +282,21 @@
                 <source>label.ui_block_showcase_url</source>
                 <target>Vitrine des blocks - URL</target>
             </trans-unit>
+            <trans-unit id="R1c.duO">
+                <source>label.ui_watermark_margin</source>
+                <target>Filigrane - Marge (%)</target>
+            </trans-unit>
+            <trans-unit id="G8HJlwb">
+                <source>label.ui_watermark_position</source>
+                <target>Filigrane - Coin</target>
+            </trans-unit>
+            <trans-unit id="pZTMoK5">
+                <source>label.ui_watermark_width</source>
+                <target>Filigrane - Largeur (%)</target>
+            </trans-unit>
             <trans-unit id="vSe2.fp">
                 <source>label.url_cookies_policy</source>
                 <target>URL de la politique de cookies</target>
-            </trans-unit>
-            <trans-unit id="2uenlW5">
-                <source>label.watermark_margin</source>
-                <target>Filigrane - Marge (%)</target>
-            </trans-unit>
-            <trans-unit id="tGPfaYH">
-                <source>label.watermark_position</source>
-                <target>Filigrane - Coin</target>
-            </trans-unit>
-            <trans-unit id="cdc16bY">
-                <source>label.watermark_width</source>
-                <target>Filigrane - Largeur (%)</target>
             </trans-unit>
         </body>
     </file>

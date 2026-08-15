@@ -18,6 +18,7 @@ use c975L\ConfigBundle\Management\SitemapWriter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ConfigSqlExporter;
 use c975L\ConfigBundle\Service\Export\SyncAllExporter;
+use c975L\ConfigBundle\Service\UserFormSeeder;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Repository\FormRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -475,12 +476,14 @@ class ConfigShortcutControllerTest extends TestCase
         $this->assertSame(302, $controller->exportTables(new Request([], ['_token' => 'valid-token']))->getStatusCode());
     }
 
-    // Flips the "register" Form's own $enabled flag, the same lever FormController checks before building the form
+    // Flips the register Form's own $enabled flag, the same lever FormController checks before building the form - found by its action, so a form renamed from the back-office still answers
     public function testRegistrationEnabledToggleFlipsTheRegisterFormAndFlushes(): void
     {
-        $form = new Form()->setName('register')->setEnabled(false);
+        $form = new Form()->setName('inscription')->setAction(UserFormSeeder::REGISTER_ACTION)->setEnabled(false);
         $formRepository = $this->createStub(FormRepository::class);
-        $formRepository->method('findOneBy')->willReturn($form);
+        $formRepository->method('findOneBy')->willReturnCallback(
+            static fn (array $criteria) => ['action' => UserFormSeeder::REGISTER_ACTION] === $criteria ? $form : null
+        );
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->once())->method('flush');

@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-08-15",
+        "description": [
+            {
+                "en": "A weekly check now looks for what someone breaking into your site would leave behind: a program file where only your uploads are written, code that no longer matches what was deployed, and one administrator account more than the week before",
+                "fr": "Une vérification hebdomadaire recherche désormais ce que laisserait derrière lui quelqu'un s'introduisant dans votre site : un fichier programme là où seuls vos envois sont écrits, du code qui ne correspond plus à ce qui a été déployé, et un compte d'administration de plus que la semaine précédente",
+                "es": "Una comprobación semanal busca ahora lo que dejaría tras de sí alguien que entrara en su sitio: un archivo de programa donde solo se escriben sus envíos, código que ya no coincide con lo desplegado y una cuenta de administración más que la semana anterior"
+            },
+            {
+                "en": "A check that cannot run says so instead of reporting everything is fine, so a silent result is never mistaken for a clean one",
+                "fr": "Une vérification qui ne peut pas s'exécuter le dit, au lieu d'annoncer que tout va bien : un résultat silencieux n'est jamais pris pour un résultat sain",
+                "es": "Una comprobación que no puede ejecutarse lo dice, en lugar de anunciar que todo está bien: un resultado silencioso nunca se confunde con uno limpio"
+            },
+            {
+                "en": "One failing check no longer takes the whole health check run down with it — every other result is still recorded",
+                "fr": "Une vérification en échec n'emporte plus toute l'exécution du contrôle de santé : tous les autres résultats sont bien enregistrés",
+                "es": "Una comprobación fallida ya no arrastra consigo toda la ejecución del control de salud: los demás resultados sí quedan registrados"
+            },
+            {
+                "en": "The tile opening and closing account creation keeps working after you rename the registration form",
+                "fr": "La tuile qui ouvre et ferme la création de comptes continue de fonctionner après avoir renommé le formulaire d'inscription",
+                "es": "El mosaico que abre y cierra la creación de cuentas sigue funcionando tras renombrar el formulario de registro"
+            }
+        ]
+    },
+    {
         "date": "2026-08-14",
         "description": [
             {

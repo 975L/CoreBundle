@@ -4,7 +4,8 @@
     {% set href = detailUrl|default(null) ?: url|default(null) %}
     {# Nothing to link to: a href="#" would be a dead link that still looks clickable #}
     {% set tag = href ? 'a' : 'div' %}
-    <{{ tag }} class="portfolio-grid__project"{% if href %} href="{{ href }}"{% if not detailUrl and url %} target="_blank" rel="noopener"{% endif %}{% endif %}>
+    {# Only a link leaving the site opens a tab of its own: an item's "url" is just as legitimately a page of this very site (a real Page written for that one project, which wins over the shared detail page - see SiteBundle's PageController::display()), and sending the visitor out of their tab for it would be wrong #}
+    <{{ tag }} class="portfolio-grid__project"{% if href %} href="{{ href }}"{% if href starts with 'http' %} target="_blank" rel="noopener"{% endif %}{% endif %}>
         {% if imageUrl %}
             {# "imageUrl" alone is a bare string, so the dimensions come from the attached media instead #}
             {% set itemMedia = block.media|length > 0 ? block.media|first : null %}

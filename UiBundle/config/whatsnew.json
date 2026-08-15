@@ -1,5 +1,50 @@
 [
     {
+        "date": "2026-08-15",
+        "description": [
+            {
+                "en": "Your text blocks — folded text, hook, text section, article and alert — accept the style names of your own site's theme, so a paragraph can be given a look the block did not offer",
+                "fr": "Vos blocks de texte — texte replié, accroche, section de texte, article et alerte — acceptent les noms de style du thème de votre propre site, pour donner à un paragraphe une allure que le block ne proposait pas",
+                "es": "Sus bloques de texto — texto plegado, gancho, sección de texto, artículo y alerta — aceptan los nombres de estilo del tema de su propio sitio, para dar a un párrafo un aspecto que el bloque no ofrecía"
+            },
+            {
+                "en": "A folded text placed on a page now takes the same breathing space as the blocks around it, instead of sitting almost flush against the one above",
+                "fr": "Un texte replié placé dans une page prend désormais la même respiration que les blocks qui l'entourent, au lieu de rester presque collé à celui du dessus",
+                "es": "Un texto plegado colocado en una página toma ahora el mismo respiro que los bloques que lo rodean, en lugar de quedar casi pegado al de arriba"
+            },
+            {
+                "en": "A project of your portfolio pointing at a page of your own site opens in the same tab, a new tab being kept for the links leaving the site",
+                "fr": "Un projet de votre portfolio pointant vers une page de votre propre site s'ouvre dans le même onglet, le nouvel onglet restant réservé aux liens qui quittent le site",
+                "es": "Un proyecto de su portafolio que apunta a una página de su propio sitio se abre en la misma pestaña, y la pestaña nueva queda reservada a los enlaces que salen del sitio"
+            },
+            {
+                "en": "A grid of projects lays out correctly again whether the last project carries a link or not",
+                "fr": "Une grille de projets se met en page correctement à nouveau, que le dernier projet porte un lien ou non",
+                "es": "Una cuadrícula de proyectos vuelve a maquetarse correctamente, tanto si el último proyecto lleva enlace como si no"
+            },
+            {
+                "en": "A new check lists the PDF documents left without their preview image, and says whether re-saving the document is enough or whether the server simply cannot produce one",
+                "fr": "Une nouvelle vérification liste les documents PDF restés sans image d'aperçu, et indique si ré-enregistrer le document suffit ou si le serveur ne peut tout simplement pas en produire",
+                "es": "Una nueva comprobación enumera los documentos PDF que se han quedado sin imagen de vista previa, e indica si basta con volver a guardar el documento o si el servidor sencillamente no puede generarla"
+            },
+            {
+                "en": "The delete and download labels of an upload field read in your language again, instead of showing a technical key",
+                "fr": "Les libellés de suppression et de téléchargement d'un champ d'envoi de fichier s'affichent à nouveau dans votre langue, au lieu d'une clé technique",
+                "es": "Las etiquetas de borrado y de descarga de un campo de subida vuelven a mostrarse en su idioma, en lugar de una clave técnica"
+            },
+            {
+                "en": "A live grid can now draw its items at random: a page putting three of your characters forward shows a different three on each visit, instead of the same three forever",
+                "fr": "Une grille dynamique peut désormais tirer ses éléments au hasard : une page qui met trois de vos personnages en avant en montre trois différents à chaque visite, au lieu des trois mêmes indéfiniment",
+                "es": "Una cuadrícula dinámica puede ahora sortear sus elementos al azar: una página que destaca tres de sus personajes muestra tres diferentes en cada visita, en lugar de los tres mismos indefinidamente"
+            },
+            {
+                "en": "The overline and the \"see all\" link of a live grid are shown whichever presentation you picked - filling them in on the default one used to change nothing on the page",
+                "fr": "Le surtitre et le lien « Voir tout » d'une grille dynamique s'affichent quelle que soit la présentation choisie - les renseigner sur la présentation par défaut ne changeait rien sur la page",
+                "es": "El sobretítulo y el enlace «Ver todo» de una cuadrícula dinámica se muestran sea cual sea la presentación elegida: rellenarlos en la presentación por defecto no cambiaba nada en la página"
+            }
+        ]
+    },
+    {
         "date": "2026-08-14",
         "description": [
             {

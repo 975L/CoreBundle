@@ -57,7 +57,7 @@ class BlockExtension
         ++$this->renderDepth;
 
         try {
-            $html = $this->wrapInAnimation($block, $this->renderHtml($block, $cacheKey, $cacheTags));
+            $html = $this->wrapInAnimation($block, $this->wrapInCssClasses($block, $this->renderHtml($block, $cacheKey, $cacheTags)));
         } finally {
             --$this->renderDepth;
         }
@@ -81,6 +81,34 @@ class BlockExtension
             htmlspecialchars($animation, \ENT_QUOTES),
             $html
         );
+    }
+
+    // The site's own classes (see HasCssClassesFieldTrait), on a wrapper rather than on the kind's own markup: every kind then supports the field the moment its FormType offers it, with nothing to thread through its template - and a class of the site's never lands on an element the bundle styles itself. Inside the animation wrapper, that one being "display: contents" and this one having to be the box the layout addresses.
+    // Outside the cache renderHtml() writes to, same as wrapInAnimation: the wrapper is one attribute computed from the block itself
+    private function wrapInCssClasses(Block $block, string $html): string
+    {
+        $classes = $this->cssClasses($block);
+        if ('' === $classes) {
+            return $html;
+        }
+
+        return sprintf('<div class="%s">%s</div>', htmlspecialchars($classes, \ENT_QUOTES), $html);
+    }
+
+    // Filtered here rather than on submit: block data also reaches the page through an import (see BlockDataImporter, which stores the "data" array whole), and the render is the one gate both paths go through. Anything that is not a plain class name is dropped rather than escaped into the attribute - a value like 'a" onclick="x' would otherwise sit there, harmless but for good only by the escaping above
+    private function cssClasses(Block $block): string
+    {
+        $stored = $block->getData()['cssClasses'] ?? null;
+        if (!is_string($stored)) {
+            return '';
+        }
+
+        $names = array_filter(
+            preg_split('/\s+/', trim($stored), -1, \PREG_SPLIT_NO_EMPTY) ?: [],
+            static fn (string $name): bool => 1 === preg_match('/^[A-Za-z][A-Za-z0-9_-]*$/', $name)
+        );
+
+        return implode(' ', array_unique($names));
     }
 
     private function renderHtml(Block $block, ?string $cacheKey, array $cacheTags): string

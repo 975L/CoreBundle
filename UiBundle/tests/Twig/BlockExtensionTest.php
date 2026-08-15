@@ -164,6 +164,52 @@ class BlockExtensionTest extends TestCase
         $this->assertSame('<article>fresh</article>', $extension->renderBlock($block));
     }
 
+    // The site's own classes are wrapped around the kind's output rather than passed into its template, so a kind supports the field as soon as its FormType offers it
+    public function testRenderBlockWrapsTheBlockInTheSiteClassesItWasGiven(): void
+    {
+        $block = $this->createUncachedBlock(['cssClasses' => 'big-text accent']);
+
+        $this->assertSame('<div class="big-text accent"><p>copy</p></div>', $this->createExtensionRendering('<p>copy</p>')->renderBlock($block));
+    }
+
+    // The field is free text, and block data also reaches the page through an import: anything that is not a plain class name is dropped rather than escaped into the attribute, and a name typed twice lands once
+    public function testRenderBlockKeepsOnlyValidClassNames(): void
+    {
+        $block = $this->createUncachedBlock(['cssClasses' => '  accent  a" onclick="x  9lives accent  ']);
+
+        $this->assertSame('<div class="accent"><p>copy</p></div>', $this->createExtensionRendering('<p>copy</p>')->renderBlock($block));
+    }
+
+    // No wrapper at all rather than an empty one, a block of a kind not offering the field included: the extra div would otherwise become the flex/grid item the layout around it addresses
+    public function testRenderBlockAddsNoWrapperWhenNoSiteClassIsStored(): void
+    {
+        $block = $this->createUncachedBlock(['cssClasses' => '   ']);
+
+        $this->assertSame('<p>copy</p>', $this->createExtensionRendering('<p>copy</p>')->renderBlock($block));
+    }
+
+    // No id, so the render goes straight through without the cache getting in the way of what is being asserted
+    private function createUncachedBlock(array $data): Block
+    {
+        $block = new Block();
+        $block->setKind('readmore');
+        $block->setData($data);
+
+        return $block;
+    }
+
+    private function createExtensionRendering(string $html): BlockExtension
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getTemplate')->willReturn('readmore.html.twig');
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn($html);
+
+        return new BlockExtension($registry, $twig, $this->createStub(TagAwareCacheInterface::class), new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
+    }
+
     // anchor_id is computed once here instead of every "Page sections" adapter template repeating its own "{{ anchor ~ '-' ~ block.id }}" - the trailing block id keeps two blocks of the same kind (or the same title/anchor reused elsewhere) on the same page from colliding on the same HTML id
     public function testRenderBlockComputesAnchorIdFromTheBlocksAnchorAndId(): void
     {

@@ -18,6 +18,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ReadmoreType extends AbstractType
 {
+    use HasCssClassesFieldTrait;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -28,6 +30,8 @@ class ReadmoreType extends AbstractType
             ->add('text', TrixEditorType::class, [
                 'label' => 'label.text',
             ]);
+
+        $this->addCssClassesField($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

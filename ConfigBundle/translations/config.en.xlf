@@ -1070,6 +1070,42 @@
                 <source>label.health_check_humans_stale</source>
                 <target>humans.txt has not been rewritten since %date%, the date it states is no longer true</target>
             </trans-unit>
+            <trans-unit id="dEBDFIc">
+                <source>label.health_check_intrusion_accounts_gained</source>
+                <target>%count% administration account(s), against %previous% at the previous check: if you created none, that account is to be looked at right away</target>
+            </trans-unit>
+            <trans-unit id="YovIVnd">
+                <source>label.health_check_intrusion_accounts_no_role</source>
+                <target>No administration role is configured: privileged accounts could not be counted</target>
+            </trans-unit>
+            <trans-unit id="fnykLtk">
+                <source>label.health_check_intrusion_accounts_stable</source>
+                <target>%count% administration account(s), unchanged since the previous check</target>
+            </trans-unit>
+            <trans-unit id="xWEtMEL">
+                <source>label.health_check_intrusion_code_clean</source>
+                <target>The deployed code is identical to the repository</target>
+            </trans-unit>
+            <trans-unit id="Tzu6PJN">
+                <source>label.health_check_intrusion_code_modified</source>
+                <target>%count% code file(s) modified since deployment: %files%</target>
+            </trans-unit>
+            <trans-unit id="1osmSff">
+                <source>label.health_check_intrusion_code_no_repository</source>
+                <target>The deployed code is not a git repository: its integrity cannot be checked here</target>
+            </trans-unit>
+            <trans-unit id="0U3AE2N">
+                <source>label.health_check_intrusion_code_unavailable</source>
+                <target>git is unavailable on this server: the code's integrity could not be checked</target>
+            </trans-unit>
+            <trans-unit id="cJiC6pc">
+                <source>label.health_check_intrusion_uploads_clean</source>
+                <target>No executable file in the upload directories</target>
+            </trans-unit>
+            <trans-unit id="1mxCtvc">
+                <source>label.health_check_intrusion_uploads_executable</source>
+                <target>%count% executable file(s) where only uploads are written: %files%</target>
+            </trans-unit>
             <trans-unit id="o3s6n4c">
                 <source>label.health_check_kind</source>
                 <target>Check</target>

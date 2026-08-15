@@ -24,6 +24,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class TextSectionType extends AbstractType
 {
     use HasBackgroundFieldTrait;
+    use HasCssClassesFieldTrait;
 
     // Matches the ".text-section--{tone}" modifier styled in sass/_page-sections.scss; "normal" is the block's own default and writes no class, so every section stored before this field existed goes on rendering as it did
     public const TONES = ['normal', 'secondary'];
@@ -64,6 +65,7 @@ class TextSectionType extends AbstractType
             ]);
 
         $this->addBackgroundField($builder);
+        $this->addCssClassesField($builder);
 
         $builder->addEventListener(
             FormEvents::SUBMIT,

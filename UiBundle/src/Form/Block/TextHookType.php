@@ -18,12 +18,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 // A block of its own because Trix writes no class, so a set-apart paragraph can't come from a text block
 class TextHookType extends AbstractType
 {
+    use HasCssClassesFieldTrait;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('text', TrixEditorType::class, [
                 'label' => 'label.text',
             ]);
+
+        $this->addCssClassesField($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

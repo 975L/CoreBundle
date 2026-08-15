@@ -65,6 +65,21 @@ class HealthCheckResultRepository extends ServiceEntityRepository
         return $latest;
     }
 
+    // The single most recent row of one (url, kind), or null if that pair was never checked - what a provider comparing a run against the one before it needs (see IntrusionHealthCheckProvider, which reads one integer out of it). Bounded in SQL rather than deduped in PHP like findLatestPerUrlAndKind(): reading one row must not hydrate a history that grows with every run
+    public function findLatestByUrlAndKind(string $url, string $kind): ?HealthCheckResult
+    {
+        return $this->createQueryBuilder('h')
+            ->andWhere('h.url = :url')
+            ->andWhere('h.kind = :kind')
+            ->setParameter('url', $url)
+            ->setParameter('kind', $kind)
+            ->orderBy('h.checkedAt', 'DESC')
+            ->addOrderBy('h.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     // The most recent rows of a single kind, newest first - unlike findLatestPerUrlAndKind() this keeps the history rather than deduping it, so a caller can compare a run against the one before it (see BackupResultRecorder, which flags an archive that suddenly shrank, and BackupAlertProvider, which only needs the first row)
     // @return HealthCheckResult[]
     public function findLatestByKind(string $kind, int $limit = 2): array

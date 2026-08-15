@@ -1,27 +1,30 @@
 {# Static usage: <twig:c975LUi:Collection:Grid items="{{ [...] }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [variant=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Collection.html.twig #}
-{# Each "items" entry is already-rendered HTML; the "portfolio" variant borrows PortfolioGrid's grid and head so it matches a real one on the same page #}
+{# Each "items" entry is already-rendered HTML; the "portfolio" variant borrows PortfolioGrid's grid so it matches a real one on the same page #}
 {% set isPortfolio = variant is defined and variant == 'portfolio' %}
-{# A headingless <section> is invalid HTML; only the portfolio variant can be headed by its eyebrow #}
-{% set hasHeading = title|default('') or (isPortfolio and eyebrow|default('')) %}
+
+{# The same head in both variants: the block's form offers eyebrow and the "see all" link whatever the presentation, and dropping them for the default one left the editor filling in fields that never showed up #}
+{% set eyebrow = eyebrow|default('') %}
+{% set title = title|default('') %}
+{% set linkLabel = linkLabel|default('') %}
+{% set linkUrl = linkUrl|default('') %}
+
+{# A headingless <section> is invalid HTML, and a head reduced to its link carries no heading #}
+{% set hasHeading = title or eyebrow %}
 {% set tag = hasHeading ? 'section' : 'div' %}
 <{{ tag }} class="collection-grid{{ isPortfolio ? ' collection-grid--portfolio' : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
-        {% if isPortfolio and (eyebrow or title or linkLabel) %}
-            <div class="portfolio-grid__head">
+        {% if hasHeading or (linkLabel and linkUrl) %}
+            <div class="{{ isPortfolio ? 'portfolio-grid__head' : 'collection-grid__head' }}">
                 <div>
-                    {% if title|default('') %}
+                    {% if title %}
                         {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
                         <h2 class="section-title">{{ title }}</h2>
-                    {% elseif eyebrow|default('') %}
+                    {% elseif eyebrow %}
                         <h2 class="section-eyebrow">{{ eyebrow }}</h2>
                     {% endif %}
                 </div>
                 {% if linkLabel and linkUrl %}<a class="section-btn section-btn--ghost" href="{{ linkUrl }}">{{ linkLabel }}</a>{% endif %}
-            </div>
-        {% elseif title %}
-            <div class="collection-grid__head">
-                <h2 class="section-title">{{ title }}</h2>
             </div>
         {% endif %}
         <div class="{{ isPortfolio ? 'portfolio-grid__grid' : 'cards' }}">

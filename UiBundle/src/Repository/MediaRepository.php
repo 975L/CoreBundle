@@ -35,6 +35,17 @@ class MediaRepository extends ServiceEntityRepository
         return $this->findBy(['role' => Media::getSingletonRoles()]);
     }
 
+    // @return Media[] Rows holding a PDF, for the check that then looks for each one's thumbnail on disk (see PdfThumbnailHealthCheckProvider). Unlike findSvgCandidates() the extension alone decides: a PDF is never rewritten to another format on upload, and the mime type a browser sent for it is the unreliable half here (application/octet-stream from some clients)
+    public function findPdfs(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.filename LIKE :pdfExtension')
+            ->setParameter('pdfExtension', '%.pdf')
+            ->orderBy('m.filename', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     // @return Media[] Rows whose stored file may still be SVG markup, for a check that then reads each one (see SiteBundle's SvgFontsHealthCheckProvider). Both the mime type and the extension are looked at: an icon role's file is renamed to the role's own .ico/.png on upload, so only the mime type it came in with says what it holds
     public function findSvgCandidates(): array
     {

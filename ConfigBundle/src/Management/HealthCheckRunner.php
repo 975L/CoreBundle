@@ -39,7 +39,13 @@ class HealthCheckRunner
             }
 
             $checkedAt = new \DateTime();
-            $rows = $provider->runChecks();
+
+            // One provider throwing must not take the run down with it: rows are only flushed once every provider has run, so an exception here would discard what the providers before it already produced, and the ones after it would never run at all
+            try {
+                $rows = $provider->runChecks();
+            } catch (\Throwable) {
+                continue;
+            }
 
             foreach ($rows as $row) {
                 $this->entityManager->persist($this->buildResult($kind, $row, $checkedAt));

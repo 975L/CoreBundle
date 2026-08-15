@@ -56,6 +56,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router, a `*` on both sides renaming a whole url tree
 - Url descriptions for the pages no entity carries (`site_url_metadata` table, EasyAdmin CRUD, export/import), read by the layouts, listed by `c975l:url-metadata:sync` from what each bundle declares via `UrlMetadataProviderInterface`
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps and the two cross-checked, redirect chains, deployment, and the content quality of every url any bundle declares
+- A weekly intrusion check looking for the traces rather than for the doors: an executable file where only uploads are written, a working tree no longer matching what was deployed, and a privileged account more than the run before
 - A Turbo-safe CSP nonce generator, and the `site_copyright()` Twig function
 - `/status/report`, serving what a site runs (versions, installed bundles, health check summary) to whoever presents its key — answers nobody unless configured, extensible via `StatusProviderInterface`, dumped locally by `c975l:status:dump`
 - Scheduled maintenance tasks declared by each bundle (`MaintenanceTaskProviderInterface`) rather than listed by the app, and spread over each install's own minutes (`ScheduleSpreader`) so sites sharing a server don't all run them at once
@@ -504,6 +505,8 @@ without `ROLE_SUPER_ADMIN` and demoted them, with neither of them seeing it.
 ### Disabling registration
 
 Registration/reset-password-request are plain `c975L\UiBundle\Entity\Form` rows ("register"/"reset_password_request"), processed by UiBundle's generic `c975L\UiBundle\Controller\FormController` exactly like "contact" - no dedicated `RegistrationController`/`ResetPasswordController` action builds or displays them anymore. To turn registration off without a deployment, uncheck the "register" Form's `enabled` field from the admin's Forms screen (or toggle it from the dashboard shortcut) - `FormController` then shows a generic "not available" notice instead of the form, on both the standalone `/form/register` route and the "form" Block wherever it's embedded.
+
+The dashboard shortcut and the `registration` section of the [status report](#status-report--letting-another-system-read-what-this-site-runs) find that row by its **action** (`UserFormSeeder::REGISTER_ACTION`), not by its name: the name is editable from the Forms screen, and a site renaming it to "Inscription" would otherwise take the tile away with it while the site went on registering people.
 
 ### Registration anti-spam protections
 
@@ -1391,6 +1394,7 @@ This bundle's own providers:
 | `DeploymentHealthCheckProvider` | `deployment` | http→https redirect, that an unknown url actually answers 404, and that the other spelling of the host (`www` vs apex) either serves nothing or redirects here — including the case where it resolves and refuses the connection, its certificate not covering it |
 | `DeclaredUrlsHealthCheckProvider` | `urls-<bundle>` | The content-quality checks over the urls each bundle declares for its sitemap — one kind per bundle, each schedulable at its own cadence |
 | `DatabaseLoadHealthCheckProvider` | `database-load` | Table sizes and row counts against the host's own limits |
+| `IntrusionHealthCheckProvider` | `intrusion` | Weekly, three rows: an executable file (`.php`, `.phtml`, `.sh`, `.htaccess`… in the name, not only at its end) under any directory a bundle declared for the backup, the working tree against the repository it was deployed from, and the number of accounts holding `site-role-admin` against the count the previous run recorded |
 | `BackupHealthCheckAdviceProvider` | — | Advice lines for the backup alerts |
 
 **Where the OWASP checks stop**: `security-headers` and `security-misconfig` cover what only the deployed site can answer for — misconfiguration, exposed debug tooling, missing cookie flags. A vulnerable dependency (OWASP A06) is *not* among them, on purpose: it is written in `composer.lock`, which the CI reads long before a deployment. Add it to your site's workflow rather than waiting for a health check run to say a site already in production ships a known CVE:
@@ -1400,6 +1404,8 @@ composer audit --locked --abandoned=report
 ```
 
 `--locked` is what makes it answer for the versions actually deployed, and `--abandoned=report` keeps a transitive package someone stopped maintaining from failing a deployment over something no CVE covers. This bundle runs the same check on itself, as the first entry of its `composer qa`.
+
+**What `intrusion` looks at, and what it deliberately doesn't**: every other security check here answers "is this closed", which says nothing about whether someone already walked in. This one looks for traces instead, chosen for having no innocent explanation on a deployed site. The upload directories it walks are the ones bundles already declare for the backup (`BackupPathProviderInterface`) — the same list read for the opposite reason, those being everywhere the site writes what visitors and editors send it — so a bundle added later is covered without this provider knowing it exists. The working-tree row runs `git status --porcelain --untracked-files=no` and only ever reads: a site deployed by rsync or by hand, or one whose host disabled `exec()`, gets a `skipped` row saying so rather than a green one. Files the site generates must be gitignored for that row to stay quiet, which is what `c975l:scaffold:install` writes (`public/sitemap*`, the SEO files, the media directories). The accounts row keeps a **count**, never a list, and compares it to what the previous run recorded: a count that dropped is somebody doing their job, a count that rose without you creating an account is the row worth reading tonight. None of the three proves an intrusion on its own, and none is meant to — what they have in common is that a site nobody touched produces none of them.
 
 `ContentQualityAnalyzer` is what does the content work behind `urls-<bundle>` **and** behind SiteBundle's own `content-quality`. It reports each offence with a link to the screen that fixes it whenever a `ContentOffenceLocatorInterface` recognizes the entry's source — SiteBundle registers one tracing a page's image or link back to the block holding it. Without any locator the offence is still reported, just unlinked.
 
@@ -1980,13 +1986,22 @@ What the report holds:
         "issues": [{"kind": "ssl", "url": "https://example.com", "summary": "..."}],
         "issuesTruncated": false
     },
-    "extra": {}
+    "extra": {
+        "capabilities": {
+            "sapi": "fpm-fcgi",
+            "exec": false,
+            "directives": {"memory_limit": "512M", "max_execution_time": "60", "upload_max_filesize": "64M", "post_max_size": "64M", "max_input_vars": "1000"}
+        },
+        "registration": {"open": true, "form": "enabled"}
+    }
 }
 ```
 
 Three deliberate limits. `packages` lists the installed **bundles** rather than the whole dependency tree, Symfony's own excluded since the `symfony` field already carries their version — whether a bundle is a direct requirement or came along with another one doesn't change what runs. `issues` carries the rows **in error** only, without their `HealthCheckResult::$details`: the receiver learns *where* it hurts and links back to the site to learn *why*, so the payload stays small and holds nothing revealing — a site merely in warning is a site to improve, and its `counts` still say so. And it is capped at 20 rows, `issuesTruncated` saying so — the counts stay exact either way, so a short list is never mistaken for a complete one.
 
 `checks` is `null`, rather than absent or empty, on a site whose migrations haven't run yet: no health check data available is not the same thing as no issue found.
+
+**The two sections this bundle contributes to `extra`** answer the questions a console holding a dozen sites can't get from a version number. `capabilities` (`CapabilitiesStatusProvider`, reading `Service\EnvironmentProbe`) says what the PHP process is actually allowed to do — its SAPI, whether `exec()` can be called at all, and the ini directives that silently cap an upload or a long task — because a host can withdraw a function from one site and not the next, nothing in the application changes, and the feature relying on it stops without ever raising an error. It is keyed `capabilities` and not `environment`, the report already carrying an `environment` of its own meaning `prod`/`dev`. `registration` (`RegistrationStatusProvider`) says whether a stranger can still create an account here, read off the register `Form`'s own `enabled` flag rather than off a config that could contradict it — a registration opened for a campaign and never closed again looks exactly like one that was never opened, from the outside and from the site's own dashboard. Both report readings and counts only: `disable_functions` in full names every function a host left reachable, which describes an attack surface rather than a capability, and that stays on the server.
 
 ### Contributing status data from other bundles
 

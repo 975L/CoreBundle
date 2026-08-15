@@ -126,6 +126,9 @@ class UserFormSeeder
         ],
     ];
 
+    // The FormActionInterface key the register Form carries, and the only thing telling that Form apart from any other - seeded here, read back by RegistrationStatusProvider to answer whether accounts can still be created at all
+    public const string REGISTER_ACTION = 'register';
+
     public function __construct(
         private readonly FormSeeder $formSeeder,
         private readonly EntityManagerInterface $entityManager,
@@ -135,7 +138,7 @@ class UserFormSeeder
     // The whole account-creation flow: the form itself, plus the email its action sends
     public function ensureRegisterForm(): void
     {
-        $this->formSeeder->ensureForm('register', self::REGISTER_CORE_FIELDS, 'register', linksByLocale: self::REGISTER_LINKS);
+        $this->formSeeder->ensureForm('register', self::REGISTER_CORE_FIELDS, self::REGISTER_ACTION, linksByLocale: self::REGISTER_LINKS);
         $this->formSeeder->ensureEmailTemplate(EmailVerifier::EMAIL_TEMPLATE, self::ACCOUNT_VALIDATION_BLOCKS);
     }
 
