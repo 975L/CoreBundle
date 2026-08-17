@@ -14,18 +14,31 @@ use c975L\UiBundle\Management\PaginatorPageSize;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 // "pageSize" reaches this straight from the url, so what it accepts is what ends up in a LIMIT clause
 class PaginatorPageSizeTest extends TestCase
 {
-    private function resolve(?array $query): int
+    private function resolve(?array $query, ?SessionInterface $session = null): int
     {
         $requestStack = new RequestStack();
         if (null !== $query) {
-            $requestStack->push(new Request($query));
+            $request = new Request($query);
+            if (null !== $session) {
+                $request->setSession($session);
+            }
+
+            $requestStack->push($request);
         }
 
         return new PaginatorPageSize($requestStack)->resolve();
+    }
+
+    private function session(): SessionInterface
+    {
+        return new Session(new MockArraySessionStorage());
     }
 
     public function testAnOfferedSizeIsUsed(): void
@@ -70,5 +83,45 @@ class PaginatorPageSizeTest extends TestCase
     public function testTheDefaultIsOneOfTheOfferedSizes(): void
     {
         $this->assertContains(PaginatorPageSize::DEFAULT_SIZE, PaginatorPageSize::SIZES);
+    }
+
+    // The whole point of remembering it: EasyAdmin drops "pageSize" from the edit link, so the request coming back from a saved record carries nothing
+    public function testTheLastChosenSizeAppliesWithoutTheParameter(): void
+    {
+        $session = $this->session();
+
+        $this->resolve(['pageSize' => '100'], $session);
+
+        $this->assertSame(100, $this->resolve([], $session));
+    }
+
+    public function testTheUrlWinsOverTheRememberedSize(): void
+    {
+        $session = $this->session();
+
+        $this->resolve(['pageSize' => '100'], $session);
+
+        $this->assertSame(50, $this->resolve(['pageSize' => '50'], $session));
+        $this->assertSame(50, $this->resolve([], $session));
+    }
+
+    // A forged parameter must not outlive its own request, or a rejected size would settle in as the admin's choice - it is read as no choice at all, which is the size already remembered
+    public function testARejectedSizeIsNotRemembered(): void
+    {
+        $session = $this->session();
+
+        $this->resolve(['pageSize' => '100'], $session);
+
+        $this->assertSame(100, $this->resolve(['pageSize' => '500'], $session));
+        $this->assertSame(100, $this->resolve([], $session));
+    }
+
+    // Nothing but the whitelist comes out, whatever a tampered session holds
+    public function testATamperedRememberedSizeFallsBackToTheDefault(): void
+    {
+        $session = $this->session();
+        $session->set('c975l_ui.paginator_page_size', 5000);
+
+        $this->assertSame(PaginatorPageSize::DEFAULT_SIZE, $this->resolve([], $session));
     }
 }

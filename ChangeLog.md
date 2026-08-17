@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.12.0
+
+A bundle explains itself to the agent installing it
+
+### The package
+
+- Eight skills ship in the package, four per bundle, for the coding agents of the sites installing it (17/08/2026)
+- `SkillsTest` checks every path, route, config slug, command, class member, Twig function and block kind they quote (17/08/2026)
+- Both READMEs document where an agent reads the skills from, the root one pointing at the two (17/08/2026)
+- The eslint globals declare `DOMParser`, `FormData` and `XMLHttpRequest` (17/08/2026)
+
+### UiBundle
+
+- Added `TrashableInterface` and `TrashableTrait`, the flag an entity carries to be deleted in two steps (17/08/2026)
+- The trait carries its own `isDeleted` column mapping (17/08/2026)
+- Method names match SiteBundle's `Page`, which adopts the trait without renaming anything (17/08/2026)
+- Added `TrashableTraitTest` (17/08/2026)
+- The README documents deleting an entity in two steps (17/08/2026)
+- Added the `upload-progress` controller, the bar shown while a form posts its files (17/08/2026)
+- The transfer is counted in megabytes, the processing that follows shown as an indeterminate `<progress>` (17/08/2026)
+- The submit is taken away for the whole wait, handed back if the network refuses the batch (17/08/2026)
+- Added `UploadProgress`, arming the bar on a form and answering its submission (17/08/2026)
+- `formAttr()` composes with the controller and the action a form already declares (17/08/2026)
+- `redirect()` hands an XHR submission the url instead of a redirect (17/08/2026)
+- A response holding the form again replaces the one on screen, errors included (17/08/2026)
+- Added `sass/management/_upload-progress.scss` (17/08/2026)
+- Added the three progress messages in the three locales (17/08/2026)
+- Added `UploadProgressTest` and `UploadProgressControllerTest` (17/08/2026)
+- The README documents arming the bar on a form posting files (17/08/2026)
+- UiBundle's README named a `BlockOrphanListener`, which is `BlockRemovalListener` (17/08/2026)
+- `PaginatorPageSize` remembers the chosen size in the session, one value for every list (17/08/2026)
+- An edit link drops the parameter, EasyAdmin regenerating it through a whitelist of its own (17/08/2026)
+- A size read from the url wins and becomes the remembered one, a rejected one never stored (17/08/2026)
+- `PaginatorPageSizeTest` reads the remembered size, the url winning and a tampered session (17/08/2026)
+- ConfigBundle's README states the size being remembered (17/08/2026)
+
 ## v1.11.6
 
 A card is sized by how many of it a row holds

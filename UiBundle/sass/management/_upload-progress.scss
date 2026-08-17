@@ -1,0 +1,16 @@
+/* UPLOAD PROGRESS (assets/js/upload-progress.js) - the bar shown while a form posts its files */
+
+// Built into the form itself rather than into a dialog over it: what is being waited for is the screen, and the panel is meant to sit where the submit that started the wait is
+.upload-progress {
+    margin: 20px 0;
+}
+
+// A <progress> and not a styled div: the browser paints it, animates it on its own while the server works, and needs no width class per percent - a class rather than a style attribute being what a nonce-based style-src leaves available here (see _legal-model.scss)
+.upload-progress-bar {
+    width: 100%;
+    height: 20px;
+}
+
+.upload-progress-status {
+    margin: 5px 0 0;
+}

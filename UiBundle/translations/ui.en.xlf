@@ -2758,6 +2758,18 @@
                 <source>label.tuesday</source>
                 <target>Tuesday</target>
             </trans-unit>
+            <trans-unit id="YKASrao">
+                <source>label.upload_progress_failed</source>
+                <target>The upload failed. Check your connection, then send the files again.</target>
+            </trans-unit>
+            <trans-unit id="28y2bcy">
+                <source>label.upload_progress_processing</source>
+                <target>Files received, being processed. Please do not close this page.</target>
+            </trans-unit>
+            <trans-unit id="P9oYpAt">
+                <source>label.upload_progress_uploading</source>
+                <target>Uploading… %percent%% (%sent% MB of %total% MB)</target>
+            </trans-unit>
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>
                 <target>URL</target>

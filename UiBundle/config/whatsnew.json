@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-17",
+        "description": [
+            {
+                "en": "Sending a batch of files now shows a progress bar: what has already been sent, then that your files are being processed, so the page no longer looks stuck and the button cannot be clicked twice",
+                "fr": "L'envoi d'un lot de fichiers affiche désormais une barre de progression : ce qui a déjà été envoyé, puis le traitement de vos fichiers, si bien que la page ne semble plus figée et que le bouton ne peut pas être cliqué deux fois",
+                "es": "El envío de un lote de archivos muestra ahora una barra de progreso: lo que ya se ha enviado y después el procesamiento de sus archivos, de modo que la página ya no parece bloqueada y el botón no puede pulsarse dos veces"
+            },
+            {
+                "en": "The number of rows you choose for a list is now kept as you move around the back-office, instead of going back to 20 as soon as you edit a record",
+                "fr": "Le nombre de lignes que vous choisissez pour une liste est désormais conservé au fil de votre navigation dans l'administration, au lieu de revenir à 20 dès que vous modifiez une fiche",
+                "es": "El número de filas que elige para una lista se conserva ahora mientras navega por la administración, en lugar de volver a 20 en cuanto edita una ficha"
+            }
+        ]
+    },
+    {
         "date": "2026-08-15",
         "description": [
             {

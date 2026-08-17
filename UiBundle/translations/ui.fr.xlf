@@ -2758,6 +2758,18 @@
                 <source>label.tuesday</source>
                 <target>Mardi</target>
             </trans-unit>
+            <trans-unit id="YKASrao">
+                <source>label.upload_progress_failed</source>
+                <target>L'envoi a échoué. Vérifiez votre connexion, puis envoyez les fichiers à nouveau.</target>
+            </trans-unit>
+            <trans-unit id="28y2bcy">
+                <source>label.upload_progress_processing</source>
+                <target>Fichiers reçus, traitement en cours. Ne fermez pas cette page.</target>
+            </trans-unit>
+            <trans-unit id="P9oYpAt">
+                <source>label.upload_progress_uploading</source>
+                <target>Envoi en cours… %percent% % (%sent% Mo sur %total% Mo)</target>
+            </trans-unit>
             <trans-unit id="mcQ1Bzu">
                 <source>label.url</source>
                 <target>URL</target>

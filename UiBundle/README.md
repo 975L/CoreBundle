@@ -26,12 +26,13 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 ## Contents
 
 - **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
-- **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails)
+- **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails) · [upload progress](#showing-the-progress-of-a-form-that-posts-files)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [no inline styles](#no-inline-styles) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections) · [confirming a title change that rewrites a slug](#confirming-a-title-change-that-rewrites-a-slug)
-- **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
+- **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [deleting an entity in two steps](#deleting-an-entity-in-two-steps) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
+- **For coding agents** — [AI agent skills](#ai-agent-skills)
 
 ## Features
 
@@ -135,11 +136,46 @@ Any `/management` form can also be opened straight on one of its fields by addin
 
 ---
 
+## Deleting an entity in two steps
+
+An entity that carries `TrashableInterface` and `TrashableTrait` is never lost in one click: what its
+back-office **delete** writes is a flag, its row and its files staying exactly where they are until a
+second, deliberate deletion.
+
+```php
+use c975L\UiBundle\Contract\TrashableInterface;
+use c975L\UiBundle\Entity\Trait\TrashableTrait;
+
+class GalleryCategory implements TrashableInterface
+{
+    use TrashableTrait;
+}
+```
+
+Unlike `HasBlocksTrait` below, the trait carries its own `isDeleted` column mapping — a relation's
+mapping differs at every use, a boolean column's never does. Generate a migration after adding it.
+
+What the trait gives you is only the flag; the two steps are yours to wire, and they are always the same
+three moves:
+
+- **`deleteEntity()`** writes `setIsDeleted(true)` and flushes, instead of calling `remove()`. This is
+  what spares the cascades and the file listeners — they only ever run from a real removal.
+- **The read paths filter it out.** Put the `isDeleted = false` condition in the repository rather than at
+  each caller: one caller forgetting it is what puts a trashed entity back on the site. Leave the
+  by-slug lookup unfiltered, so the front-office can answer **410 Gone** from the row itself and an
+  import can still match a slug the unique constraint holds either way.
+- **The index switches** on a `?trash=1` query parameter (`createIndexQueryBuilder()`), where a
+  `restore` and a `deletePermanently` action appear. Hold the second one at a higher role: it is the
+  only irreversible one.
+
+SiteBundle's `Page` and GalleryBundle's `GalleryCategory` / `GalleryMedia` all work this way, and the
+method names match across the three.
+
 ## Attaching blocks to an entity
 
 ### How block attachment works
 
-Blocks are linked to their owner via a **ManyToMany join table**. The `Block` entity itself has no FK back to any specific owner — this keeps UiBundle fully decoupled from your domain entities. Each owner entity defines its own join table, and the `BlockOrphanListener` (auto-registered by the bundle) removes detached blocks on flush.
+Blocks are linked to their owner via a **ManyToMany join table**. The `Block` entity itself has no FK back to any specific owner — this keeps UiBundle fully decoupled from your domain entities. Each owner entity defines its own join table, and the `BlockRemovalListener` (auto-registered by the bundle) removes detached blocks on flush.
 
 ### 1. Implement the interface and trait
 
@@ -171,7 +207,7 @@ Key points:
 - Use `ManyToMany` (not `OneToMany`) — `Block` has no FK back to the owner.
 - Name the join table explicitly (e.g. `site_page_block`) to avoid collisions.
 - `cascade: ['persist', 'remove']` ensures blocks are saved and deleted with the owner.
-- Do **not** add `orphanRemoval` — the `BlockOrphanListener` handles that automatically when you call `removeBlock()`.
+- Do **not** add `orphanRemoval` — the `BlockRemovalListener` handles that automatically when you call `removeBlock()`.
 
 ### 2. Run migrations
 
@@ -184,7 +220,7 @@ php bin/console doctrine:migrations:migrate
 
 ### How block removal works
 
-When you call `$page->removeBlock($block)`, the trait queues the block in a `pendingBlockRemovals` list instead of immediately removing it. The `BlockOrphanListener` (Doctrine `preFlush` listener) then calls `$em->remove($block)` for each queued block before the flush completes. This ensures blocks are properly deleted from the database even though the relationship is ManyToMany.
+When you call `$page->removeBlock($block)`, the trait queues the block in a `pendingBlockRemovals` list instead of immediately removing it. The `BlockRemovalListener` (Doctrine `preFlush` listener) then calls `$em->remove($block)` for each queued block before the flush completes. This ensures blocks are properly deleted from the database even though the relationship is ManyToMany.
 
 ### Editable block overlay
 
@@ -307,6 +343,45 @@ TextField::new('title')
 ```
 
 Leave the "new" page out, as above: the modal it reuses is only rendered on the edit/index/detail pages, and a record being created has no slug to preserve yet.
+
+---
+
+## Showing the progress of a form that posts files
+
+A form carrying files holds the screen for as long as the transfer lasts, plus whatever the server then does with what it received — a batch of fifty photos to resize and watermark is minutes of a page showing nothing at all, which reads as a click that never registered and is clicked again. The `upload-progress` controller, registered by `@c975l/ui-bundle/controllers-admin.js`, sends the form over `XMLHttpRequest` instead (the only api a browser reports upload progress on) and states the two phases apart: the transfer, counted in megabytes, then the processing, which has no percentage to give and is shown as an indeterminate `<progress>`. The submit button is taken away for the whole wait and handed back if the network refuses the batch.
+
+Arm it from the form type, through `Service\UploadProgress`:
+
+```php
+public function configureOptions(OptionsResolver $resolver): void
+{
+    $resolver->setDefaults([
+        'attr' => $this->uploadProgress->formAttr(),
+    ]);
+}
+```
+
+`formAttr()` composes with what the form already declares rather than replacing it — a form carrying a controller and an action of its own (a client-side check of the selection, say) keeps both, Stimulus reading either attribute as a space-separated list:
+
+```php
+'attr' => $this->uploadProgress->formAttr([
+    'data-controller' => 'gallery-upload-limits',
+    'data-action' => 'change->gallery-upload-limits#check',
+]),
+```
+
+Then answer the submission with the url rather than a redirect, in whichever controller receives it:
+
+```php
+// Instead of $this->redirect($url)
+return $this->uploadProgress->redirect($request, $url);
+```
+
+That last line is the one thing the bar cannot do on its own: `XMLHttpRequest` follows a 302 by itself, so the arrival page would be built — and its flash message read — inside a request nobody ever sees, leaving the screen that finally loads without the "saved" it was meant to show. Sent by anything else (a browser running no JS, a plain form post), the same call redirects as before, so nothing has to be duplicated for the two cases.
+
+Anything the server answers that is not that json is taken to be the form itself rendered again with its errors, and swapped in place of the one on screen — Stimulus watches the document, so every controller the new markup carries reconnects on its own. The panel (`<progress>` plus a `role="status"` line, styled by `sass/management/_upload-progress.scss`) is built by the controller, above the submit button that started the wait; a template wanting its own renders it and declares the `panel`, `bar` and `status` targets instead.
+
+The controller works from a `<div>` wrapping the form as well as from the form itself, which is what an EasyAdmin CRUD screen leaves available — it renders the form as a whole, and a submit event reaches the wrapper all the same. Mounted on an element holding no form at all, it simply steps aside and the browser submits as it always did.
 
 ---
 
@@ -2389,6 +2464,33 @@ Run it from the **consuming site's** console, and install its dependency there r
 It reports without failing unless `--strict` is passed — a headless browser is never deterministic enough to gate a push on, and a check that fails at random is a check that ends up disabled. A page it could not measure at all is reported too, rather than counted as a clean one.
 
 Deliberately not a `HealthCheckProviderInterface`: those run from cron on the managed server, which has no browser and no way to install one.
+
+---
+
+## AI agent skills
+
+The bundle ships four skills of its own, written for the coding agent of the site installing it rather than for someone modifying it. Point your agent at the directory:
+
+```text
+vendor/c975l/core-bundle/UiBundle/skills/
+```
+
+| Skill | Covers |
+| --- | --- |
+| `c975l-blocks` | giving an entity blocks, registering a kind, contexts and containers, the render cache, the edit overlay, the legal models |
+| `c975l-media` | the shared `Media`, a bundle's own Vich entity, the three derivatives, kept originals, watermarking, private files |
+| `c975l-forms-emails` | `Form`/`FormField`, form actions, the shared protections and reCAPTCHA, `EmailTemplate` and the email layout registry |
+| `c975l-ui-assets` | the stylesheet and script registries, the token layers, the scaffolded theme files, the helpers a satellite must reuse |
+
+They are split by subject rather than shipped as one file so that an agent loads the one it needs. Each holds what an agent gets wrong when left to its own habits — that a block's data needs no column, that a kind reading outside data must not be cacheable, that the resize pipeline is never to be rewritten, that a token declared on `:root` alone breaks every scope below it.
+
+Nothing is installed, nothing is copied into your project: the files sit in `vendor/` like any other part of the package and follow it at each `composer update`. A user of Claude Code wanting one to load by itself symlinks it into their own skills directory:
+
+```bash
+ln -s ../../vendor/c975l/core-bundle/UiBundle/skills/c975l-blocks .claude/skills/c975l-blocks
+```
+
+`Tests\SkillsTest` keeps them honest: every path, route, config slug, command, class member, Twig function, block kind and component they quote is checked against the sources, so renaming any of them fails the build rather than leaving an agent confidently wrong.
 
 ---
 

@@ -54,6 +54,8 @@ Each bundle keeps its own README, unchanged:
 - [ConfigBundle](ConfigBundle/README.md)
 - [UiBundle](UiBundle/README.md)
 
+Each also ships four skills under its own `skills/` directory, written for the coding agent of the site installing the package rather than for someone modifying it — see [ConfigBundle](ConfigBundle/README.md#ai-agent-skills) and [UiBundle](UiBundle/README.md#ai-agent-skills).
+
 Its history, on the other hand, is the package's: [ChangeLog.md](ChangeLog.md) and [UPGRADE.md](UPGRADE.md) carry both bundles from here on. Each bundle's own files stop at its last published release — `v5.17.1` for ConfigBundle, `v1.17.0` for UiBundle — and are kept as archives.
 
 ## Quality checks
