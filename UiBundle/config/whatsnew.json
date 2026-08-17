@@ -11,6 +11,11 @@
                 "en": "The number of rows you choose for a list is now kept as you move around the back-office, instead of going back to 20 as soon as you edit a record",
                 "fr": "Le nombre de lignes que vous choisissez pour une liste est désormais conservé au fil de votre navigation dans l'administration, au lieu de revenir à 20 dès que vous modifiez une fiche",
                 "es": "El número de filas que elige para una lista se conserva ahora mientras navega por la administración, en lugar de volver a 20 en cuanto edita una ficha"
+            },
+            {
+                "en": "A flip card now shows its turn arrow straight away on a phone or a tablet, where nothing else said the card had a back to look at — on a computer it still appears when the mouse is over the card",
+                "fr": "Une carte à retourner affiche désormais d'emblée sa flèche de retournement sur un téléphone ou une tablette, où rien d'autre ne disait que la carte avait un verso à consulter — sur un ordinateur, elle apparaît toujours au passage de la souris",
+                "es": "Una tarjeta giratoria muestra ahora directamente su flecha de giro en un teléfono o una tableta, donde nada más indicaba que la tarjeta tenía un reverso que consultar — en un ordenador sigue apareciendo al pasar el ratón"
             }
         ]
     },

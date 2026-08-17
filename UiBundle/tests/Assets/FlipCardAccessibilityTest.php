@@ -209,6 +209,26 @@ class FlipCardAccessibilityTest extends TestCase
         }
     }
 
+    // A finger summons neither the sway nor the mark: both are bound to a pointer a phone or a tablet does not have, so the mark is drawn from the start there and is the only thing left saying the card has a verso
+    public function testTheHintIsDrawnFromTheStartWhereNoPointerCanHover(): void
+    {
+        $stylesheet = $this->read(self::STYLESHEET);
+
+        // The primary pointer's own ability, asked of the browser: a device sniff would answer a question about the user agent's name instead, and would be wrong on a touch laptop and on a tablet driven by a mouse
+        $this->assertMatchesRegularExpression(
+            '/@media \(hover: none\) and \(pointer: coarse\) \{\s*\.flip-card-face:has\(\.flip-card-toggle:not\(\[hidden\]\)\)::after \{\s*opacity: 1;/',
+            $stylesheet,
+            'A card on a touch screen shows nothing at all saying it turns: neither the hover that fades the mark in nor the sway ever happens there.',
+        );
+
+        // A media query adds no specificity, so the rest rule it undoes has to come first - the two reveals carry that same specificity and ask for the same value, so nothing here fights them
+        $this->assertLessThan(
+            strpos($stylesheet, '@media (hover: none) and (pointer: coarse)'),
+            strpos($stylesheet, 'opacity: 0;'),
+            'The rest rule now comes after the query undoing it, and wins on source order.',
+        );
+    }
+
     // Drawn on the face rather than on the toggle's own ::after, which the body would paint over: the toggle sits under the content and carries a stacking context of its own, so a mark drawn on it could only be given room by holding a gutter open under the content on every card - which is a permanent cost for something the pointer summons
     public function testTheHintIsLiftedOverTheContentRatherThanGivenAGutter(): void
     {

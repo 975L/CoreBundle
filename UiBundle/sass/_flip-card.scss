@@ -180,6 +180,15 @@ $hint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox
     opacity: 1;
 }
 
+// A finger summons nothing: there is no hover to fade the mark in with, and no sway either - the two things telling a mouse the card turns are both bound to a pointer a phone or a tablet does not have. So the mark is drawn from the start there, and it is the only thing left saying the card has a verso.
+// "(hover: none) and (pointer: coarse)" asks the browser what the primary pointer can do, which is what "mobile or tablet" actually means for this - a device sniff would answer a question about the user agent's name instead, and would be wrong on a touch laptop and on a tablet driven by a mouse. Same query as the one hiding the slider's arrows for a swipe (sass/_slider.scss).
+// Same selector as the rest rule above and later in the file, so it wins on source order alone - a media query adds no specificity. The two reveals above carry that same specificity and ask for the same "opacity: 1", so none of the three fight
+@media (hover: none) and (pointer: coarse) {
+    .flip-card-face:has(.flip-card-toggle:not([hidden]))::after {
+        opacity: 1;
+    }
+}
+
 .flip-card-media {
     width: min(70vw, var(--flip-card-media-max-width));
     margin: 0.5rem auto;

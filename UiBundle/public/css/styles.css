@@ -1107,6 +1107,11 @@ label[for=contact_form_username],
   opacity: 1;
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .flip-card-face:has(.flip-card-toggle:not([hidden]))::after {
+    opacity: 1;
+  }
+}
 .flip-card-media {
   width: min(70vw, var(--flip-card-media-max-width));
   margin: 0.5rem auto;

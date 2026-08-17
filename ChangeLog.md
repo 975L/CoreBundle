@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.12.1
+
+A card says it can be turned where no pointer can hover
+
+### UiBundle
+
+- A flip card draws its turn mark from the start where the primary pointer cannot hover (17/08/2026)
+- The query reads the pointer's own ability rather than sniffing the user agent (17/08/2026)
+- `FlipCardAccessibilityTest` locks the query and the source order it depends on (17/08/2026)
+- The README states the mark being drawn from the start on a touch screen (17/08/2026)
+- The compiled emails stylesheet carries the big card tokens (17/08/2026)
+
 ## v1.12.0
 
 A bundle explains itself to the agent installing it
