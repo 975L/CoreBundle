@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.12.4
+
+The CI stops downloading again what it downloaded an hour ago
+
+### The package
+
+- Composer's archive cache is carried from one run to the next (17/08/2026)
+- The cache is keyed on `composer.json`, so it owes nothing to a `composer.lock` this package does not version (17/08/2026)
+- The workflow watches a push to main and pull requests only, no longer running twice for the same commit (17/08/2026)
+- A `concurrency` group cancels a run that the next push has superseded (17/08/2026)
+- `COMPOSER_TOKEN` is gone from the setup-php step, the redirect serving the archives dropping the header anyway (17/08/2026)
+
 ## v1.12.3
 
 The CI fetches its dependencies as itself rather than anonymously
