@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.12.3
+
+The CI fetches its dependencies as itself rather than anonymously
+
+### The package
+
+- The setup-php step passes `COMPOSER_TOKEN`, so Composer authenticates the archive downloads (17/08/2026)
+- The runner's shared IP no longer draws a 429 from codeload.github.com (17/08/2026)
+
 ## v1.12.2
 
 The contact graph names the profiles of the same business
