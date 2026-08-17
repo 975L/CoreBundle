@@ -16,6 +16,11 @@
                 "en": "A flip card now shows its turn arrow straight away on a phone or a tablet, where nothing else said the card had a back to look at — on a computer it still appears when the mouse is over the card",
                 "fr": "Une carte à retourner affiche désormais d'emblée sa flèche de retournement sur un téléphone ou une tablette, où rien d'autre ne disait que la carte avait un verso à consulter — sur un ordinateur, elle apparaît toujours au passage de la souris",
                 "es": "Una tarjeta giratoria muestra ahora directamente su flecha de giro en un teléfono o una tableta, donde nada más indicaba que la tarjeta tenía un reverso que consultar — en un ordenador sigue apareciendo al pasar el ratón"
+            },
+            {
+                "en": "A page holding cards to turn no longer slides sideways on a phone: the cards now fit the width of the screen instead of pushing the page past it",
+                "fr": "Une page contenant des cartes à retourner ne glisse plus latéralement sur un téléphone : les cartes tiennent désormais dans la largeur de l'écran au lieu de pousser la page au-delà",
+                "es": "Una página con tarjetas giratorias ya no se desplaza lateralmente en un teléfono: las tarjetas caben ahora en el ancho de la pantalla en lugar de empujar la página más allá"
             }
         ]
     },

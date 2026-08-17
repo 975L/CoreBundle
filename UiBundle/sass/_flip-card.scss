@@ -14,6 +14,8 @@ $radius: var(--block-radius, var(--flip-card-radius));
     margin: 1em auto;
     // The box the ".cards" row stretched has to be the box the card is *painted* on, so the inner - and the two faces stretched inside it - fills it rather than shrinking back to its own content. Without it a row is as tall as its longest card while every shorter one paints a box of its own height (see LayoutAudit "flip-card-row-heights")
     display: grid;
+    // An "auto" track never goes under the min-content of what it holds, and a card nested in a face carries its own "width: var(--card-width)" - a length, not a percentage, so it counts in full towards that min-content. The track then held the card's asked-for width whatever box it sat in, and the cap above was read but never applied: on a phone the row spilled past the viewport and the page scrolled sideways. "minmax(0, 1fr)" is what lets the track follow the cap back down
+    grid-template-columns: minmax(0, 1fr);
 }
 
 // The two other measures of the row, read off the very same tokens as the plain card's (sass/_cards.scss): a row mixing the two kinds holds together only if a flip card sized "big" is as wide as a card sized "big". The title is left alone where ".card" moves its own - a flip card's is drawn from --flip-card-title-size, its own token, and the face it sits in is redrawn from whatever width applies
@@ -262,6 +264,8 @@ $hint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox
 .flip-card-inner {
     // Grid rather than absolute positioning: both faces share one cell, so the card is as tall as its tallest face whatever an editor typed in either, where the fixed height absolute positioning needs would clip it
     display: grid;
+    // Same track as ".flip-card"'s own, and for the same reason: the two faces sharing the cell hold the nested card, whose asked-for width would otherwise set the track and spill out of the box the outer one was just capped to
+    grid-template-columns: minmax(0, 1fr);
     transform-style: preserve-3d;
     transition: transform 0.7s;
     // No pointer on the inner's own box - and on the spacer below, drawn on it: both sit flat at z=0, where the two faces take the pointer back

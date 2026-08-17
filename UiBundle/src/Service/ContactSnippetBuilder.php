@@ -10,6 +10,8 @@
 
 namespace c975L\UiBundle\Service;
 
+use c975L\UiBundle\Registry\SameAsRegistry;
+
 // Builds the schema.org graph a "contact_details" block publishes as JSON-LD, out of the very fields it displays.
 // Display and structured data are rendered apart on purpose: microdata would pin every itemprop to a displayed element, so a field left empty - and they are all optional here - would leave an empty node behind. A graph assembled here instead simply drops what wasn't filled in, and can carry what isn't displayed (geo, image URL).
 class ContactSnippetBuilder
@@ -26,6 +28,10 @@ class ContactSnippetBuilder
 
     // schema.org's own day names, stored as-is so no mapping is needed here; the display side translates them
     public const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    public function __construct(private readonly SameAsRegistry $sameAsRegistry)
+    {
+    }
 
     // $imageUrl is resolved by the caller rather than read from the data: only a template can turn an attached Media into an absolute URL
     public function build(array $data, ?string $imageUrl = null): array
@@ -52,6 +58,8 @@ class ContactSnippetBuilder
             'hasMap' => $this->value($data, 'mapUrl'),
             'address' => $this->address($data),
             'geo' => $this->geo($data),
+            // The profiles naming this same business elsewhere, contributed by whichever bundle owns them (see SameAsProviderInterface) - "hasMap" above only says a map of the place exists, where this is what ties the site and those profiles into one entity
+            'sameAs' => $this->sameAsRegistry->all(),
             'openingHoursSpecification' => $this->openingHours($data),
         ]);
     }

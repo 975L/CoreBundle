@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Twig;
 
+use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +20,7 @@ class ContactExtensionTest extends TestCase
 {
     private function extension(): ContactExtension
     {
-        return new ContactExtension(new ContactSnippetBuilder());
+        return new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry()));
     }
 
     // Names locked: templates/components/Contact/Details.html.twig calls both, and a rename would fail there silently

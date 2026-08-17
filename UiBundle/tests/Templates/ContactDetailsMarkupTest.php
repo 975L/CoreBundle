@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
@@ -117,7 +118,7 @@ class ContactDetailsMarkupTest extends TestCase
         // What TwigBundle assembles from the #[AsTwigFunction] attributes: the extension reads them, the runtime loader hands over the instance the callables are called on
         $twig->addExtension(new AttributeExtension(ContactExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([
-            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder()),
+            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry())),
         ]));
 
         return $twig->render('components/Contact/Details.html.twig', $context);

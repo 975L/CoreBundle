@@ -957,6 +957,7 @@ label[for=contact_form_username],
   max-width: 100%;
   margin: 1em auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .flip-card--compact {
@@ -1180,6 +1181,7 @@ label[for=contact_form_username],
 
 .flip-card-inner {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   transform-style: preserve-3d;
   transition: transform 0.7s;
   pointer-events: none;

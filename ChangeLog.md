@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.12.2
+
+The contact graph names the profiles of the same business
+
+### UiBundle
+
+- A flip card and its inner lay out on a track that can shrink, so the cap on the card is applied instead of merely read (17/08/2026)
+- A row of flip cards no longer pushes a phone into a horizontal scroll, on any screen narrower than the width a card asks for (17/08/2026)
+- `CardMeasureTest` locks the track both boxes of a flip card lay out on (17/08/2026)
+- Added `SameAsProviderInterface`, letting a bundle publish the profiles naming the same business (17/08/2026)
+- The `contact_details` graph now carries `sameAs`, de-duplicated across providers (17/08/2026)
+- Added `SameAsRegistryTest` and `SameAsProviderPassTest` (17/08/2026)
+- The README documents contributing the profiles of the same business (17/08/2026)
+- The blocks skill documents the contact graph and its provider (17/08/2026)
+
 ## v1.12.1
 
 A card says it can be turned where no pointer can hover

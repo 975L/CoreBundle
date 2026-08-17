@@ -10,6 +10,8 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
+use c975L\UiBundle\Contract\SameAsProviderInterface;
+use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +19,7 @@ class ContactSnippetBuilderTest extends TestCase
 {
     private function builder(): ContactSnippetBuilder
     {
-        return new ContactSnippetBuilder();
+        return new ContactSnippetBuilder(new SameAsRegistry());
     }
 
     // The whole point of the kind: a field left empty is dropped from the graph instead of published blank
@@ -33,6 +35,52 @@ class ContactSnippetBuilderTest extends TestCase
         ]);
 
         $this->assertSame(['@context', '@type', 'name'], array_keys($snippet));
+    }
+
+    // The registry is read at render time, so what a provider reads from the database reaches the graph
+    public function testContributedProfilesArePublishedAsSameAs(): void
+    {
+        $registry = new SameAsRegistry();
+        $registry->addProvider($this->provider(['https://www.google.com/maps?cid=1', 'https://facebook.com/autotech']));
+
+        $snippet = new ContactSnippetBuilder($registry)->build(['name' => 'Autotech']);
+
+        $this->assertSame(['https://www.google.com/maps?cid=1', 'https://facebook.com/autotech'], $snippet['sameAs']);
+    }
+
+    // Two bundles naming the same profile would otherwise publish it twice, which reads as two entities
+    public function testTheSameProfileContributedTwiceIsPublishedOnce(): void
+    {
+        $registry = new SameAsRegistry();
+        $registry->addProvider($this->provider(['https://www.google.com/maps?cid=1', '  ']));
+        $registry->addProvider($this->provider(['https://www.google.com/maps?cid=1']));
+
+        $snippet = new ContactSnippetBuilder($registry)->build(['name' => 'Autotech']);
+
+        $this->assertSame(['https://www.google.com/maps?cid=1'], $snippet['sameAs']);
+    }
+
+    // A site whose bundles contribute nothing must not publish an empty property, same rule as every other field
+    public function testNoContributedProfileLeavesNoSameAsAtAll(): void
+    {
+        $this->assertArrayNotHasKey('sameAs', $this->builder()->build(['name' => 'Autotech']));
+    }
+
+    /**
+     * @param string[] $urls
+     */
+    private function provider(array $urls): SameAsProviderInterface
+    {
+        return new readonly class ($urls) implements SameAsProviderInterface {
+            public function __construct(private array $urls)
+            {
+            }
+
+            public function getSameAs(): array
+            {
+                return $this->urls;
+            }
+        };
     }
 
     public function testNoNameProducesNoGraphAtAll(): void

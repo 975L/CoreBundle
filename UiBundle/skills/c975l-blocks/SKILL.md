@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore."
 ---
 
 # c975L UiBundle — blocks
@@ -130,6 +130,19 @@ button on the rendered page — call `Service\LegalModelEditUrl::build()` first 
 a `legal_model` block being edited on its own screen. `BlockLocationProviderInterface` tells the
 screens listing one kind site-wide where each block actually lives.
 
+## The contact graph
+
+The `contact_details` kind has two outputs off the same fields: the panel a visitor reads, and the
+schema.org JSON-LD graph `ContactSnippetBuilder` assembles, every field optional and an empty one
+dropped rather than published blank.
+
+A bundle holding the urls of the profiles naming that same business elsewhere — a Google listing, a
+social account — implements `SameAsProviderInterface` and they reach that graph's `sameAs`, the
+property tying the site and those profiles into one entity. Same auto-discovery as everything above,
+no tag needed; the registry is read at render time, so urls kept in the database are current, and it
+de-duplicates across providers. **Do not add a field to the block for them** — the bundle owning the
+profiles is the only one that knows their urls.
+
 ## Legal models
 
 The legal notice, privacy policy, terms of sales and use, cookies and copyright are **this bundle's**:
@@ -155,6 +168,8 @@ them** rather than writing a walk of your own. A content export never carries th
 - **Do not cache a kind that embeds a form or reads outside data.**
 - **Do not re-implement the block export walk.**
 - **Do not write legal text in a template** or duplicate the legal models.
+- **Do not add a field for outside profile urls** to the contact block — contribute them through
+  `SameAsProviderInterface`.
 - **Do not make a singleton kind pickable.**
 - **Do not add a built-in kind to this bundle from an app** — `c975l:ui:block:create` generates into
   the app's own namespace, which is where a one-off kind belongs.

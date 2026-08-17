@@ -112,6 +112,17 @@ class CardMeasureTest extends TestCase
         }
     }
 
+    // The cap above is read but not applied on a flip card unless both its boxes can go under the min-content of what they hold: an "auto" track never does, and a card nested in a face carries "width: var(--card-width)" - a length, which counts in full towards that min-content. The track then held the asked-for width whatever box it sat in, and a phone scrolled sideways on every page carrying a flip card
+    #[DataProvider('stylesheetProvider')]
+    public function testBothBoxesOfAFlipCardFollowThatCapDown(string $file): void
+    {
+        foreach (['.flip-card', '.flip-card-inner'] as $selector) {
+            $declarations = $this->declarationsOf($this->stylesheet($file), $selector, $file);
+
+            $this->assertStringContainsString('grid-template-columns:minmax(0,1fr)', $declarations, sprintf('"%s" lays its grid out on a track that cannot shrink under its content in "%s", so the cap on the card is never applied and a narrow screen scrolls sideways.', $selector, $file));
+        }
+    }
+
     // Comments out and every space with them, so the same assertions hold on both sheets - nothing here reads a descendant combinator
     private function stylesheet(string $file): string
     {
@@ -162,11 +173,19 @@ class CardMeasureTest extends TestCase
     // The body of a kind's own rule, told apart from the ones a row or a cell restates by the width it reads. Both kinds line up in the same ".cards" row, so both read that one token: a width written down again is a number computed against the default page, which is what dropped a flip card off a row every site framing its content tighter
     private function measuredDeclarations(string $css, string $selector, string $file): string
     {
+        $declarations = $this->declarationsOf($css, $selector, $file);
+
+        $this->assertStringContainsString('width:var(--card-width)', $declarations, sprintf('"%s" no longer measures "%s" off the shared token.', $file, $selector));
+
+        return $declarations;
+    }
+
+    // The rule's own block, read off the selector alone: a flip card's inner measures nothing of its own and carries no width for the assertion above to find
+    private function declarationsOf(string $css, string $selector, string $file): string
+    {
         if (1 !== preg_match(sprintf('/(?:^|[};])%s\{([^}]*)\}/', preg_quote($selector, '/')), $css, $matches)) {
             $this->fail(sprintf('"%s" has no "%s" rule at all.', $file, $selector));
         }
-
-        $this->assertStringContainsString('width:var(--card-width)', $matches[1], sprintf('"%s" no longer measures "%s" off the shared token.', $file, $selector));
 
         return $matches[1];
     }
