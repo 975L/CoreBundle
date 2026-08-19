@@ -138,6 +138,23 @@ class HealthCheckResultRepository extends ServiceEntityRepository
         return (int) $qb->getQuery()->execute();
     }
 
+    // Deletes every row of one kind whose url is not in $urls - what an exhaustive provider's run leaves behind (see HealthCheckExhaustiveInterface): a url it no longer returns has nothing left to check, and its last row would otherwise stand as the dashboard's current state for good, the retention purge preserving the latest row of each (url, kind) whatever its age. An empty $urls clears the kind, that being what an exhaustive run returning nothing means. A bulk DQL delete for the same reason as deleteOlderThan(): none of these rows is of any use to the identity map afterwards
+    public function deleteByKindNotInUrls(string $kind, array $urls): int
+    {
+        $qb = $this->createQueryBuilder('h')
+            ->delete()
+            ->andWhere('h.kind = :kind')
+            ->setParameter('kind', $kind);
+
+        if ([] !== $urls) {
+            $qb
+                ->andWhere('h.url NOT IN (:urls)')
+                ->setParameter('urls', array_values(array_unique($urls)));
+        }
+
+        return (int) $qb->getQuery()->execute();
+    }
+
     // The distinct kinds having recorded at least one row since a given moment - how the Health check page tells how many of a queued run's jobs have landed (see HealthCheckRunProgress), the jobs themselves running in a Messenger worker the web request knows nothing about. A DISTINCT aggregate rather than a hydration: the answer is a handful of strings whatever the number of rows behind them, and this is polled every few seconds
     // @return string[]
     public function findKindsCheckedSince(\DateTimeInterface $since): array

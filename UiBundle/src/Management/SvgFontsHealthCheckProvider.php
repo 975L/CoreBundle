@@ -11,7 +11,7 @@
 namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
-use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Entity\Media;
@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Lists the SVG files the site serves and flags those still drawing their text with a font instead of with paths. The upload itself already warns (see UiBundle's SvgTextWarningListener), but only whoever was uploading saw it, and only from that day on - this is what surfaces the ones already in place, and the ones a content_import brought in with no session to flash to. Reads files off the disk rather than over http: they are this site's own, and an unreachable one is a different check's business (see SeoFilesHealthCheckProvider)
-class SvgFontsHealthCheckProvider implements HealthCheckProviderInterface
+class SvgFontsHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     // Named here rather than restated as a literal wherever a row of this kind is picked out - SvgFontsHealthCheckAdviceProvider does exactly that
     public const string KIND = 'svg-fonts';
@@ -58,7 +58,7 @@ class SvgFontsHealthCheckProvider implements HealthCheckProviderInterface
                 continue;
             }
 
-            // The OK row is what lets a corrected file go back to green: results are kept per url and kind, so dropping it would leave the previous warning standing for good
+            // The OK row is what lets a corrected file go back to green where its filename is stable, and the exhaustive purge is what retires the old url otherwise - re-uploading names the file anew (see UiMediaNamer), so the green row lands on a url of its own rather than replacing the warning (see HealthCheckExhaustiveInterface)
             if (!$this->svgTextDetector->drawsText($absolutePath)) {
                 $rows[] = $this->row($media, $siteUrl, HealthCheckResult::STATUS_OK, 'label.health_check_svg_fonts_ok');
 

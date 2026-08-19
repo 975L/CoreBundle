@@ -1982,6 +1982,14 @@
                 <source>label.health_check_advice_svg_fonts_vectorize</source>
                 <target>Reopen the file in your drawing tool and convert its text to paths (Inkscape: Path &gt; Object to Path; Illustrator: Type &gt; Create Outlines), then upload it again on this media.</target>
             </trans-unit>
+            <trans-unit id="8dcvz_l">
+                <source>label.health_check_declared_file_found</source>
+                <target>%file% is where the server expects it</target>
+            </trans-unit>
+            <trans-unit id="Egb3haU">
+                <source>label.health_check_declared_file_missing</source>
+                <target>%file% is declared in the database but missing from the server: nothing serves it any more, and whatever uses it degrades silently</target>
+            </trans-unit>
             <trans-unit id="epZIsrh">
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% section(s) you rewrote have changed in the "%model%" model: %sections%</target>

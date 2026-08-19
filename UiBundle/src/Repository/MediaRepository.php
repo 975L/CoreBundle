@@ -77,6 +77,18 @@ class MediaRepository extends ServiceEntityRepository
         return $this->find($ids[array_rand($ids)]);
     }
 
+    // @return Media[] Rows naming a file, for the check that then looks for each one on disk (see MediaFilesHealthCheckProvider). An empty string counts as naming none, a row created for its caption alone never having held a file
+    public function findWithFilename(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.filename IS NOT NULL AND m.filename != :empty')
+            ->setParameter('empty', '')
+            ->orderBy('m.filename', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // @return Media[] Rows whose width or height is still unset - what MediaDimensionsCommand backfills. An empty string counts as unset: the admin form (see MediaUploadType) submits one for a field left blank, where an untouched row holds null
     public function findWithoutDimensions(): array
     {

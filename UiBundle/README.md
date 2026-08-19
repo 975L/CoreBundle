@@ -1944,7 +1944,7 @@ An entity whose uploads should carry the site's signature implements `Contract\V
 | `wantsWatermark(): bool` | `false` leaves every derivative untouched — a screenshot or a press photo is nobody's to sign, so this is decided per row rather than per entity class |
 | `getWatermarkPosition(): ?string` | one of `POSITION_TOP_LEFT`/`TOP_RIGHT`/`BOTTOM_RIGHT`/`BOTTOM_LEFT`, or `null` to take the corner set site-wide |
 
-The signature itself is a site graphic, not an entity's business: it is uploaded once for the whole site, under **two** roles — `Media::ROLE_WATERMARK_ON_LIGHT` and `Media::ROLE_WATERMARK_ON_DARK`, named after the background they are meant to be read against. `Service\ImageWatermarker` measures the average luminance of the very corner the logo is about to occupy and picks the one that will still be visible there: a dark signature disappears into a night sky and a white one into a snowfield, and a gallery holds both shots. A site that uploaded only one of the two gets it on every photo.
+The signature itself is a site graphic, not an entity's business: it is uploaded once for the whole site, under **two** roles — `Media::ROLE_WATERMARK_ON_LIGHT` and `Media::ROLE_WATERMARK_ON_DARK`, named after the background they are meant to be read against. `Service\ImageWatermarker` measures the average luminance of the very corner the logo is about to occupy and picks the one that will still be visible there: a dark signature disappears into a night sky and a white one into a snowfield, and a gallery holds both shots. A site that uploaded only one of the two gets it on every photo — readable or not, which is exactly what the [`files-ui` health check](#a-file-the-database-declares-and-the-server-no-longer-has) is there to catch when the second signature was never deployed.
 
 Three configs of the `general` group govern the rest, all three expressed as a percentage of the image's own width, so a 600px thumbnail and a 2048px export carry the same signature at the same relative size:
 
@@ -2009,6 +2009,33 @@ The index shows one button per graphic still missing: each opens the upload form
 The `og-image` role is the one graphic offered an **alternative text** on that screen, the others being decoration a share never carries. `@c975LUi/layout.html.twig` writes it as `og:image:alt`, alongside the `og:image:width`/`og:image:height` the media library already holds as columns — stated only when known, a network reading them reserving the thumbnail's room before it loads. A template setting `ogImage` itself is the only one knowing what that image shows, so it says it next to it, in `ogImageAlt`.
 
 `Form\OgImageType` embeds a single `Media` upload and its alternative text, for an entity of your own carrying a share image (SiteBundle's `Page`, ConfigBundle's `UrlMetadata`).
+
+### A file the database declares and the server no longer has
+
+A site graphic is uploaded on the server it serves from — it is not in the site's repository, so no deployment carries it. The day one is missing there, nothing says so: the row still declares it, the Site graphics screen still lists it, every export still carries it, and only whoever loads the page it belongs to sees the hole. A watermark signature missing in production had two days of photographs signed with the other one, silently, `ImageWatermarker` falling back rather than refusing to sign.
+
+`Management\MediaFilesHealthCheckProvider` (kind `files-ui`, on ConfigBundle's **Health check** page) is what answers that: one row per file a `Media` or a `Font` row names, **error** when it is not under `public/`, ok when it is. Only the six singleton roles keep a stable filename, so the ok row is what takes them back to green; everywhere else `UiMediaNamer` names the re-uploaded file anew, and the old url is retired instead — the provider declares itself exhaustive (see ConfigBundle's `HealthCheckExhaustiveInterface`), so a url a run no longer returns has its rows dropped rather than left standing in red. A media carrying a role links to the Site graphics screen, one without to the media library, and a font to its own — the screen the file is re-uploaded from, never merely the one it is listed on.
+
+The check itself lives in `Management\AbstractDeclaredFilesHealthCheckProvider`, so a bundle covering its own uploads writes nothing but what declares a file:
+
+```php
+class GalleryFilesHealthCheckProvider extends AbstractDeclaredFilesHealthCheckProvider
+{
+    public function getKind(): string
+    {
+        return 'files-gallery';
+    }
+
+    protected function declaredFiles(): iterable
+    {
+        foreach ($this->galleryMediaRepository->findWithFilename() as $media) {
+            yield ['filename' => (string) $media->getFilename(), 'label' => $media->getTitle(), 'editUrl' => $this->editUrl($media)];
+        }
+    }
+}
+```
+
+Only the file a row *names* is looked for, never one derived from it: a thumbnail is rebuilt from the stored image (see [Three sizes of one image](#three-sizes-of-one-image)), where a named file gone is one nothing can bring back. SiteBundle covers its collection items this way, GalleryBundle its photographs and their self-hosted videos.
 
 ---
 

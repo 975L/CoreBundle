@@ -1,5 +1,34 @@
 # ChangeLog
 
+## v1.12.5
+
+A file the database declares is looked for on the server
+
+### UiBundle
+
+- Added `Management\AbstractDeclaredFilesHealthCheckProvider`, checking that every file a bundle's rows name is under `public/` (19/08/2026)
+- Added `Management\MediaFilesHealthCheckProvider` (kind `files-ui`), covering the media library, the site graphics and the uploaded fonts (19/08/2026)
+- A declared file missing from the server is an error, never a warning: nothing else says it is gone (19/08/2026)
+- The ok row is kept for a file in place, so a re-upload takes its row back to green (19/08/2026)
+- `AbstractDeclaredFilesHealthCheckProvider` and `SvgFontsHealthCheckProvider` now declare themselves exhaustive, retiring the url a re-upload renamed (19/08/2026)
+- A media carrying a role links to the Site graphics screen, one without to the media library (19/08/2026)
+- Added `MediaRepository::findWithFilename()` and `FontRepository::findWithFilename()` (19/08/2026)
+- Added `label.health_check_declared_file_found` and `label.health_check_declared_file_missing` in the three locales (19/08/2026)
+- Added `MediaFilesHealthCheckProviderTest` (19/08/2026)
+- The README documents the check, the watermark section pointing at it (19/08/2026)
+- The `c975l-media` skill documents the check and how a bundle extends it (19/08/2026)
+
+### ConfigBundle
+
+- Added `Management\HealthCheckExhaustiveInterface`, for a provider whose run lists the whole of its domain (19/08/2026)
+- `HealthCheckRunner` now drops the rows of a kind whose url an exhaustive provider no longer returns (19/08/2026)
+- Added `HealthCheckResultRepository::deleteByKindNotInUrls()` (19/08/2026)
+- The `files-ui` rows now show in the Health check page's Site section instead of the per-page table (19/08/2026)
+- Added five `HealthCheckRunnerTest` cases covering the exhaustive purge (19/08/2026)
+- Added three `ConfigCrudControllerTest` cases covering the restricted config guard (19/08/2026)
+- The README documents a provider listing the whole of its domain (19/08/2026)
+- The `c975l-operations` skill names the shared file check next to the declared urls one (19/08/2026)
+
 ## v1.12.4
 
 The CI stops downloading again what it downloaded an hour ago

@@ -1886,6 +1886,23 @@ class MyGeneratedHealthCheckProvider implements HealthCheckProviderInterface, He
 
 `HealthCheckRunner` asks the instance first, then falls back to the class attribute, then to weekly. Only that rare generated-provider case needs the interface — everything else states its cadence with the attribute and never implements it.
 
+### A provider that lists the whole of its domain
+
+Results are kept per (url, kind) and the retention purge deliberately preserves the latest row of each pair, so a url that can never come back keeps its last **error** as the dashboard's current state for good. That is what happens whenever the url carries a generated filename: re-uploading a missing file names it anew, the green row lands on a url of its own, and the red one is orphaned rather than replaced.
+
+A provider whose run enumerates its whole domain says so with `HealthCheckExhaustiveInterface`, and `HealthCheckRunner` then deletes that kind's rows for the urls missing from the run:
+
+```php
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
+
+class MyUploadedFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
+{
+    // getKind() and runChecks() as above - the interface adds no method, it only states that a url this run did not return has nothing left to check
+}
+```
+
+Only implement it on a provider that really does list its whole domain every run: an empty run is taken at face value and clears the kind entirely. A provider checking a fixed set of urls (security headers, the certificate, `robots.txt`) has no reason to — its urls never disappear, and its history is the point. A run that throws never purges, a failure telling nothing about what the provider declares.
+
 ## Contributing health check advice from other bundles
 
 Any bundle can attach actionable advice under a Health check table row (e.g. "this page is missing an H1" linking to its edit screen) by implementing `HealthCheckAdviceProviderInterface` — no manual service tagging needed, `TaggedInterfacePass` auto-detects any class implementing it, same mechanism as `MenuProviderInterface` above:

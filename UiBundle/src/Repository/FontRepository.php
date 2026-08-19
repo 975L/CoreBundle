@@ -35,6 +35,19 @@ class FontRepository extends ServiceEntityRepository
         ;
     }
 
+    // @return Font[] Rows naming a file, for the check that then looks for each one on disk (see MediaFilesHealthCheckProvider) - a font whose file is gone leaves the site rendering its fallback, which no error anywhere reports
+    public function findWithFilename(): array
+    {
+        return $this->createQueryBuilder('f')
+            ->where('f.filename IS NOT NULL AND f.filename != :empty')
+            ->setParameter('empty', '')
+            ->orderBy('f.name', 'ASC')
+            ->addOrderBy('f.weight', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // Distinct font-family names currently uploaded, offered by FontService to the "font" kind config selects
     public function findDistinctNames(): array
     {

@@ -71,6 +71,24 @@ everything written is webp, a format saved without EXIF, so nothing downstream r
   serve a paid file from outside `public/`. **It only builds the response — the access check stays your
   controller's job.**
 
+## Checking the files are still there
+
+A file is uploaded on the server that serves it and never travels with a deployment, so one that goes
+missing leaves no trace at all: the row still names it, every screen still lists it, and only the page
+carrying it shows the hole. `Management\AbstractDeclaredFilesHealthCheckProvider` is the check that
+answers for that — one row per file a bundle's rows name, **error** when it is not under `public/`, ok
+when it is. `Management\MediaFilesHealthCheckProvider` (kind `files-ui`) covers this bundle's own
+`Media` and `Font` rows.
+
+The abstract provider declares itself exhaustive (see ConfigBundle's `HealthCheckExhaustiveInterface`),
+which is what takes a fixed file back to green: `UiMediaNamer` names a re-uploaded file anew, so the ok
+row lands on a url of its own and the old error url is dropped rather than left standing. A subclass
+inherits that, and must therefore yield **every** file it declares on every run.
+
+A bundle storing uploads of its own extends it and implements `declaredFiles()` alone, yielding
+`filename`, `label` and `editUrl` per file — the screen the file is **re-uploaded from**. Only the file
+a row names, never a derivative: a thumbnail is rebuilt, a named file gone is not.
+
 ## In the app
 
 ```twig
@@ -123,5 +141,7 @@ network refuses the batch.
   built the response.
 - **Do not forget to remove your own derivatives** when a row is deleted — nothing does it for you.
 - **Do not upload the site logo or favicon as an entity of your own**; they are `Media` roles.
+- **Do not write a file-exists check of your own** for your uploads — extend
+  `AbstractDeclaredFilesHealthCheckProvider` and name the rows.
 - **Do not write a progress bar of your own**, and do not redirect from a controller answering a form
   that carries one — hand the url over.

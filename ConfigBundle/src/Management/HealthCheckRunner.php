@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
+use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 // Runs every registered HealthCheckProvider and persists their rows - called from c975l:health-check:run only (see HealthCheckProviderInterface), never from a controller, so a slow third-party API call never blocks a dashboard request
@@ -20,6 +21,7 @@ class HealthCheckRunner
     public function __construct(
         private readonly iterable $healthCheckProviders,
         private readonly EntityManagerInterface $entityManager,
+        private readonly HealthCheckResultRepository $healthCheckResultRepository,
     ) {
     }
 
@@ -27,6 +29,7 @@ class HealthCheckRunner
     public function run(array $onlyKinds = [], ?string $frequency = null): array
     {
         $counts = [];
+        $exhaustiveUrls = [];
 
         foreach ($this->healthCheckProviders as $provider) {
             $kind = $provider->getKind();
@@ -51,12 +54,22 @@ class HealthCheckRunner
                 $this->entityManager->persist($this->buildResult($kind, $row, $checkedAt));
             }
 
+            // Collected per kind rather than purged here, because one class can be registered several times over under the same kind, one instance per source (see DeclaredUrlsHealthCheckProvider) - purging inside the loop would have each instance delete what the ones before it just produced
+            if ($provider instanceof HealthCheckExhaustiveInterface) {
+                $exhaustiveUrls[$kind] = array_merge($exhaustiveUrls[$kind] ?? [], array_column($rows, 'url'));
+            }
+
             $counts[$kind] = \count($rows);
         }
 
         // Skips flush() entirely on a true no-op (no provider matched $onlyKinds, or every matched provider returned zero rows) - flush() walks the whole UnitOfWork's changeset, not just what this method touched, so there's a real cost to paying for it when nothing was persisted
         if (array_sum($counts) > 0) {
             $this->entityManager->flush();
+        }
+
+        // Drops what an exhaustive provider no longer declares (see HealthCheckExhaustiveInterface), after the flush so the rows just persisted are on the table and survive the delete on their own urls. Unconditional: a run returning nothing is exactly the case where every row of that kind is stale
+        foreach ($exhaustiveUrls as $kind => $urls) {
+            $this->healthCheckResultRepository->deleteByKindNotInUrls($kind, $urls);
         }
 
         return $counts;

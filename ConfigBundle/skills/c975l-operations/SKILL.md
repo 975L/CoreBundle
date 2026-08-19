@@ -81,6 +81,18 @@ content-quality analysis over the urls a bundle already declares for its sitemap
 **Nothing to implement bundle-side** — declaring the sitemap is enough. Do not write a per-bundle
 content check, and do not remount in an `extra` status section what it already reports.
 
+**For the files a bundle stores rather than the urls it publishes**, UiBundle ships
+`AbstractDeclaredFilesHealthCheckProvider`: extend it, yield the files your rows name, and every one
+missing from `public/` is reported as an error (kinds `files-ui`, `files-site`, `files-gallery`). It is
+what catches a file that only ever existed on the server — a site graphic, a signature — and that no
+deployment carries. Do not write a file-exists check of your own.
+
+A provider whose run lists the whole of its domain — the file checks above, `svg-fonts` — implements
+`HealthCheckExhaustiveInterface`, and the runner then drops that kind's rows for the urls the run no
+longer returns. Without it a url carrying a generated filename keeps its last error for good, the
+retention purge preserving the latest row of each (url, kind). Never put it on a provider checking a
+fixed set of urls: an empty run clears the kind.
+
 Checks run from `c975l:health-check:run` only, never from a controller, so a slow or paid API call
 never blocks a request. **Run them against production's own database**: the url list comes from
 whichever database is connected, while the urls always point at `site-url`.

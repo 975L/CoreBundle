@@ -40,8 +40,8 @@ class HealthCheckController extends AbstractController
     // EasyAdmin prefixes this with the Dashboard's own route name, giving management_health_check_run
     public const RUN_ROUTE = 'management_health_check_run';
 
-    // Kinds checked once for the whole site (infrastructure-level: TLS cert, security headers, security misconfiguration, robots.txt/sitemap, sitemaps cross-checked against robots.txt, redirect chains, http/https + 404 deployment checks, database load, last backup, uploaded svg files, ai crawlers list) rather than once per page - shown in their own "Site" section instead of the per-page table, see index()
-    private const array SITE_WIDE_KINDS = ['security-headers', 'security-misconfig', 'ssl-certificate', 'seo-files', 'redirect-chains', 'deployment', 'svg-fonts', AiCrawlersHealthCheckProvider::KIND, DatabaseLoadHealthCheckProvider::KIND, BackupResultRecorder::KIND, SitemapRobotsHealthCheckProvider::KIND];
+    // Kinds checked once for the whole site (infrastructure-level: TLS cert, security headers, security misconfiguration, robots.txt/sitemap, sitemaps cross-checked against robots.txt, redirect chains, http/https + 404 deployment checks, database load, last backup, uploaded svg files, declared files, ai crawlers list) rather than once per page - shown in their own "Site" section instead of the per-page table, see index()
+    private const array SITE_WIDE_KINDS = ['security-headers', 'security-misconfig', 'ssl-certificate', 'seo-files', 'redirect-chains', 'deployment', 'svg-fonts', 'files-ui', AiCrawlersHealthCheckProvider::KIND, DatabaseLoadHealthCheckProvider::KIND, BackupResultRecorder::KIND, SitemapRobotsHealthCheckProvider::KIND];
 
     public function __construct(
         private readonly HealthCheckResultRepository $healthCheckResultRepository,

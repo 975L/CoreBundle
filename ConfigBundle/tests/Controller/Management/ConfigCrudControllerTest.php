@@ -174,6 +174,14 @@ class ConfigCrudControllerTest extends TestCase
         return AdminContext::forTesting();
     }
 
+    // Same factories, but carrying an actual Config instance: edit()/denyAccessToRestrictedConfig() read the entity through the CrudContext
+    private function createAdminContextForConfig(Config $config): AdminContext
+    {
+        return AdminContext::forTesting(crudContext: CrudContext::forTesting(
+            entityDto: new EntityDto(Config::class, new ClassMetadata(Config::class), null, $config),
+        ));
+    }
+
     // --- currentGroup (private) -----------------------------------------------------------------------
 
     public function testCurrentGroupReturnsNullWhenNoGroupQueryParam(): void
@@ -542,6 +550,48 @@ class ConfigCrudControllerTest extends TestCase
             new FieldCollection([]),
             new FilterCollection([]),
         );
+    }
+
+    // --- edit / denyAccessToRestrictedConfig ------------------------------------------------------------
+
+    // The guard the whole "restricted" promise rests on: NEW/DELETE/DETAIL being disabled, edit() is the only CRUD action left able to reach a config by its id
+    public function testEditDeniesAccessToARestrictedConfigBelowRoleSuperAdmin(): void
+    {
+        $this->expectException(AccessDeniedException::class);
+
+        $controller = $this->createController();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(false),
+        ]));
+
+        $controller->edit($this->createAdminContextForConfig(new Config()->setIsRestricted(true)));
+    }
+
+    public function testDenyAccessToRestrictedConfigLetsASuperAdminThrough(): void
+    {
+        $controller = $this->createController();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+        ]));
+
+        $this->assertNull($this->invokePrivate($controller, 'denyAccessToRestrictedConfig', [
+            $this->createAdminContextForConfig(new Config()->setIsRestricted(true)),
+        ]));
+    }
+
+    // isRestricted is nullable: a legacy row not yet synced by config:load-all must stay editable by every admin, not be locked away
+    public function testDenyAccessToRestrictedConfigLetsANonRestrictedConfigThrough(): void
+    {
+        $controller = $this->createController();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(false),
+        ]));
+
+        foreach ([false, null] as $isRestricted) {
+            $this->assertNull($this->invokePrivate($controller, 'denyAccessToRestrictedConfig', [
+                $this->createAdminContextForConfig(new Config()->setIsRestricted($isRestricted)),
+            ]));
+        }
     }
 
     // --- fetchExportRows (private) ---------------------------------------------------------------------

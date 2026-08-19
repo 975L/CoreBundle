@@ -1982,6 +1982,14 @@
                 <source>label.health_check_advice_svg_fonts_vectorize</source>
                 <target>Rouvrez le fichier dans votre outil de dessin et convertissez son texte en tracés (Inkscape : Chemin &gt; Objet en chemin ; Illustrator : Texte &gt; Vectoriser), puis réimportez-le sur ce média.</target>
             </trans-unit>
+            <trans-unit id="8dcvz_l">
+                <source>label.health_check_declared_file_found</source>
+                <target>%file% est bien à sa place sur le serveur</target>
+            </trans-unit>
+            <trans-unit id="Egb3haU">
+                <source>label.health_check_declared_file_missing</source>
+                <target>%file% est déclaré en base mais absent du serveur : plus rien ne le sert, et ce qui l'utilise se dégrade en silence</target>
+            </trans-unit>
             <trans-unit id="epZIsrh">
                 <source>label.health_check_legal_model_drift</source>
                 <target>%count% section(s) que vous avez réécrite(s) ont évolué dans le modèle « %model% » : %sections%</target>

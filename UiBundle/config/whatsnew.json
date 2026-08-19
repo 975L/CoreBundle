@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-08-19",
+        "description": [
+            {
+                "en": "The Health check page now says when a file your site declares is no longer on the server. A logo, a favicon, a watermark signature or a font is uploaded on the server itself and never travels with a deployment, so one that disappears used to leave no trace at all: the record still named it, every screen still listed it, and only the page carrying it showed the hole. Each missing file is now reported in red, with a link straight to the screen it is re-uploaded from — and goes back to green as soon as you send it again",
+                "fr": "La page Contrôle de santé indique désormais qu'un fichier déclaré par votre site n'est plus sur le serveur. Un logo, une favicon, une signature de filigrane ou une police est téléversé sur le serveur lui-même et ne voyage jamais avec une mise en production : celui qui disparaissait ne laissait donc aucune trace : la fiche le nommait toujours, tous les écrans le listaient encore, et seule la page qui le portait montrait le trou. Chaque fichier manquant est maintenant signalé en rouge, avec un lien direct vers l'écran d'où le renvoyer — et repasse au vert dès que vous l'avez renvoyé",
+                "es": "La página Control de salud indica ahora cuándo un archivo declarado por su sitio ya no está en el servidor. Un logotipo, un favicon, una firma de marca de agua o una tipografía se sube al propio servidor y nunca viaja con una puesta en producción: el que desaparecía no dejaba por tanto ningún rastro: la ficha seguía nombrándolo, todas las pantallas seguían listándolo, y solo la página que lo llevaba mostraba el hueco. Cada archivo que falta se señala ahora en rojo, con un enlace directo a la pantalla desde la que volver a enviarlo — y vuelve a verde en cuanto lo ha enviado de nuevo"
+            }
+        ]
+    },
+    {
         "date": "2026-08-17",
         "description": [
             {
