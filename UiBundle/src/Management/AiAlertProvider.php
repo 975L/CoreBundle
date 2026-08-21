@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Management;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
+use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiUsageTracker;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -66,7 +67,7 @@ class AiAlertProvider implements AlertProviderInterface
             'label' => $label,
             'description' => $description,
             'severity' => $severity,
-            'url' => $this->urlGenerator->generate('management_ui_ai_assistant_index'),
+            'url' => $this->urlGenerator->generate(AiAssistantController::INDEX_ROUTE),
         ];
     }
 }

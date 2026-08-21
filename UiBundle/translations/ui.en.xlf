@@ -34,6 +34,10 @@
                 <source>description.guided_project_ui_form</source>
                 <target>Build a form field by field, then drop it into a page</target>
             </trans-unit>
+            <trans-unit id="2pt5gfj">
+                <source>description.guided_project_ui_form_field_template</source>
+                <target>A field settled once - its wording, its type, whether it is required - drops into any form of the site in one click, and always asks the visitor the same question.</target>
+            </trans-unit>
             <trans-unit id="_2UHUq_">
                 <source>description.guided_project_ui_legal_model</source>
                 <target>Hide, retitle or rewrite a section of a legal document this bundle ships, and add sections of your own, without losing the updates it keeps receiving</target>
@@ -113,6 +117,30 @@
             <trans-unit id="WdMcqav">
                 <source>description.guided_step_ui_form_action</source>
                 <target>The action decides what happens on submit: sending an e-mail, signing somebody up, resetting a password.</target>
+            </trans-unit>
+            <trans-unit id="616jVGU">
+                <source>description.guided_step_ui_form_field_template_done</source>
+                <target>On the Forms screen, the picker sitting next to the collection's own "Add" button now offers this model, and fills a whole field row at once.</target>
+            </trans-unit>
+            <trans-unit id="xR2Mhob">
+                <source>description.guided_step_ui_form_field_template_label</source>
+                <target>The wording printed above the field on the page. Settle it here once and every form asking for it words the question the same way.</target>
+            </trans-unit>
+            <trans-unit id="sTAGo1O">
+                <source>description.guided_step_ui_form_field_template_name</source>
+                <target>This name stays yours alone: it is what the picker shows you when the time comes to drop the field into a form, never what the visitor reads.</target>
+            </trans-unit>
+            <trans-unit id="tgeO.Ye">
+                <source>description.guided_step_ui_form_field_template_open</source>
+                <target>No menu entry leads here: the catalog opens from the toolbar of the Forms screen and of the Email templates one alike.</target>
+            </trans-unit>
+            <trans-unit id="FZz1m7d">
+                <source>description.guided_step_ui_form_field_template_required</source>
+                <target>Only a default: a form dropping this field in can still decide otherwise on its own.</target>
+            </trans-unit>
+            <trans-unit id="c.4Bl9b">
+                <source>description.guided_step_ui_form_field_template_type</source>
+                <target>The type decides how the field is drawn and what the visitor is allowed to type into it - an e-mail one refuses an address that isn't one.</target>
             </trans-unit>
             <trans-unit id="KgGbEW5">
                 <source>description.guided_step_ui_form_fields</source>
@@ -1786,6 +1814,10 @@
                 <source>label.guided_project_ui_form</source>
                 <target>Create a form</target>
             </trans-unit>
+            <trans-unit id="N26HCnb">
+                <source>label.guided_project_ui_form_field_template</source>
+                <target>Build a catalog of ready-made fields</target>
+            </trans-unit>
             <trans-unit id="Q.ghvqg">
                 <source>label.guided_project_ui_legal_model</source>
                 <target>Adjust a legal document</target>
@@ -1873,6 +1905,38 @@
             <trans-unit id="L0azB6X">
                 <source>label.guided_step_ui_form_action</source>
                 <target>Pick what it triggers</target>
+            </trans-unit>
+            <trans-unit id="ynGb_IA">
+                <source>label.guided_step_ui_form_field_template_done</source>
+                <target>Drop it into a form</target>
+            </trans-unit>
+            <trans-unit id="dPeXBBh">
+                <source>label.guided_step_ui_form_field_template_label</source>
+                <target>Write what the visitor reads</target>
+            </trans-unit>
+            <trans-unit id="ayWiQri">
+                <source>label.guided_step_ui_form_field_template_name</source>
+                <target>Name it</target>
+            </trans-unit>
+            <trans-unit id="h1bCqa5">
+                <source>label.guided_step_ui_form_field_template_new</source>
+                <target>Add a model</target>
+            </trans-unit>
+            <trans-unit id="7UTZlKx">
+                <source>label.guided_step_ui_form_field_template_open</source>
+                <target>Open the catalog</target>
+            </trans-unit>
+            <trans-unit id=".r9l1.O">
+                <source>label.guided_step_ui_form_field_template_required</source>
+                <target>Decide whether it is required</target>
+            </trans-unit>
+            <trans-unit id="IoWXocp">
+                <source>label.guided_step_ui_form_field_template_save</source>
+                <target>Save it</target>
+            </trans-unit>
+            <trans-unit id="PJ4LPB4">
+                <source>label.guided_step_ui_form_field_template_type</source>
+                <target>Choose its type</target>
             </trans-unit>
             <trans-unit id="X4RitF7">
                 <source>label.guided_step_ui_form_fields</source>

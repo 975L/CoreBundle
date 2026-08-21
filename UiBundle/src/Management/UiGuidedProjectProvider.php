@@ -16,6 +16,7 @@ use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
 use c975L\UiBundle\Controller\Management\FontCrudController;
 use c975L\UiBundle\Controller\Management\FormCrudController;
+use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
@@ -23,7 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-40) and SiteBundle (50-80), and running 90-110 - the range SocialBundle and GalleryBundle both state as this bundle's, SocialBundle's own opening at 120. Seven projects in it means a step of 3, not the 10 the earlier bundles use: an order shared with another provider's leaves their sequence to the order the providers happen to be registered in (see GuidedProjectBuilder), which is exactly what "order" exists to decide, and the range's last two values are left free for the next one to slot in without renumbering the lot again. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the three occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-40) and SiteBundle (50-80), and running 90-110 - the range SocialBundle and GalleryBundle both state as this bundle's, SocialBundle's own opening at 120. Seven of them run at a step of 3 from 90, not the 10 the earlier bundles use: an order shared with another provider's leaves their sequence to the order the providers happen to be registered in (see GuidedProjectBuilder), which is exactly what "order" exists to decide. The eighth sits at 104, slipped between the forms (102) and the e-mail templates (105) rather than appended at the end, the catalog it walks being what those two screens both open - carrying on at a step of 3 would have put it at 111, outside the range, and renumbering the lot to fit it is what leaving gaps exists to avoid. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the four occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -42,6 +43,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->legalModelProject(),
             $this->aiAssistantProject(),
             $this->formProject(),
+            $this->formFieldTemplateProject(),
             $this->emailTemplateProject(),
             $this->fontProject(),
         ];
@@ -279,6 +281,61 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_ui_form_place',
                     'description' => 'description.guided_step_ui_form_place',
+                ],
+            ],
+        ];
+    }
+
+    // A field set up once is dropped into any form in one click, always worded the same way - the catalog the "fields" collection of the previous project picks from, which no sidebar entry ever names
+    private function formFieldTemplateProject(): array
+    {
+        return [
+            'slug' => 'ui-form-field-template',
+            'label' => 'label.guided_project_ui_form_field_template',
+            'description' => 'description.guided_project_ui_form_field_template',
+            'translation_domain' => 'ui',
+            // Slotted between the forms and the e-mail templates, the two screens whose own toolbar opens this catalog - the 90-110 range being what it is, an eighth project takes the value left between them rather than pushing the whole sequence up
+            'order' => 104,
+            // The gate FormFieldTemplateCrudController sets on every one of its actions, its own catalog() included
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    // No sidebar entry opens this screen: it is reached by the "formFieldTemplates" toolbar button of FormCrudController and EmailTemplateCrudController alike, which is exactly why it deserves a parcours of its own
+                    'label' => 'label.guided_step_ui_form_field_template_open',
+                    'description' => 'description.guided_step_ui_form_field_template_open',
+                    'url' => $this->indexUrl(FormFieldTemplateCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_form_field_template_new',
+                    'highlight' => '.action-new',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_form_field_template_name',
+                    'description' => 'description.guided_step_ui_form_field_template_name',
+                    'highlight' => '#FormFieldTemplate_name',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_form_field_template_label',
+                    'description' => 'description.guided_step_ui_form_field_template_label',
+                    'highlight' => '#FormFieldTemplate_fieldLabel',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_form_field_template_type',
+                    'description' => 'description.guided_step_ui_form_field_template_type',
+                    'highlight' => '#FormFieldTemplate_type',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_form_field_template_required',
+                    'description' => 'description.guided_step_ui_form_field_template_required',
+                    'highlight' => '#FormFieldTemplate_required',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_form_field_template_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_form_field_template_done',
+                    'description' => 'description.guided_step_ui_form_field_template_done',
                 ],
             ],
         ];

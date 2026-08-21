@@ -56,9 +56,65 @@ class RatingRepositoryTest extends TestCase
         $this->assertSame(['average' => 0.0, 'count' => 0], $repository->getAggregate('book', 7));
     }
 
+    // Deleting a gallery of two thousand photos takes one query, not two thousand
+    public function testAWholeSetIsDeletedInOneQuery(): void
+    {
+        $parameters = [];
+        $repository = $this->deletingRepository(5, $parameters, $calls);
+
+        $this->assertSame(5, $repository->deleteForOwners('gallery_media', [7, 9]));
+        $this->assertSame(1, $calls);
+        $this->assertSame([7, 9], $parameters['ownerIds']);
+    }
+
+    // One owner goes through the very same query, the set holding just it
+    public function testDeletingOneOwnerDeletesTheSetItAloneMakes(): void
+    {
+        $parameters = [];
+        $repository = $this->deletingRepository(1, $parameters, $calls);
+
+        $this->assertSame(1, $repository->deleteForOwner('gallery_media', 7));
+        $this->assertSame([7], $parameters['ownerIds']);
+    }
+
+    // An empty set deletes nothing rather than everything - "IN ()" is not something to hand a database
+    public function testAnEmptySetDeletesNothing(): void
+    {
+        $repository = $this->createPartialMock(RatingRepository::class, ['createQueryBuilder']);
+        $repository->expects($this->never())->method('createQueryBuilder');
+
+        $this->assertSame(0, $repository->deleteForOwners('gallery_media', []));
+    }
+
     private function aggregates(array $rows, array $ownerIds): array
     {
         return $this->repository($rows)->getAggregates('book', $ownerIds);
+    }
+
+    private function deletingRepository(int $deleted, array &$parameters, ?int &$calls = null): RatingRepository
+    {
+        $calls = 0;
+        $repository = $this->createPartialMock(RatingRepository::class, ['createQueryBuilder']);
+        $repository->method('createQueryBuilder')->willReturnCallback(function () use ($deleted, &$parameters, &$calls): QueryBuilder {
+            ++$calls;
+            $query = $this->createMock(Query::class);
+            $query->method('execute')->willReturn($deleted);
+
+            $queryBuilder = $this->createMock(QueryBuilder::class);
+            foreach (['delete', 'andWhere'] as $method) {
+                $queryBuilder->method($method)->willReturnSelf();
+            }
+            $queryBuilder->method('setParameter')->willReturnCallback(function (string $name, mixed $value) use ($queryBuilder, &$parameters): QueryBuilder {
+                $parameters[$name] = $value;
+
+                return $queryBuilder;
+            });
+            $queryBuilder->method('getQuery')->willReturn($query);
+
+            return $queryBuilder;
+        });
+
+        return $repository;
     }
 
     private function repository(array $rows): RatingRepository

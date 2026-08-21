@@ -78,12 +78,26 @@ class RatingRepository extends ServiceEntityRepository
     // Called when the rated thing is deleted for good, not when it is only trashed: a restored book must find its votes again. There is no foreign key to cascade from, $ownerType being a name and not a relation, so whoever deletes says so
     public function deleteForOwner(string $ownerType, int $ownerId): int
     {
+        return $this->deleteForOwners($ownerType, [$ownerId]);
+    }
+
+    /**
+     * The same deletion for a whole set of things at once - deleting a gallery of two thousand photos would otherwise run two thousand queries.
+     *
+     * @param int[] $ownerIds
+     */
+    public function deleteForOwners(string $ownerType, array $ownerIds): int
+    {
+        if ([] === $ownerIds) {
+            return 0;
+        }
+
         return (int) $this->createQueryBuilder('r')
             ->delete()
             ->andWhere('r.ownerType = :ownerType')
-            ->andWhere('r.ownerId = :ownerId')
+            ->andWhere('r.ownerId IN (:ownerIds)')
             ->setParameter('ownerType', $ownerType)
-            ->setParameter('ownerId', $ownerId)
+            ->setParameter('ownerIds', $ownerIds)
             ->getQuery()
             ->execute()
         ;

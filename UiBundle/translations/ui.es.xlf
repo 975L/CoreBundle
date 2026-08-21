@@ -34,6 +34,10 @@
                 <source>description.guided_project_ui_form</source>
                 <target>Construir un formulario campo a campo y luego colocarlo en una página</target>
             </trans-unit>
+            <trans-unit id="2pt5gfj">
+                <source>description.guided_project_ui_form_field_template</source>
+                <target>Un campo configurado una sola vez - su etiqueta, su tipo, si es obligatorio - se añade después a cualquier formulario del sitio con un clic, y siempre plantea la misma pregunta al visitante.</target>
+            </trans-unit>
             <trans-unit id="_2UHUq_">
                 <source>description.guided_project_ui_legal_model</source>
                 <target>Ocultar, retitular o reescribir una sección de un documento legal provisto por este bundle, y añadir secciones propias, sin perder las actualizaciones que sigue recibiendo</target>
@@ -113,6 +117,30 @@
             <trans-unit id="WdMcqav">
                 <source>description.guided_step_ui_form_action</source>
                 <target>La acción decide qué ocurre al enviar: mandar un correo, registrar a alguien, restablecer una contraseña.</target>
+            </trans-unit>
+            <trans-unit id="616jVGU">
+                <source>description.guided_step_ui_form_field_template_done</source>
+                <target>En la pantalla Formularios, el selector situado junto al botón «Añadir» de la colección ya ofrece este modelo y rellena toda una fila de campo de una vez.</target>
+            </trans-unit>
+            <trans-unit id="xR2Mhob">
+                <source>description.guided_step_ui_form_field_template_label</source>
+                <target>La etiqueta impresa encima del campo en la página. Defínala aquí una vez y todos los formularios que lo pidan plantean la pregunta igual.</target>
+            </trans-unit>
+            <trans-unit id="sTAGo1O">
+                <source>description.guided_step_ui_form_field_template_name</source>
+                <target>Este nombre solo le concierne a usted: es el que muestra el selector al añadir el campo a un formulario, nunca el que lee el visitante.</target>
+            </trans-unit>
+            <trans-unit id="tgeO.Ye">
+                <source>description.guided_step_ui_form_field_template_open</source>
+                <target>Ninguna entrada de menú lleva hasta aquí: el catálogo se abre desde la barra de herramientas de la pantalla Formularios y también de la de Plantillas de email.</target>
+            </trans-unit>
+            <trans-unit id="FZz1m7d">
+                <source>description.guided_step_ui_form_field_template_required</source>
+                <target>Solo es un valor por defecto: un formulario que añada este campo aún puede decidir otra cosa por su cuenta.</target>
+            </trans-unit>
+            <trans-unit id="c.4Bl9b">
+                <source>description.guided_step_ui_form_field_template_type</source>
+                <target>El tipo decide cómo se dibuja el campo y qué puede escribir el visitante en él: un campo de correo rechaza una dirección que no lo es.</target>
             </trans-unit>
             <trans-unit id="KgGbEW5">
                 <source>description.guided_step_ui_form_fields</source>
@@ -1786,6 +1814,10 @@
                 <source>label.guided_project_ui_form</source>
                 <target>Crear un formulario</target>
             </trans-unit>
+            <trans-unit id="N26HCnb">
+                <source>label.guided_project_ui_form_field_template</source>
+                <target>Crear un catálogo de campos listos para usar</target>
+            </trans-unit>
             <trans-unit id="Q.ghvqg">
                 <source>label.guided_project_ui_legal_model</source>
                 <target>Ajustar un documento legal</target>
@@ -1873,6 +1905,38 @@
             <trans-unit id="L0azB6X">
                 <source>label.guided_step_ui_form_action</source>
                 <target>Elegir qué desencadena</target>
+            </trans-unit>
+            <trans-unit id="ynGb_IA">
+                <source>label.guided_step_ui_form_field_template_done</source>
+                <target>Añadirlo a un formulario</target>
+            </trans-unit>
+            <trans-unit id="dPeXBBh">
+                <source>label.guided_step_ui_form_field_template_label</source>
+                <target>Escribir lo que lee el visitante</target>
+            </trans-unit>
+            <trans-unit id="ayWiQri">
+                <source>label.guided_step_ui_form_field_template_name</source>
+                <target>Ponerle nombre</target>
+            </trans-unit>
+            <trans-unit id="h1bCqa5">
+                <source>label.guided_step_ui_form_field_template_new</source>
+                <target>Añadir un modelo</target>
+            </trans-unit>
+            <trans-unit id="7UTZlKx">
+                <source>label.guided_step_ui_form_field_template_open</source>
+                <target>Abrir el catálogo</target>
+            </trans-unit>
+            <trans-unit id=".r9l1.O">
+                <source>label.guided_step_ui_form_field_template_required</source>
+                <target>Decidir si es obligatorio</target>
+            </trans-unit>
+            <trans-unit id="IoWXocp">
+                <source>label.guided_step_ui_form_field_template_save</source>
+                <target>Guardarlo</target>
+            </trans-unit>
+            <trans-unit id="PJ4LPB4">
+                <source>label.guided_step_ui_form_field_template_type</source>
+                <target>Elegir su tipo</target>
             </trans-unit>
             <trans-unit id="X4RitF7">
                 <source>label.guided_step_ui_form_fields</source>

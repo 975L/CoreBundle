@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.13.1
+
+A guided tour opens the field catalog no menu entry names
+
+### UiBundle
+
+- Added the `ui-form-field-template` guided project, walking the catalog reached from the Forms and Email templates toolbars alone (21/08/2026)
+- Added its labels and descriptions to the `ui` translations (21/08/2026)
+- Added `RatingRepository::deleteForOwners()`, deleting the ratings of a whole set of things at once (21/08/2026)
+- `AiAlertProvider` names its target through `AiAssistantController::INDEX_ROUTE` instead of the route string (21/08/2026)
+- Extended `RatingRepositoryTest` and `UiGuidedProjectProviderTest` (21/08/2026)
+
 ## v1.13.0
 
 A visitor rates anything the site publishes if desired

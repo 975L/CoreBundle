@@ -72,8 +72,8 @@ class UiGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-email-template', 'ui-font'], array_column($projects, 'slug'));
-        $this->assertSame([90, 93, 96, 99, 102, 105, 108], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-form-field-template', 'ui-email-template', 'ui-font'], array_column($projects, 'slug'));
+        $this->assertSame([90, 93, 96, 99, 102, 104, 105, 108], array_column($projects, 'order'));
     }
 
     // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's range is the 90-110 SocialBundle and GalleryBundle both state as its own, SocialBundle's opening at 120
@@ -98,6 +98,7 @@ class UiGuidedProjectProviderTest extends TestCase
             'ui-legal-model' => 'ROLE_EDITOR',
             'ui-ai-assistant' => 'ROLE_ADMIN',
             'ui-form' => 'ROLE_ADMIN',
+            'ui-form-field-template' => 'ROLE_ADMIN',
             'ui-email-template' => 'ROLE_ADMIN',
             'ui-font' => 'ROLE_EDITOR',
         ];
@@ -154,7 +155,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'EmailTemplateCrudController', 'FontCrudController'],
+            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }
