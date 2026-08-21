@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.13.4
+
+A rating row is big enough to tap where the pointer is coarse
+
+### UiBundle
+
+- A rating row is drawn at `--rating-size: 2.2rem` under `pointer: coarse` (21/08/2026)
+- The enlarged icons are spaced apart, two of them no longer reading as one target (21/08/2026)
+- Added `RatingTouchTargetTest` (21/08/2026)
+
 ## v1.13.3
 
 A catalog card carries the score without the sentence beside it

@@ -3594,6 +3594,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
     background-color: var(--rating-on, var(--secondary));
   }
 }
+@media (pointer: coarse) {
+  .rating-vote {
+    --rating-size: 2.2rem;
+  }
+  .rating-vote .rating {
+    gap: 0.3em;
+  }
+}
 .rating-tally {
   margin: 0;
   font-size: 0.9em;

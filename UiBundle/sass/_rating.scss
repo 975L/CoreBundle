@@ -85,6 +85,17 @@ $icons: (
     }
 }
 
+// An icon is aimed at with a finger: where the primary pointer is coarse the row is drawn large enough to be tapped, a mouse making do with the type size. The token is restated on the widget itself, so the row read beside the tally grows with it
+@media (pointer: coarse) {
+    .rating-vote {
+        --rating-size: 2.2rem;
+    }
+
+    .rating-vote .rating {
+        gap: 0.3em;
+    }
+}
+
 .rating-tally {
     margin: 0;
     font-size: 0.9em;
