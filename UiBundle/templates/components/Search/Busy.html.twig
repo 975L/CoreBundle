@@ -1,0 +1,6 @@
+{# <twig:c975LUi:Search:Busy/> - what a live search says while it is fetching, placed inside the component whose field it watches: a search answering in a second still leaves the visitor wondering whether it heard them #}
+{# "addClass" and not "show": showing is done by writing a style onto the element from javascript, which a style-src holding no "unsafe-inline" refuses - a class is never blocked, and the paragraph keeps its place either way #}
+<p class="search-busy" data-loading="addClass(search-busy--on)" role="status">
+    <span class="search-busy__spinner" aria-hidden="true"></span>
+    {{ 'label.searching'|trans({}, 'ui') }}
+</p>

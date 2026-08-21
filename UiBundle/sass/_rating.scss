@@ -93,3 +93,15 @@ $icons: (
 .rating-average {
     font-weight: 600;
 }
+
+// The widget as a catalog card carries it: the score alone under the icons, no sentence saying how many voted (see the "compact" prop). Smaller and centered, a card being read at a glance and not studied
+.rating-vote--compact {
+    justify-content: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+}
+
+// The score keeps a line of its own height even before anyone voted, so the cards of a row stay aligned whether they are rated or not
+.rating-vote--compact .rating-tally {
+    min-height: 1.2em;
+}

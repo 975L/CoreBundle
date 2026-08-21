@@ -23,4 +23,11 @@ class VideoExtension
     {
         return VideoPlatform::resolve($url)?->embedUrl() ?? $url;
     }
+
+    // The other side of the same coin: where the video is watched on the platform itself, for a page offering a way out to the channel, the comments or the full screen. Read off whatever the editor stored - an embed url as readily as a share link - and, like the filter above, a url belonging to no declared platform comes back untouched
+    #[AsTwigFilter('video_watch_url')]
+    public function toWatchUrl(?string $url): ?string
+    {
+        return VideoPlatform::resolve($url)?->watchUrl() ?? $url;
+    }
 }

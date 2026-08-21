@@ -38,6 +38,29 @@ enum VideoPlatform: string
         return $url . (str_contains($url, '?') ? '&' : '?') . http_build_query($carriedParams);
     }
 
+    // The address the video is watched at on the platform itself, for whoever offers a way out of the page - a reader wanting the channel, the comments, or the full screen. Not the embed url: a player address pasted in a browser is a bare frame, and on YouTube it is the one page the platform refuses to open on its own
+    // The carried params are read here as well as by embedUrl(), and for the same reason: a playlist and an unlisted video are addressed by them rather than by their id, so dropping them would build a watch url the platform answers with an error page
+    // TikTok is the one platform whose own page needs the author handle, which the id alone does not carry - its legacy mobile permalink is the form that gets there without one, the platform redirecting it to the handle it knows
+    public function watchUrl(string $id, array $carriedParams = []): string
+    {
+        $id = rawurlencode($id);
+
+        return match ($this) {
+            self::Youtube => match (true) {
+                !isset($carriedParams['list']) => sprintf('https://www.youtube.com/watch?v=%s', $id),
+                // A playlist is stored with the literal "videoseries" for an id, which names no video: the list is the whole address
+                'videoseries' === $id => sprintf('https://www.youtube.com/playlist?list=%s', rawurlencode($carriedParams['list'])),
+                default => sprintf('https://www.youtube.com/watch?v=%s&list=%s', $id, rawurlencode($carriedParams['list'])),
+            },
+            self::Tiktok => sprintf('https://m.tiktok.com/v/%s.html', $id),
+            // An unlisted video is only reachable with its access token, the page naming it after the id
+            self::Vimeo => isset($carriedParams['h'])
+                ? sprintf('https://vimeo.com/%s/%s', $id, rawurlencode($carriedParams['h']))
+                : sprintf('https://vimeo.com/%s', $id),
+            self::Dailymotion => sprintf('https://www.dailymotion.com/video/%s', $id),
+        };
+    }
+
     // The stills this platform serves for a video id, best first - whoever imports one takes the first that answers (see VideoPosterImporter)
     // Only YouTube has an address a poster can be built from at all: TikTok, Vimeo and Dailymotion hand theirs out through an API call, which no url scheme can stand in for, so they resolve to no candidate rather than to a guessed one - same rule as urlPatterns(), where an undeclared platform is left alone instead of being pattern-matched
     // i.ytimg.com rather than img.youtube.com: the same bytes without the redirect, and neither host sets a cookie - which is what makes importing one a plain file copy rather than a privacy decision

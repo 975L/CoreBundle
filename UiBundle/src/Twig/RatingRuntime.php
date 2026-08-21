@@ -28,16 +28,22 @@ class RatingRuntime implements RuntimeExtensionInterface
      *
      * The voter's own score is deliberately absent - the page carrying this is cached and shared between visitors, so what one of them voted is read from their own browser by assets/js/rating.js, never printed here.
      *
+     * $aggregate is the tally already read for this owner, which a listing hands over rather than letting each of its cards query its own (see ratings()). Anything else than the shape ratings() returns is read as no vote at all, a card of a catalog being no place to raise an error.
+     *
+     * @param array{average?: float, count?: int}|null $aggregate the keys are optional because this comes from a template, where an owner nobody voted on can be handed over as an empty array
+     *
      * @return array{ownerType: string, ownerId: int, average: float, count: int, scale: int, icon: string}
      */
-    public function rating(string $ownerType, int $ownerId, ?int $scale = null, ?string $icon = null): array
+    public function rating(string $ownerType, int $ownerId, ?int $scale = null, ?string $icon = null, ?array $aggregate = null): array
     {
         return [
             'ownerType' => $ownerType,
             'ownerId' => $ownerId,
             'scale' => $this->ratingService->getScale($scale),
             'icon' => $this->ratingService->getIcon($icon),
-        ] + $this->ratingService->getAggregate($ownerType, $ownerId);
+        ] + (null === $aggregate
+            ? $this->ratingService->getAggregate($ownerType, $ownerId)
+            : ['average' => (float) ($aggregate['average'] ?? 0.0), 'count' => (int) ($aggregate['count'] ?? 0)]);
     }
 
     /**

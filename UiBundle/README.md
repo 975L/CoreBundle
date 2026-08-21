@@ -750,6 +750,8 @@ Consecutive `card` and `flip_card` blocks are wrapped in one `.cards` flex row (
 
 **How many fit on a line is the width's business, not the row's.** The row is a plain wrapping flex row of fixed-width items — three cards and their two gaps, six compact ones and their five, two big ones and their one — and that count holds because `--card-width` / `--card-width-compact` / `--card-width-big` are **read off the page measure** rather than written down (`sass/_tokens.scss`): each is the measure minus its two gutters minus the row's own gaps, divided by three, by six or by two, capped at `380px` / `190px` / `570px` and at `90vw` / `45vw` / `90vw`. On the default `1440px` page they resolve to exactly those caps, so nothing moves; on a site framing its content tighter — a `--section-wrap-max-width` of `1200px`, say — they narrow on a screen wide enough to hold the gutter at its `64px` cap, and the row still holds three, six and two. A hand-written `380px` did not: it was a number computed against the default measure, and every site that narrowed the wrap silently dropped a card off the line and had to recalculate the token for itself.
 
+**What the row puts between two cards is a token too.** `--cards-gap` (`20px` by default) is declared in the token layer like every other one, read by `.cards` and read back by the three widths above, which take two of those gaps off, or five, or one. Widening it in a theme widens the row's gutters and narrows its cards in the same breath, where the two used to be a `20px` on the row and a hand-copied `40px` / `100px` / `20px` in the widths, free to drift apart.
+
 The three caps are one series rather than three values: `380 × 3`, `190 × 6` and `570 × 2` are the same `1140px` of cards. `CardMeasureTest` locks each one to its count, and that none of them carries a floor — a floor is what made a card overflow its own wrap under a `420px` viewport, where `90vw` is already less than it.
 
 What is read there is the measure the *page* declares, which says nothing about the box a given row sits in — a `.cards` nested in a `flex_columns` cell, in a panel or in a modal is narrower than that. `max-width: 100%` on `.card` is what closes it: the token is what a card asks for, that is what it never exceeds. It also ends the overflow a phone under `420px` used to show, where the old `clamp()`'s `300px` floor won over its own `90vw` ceiling.
@@ -1103,6 +1105,19 @@ Drop the widget where the score belongs:
 **One vote each, without a login.** An authenticated visitor is keyed on their account (`u<id>`), so their vote follows them to another browser and cannot be renewed. Anyone else is keyed on a random 32-hex token their own browser mints **on the click** and keeps in `localStorage` — best-effort by construction (clearing the browser's storage buys another vote) but it needs no cookie banner, nothing being stored for someone who merely reads the page, and no address of theirs is kept anywhere. Both end up in the same `voter` column, under one unique constraint on `(owner_type, owner_id, voter)`.
 
 **Why the vote goes through its own route.** The rated page is usually cached and shared (a book's is public for an hour), so nothing about the visitor's own vote may travel in its HTML: the server renders the average, `assets/js/rating.js` paints their own score over it from their browser, and `POST /rating/{ownerType}/{ownerId}` answers `no-store`. That route takes **no CSRF token** — a token would make the server open a session, and a `Set-Cookie` is exactly what the shared cache would keep and hand to the next visitor. In its place: a JSON body (which sends any cross-origin caller through a CORS preflight nothing answers), an `Origin`/`Referer` that is this site's own, and the `ui_rating` rate limiter this bundle prepends for you.
+
+**On a listing** — two more props turn the widget into what a catalog card has room for:
+
+```twig
+{% set ratings = ui_ratings('book', books|map(b => b.id)) %}
+{% for book in books %}
+    <twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}" compact="true" :aggregate="ratings[book.id]"/>
+{% endfor %}
+```
+
+`compact` prints the score and nothing else — the "37 avis" a product page spells out is dropped, and a thing nobody voted on says nothing at all rather than "pas encore noté", the empty row of icons saying it already. Except on a scale of 1, where the count *is* the reading and there is no average to drop it for. `aggregate` hands the widget the tally the listing already read, so thirty cards run **no query of their own**; leave it out and each one reads its own.
+
+Only a listing rendered **outside the block cache** should ask for it: the html of a cached block is shared by every visitor, and its averages would be frozen with it. That is why `Book:Books`, `Strip:Cards` and ShopBundle's `Product:Products` all take the widget as an opt-in prop, which only the index pages pass.
 
 **Reading the tallies yourself** — `ui_rating(ownerType, ownerId)` returns `{average, count, scale, icon}`, and `ui_ratings(ownerType, ids)` returns one tally per id **in a single query**, which is what a listing needs to avoid an N+1.
 
@@ -1502,6 +1517,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Progress:Bar>` | Progress bar |
 | `<twig:c975LUi:Progress:Rating>` | Score read as a row of stars |
 | `<twig:c975LUi:Progress:Tracker>` | Segmented count of items obtained out of a total |
+| `<twig:c975LUi:Search:Busy>` | The sign a live search gives while it is fetching, dropped inside the component whose field it watches |
 | `<twig:c975LUi:Section:Cards>` | Section title followed by a stack of full Card blocks (`.cards` row) |
 | `<twig:c975LUi:Section:Features>` | Section title followed by a grid of features (icon/title/text) |
 | `<twig:c975LUi:Slider:Slider>` | Image/media slider |
@@ -1944,12 +1960,12 @@ it, how its embed URL is built, what shape its player is, and which origin a Con
 to allow for it. Adding a platform is **adding a case**: nothing else here, and nothing at all in the
 bundles reading it (`c975l/gallery-bundle` stores a case's value as its media type).
 
-| Platform | Embed URL | Shape |
-| --- | --- | --- |
-| `youtube` | `www.youtube-nocookie.com/embed/{id}` | 16 / 9 |
-| `tiktok` | `www.tiktok.com/embed/v2/{id}` | 9 / 16 |
-| `vimeo` | `player.vimeo.com/video/{id}?dnt=1` | 16 / 9 |
-| `dailymotion` | `www.dailymotion.com/embed/video/{id}` | 16 / 9 |
+| Platform | Embed URL | Watch URL | Shape |
+| --- | --- | --- | --- |
+| `youtube` | `www.youtube-nocookie.com/embed/{id}` | `www.youtube.com/watch?v={id}` | 16 / 9 |
+| `tiktok` | `www.tiktok.com/embed/v2/{id}` | `m.tiktok.com/v/{id}.html` | 9 / 16 |
+| `vimeo` | `player.vimeo.com/video/{id}?dnt=1` | `vimeo.com/{id}` | 16 / 9 |
+| `dailymotion` | `www.dailymotion.com/embed/video/{id}` | `www.dailymotion.com/video/{id}` | 16 / 9 |
 
 `VideoPlatform::resolve($url)` reads a platform and an id off **whatever an editor actually pasted** — the
 address bar of the page they were watching (`/watch?v=`, `/@user/video/`), a share link (`youtu.be`,
@@ -1957,6 +1973,8 @@ address bar of the page they were watching (`/watch?v=`, `/@user/video/`), a sha
 a platform nobody declared from being framed on the strength of a pattern that happened to match: callers
 either leave such an URL untouched (the `privacy_embed_url` filter) or store it as pasted
 (`c975l/gallery-bundle`'s `embed` type).
+
+**The watch URL is the other side of it** — where the video is played on the platform rather than inside your page, for a link out to the channel, the comments or the full screen. `VideoPlatform::watchUrl()`, and the `video_watch_url` filter over it, read whatever was stored (an embed URL as readily as a share link) and, like `privacy_embed_url`, leave an URL belonging to no declared platform exactly as it was. It carries the same params the embed URL does: a YouTube playlist opens at `/playlist?list=` rather than on a video called `videoseries`, and an unlisted Vimeo keeps its access token. TikTok is the one addressed by its legacy mobile permalink, its own page needing an author handle nothing here stores.
 
 What it produces is always the **privacy-first** URL — `youtube-nocookie.com` rather than `youtube.com`,
 Vimeo's `dnt=1`. Neither replaces consent: both are third-party frames all the same, which is what

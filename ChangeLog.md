@@ -1,5 +1,30 @@
 # ChangeLog
 
+## v1.13.3
+
+A catalog card carries the score without the sentence beside it
+
+### UiBundle
+
+- `<twig:c975LUi:Rating:Rating compact="true"/>` prints the score alone, what a catalog card has room for (21/08/2026)
+- A compact widget nobody voted on says nothing, the empty row of icons saying it already (21/08/2026)
+- On a scale of 1 the count stays, there being no average to drop it for (21/08/2026)
+- The widget takes an `aggregate`, the tally a listing already read, so a row of cards runs no query of its own (21/08/2026)
+- `ui_rating()` takes that tally as a fifth argument, reading its own only when none is handed over (21/08/2026)
+- Added `.rating-vote--compact`, smaller and centered, its tally holding a line of its own height (21/08/2026)
+- Added `<twig:c975LUi:Search:Busy/>`, the sign a live search gives while it is fetching (21/08/2026)
+- It keeps its place when silent, so the results below it do not jump (21/08/2026)
+- It goes visible through `data-loading="addClass(...)"`: `show` writes a style a `style-src` without `unsafe-inline` refuses (21/08/2026)
+- Added `label.searching` and `sass/_search-busy.scss` (21/08/2026)
+- Added `video_watch_url`, where a video is watched on its platform rather than played inside the page (21/08/2026)
+- It carries the params the embed url does, a YouTube playlist opening at `/playlist?list=` and an unlisted Vimeo keeping its access token (21/08/2026)
+- TikTok is addressed by its legacy mobile permalink, its own page needing an author handle nothing stores (21/08/2026)
+- Added `--cards-gap`, read by the `.cards` row and by the card widths measured off it (21/08/2026)
+- The buttons of a `.flex-center` row group at its center, their `margin: 1em auto` no longer absorbing the free space (21/08/2026)
+- `a.btn` states its layout apart from the ink it restates in each state, so hovering a button in a row no longer moves it (21/08/2026)
+- Extended `RatingRuntimeTest`, `RatingVoteMarkupTest`, `RatingVoteControllerTest`, `VideoExtensionTest` and `CardMeasureTest` (21/08/2026)
+- Added `SearchBusyTest` and `ButtonRowLayoutTest` (21/08/2026)
+
 ## v1.13.2
 
 A card carries a mention at the end of its title band

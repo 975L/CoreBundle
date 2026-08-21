@@ -111,7 +111,16 @@ class RatingVoteControllerTest extends TestCase
     // A single icon is a "like", where the count is the whole answer - the same reading the template opens on
     public function testTheTallyDropsTheAverageOnASingleIcon(): void
     {
-        $this->assertStringContainsString('this.scaleValue > 1 ?', $this->read(self::CONTROLLER_JS));
+        $this->assertStringContainsString('if (1 === this.scaleValue) {', $this->read(self::CONTROLLER_JS));
+    }
+
+    // A compact widget prints the score and nothing else, the count being what a catalog card has no room for - the same reading the template opens on
+    public function testACompactTallyDropsTheCount(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('compact: Boolean,', $controller);
+        $this->assertStringContainsString('this.compactValue ? `${this.averageValue}/${this.scaleValue}`', $controller);
     }
 
     // The scale the widget was drawn with stays a display matter: sending it would let a forged vote store a score above what the site is rated out of, so the server reads the setting itself

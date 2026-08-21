@@ -14,6 +14,7 @@
     --alert-info-background: #d9edf7;
     --alert-success-background: #d0e9c6;
     --alert-warning-background: #f9dba7;
+    --audio-sticky-background: var(--background);
     --background: var(--c975l-color-background, #fff);
     --banner-title-height-large: 520px;
     --banner-title-height-medium: 360px;
@@ -52,12 +53,16 @@
     --button-background-success-dark: rgb(40, 167, 69, 0.9);
     --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
     --button-color: #fff;
+    --button-icon-invert: 1;
     --button-link-color: #fff;
     --button-secondary-color: #000;
+    --button-secondary-icon-invert: 0;
     --card-background: #fff;
     --card-title-size: calc(19px * var(--font-size-title-scale, 1));
     --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1));
     --card-title-size-big: calc(23px * var(--font-size-title-scale, 1));
+    --card-header-aside-size: 0.75em;
+    --card-header-aside-opacity: 0.8;
     --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3));
     --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
     --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2));
@@ -79,6 +84,7 @@
     --form-label-color: var(--black);
     --form-width: min(70vw, 1000px);
     --frame-background: var(--background);
+    --icon-filter: none;
     --input-background: transparent;
     --input-border-bottom-color: #bfbfbf;
     --input-border-color: #4d4d4d;
@@ -111,6 +117,18 @@
     --surface-inverse: #232323;
     --text: var(--c975l-color-text, #000);
     --text-on-inverse: #d8d8d8;
+    /* The page summary of anchors (see sass/_toc.scss): a bar of chips on a phone, a column beside the text from 1200px on */
+    /* The bar hides the page sliding under it, so it cannot be transparent */
+    --toc-background: var(--background);
+    --toc-chip-radius: 999px;
+    --toc-column-width: 220px;
+    --toc-current-color: var(--primary);
+    --toc-gap: 0.5rem;
+    /* What the resting bar covers, which is what a section jumped to has to leave above itself - one 44px chip plus its own breathing room. Stated rather than measured: a nonced style-src drops any rule a script writes onto an element */
+    --toc-height: 4rem;
+    --toc-marker-width: 3px;
+    /* Where the bar comes to rest - the same height a fixed header covers, which is what --scroll-offset already says. A site whose header scrolls away with the page sets this to 0 */
+    --toc-sticky-top: var(--scroll-offset, 80px);
     --white: #fff;
   }
 }

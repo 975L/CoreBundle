@@ -8,7 +8,7 @@ $radius: var(--block-radius, var(--radius-card));
     align-items: stretch;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: var(--cards-gap);
 }
 
 // A bare run of "card" blocks has no ".section-wrap" around it, so it restates the page measure here

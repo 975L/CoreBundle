@@ -7,6 +7,11 @@
     gap: 1em;
 }
 
+// A button carries "margin: 1em auto", which centers it when it sits alone on its line. In a flex row those auto margins absorb the free space instead, pushing the buttons apart - the opposite of what this class asks for. Only the horizontal ones go, the row being spaced by its gap
+.flex-center > .btn {
+    margin-inline: 0;
+}
+
 .flex-start {
     align-items: flex-start;
 }

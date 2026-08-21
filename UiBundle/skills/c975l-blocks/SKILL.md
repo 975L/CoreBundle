@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact."
 ---
 
 # c975L UiBundle — blocks
@@ -163,6 +163,23 @@ round-trips, so no bundle maps a collection it never reads.
 `ui_rating(ownerType, ownerId)` returns `{average, count, scale, icon}`, and
 `ui_ratings(ownerType, ids)` one tally per id **in a single query** — what a listing needs to avoid an
 N+1.
+
+On a listing, two more props turn the widget into what a catalog card has room for:
+
+```twig
+{% set ratings = ui_ratings('book', books|map(b => b.id)) %}
+<twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}" compact="true" :aggregate="ratings[book.id]"/>
+```
+
+- **`compact`** prints the score and nothing else — no "37 avis", and nothing at all before the first
+  vote, the empty row of icons saying it already. Except on a **scale of 1**, where the count *is* the
+  reading and there is no average to drop it for.
+- **`aggregate`** hands the widget the tally the listing already read, so thirty cards run **no query
+  of their own**; left out, each one reads its own. `ui_rating()` takes it as a fifth argument, and
+  reads anything but that shape as no vote at all — a catalog card is no place to raise an error.
+- **Only a listing rendered outside the block cache asks for it.** The html of a cached block is shared
+  by every visitor and its averages would freeze with it, which is why `Book:Books`, `Strip:Cards` and
+  ShopBundle's `Product:Products` all take the widget as an opt-in prop their index pages alone pass.
 
 - **The icon and the scale are the site's**, two `configs.json` entries of the `general` group:
   `ui-rating-icon` (`star`, `heart`, `thumbs-up`, `face-smile`) and `ui-rating-scale` (1 to 10). A

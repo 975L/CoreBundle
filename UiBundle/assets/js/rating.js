@@ -19,6 +19,7 @@ export default class extends Controller {
         scale: Number,
         count: Number,
         average: Number,
+        compact: Boolean,
         noneLabel: String,
         oneLabel: String,
         manyLabel: String,
@@ -97,14 +98,19 @@ export default class extends Controller {
     }
 
     tally() {
+        // A compact widget says nothing rather than "not rated yet": the empty row of icons already says it, and the sentence would take the width of the card it sits in
         if (0 === this.countValue) {
-            return this.noneLabelValue;
+            return this.compactValue ? "" : this.noneLabelValue;
         }
 
         const label = (1 === this.countValue ? this.oneLabelValue : this.manyLabelValue).replace("%count%", String(this.countValue));
 
-        // A single icon is a "like": the average of a column of ones says nothing, the count says everything
-        return this.scaleValue > 1 ? `${this.averageValue}/${this.scaleValue} - ${label}` : label;
+        // A single icon is a "like": the average of a column of ones says nothing, the count says everything - which is also why a compact widget keeps the count here and drops it everywhere else
+        if (1 === this.scaleValue) {
+            return label;
+        }
+
+        return this.compactValue ? `${this.averageValue}/${this.scaleValue}` : `${this.averageValue}/${this.scaleValue} - ${label}`;
     }
 
     // 32 hex characters, the shape RatingService::resolveVoter() accepts

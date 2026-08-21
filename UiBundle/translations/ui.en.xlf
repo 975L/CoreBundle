@@ -2618,6 +2618,10 @@
                 <source>label.search_icon</source>
                 <target>Search icon...</target>
             </trans-unit>
+            <trans-unit id="YMb_FVz">
+                <source>label.searching</source>
+                <target>Searching…</target>
+            </trans-unit>
             <trans-unit id="knthYeK">
                 <source>label.secondary</source>
                 <target>Secondary</target>

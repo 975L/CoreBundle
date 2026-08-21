@@ -138,6 +138,10 @@ a.btn:hover,
 a.btn:visited:hover {
     color: var(--button-link-color);
     text-decoration: none;
+}
+
+// Set apart from the ink above, which has to be restated in each state to outweigh the global "a:hover": repeated there, the layout came back with a pseudo-class in its selector and outweighed anything a row of buttons had said about it - hovering one of them put it back where it was before the row grouped them (see .flex-center)
+a.btn {
     display: block;
     margin: 0 auto;
     max-width: 300px;

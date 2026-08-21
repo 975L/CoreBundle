@@ -25,6 +25,13 @@ final readonly class ResolvedVideo
         return $this->platform->embedUrl($this->id, $this->carriedParams);
     }
 
+    // Where the video is watched on the platform itself, the embed url above being where it is played inside a page
+    // The carried params go with it, exactly as they go to the embed url: a playlist and an unlisted video have no watchable address without them
+    public function watchUrl(): string
+    {
+        return $this->platform->watchUrl($this->id, $this->carriedParams);
+    }
+
     // Empty for every platform serving no guessable still - which is also how a caller knows not to offer the import at all (see VideoIframeType)
     public function posterUrls(): array
     {

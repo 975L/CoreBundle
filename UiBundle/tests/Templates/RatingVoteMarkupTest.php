@@ -10,11 +10,13 @@
 
 namespace c975L\UiBundle\Tests\Templates;
 
+use c975L\UiBundle\Twig\BoolExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\IdentityTranslator;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 // The widget a visitor clicks. What it must never print is the visitor's own vote: the page carrying it is public and shared (a book's is cached for an hour), so the row it opens on is everyone's average and nothing else
@@ -110,17 +112,60 @@ class RatingVoteMarkupTest extends TestCase
         $this->assertStringContainsString('data-ui-rating-key-value="book:42"', $this->render([]));
     }
 
-    private function render(array $rating): string
+    // A catalog card shows the score and the way to set it, not how many voted: the visitor is choosing between items there, not reading up on one
+    public function testACompactWidgetPrintsTheScoreWithoutTheCount(): void
+    {
+        $html = $this->render(['scale' => 5, 'average' => 4.2, 'count' => 37], true);
+
+        // The tally itself and not the whole widget: the labels the controller writes are carried as data attributes either way
+        $this->assertStringContainsString('<span class="rating-average">4.2/5</span></p>', $html);
+        $this->assertStringContainsString('rating-vote--compact', $html);
+    }
+
+    // The empty row of icons already says nobody voted, where the sentence would take the width of the card
+    public function testACompactWidgetSaysNothingOnAThingNobodyVotedOn(): void
+    {
+        $html = $this->render(['scale' => 5, 'average' => 0.0, 'count' => 0], true);
+
+        // Emptied, not dropped: assets/js/rating.js writes the new tally, and an error, into this very element
+        $this->assertStringContainsString('data-ui-rating-target="tally" aria-live="polite"></p>', $html);
+    }
+
+    // A single icon has no average to drop the count for, so the count stays even compact
+    public function testACompactSingleIconKeepsTheCount(): void
+    {
+        $this->assertStringContainsString('aria-live="polite">label.rating_votes_many</p>', $this->render(['scale' => 1, 'average' => 1.0, 'count' => 37], true));
+    }
+
+    // What the controller reads to tell the two shapes apart
+    public function testTheShapeIsCarriedForTheController(): void
+    {
+        $this->assertStringContainsString('data-ui-rating-compact-value="false"', $this->render([]));
+        $this->assertStringContainsString('data-ui-rating-compact-value="true"', $this->render([], true));
+    }
+
+    // The symmetrical form of the documented compact="true": a Twig component attribute written literally arrives as the string "false", which is truthy on its own and would render the very shape it asks against
+    public function testAWidgetToldNotToBeCompactIsNot(): void
+    {
+        $html = $this->render([], 'false');
+
+        $this->assertStringNotContainsString('rating-vote--compact', $html);
+        $this->assertStringContainsString('data-ui-rating-compact-value="false"', $html);
+    }
+
+    private function render(array $rating, mixed $compact = false): string
     {
         $rating += ['ownerType' => 'book', 'ownerId' => 42, 'scale' => 5, 'icon' => 'star', 'average' => 0.0, 'count' => 0];
 
         $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
         // Untranslated keys come back as-is, which is what the assertions above read
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
+        // The bundle's own filter and not a cast: a cast reads the string "false" as true, which is the very thing the template applies it against
+        $twig->addFilter(new TwigFilter('to_bool', new BoolExtension()->toBool(...)));
         // The aggregate query is RatingRuntime's business (see RatingRuntimeTest); what is checked here is the markup built from what it answers
         $twig->addFunction(new TwigFunction('ui_rating', static fn (): array => $rating));
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/rating/' . $parameters['ownerType'] . '/' . $parameters['ownerId']));
 
-        return $twig->render('components/Rating/Rating.html.twig', ['ownerType' => 'book', 'ownerId' => 42]);
+        return $twig->render('components/Rating/Rating.html.twig', ['ownerType' => 'book', 'ownerId' => 42, 'compact' => $compact]);
     }
 }

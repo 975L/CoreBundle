@@ -1,14 +1,18 @@
-{# <twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}" [scale="5"] [icon="heart"]/> - a score a visitor sets, next to Progress:Rating's read-only row #}
+{# <twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}" [scale="5"] [icon="heart"] [compact="true"] [aggregate="{{ ratings[book.id] }}"]/> - a score a visitor sets, next to Progress:Rating's read-only row #}
 {# The tally is rendered here and the page carrying it is usually cached and shared (a book's is public for an hour), so nothing about the visitor's own vote is printed: assets/js/rating.js reads that from their own browser, then from the answer to their vote #}
-{% set rating = ui_rating(ownerType, ownerId, scale|default(null), icon|default(null)) %}
+{# "compact": the score alone, without how many voted - what a catalog card has room for, where the visitor is choosing between items and not reading up on one #}
+{# "aggregate": the tally the listing already read for the whole page (see ui_ratings()), so thirty cards do not run thirty queries. Left out, this widget reads its own #}
+{% set compact = compact|default(false)|to_bool %}
+{% set rating = ui_rating(ownerType, ownerId, scale|default(null), icon|default(null), aggregate|default(null)) %}
 {% set filled = rating.count > 0 ? rating.average|round : 0 %}
-<div class="rating-vote"
+<div class="rating-vote{{ compact ? ' rating-vote--compact' : '' }}"
      data-controller="ui-rating"
      data-ui-rating-url-value="{{ path('ui_rating_vote', {ownerType: rating.ownerType, ownerId: rating.ownerId}) }}"
      data-ui-rating-key-value="{{ rating.ownerType }}:{{ rating.ownerId }}"
      data-ui-rating-scale-value="{{ rating.scale }}"
      data-ui-rating-count-value="{{ rating.count }}"
      data-ui-rating-average-value="{{ rating.average }}"
+     data-ui-rating-compact-value="{{ compact ? 'true' : 'false' }}"
      data-ui-rating-none-label-value="{{ 'label.rating_none'|trans({}, 'ui') }}"
      data-ui-rating-one-label-value="{{ 'label.rating_votes_one'|trans({}, 'ui') }}"
      data-ui-rating-many-label-value="{{ 'label.rating_votes_many'|trans({}, 'ui') }}"
@@ -26,12 +30,17 @@
         {% endfor %}
     </p>
     {# The average is only worth printing on a real scale: a single icon is a "like", where what counts is how many, not the average of a column of ones #}
+    {# Kept in the markup even when it holds nothing: assets/js/rating.js writes the new tally, and an error, into this very element #}
     <p class="rating-tally" data-ui-rating-target="tally" aria-live="polite">
         {%- if 0 == rating.count -%}
-            {{ 'label.rating_none'|trans({}, 'ui') }}
+            {# A compact widget says nothing rather than "not rated yet": an empty row of icons already says it, and the sentence would take the width of the card it sits in #}
+            {{- compact ? '' : 'label.rating_none'|trans({}, 'ui') -}}
         {%- else -%}
-            {%- if rating.scale > 1 %}<span class="rating-average">{{ rating.average }}/{{ rating.scale }}</span> - {% endif -%}
-            {{ (1 == rating.count ? 'label.rating_votes_one' : 'label.rating_votes_many')|trans({'%count%': rating.count}, 'ui') }}
+            {%- if rating.scale > 1 %}<span class="rating-average">{{ rating.average }}/{{ rating.scale }}</span>{% if not compact %} - {% endif %}{% endif -%}
+            {# How many voted is dropped by a compact widget - except on a single icon, where the count is the whole reading and there is no average to drop it for #}
+            {%- if not compact or 1 == rating.scale -%}
+                {{- (1 == rating.count ? 'label.rating_votes_one' : 'label.rating_votes_many')|trans({'%count%': rating.count}, 'ui') -}}
+            {%- endif -%}
         {%- endif -%}
     </p>
 </div>

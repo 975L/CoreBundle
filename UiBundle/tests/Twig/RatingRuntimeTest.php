@@ -59,6 +59,35 @@ class RatingRuntimeTest extends TestCase
         $this->assertArrayNotHasKey('voter', $rating);
     }
 
+    // The tally a listing already read is taken as it is: thirty cards handed their own would otherwise run thirty queries behind the one the listing already ran
+    public function testATallyHandedOverIsNotQueriedAgain(): void
+    {
+        $service = $this->createMock(RatingService::class);
+        $service->method('getScale')->willReturn(5);
+        $service->method('getIcon')->willReturn('star');
+        $service->expects($this->never())->method('getAggregate');
+
+        $rating = new RatingRuntime($service, $this->createMock(RatingRepository::class))
+            ->rating('book', 42, null, null, ['average' => 4.5, 'count' => 2]);
+
+        $this->assertSame(4.5, $rating['average']);
+        $this->assertSame(2, $rating['count']);
+    }
+
+    // A card of a catalog is no place to raise an error: an id nobody voted on, handed over as nothing at all, reads as no vote
+    public function testATallyHandedOverEmptyReadsAsNoVote(): void
+    {
+        $service = $this->createMock(RatingService::class);
+        $service->method('getScale')->willReturn(5);
+        $service->method('getIcon')->willReturn('star');
+
+        $rating = new RatingRuntime($service, $this->createMock(RatingRepository::class))
+            ->rating('book', 42, null, null, []);
+
+        $this->assertSame(0.0, $rating['average']);
+        $this->assertSame(0, $rating['count']);
+    }
+
     // A catalog page prints one row of stars per card, and asks for all of them at once
     public function testAListIsAskedForInOneGoAndZeroesTheOnesNobodyVotedOn(): void
     {

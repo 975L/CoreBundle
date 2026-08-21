@@ -160,14 +160,22 @@ class CardMeasureTest extends TestCase
         return [(int) $matches[1], (int) $matches[2]];
     }
 
-    // The gap the row itself declares, which is what the tokens have to take off the measure
+    // The gap the row itself declares, which is what the tokens have to take off the measure - written on the row or read by it off "--cards-gap", the two being the same number and the token being what a site retunes
     private function rowGap(string $css, string $file): int
     {
-        if (1 !== preg_match('/(?:^|[};])\.cards\{([^}]*)\}/', $css, $rule) || 1 !== preg_match('/gap:(\d+)px/', $rule[1], $matches)) {
+        if (1 !== preg_match('/(?:^|[};])\.cards\{([^}]*)\}/', $css, $rule)) {
             $this->fail(sprintf('"%s" has no ".cards" rule spacing its cards with a "gap".', $file));
         }
 
-        return (int) $matches[1];
+        if (1 === preg_match('/gap:(\d+)px/', $rule[1], $matches)) {
+            return (int) $matches[1];
+        }
+
+        if (1 === preg_match('/gap:\s*var\(--cards-gap/', $rule[1]) && 1 === preg_match('/--cards-gap:\s*(\d+)px/', $css, $matches)) {
+            return (int) $matches[1];
+        }
+
+        $this->fail(sprintf('"%s" has no ".cards" rule spacing its cards with a "gap".', $file));
     }
 
     // The body of a kind's own rule, told apart from the ones a row or a cell restates by the width it reads. Both kinds line up in the same ".cards" row, so both read that one token: a width written down again is a number computed against the default page, which is what dropped a flip card off a row every site framing its content tighter

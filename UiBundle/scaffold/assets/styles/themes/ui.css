@@ -115,6 +115,8 @@
     /* The eyebrow above a card's title - the page's own ink by default, an eyebrow being set small enough that an accent rarely holds the 4.5:1 a 12px text asks for. Set the accent here once it has been checked that it does */
     /* --card-eyebrow-color: var(--text); */
     /* The measure of a card, and of the compact one a dense row uses. Both are read off --section-wrap-max-width above rather than written down: three cards and their two gaps have to fit the page measure, six compact ones and their five, whatever measure this site sets - which is why neither of them has to be recalculated here after narrowing the wrap. They resolve to 380px and 190px on the default 1440px page */
+    /* What a ".cards" row puts between two cards, read by the row itself and by the widths below */
+    /* --cards-gap: 20px; */
     /* --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3)); */
     /* --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
     /* --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2)); */

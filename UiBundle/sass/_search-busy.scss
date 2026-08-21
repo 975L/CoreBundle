@@ -1,0 +1,45 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+// The sign a live search gives while it is fetching (see components/Search/Busy.html.twig). Hidden rather than absent: it keeps its place when silent, so the results below it do not jump the moment it speaks
+.search-busy {
+    display: flex;
+    visibility: hidden;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    margin: 1em auto;
+    text-align: center;
+}
+
+.search-busy--on {
+    visibility: visible;
+}
+
+// Drawn with a border rather than a picture: no file to fetch, and it takes the ink of whatever it is written in
+.search-busy__spinner {
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: search-busy-spin 0.8s linear infinite;
+}
+
+@keyframes search-busy-spin {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+// Nothing turns for a visitor who asked for less movement - the word alone says the search is running
+@media (prefers-reduced-motion: reduce) {
+    .search-busy__spinner {
+        animation: none;
+    }
+}
