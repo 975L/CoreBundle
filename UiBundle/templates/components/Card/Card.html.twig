@@ -1,4 +1,6 @@
-{# Static usage: <twig:c975LUi:Card:Card id="id" title="Title" [titleUrl=""] [level="h2"] [icon="{{ ['file.ext', 'css-classes', width, height] }}"] [lang=""]>Your content</twig:c975LUi:Card:Card> #}
+{# Static usage: <twig:c975LUi:Card:Card id="id" title="Title" [titleUrl=""] [titleAside=""] [level="h2"] [icon="{{ ['file.ext', 'css-classes', width, height] }}"] [lang=""]>Your content</twig:c975LUi:Card:Card> #}
+{# "titleAside": a second mention at the right end of the band - a date, a price, a count. It reads as what qualifies the title, not as a title of its own, hence lighter and smaller rather than set apart by a rule #}
+{# The title is only wrapped in a span of its own when there is a mention beside it: a band carrying nothing else keeps the markup it has always had, which is what the sites styling ".card-header > a" are written against #}
 {# "stat" variant: add any of [src=""] [alt=""] [eyebrow=""] [rating=""] [stats="{{ [{label: 'Int.', value: 900}] }}"] and the card opens on a picture, then a qualifying line, a score and a row of key figures, whatever is nested coming after them. A card given none of the five is exactly the card it always was #}
 {# Every attribute the card reads is declared here, so what is left in "attributes" is what the caller added on top - data-theme first of all, which opens a second color ambiance on this card alone (sass/_tokens.scss declares the tokens on ":root, [data-theme]") #}
 {# Declared rather than rendered through attributes.defaults(): id/class/lang keep the hand-written conditions below, an empty id="" passed by a caller being invalid HTML the component has always dropped #}
@@ -6,6 +8,7 @@
     title,
     id = "",
     titleUrl = "",
+    titleAside = "",
     level = "",
     icon = "",
     lang = "",
@@ -26,9 +29,9 @@
 <div class="card box-shadow{{ isStat ? " card--stat" : "" }} {{ class }}"{% if id %} id="{{ id }}"{% endif %}{% if dataAnimation %} data-animation="{{ dataAnimation }}"{% endif %}{% if lang %} lang="{{ lang }}"{% endif %}{{ attributes }}>
     {# "length" and not != "": an empty icon reaches the card as [] as often as "" (Section:Features passes [] when its card has no icon), and [] != "" is true in Twig, which sent the card reading icon[0] on an empty array #}
     {% if icon|length %}
-        <{{ level|default('h2') }} class="card-header"><twig:c975LUi:Image:Icon src="{{ icon[0] }}" class="{{ icon[1] }}" width="{{ icon[2] }}" height="{{ icon[3] }}"/> {% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
+        <{{ level|default('h2') }} class="card-header">{% if titleAside %}<span class="card-header__title">{% endif %}<twig:c975LUi:Image:Icon src="{{ icon[0] }}" class="{{ icon[1] }}" width="{{ icon[2] }}" height="{{ icon[3] }}"/> {% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}{% if titleAside %}</span><span class="card-header__aside">{{ titleAside }}</span>{% endif %}</{{ level|default('h2') }}>
     {% else %}
-        <{{ level|default('h2') }} class="card-header">{% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ level|default('h2') }}>
+        <{{ level|default('h2') }} class="card-header">{% if titleAside %}<span class="card-header__title">{% endif %}{% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}{% if titleAside %}</span><span class="card-header__aside">{{ titleAside }}</span>{% endif %}</{{ level|default('h2') }}>
     {% endif %}
     <div class="card-body">
         {% if src %}

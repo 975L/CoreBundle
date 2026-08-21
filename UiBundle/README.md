@@ -1608,6 +1608,22 @@ every item read as a subject of its own. `class="card--big"` goes the other way,
 (`--card-width-big`) with the title stepped up — for the two-way choice a page puts to its visitor,
 one door against another, where three to the row reads as a list and not as a decision.
 
+`titleAside` puts a second mention at the end of the header band, on the title's own line — a date, a
+price, a count. The band then lays its two parts out in flex, the title at the start and the mention at
+the end, written a step smaller and a shade lighter (`--card-header-aside-size`,
+`--card-header-aside-opacity`): it reads as what qualifies the title, not as a title of its own. Only
+then — the rule is written on `:has(.card-header__aside)` rather than on every band, because `flex`
+changes how a long title wraps in it, and because a card given no mention keeps exactly the markup it
+always had, its title or its link still a direct child of the band. That is what the sites styling
+`.card-header > a` are written against; a card *with* a mention wraps that link in a
+`.card-header__title` span. `CardTitleAsideTest` locks both shapes, `CardHeaderAsideTest` the rules in
+the compiled stylesheets.
+
+```twig
+<twig:c975LUi:Card:Card title="Nom" titleUrl="{{ path('book_show', {slug: book.slug}) }}"
+    titleAside="{{ book.publishedAt|date('d/m/Y') }}" />
+```
+
 ### Collection: a live grid sourced from another bundle
 
 The `collection` kind lets an editor drop a section on a page that always shows the latest N items

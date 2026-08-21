@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.13.2
+
+A card carries a mention at the end of its title band
+
+### UiBundle
+
+- `<twig:c975LUi:Card:Card>` takes a `titleAside`, a second mention at the end of the header band - a date, a price, a count (21/08/2026)
+- A band holding one lays its two parts out in flex, the title at the start and the mention at the end (21/08/2026)
+- Added `--card-header-aside-size` and `--card-header-aside-opacity`, the mention being read second on its line (21/08/2026)
+- A card given no mention keeps the markup it had, its title still a direct child of `.card-header` (21/08/2026)
+- Added `CardTitleAsideTest` and `CardHeaderAsideTest` (21/08/2026)
+
 ## v1.13.1
 
 A guided tour opens the field catalog no menu entry names

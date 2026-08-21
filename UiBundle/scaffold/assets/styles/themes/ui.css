@@ -122,6 +122,9 @@
     /* --card-title-size: calc(19px * var(--font-size-title-scale, 1)); */
     /* --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1)); */
     /* --card-title-size-big: calc(23px * var(--font-size-title-scale, 1)); */
+    /* The mention at the right end of a band ("titleAside") - a size below the title it qualifies, a shade lighter */
+    /* --card-header-aside-size: 0.75em; */
+    /* --card-header-aside-opacity: 0.8; */
     /* --box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
     /* Lines shown before a "read more" block clamps its text */
     /* --readmore-lines: 5; */

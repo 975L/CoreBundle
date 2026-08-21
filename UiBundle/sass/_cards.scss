@@ -119,6 +119,20 @@ h2.card-header {
     border-radius: calc(#{$radius} - 1px) calc(#{$radius} - 1px) 0 0;
 }
 
+// A band carrying a second mention lays the two on one line, the title at the start and the mention at the end. Only then: a band with nothing beside its title is the plain block it has always been, and "flex" would change how a long title wraps in it
+.card-header:has(.card-header__aside) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75em;
+}
+
+.card-header__aside {
+    flex: none;
+    font-size: var(--card-header-aside-size);
+    opacity: var(--card-header-aside-opacity);
+}
+
 // An icon is an <img>, so it paints the SVG file's own fill - black - instead of inheriting the header's color like the title next to it does. Whitened here rather than by a "white" class on the markup, so every card gets it, whichever template built the icon (see the ".white" utility in _images.scss).
 // "brightness(0)" flattens it to black first; the inversion after is what turns that black white, so the four light hues above switch the icon with their title by setting the amount to 0 rather than 1
 .card-header .icon {

@@ -70,6 +70,9 @@
         --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1));
         // And the big one steps up once, to the measure of its 570px: two cards to the row are read from further off than three, and the 19px that titles a third of a row reads small across a half of one
         --card-title-size-big: calc(23px * var(--font-size-title-scale, 1));
+        // The mention at the right end of a band ("titleAside"): a size below the title it qualifies, and a shade lighter than it - it is read second, on the same line
+        --card-header-aside-size: 0.75em;
+        --card-header-aside-opacity: 0.8;
         // Three cards and their two gaps have to fit ".section-wrap", six compact ones and their five, two big ones and their one - the invariant these three widths exist to hold. It was held by hand until now, 380px being what fits the 1312px the *default* measure leaves, so a site framing its content tighter dropped a card off the row with nothing to say so. Read off the measure instead: at the default the two resolve to the very 380px and 190px written here before, and they follow a narrower page on their own.
         // Taken off it: the two gutters ".section-wrap" pads with, then the gaps ".cards" puts between the cards themselves - 40px for two, 100px for five (see sass/_cards.scss). What is read is the measure a site *declares*, not the width of the box a row actually sits in: a ".cards" nested in a slot narrower than the page is held by the "max-width: 100%" of sass/_cards.scss, not here
         // The 90vw/45vw ceilings keep a card off the edges of a phone. The 300px/150px floors the clamp carried are gone with the clamp: a floor is what made a card overflow its own wrap under a 420px viewport, where 90vw is already less than the floor
