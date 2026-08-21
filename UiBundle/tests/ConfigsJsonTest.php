@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests;
 
+use c975L\UiBundle\Service\RatingService;
 use PHPUnit\Framework\TestCase;
 
 // Guards config/configs.json, the list ConfigBundle seeds the backoffice from - an entry whose label/description has no translation shows up there as a raw "label.some_key" string
@@ -92,6 +93,41 @@ class ConfigsJsonTest extends TestCase
         foreach ($this->loadConfigs() as $config) {
             $this->assertSame('label.' . str_replace('-', '_', $config['slug']), $config['label'], sprintf('Config "%s" declares a label key its slug does not derive', $config['slug']));
         }
+    }
+
+    // The icons offered are the ones RatingService accepts and sass/_rating.scss cuts out: a setting offering a glyph nobody masks would paint a row of nothing
+    public function testTheRatingIconChoicesAreTheOnesTheCodeKnows(): void
+    {
+        $entry = $this->entry('ui-rating-icon');
+
+        $this->assertSame(RatingService::ICONS, $entry['choices']);
+        $this->assertSame(RatingService::DEFAULT_ICON, $entry['value']);
+    }
+
+    // The scale offered stops where the widget stops: a row longer than that is clamped anyway, and the setting would be lying about it
+    public function testTheRatingScaleChoicesStopWhereTheWidgetDoes(): void
+    {
+        $entry = $this->entry('ui-rating-scale');
+
+        $this->assertSame(
+            array_map(strval(...), range(RatingService::MIN_SCALE, RatingService::MAX_SCALE)),
+            $entry['choices']
+        );
+        $this->assertSame((string) RatingService::DEFAULT_SCALE, $entry['value']);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function entry(string $slug): array
+    {
+        foreach ($this->loadConfigs() as $config) {
+            if ($slug === $config['slug']) {
+                return $config;
+            }
+        }
+
+        $this->fail(sprintf('No config declares the slug "%s"', $slug));
     }
 
     // Both the label and the description of every entry are translated in each shipped locale

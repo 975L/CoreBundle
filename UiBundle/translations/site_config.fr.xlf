@@ -134,6 +134,14 @@
                 <source>description.theme_mode</source>
                 <target>Mode d'affichage appliqué à tout le site pour tous les visiteurs</target>
             </trans-unit>
+            <trans-unit id="RVA3kky">
+                <source>description.ui_rating_icon</source>
+                <target>Le symbole avec lequel les visiteurs notent : étoile, cœur, pouce ou sourire</target>
+            </trans-unit>
+            <trans-unit id="tuD18o0">
+                <source>description.ui_rating_scale</source>
+                <target>Nombre d'icônes proposées. 1 transforme la note en simple « j'aime » et affiche le nombre de votes au lieu de la moyenne</target>
+            </trans-unit>
             <trans-unit id="vnYPhlr">
                 <source>description.url_cookies_policy</source>
                 <target>URL de la politique de cookies, ex. https://example.com/pages/cookies</target>
@@ -281,6 +289,14 @@
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>
                 <target>Vitrine des blocks - URL</target>
+            </trans-unit>
+            <trans-unit id="H42R_Op">
+                <source>label.ui_rating_icon</source>
+                <target>Icône des notes</target>
+            </trans-unit>
+            <trans-unit id="p3KMSht">
+                <source>label.ui_rating_scale</source>
+                <target>Échelle des notes</target>
             </trans-unit>
             <trans-unit id="R1c.duO">
                 <source>label.ui_watermark_margin</source>

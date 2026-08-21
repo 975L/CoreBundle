@@ -9,16 +9,9 @@ import { Controller } from "@hotwired/stimulus";
 import { showAdminMessage } from "./admin-modal.js";
 import { addToolbarButton } from "./block-toolbar.js";
 import { addSortGesture } from "./pointer-sort.js";
+import { MOVE_ICON } from "./sort-icon.js";
 
 // Mounted automatically on <body> by controllers-admin.js — no layout override needed.
-
-// No width/height here, deliberately - EasyAdmin's own icons (e.g. the delete button's) don't set them either, relying entirely on its global ".icon svg" CSS to size every icon consistently. Hard-coding a size here would make this one the odd one out instead of matching the others.
-const UI_MOVE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-    + 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-    + '<polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/>'
-    + '<polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/>'
-    + '<line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/>'
-    + '</svg>';
 
 export default class extends Controller {
     connect() {
@@ -28,6 +21,8 @@ export default class extends Controller {
         this.dragOriginNextSibling = null;
 
         this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => { this.initField(field); });
+
+        this.restoreOpenPanels();
 
         this.boundOnItemAdded = this.onItemAdded.bind(this);
         document.addEventListener('ea.collection.item-added', this.boundOnItemAdded);
@@ -57,7 +52,7 @@ export default class extends Controller {
 
         item.classList.add('ui-dragging-visual');
 
-        if (this.isBlockCollectionField(this.dragOriginField)) this.highlightDropTargets(this.dragOriginField);
+        if (this.sortGroup(this.dragOriginField)) this.highlightDropTargets(this.dragOriginField);
     }
 
     // What "dragover" used to give for free. The pointer belongs to the gesture for its whole duration, so nothing under it receives an event of its own any more and the field being flown over has to be hit-tested instead.
@@ -97,11 +92,56 @@ export default class extends Controller {
         this.clearDrag();
     }
 
-    // Cross-field moves are only offered between two Block-collection fields; every other sortable stays single-field
+    // Cross-field moves are offered between two fields of the same group, whatever that group holds - the Block collections were the first, they are no longer the only one. A field naming no group stays single-field, which is every sortable that never asked for more
     acceptsDrop(field) {
         if (field === this.dragOriginField) return true;
 
-        return this.isBlockCollectionField(field) && this.isBlockCollectionField(this.dragOriginField);
+        const group = this.sortGroup(field);
+
+        return !!group && group === this.sortGroup(this.dragOriginField);
+    }
+
+    // The group a collection field belongs to, null for one belonging to none
+    sortGroup(field) {
+        if (!field) return null;
+
+        return field.dataset.uiSortGroup || null;
+    }
+
+    // The accordions open at the moment of a move, by their own id: a reload is the only way to rebuild a form whose indices just changed, and it folds every one of them shut
+    rememberOpenPanels() {
+        const open = [...this.element.querySelectorAll('.accordion-collapse.show[id]')].map(panel => panel.id);
+
+        try {
+            window.sessionStorage.setItem(this.panelStorageKey(), JSON.stringify(open));
+        } catch {
+            // A browser refusing storage loses the panel, not the move
+        }
+    }
+
+    // Reopened once, then forgotten: the state belongs to the reload that follows a move, not to the screen
+    restoreOpenPanels() {
+        let open = [];
+
+        try {
+            open = JSON.parse(window.sessionStorage.getItem(this.panelStorageKey()) || '[]');
+            window.sessionStorage.removeItem(this.panelStorageKey());
+        } catch {
+            return;
+        }
+
+        open.forEach(id => {
+            const panel = document.getElementById(id);
+            if (!panel) return;
+
+            panel.classList.add('show');
+            document.querySelector(`[data-bs-target="#${CSS.escape(id)}"]`)?.classList.remove('collapsed');
+        });
+    }
+
+    // The screen's own key: two entities edited in two tabs never restore each other's panels
+    panelStorageKey() {
+        return `ui-open-panels:${window.location.pathname}${window.location.search}`;
     }
 
     clearDragStyle(item) {
@@ -120,14 +160,11 @@ export default class extends Controller {
             || !!field.querySelector('[name$="[position]"]');
     }
 
-    isBlockCollectionField(field) {
-        return !!(field && field.dataset.blockCollection === '1');
-    }
-
     // An empty "slots" field has no visible size to aim a drag at, so every eligible target is outlined
     highlightDropTargets(originField) {
+        const group = this.sortGroup(originField);
         this.element.querySelectorAll('[data-ea-collection-field]').forEach(field => {
-            if (field === originField || !this.isBlockCollectionField(field)) return;
+            if (field === originField || this.sortGroup(field) !== group) return;
             const container = this.itemsContainer(field);
             if (container) container.classList.add('ui-drop-target');
         });
@@ -147,7 +184,7 @@ export default class extends Controller {
 
         const btn = addToolbarButton(item, {
             title: 'Déplacer',
-            icon: UI_MOVE_ICON,
+            icon: MOVE_ICON,
             order: 1,
             onClick: () => {},
         });
@@ -203,33 +240,35 @@ export default class extends Controller {
     }
 
     // Persisted server-side rather than renamed in the form: a resubmit would delete the Block and recreate it empty, losing its media
+    // The row is never rewritten in the DOM: its id is posted to the endpoint the group declares, which is what lets two collections of different shapes exchange rows at all - a Block row and a media row hold nothing like the same fields
     async moveAcrossFields(item, finalField, originContainer, originNextSibling) {
-        const root = finalField.closest('[data-block-owner-type]');
-        const blockIdInput = item.querySelector('[name$="[id]"]');
-        const blockId = blockIdInput ? blockIdInput.value : '';
+        const root = finalField.closest('[data-ui-move-url]');
+        const idInput = item.querySelector('[name$="[id]"]');
+        const id = idInput ? idInput.value : '';
 
-        // An unsaved block has no id to relocate against, so it stays out of this mechanism
-        if (!blockId || !root) {
+        // A row not saved yet has no id to relocate against, so it stays out of this mechanism
+        if (!id || !root) {
             this.revertToOrigin(item, originContainer, originNextSibling);
             return;
         }
 
         const body = new URLSearchParams({
-            blockId,
-            ownerType: root.dataset.blockOwnerType || '',
-            ownerId: root.dataset.blockOwnerId || '',
-            targetBlockId: finalField.dataset.blockContainerId || '',
+            id,
+            ownerType: root.dataset.uiMoveOwnerType || '',
+            ownerId: root.dataset.uiMoveOwnerId || '',
+            target: finalField.dataset.uiMoveTarget || '',
         });
 
         try {
-            const response = await fetch(root.dataset.blockMoveUrl, {
+            const response = await fetch(root.dataset.uiMoveUrl, {
                 method: 'POST',
-                headers: { 'X-CSRF-Token': root.dataset.blockMoveCsrfToken || '' },
+                headers: { 'X-CSRF-Token': root.dataset.uiMoveCsrfToken || '' },
                 body,
             });
 
             if (response.ok) {
-                // Reloaded: the rest of the form was built against the pre-move indices and would misalign
+                // Reloaded: the rest of the form was built against the pre-move indices and would misalign. What was open is remembered first, so the editor comes back to the panel they were working in rather than to a form folded shut
+                this.rememberOpenPanels();
                 window.location.reload();
                 return;
             }
@@ -252,7 +291,7 @@ export default class extends Controller {
     }
 
     showFailure(root, reason = '') {
-        showAdminMessage(root.dataset.blockMoveFailedLabel || '', reason, root.dataset.blockMoveCloseLabel || 'OK');
+        showAdminMessage(root.dataset.uiMoveFailedLabel || '', reason, root.dataset.uiMoveCloseLabel || 'OK');
     }
 
     revertToOrigin(item, originContainer, originNextSibling) {

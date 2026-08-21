@@ -1,0 +1,108 @@
+// The breakpoint the summary stops being a bar and becomes a column - the desktop step of the handoffs this component was drawn for, one step above $page-section-bp-lg because a 220px column only pays for itself once the text beside it still holds its measure
+$toc-bp-column: 1200px;
+
+// Mobile first: a bar of chips that comes to rest under the header and scrolls sideways, so a page of nine sections costs one line rather than nine
+.toc {
+    position: sticky;
+    top: var(--toc-sticky-top);
+    z-index: 2;
+    background: var(--toc-background);
+    border-bottom: 1px solid var(--border-color);
+    margin-block: 1em;
+    padding-block: 0.6em;
+}
+
+.toc-list {
+    display: flex;
+    gap: var(--toc-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    // The scrollbar would sit on the chips themselves: the half-cut chip at the edge is what says there are more
+    scrollbar-width: none;
+}
+
+.toc-list::-webkit-scrollbar {
+    display: none;
+}
+
+.toc-item {
+    flex: none;
+}
+
+// 44px tall whatever the font size: the chips are the page's navigation on a phone, and a thumb is what reaches them
+.toc-link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.9em;
+    border: 1px solid var(--border-color);
+    border-radius: var(--toc-chip-radius);
+    color: var(--text);
+    font-family: var(--font-family-body);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.toc-link:hover {
+    border-color: var(--toc-current-color);
+    color: var(--toc-current-color);
+}
+
+// Written by toc.js alone, which is also what sets aria-current: no selector can ask which section the reader is in
+.toc-link--current {
+    background: var(--toc-current-color);
+    border-color: var(--toc-current-color);
+    color: var(--button-color);
+    font-weight: bold;
+}
+
+// The room a section leaves above itself so the bar resting over it does not cover its own title after a jump. Written here rather than measured by the controller: a nonced style-src drops any rule a script writes onto an element (see tests/Assets/NoncedStyleSrcTest.php), so the bar's height is a token the sheet states and a site retunes, not something read back off the page
+.toc-target {
+    scroll-margin-top: calc(var(--toc-sticky-top) + var(--toc-height));
+}
+
+// From the desktop step on, the same list stands beside the text instead of over it - the page puts it in its own column, this only changes what the summary looks like once it is there
+@media (min-width: $toc-bp-column) {
+    .toc {
+        width: var(--toc-column-width);
+        align-self: start;
+        background: none;
+        border-bottom: none;
+        padding-block: 0;
+    }
+
+    .toc-list {
+        flex-direction: column;
+        gap: 0;
+        overflow: visible;
+    }
+
+    // The chip becomes a line, and the entry being read is said by a rule standing in the margin rather than by a filled pill
+    .toc-link {
+        border: none;
+        border-inline-start: var(--toc-marker-width) solid transparent;
+        border-radius: 0;
+        padding-block: 0.5em;
+        white-space: normal;
+    }
+
+    // Standing beside the text, the summary covers nothing: a section needs no room left above it beyond what the header itself asks
+    .toc-target {
+        scroll-margin-top: var(--toc-sticky-top);
+    }
+
+    .toc-link--current {
+        background: none;
+        border-inline-start-color: var(--toc-current-color);
+        color: var(--toc-current-color);
+    }
+}
+
+// A summary of anchors leads nowhere on paper, where every section it points at is printed below anyway
+@media print {
+    .toc {
+        display: none;
+    }
+}

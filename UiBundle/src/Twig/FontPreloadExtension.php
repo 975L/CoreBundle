@@ -66,9 +66,12 @@ class FontPreloadExtension
             return [];
         }
 
+        // Read once for the whole computation: the site names a family per role (titles, body...), and looking each one up in its own query read the same table three times over
+        $fonts = $this->fontRepository->findAllOrdered();
+
         $preloads = [];
         foreach ($families as $family) {
-            $font = $this->findPreloadableFont($family);
+            $font = $this->findPreloadableFont($family, $fonts);
             if (null === $font) {
                 continue;
             }
@@ -108,10 +111,11 @@ class FontPreloadExtension
     }
 
     // A variable font covers every weight; otherwise the upright regular is what body text renders with
-    private function findPreloadableFont(string $family): ?Font
+    /** @param list<Font> $fonts */
+    private function findPreloadableFont(string $family, array $fonts): ?Font
     {
         $candidates = [];
-        foreach ($this->fontRepository->findAllOrdered() as $font) {
+        foreach ($fonts as $font) {
             if (null === $font->getFilename() || 0 !== strcasecmp((string) $font->getName(), $family)) {
                 continue;
             }

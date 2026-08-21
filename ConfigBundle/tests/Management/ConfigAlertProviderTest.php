@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\ConfigAlertProvider;
 use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Repository\ConfigRepository;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -65,7 +66,7 @@ class ConfigAlertProviderTest extends TestCase
         $adminUrlGenerator->method('generateUrl')->willReturn('/management/config/42/edit');
 
         $resolver = $this->createResolver(['label.site_maintenance_hash' => 'Hash de maintenance']);
-        $provider = new ConfigAlertProvider($repository, $adminUrlGenerator, $resolver);
+        $provider = new ConfigAlertProvider($repository, $adminUrlGenerator, $resolver, $this->createConfigService([]), $this->createTranslator());
 
         $alerts = $provider->getAlerts();
 
@@ -92,11 +93,62 @@ class ConfigAlertProviderTest extends TestCase
         $adminUrlGenerator->method('setEntityId')->willReturnSelf();
         $adminUrlGenerator->method('generateUrl')->willReturn('/management/config/7/edit');
 
-        $provider = new ConfigAlertProvider($repository, $adminUrlGenerator, $this->createResolver());
+        $provider = new ConfigAlertProvider($repository, $adminUrlGenerator, $this->createResolver(), $this->createConfigService([]), $this->createTranslator());
 
         $alerts = $provider->getAlerts();
 
         $this->assertSame('Destinataire du digest des sites', $alerts[0]['label']);
+    }
+
+    // A key encrypted with a secret the site no longer has: the entry shows as filled, and everything reading it gets nothing (see ConfigService::loadAll())
+    public function testGetAlertsReportsASensitiveConfigFilledButUnreadable(): void
+    {
+        $unreadable = $this->createConfig(11, 'stripe-secret', Config::SEVERITY_DANGER);
+        $readable = $this->createConfig(12, 'stripe-secret-test', Config::SEVERITY_DANGER);
+
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findRequiringAttention')->willReturn([]);
+        $repository->method('findSensitiveWithValue')->willReturn([$unreadable, $readable]);
+
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->method('setAction')->willReturnSelf();
+        $adminUrlGenerator->method('setEntityId')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/config/11/edit');
+
+        $provider = new ConfigAlertProvider(
+            $repository,
+            $adminUrlGenerator,
+            $this->createResolver(),
+            $this->createConfigService(['stripe-secret-test' => 'sk_test_1']),
+            $this->createTranslator(),
+        );
+
+        $alerts = $provider->getAlerts();
+
+        $this->assertCount(1, $alerts);
+        $this->assertSame('stripe-secret', $alerts[0]['label']);
+        $this->assertSame('description.config_unreadable', $alerts[0]['description']);
+        $this->assertSame(Config::SEVERITY_DANGER, $alerts[0]['severity']);
+    }
+
+    // The configuration as the site reads it: a sensitive value it could not decrypt is empty here while the row still holds its ciphertext
+    private function createConfigService(array $values): ConfigServiceInterface
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(static fn (string $slug) => $values[$slug] ?? null);
+
+        return $configService;
+    }
+
+    // The stub hands the key back untranslated, which is what the assertions read
+    private function createTranslator(): TranslatorInterface
+    {
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnArgument(0);
+
+        return $translator;
     }
 
     public function testGetAlertsReturnsEmptyArrayWhenNoConfigRequiresAttention(): void
@@ -104,7 +156,7 @@ class ConfigAlertProviderTest extends TestCase
         $repository = $this->createStub(ConfigRepository::class);
         $repository->method('findRequiringAttention')->willReturn([]);
 
-        $provider = new ConfigAlertProvider($repository, $this->createStub(AdminUrlGeneratorInterface::class), $this->createResolver());
+        $provider = new ConfigAlertProvider($repository, $this->createStub(AdminUrlGeneratorInterface::class), $this->createResolver(), $this->createConfigService([]), $this->createTranslator());
 
         $this->assertSame([], $provider->getAlerts());
     }

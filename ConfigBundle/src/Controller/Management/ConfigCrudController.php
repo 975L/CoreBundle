@@ -99,6 +99,10 @@ class ConfigCrudController extends AbstractCrudController
 
             return $this->render('@c975LConfig/management/config_crud_groups.html.twig', [
                 'counts' => $this->configRepository->countsByGroup($showSensitive, $this->security->isGranted('ROLE_SUPER_ADMIN')),
+                'showSensitive' => $showSensitive,
+                // The grid's own toggle is a global action of the index page, which this screen replaces - so it draws its own, under the same permission (see configureActions())
+                'canShowSensitive' => $this->security->isGranted((string) $this->configService->get('site-role-admin')),
+                'sensitiveToggleUrl' => $this->sensitiveToggleUrl($showSensitive),
                 'alerts' => AlertBuilder::groupBySeverity($this->configAlertProvider->getAlerts()),
                 'alertsTitle' => $this->translator->trans(
                     'label.items_not_filled_for',
@@ -516,6 +520,18 @@ class ConfigCrudController extends AbstractCrudController
         $group = $this->requestStack->getCurrentRequest()?->query->get('group');
 
         return \is_string($group) && '' !== $group ? $group : null;
+    }
+
+    // The url of the "pick a group" screen with the sensitive entries shown or hidden, built here rather than in the template: ea_url() hands out one generator for the whole request, so a link unsetting a parameter takes it away from every link drawn after it
+    private function sensitiveToggleUrl(bool $showSensitive): string
+    {
+        $url = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::INDEX)
+            ->unset('group')
+            ->unset(EA::QUERY);
+
+        return $showSensitive ? $url->unset('showSensitive')->generateUrl() : $url->set('showSensitive', 1)->generateUrl();
     }
 
     // True when nothing scopes the grid yet: no group picked and no cross-group search query typed - see index() and configureActions()'s backToGroupsAction, which clears both to return here

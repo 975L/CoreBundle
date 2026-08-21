@@ -49,6 +49,16 @@ class FieldFocusControllerRegistrationTest extends TestCase
         $this->assertStringContainsString('[name$="[${field}]"]', $this->read(self::CONTROLLER_JS));
     }
 
+    // A CollectionField prints neither name nor id of its own, so the suffix match never finds one: the fallback reads the property name off its entries, then off its prototype when it holds none
+    public function testACollectionIsLookedUpByItsEntriesAndItsPrototype(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('[name*="[${field}]["]', $controller);
+        $this->assertStringContainsString('[data-prototype*="[${field}]["]', $controller);
+        $this->assertStringContainsString("closest('[data-ea-collection-field]')", $controller);
+    }
+
     private function read(string $relativePath): string
     {
         $path = \dirname(__DIR__, 2) . '/' . $relativePath;

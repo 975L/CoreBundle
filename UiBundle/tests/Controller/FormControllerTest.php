@@ -229,6 +229,7 @@ class FormControllerTest extends TestCase
         $this->assertSame('<already-authenticated>', $response->getContent());
     }
 
+    // Same notice as fragment() above, but wrapped in the standalone page shell - "ui_form_submit" is an address a visitor lands on, not a fragment embedded in an already-rendered page
     public function testSubmitRendersAlreadyAuthenticatedNoticeWithoutHandlingAnySubmissionWhenActionRequiresAnonymousAndUserIsLoggedIn(): void
     {
         $repository = $this->createStub(FormRepository::class);
@@ -236,7 +237,9 @@ class FormControllerTest extends TestCase
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())->method('render')
-            ->with('@c975LUi/components/Form/FormAlreadyAuthenticated.html.twig')
+            ->with('@c975LUi/form/page.html.twig', $this->callback(
+                static fn (array $parameters): bool => '@c975LUi/components/Form/FormAlreadyAuthenticated.html.twig' === $parameters['innerTemplate']
+            ))
             ->willReturn('<already-authenticated>');
 
         $response = $this->createController(
@@ -249,6 +252,40 @@ class FormControllerTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('<already-authenticated>', $response->getContent());
+    }
+
+    // The bare route is a page of its own: served as a fragment it carried neither the stylesheet hiding the honeypot field nor the importmap the "captcha" Stimulus controller needs to fill its token, which CaptchaValidator then rejected as a bot. Never indexed either, the Page carrying the "form" Block being the canonical address
+    public function testSubmitWrapsTheFormInTheStandalonePageShell(): void
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())->method('render')
+            ->with('@c975LUi/form/page.html.twig', $this->callback(
+                static fn (array $parameters): bool => '@c975LUi/components/Form/Form.html.twig' === $parameters['innerTemplate']
+                    && 'noindex, follow' === $parameters['robots']
+                    && isset($parameters['form'])
+            ))
+            ->willReturn('<page></page>');
+
+        $response = $this->createController($this->createSubmittedForm(false, false), twig: $twig)
+            ->submit('contact', $this->createRequest());
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('<page></page>', $response->getContent());
+    }
+
+    // The fragment stays bare, being embedded in an already-rendered page (see FormBlock.html.twig) - a layout there would nest a second <html> inside the host page
+    public function testFragmentRendersTheBareFormWithoutAnyPageShell(): void
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())->method('render')
+            ->with('@c975LUi/components/Form/Form.html.twig')
+            ->willReturn('<form></form>');
+
+        $response = $this->createController($this->createSubmittedForm(false, false), twig: $twig)
+            ->fragment('contact', $this->createRequest());
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('<form></form>', $response->getContent());
     }
 
     // An action not implementing RequiresAnonymousInterface (e.g. "contact") stays open to a logged-in visitor

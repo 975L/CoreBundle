@@ -1,5 +1,40 @@
 [
     {
+        "date": "2026-08-21",
+        "description": [
+            {
+                "en": "A rating a visitor gives now always stays within the scale you set: a score sent from outside your site could be stored above it, and the page then showed an average like \"7.3/5\". The average and the number of ratings beside it no longer run into each other either",
+                "fr": "Une note laissée par un visiteur reste désormais toujours dans l'échelle que vous avez choisie : une note envoyée depuis l'extérieur de votre site pouvait être enregistrée au-dessus, et la page affichait alors une moyenne du genre « 7,3/5 ». La moyenne et le nombre d'avis à côté d'elle ne se touchent plus non plus",
+                "es": "Una valoración dejada por un visitante se mantiene ahora siempre dentro de la escala que usted ha elegido: una puntuación enviada desde fuera de su sitio podía registrarse por encima, y la página mostraba entonces una media del tipo «7,3/5». La media y el número de valoraciones a su lado tampoco se tocan ya"
+            },
+            {
+                "en": "The grey box shown in place of a third-party video until the visitor accepts it now has the size and the shape of the player it replaces, instead of spreading across the page and shrinking the moment it was accepted, and its message is centred again",
+                "fr": "Le cache gris affiché à la place d'une vidéo tierce tant que le visiteur ne l'accepte pas a désormais la taille et la forme du lecteur qu'il remplace, au lieu de s'étaler sur toute la page et de se réduire d'un coup une fois acceptée, et son message est de nouveau centré",
+                "es": "La caja gris mostrada en lugar de un vídeo de terceros mientras el visitante no lo acepta tiene ahora el tamaño y la forma del reproductor al que sustituye, en vez de extenderse por toda la página y encogerse de golpe una vez aceptado, y su mensaje vuelve a estar centrado"
+            },
+            {
+                "en": "The confetti animation now actually plays on the pages you put it on, where it mostly stayed silent — and nothing at all is downloaded for a visitor who has asked their device for less animation",
+                "fr": "L'animation de confettis se déclenche désormais vraiment sur les pages où vous l'avez posée, alors qu'elle restait le plus souvent muette — et plus rien n'est téléchargé chez un visiteur ayant demandé moins d'animations à son appareil",
+                "es": "La animación de confeti se activa ahora de verdad en las páginas donde la ha colocado, cuando la mayoría de las veces se quedaba muda — y ya no se descarga nada en un visitante que ha pedido menos animaciones a su dispositivo"
+            },
+            {
+                "en": "Dragging a block into a container that is still empty works again: the area to drop it on had become invisible",
+                "fr": "Glisser un block dans un conteneur encore vide fonctionne de nouveau : la zone où le déposer était devenue invisible",
+                "es": "Arrastrar un bloque a un contenedor todavía vacío vuelve a funcionar: la zona donde soltarlo se había vuelto invisible"
+            }
+        ]
+    },
+    {
+        "date": "2026-08-20",
+        "description": [
+            {
+                "en": "Your visitors can now rate what you publish, without having to create an account. You choose the symbol they rate with - a star, a heart, a thumb or a smiley - and how many of them they get: five for a proper score, and a single one to turn the whole thing into a plain \"like\", where the page then says how many people liked it rather than an average. Someone who is logged in votes once wherever they read you, on their phone as on their computer; anyone else votes once from their browser, and clicking their own score again takes it back. The page keeps showing everyone else's average either way",
+                "fr": "Vos visiteurs peuvent désormais noter ce que vous publiez, sans avoir à créer de compte. Vous choisissez le symbole avec lequel ils notent — une étoile, un cœur, un pouce ou un sourire — et combien on leur en propose : cinq pour une vraie note, un seul pour transformer le tout en simple « j'aime », la page indiquant alors combien de personnes l'ont aimé plutôt qu'une moyenne. Une personne connectée vote une fois où qu'elle vous lise, sur son téléphone comme sur son ordinateur ; les autres votent une fois depuis leur navigateur, et recliquer sur sa propre note la retire. Dans tous les cas la page continue d'afficher la moyenne de tout le monde",
+                "es": "Sus visitantes pueden ahora valorar lo que publica, sin tener que crear una cuenta. Usted elige el símbolo con el que valoran —una estrella, un corazón, un pulgar o una sonrisa— y cuántos se les ofrecen: cinco para una valoración de verdad, uno solo para convertirlo todo en un simple «me gusta», y entonces la página indica cuántas personas lo han marcado en lugar de una media. Quien ha iniciado sesión vota una vez allí donde le lea, tanto en su teléfono como en su ordenador; los demás votan una vez desde su navegador, y volver a pulsar su propia valoración la retira. En todos los casos la página sigue mostrando la media de todo el mundo"
+            }
+        ]
+    },
+    {
         "date": "2026-08-19",
         "description": [
             {

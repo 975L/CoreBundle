@@ -14,6 +14,8 @@
         --alert-info-background: #d9edf7;
         --alert-success-background: #d0e9c6;
         --alert-warning-background: #f9dba7;
+        // The ground a sticky player writes on, which cannot be transparent: it hides the column sliding under it
+        --audio-sticky-background: var(--background);
         --background: var(--c975l-color-background, #fff);
         // The three steps the banner's "height" field offers, on top of the "automatic" default it keeps for itself - the 200px floor sass/_banner-title.scss sets. Each raises that floor and none of them caps anything: a banner grows past its step rather than cropping a title that needs the room. Steps and not a length, for the reason the corners and the shadow above are: a free value puts arbitrary CSS in the database
         --banner-title-height-large: 520px;
@@ -56,8 +58,12 @@
         --button-background-success-dark: rgb(40, 167, 69, 0.9);
         --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
         --button-color: #fff;
+        // An icon on a button is an <img>, which paints its file's own black fill instead of taking the color the label beside it is written in: 1 inverts that black to white, 0 leaves it black. The default follows the white above, so a site writing a dark ink on its buttons carries this one along - the same pair as --card-accent-color / --card-accent-invert (see sass/_cards.scss)
+        --button-icon-invert: 1;
         --button-link-color: #fff;
         --button-secondary-color: #000;
+        // Its own value, the secondary button being the one variant whose label is written dark by default
+        --button-secondary-icon-invert: 0;
         --card-background: #fff;
         // The 19px this bundle's own hierarchy sets for a card title, from the hero's 66px down to here (see sass/_page-sections.scss) - never inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact one steps down once more, to the measure of its 190px
         --card-title-size: calc(19px * var(--font-size-title-scale, 1));
@@ -92,6 +98,8 @@
         --form-label-color: var(--black);
         --form-width: min(70vw, 1000px);
         --frame-background: var(--background);
+        // The same shape as --input-icon-filter one step wider: any icon laid on the page itself paints its file's own black, out of reach of the currentColor its neighbouring text follows. "none" leaves a colored file alone, an ambience writing the treatment its surface asks for
+        --icon-filter: none;
         --input-background: transparent;
         --input-border-bottom-color: #bfbfbf;
         --input-border-color: #4d4d4d;
@@ -125,6 +133,19 @@
         --surface-inverse: #232323;
         --text: var(--c975l-color-text, #000);
         --text-on-inverse: #d8d8d8;
+
+        /* The page summary of anchors (see sass/_toc.scss): a bar of chips on a phone, a column beside the text from 1200px on */
+        /* The bar hides the page sliding under it, so it cannot be transparent */
+        --toc-background: var(--background);
+        --toc-chip-radius: 999px;
+        --toc-column-width: 220px;
+        --toc-current-color: var(--primary);
+        --toc-gap: 0.5rem;
+        /* What the resting bar covers, which is what a section jumped to has to leave above itself - one 44px chip plus its own breathing room. Stated rather than measured: a nonced style-src drops any rule a script writes onto an element */
+        --toc-height: 4rem;
+        --toc-marker-width: 3px;
+        /* Where the bar comes to rest - the same height a fixed header covers, which is what --scroll-offset already says. A site whose header scrolls away with the page sets this to 0 */
+        --toc-sticky-top: var(--scroll-offset, 80px);
         --white: #fff;
     }
 }

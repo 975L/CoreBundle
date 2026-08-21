@@ -54,7 +54,7 @@ class BlockMoveController extends AbstractController
             return new JsonResponse(['error' => 'invalid_csrf'], 419);
         }
 
-        $block = $this->blockRepository->find((int) $request->request->get('blockId'));
+        $block = $this->blockRepository->find((int) $request->request->get('id'));
         if (!$block instanceof Block) {
             return new JsonResponse(['error' => 'unknown_block'], 404);
         }
@@ -71,7 +71,7 @@ class BlockMoveController extends AbstractController
         }
 
         $targetContainer = null;
-        $targetBlockId = $request->request->get('targetBlockId');
+        $targetBlockId = $request->request->get('target');
         if (null !== $targetBlockId && '' !== $targetBlockId) {
             $targetContainer = $this->blockRepository->find((int) $targetBlockId);
             if (!$targetContainer instanceof Block) {

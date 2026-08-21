@@ -134,6 +134,14 @@
                 <source>description.theme_mode</source>
                 <target>Display mode applied site-wide for every visitor</target>
             </trans-unit>
+            <trans-unit id="RVA3kky">
+                <source>description.ui_rating_icon</source>
+                <target>The symbol visitors rate with: star, heart, thumb or smile</target>
+            </trans-unit>
+            <trans-unit id="tuD18o0">
+                <source>description.ui_rating_scale</source>
+                <target>How many icons are offered. 1 turns the rating into a plain "like", showing how many voted instead of the average</target>
+            </trans-unit>
             <trans-unit id="vnYPhlr">
                 <source>description.url_cookies_policy</source>
                 <target>Cookies policy page URL, e.g. https://example.com/pages/cookies</target>
@@ -281,6 +289,14 @@
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>
                 <target>Block showcase - Url</target>
+            </trans-unit>
+            <trans-unit id="H42R_Op">
+                <source>label.ui_rating_icon</source>
+                <target>Rating icon</target>
+            </trans-unit>
+            <trans-unit id="p3KMSht">
+                <source>label.ui_rating_scale</source>
+                <target>Rating scale</target>
             </trans-unit>
             <trans-unit id="R1c.duO">
                 <source>label.ui_watermark_margin</source>

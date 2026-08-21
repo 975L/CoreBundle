@@ -290,8 +290,8 @@ class BlockTypeTest extends TestCase
 
         new \ReflectionMethod($type, 'addSlotsSubForm')->invoke($type, $form, 'flex_columns', $container);
 
-        $this->assertSame('1', $added['slots']['options']['row_attr']['data-block-collection']);
-        $this->assertSame(42, $added['slots']['options']['row_attr']['data-block-container-id']);
+        $this->assertSame('block', $added['slots']['options']['row_attr']['data-ui-sort-group']);
+        $this->assertSame(42, $added['slots']['options']['row_attr']['data-ui-move-target']);
     }
 
     // A nested container declares its slots with its own context, so no column can hold a column

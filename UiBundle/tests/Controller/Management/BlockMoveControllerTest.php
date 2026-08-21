@@ -110,7 +110,7 @@ class BlockMoveControllerTest extends TestCase
         $blockRepository->method('find')->willReturn(null);
 
         $controller = $this->createController($blockRepository, $this->createStub(BlockOwnerRegistry::class));
-        $response = $controller->move($this->requestWith(['blockId' => '999']));
+        $response = $controller->move($this->requestWith(['id' => '999']));
 
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame('unknown_block', json_decode($response->getContent(), true)['error']);
@@ -125,7 +125,7 @@ class BlockMoveControllerTest extends TestCase
         $ownerRegistry->method('find')->willReturn(null);
 
         $controller = $this->createController($blockRepository, $ownerRegistry);
-        $response = $controller->move($this->requestWith(['blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1']));
+        $response = $controller->move($this->requestWith(['id' => '1', 'ownerType' => 'page', 'ownerId' => '1']));
 
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame('unknown_owner', json_decode($response->getContent(), true)['error']);
@@ -144,7 +144,7 @@ class BlockMoveControllerTest extends TestCase
         $ownerRegistry->method('find')->willReturn($owner);
 
         $controller = $this->createController($blockRepository, $ownerRegistry);
-        $response = $controller->move($this->requestWith(['blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1']));
+        $response = $controller->move($this->requestWith(['id' => '1', 'ownerType' => 'page', 'ownerId' => '1']));
 
         $this->assertSame(403, $response->getStatusCode());
         $this->assertSame('block_not_owned', json_decode($response->getContent(), true)['error']);
@@ -167,7 +167,7 @@ class BlockMoveControllerTest extends TestCase
         $entityManager->expects($this->once())->method('flush');
 
         $controller = $this->createController($blockRepository, $ownerRegistry, null, $relocator, $entityManager);
-        $response = $controller->move($this->requestWith(['blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1']));
+        $response = $controller->move($this->requestWith(['id' => '1', 'ownerType' => 'page', 'ownerId' => '1']));
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertTrue(json_decode($response->getContent(), true)['ok']);
@@ -192,7 +192,7 @@ class BlockMoveControllerTest extends TestCase
 
         $controller = $this->createController($blockRepository, $ownerRegistry, $blockRegistry);
         $response = $controller->move($this->requestWith([
-            'blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'targetBlockId' => '2',
+            'id' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'target' => '2',
         ]));
 
         $this->assertSame(400, $response->getStatusCode());
@@ -221,7 +221,7 @@ class BlockMoveControllerTest extends TestCase
 
         $controller = $this->createController($blockRepository, $ownerRegistry, $blockRegistry);
         $response = $controller->move($this->requestWith([
-            'blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'targetBlockId' => '2',
+            'id' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'target' => '2',
         ]));
 
         $this->assertSame(400, $response->getStatusCode());
@@ -250,7 +250,7 @@ class BlockMoveControllerTest extends TestCase
 
         $controller = $this->createController($blockRepository, $ownerRegistry, $blockRegistry);
         $response = $controller->move($this->requestWith([
-            'blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'targetBlockId' => '2',
+            'id' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'target' => '2',
         ]));
 
         $this->assertSame(400, $response->getStatusCode());
@@ -281,7 +281,7 @@ class BlockMoveControllerTest extends TestCase
 
         $controller = $this->createController($blockRepository, $ownerRegistry, $blockRegistry);
         $response = $controller->move($this->requestWith([
-            'blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'targetBlockId' => '2',
+            'id' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'target' => '2',
         ]));
 
         $this->assertArrayNotHasKey('message', json_decode($response->getContent(), true));
@@ -314,7 +314,7 @@ class BlockMoveControllerTest extends TestCase
 
         $controller = $this->createController($blockRepository, $ownerRegistry, $blockRegistry, $relocator, $entityManager);
         $response = $controller->move($this->requestWith([
-            'blockId' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'targetBlockId' => '2',
+            'id' => '1', 'ownerType' => 'page', 'ownerId' => '1', 'target' => '2',
         ]));
 
         $this->assertSame(200, $response->getStatusCode());

@@ -182,7 +182,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
-[data-block-collection] .ea-form-collection-items {
+[data-ui-sort-group] .ea-form-collection-items {
   min-height: 56px;
   border: 1px dashed transparent;
   border-radius: 6px;

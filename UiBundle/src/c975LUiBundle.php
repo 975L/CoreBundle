@@ -84,6 +84,12 @@ class c975LUiBundle extends AbstractBundle
                     'limit' => 5,
                     'interval' => '10 minutes',
                 ],
+                // The public vote route (see RatingController), declared here for the same reason: it is served by this bundle and no site wires anything for it. Roomier than the form's - correcting a score, then rating the next book, is ordinary browsing, whereas five contact e-mails in ten minutes is not
+                'ui_rating' => [
+                    'policy' => 'sliding_window',
+                    'limit' => 30,
+                    'interval' => '10 minutes',
+                ],
             ],
         ]);
 

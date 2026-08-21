@@ -6,6 +6,16 @@
 
     <p>{{ ('description.config'|trans({}, 'config')) }}</p>
 
+    {# The toggle EasyAdmin draws on its grid, which this screen has to draw itself since it replaces the index page and its global actions. Without it, a group holding only sensitive entries - the payment keys - was reachable only by showing them from another group's listing first #}
+    {% if canShowSensitive|default(false) %}
+        <p>
+            <a class="btn btn-{{ showSensitive|default(false) ? '' : 'outline-' }}warning btn-sm" href="{{ sensitiveToggleUrl }}">
+                <i class="fa fa-eye{{ showSensitive|default(false) ? '-slash' : '' }}"></i>
+                {{ (showSensitive|default(false) ? 'label.hide_sensitive' : 'label.show_sensitive')|trans({}, 'config') }}
+            </a>
+        </p>
+    {% endif %}
+
     {{ include('@c975LConfig/management/_alerts.html.twig', {
         alerts: alerts|default([]),
         title: alertsTitle|default(''),

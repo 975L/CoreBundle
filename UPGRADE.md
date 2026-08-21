@@ -1,5 +1,38 @@
 # UPGRADE
 
+## From `v1.12.5` to `v1.13`
+
+### A Block collection's `data-block-*` attributes are now `data-ui-*`
+
+Reordering is no longer the Blocks' own affair: any sortable collection naming a group exchanges its rows with
+another naming the same one (`assets/js/ea-sortable.js`), and the markers say so. `data-block-collection: '1'`
+becomes `data-ui-sort-group: 'block'` — the group's name, `Service\BlockMoveRowAttrBuilder::GROUP`, no longer a
+flag — `data-block-move-url` / `-csrf-token` / `-failed-label` / `-close-label` and
+`data-block-owner-type` / `-owner-id` become `data-ui-move-url` / `-csrf-token` / `-failed-label` /
+`-close-label` / `-owner-type` / `-owner-id`, and a container's `data-block-container-id` becomes
+`data-ui-move-target`.
+
+**Nothing to do if your `blocks` field takes its `row_attr` from `Service\BlockMoveRowAttrBuilder::build()`**,
+which emits the new names by itself, and nothing to do for a container's `slots`, built by `Form\BlockType`.
+Three things follow for everyone else: a field marking itself by hand has to be renamed or its rows stop being
+droppable; a stylesheet or a script of your own targeting `[data-block-collection]` selects nothing any more
+(this bundle's own drop-zone rule is retargeted at `[data-ui-sort-group]`); and a guided-tour step or a test
+naming one of those attributes has to follow — `c975l/site-bundle` and `c975l/book-bundle` both do, and follow
+in their own releases.
+
+### A rating's scale is the site's, and no longer travels with the vote
+
+`Service\RatingService::vote()` dropped its last argument, `?int $scale`: the score is bounded by
+`ui-rating-scale` and by nothing the caller sends. `Controller\RatingController` no longer reads
+`scale` out of the request body and `assets/js/rating.js` no longer puts it there — the value used to be taken
+as sent, so a forged `{"value": 10, "scale": 10}` stored a 10 on a site rated out of five and the public
+average then read `7.3/5`.
+
+**Nothing to do unless you call `vote()` yourself**, in which case drop the argument. The `scale` prop of
+`<twig:c975LUi:Rating:Rating>` is unchanged and still decides what is *drawn*: a placement showing fewer icons
+than the site's setting (the single-heart "like" on a site rated out of five) works exactly as before, while
+one showing more now stores scores capped to the setting.
+
 ## From `v1.10.3` to `v1.10.4`
 
 ### Sensitive config values are now encrypted with AES-256-GCM

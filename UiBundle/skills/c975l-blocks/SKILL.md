@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote."
 ---
 
 # c975L UiBundle — blocks
@@ -10,7 +10,7 @@ description: "Use this skill when working with page blocks in a Symfony applicat
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `templates/blocks/`, `templates/components/Blocks/`, `config/services.yaml`
+`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `templates/blocks/`, `templates/components/Blocks/`, `config/services.yaml`
 
 **Related skills:** `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-config`, `c975l-management` in ConfigBundle beside it.
 
@@ -150,6 +150,36 @@ the `legal_model` block renders them and the **Legal models** screen customizes 
 section. A site running a shop with no page management needs them just as much. **Do not write legal
 text into a template**, and do not duplicate the models in a satellite bundle.
 
+## Visitor ratings
+
+Anything at all is rated by a visitor, blocks or not — the rated thing is **named**, never related:
+`Entity\Rating` stores an `ownerType`/`ownerId` pair, the same vocabulary `BlockOwnerResolverInterface`
+round-trips, so no bundle maps a collection it never reads.
+
+```twig
+<twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}"/>
+```
+
+`ui_rating(ownerType, ownerId)` returns `{average, count, scale, icon}`, and
+`ui_ratings(ownerType, ids)` one tally per id **in a single query** — what a listing needs to avoid an
+N+1.
+
+- **The icon and the scale are the site's**, two `configs.json` entries of the `general` group:
+  `ui-rating-icon` (`star`, `heart`, `thumbs-up`, `face-smile`) and `ui-rating-scale` (1 to 10). A
+  scale of **1 is a "like"**: the count replaces the average and clicking again takes the vote back.
+- **The scale is read server-side, never off the request** — a forged POST would otherwise store a 10
+  on a site rated out of 5.
+- **One vote each, without a login**: an authenticated visitor is keyed on their account, anyone else
+  on a 32-hex token their own browser mints **on the click** and never before, which is what keeps the
+  widget out of consent territory. Both land in the same `voter` column under one unique constraint.
+- **`POST /rating/{ownerType}/{ownerId}` (`ui_rating_vote`) takes no CSRF token** and answers
+  `no-store`: a token would open a session whose `Set-Cookie` the shared cache would hand to the next
+  visitor. A json body, an `Origin`/`Referer` of this site and the `ui_rating` limiter stand in its
+  place.
+- **Nothing cascades.** Whichever service deletes the rated row *for good* calls
+  `RatingRepository::deleteForOwner()` — on the permanent delete only, never on a trash: a restored
+  entity has to find its notes where it left them.
+
 ## Exporting
 
 `BlockDataExporter` / `BlockDataImporter` are the shared Block/Media serialization behind every content
@@ -171,5 +201,8 @@ them** rather than writing a walk of your own. A content export never carries th
 - **Do not add a field for outside profile urls** to the contact block — contribute them through
   `SameAsProviderInterface`.
 - **Do not make a singleton kind pickable.**
+- **Do not map a relation to `Rating`**, and do not read a rating's scale off the request.
+- **Do not call `RatingRepository::deleteForOwner()` from a trash action** — only from the
+  permanent delete.
 - **Do not add a built-in kind to this bundle from an app** — `c975l:ui:block:create` generates into
   the app's own namespace, which is where a one-off kind belongs.

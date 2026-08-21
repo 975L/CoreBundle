@@ -14,9 +14,11 @@ use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigService;
 use c975L\ConfigBundle\Service\VaultEncryptor;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -55,6 +57,17 @@ class ConfigServiceTest extends TestCase
         return $repository;
     }
 
+    // Builds a ConfigRepository double whose read fails the way an unmigrated schema does
+    private function createFailingConfigRepository(): ConfigRepository
+    {
+        $repository = $this->createStub(ConfigRepository::class);
+        $unreadable = new class ('Unknown column') extends \RuntimeException implements DBALException {
+        };
+        $repository->method('findAll')->willThrowException($unreadable);
+
+        return $repository;
+    }
+
     // Builds a CacheInterface double that always invokes the callback (a permanent cache miss), since ConfigService already memoizes the result in memory and the cache backend itself isn't under test
     private function createCache(): CacheInterface
     {
@@ -75,6 +88,7 @@ class ConfigServiceTest extends TestCase
         ?CacheInterface $cache = null,
         ?ParameterBagInterface $params = null,
         ?VaultEncryptor $vaultEncryptor = null,
+        ?LoggerInterface $logger = null,
     ): ConfigService {
         return new ConfigService(
             $repository,
@@ -82,6 +96,7 @@ class ConfigServiceTest extends TestCase
             $params ?? $this->createStub(ParameterBagInterface::class),
             $this->createStub(EntityManagerInterface::class),
             $vaultEncryptor ?? new VaultEncryptor(null),
+            $logger,
         );
     }
 
@@ -215,6 +230,42 @@ class ConfigServiceTest extends TestCase
         $service = $this->createService($repository);
 
         $this->assertSame('ROLE_MANAGER', $service->get('site-role-admin'));
+    }
+
+    // A schema predating the current entity answers nothing readable, and loadAll() runs on every console command through TimezoneListener - so the very commands that would migrate that schema could no longer boot
+    public function testLoadAllLeavesTheConfigurationEmptyWhenTheDatabaseCannotBeRead(): void
+    {
+        $repository = $this->createFailingConfigRepository();
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('error')
+            ->with('Configuration left empty, the database could not be read', $this->anything());
+
+        $service = $this->createService($repository, logger: $logger);
+
+        $this->assertSame(['site-role-admin' => 'ROLE_ADMIN'], $service->loadAll());
+    }
+
+    // Neither memoized nor cached, so the run that finally migrates the schema sees the real values
+    public function testLoadAllRetriesAfterAnUnreadableDatabase(): void
+    {
+        $configs = [$this->createConfig('site-name', 'My Site')];
+        $attempt = 0;
+
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findAll')->willReturnCallback(function () use ($configs, &$attempt) {
+            if (0 === $attempt++) {
+                throw new class ('Unknown column') extends \RuntimeException implements DBALException {
+                };
+            }
+
+            return $configs;
+        });
+
+        $service = $this->createService($repository);
+
+        $this->assertSame(['site-role-admin' => 'ROLE_ADMIN'], $service->loadAll());
+        $this->assertSame('My Site', $service->get('site-name'));
     }
 
     public function testLoadAllIsMemoizedAndDoesNotQueryRepositoryTwice(): void

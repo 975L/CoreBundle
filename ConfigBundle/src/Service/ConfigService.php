@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Service;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -93,6 +94,21 @@ class ConfigService implements ConfigServiceInterface
             return $this->configs;
         }
 
+        // A database whose schema predates the current entity (a site being migrated from an older base, whose site_config has yet to gain the columns Config now maps) answers nothing readable, and this runs on every console command through TimezoneListener - so the very commands that would migrate that schema could no longer boot. The configuration is left empty for this call instead, exactly as an empty table would leave it, and the failure goes to the log. Deliberately not memoized in $this->configs nor written to the cache: the next call retries, and the run that finally migrates the schema sees the real values
+        try {
+            return $this->loadAllFromDatabase();
+        } catch (DBALException $exception) {
+            $this->logger?->error('Configuration left empty, the database could not be read', [
+                'reason' => $exception->getMessage(),
+            ]);
+
+            return ['site-role-admin' => 'ROLE_ADMIN'];
+        }
+    }
+
+    // Reads every config row through the cache, the one place the database is actually hit
+    private function loadAllFromDatabase(): array
+    {
         // $this->invalidateCache(); // For debug
         $this->configs = $this->cache->get(self::CACHE_KEY, function (ItemInterface $item): array {
             $item->expiresAfter(null);

@@ -1,6 +1,6 @@
 ---
 name: c975l-config
-description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, the closed group list, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, site-maintenance, .env, parameters.yaml, TreeBuilder."
+description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, the closed group list, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, .env, parameters.yaml, TreeBuilder."
 ---
 
 # c975L ConfigBundle — configuration
@@ -51,7 +51,10 @@ encrypting `sensitive` values. That is infrastructure, not an application settin
 - **`group`** — a **closed list**: `system`, `general`, `legal`, `credits`, `analytics`, `backup`,
   `email`, `form`, `security`, `shop`, `payment`, `theme`, `ai`, `messenger`. **If none fits, leave
   `group` unset** — inventing one means extending `Config::GROUPS` and its translations here.
-- **`sensitive: true`** for any secret: encrypted at rest, masked in the list.
+- **`sensitive: true`** for any secret: encrypted at rest, masked in the list. One holding a value the
+  site can no longer decrypt is raised as a **danger alert** of its own (`ConfigAlertProvider`, off
+  `ConfigRepository::findSensitiveWithValue()`): everything reading it gets an empty value while the
+  entry still shows as filled, so nothing else says the site is running without it.
 - **`restricted: true`** on top, for a secret shared by the whole install: the entry disappears
   entirely — index, edit form and every export — for anyone without `ROLE_SUPER_ADMIN`.
 - **`severity`** — `danger`, `warning`, `info`: as long as `value` is empty, the entry is listed as a

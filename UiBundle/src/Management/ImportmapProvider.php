@@ -36,6 +36,10 @@ class ImportmapProvider implements ImportmapProviderInterface
                 'path' => 'assets/controllers.js',
                 'entrypoint' => true,
             ],
+            // No entrypoint, same as pointer-sort.js above: imported by name from another bundle's front controller, PaymentBundle's basket handlers borrowing the language reading and the translation this one holds rather than copying them
+            '@c975l/ui-bundle/handlers.js' => [
+                'path' => 'assets/js/handlers.js',
+            ],
         ];
     }
 }

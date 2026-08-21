@@ -6,8 +6,8 @@
  * with this source code in the file LICENSE.
  */
 
-// Visible drop zone: an empty EasyAdmin collection has no size of its own to aim a drag at
-[data-block-collection] .ea-form-collection-items {
+// Visible drop zone: an empty EasyAdmin collection has no size of its own to aim a drag at. Aimed at the sorting group a collection names (BlockMoveRowAttrBuilder, BlockType::addSlotsSubForm()), which is what marks a collection rows can be dropped into
+[data-ui-sort-group] .ea-form-collection-items {
     min-height: 56px;
     border: 1px dashed transparent;
     border-radius: 6px;

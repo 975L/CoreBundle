@@ -1,0 +1,22 @@
+{# Static usage: <twig:c975LUi:Text:Toc entries="{{ [{anchor: 'summary', label: 'Summary'}] }}" [id=""] [label=""] [class=""] /> #}
+{# A page's own summary of anchors: chips scrolling sideways under the header on a phone, a column standing beside the text from the desktop breakpoint on (see sass/_toc.scss) #}
+{# The entries are the caller's - what actually rendered on that page - so an anchor is never offered for a section the page left out #}
+{% props
+    entries = [],
+    id = "",
+    label = "",
+    class = ""
+%}
+{% if entries|length %}
+    {# aria-label rather than a visible heading: the list is the navigation, and a title above it would take the height the sticky bar is measured on #}
+    <nav class="toc {{ class }}"{% if id %} id="{{ id }}"{% endif %} data-controller="toc" aria-label="{{ label|default('label.toc'|trans({}, 'ui')) }}">
+        <ul class="toc-list">
+            {% for entry in entries %}
+                <li class="toc-item">
+                    {# The path is repeated before the fragment on purpose: SiteBundle's layout writes a <base href="…/">, and a bare "#anchor" resolves against that base rather than against the page - every entry then leading to the home page #}
+                    <a class="toc-link" href="{{ app.request.requestUri }}#{{ entry.anchor }}" data-toc-target="link" data-toc-anchor="{{ entry.anchor }}">{{ entry.label }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endif %}

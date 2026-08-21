@@ -18,11 +18,15 @@ const LAZY_CONTROLLERS = {
     flipCard: () => import('./js/flip-card.js'),
     heroVideo: () => import('./js/hero-video.js'),
     imageCompare: () => import('./js/image-compare.js'),
+    infiniteScroll: () => import('./js/infinite-scroll.js'),
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
     matomo: () => import('./js/matomo.js'),
     password: () => import('./js/password.js'),
     readmore: () => import('./js/readmore.js'),
     slider: () => import('./js/slider.js'),
+    toc: () => import('./js/toc.js'),
+    // Kebab-case identifier, same reason as cookie-consent above: every "data-ui-rating-*-value" binding is derived from it
+    'ui-rating': () => import('./js/rating.js'),
     videoIframe: () => import('./js/video-iframe.js'),
 };
 

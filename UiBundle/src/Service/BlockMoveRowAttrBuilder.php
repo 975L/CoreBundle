@@ -20,6 +20,9 @@ class BlockMoveRowAttrBuilder
 {
     public const ROUTE = 'management_ui_block_move';
 
+    // The sorting group of the Block collections: two collections naming the same group exchange their rows
+    public const string GROUP = 'block';
+
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
@@ -41,14 +44,15 @@ class BlockMoveRowAttrBuilder
         }
 
         return [
-            'data-block-collection' => '1',
-            'data-block-owner-type' => $ownerType,
-            'data-block-owner-id' => $ownerId,
-            'data-block-move-url' => $url,
-            'data-block-move-csrf-token' => $this->csrfTokenManager->getToken(self::ROUTE)->getValue(),
-            'data-block-move-failed-label' => $this->translator->trans('flash.block_move_failed', [], 'ui'),
+            // The Blocks are one sorting group among others now (see assets/js/ea-sortable.js): two collections naming the same group exchange rows, and each group names the endpoint that moves one
+            'data-ui-sort-group' => self::GROUP,
+            'data-ui-move-owner-type' => $ownerType,
+            'data-ui-move-owner-id' => $ownerId,
+            'data-ui-move-url' => $url,
+            'data-ui-move-csrf-token' => $this->csrfTokenManager->getToken(self::ROUTE)->getValue(),
+            'data-ui-move-failed-label' => $this->translator->trans('flash.block_move_failed', [], 'ui'),
             // The failure is shown in a modal of the sortable's own (see admin-modal.js), which has no other way to label its dismiss button
-            'data-block-move-close-label' => $this->translator->trans('action.close', [], 'ui'),
+            'data-ui-move-close-label' => $this->translator->trans('action.close', [], 'ui'),
         ];
     }
 }

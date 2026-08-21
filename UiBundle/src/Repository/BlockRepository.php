@@ -39,4 +39,44 @@ class BlockRepository extends ServiceEntityRepository
     {
         return $this->findBy(['kind' => $kind], ['id' => 'ASC']);
     }
+
+    // Initializes the nested blocks of a whole tree, and their medias, in one query per level of depth - what every owner of blocks (a Page, a Menu) calls right after reading them
+    // A container's slots are a lazy collection, so a render walking the tree (the templates themselves, BlockCacheTagResolver, MenuExtension) reads one query per block otherwise, the leaves included: a collection nobody joined is queried to be found empty. Joining one level in the owner's own query only moves the problem one step down, a slot's slots being lazy in their turn
+    /** @param iterable<Block> $blocks */
+    public function preloadSlots(iterable $blocks): void
+    {
+        $ids = [];
+        foreach ($blocks as $block) {
+            $ids[] = $block->getId();
+        }
+
+        // Ends on the level that has no slots at all, its own collections having just been initialized empty by the query that looked for them. Blocks already visited are dropped on the way, so a row somehow made its own ancestor loops nowhere
+        $visited = [];
+        while ([] !== $ids) {
+            $ids = array_values(array_diff(array_unique($ids), $visited));
+            if ([] === $ids) {
+                return;
+            }
+
+            $visited = array_merge($visited, $ids);
+
+            // Fetch-joined on rows the entity manager already holds: this is what marks their slots initialized, hydrating the next level with its medias at the same time
+            $level = $this->createQueryBuilder('b')
+                ->select('b, s, sm')
+                ->leftJoin('b.slots', 's')
+                ->leftJoin('s.medias', 'sm')
+                ->andWhere('b.id IN (:ids)')
+                ->setParameter('ids', $ids)
+                ->getQuery()
+                ->getResult()
+            ;
+
+            $ids = [];
+            foreach ($level as $block) {
+                foreach ($block->getSlots() as $slot) {
+                    $ids[] = $slot->getId();
+                }
+            }
+        }
+    }
 }

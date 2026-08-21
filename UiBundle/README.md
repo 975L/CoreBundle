@@ -29,6 +29,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails) · [upload progress](#showing-the-progress-of-a-form-that-posts-files)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [no inline styles](#no-inline-styles) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
+- **Visitors** — [ratings](#visitor-ratings)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections) · [confirming a title change that rewrites a slug](#confirming-a-title-change-that-rewrites-a-slug)
 - **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [deleting an entity in two steps](#deleting-an-entity-in-two-steps) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
@@ -53,10 +54,11 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - A `card` and a `flip_card` are sized by the count they make to the row — six compact, three by default, two big — each step read off the page measure rather than written as a width
 - Extensible: register your own block kinds via a service tag
 - Automatic CSS injection: bundles declare their stylesheets via a service tag, rendered by `bundle_stylesheets()` in Twig
-- Reusable drag-and-drop sortable script for any EasyAdmin `CollectionField`, plus the touch-capable drag gesture behind it (`assets/js/pointer-sort.js`) on its own, for a bundle sorting something that isn't a collection field
+- Reusable drag-and-drop sortable scripts for any EasyAdmin `CollectionField` and for the rows of any EasyAdmin index, plus the touch-capable drag gesture behind them (`assets/js/pointer-sort.js`) on its own, for a bundle sorting something that is neither
 - Font-family provider contract (`FontProviderInterface`/`FontRegistry`) plus a generic `FontChoiceType` select, reused by ConfigBundle's font-kind config fields
 - Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private downloads (`PrivateFileResponseFactory`)
 - Shared plumbing every satellite bundle needs without needing SiteBundle: unique slugs, block edit URLs, sortable row attributes, generated-stylesheet writing, Vich upload options, block cache invalidation, block export/import
+- Visitor ratings for anything at all - a book, a photo, an article - one widget, one table, no mapping on the rated entity, and a scale of 1 turning the whole thing into a "like"
 - Generic Twig helpers (`nl2br`, `linkify`, `route_exists`, `template_exists`, `asset_exists`)
 - Layout invariants checked without a browser (`Testing\StylesheetCascade`, shipped for the bundles depending on this one), plus `c975l:ui:layout-audit` for what only a rendered page shows
 
@@ -93,9 +95,11 @@ php bin/console doctrine:migrations:migrate
 
 `controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, `title-confirm`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
 
-Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `heroVideo`, `imageCompare`, `password`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
+Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `heroVideo`, `imageCompare`, `infiniteScroll`, `password`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
 
-The `confetti` controller loads its `canvas-confetti` library from the copy vendored in this bundle (`public/js/confetti.browser.min.js`) rather than from a CDN. Point it elsewhere with `data-confetti-script-value="/your/own/path.js"` on the same element.
+The `confetti` controller loads its `canvas-confetti` library from the copy vendored in this bundle (`public/js/confetti.browser.min.js`) rather than from a CDN. Point it elsewhere with `data-confetti-script-value="/your/own/path.js"` on the same element. It fires as soon as it connects, `document.readyState` being what it goes by rather than a `DOMContentLoaded` a lazily-imported controller has already missed, and a visitor asking for `prefers-reduced-motion: reduce` gets nothing — not even the library's download.
+
+The `infiniteScroll` controller grows a paginated listing as the visitor scrolls, with no route and no partial template of its own: it fetches the page the listing's own "next" link points to, appends the items found there, and reads that page's own link to know where to go next - or that there is nowhere left. A template opts in with `data-controller="infiniteScroll"` around the whole thing, `data-infiniteScroll-target="list"` on the element holding the items, and `data-infiniteScroll-target="next"` plus `data-action="click->infiniteScroll#load"` on the link to the next page; an optional `data-infiniteScroll-target="count"` is filled with the number of items loaded. Nothing is hidden by any of it: without javascript, and for a crawler, that link is the ordinary link to the next page it looks like, and a failed fetch leaves it clickable. ShopBundle's shop index is the first listing to use it.
 
 The `videoIframe` controller never injects its iframe before consent has been given, and then only once the element nears the viewport. It looks for a consent banner registered as either `cookie-consent` (what this bundle's `<twig:c975LUi:Cookie:Consent />` writes) or `cookieConsent`; with no banner in the page at all it treats the content as unrestricted and loads it on approach.
 
@@ -132,7 +136,7 @@ Blocks are managed through EasyAdmin at `/management`, provided by `c975l/config
 
 That's it — `eaSortable`, `block`, and Trix are then available on every `/management` page.
 
-Any `/management` form can also be opened straight on one of its fields by adding a `focusField=<property>` query param to its URL — the `fieldFocus` controller opens that field's own tab, scrolls to it and focuses it, instead of dropping the user at the top of a form holding dozens of fields. SiteBundle's page health check advice links this way.
+Any `/management` form can also be opened straight on one of its fields by adding a `focusField=<property>` query param to its URL — the `fieldFocus` controller opens that field's own tab, scrolls to it and focuses it, instead of dropping the user at the top of a form holding dozens of fields. SiteBundle's page health check advice links this way, BookBundle's display pages from the pencil hovering each of their sections. A `CollectionField` prints neither name nor id of its own — EasyAdmin renders its label as a `<legend>` — so it is reached through the entries it holds, or through its prototype when it holds none.
 
 ---
 
@@ -292,6 +296,25 @@ Two things differ from the mouse, both deliberate:
 
 Dragging a saved block into a container is persisted server-side (`BlockMoveController`, the form would otherwise re-create the block and lose its media), so a drop can be refused: a kind that container doesn't take, a target belonging to another entity. The row goes back where it was picked up and the reason is shown in a Bootstrap modal (`assets/js/admin-modal.js`, exporting **`showAdminMessage(title, message, closeLabel)`** for any admin script needing to say something), not in a native `alert()`. The refusal an editor can act on — the moved kind isn't allowed in that container — carries its own translated message; anything else stays a plain "the move failed". EasyAdmin's own `#modal-action-confirmation` is deliberately not borrowed for this: its button keeps whatever handler the last opened action attached to it, so a click meant to dismiss a message could run a delete.
 
+### Reordering the rows of an index
+
+`assets/js/ea-sortable.js` handles a `CollectionField`, whose new order the surrounding form carries. An entity living as index rows has no such form, so `assets/js/ea-index-sort.js` persists the drop on its own. It is registered and mounted on `<body>` by `@c975l/ui-bundle/controllers-admin.js` like the rest, and stays a no-op until a CRUD opts in from its own `entity_row_attributes` block:
+
+```twig
+{% block entity_row_attributes %}
+    data-reorder-url="{{ ea_url().setAction('reorder') }}"
+    data-reorder-token="{{ csrf_token('my_entity_reorder') }}"
+{% endblock %}
+```
+
+| Attribute | Role |
+| --- | --- |
+| `data-reorder-url` | Where the new order is POSTed. Its absence is what leaves an index alone |
+| `data-reorder-token` | CSRF token, checked by the action |
+| `data-reorder-group` | Optional: scopes a drag to the rows sharing it, for an index holding several sortable sets. Left out otherwise |
+
+The grip is prepended to the `position` cell, so the field has to be visible on the index — the rest of the row keeps working normally, EasyAdmin's own row action still opening the edit page on a plain click. The request body is `{group, ids, _token}`, `ids` being the ids in their new display order, and the action answers `{positions: {id: position}}` — what it actually persisted, which the browser cannot deduce on a paginated index reordering one slice of a table. SiteBundle's `CollectionItemCrudController` (one group at a time, renumbered from 0) and ShopBundle's `ProductCrudController` (unfiltered and paginated, the dropped rows taking back their own slots among the whole catalogue) are the two worked examples.
+
 ### Reusing the gesture elsewhere
 
 `assets/js/pointer-sort.js` is the gesture layer on its own, and knows nothing about EasyAdmin: it exports **`addSortGesture(zone, options)`**, which arms `zone` as a place a drag can start from and hands the caller back four hooks. Where a dragged element should land, and what to do once it has, stay entirely with the caller — the shapes differ too much between a vertical list of rows, a wrapping grid of thumbnails and a table for a single answer to fit all three.
@@ -323,7 +346,7 @@ this.itemTargets.forEach(tile => addSortGesture(tile, {
 
 The `@c975l/ui-bundle/…` specifier is reachable from any bundle requiring `c975l/core-bundle` — the importmap entry is contributed automatically, same as the two controller entrypoints above. This is one of the few things worth importing across bundles rather than copying: a hand-rolled drag is where the touch support, the edge scrolling and the click suppression get quietly left out.
 
-The module adds `.ui-dragging` to the dragged element and swallows the click a drag would otherwise leave behind; everything else — the highlight, the drop styling, the persistence — is the caller's. `assets/js/ea-sortable.js` is the worked example, cross-collection moves included.
+The module adds `.ui-dragging` to the dragged element and swallows the click a drag would otherwise leave behind; everything else — the highlight, the drop styling, the persistence — is the caller's. `assets/js/ea-sortable.js` is the worked example, cross-collection moves included, and `assets/js/ea-index-sort.js` the shorter one. Both mark their handle with the grip `assets/js/sort-icon.js` exports.
 
 ---
 
@@ -510,6 +533,14 @@ It is written that way round on purpose - link visible in the markup, hidden aft
 
 The measure is redone on every resize of the text box (`ResizeObserver`) and once web fonts have landed, both of which change how many lines the text takes. While the text is open the measure is skipped: the box then holds all of it, and reading that as "complete" would take the link away with no way back. `ReadmoreStyleTest` locks the rule in the compiled stylesheets.
 
+#### Summary of a page's anchors
+
+`<twig:c975LUi:Text:Toc entries="{{ [{anchor: 'resume', label: 'Résumé'}] }}" />` renders a page's own summary. The entries are the caller's - what actually rendered on that page - so an anchor is never offered for a section the page left out, and an empty list renders nothing at all.
+
+Mobile first: a bar of chips coming to rest under the header (`--toc-sticky-top`, which follows `--scroll-offset`) and scrolling sideways, so nine sections cost one line rather than nine. From `1200px` on, the same list becomes a `--toc-column-width` column standing beside the text, the entry being read marked by a `--toc-marker-width` rule in the margin instead of a filled chip.
+
+Each section the summary points at wears `toc-target`, which is what leaves `--toc-height` of room above it so the resting bar does not cover its title after a jump. That room is the stylesheet's alone: a nonced `style-src` drops any rule a script writes onto an element, so `toc.js` measures nothing. All it adds is the one thing no selector can ask - which section the reader is in - through an `IntersectionObserver` on a band across the upper third of the screen, marking the first section crossing it in the page's own order with `toc-link--current` and `aria-current`. Without a line of JS the summary is still a working list of links.
+
 Nothing is folded that fits: a short text renders as plain body copy with no link under it, so the component can be dropped on a field whose length isn't known - a description, a lore, an editor's paragraph - without a caller having to count its characters first.
 
 ---
@@ -552,8 +583,8 @@ Reordering (drag-and-drop, `assets/js/ea-sortable.js`) only ever rearranges rows
 
 Dragging an already-saved Block onto a *different* Block-collection field (another container's slots, or back out to top-level) instead persists the move immediately, via `BlockMoveController`/`BlockRelocator`, bypassing the open edit form entirely:
 
-- Both fields (the drag's origin and destination) must carry `row_attr`'s `data-block-collection: '1'` marker for the cross-field drop to be offered at all - every other sortable collection in this bundle (medias, form fields, email blocks...) is untouched. `BlockType::addSlotsSubForm()` already marks a container's own `slots` field this way (only once the container itself has an id - a not-yet-saved container can't be a move destination yet).
-- Your own `HasBlocksInterface` owner's top-level `blocks` field needs the same marker plus `data-block-owner-type`/`data-block-owner-id` (a short type string of your choosing, e.g. `"page"`) and a `BlockOwnerResolverInterface` implementation resolving that type back to your entity - see `c975L\SiteBundle\Management\SiteBlockOwnerResolver`/`Controller\Management\PageCrudController`'s own "blocks" field for a full example, auto-discovered the same way as `MediaUsageProviderInterface` (no tag needed, see `BlockOwnerResolverPass`).
+- Both fields (the drag's origin and destination) must carry `row_attr`'s `data-ui-sort-group: 'block'` marker (`BlockMoveRowAttrBuilder::GROUP`) for the cross-field drop to be offered at all - every other sortable collection in this bundle (medias, form fields, email blocks...) is untouched. `BlockType::addSlotsSubForm()` already marks a container's own `slots` field this way (only once the container itself has an id - a not-yet-saved container can't be a move destination yet).
+- Your own `HasBlocksInterface` owner's top-level `blocks` field needs the same marker plus `data-ui-move-owner-type`/`data-ui-move-owner-id` (a short type string of your choosing, e.g. `"page"`) and a `BlockOwnerResolverInterface` implementation resolving that type back to your entity - see `c975L\SiteBundle\Management\SiteBlockOwnerResolver`/`Controller\Management\PageCrudController`'s own "blocks" field for a full example, auto-discovered the same way as `MediaUsageProviderInterface` (no tag needed, see `BlockOwnerResolverPass`).
 - The move itself never crosses two different owners (a Page's blocks can only move within that same Page) - `BlockMoveController` re-verifies ownership server-side regardless of what the client sends.
 
 The same move works at the finger, from the row's move handle (see [At the finger](#at-the-finger)). The outline every eligible destination gets while a block is held matters more there than at the mouse: an empty `slots` field has no size of its own to aim at, and a finger covers what it is aiming for.
@@ -770,6 +801,33 @@ The band's own ink is `var(--card-accent-color, #fff)`, that fallback being a st
 ```
 
 Another kind offers the same picker with one line, `->add('accent', BlockAccentChoiceType::class)`, plus its own `--accent-<hue>` rules and the matching list in its template.
+
+---
+
+## The icon a button carries
+
+An icon is an `<img>`, so it paints the black fill of its own SVG file instead of taking the color the label beside it is written in. Every template placing one on a button used to state that color itself — `class="white"`, hardcoded in ShopBundle, PaymentBundle, CrowdfundingBundle and this bundle's own `Button` component — which held only as long as buttons were written white. A site pointing `--button-color` at a dark ink got a dark label and a white icon on the same button.
+
+`.btn .icon` paints it instead, with the same technique as the card header's: `brightness(0)` flattens the file to black, and the inversion after is what turns that black white.
+
+```css
+.btn .icon {
+    filter: brightness(0) invert(var(--button-icon-invert, 1));
+}
+```
+
+The value is `1` where the button's label is written white and `0` where it is written dark, so a site writing a dark ink on its buttons carries `--button-icon-invert` along with it — the same pair as `--card-accent-color` / `--card-accent-invert` above:
+
+```css
+:root, [data-theme] {
+    --button-color: var(--background);
+    --button-icon-invert: 0;
+}
+```
+
+The secondary button is the one variant whose label is dark by default (`--button-secondary-color: #000`), and it swaps the value the rule reads rather than restating the filter: `.btn.btn-secondary { --button-icon-invert: var(--button-secondary-icon-invert, 0); }`. A site writing that variant white sets `--button-secondary-icon-invert: 1`.
+
+A `class="white"` left on such an icon is now dead weight rather than a bug — `.btn .icon` outweighs `img.white` — but it says something the button no longer asks the markup to say.
 
 ---
 
@@ -1020,6 +1078,35 @@ $builder->add('captcha', CaptchaType::class, [
     'action_name' => 'contact',
 ]);
 ```
+
+---
+
+## Visitor ratings
+
+A visitor scores something and sees what everyone else scored. The thing rated is **named, not related**: `Entity\Rating` carries an `ownerType` string and an `ownerId`, the same vocabulary `Contract\BlockOwnerResolverInterface` already round-trips. So a bundle gets ratings without mapping a collection on its entity, and this bundle never hears about the entity - a catalog card can print the average with a plain query, which a rating hung off a block could not.
+
+Drop the widget where the score belongs:
+
+```twig
+<twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}"/>
+```
+
+`scale` and `icon` may be passed to override the site's own settings for one placement — for what is *drawn*: a vote is recorded against `ui-rating-scale` whatever the placement shows, the scale never travelling in the request. So a placement asking for more icons than the site is rated out of stores scores capped to the setting, where one asking for fewer (the single-heart "like" on a site rated out of five) works as it reads. To print a tally without offering a vote, `<twig:c975LUi:Progress:Rating value="4"/>` is the read-only row the widget is built on.
+
+**What the site chooses** — two `config/configs.json` entries, both in the *general* group:
+
+| Slug | What it does |
+|---|---|
+| `ui-rating-icon` | `star`, `heart`, `thumbs-up` or `face-smile` — the glyph the whole scale is drawn with (`sass/_rating.scss` masks each one) |
+| `ui-rating-scale` | 1 to 10. **1 turns the rating into a "like"**: one icon, clicking it again takes the vote back, and the tally prints how many voted instead of an average |
+
+**One vote each, without a login.** An authenticated visitor is keyed on their account (`u<id>`), so their vote follows them to another browser and cannot be renewed. Anyone else is keyed on a random 32-hex token their own browser mints **on the click** and keeps in `localStorage` — best-effort by construction (clearing the browser's storage buys another vote) but it needs no cookie banner, nothing being stored for someone who merely reads the page, and no address of theirs is kept anywhere. Both end up in the same `voter` column, under one unique constraint on `(owner_type, owner_id, voter)`.
+
+**Why the vote goes through its own route.** The rated page is usually cached and shared (a book's is public for an hour), so nothing about the visitor's own vote may travel in its HTML: the server renders the average, `assets/js/rating.js` paints their own score over it from their browser, and `POST /rating/{ownerType}/{ownerId}` answers `no-store`. That route takes **no CSRF token** — a token would make the server open a session, and a `Set-Cookie` is exactly what the shared cache would keep and hand to the next visitor. In its place: a JSON body (which sends any cross-origin caller through a CORS preflight nothing answers), an `Origin`/`Referer` that is this site's own, and the `ui_rating` rate limiter this bundle prepends for you.
+
+**Reading the tallies yourself** — `ui_rating(ownerType, ownerId)` returns `{average, count, scale, icon}`, and `ui_ratings(ownerType, ids)` returns one tally per id **in a single query**, which is what a listing needs to avoid an N+1.
+
+**Cleaning up after a deletion.** `ownerType` is a name and not a relation, so nothing cascades. Whichever service deletes the rated row for good calls `RatingRepository::deleteForOwner('book', $id)` — on the permanent delete only, never when the row is merely trashed: a restored book must find its notes where it left them (see BookBundle's `BookTrashManager`).
 
 ---
 
@@ -1394,7 +1481,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Alert:Alert>` | Bootstrap-style alert box |
 | `<twig:c975LUi:Article:Article>` | Single article (title/content/media) |
 | `<twig:c975LUi:Article:Articles>` | Loops `Article` over a collection |
-| `<twig:c975LUi:Audio:Audio>` | HTML5 audio player |
+| `<twig:c975LUi:Audio:Audio>` | HTML5 audio player, `sticky="true"` making it a bar resting against the bottom of the screen |
 | `<twig:c975LUi:Blocks:Block>` | Renders one `Block` entity via its registered kind template |
 | `<twig:c975LUi:Blocks:Blocks>` | Loops `Block` over a collection, auto-wraps consecutive `card` blocks in a `.cards` flex row |
 | `<twig:c975LUi:Button:Button>` | Styled button/link |
@@ -1421,6 +1508,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Text:Hook>` | Lead-in paragraph, set apart from the text it introduces |
 | `<twig:c975LUi:Text:Readmore>` | Collapsible "read more" text block |
 | `<twig:c975LUi:Text:Section>` | Text section with optional image |
+| `<twig:c975LUi:Text:Toc>` | Summary of a page's anchors, sticky bar then column |
 | `<twig:c975LUi:Video:Iframe>` | Embedded video iframe (YouTube etc.) |
 | `<twig:c975LUi:Video:Video>` | HTML5 video player |
 
@@ -1760,6 +1848,8 @@ as plain text, same as today.
 ### Video and audio blocks: driven by the uploaded file
 
 The `video` and `audio` kinds carry no file path and no format field of their own: both are read back from the uploaded `Media` (its stored `mimeType`). `video` accepts `video/mp4,video/webm,video/ogg` plus an optional `image/*` used as the player's cover, told apart by mimetype in `blocks/Video.html.twig`; `audio` accepts `audio/mpeg,audio/ogg,audio/wav`. `VideoType` keeps only the player's own display fields — `options` (`autoplay`/`muted`/`loop`) plus the same `title`/`description`/`width`/`height`/`class` as `VideoIframeType`, and `AudioType` the same `title`/`description`/`class` (no `width`/`height`, an `<audio>` element has no such attributes). All three kinds render the same `<figure>` / `<h3 …-title>` / `<figcaption …-description>` structure, on a `video-`, `video-iframe-` or `audio-` class prefix sharing one set of sass rules (see `sass/_images.scss`).
+
+`<twig:c975LUi:Audio:Audio>` takes one more prop the `audio` block does not offer: `sticky="true"`, which adds `audio-figure--sticky` and makes the player come to rest against the bottom of the screen, following the reader down a long page the way `.toc` rests against its top. It is `position: sticky` and not `fixed`, so the player takes its own room at the end of the flow and hides nothing under it — which is also why it has to be a **direct child of the column it accompanies**: a sticky element never leaves its own containing block, and one nested in a card would stick to that card's few hundred pixels. The ground it writes on is `--audio-sticky-background`, which cannot be transparent.
 
 > **Breaking:** blocks of these kinds saved before this change stored a raw `src`/`type` (and `poster`) in their data with no media attached, and render nothing now. Re-upload the file on each one — there is no automatic migration.
 

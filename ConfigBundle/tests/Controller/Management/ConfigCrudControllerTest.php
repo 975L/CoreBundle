@@ -275,6 +275,115 @@ class ConfigCrudControllerTest extends TestCase
         $this->assertSame('<html>groups</html>', $response->getContent());
     }
 
+    // The grid's own "show sensitive data" toggle is a global action of the index page, which this screen replaces - so the screen draws its own
+    public function testIndexPassesTheSensitiveToggleToTheGroupsScreen(): void
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn(true);
+
+        $configRepository = $this->createStub(ConfigRepository::class);
+        $configRepository->method('countsByGroup')->willReturn(['general' => 3]);
+
+        $controller = $this->createController(
+            security: $security,
+            configRepository: $configRepository,
+            requestStack: new RequestStack([new Request()]),
+            adminUrlGenerator: $this->createParameterEchoingAdminUrlGenerator(),
+        );
+
+        $parameters = $this->renderGroupsScreen($controller);
+
+        $this->assertFalse($parameters['showSensitive']);
+        $this->assertTrue($parameters['canShowSensitive']);
+        $this->assertStringContainsString('showSensitive=1', $parameters['sensitiveToggleUrl']);
+    }
+
+    // Showing them already, the same link takes them away again
+    public function testIndexTurnsTheSensitiveToggleOffOnceItIsOn(): void
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn(true);
+
+        $configRepository = $this->createStub(ConfigRepository::class);
+        $configRepository->method('countsByGroup')->willReturn(['general' => 3]);
+
+        $controller = $this->createController(
+            security: $security,
+            configRepository: $configRepository,
+            requestStack: new RequestStack([new Request(['showSensitive' => '1'])]),
+            adminUrlGenerator: $this->createParameterEchoingAdminUrlGenerator(),
+        );
+
+        $parameters = $this->renderGroupsScreen($controller);
+
+        $this->assertTrue($parameters['showSensitive']);
+        $this->assertStringNotContainsString('showSensitive', $parameters['sensitiveToggleUrl']);
+    }
+
+    // Nothing below the Config permission gets the button at all
+    public function testTheSensitiveToggleIsWithheldFromAViewerWithoutThePermission(): void
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn(false);
+
+        $configRepository = $this->createStub(ConfigRepository::class);
+        $configRepository->method('countsByGroup')->willReturn(['general' => 3]);
+
+        $controller = $this->createController(
+            security: $security,
+            configRepository: $configRepository,
+            requestStack: new RequestStack([new Request()]),
+            adminUrlGenerator: $this->createParameterEchoingAdminUrlGenerator(),
+        );
+
+        $this->assertFalse($this->renderGroupsScreen($controller)['canShowSensitive']);
+    }
+
+    // Renders the "pick a group" screen through a Twig double and hands back the parameters it was given
+    private function renderGroupsScreen(ConfigCrudController $controller): array
+    {
+        $captured = [];
+
+        $twig = $this->createStub(\Twig\Environment::class);
+        $twig->method('render')->willReturnCallback(
+            static function (string $template, array $parameters) use (&$captured): string {
+                $captured = $parameters;
+
+                return '<html>groups</html>';
+            }
+        );
+
+        $controller->setContainer($this->createContainer(['twig' => $twig]));
+        $controller->index(AdminContext::forTesting());
+
+        return $captured;
+    }
+
+    // Same generator as above, its url generator echoing the parameters back so a link setting or unsetting one can be read
+    private function createParameterEchoingAdminUrlGenerator(): AdminUrlGenerator
+    {
+        $adminControllers = $this->createStub(AdminControllerRegistryInterface::class);
+        $adminControllers->method('getDashboardCount')->willReturn(1);
+        $adminControllers->method('getFirstDashboard')->willReturn('App\\Controller\\Management\\DashboardController');
+        $adminControllers->method('getFirstDashboardRoute')->willReturn('admin');
+
+        $routeGenerator = $this->createStub(AdminRouteGeneratorInterface::class);
+        $routeGenerator->method('findRouteName')->willReturn('admin');
+
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturnCallback(
+            static fn (string $route, array $parameters = []): string => '/management/config?' . http_build_query($parameters),
+        );
+
+        return new AdminUrlGenerator(
+            $this->createStub(EaAdminContextProviderInterface::class),
+            $urlGenerator,
+            $adminControllers,
+            $routeGenerator,
+            new ArrayAdapter(),
+        );
+    }
+
     // --- persistEntity / updateEntity / deleteEntity -------------------------------------------------
 
     public function testPersistEntityEncryptsSensitiveValueSetsDatesAndInvalidatesCache(): void

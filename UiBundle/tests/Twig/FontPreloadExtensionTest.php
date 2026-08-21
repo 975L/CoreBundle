@@ -62,6 +62,27 @@ class FontPreloadExtensionTest extends TestCase
         $this->assertSame('medias/fonts/inter.woff2', $first[0]['path']);
     }
 
+    // The site names a family per role, and looking each one up on its own read the whole table once per role
+    public function testReadsTheFontsOnceWhateverTheNumberOfFamilies(): void
+    {
+        $configs = [
+            'theme-font-family-title' => 'Kavoon',
+            'theme-font-family-body' => 'Inter',
+            'theme-font-family-accent' => 'Cabin',
+        ];
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(fn (string $key) => $configs[$key] ?? null);
+
+        $fontRepository = $this->createMock(FontRepository::class);
+        $fontRepository->expects($this->once())
+            ->method('findAllOrdered')
+            ->willReturn([$this->createFont('Inter', 'medias/fonts/inter.woff2')]);
+
+        $preloads = new FontPreloadExtension($configService, $fontRepository, new ArrayAdapter())->getFontPreloads();
+
+        $this->assertSame([['path' => 'medias/fonts/inter.woff2', 'type' => 'font/woff2']], $preloads);
+    }
+
     public function testReturnsTheRegularUprightFileOfEachThemeFamily(): void
     {
         $extension = $this->createExtension(

@@ -49,6 +49,19 @@ class ImportmapProviderTest extends TestCase
                 'path' => 'assets/controllers.js',
                 'entrypoint' => true,
             ],
+            '@c975l/ui-bundle/handlers.js' => [
+                'path' => 'assets/js/handlers.js',
+            ],
         ], $entries);
+    }
+
+    // The language reading and the translation are imported by name from PaymentBundle's basket handlers, so they need an entry of their own - but not an entrypoint: nothing loads them as a script tag
+    public function testHandlersAreDeclaredWithoutBeingAnEntrypoint(): void
+    {
+        $entry = new ImportmapProvider()->getImportmapEntries()['@c975l/ui-bundle/handlers.js'] ?? null;
+
+        $this->assertNotNull($entry, 'The handlers module is no longer importable from outside UiBundle.');
+        $this->assertArrayNotHasKey('entrypoint', $entry, 'The handlers module is declared as an entrypoint, which would have the front layout load it as a script of its own.');
+        $this->assertFileExists(dirname(__DIR__, 2) . '/' . $entry['path'], 'The declared path points at no file, so the entry resolves to nothing in the browser.');
     }
 }

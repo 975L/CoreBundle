@@ -1,0 +1,8 @@
+{# Standalone page for the bare "ui_form_submit" route, wrapping whatever FormController renders there (the form itself, or its disabled/already-authenticated notice) in a real page shell - the app's own scaffolded layout first, then SiteBundle's, then this bundle's minimal one, so it works whichever foundation is installed #}
+{# Only "submit" goes through this: "ui_form_fragment" is embedded in an already-rendered page (see FormBlock.html.twig) and must stay bare. Served bare, the route had neither the stylesheet - showing the honeypot field it hides - nor the importmap, leaving the "captcha" Stimulus controller unstarted and its token empty, which CaptchaValidator then rejects as a bot on every submission #}
+{% extends ['layout.html.twig', '@c975LSite/layout.html.twig', '@c975LUi/layout.html.twig'] %}
+
+{% block content %}
+    {# Inherits the current context, so the wrapped template reads "uiForm"/"form" as it does when rendered on its own #}
+    {{ include(innerTemplate) }}
+{% endblock %}

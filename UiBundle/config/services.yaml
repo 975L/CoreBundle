@@ -31,6 +31,11 @@ services:
         arguments:
             $formLimiterFactory: '@?limiter.ui_form'
 
+    # Same reading as the form limiter above: c975LUiBundle prepends "ui_rating" itself, so a public vote route is never served unlimited, and a site that took the limiter away still gets a controller rather than a container that refuses to compile
+    c975L\UiBundle\Controller\RatingController:
+        arguments:
+            $ratingLimiterFactory: '@?limiter.ui_rating'
+
     # NelmioSecurityBundle registers its CSP listener under its own service id alone, aliasing nothing on the class - so CspNonceProvider, which type-hints that class, is not autowirable in a consuming app and brings the whole container down on the first cache:clear
     # Wired here rather than aliased: the listener only exists once a site has configured a csp section, and a site that has not is one whose pages carry no nonce at all - it gets an empty one rather than a container that refuses to compile (see CspNonceProvider::styleNonce)
     c975L\UiBundle\Service\CspNonceProvider:

@@ -1,0 +1,37 @@
+{# <twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}" [scale="5"] [icon="heart"]/> - a score a visitor sets, next to Progress:Rating's read-only row #}
+{# The tally is rendered here and the page carrying it is usually cached and shared (a book's is public for an hour), so nothing about the visitor's own vote is printed: assets/js/rating.js reads that from their own browser, then from the answer to their vote #}
+{% set rating = ui_rating(ownerType, ownerId, scale|default(null), icon|default(null)) %}
+{% set filled = rating.count > 0 ? rating.average|round : 0 %}
+<div class="rating-vote"
+     data-controller="ui-rating"
+     data-ui-rating-url-value="{{ path('ui_rating_vote', {ownerType: rating.ownerType, ownerId: rating.ownerId}) }}"
+     data-ui-rating-key-value="{{ rating.ownerType }}:{{ rating.ownerId }}"
+     data-ui-rating-scale-value="{{ rating.scale }}"
+     data-ui-rating-count-value="{{ rating.count }}"
+     data-ui-rating-average-value="{{ rating.average }}"
+     data-ui-rating-none-label-value="{{ 'label.rating_none'|trans({}, 'ui') }}"
+     data-ui-rating-one-label-value="{{ 'label.rating_votes_one'|trans({}, 'ui') }}"
+     data-ui-rating-many-label-value="{{ 'label.rating_votes_many'|trans({}, 'ui') }}"
+     data-ui-rating-error-label-value="{{ 'label.rating_error'|trans({}, 'ui') }}">
+    {# Each icon is a button and not a label on a radio: the vote is sent by fetch, there is no form to submit, and a radio already checked could not be clicked again to take the vote back #}
+    <p class="rating rating--{{ rating.icon }}" data-ui-rating-target="row">
+        {% for i in 1..rating.scale %}
+            <button type="button"
+                    class="rating-star{{ i <= filled ? ' rating-star--on' : '' }}"
+                    data-ui-rating-target="star"
+                    data-action="ui-rating#vote"
+                    data-ui-rating-value-param="{{ i }}"
+                    aria-pressed="false"
+                    aria-label="{{ 1 == rating.scale ? 'label.rating_like'|trans({}, 'ui') : 'label.rating_give'|trans({'%value%': i, '%scale%': rating.scale}, 'ui') }}"></button>
+        {% endfor %}
+    </p>
+    {# The average is only worth printing on a real scale: a single icon is a "like", where what counts is how many, not the average of a column of ones #}
+    <p class="rating-tally" data-ui-rating-target="tally" aria-live="polite">
+        {%- if 0 == rating.count -%}
+            {{ 'label.rating_none'|trans({}, 'ui') }}
+        {%- else -%}
+            {%- if rating.scale > 1 %}<span class="rating-average">{{ rating.average }}/{{ rating.scale }}</span> - {% endif -%}
+            {{ (1 == rating.count ? 'label.rating_votes_one' : 'label.rating_votes_many')|trans({'%count%': rating.count}, 'ui') }}
+        {%- endif -%}
+    </p>
+</div>

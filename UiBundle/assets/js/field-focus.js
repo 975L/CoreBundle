@@ -14,18 +14,26 @@ export default class extends Controller {
         if (!field) return;
 
         // EasyAdmin names every field "<FormName>[<property>]", the form name varying with the entity - matching on the suffix alone keeps this free of it
-        const input = this.element.querySelector(`[name$="[${field}]"]`);
-        if (!input) return;
+        const target = this.element.querySelector(`[name$="[${field}]"]`) ?? this.collection(field);
+        if (!target) return;
 
         // A field sitting in a non-active tab has no size to scroll to until its own tab is shown. EasyAdmin's tabs are Bootstrap ones pointing at their pane through href (see its Tabs/Item.html.twig), collapsible sections through data-bs-target - both looked up, so this keeps working whichever it renders
-        const pane = input.closest('.tab-pane');
+        const pane = target.closest('.tab-pane');
         const trigger = pane && document.querySelector(`[data-bs-toggle="tab"][href="#${pane.id}"], [data-bs-target="#${pane.id}"]`);
         if (trigger) trigger.click();
 
         // One frame later: showing a tab moves the focus itself (Bootstrap's own handling, and the fragment navigation of an <a href="#pane"> trigger), which would take it straight back off the field
         requestAnimationFrame(() => {
-            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            input.focus({ preventScroll: true });
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // A no-op on the collection row found below, which is a <div> nothing can focus - it is scrolled to, and the row it opens on is where the caret belongs anyway
+            target.focus({ preventScroll: true });
         });
+    }
+
+    // A CollectionField prints no name, no id and no "for" of its own - EasyAdmin renders its label as a <legend> (see its crud/form_theme.html.twig), so the suffix match above never finds one. Its entries carry the property name instead ("Book[videos][0][url]"), and its prototype does when it holds none: the whole row is returned rather than that first input, an entry sitting in a collapsed accordion having nowhere to scroll to
+    collection(field) {
+        const entry = this.element.querySelector(`[name*="[${field}]["]`);
+
+        return entry?.closest('[data-ea-collection-field]') ?? this.element.querySelector(`[data-prototype*="[${field}]["]`);
     }
 }

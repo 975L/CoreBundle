@@ -11,17 +11,22 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
+use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Repository\ConfigRepository;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Alerts for configs still missing a value despite being flagged with a severity
+// Alerts for configs still missing a value despite being flagged with a severity, plus the sensitive ones filled but unreadable
 class ConfigAlertProvider implements AlertProviderInterface
 {
     public function __construct(
         private readonly ConfigRepository $configRepository,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly ConfigLabelResolver $configLabelResolver,
+        private readonly ConfigServiceInterface $configService,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -35,15 +40,34 @@ class ConfigAlertProvider implements AlertProviderInterface
                 'label' => $this->configLabelResolver->resolve($config),
                 'description' => $config->getDescription(),
                 'severity' => $config->getSeverity(),
-                'url' => $this->adminUrlGenerator
-                    ->unsetAll()
-                    ->setController(ConfigCrudController::class)
-                    ->setAction(Action::EDIT)
-                    ->setEntityId($config->getId())
-                    ->generateUrl(),
+                'url' => $this->editUrl($config),
+            ];
+        }
+
+        // A value ConfigService could not decrypt is left empty for everything reading it, while the entry still shows as filled everywhere - the site then behaves as if the setting had never been given (an api key silently gone, see ConfigService::loadAll()) and nothing said so
+        foreach ($this->configRepository->findSensitiveWithValue() as $config) {
+            if ('' !== (string) $this->configService->get($config->getSlug())) {
+                continue;
+            }
+
+            $alerts[] = [
+                'label' => $this->configLabelResolver->resolve($config),
+                'description' => $this->translator->trans('description.config_unreadable', [], 'config'),
+                'severity' => Config::SEVERITY_DANGER,
+                'url' => $this->editUrl($config),
             ];
         }
 
         return $alerts;
+    }
+
+    private function editUrl(Config $config): string
+    {
+        return $this->adminUrlGenerator
+            ->unsetAll()
+            ->setController(ConfigCrudController::class)
+            ->setAction(Action::EDIT)
+            ->setEntityId($config->getId())
+            ->generateUrl();
     }
 }

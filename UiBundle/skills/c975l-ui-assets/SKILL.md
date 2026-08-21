@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, UniqueSlug, BuildFileWriter, BlockFocusUrl."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, toc.js, --icon-filter."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -10,7 +10,7 @@ description: "Use this skill when a stylesheet, a script, a font or a design tok
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Listener/ThemeVariablesCssListener.php`, `sass/_tokens.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`
+`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Listener/ThemeVariablesCssListener.php`, `sass/_tokens.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`
 
 **Related skills:** `c975l-blocks`, `c975l-media`, `c975l-forms-emails` in this same bundle, and `c975l-config` in ConfigBundle beside it.
 
@@ -38,6 +38,16 @@ it. Symfony's own recipe writes exactly that import.
 
 Importmap entries come from `ImportmapProviderInterface` (ConfigBundle) and are written on the first
 `composer update` after installing a bundle; `c975l:config:check-importmap` reports a missing one.
+
+A Stimulus controller of this bundle is registered in `assets/controllers.js` — front office — or in
+`assets/controllers-admin.js`, which also mounts the back-office ones on `<body>` itself, EasyAdmin's
+layout never writing a `data-controller`. A controller listed in that file's `LAZY_CONTROLLERS` is
+imported dynamically, so **`connect()` usually runs after the page's DOMContentLoaded**: read
+`document.readyState` rather than subscribing to an event already fired.
+
+An icon laid on the page itself is an `<img>`, which paints its file's own black and takes no
+`currentColor`: the ambience states the treatment in `--icon-filter`, `none` leaving a colored file
+alone. `.btn .icon` and `.card-header .icon` carry their own inversion and weigh more.
 
 ## The token layers
 
@@ -86,6 +96,9 @@ and `font_preloads()` returns the files the current theme really uses.
 | `Form\VichImageOptions::default()` | the five Vich upload options |
 | `Listener\AbstractBlockCacheInvalidationListener` | the Doctrine wiring of a listener reacting to one kind changing |
 | `assets/js/pointer-sort.js` | the drag gesture, mouse and finger alike — reach for it rather than hand-rolling one |
+| `assets/js/sort-icon.js` | the move grip both sortables mark their handle with, sized by EasyAdmin's own `.icon svg` |
+| `assets/js/ea-index-sort.js` | reorders the rows of an EasyAdmin index; a CRUD opts in with `data-reorder-url`, `data-reorder-token` and an optional `data-reorder-group` on its index rows |
+| `@c975l/ui-bundle/handlers.js` | the importmap entry a satellite imports the language reading and the translation helper from, rather than copying them |
 
 They are static classes and services rather than traits **on purpose**: a trait shared across packages
 is only analysed against callers in the same package, so PHPStan reports its properties as dead in
@@ -102,3 +115,6 @@ every bundle that copies it.
 - **Do not ship an empty theme file** "for later".
 - **Do not share code between bundles through a trait** — use a static class or a service.
 - **Do not write a generated file straight to its final path** — write and rename.
+- **Do not subscribe a lazily-imported controller to DOMContentLoaded** without reading
+  `document.readyState` first.
+- **Do not hand-roll a drag gesture or a move grip** — `pointer-sort.js` and `sort-icon.js` are shared.

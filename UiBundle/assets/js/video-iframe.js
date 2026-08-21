@@ -33,6 +33,9 @@ export default class extends Controller {
             return;
         }
 
+        // Applied on connect rather than when the player is injected: the consent cover stands in for the player, so it has to hold its width - a 320px thumbnail was otherwise announced by a grey box as wide as the page
+        this.applySizing();
+
         // No consent banner on this page - never block content on a site that doesn't use one
         if (!document.querySelector(CONSENT_BANNER_SELECTOR)) {
             this.onConsentSettled();
@@ -140,10 +143,8 @@ export default class extends Controller {
         this.observer.observe(this.element);
     }
 
-    renderIframe() {
-        this.stopListening();
-        this.observer?.disconnect();
-
+    // The requested size is carried by the component itself and not by the <iframe> alone: the cover and the player follow each other in the same box, and bounding it once puts both at the same width - a grey box in the video's ratio but as wide as the card shrank at once to the thumbnail as soon as consent was given
+    applySizing() {
         // Only one side is configured in practice, so the other is derived off the iframe's 300x150 default
         const RATIO = 16 / 9;
         let width = this.widthValue ? parseInt(this.widthValue, 10) : null;
@@ -154,15 +155,26 @@ export default class extends Controller {
             width = Math.round(height * RATIO);
         }
 
-        // An id-scoped <style> element: width/height attributes lose to any CSS declaration, and a CSP nonce never covers an inline style attribute
-        if (width && height) {
-            if (!this.element.id) {
-                this.element.id = `video-iframe-${Math.random().toString(36).slice(2)}`;
-            }
-            // "auto" + aspect-ratio, not a fixed px height, so a narrow viewport scales it proportionally
-            this.sizingStyleEl = createNoncedStyleElement();
-            this.sizingStyleEl.textContent = `#${CSS.escape(this.element.id)} iframe { width: ${width}px; height: auto; aspect-ratio: ${width} / ${height}; }`;
+        if (!width || !height) {
+            return;
         }
+
+        // An id-scoped <style> element: width/height attributes lose to any CSS declaration, and a CSP nonce never covers an inline style attribute
+        if (!this.element.id) {
+            this.element.id = `video-iframe-${Math.random().toString(36).slice(2)}`;
+        }
+
+        // A ceiling and not a fixed width, and "auto" + aspect-ratio rather than a height in pixels: a column narrower than the requested size then scales the whole down proportionally
+        const id = CSS.escape(this.element.id);
+        this.sizingStyleEl = createNoncedStyleElement();
+        this.sizingStyleEl.textContent =
+            `#${id} { max-width: ${width}px; margin-inline: auto; }` +
+            `#${id} iframe { width: 100%; height: auto; aspect-ratio: ${width} / ${height}; }`;
+    }
+
+    renderIframe() {
+        this.stopListening();
+        this.observer?.disconnect();
 
         const iframe = document.createElement("iframe");
         iframe.src = this.srcValue;

@@ -70,19 +70,24 @@ class FormController extends AbstractController
     }
 
     // A stale/unregistered action key is left to fail at submit time as before (see FormActionRegistry::get()) - only a resolvable RequiresAnonymousInterface provider blocks the GET/POST paths here
-    private function alreadyAuthenticatedResponse(Form $uiForm): ?Response
+    private function isBlockedForCurrentUser(Form $uiForm): bool
     {
         if (null === $this->security->getUser() || !$this->actionRegistry->has($uiForm->getAction())) {
-            return null;
+            return false;
         }
 
-        if (!$this->actionRegistry->get($uiForm->getAction()) instanceof RequiresAnonymousInterface) {
-            return null;
-        }
+        return $this->actionRegistry->get($uiForm->getAction()) instanceof RequiresAnonymousInterface;
+    }
 
-        return $this->render('@c975LUi/components/Form/FormAlreadyAuthenticated.html.twig', [
+    // "ui_form_submit" is a page a visitor can land on (a shared link, or a login page's "forgot password" on a site with no Page carrying the matching "form" Block - see FormUrlExtension), so everything it renders goes through a layout, unlike "ui_form_fragment", which is embedded in an already-rendered page and stays bare.
+    // Never indexed: whichever Page carries the Block is the canonical address of that form, this route only the fallback - both layouts read "robots"
+    private function renderPage(Form $uiForm, string $innerTemplate, array $parameters = []): Response
+    {
+        return $this->render('@c975LUi/form/page.html.twig', array_merge($parameters, [
+            'innerTemplate' => $innerTemplate,
             'uiForm' => $uiForm,
-        ]);
+            'robots' => 'noindex, follow',
+        ]));
     }
 
     private function buildSymfonyForm(Form $uiForm, array $prefill = []): FormInterface
@@ -103,8 +108,8 @@ class FormController extends AbstractController
         if (!$uiForm->isEnabled()) {
             return $this->render('@c975LUi/components/Form/FormDisabled.html.twig', ['uiForm' => $uiForm]);
         }
-        if (null !== $response = $this->alreadyAuthenticatedResponse($uiForm)) {
-            return $response;
+        if ($this->isBlockedForCurrentUser($uiForm)) {
+            return $this->render('@c975LUi/components/Form/FormAlreadyAuthenticated.html.twig', ['uiForm' => $uiForm]);
         }
 
         $this->botProtection->startTimer($request, $this->sessionKeyFor($uiForm));
@@ -120,10 +125,10 @@ class FormController extends AbstractController
     {
         $uiForm = $this->loadForm($name);
         if (!$uiForm->isEnabled()) {
-            return $this->render('@c975LUi/components/Form/FormDisabled.html.twig', ['uiForm' => $uiForm]);
+            return $this->renderPage($uiForm, '@c975LUi/components/Form/FormDisabled.html.twig');
         }
-        if (null !== $response = $this->alreadyAuthenticatedResponse($uiForm)) {
-            return $response;
+        if ($this->isBlockedForCurrentUser($uiForm)) {
+            return $this->renderPage($uiForm, '@c975LUi/components/Form/FormAlreadyAuthenticated.html.twig');
         }
 
         $this->botProtection->startTimer($request, $this->sessionKeyFor($uiForm));
@@ -181,8 +186,7 @@ class FormController extends AbstractController
             }
         }
 
-        return $this->render('@c975LUi/components/Form/Form.html.twig', [
-            'uiForm' => $uiForm,
+        return $this->renderPage($uiForm, '@c975LUi/components/Form/Form.html.twig', [
             'form' => $symfonyForm->createView(),
         ]);
     }

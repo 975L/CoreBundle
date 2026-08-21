@@ -375,5 +375,29 @@
         "group": "general",
         "severity": null,
         "description": "description.watermark_margin"
+    },
+    {
+        "label": "label.ui_rating_icon",
+        "slug": "ui-rating-icon",
+        "sensitive": false,
+        "restricted": false,
+        "value": "star",
+        "kind": "choice",
+        "choices": ["star", "heart", "thumbs-up", "face-smile"],
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_rating_icon"
+    },
+    {
+        "label": "label.ui_rating_scale",
+        "slug": "ui-rating-scale",
+        "sensitive": false,
+        "restricted": false,
+        "value": "5",
+        "kind": "choice",
+        "choices": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_rating_scale"
     }
 ]

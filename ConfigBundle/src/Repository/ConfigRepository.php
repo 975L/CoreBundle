@@ -51,6 +51,18 @@ class ConfigRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // Every sensitive config actually holding a value, which is what tells an entry filled but unreadable from one simply left empty (see ConfigAlertProvider)
+    public function findSensitiveWithValue(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.isSensitive = :sensitive')
+            ->andWhere("c.value IS NOT NULL AND c.value != ''")
+            ->setParameter('sensitive', true)
+            ->orderBy('c.label', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     // Returns every config belonging to the given group (e.g. Config::GROUP_THEME), sorted by label
     public function findByGroup(string $group): array
     {

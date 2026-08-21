@@ -1,5 +1,61 @@
 # ChangeLog
 
+## v1.13.0
+
+A visitor rates anything the site publishes if desired
+
+### UiBundle
+
+- Added `Entity\Rating`, `Repository\RatingRepository`, `Service\RatingService` and `Controller\RatingController`: a visitor rates anything at all, the rated thing being named (`ownerType`/`ownerId`, the vocabulary `BlockOwnerResolverInterface` already round-trips) rather than related, so no bundle maps a collection it never reads and a listing prints its averages in one query (20/08/2026) [DB-Migration]
+- Added `<twig:c975LUi:Rating:Rating ownerType="book" ownerId="…"/>`, `ui_rating()` and `ui_ratings()` — the read-only `Progress:Rating` row with buttons on it, the tally rendered server-side and the visitor's own vote painted over it by the browser, the rated page being public and shared (20/08/2026)
+- Added `ui-rating-icon` (star, heart, thumbs-up, face-smile) and `ui-rating-scale` (1 to 10): a scale of 1 is a "like", where the count replaces the average and clicking the icon again takes the vote back (20/08/2026)
+- Added `rating.js`, minting its 32-hex token on the click and never before — nothing is stored for a visitor who merely reads the page, which is what keeps the widget out of consent territory; an authenticated visitor is keyed on their account instead, and votes once across their devices (20/08/2026)
+- `POST /rating/{ownerType}/{ownerId}` answers `no-store` and takes no csrf token, which would open a session whose `Set-Cookie` the shared cache would hand to the next visitor: a json body, an `Origin`/`Referer` of this site and the new `ui_rating` limiter stand in its place (20/08/2026)
+- Added `public/icons/heart.svg` and `thumbs-up.svg`, and moved the `.rating*` rules out of `sass/_progress.scss` into `sass/_rating.scss`, where each offered glyph is masked and the row previews up to the icon under the pointer (20/08/2026)
+- Added `RatingTest`, `RatingRepositoryTest`, `RatingServiceTest`, `RatingControllerTest`, `RatingRuntimeTest`, `RatingVoteMarkupTest` and `RatingVoteControllerTest` (20/08/2026)
+- The bare `ui_form_submit` route now renders through a page shell (`form/page.html.twig`), the app's own layout first, then SiteBundle's, then this bundle's (19/08/2026)
+- Served bare, it carried neither the stylesheet hiding the honeypot field nor the importmap the `captcha` Stimulus controller needs, so every submission was rejected as a bot (19/08/2026)
+- That page is never indexed, whichever Page carries the matching "form" Block being the canonical address (19/08/2026)
+- `ui_form_fragment` is unchanged and stays bare, being embedded in an already-rendered page (19/08/2026)
+- Added `BlockRepository::preloadSlots()`, initializing the slots of a whole tree of blocks, and their medias, in one query per level of depth (19/08/2026)
+- A container's slots being a lazy collection, every render walking the tree read one query per block, the leaves included - a joined level only moved the problem one step down (19/08/2026)
+- `FontPreloadExtension` reads the fonts once for the whole computation instead of once per font family (19/08/2026)
+- Added `BlockRepositoryTest`, and a `FontPreloadExtensionTest` case on the single read (19/08/2026)
+- `ImportmapProvider` declares `@c975l/ui-bundle/handlers.js`, PaymentBundle's basket handlers importing the language reading and the translation from it rather than copying them (20/08/2026)
+- `<twig:c975LUi:Audio:Audio>` takes a `sticky`, the player then resting against the bottom of the screen (`audio-figure--sticky`, `--audio-sticky-background`) (20/08/2026)
+- Added `ea-index-sort.js`, reordering an EasyAdmin index by dragging its rows (20/08/2026)
+- Added `infinite-scroll.js`, growing a paginated listing as the visitor scrolls, its next link left as an ordinary link (20/08/2026)
+- Added `InfiniteScrollControllerTest` (20/08/2026)
+- Added `sort-icon.js`, the move grip shared by both sortables (20/08/2026)
+- Added `<twig:c975LUi:Text:Toc>`, a page's summary of anchors - sticky bar of chips on a phone, column from 1200px on (20/08/2026)
+- Added `toc.js`, marking the section being read through an `IntersectionObserver` (20/08/2026)
+- Added the `--toc-*` tokens, `sass/_toc.scss` and the `toc-target` room-leaving class (20/08/2026)
+- Added `label.toc` to the `ui` translations (20/08/2026)
+- Added `TocControllerTest`, `TocStyleTest` and `TocMarkupTest` (20/08/2026)
+- `field-focus.js` reaches a `CollectionField`, which prints no name of its own, through its entries or its prototype (20/08/2026)
+- Donovan's rephrase toolbar now reaches every EasyAdmin `TextEditorField`, not only `TrixEditorType` (20/08/2026)
+- Added `AiRephraseThemeTest` (20/08/2026)
+- `img.icon` reads `--icon-filter`, an icon laid on the page itself following its ambience instead of keeping its file's black (20/08/2026)
+- `.btn .icon` is painted with the button's own ink through `--button-icon-invert`, a template no longer stating a color the site cannot retune (20/08/2026)
+- `.slider-sized` states a width and drops its ratio, an `aspect-ratio` left beside the height the controller writes driving the width instead and overflowing the column (20/08/2026)
+- A collection's sorting markers are `data-ui-*`, any field naming a group exchanging rows with another naming the same one - `data-block-collection` becomes `data-ui-sort-group`, `data-block-container-id` becomes `data-ui-move-target` (21/08/2026) [BC-Break]
+- The drop zone of an empty block collection is visible again, its rule still naming `[data-block-collection]` (21/08/2026)
+- A rating's scale is read from `ui-rating-scale` and no longer from the request body, a forged POST having stored a 10 on a site rated out of five and the public average reading "7.3/5" - `RatingService::vote()` drops its `$scale` argument (21/08/2026) [BC-Break]
+- A double-click on the vote sends one request only (`rating.js`), and two simultaneous votes answer 409 instead of 500, `uniq_rating_owner_voter` now being caught (21/08/2026)
+- A separator splits the average from the vote count under the icons, "4/5 1 avis" having read as "4/51 avis" (`Rating:Rating`, `rating.js`) (21/08/2026)
+- The consent cover of a third-party video holds the width of the player it stands in for, the size being applied on connect and bounding the whole component (`video-iframe.js`) (21/08/2026)
+- That cover takes a panel's radius and not a button's, a theme drawing its buttons as pills having made it a large oval (`--radius-panel`) (21/08/2026)
+- Its message centers itself, a `div { text-align: left }` from another bundle of the stack being an element selector that wins over inheritance (21/08/2026)
+- The `confetti` controller reads `document.readyState` instead of subscribing to a `DOMContentLoaded` already fired, a dynamic import mostly connecting after it (21/08/2026)
+- The `confetti` controller downloads nothing at all for a visitor asking for less animation, the library keeping its `disableForReducedMotion` besides (21/08/2026)
+
+### ConfigBundle
+
+- The "pick a group" screen of the configs carries the "show sensitive data" button (20/08/2026)
+- `ConfigAlertProvider` alerts on a sensitive config filled but undecipherable, until now only logged (20/08/2026)
+- Added `ConfigRepository::findSensitiveWithValue()` and `description.config_unreadable` to the `config` translations (20/08/2026)
+- `ConfigService::loadAll()` leaves the configuration empty on an unreadable database instead of throwing, a schema predating the current entity having stopped the very commands that would migrate it (19/08/2026)
+
 ## v1.12.5
 
 A file the database declares is looked for on the server

@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-20",
+        "description": [
+            {
+                "en": "The settings screen carries the \"show sensitive data\" button, so a group holding only hidden entries - the payment keys - is reached in one click instead of through another group",
+                "fr": "L'écran des réglages porte le bouton « Voir données sensibles » : un groupe ne contenant que des entrées masquées, comme les clés de paiement, s'atteint en un clic au lieu de passer par un autre groupe",
+                "es": "La pantalla de ajustes lleva el botón «Ver datos sensibles»: un grupo que solo contiene entradas ocultas, como las claves de pago, se alcanza con un clic en lugar de pasar por otro grupo"
+            },
+            {
+                "en": "A sensitive setting that is filled in but can no longer be read back is now reported on the dashboard, where the site used to behave as if you had never given it",
+                "fr": "Un réglage sensible renseigné mais devenu illisible est désormais signalé sur le tableau de bord, là où le site se comportait comme si vous ne l'aviez jamais donné",
+                "es": "Un ajuste sensible relleno pero que ya no puede leerse se señala ahora en el panel, donde el sitio se comportaba como si nunca lo hubiera indicado"
+            }
+        ]
+    },
+    {
         "date": "2026-08-15",
         "description": [
             {

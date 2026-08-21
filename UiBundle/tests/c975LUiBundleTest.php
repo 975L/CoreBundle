@@ -84,18 +84,39 @@ class c975LUiBundleTest extends TestCase
         $this->assertSame('10 minutes', $limiter['interval']);
     }
 
-    // The name is the contract with FormController's "@?limiter.ui_form" argument - a rename on either side silently restores the hole this default closes
-    public function testTheRateLimiterIsNamedAfterTheServiceFormControllerAsksFor(): void
+    // RatingController takes its limiter optionally too, and its route is public and unauthenticated: with no default here, a site that declared nothing served the vote endpoint unlimited
+    public function testPrependExtensionRegistersTheRatingRateLimiter(): void
     {
         $container = new ContainerBuilder();
 
         new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
-        $this->assertSame(['ui_form'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
+        $limiter = $container->getExtensionConfig('framework')[0]['rate_limiter']['ui_rating'];
+
+        $this->assertSame('sliding_window', $limiter['policy']);
+        $this->assertSame(30, $limiter['limit']);
+        $this->assertSame('10 minutes', $limiter['interval']);
+    }
+
+    // Each name is the contract with a controller's own "@?limiter.*" argument - a rename on either side silently restores the hole these defaults close
+    public function testTheRateLimitersAreNamedAfterTheServicesTheControllersAskFor(): void
+    {
+        $container = new ContainerBuilder();
+
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $this->assertSame(['ui_form', 'ui_rating'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
+
+        $services = file_get_contents(__DIR__ . '/../config/services.yaml');
         $this->assertStringContainsString(
             '@?limiter.ui_form',
-            file_get_contents(__DIR__ . '/../config/services.yaml'),
+            $services,
             'FormController no longer asks for limiter.ui_form, which is the name prepended here.'
+        );
+        $this->assertStringContainsString(
+            '@?limiter.ui_rating',
+            $services,
+            'RatingController no longer asks for limiter.ui_rating, which is the name prepended here.'
         );
     }
 

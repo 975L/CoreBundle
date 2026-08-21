@@ -48,7 +48,7 @@ class AdminModalTest extends TestCase
 
         $this->assertStringContainsString('showAdminMessage', $js, 'The sortable no longer reports its failures through the modal.');
         $this->assertStringNotContainsString('window.alert', $js, 'A native alert is back in the sortable.');
-        $this->assertStringContainsString('blockMoveCloseLabel', $js, 'The modal\'s dismiss button is no longer labelled from the translated attribute (see BlockMoveRowAttrBuilder).');
+        $this->assertStringContainsString('uiMoveCloseLabel', $js, 'The modal\'s dismiss button is no longer labelled from the translated attribute (see BlockMoveRowAttrBuilder, which now speaks the generic move vocabulary).');
         $this->assertStringContainsString('refusalReason', $js, 'The server\'s own explanation is no longer read back from the response.');
     }
 

@@ -126,6 +126,22 @@
     /* Lines shown before a "read more" block clamps its text */
     /* --readmore-lines: 5; */
 
+    /* The page summary of anchors - a bar of chips coming to rest under the header on a phone, a column
+       standing beside the text from 1200px on. --toc-height is what the resting bar covers, and so what a
+       section jumped to leaves above itself: retune it here if the chips are given another size below. */
+    /* --toc-sticky-top: var(--scroll-offset, 80px); */
+    /* --toc-height: 4rem; */
+    /* --toc-background: var(--background); */
+    /* --toc-current-color: var(--primary); */
+    /* --toc-chip-radius: 999px; */
+    /* --toc-column-width: 220px; */
+    /* --toc-gap: 0.5rem; */
+    /* --toc-marker-width: 3px; */
+
+    /* The player of an <audio> given sticky="true" - a bar coming to rest against the bottom of the
+       column it accompanies. It hides what slides under it, so it cannot be transparent. */
+    /* --audio-sticky-background: var(--background); */
+
     /* The two-sided card. Its own shape and its own surfaces, sharing nothing with the plain card above: a
        flip card is an object a visitor reaches for - outlined, rounded, titled - where a card is a panel to
        read, so retuning one here never moves the other. The back is what the turn reveals, hence a surface
@@ -196,6 +212,9 @@
     /* --button-color: #fff; */
     /* --button-secondary-color: #fff; */
     /* --button-link-color: #fff; */
+    /* An icon on a button is an <img>, so it takes no color from the label beside it: 1 paints it white, 0 leaves it black. To be carried along whenever one of the three inks above is written dark, or the icon reads white on a flat meant for dark text. */
+    /* --button-icon-invert: 1; */
+    /* --button-secondary-icon-invert: 0; */
     /* --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
     /* The two below are the fallbacks --primary and --secondary read when the admin sets no color, so uncommenting one repaints the whole site, not just its buttons - retune the palette in the backoffice instead, unless the design really means to take those two hues away from it. The values shown are SiteBundle's, which restates these three and loads after this bundle: a site without SiteBundle gets sass/_tokens.scss's own rgb(11, 55, 178) / rgb(218, 126, 57) / #000 instead. */
     /* --button-background-primary: #0a2d6b; */
@@ -242,6 +261,8 @@
     /* --input-invalid-text-color: var(--button-background-danger); */
     /* Applied to the show/hide eye the password controller injects - it is an <img>, out of reach of currentColor, so dark mode inverts the black shape rather than recoloring it */
     /* --input-icon-filter: none; */
+    /* Same treatment for any other icon laid on the page itself - a count, a list marker - an <img> being out of reach of currentColor wherever it sits. Dark mode flattens then inverts it, so a two-tone file turns into one white silhouette rather than its own negative */
+    /* --icon-filter: none; */
     /* --required-color: #000; */
     /* --disabled: #808080; */
 }

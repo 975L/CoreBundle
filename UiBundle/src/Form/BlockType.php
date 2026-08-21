@@ -16,6 +16,7 @@ use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Form\Util\MultiUploadMerger;
 use c975L\UiBundle\Form\Util\SubmissionIntegrity;
 use c975L\UiBundle\Registry\BlockRegistry;
+use c975L\UiBundle\Service\BlockMoveRowAttrBuilder;
 use c975L\UiBundle\Service\VideoPosterImporter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PostSubmitEvent;
@@ -331,8 +332,8 @@ class BlockType extends AbstractType
             'by_reference' => false,
             'prototype' => true,
             'row_attr' => null !== $containerId ? [
-                'data-block-collection' => '1',
-                'data-block-container-id' => $containerId,
+                'data-ui-sort-group' => BlockMoveRowAttrBuilder::GROUP,
+                'data-ui-move-target' => $containerId,
             ] : [],
         ]);
 

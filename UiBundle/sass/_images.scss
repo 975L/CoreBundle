@@ -39,9 +39,11 @@ span.img-below {
     margin-top: 20px;
 }
 
+// An icon is an <img>: it paints its file's own fill and takes no currentColor, so a black glyph stays black on a dark surface while the text beside it is lightened. The ambience states the treatment in the token, "none" leaving a colored icon untouched in light mode - the same pair as --input-icon-filter (see SiteBundle's sass/_theme-dark.scss). ".btn .icon" and ".card-header .icon" weigh more and keep their own invert, "img.white" ties and follows below
 img.icon {
     width: 24px;
     height: 24px;
+    filter: var(--icon-filter);
 }
 
 img.icon-big {
@@ -73,7 +75,8 @@ img.white {
     text-align: center;
     padding: 1.5rem;
     background-color: var(--input-shadow-color);
-    border-radius: var(--radius-btn);
+    // A panel's radius and not a button's: the box spans the whole width of the media, and a theme drawing its buttons as pills (--radius-btn: 999px) turned it into a large oval in the middle of the page
+    border-radius: var(--radius-panel);
 }
 
 // With a poster the box is the still itself, so the padded grey placeholder gives way to it - the ratio and the centering above are what the poster and the play button are then laid out against
@@ -93,6 +96,11 @@ img.white {
     object-fit: cover;
 }
 
+// Centered on the element itself: the cover already says so for the whole box, but a "div { text-align: left }" from another bundle of the stack is an element selector that wins over inheritance, and the message went back to the left
+.video-iframe-prompt {
+    text-align: center;
+}
+
 // Both stack over the poster rather than beside it
 .video-iframe-placeholder--poster .video-iframe-prompt,
 .video-iframe-play {
@@ -102,7 +110,7 @@ img.white {
 // Legible whatever the still behind it: a prompt sitting straight on a photo is not
 .video-iframe-placeholder--poster .video-iframe-prompt {
     padding: 1.5rem;
-    border-radius: var(--radius-btn);
+    border-radius: var(--radius-panel);
     background-color: color-mix(in srgb, var(--background) 82%, transparent);
 }
 
@@ -152,4 +160,27 @@ img.white {
 .video-iframe-description,
 .audio-description {
     margin-top: 0.5rem;
+}
+
+// The player that follows the reader down the page instead of waiting where it was printed. Sticky rather than fixed: it takes its own room at the end of the column, so nothing is ever hidden under it, and it stops where that column stops
+.audio-figure--sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    padding-block: 0.5rem;
+    background: var(--audio-sticky-background);
+    border-top: 1px solid var(--border-color);
+}
+
+// An audio element takes the width it is given, the bar spanning the column it rests in
+.audio-figure--sticky audio {
+    display: block;
+    width: 100%;
+}
+
+// A player resting against the bottom of a screen has no meaning on paper
+@media print {
+    .audio-figure--sticky {
+        position: static;
+    }
 }

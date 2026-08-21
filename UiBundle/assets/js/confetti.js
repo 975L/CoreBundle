@@ -14,10 +14,22 @@ export default class extends Controller {
     };
 
     connect() {
-        document.addEventListener("DOMContentLoaded", this.onDomContentLoaded.bind(this));
+        // Nothing is downloaded at all for a visitor asking for less animation: the library already keeps quiet on its own (disableForReducedMotion below), but it was fetched anyway to do nothing
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            return;
+        }
+
+        // The controller is imported dynamically (see LAZY_CONTROLLERS in controllers.js), so connect() mostly runs after DOMContentLoaded: subscribing to it without reading readyState never fired again
+        if ("loading" === document.readyState) {
+            document.addEventListener("DOMContentLoaded", this.launch.bind(this), { once: true });
+
+            return;
+        }
+
+        this.launch();
     }
 
-    onDomContentLoaded() {
+    launch() {
         // https://github.com/catdad/canvas-confetti (ISC)
         this.loadScript(this.scriptValue, () => {
             confetti({ particleCount: 500, disableForReducedMotion: true });

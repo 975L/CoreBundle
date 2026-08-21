@@ -14,6 +14,16 @@
     touch-action: manipulation;
 }
 
+// The icon a button carries, painted with the button's own ink rather than by a "white" class on the markup: an <img> takes no currentColor, so every template placing one had to state a color the site could then retune under it. "brightness(0)" flattens the file to black, and the inversion after is what turns that black white
+.btn .icon {
+    filter: brightness(0) invert(var(--button-icon-invert, 1));
+}
+
+// The variant swaps the value the rule above reads, rather than restating the filter
+.btn.btn-secondary {
+    --button-icon-invert: var(--button-secondary-icon-invert, 0);
+}
+
 .btn-small {
     font-size: 0.9rem;
     padding: 0.5rem 1rem;

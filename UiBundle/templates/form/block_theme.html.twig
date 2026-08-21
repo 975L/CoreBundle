@@ -12,6 +12,24 @@
     {% endif %}
 {% endblock %}
 
+{# Mirrors EasyAdmin's own ea_text_editor_widget (TextEditorField, used by every bundle for its prose fields) for the rephrase toolbar alone: the include cannot be added from the inner textarea_widget below, which EasyAdmin renders BEFORE the editor wrapper - the toolbar would sit above the editor there, when TrixEditorType puts it under #}
+{% block ea_text_editor_widget %}
+    {{ form_widget(form, {attr: attr|merge({
+        class: 'ea-text-editor-content d-none',
+        'data-number-of-rows': form.vars.ea_vars.field.customOptions.get('numOfRows')|default(5),
+        'data-trix-editor-config': form.vars.ea_vars.field.customOptions.get('trixEditorConfig')|default(null)|json_encode,
+    })}) }}
+
+    <div class="ea-text-editor-wrapper {{ row_attr.class|default('') ~ (not valid ? ' has-error') }}">
+        <trix-editor input="{{ id }}" class="trix-content" {% if disabled %}disabled{% endif %}></trix-editor>
+    </div>
+
+    {# Unconditional, like trix_editor_widget above: a rich editor holds prose by definition, the opt-in below is for plain textareas only #}
+    {% if ai_rephrase_enabled() %}
+        {{ include('@c975LUi/form/_ai_rephrase.html.twig', {field_id: id}) }}
+    {% endif %}
+{% endblock ea_text_editor_widget %}
+
 {# Opt-in via attr['data-ai-rephrase']: a plain textarea also carries raw JSON/config values dashboard-wide #}
 {% block textarea_widget %}
     {# EasyAdmin only styles "textarea.form-control"; without it the native default width applies #}

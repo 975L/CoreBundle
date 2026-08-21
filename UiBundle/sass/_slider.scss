@@ -15,6 +15,8 @@
 // Laid out on the same measure as the body copy (--reading-max-width, declared by SiteBundle), so a slider never outruns the text it sits with Symmetric room above and below: the former "1em auto 3em" left a slider all but flush against the block introducing it
 .slider {
     position: relative;
+    // Stated, and not left to "auto": the controller sets the slider a height, and the ratio below then derived a width from it - the measure below only capped that width, so in a column narrower than it the slider overflowed onto whatever sat beside it. A width of its own is what the ratio no longer has to invent
+    width: 100%;
     max-width: var(--reading-max-width, min(75ch, 90vw));
     margin: var(--slider-margin-block, 3em) auto;
     // Fallback so the slider never collapses to 0 height, its content being absolutely positioned
@@ -98,6 +100,11 @@
 .slider-ratio-9-16 { aspect-ratio: 9 / 16; }
 .slider-ratio-16-9 { aspect-ratio: 16 / 9; }
 .slider-ratio-21-9 { aspect-ratio: 21 / 9; }
+
+// The height resizeSlider() writes replaces the fallback ratio, and the ratio has to go with it: an "aspect-ratio" left standing beside a definite height drives the *width* instead, so the slider took the width of its tallest image (825px inside a 358px card) and overflowed everything around it
+.slider-sized {
+    aspect-ratio: auto;
+}
 
 // "slider-sized" is set by resizeSlider(); without a definite height a descendant's height: 100% collapses
 .slider-ratio-2-3 .slider-list,

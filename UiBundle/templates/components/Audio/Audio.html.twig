@@ -1,6 +1,7 @@
-{# Static usage : <twig:c975LUi:Audio:Audio src="your-path/file.ext" type="audio/mpeg" [title="optional title"] [description="optional description"] [class="your-css-classes"]/> #}
+{# Static usage : <twig:c975LUi:Audio:Audio src="your-path/file.ext" type="audio/mpeg" [title="optional title"] [description="optional description"] [sticky="true"] [class="your-css-classes"]/> #}
 {# Same <figure>/title/description structure as Video:Video and Video:Iframe, so every media block is captioned identically #}
-<figure class="audio-figure">
+{# Sticky: the player comes to rest against the bottom of the screen and follows the reader down the page, the way the summary of anchors rests against its top - it has to be a direct child of the column it accompanies, a sticky element never leaving its own containing block #}
+<figure class="audio-figure{% if sticky|default(false) %} audio-figure--sticky{% endif %}">
     {% if title is defined and title %}<h3 class="audio-title">{{ title }}</h3>{% endif %}
     <audio controls class="{{ class|default([])|join(' ') }}">
         <source src="{{ src }}" type="{{ type|default('audio/mpeg') }}">

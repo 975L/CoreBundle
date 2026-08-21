@@ -2430,6 +2430,30 @@
                 <source>label.radius_theme</source>
                 <target>Thème</target>
             </trans-unit>
+            <trans-unit id="IVJoccs">
+                <source>label.rating_error</source>
+                <target>Votre vote n'a pas pu être enregistré</target>
+            </trans-unit>
+            <trans-unit id="gN64iEv">
+                <source>label.rating_give</source>
+                <target>Noter %value% sur %scale%</target>
+            </trans-unit>
+            <trans-unit id="8iNn9qY">
+                <source>label.rating_like</source>
+                <target>J'aime</target>
+            </trans-unit>
+            <trans-unit id="t_cME5S">
+                <source>label.rating_none</source>
+                <target>Aucun avis</target>
+            </trans-unit>
+            <trans-unit id="ngc6xNR">
+                <source>label.rating_votes_many</source>
+                <target>%count% avis</target>
+            </trans-unit>
+            <trans-unit id="ODmNsZO">
+                <source>label.rating_votes_one</source>
+                <target>%count% avis</target>
+            </trans-unit>
             <trans-unit id="8NHfPcl">
                 <source>label.ratio</source>
                 <target>Ratio</target>
@@ -2757,6 +2781,10 @@
             <trans-unit id="EE5wbzn">
                 <source>label.title_level</source>
                 <target>Niveau de titre</target>
+            </trans-unit>
+            <trans-unit id="OfFGV9I">
+                <source>label.toc</source>
+                <target>Sommaire</target>
             </trans-unit>
             <trans-unit id="wPJiQJ5">
                 <source>label.total</source>

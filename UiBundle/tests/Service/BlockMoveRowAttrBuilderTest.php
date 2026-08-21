@@ -27,13 +27,13 @@ class BlockMoveRowAttrBuilderTest extends TestCase
         $attributes = $builder->build('page', 42);
 
         $this->assertSame([
-            'data-block-collection' => '1',
-            'data-block-owner-type' => 'page',
-            'data-block-owner-id' => 42,
-            'data-block-move-url' => '/management/ui/block/move',
-            'data-block-move-csrf-token' => 'a-token',
-            'data-block-move-failed-label' => 'flash.block_move_failed',
-            'data-block-move-close-label' => 'action.close',
+            'data-ui-sort-group' => 'block',
+            'data-ui-move-owner-type' => 'page',
+            'data-ui-move-owner-id' => 42,
+            'data-ui-move-url' => '/management/ui/block/move',
+            'data-ui-move-csrf-token' => 'a-token',
+            'data-ui-move-failed-label' => 'flash.block_move_failed',
+            'data-ui-move-close-label' => 'action.close',
         ], $attributes);
     }
 

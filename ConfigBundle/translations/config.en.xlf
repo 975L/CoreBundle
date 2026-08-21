@@ -50,6 +50,10 @@
                 <source>description.config_prune</source>
                 <target>Entries left in database that no configs*.json declares anymore, e.g. a setting a bundle dropped, or a bundle uninstalled. Nothing is deleted until the form below is submitted.</target>
             </trans-unit>
+            <trans-unit id="4qwnKQS">
+                <source>description.config_unreadable</source>
+                <target>The stored value could not be decrypted: everything reading it gets an empty value. Enter it again.</target>
+            </trans-unit>
             <trans-unit id="mf1xPAY">
                 <source>description.essential_action_email</source>
                 <target>Who sends and who receives the site's notifications</target>

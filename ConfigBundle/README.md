@@ -362,17 +362,19 @@ decrypted`, with the slug). Every sensitive value is decrypted inside one cache 
 failure through used to take the whole configuration down with it — a 500 on every page for a setting nothing
 on that page needed. The logged reason tells the two causes apart: nothing read at all points at
 `C975L_VAULT_KEY`, while a legacy CBC value that came back as something other than text points at the value
-itself, which no key will bring back — re-encrypt it from its source.
+itself, which no key will bring back — re-encrypt it from its source. Such a row is also raised as a **danger
+alert on the `/management` home page**, linking to its edit form: the entry shows as filled everywhere, so
+nothing else said that the site was running without it.
 
 ## EasyAdmin interface
 
 The bundle registers a management dashboard at `/management`. Navigate to **Config** to view entries and edit their `value` — `label`, `slug`, `kind`, `group`, `severity`, and `description` are fixed by the bundle's `configs.json` and shown read-only; there is no manual creation or deletion, entries only come from `configs.json`.
 
-**Config** opens on a "pick a group" screen (one row per distinct `group`, with its entry count) rather than one flat table of every entry — picking a group filters the familiar EasyAdmin grid down to just that group's entries, with a "← Config" action to go back. This keeps the list readable as more bundles/groups accumulate; the entry count shown per group respects both the current sensitive/non-sensitive view and, below `ROLE_SUPER_ADMIN`, excludes restricted entries the viewer wouldn't see anyway.
+**Config** opens on a "pick a group" screen (one row per distinct `group`, with its entry count) rather than one flat table of every entry — picking a group filters the familiar EasyAdmin grid down to just that group's entries, with a "← Config" action to go back. This keeps the list readable as more bundles/groups accumulate; the entry count shown per group respects both the current sensitive/non-sensitive view and, below `ROLE_SUPER_ADMIN`, excludes restricted entries the viewer wouldn't see anyway. That screen carries the "show sensitive data" button itself, a group holding only sensitive entries (the payment keys) being otherwise reachable only by turning them on from another group's listing first.
 
 Theme CSS variables (colors, fonts, light/dark mode, declared by a bundle like any other entry) sit under the `theme` group — reachable the same way, via **Config**'s "pick a group" screen, at the same `site-role-admin` permission as every other group (no dedicated page, no separate permission tier).
 
-Any entry with a `severity` and an empty `value` shows up as a colored alert (danger/warning/info) right on the `/management` home page, each linking directly to its edit form.
+Any entry with a `severity` and an empty `value` shows up as a colored alert (danger/warning/info) right on the `/management` home page, each linking directly to its edit form — as does a `sensitive` entry holding a value the site can no longer decrypt.
 
 ### Rows per page
 

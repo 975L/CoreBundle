@@ -50,6 +50,10 @@
                 <source>description.config_prune</source>
                 <target>Entradas que permanecen en la base de datos y que ningún configs*.json declara ya, por ejemplo un ajuste abandonado por un bundle, o un bundle desinstalado. No se elimina nada mientras no se valide el formulario de abajo.</target>
             </trans-unit>
+            <trans-unit id="4qwnKQS">
+                <source>description.config_unreadable</source>
+                <target>El valor guardado no ha podido descifrarse: todo lo que lo lee recibe un valor vacío. Vuelva a introducirlo.</target>
+            </trans-unit>
             <trans-unit id="mf1xPAY">
                 <source>description.essential_action_email</source>
                 <target>Quién envía y quién recibe las notificaciones del sitio</target>

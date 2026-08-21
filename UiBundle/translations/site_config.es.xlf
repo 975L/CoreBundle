@@ -134,6 +134,14 @@
                 <source>description.theme_mode</source>
                 <target>Modo de visualización aplicado a todo el sitio para todos los visitantes</target>
             </trans-unit>
+            <trans-unit id="RVA3kky">
+                <source>description.ui_rating_icon</source>
+                <target>El símbolo con el que los visitantes valoran: estrella, corazón, pulgar o sonrisa</target>
+            </trans-unit>
+            <trans-unit id="tuD18o0">
+                <source>description.ui_rating_scale</source>
+                <target>Número de iconos ofrecidos. 1 convierte la valoración en un simple «me gusta» y muestra el número de votos en lugar de la media</target>
+            </trans-unit>
             <trans-unit id="vnYPhlr">
                 <source>description.url_cookies_policy</source>
                 <target>URL de la política de cookies, ej. https://example.com/pages/cookies</target>
@@ -281,6 +289,14 @@
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>
                 <target>Vitrina de bloques - URL</target>
+            </trans-unit>
+            <trans-unit id="H42R_Op">
+                <source>label.ui_rating_icon</source>
+                <target>Icono de las valoraciones</target>
+            </trans-unit>
+            <trans-unit id="p3KMSht">
+                <source>label.ui_rating_scale</source>
+                <target>Escala de las valoraciones</target>
             </trans-unit>
             <trans-unit id="R1c.duO">
                 <source>label.ui_watermark_margin</source>
