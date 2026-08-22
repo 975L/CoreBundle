@@ -56,10 +56,16 @@
     /* --tracker-segment-on: var(--primary); */
     /* --tracker-segment-off: var(--border-color); */
 
-    /* The star rating - the score in the secondary color, the rest of the row a quarter of the page ink. Two colors rather than one and an opacity: a faded accent reads as a disabled control where a neutral reads as "not yet earned". The size is in em, so a row of stars follows the type size of wherever it is dropped */
+    /* The rating - the rest of the row a quarter of the page ink, two colors rather than one and an opacity: a faded accent reads as a disabled control where a neutral reads as "not yet earned". The size is in em, so a row of icons follows the type size of wherever it is dropped */
+    /* A lit icon is painted in the color of its own sign - golden for a star, red for a heart, blue for a thumb - which the bundle holds and no theme retunes one by one. Setting --rating-on is how a site says "my accent on all of them": it wins over the four */
     /* --rating-on: var(--secondary); */
     /* --rating-off: color-mix(in srgb, var(--text) 25%, var(--background)); */
     /* --rating-size: 1.1em; */
+
+    /* The wishlist heart - the same two-color reading as the rating row above: filled in the red a heart is read in once the visitor put the thing aside, a quarter of the page ink until then. Sized in em so it follows the type size of the card or the sheet it is dropped in */
+    /* --favorite-on: #e0245e; */
+    /* --favorite-off: color-mix(in srgb, var(--text) 25%, var(--background)); */
+    /* --favorite-size: 1.5em; */
 
     /* Hero block - its own typographic scale, independent from the page's headings */
     /* --hero-title-size: clamp(40px, 6vw, 66px); */
@@ -143,6 +149,10 @@
     /* --toc-gap: 0.5rem; */
     /* --toc-marker-width: 3px; */
 
+    /* The two buttons pulling to the top and to the bottom of the page, which a long page is walked with. */
+    /* --back-pull-background-color: #bababa; */
+    /* --back-pull-background-color-hover: #90ee90; */
+
     /* The player of an <audio> given sticky="true" - a bar coming to rest against the bottom of the
        column it accompanies. It hides what slides under it, so it cannot be transparent. */
     /* --audio-sticky-background: var(--background); */
@@ -214,12 +224,17 @@
     /* --white: #fff; */
 
     /* Buttons - the primary/secondary pair follows the admin's palette through color-mix, the status three are fixed by convention (red danger, green success). */
-    /* --button-color: #fff; */
-    /* --button-secondary-color: #fff; */
-    /* --button-link-color: #fff; */
-    /* An icon on a button is an <img>, so it takes no color from the label beside it: 1 paints it white, 0 leaves it black. To be carried along whenever one of the three inks above is written dark, or the icon reads white on a flat meant for dark text. */
-    /* --button-icon-invert: 1; */
-    /* --button-secondary-icon-invert: 0; */
+    /* The three inks below are read from the compiled theme first: the backoffice computes them from the colors the admin picked - white on a dark one, black on a light one - so a pale brand color no longer carries a label nobody can read. Uncommenting one takes that reading away and fixes the ink whatever the palette becomes. */
+    /* --button-color: var(--c975l-button-color, #fff); */
+    /* --button-secondary-color: var(--c975l-button-secondary-color, #000); */
+    /* --button-link-color: var(--c975l-button-link-color, #fff); */
+    /* An icon on a button is an <img>, so it takes no color from the label beside it: 1 paints it white, 0 leaves it black. Computed with the inks above and never apart from them, a dark label beside a white icon being the same button written twice. */
+    /* --button-icon-invert: var(--c975l-button-icon-invert, 1); */
+    /* --button-secondary-icon-invert: var(--c975l-button-secondary-icon-invert, 0); */
+    /* The variants whose background is a constant of the library rather than the site's color keep an ink of their own, which nothing derived from the palette reaches. */
+    /* --button-status-color: #fff; */
+    /* --button-grey-background: lightgrey; */
+    /* --button-grey-color: #000; */
     /* --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5); */
     /* The two below are the fallbacks --primary and --secondary read when the admin sets no color, so uncommenting one repaints the whole site, not just its buttons - retune the palette in the backoffice instead, unless the design really means to take those two hues away from it. The values shown are SiteBundle's, which restates these three and loads after this bundle: a site without SiteBundle gets sass/_tokens.scss's own rgb(11, 55, 178) / rgb(218, 126, 57) / #000 instead. */
     /* --button-background-primary: #0a2d6b; */

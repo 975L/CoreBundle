@@ -70,6 +70,10 @@
                 <source>description.seo_robots_private</source>
                 <target>Mantiene este sitio fuera de los buscadores: robots.txt prohíbe entonces todo rastreo y no se escribe ningún llms.txt. Solo declarativo: lo que no debe alcanzarse tiene que estar tras una autenticación, nunca tras este ajuste.</target>
             </trans-unit>
+            <trans-unit id="MlHHZXH">
+                <source>description.site_address</source>
+                <target>Dirección postal del vendedor, utilizada por el formulario de desistimiento de las condiciones generales de venta. Facultativa, déjela vacía para un sitio gestionado desde un domicilio.</target>
+            </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
                 <target>El autor que se indicará en los metadatos</target>
@@ -297,6 +301,10 @@
             <trans-unit id="xzbvGNq">
                 <source>label.seo_robots_private</source>
                 <target>robots.txt - sitio fuera de los buscadores</target>
+            </trans-unit>
+            <trans-unit id="Yc66g7d">
+                <source>label.site_address</source>
+                <target>Dirección postal</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

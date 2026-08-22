@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-22",
+        "description": [
+            {
+                "en": "A redirect can no longer be saved on a path your server answers itself, such as a stylesheet or an image address: the form now says so instead of storing a rule that would never have applied",
+                "fr": "Une redirection ne peut plus être enregistrée sur un chemin que votre serveur sert lui-même, comme l'adresse d'une feuille de style ou d'une image : le formulaire vous le signale au lieu d'enregistrer une règle qui n'aurait jamais fonctionné",
+                "es": "Una redirección ya no puede guardarse en una ruta que su servidor sirve por sí mismo, como la dirección de una hoja de estilos o de una imagen: el formulario se lo indica en lugar de guardar una regla que nunca se habría aplicado"
+            },
+            {
+                "en": "An account holding only the editor role can now open the back office, and finds there just the screens that are theirs — the pages, the media library, the redirects, what your addresses say of themselves. The settings of the site, its users, its health and its backups stay yours alone",
+                "fr": "Un compte n'ayant que le rôle éditeur peut désormais ouvrir le back-office, où il ne trouve que les écrans qui le concernent — les pages, la médiathèque, les redirections, ce que vos adresses disent d'elles-mêmes. Les réglages du site, ses utilisateurs, sa santé et ses sauvegardes restent les vôtres seuls",
+                "es": "Una cuenta que solo tiene el rol de editor puede ahora abrir el back office, donde únicamente encuentra las pantallas que le corresponden: las páginas, la mediateca, las redirecciones, lo que sus direcciones dicen de sí mismas. Los ajustes del sitio, sus usuarios, su salud y sus copias de seguridad siguen siendo solo suyos"
+            },
+            {
+                "en": "The dashboard shortcuts are now laid out in titled rows — export, maintenance, enable / disable — instead of one long grid, and a tile switching something on stays highlighted for as long as it is on: you read what your site currently has switched on without going through every label",
+                "fr": "Les raccourcis du tableau de bord sont désormais présentés en rangées titrées — export, maintenance, activer / désactiver — au lieu d'une seule grille, et une tuile qui a activé quelque chose reste mise en évidence tant que c'est le cas : vous lisez ce que votre site a actuellement activé sans parcourir chaque libellé",
+                "es": "Los accesos directos del panel se presentan ahora en filas con título — exportación, mantenimiento, activar / desactivar — en lugar de una sola cuadrícula, y una casilla que ha activado algo permanece resaltada mientras siga así: usted lee lo que su sitio tiene activado sin recorrer cada etiqueta"
+            }
+        ]
+    },
+    {
         "date": "2026-08-20",
         "description": [
             {

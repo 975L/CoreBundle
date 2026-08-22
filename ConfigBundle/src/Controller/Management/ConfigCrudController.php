@@ -94,6 +94,9 @@ class ConfigCrudController extends AbstractCrudController
     #[\Override]
     public function index(AdminContext $context): KeyValueStore | Response
     {
+        // The screen returned below never reaches parent::index(), where EasyAdmin enforces the INDEX permission set in configureActions()
+        $this->denyAccessUnlessGranted((string) $this->configService->get('site-role-admin'));
+
         if ($this->showGroupsScreen()) {
             $showSensitive = $this->requestStack->getCurrentRequest()?->query->getBoolean('showSensitive', false) ?? false;
 
@@ -404,6 +407,9 @@ class ConfigCrudController extends AbstractCrudController
                 $action,
                 $this->translator->trans('action.edit', [], 'EasyAdminBundle'),
             ))
+            // Stated rather than left open: the screen used to be unreachable for want of a menu entry, the dashboard being admin-only - it now renders for an editor, who has no business reading the site's own settings
+            ->setPermission(Action::INDEX, $this->configService->get('site-role-admin'))
+            ->setPermission(Action::EDIT, $this->configService->get('site-role-admin'))
             ->setPermission('exportCsv', $this->configService->get('site-role-admin'))
             ->setPermission('toggleSensitive', $this->configService->get('site-role-admin'))
             ->setPermission('exportSql', $this->configService->get('site-role-admin'))

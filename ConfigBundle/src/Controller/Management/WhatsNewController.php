@@ -11,7 +11,7 @@
 namespace c975L\ConfigBundle\Controller\Management;
 
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,6 @@ class WhatsNewController extends AbstractController
 {
     public function __construct(
         private readonly WhatsNewBuilder $whatsNewBuilder,
-        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -28,7 +27,8 @@ class WhatsNewController extends AbstractController
     #[AdminRoute(path: '/whatsnew', name: 'whatsnew_index')]
     public function index(): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+        // The back-office floor rather than one named bar: the page only lists what the bundles state they changed, which is news to everyone standing in the back office, editor and admin alike
+        $this->denyAccessUnlessGranted(BackOfficeAccessVoter::ACCESS);
 
         return $this->render(
             '@c975LConfig/management/whatsnew/index.html.twig',

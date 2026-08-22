@@ -33,12 +33,24 @@ class ScaffoldThemeTest extends TestCase
     ];
 
     // Read, but never off :root either: the "--c975l-" ones are what the backoffice compiles into site-theme.css, and the "--bs-" ones belong to EasyAdmin
+    // Same for "--bottom-bar-height", an optional token another bundle sets on the body when it fixes a bar at the bottom of the viewport (ShopBundle's basket bar) - a value in :root would raise the scroll buttons on every site, bar or not
     private const array NOT_THEMABLE = [
+        '--bottom-bar-height',
         '--bs-border-color',
         '--bs-primary',
         '--bs-secondary-bg',
         '--bs-secondary-color',
         '--bs-tertiary-bg',
+        '--c975l-button-color',
+        '--c975l-button-color-dark-mode',
+        '--c975l-button-icon-invert',
+        '--c975l-button-icon-invert-dark-mode',
+        '--c975l-button-link-color',
+        '--c975l-button-link-color-dark-mode',
+        '--c975l-button-secondary-color',
+        '--c975l-button-secondary-color-dark-mode',
+        '--c975l-button-secondary-icon-invert',
+        '--c975l-button-secondary-icon-invert-dark-mode',
         '--c975l-color-background',
         '--c975l-color-primary',
         '--c975l-color-secondary',
@@ -48,7 +60,7 @@ class ScaffoldThemeTest extends TestCase
         '--c975l-font-family-title',
     ];
 
-    // Set inside the rules of each variant - .section--bg-* for the flats, .card--accent-* for the twelve card hues - so one value in :root would collapse every variant into a single look (the scaffold's own header says as much). A design retunes the tokens those rules point at instead: --section-bg-* for the flats, --block-accent-* for the hues, both of which the scaffold does offer. --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange, yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule - see the "Card accents" section of the README. --flip-card-ratio is the same shape one step further: only the eight .flip-card-ratio-* classes set it, one per shape an editor picks per card, and a card left on "free" declares none at all - a value in :root would give every flip card on the site one shape, which is the field's whole point undone. --block-radius and --block-shadow are that same shape again, one per step of the "rounded corners" and "shadow" fields (.block-radius-* / .block-shadow-*): the scale behind them is what a design retunes, and the scaffold does offer it as --block-radius-* / --block-shadow-*
+    // Set inside the rules of each variant - .section--bg-* for the flats, .card--accent-* for the twelve card hues - so one value in :root would collapse every variant into a single look (the scaffold's own header says as much). A design retunes the tokens those rules point at instead: --section-bg-* for the flats, --block-accent-* for the hues, both of which the scaffold does offer. --rating-icon-on is the narrowest of the lot: one per glyph the rating offers (.rating--star, --heart, --thumbs-up, --face-smile), the color belonging to the sign rather than to the site - a value in :root would paint a heart and a star alike again, which is the whole point of it. A site wanting one accent back on every glyph sets --rating-on, which the scaffold does offer and which wins over all four. --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange, yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule - see the "Card accents" section of the README. --flip-card-ratio is the same shape one step further: only the eight .flip-card-ratio-* classes set it, one per shape an editor picks per card, and a card left on "free" declares none at all - a value in :root would give every flip card on the site one shape, which is the field's whole point undone. --block-radius and --block-shadow are that same shape again, one per step of the "rounded corners" and "shadow" fields (.block-radius-* / .block-shadow-*): the scale behind them is what a design retunes, and the scaffold does offer it as --block-radius-* / --block-shadow-*
     private const array PER_VARIANT = [
         '--section-background',
         '--section-text',
@@ -61,6 +73,7 @@ class ScaffoldThemeTest extends TestCase
         '--card-accent-invert',
         '--flip-card-accent',
         '--flip-card-ratio',
+        '--rating-icon-on',
         '--block-radius',
         '--block-shadow',
     ];

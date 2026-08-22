@@ -31,3 +31,16 @@
     scroll-margin-top: var(--scroll-offset, 80px);
     text-align: justify;
 }
+
+// The frame the law itself asks for: the legal-guarantees notice and the model withdrawal form are only compliant when they are actually boxed (annex to article D. 211-2 of the French Consumer Code), so the border belongs to the document and not to a theme
+.legal-boxed {
+    padding: 1em;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+// The box holds several paragraphs where the rest of a model holds one <div>: they read as the same body copy
+.legal-boxed p {
+    margin-block: 1em;
+    text-align: justify;
+}

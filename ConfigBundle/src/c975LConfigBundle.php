@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\DependencyInjection\Compiler\DeclaredUrlsHealthCheckPass;
 use c975L\ConfigBundle\DependencyInjection\Compiler\TaggedInterfacePass;
+use c975L\ConfigBundle\EventSubscriber\CspNonceCookieSubscriber;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
 use c975L\ConfigBundle\Management\BackupPathProviderInterface;
 use c975L\ConfigBundle\Management\ContentOffenceLocatorInterface;
@@ -62,6 +63,16 @@ class c975LConfigBundle extends AbstractBundle
                 ],
             ]);
         }
+
+        // The CSP nonce cookie, signed so only a value this server issued is ever read back: an unsigned nonce is a nonce an injected script can carry (see CookieNonceGenerator). Both names, the secure one carrying the "__Host-" prefix and this config being unable to depend on the request. hash_algo stated rather than left to the default, which nelmio/security-bundle deprecates since 3.4 and changes in 4.0 - sha256 is that current default, so cookies already signed stay valid. Prepended rather than left to each site, the cookie being the bundle's own
+        if ($container->hasExtension('nelmio_security')) {
+            $container->prependExtensionConfig('nelmio_security', [
+                'signed_cookie' => [
+                    'names' => [CspNonceCookieSubscriber::COOKIE_NAME, CspNonceCookieSubscriber::COOKIE_NAME_SECURE],
+                    'hash_algo' => 'sha256',
+                ],
+            ]);
+        }
     }
 
     public function build(ContainerBuilder $container): void
@@ -97,7 +108,7 @@ class c975LConfigBundle extends AbstractBundle
     {
         $containerConfigurator->import('../config/services.yaml');
 
-        // SessionNonceGenerator implements a NelmioSecurityBundle interface, so its class isn't loadable without that bundle. The package requires it now (UiBundle's layout calls csp_nonce()), the guard staying as the cheap way not to depend on that being true forever
+        // CookieNonceGenerator implements a NelmioSecurityBundle interface, so its class isn't loadable without that bundle. The package requires it now (UiBundle's layout calls csp_nonce()), the guard staying as the cheap way not to depend on that being true forever
         if (interface_exists(NonceGeneratorInterface::class)) {
             $containerConfigurator->import('../config/services_nelmio.yaml');
         }

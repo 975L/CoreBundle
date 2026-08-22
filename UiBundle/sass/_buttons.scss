@@ -72,6 +72,20 @@
     background-color: var(--button-background-danger-dark);
 }
 
+// The green and the red are constants of the library, so their label keeps a white of its own: --button-color follows the site's primary colour and turns black under a pale one, which has nothing to say about what is written on these two
+// Classes doubled and the four states spelled out for the same reason as .btn-secondary above: "a.btn:hover" outweighs a single class
+.btn.btn-success,
+.btn.btn-success:visited,
+.btn.btn-success:hover,
+.btn.btn-success:visited:hover,
+.btn.btn-danger,
+.btn.btn-danger:visited,
+.btn.btn-danger:hover,
+.btn.btn-danger:visited:hover {
+    --button-icon-invert: 1;
+    color: var(--button-status-color);
+}
+
 // Class doubled for the same reason as .btn-secondary above: "a.btn-link" ties with "a.btn" and loses on source order
 .btn.btn-link,
 .btn.btn-link:visited {
@@ -88,8 +102,15 @@
     text-decoration: underline;
 }
 
-.btn-grey {
-    background-color: lightgrey;
+// Same reasoning, and the ink is the other way round: the grey is light, so what is written on it is dark - where the white it inherited left the icon of a delete button all but invisible
+.btn-grey,
+.btn.btn-grey,
+.btn.btn-grey:visited,
+.btn.btn-grey:hover,
+.btn.btn-grey:visited:hover {
+    --button-icon-invert: 0;
+    background-color: var(--button-grey-background);
+    color: var(--button-grey-color);
 }
 
 /* OTHER */

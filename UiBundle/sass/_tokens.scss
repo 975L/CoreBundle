@@ -16,6 +16,9 @@
         --alert-warning-background: #f9dba7;
         // The ground a sticky player writes on, which cannot be transparent: it hides the column sliding under it
         --audio-sticky-background: var(--background);
+        // The two buttons pulling to the top and to the bottom of the page (sass/_scroll-buttons.scss), which a long page is walked with
+        --back-pull-background-color: #bababa;
+        --back-pull-background-color-hover: #90ee90;
         --background: var(--c975l-color-background, #fff);
         // The three steps the banner's "height" field offers, on top of the "automatic" default it keeps for itself - the 200px floor sass/_banner-title.scss sets. Each raises that floor and none of them caps anything: a banner grows past its step rather than cropping a title that needs the room. Steps and not a length, for the reason the corners and the shadow above are: a free value puts arbitrary CSS in the database
         --banner-title-height-large: 520px;
@@ -57,13 +60,19 @@
         --button-background-success: rgb(40, 167, 69);
         --button-background-success-dark: rgb(40, 167, 69, 0.9);
         --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
-        --button-color: #fff;
-        // An icon on a button is an <img>, which paints its file's own black fill instead of taking the color the label beside it is written in: 1 inverts that black to white, 0 leaves it black. The default follows the white above, so a site writing a dark ink on its buttons carries this one along - the same pair as --card-accent-color / --card-accent-invert (see sass/_cards.scss)
-        --button-icon-invert: 1;
-        --button-link-color: #fff;
-        --button-secondary-color: #000;
+        // The ink of everything painted on --primary. Read from the theme rather than stated here: ThemeVariablesCssListener computes it from the colour the site picked - white on a dark one, black on a light one - so a pale brand colour no longer carries a white label nobody can read. The value below is what a site with no compiled theme keeps
+        --button-color: var(--c975l-button-color, #fff);
+        // An icon on a button is an <img>, which paints its file's own black fill instead of taking the color the label beside it is written in: 1 inverts that black to white, 0 leaves it black. Derived with the ink above and never apart from it, a dark label beside a white icon being the same button written twice - the same pair as --card-accent-color / --card-accent-invert (see sass/_cards.scss)
+        --button-icon-invert: var(--c975l-button-icon-invert, 1);
+        // The same ink, for a link dressed as a button: "a.btn" carries its own colour further down sass/_buttons.scss
+        --button-link-color: var(--c975l-button-link-color, #fff);
+        --button-secondary-color: var(--c975l-button-secondary-color, #000);
         // Its own value, the secondary button being the one variant whose label is written dark by default
-        --button-secondary-icon-invert: 0;
+        --button-secondary-icon-invert: var(--c975l-button-secondary-icon-invert, 0);
+        // The variants whose background is a constant of the library and not the site's colour: their ink is a constant too, and nothing derived from the theme reaches them
+        --button-grey-background: lightgrey;
+        --button-grey-color: #000;
+        --button-status-color: #fff;
         --card-background: #fff;
         // The 19px this bundle's own hierarchy sets for a card title, from the hero's 66px down to here (see sass/_page-sections.scss) - never inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact one steps down once more, to the measure of its 190px
         --card-title-size: calc(19px * var(--font-size-title-scale, 1));
@@ -83,6 +92,8 @@
         // Two to the row, one gap between them, and a 570px cap that is the same number as the other two: 380 * 3, 190 * 6 and 570 * 2 are one and the same 1140px of cards, which is what makes the three read as one series rather than three values
         --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2));
         --disabled: #808080;
+        // The wishlist heart's own size (sass/_favorite.scss), in em so it follows the type size of wherever it is dropped
+        --favorite-size: 1.5em;
         // The flip card's own shape and surfaces - deliberately apart from the card's: the two kinds are different objects (see sass/_flip-card.scss), and a design retuning one must not move the other.
         // The back is mixed out of the palette rather than pointed at --card-background: it is what the turn reveals, so it has to read as another surface than the front, and than any card sitting beside it
         --flip-card-back-background: color-mix(in srgb, var(--secondary) 30%, var(--background));

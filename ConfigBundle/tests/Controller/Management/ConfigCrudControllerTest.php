@@ -268,11 +268,32 @@ class ConfigCrudControllerTest extends TestCase
             )
             ->willReturn('<html>groups</html>');
 
-        $controller->setContainer($this->createContainer(['twig' => $twig]));
+        $controller->setContainer($this->createContainer([
+            'twig' => $twig,
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+        ]));
 
         $response = $controller->index(AdminContext::forTesting());
 
         $this->assertSame('<html>groups</html>', $response->getContent());
+    }
+
+    // The "pick a group" screen returns before parent::index(), where EasyAdmin enforces the permission configureActions() sets - so index() bars the way itself, for both of its branches
+    public function testIndexRefusesAViewerWithoutTheAdminRole(): void
+    {
+        $controller = $this->createController(requestStack: $this->createRequestStackWithGroup(null));
+
+        $twig = $this->createMock(\Twig\Environment::class);
+        $twig->expects($this->never())->method('render');
+
+        $controller->setContainer($this->createContainer([
+            'twig' => $twig,
+            'security.authorization_checker' => $this->createAuthorizationChecker(false),
+        ]));
+
+        $this->expectException(AccessDeniedException::class);
+
+        $controller->index(AdminContext::forTesting());
     }
 
     // The grid's own "show sensitive data" toggle is a global action of the index page, which this screen replaces - so the screen draws its own
@@ -353,7 +374,10 @@ class ConfigCrudControllerTest extends TestCase
             }
         );
 
-        $controller->setContainer($this->createContainer(['twig' => $twig]));
+        $controller->setContainer($this->createContainer([
+            'twig' => $twig,
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+        ]));
         $controller->index(AdminContext::forTesting());
 
         return $captured;
@@ -959,6 +983,24 @@ class ConfigCrudControllerTest extends TestCase
 
         $this->assertNotNull($cancelAction);
         $this->assertSame(Action::INDEX, $cancelAction->getCrudActionName());
+    }
+
+    // The screen used to be unreachable for want of a menu entry, the dashboard being admin-only - it renders for an editor now, who has no business reading the site's own settings, so both actions state the bar rather than leave it open
+    public function testConfigureActionsStatesTheAdminBarOnIndexAndEdit(): void
+    {
+        $requestStack = new RequestStack([new Request()]);
+
+        $controller = $this->createController(requestStack: $requestStack);
+
+        $actions = $controller->configureActions(
+            Actions::new()
+                ->add(Crud::PAGE_INDEX, Action::EDIT)
+        );
+
+        $permissions = $actions->getAsDto(null)->getActionPermissions();
+
+        $this->assertSame('site-role-admin', $permissions[Action::INDEX] ?? null);
+        $this->assertSame('site-role-admin', $permissions[Action::EDIT] ?? null);
     }
 
     // The "SQL + secrets" export hands over decryptable secrets: its permission must stay stricter than the other exports', whose role is configurable

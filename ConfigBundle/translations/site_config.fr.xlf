@@ -70,6 +70,10 @@
                 <source>description.seo_robots_private</source>
                 <target>Retire ce site des moteurs de recherche : robots.txt interdit alors toute exploration, et aucun llms.txt n'est écrit. Purement déclaratif - ce qui ne doit pas être atteint doit être derrière une authentification, jamais derrière ce réglage.</target>
             </trans-unit>
+            <trans-unit id="MlHHZXH">
+                <source>description.site_address</source>
+                <target>Adresse postale du vendeur, reprise par le formulaire de rétractation des conditions générales de vente. Facultative, à laisser vide pour un site édité depuis un domicile.</target>
+            </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
                 <target>L'auteur qui sera renseigné dans les métadonnées</target>
@@ -297,6 +301,10 @@
             <trans-unit id="xzbvGNq">
                 <source>label.seo_robots_private</source>
                 <target>robots.txt - site hors moteurs de recherche</target>
+            </trans-unit>
+            <trans-unit id="Yc66g7d">
+                <source>label.site_address</source>
+                <target>Adresse postale</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

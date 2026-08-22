@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Controller\Management\RedirectCrudController;
 use c975L\ConfigBundle\Controller\Management\UserCrudController;
 use c975L\ConfigBundle\Management\MenuProvider;
 use c975L\ConfigBundle\Management\MenuProviderInterface;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -27,6 +28,16 @@ class MenuProviderTest extends TestCase
         $service->method('get')->willReturnCallback(static fn (string $key) => $values[$key] ?? null);
 
         return $service;
+    }
+
+    // A url that moved is the editor's business, whoever published the page it pointed at - the bar RedirectCrudController sets on its own index
+    public function testTheRedirectsEntryNamesTheEditorRoleAndTheOthersTakeTheAdminDefault(): void
+    {
+        $menus = new MenuProvider($this->createConfigService(['site-role-editor' => 'ROLE_EDITOR']))->getMenus();
+
+        $this->assertSame('ROLE_EDITOR', $menus['redirect']['role']);
+        $this->assertArrayNotHasKey('role', $menus['config']);
+        $this->assertArrayNotHasKey('role', $menus['user']);
     }
 
     public function testGetMenuSectionReturnsTheManagementSectionInTheSiteDomain(): void
@@ -95,6 +106,8 @@ class MenuProviderTest extends TestCase
         $this->assertSame('management_whatsnew_index', $links['whatsnew']['name']);
         $this->assertSame('label.whatsnew', $links['whatsnew']['label']);
         $this->assertSame('config', $links['whatsnew']['translation_domain']);
+        // The very attribute WhatsNewController denies on: no role_hierarchy is shipped, so an admin carrying no editor role would otherwise open the screen without ever seeing its link
+        $this->assertSame(BackOfficeAccessVoter::ACCESS, $links['whatsnew']['role']);
     }
 
     // Restricted to ROLE_SUPER_ADMIN since it writes arbitrary content straight into the database (see ContentImportController)

@@ -145,6 +145,64 @@ class ThemeVariablesCssListenerTest extends TestCase
         $this->assertStringContainsString('--c975l-font-family-title: "Georgia", serif;', $css);
     }
 
+    // A pale brand colour used to reach the visitor as a white label on light blue - 1.97:1, and the first thing an accessibility audit reports
+    public function testALightThemeColourIsGivenADarkInk(): void
+    {
+        $listener = $this->createListener([$this->config('theme-color-primary', '#7cc0f0')]);
+        $this->flush($this->markStale($listener, 'theme-color-primary', '#7cc0f0'));
+
+        $css = file_get_contents($this->cssPath);
+        $this->assertStringContainsString('--c975l-button-color: #000;', $css);
+        $this->assertStringContainsString('--c975l-button-link-color: #000;', $css);
+        $this->assertStringContainsString('--c975l-button-icon-invert: 0;', $css);
+    }
+
+    // The icon goes with the label and never apart from it: an <img> takes no colour of its own, so it is turned over by an inversion
+    public function testADarkThemeColourKeepsTheWhiteInkAndTheInvertedIcon(): void
+    {
+        $listener = $this->createListener([$this->config('theme-color-primary', 'rgb(11, 55, 178)')]);
+        $this->flush($this->markStale($listener, 'theme-color-primary', 'rgb(11, 55, 178)'));
+
+        $css = file_get_contents($this->cssPath);
+        $this->assertStringContainsString('--c975l-button-color: #fff;', $css);
+        $this->assertStringContainsString('--c975l-button-icon-invert: 1;', $css);
+    }
+
+    // The secondary carries its own pair, the two colours being read one by one
+    public function testTheSecondaryColourIsReadOnItsOwn(): void
+    {
+        $listener = $this->createListener([
+            $this->config('theme-color-primary', '#7cc0f0'),
+            $this->config('theme-color-secondary', '#0a2d6b'),
+        ]);
+        $this->flush($this->markStale($listener, 'theme-color-secondary', '#0a2d6b'));
+
+        $css = file_get_contents($this->cssPath);
+        $this->assertStringContainsString('--c975l-button-color: #000;', $css);
+        $this->assertStringContainsString('--c975l-button-secondary-color: #fff;', $css);
+        $this->assertStringContainsString('--c975l-button-secondary-icon-invert: 1;', $css);
+    }
+
+    // A colour this does not read is left to the stylesheet's own default rather than guessed at
+    public function testAColourThatCannotBeReadDerivesNothing(): void
+    {
+        $listener = $this->createListener([$this->config('theme-color-primary', 'hsl(200, 80%, 71%)')]);
+        $this->flush($this->markStale($listener, 'theme-color-primary', 'hsl(200, 80%, 71%)'));
+
+        $css = file_get_contents($this->cssPath);
+        $this->assertStringContainsString('--c975l-color-primary: hsl(200, 80%, 71%);', $css);
+        $this->assertStringNotContainsString('--c975l-button-color:', $css);
+        $this->assertStringNotContainsString('--c975l-button-icon-invert:', $css);
+    }
+
+    // Marks the compiled file stale the way a saved config does
+    private function markStale(ThemeVariablesCssListener $listener, string $slug, ?string $value): ThemeVariablesCssListener
+    {
+        $listener->postPersist(new PostPersistEventArgs($this->config($slug, $value), $this->createStub(EntityManagerInterface::class)));
+
+        return $listener;
+    }
+
     // A bare font name is quoted and gets its generic fallback appended, so the browser has somewhere to go
     public function testRegenerateAppendsGenericFallbackToABareCustomFontName(): void
     {

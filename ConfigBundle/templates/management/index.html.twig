@@ -24,14 +24,13 @@
         {{ include(widget.template, widget.context) }}
     {% endfor %}
 
-    {# Shortcuts merged across every bundle's ShortcutProvider #}
-    {% if shortcuts|length > 0 %}
-        <h2>{{ ('label.shortcuts'|trans({}, 'config')) }}</h2>
-        {{ include('@c975LConfig/management/_shortcuts.html.twig', { shortcuts: shortcuts }) }}
-    {% endif %}
+    {# Shortcuts merged across every bundle's ShortcutProvider, one titled row per category - the partial draws its own heading, the roles deciding what is left to show being read there #}
+    {{ include('@c975LConfig/management/_shortcuts.html.twig', { categories: shortcutCategories }) }}
 
-    {# Essential-actions entry point, merged across every bundle's EssentialActionProvider - always visible, functional (every action stays a link, even once done) #}
-    {{ include('@c975LConfig/management/_essential_actions.html.twig', { actions: essentialActions, progress: essentialActionsProgress }) }}
+    {# Essential-actions entry point, merged across every bundle's EssentialActionProvider - always visible to an admin, functional (every action stays a link, even once done). Not built at all for an editor (see DashboardController::index()), whose empty progress would leave the heading standing above nothing #}
+    {% if essentialActions|length > 0 %}
+        {{ include('@c975LConfig/management/_essential_actions.html.twig', { actions: essentialActions, progress: essentialActionsProgress }) }}
+    {% endif %}
 
     {# Alerts merged across every bundle's AlertProvider - generic title since it mixes several kinds of items #}
     {{ include('@c975LConfig/management/_alerts.html.twig', {

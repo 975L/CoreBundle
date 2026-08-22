@@ -95,6 +95,19 @@ class MaintenanceAlertProviderTest extends TestCase
         $this->assertSame('description.maintenance_alert_long', $alerts[0]['description']);
     }
 
+    // The dashboard renders for an editor now, who can neither reopen the site nor read the settings screen the alert links to - both of its alerts carry the admin bar so AlertBuilder drops them for that user
+    public function testBothAlertsCarryTheAdminRole(): void
+    {
+        $alerts = $this->createProvider(
+            $this->createConfig(true, '-1 hour'),
+            ['site-url' => 'https://example.com/', 'site-maintenance-hash' => 'abc123', 'site-role-admin' => 'ROLE_ADMIN'],
+        )->getAlerts();
+
+        $this->assertCount(2, $alerts);
+        $this->assertSame('ROLE_ADMIN', $alerts[0]['role']);
+        $this->assertSame('ROLE_ADMIN', $alerts[1]['role']);
+    }
+
     // The url to hand over to whoever has to see the closed site without being given an account
     public function testASecondAlertCarriesThePreviewUrlBuiltWithTheToken(): void
     {

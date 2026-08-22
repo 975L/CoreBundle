@@ -242,4 +242,28 @@ class RedirectSubscriberTest extends TestCase
 
         $this->assertNull($event->getResponse());
     }
+
+    // AssetMapper output is answered by the web server, so a missing file there costs no query at all - the one thing that would otherwise turn a page full of stale urls into a burst of database connections
+    public function testOnKernelRequestSkipsAssetMapperOutput(): void
+    {
+        $repository = $this->createMock(RedirectRepository::class);
+        $repository->expects($this->never())->method('findCandidatesForPath');
+        $subscriber = new RedirectSubscriber($repository);
+
+        $subscriber->onKernelRequest($this->createEvent('/assets/styles-a1b2c3.css'));
+        $subscriber->onKernelRequest($this->createEvent('/bundles/c975lui/js/app.js'));
+
+        $this->addToAssertionCount(1);
+    }
+
+    // A removed upload is a url someone did publish, so its row fires like any other: the guard covers the digest-named folders only
+    public function testOnKernelRequestRedirectsARemovedUpload(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/medias/site/guide.pdf')->setToUrl('/medias/site/guide-2026.pdf')->setPermanent(true));
+        $event = $this->createEvent('/medias/site/guide.pdf');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/medias/site/guide-2026.pdf', $event->getResponse()->getTargetUrl());
+    }
 }

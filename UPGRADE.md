@@ -1,5 +1,28 @@
 # UPGRADE
 
+## To v1.14.0
+
+`Security\SessionNonceGenerator` is now `Security\CookieNonceGenerator`. The CSP nonce is held in a signed cookie instead of the session, which opened a connection to the session store on every request of every anonymous visitor. Nothing to change in an app: the service is registered by the bundle, and both cookie names — `csp_nonce` and, over https, `__Host-csp_nonce` — are prepended to `nelmio_security.signed_cookie.names`, along with `hash_algo: sha256`. Only an app that referenced the old class by name has an import to update.
+
+| Before | After |
+|---|---|
+| `c975L\ConfigBundle\Security\SessionNonceGenerator` | `c975L\ConfigBundle\Security\CookieNonceGenerator` |
+
+### The dashboard shortcuts come as categories, not as one flat list
+
+`Management\ShortcutBuilder::getShortcuts()` is now `getCategories()`, returning one entry per category (`['label' => translated, 'shortcuts' => [...]]`) so the dashboard draws a titled row per category instead of a single grid. The template variable follows: `_shortcuts.html.twig` takes `categories`, and `management/index.html.twig` passes it `shortcutCategories`. **Nothing to do in a `ShortcutProviderInterface` of your own** — a provider still returns the same flat shortcuts. Only an app overriding `@c975LConfig/management/index.html.twig` or rendering the partial by hand has the variable to rename.
+
+`ShortcutProviderInterface::CATEGORY_TOGGLE` joins the shared categories, for a tile flipping something on or off, and `'active'` now paints: a tile whose `active` is `true` (the thing is on, clicking turns it off) wears `shortcut-tile-warning`. A one-shot action that used to set `active` for information alone has to return `false`, or it shows up as a warning-colored tile — this bundle's "Update the AI crawlers" tile did, and no longer does.
+
+| Before | After |
+|---|---|
+| `$shortcutBuilder->getShortcuts()` | `$shortcutBuilder->getCategories()` |
+| `include('@c975LConfig/management/_shortcuts.html.twig', { shortcuts: shortcuts })` | `include('@c975LConfig/management/_shortcuts.html.twig', { categories: shortcutCategories })` |
+
+### The wishlist adds a table
+
+`c975L\UiBundle\Entity\Favorite` (`site_favorite` table) backs the new wishlist: run `php bin/console doctrine:migrations:diff && php bin/console doctrine:migrations:migrate`. Nothing else to do — the feature only shows where a template drops `<twig:c975LUi:Favorite:Button/>`, and a list is only readable for a kind whose bundle implements `Contract\FavoriteItemProviderInterface`.
+
 ## From `v1.12.5` to `v1.13`
 
 ### A Block collection's `data-block-*` attributes are now `data-ui-*`

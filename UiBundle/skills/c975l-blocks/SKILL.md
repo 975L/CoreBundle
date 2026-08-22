@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash."
 ---
 
 # c975L UiBundle — blocks
@@ -10,7 +10,7 @@ description: "Use this skill when working with page blocks in a Symfony applicat
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `templates/blocks/`, `templates/components/Blocks/`, `config/services.yaml`
+`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `config/services.yaml`
 
 **Related skills:** `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-config`, `c975l-management` in ConfigBundle beside it.
 
@@ -193,10 +193,47 @@ On a listing, two more props turn the widget into what a catalog card has room f
   `no-store`: a token would open a session whose `Set-Cookie` the shared cache would hand to the next
   visitor. A json body, an `Origin`/`Referer` of this site and the `ui_rating` limiter stand in its
   place.
+- **`RatingSnippetBuilder` publishes the tally to a search engine** — `build($ownerType, $ownerId)`, or
+  `buildFromAggregate($aggregate)` off a tally the listing already read. It returns a *fragment*, never
+  a graph: schema.org reads an `AggregateRating` as a property of the thing rated, so the bundle owning
+  that thing nests the node in its own. An owner nobody voted on returns `[]`, a zeroed node being what
+  Google rejects the whole rich result for.
 - **Nothing cascades.** Whichever service deletes the rated row *for good* calls
   `RatingRepository::deleteForOwner()` — on the permanent delete only, never on a trash: a restored
   entity has to find its notes where it left them. A whole set goes through
   `deleteForOwners($ownerType, $ownerIds)`, one query for the lot rather than one per row.
+
+## Wishlist
+
+The same terms as the ratings above, for a thing a visitor puts *aside*: `Entity\Favorite` stores an
+`ownerType`/`ownerId` pair and a `holder`, so no bundle maps a collection it never reads.
+
+```twig
+<twig:c975LUi:Favorite:Button ownerType="shop_product" ownerId="{{ product.id }}"/>
+```
+
+- **A row is unreadable until its owner resolves it.** Implement `Contract\FavoriteItemProviderInterface`
+  in the bundle owning the thing — `supports($ownerType)` plus `getItems($ownerType, $ownerIds)`
+  answering **the whole page at once**, keyed by owner id, as the very `Model\CollectionItem` the
+  `collection` block hands its own items over as. Auto-discovered, no tag
+  (`DependencyInjection\Compiler\FavoriteItemProviderPass`). Two providers claiming one `ownerType`
+  throws; a kind nobody implements is simply dropped from the list rather than drawn empty.
+- **Leaving out what the visitor may no longer see** — a draft, something trashed, something withdrawn
+  from sale — **is the provider's own call**, being the only one that knows what "published" means for
+  its kind of thing. A wishlist is public reading.
+- **Whose list it is** is one opaque `holder`: `u<id>` for an authenticated visitor, so it follows them
+  to another browser, a 32-hex token their own browser mints **on the click** otherwise, kept in its own
+  `localStorage` store. One column for both, under a unique constraint on
+  `(owner_type, owner_id, holder)` — which is what lets a list built anonymously be handed over to the
+  account on the next authenticated request carrying that token.
+- **The three routes take no CSRF token**, for the reason the vote's does not: `ui_favorite_page`
+  (`GET /favorites`, the cacheable shell), `ui_favorite_toggle` and `ui_favorite_list` (both POST,
+  `no-store`). A json body, an `Origin`/`Referer` of this site and the `ui_favorite` limiter stand in
+  its place. `ui_favorite_list` is a POST because of the token, which must not reach a url.
+- **The button dispatches `ui-favorite:changed`** with `{count}`, bubbling — what a navbar counter
+  listens to.
+- **Nothing cascades here either**: `FavoriteRepository::deleteForOwner()` / `deleteForOwners()`, on the
+  permanent delete only.
 
 ## Exporting
 
@@ -220,6 +257,14 @@ them** rather than writing a walk of your own. A content export never carries th
   `SameAsProviderInterface`.
 - **Do not make a singleton kind pickable.**
 - **Do not map a relation to `Rating`**, and do not read a rating's scale off the request.
+- **Do not map a relation to `Favorite`** either, and do not resolve a wishlist one row at a time —
+  `getItems()` is handed the whole page's ids.
+- **Do not return from a `FavoriteItemProviderInterface` what the visitor may no longer see.**
+- **Do not publish `RatingSnippetBuilder`'s node as a graph of its own** — nest it in the node of the
+  thing rated.
+- **Do not read `app.flashes` unguarded** in a template or in an overridden `{% block flashes %}`:
+  reading the bag starts a session for every anonymous visitor. Wrap it in `ui_can_hold_flash()`, as
+  this bundle's `layout.html.twig` and `Form` component do.
 - **Do not call `RatingRepository::deleteForOwner()` from a trash action** — only from the
   permanent delete.
 - **Do not add a built-in kind to this bundle from an app** — `c975l:ui:block:create` generates into

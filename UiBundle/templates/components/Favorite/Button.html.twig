@@ -1,0 +1,18 @@
+{# <twig:c975LUi:Favorite:Button ownerType="shop_product" ownerId="{{ product.id }}"/> - the heart a visitor puts a thing aside with, next to Rating:Rating's row of icons #}
+{# The page carrying this is usually cached and shared between visitors, so nothing about this one's list is printed: assets/js/favorite.js reads it from their own browser, then from the answer to their click #}
+{% props ownerType, ownerId, class = "" %}
+<div class="favorite {{ class }}"
+     data-controller="ui-favorite"
+     data-ui-favorite-url-value="{{ path('ui_favorite_toggle', {ownerType: ownerType, ownerId: ownerId}) }}"
+     data-ui-favorite-key-value="{{ ownerType }}:{{ ownerId }}"
+     data-ui-favorite-add-label-value="{{ 'label.favorite_add'|trans({}, 'ui') }}"
+     data-ui-favorite-remove-label-value="{{ 'label.favorite_remove'|trans({}, 'ui') }}"
+     data-ui-favorite-error-label-value="{{ 'label.favorite_error'|trans({}, 'ui') }}">
+    {# A button and not a checkbox: the change is sent by fetch, there is no form to submit, and the state is the server's answer rather than the box's own #}
+    <button type="button"
+            class="favorite-button"
+            data-ui-favorite-target="button"
+            data-action="ui-favorite#toggle"
+            aria-pressed="false"
+            aria-label="{{ 'label.favorite_add'|trans({}, 'ui') }}"></button>
+</div>

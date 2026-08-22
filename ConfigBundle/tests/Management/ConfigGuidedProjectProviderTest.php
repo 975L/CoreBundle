@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Management\ConfigGuidedProjectProvider;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -45,7 +46,11 @@ class ConfigGuidedProjectProviderTest extends TestCase
 
     private function createProvider(array &$routes = []): ConfigGuidedProjectProvider
     {
-        return new ConfigGuidedProjectProvider($this->createAdminUrlGenerator(), $this->createUrlGenerator($routes));
+        // Answers each role key with itself, so a project's own gate is readable back in the assertions
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnArgument(0);
+
+        return new ConfigGuidedProjectProvider($this->createAdminUrlGenerator(), $configService, $this->createUrlGenerator($routes));
     }
 
     // ConfigBundle opens the sequence the satellite bundles continue - SiteBundle picks up at 50
@@ -58,6 +63,26 @@ class ConfigGuidedProjectProviderTest extends TestCase
             array_column($projects, 'slug')
         );
         $this->assertSame([10, 20, 30, 40], array_column($projects, 'order'));
+    }
+
+    // A project is offered on a dashboard an editor now reaches, so one walking an admin screen has to say so or its very first step answers a 403
+    public function testEveryProjectIsGatedByTheRoleItsOwnScreenNeeds(): void
+    {
+        $roles = [];
+        foreach ($this->createProvider()->getGuidedProjects() as $project) {
+            $roles[$project['slug']] = $project['role'];
+        }
+
+        $this->assertSame(
+            [
+                'config-settings' => 'site-role-admin',
+                'config-health-check' => 'site-role-admin',
+                'config-maintenance' => 'site-role-admin',
+                // The only one of the four whose screen answers an editor (see UrlMetadataCrudController)
+                'config-url-metadata' => 'site-role-editor',
+            ],
+            $roles,
+        );
     }
 
     public function testEverySlugIsPrefixedWithTheBundleName(): void

@@ -50,6 +50,8 @@ class MenuProvider implements MenuProviderInterface
                 'label' => 'label.media_library',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-photo-film',
+                // The bar MediaCrudController sets on its own index, and the reason this entry is the one this bundle keeps essential
+                'role' => $this->configService->get('site-role-editor'),
                 // Same key as the screen's own explanatory text - one text, reused, not a separate onboarding-only string (see MenuProviderInterface::getMenus())
                 'description' => 'label.info_media',
             ],
@@ -75,6 +77,8 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-font',
                 'tier' => 'advanced',
+                // The bar FontCrudController sets on its own index, only its "export selection" being stricter
+                'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_font',
             ],
             'site_graphic' => [
@@ -83,6 +87,8 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-image',
                 'tier' => 'advanced',
+                // The bar SiteGraphicCrudController sets on its own index, the graphics being content like any other
+                'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_site_graphic',
             ],
         ];

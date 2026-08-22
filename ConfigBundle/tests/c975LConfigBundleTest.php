@@ -14,6 +14,7 @@ use c975L\ConfigBundle\c975LConfigBundle;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\DependencyInjection\Compiler\DeclaredUrlsHealthCheckPass;
 use c975L\ConfigBundle\DependencyInjection\Compiler\TaggedInterfacePass;
+use c975L\ConfigBundle\EventSubscriber\CspNonceCookieSubscriber;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
 use c975L\ConfigBundle\Management\ContentOffenceLocatorInterface;
 use c975L\ConfigBundle\Management\DashboardWidgetProviderInterface;
@@ -145,6 +146,30 @@ class c975LConfigBundleTest extends TestCase
         $this->assertSame([], $container->getExtensionConfig('doctrine'));
     }
 
+    // The whole guarantee behind the nonce: the cookie is signed, so a value the server never issued is dropped before CookieNonceGenerator reads it. Both names are listed, the secure one carrying the "__Host-" prefix and this config having no request to pick from
+    public function testPrependExtensionSignsBothNonceCookieNames(): void
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension(new c975LConfigBundleTestNelmioSecurityExtensionFixture());
+
+        new c975LConfigBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $signedCookie = $container->getExtensionConfig('nelmio_security')[0]['signed_cookie'];
+        $this->assertSame([CspNonceCookieSubscriber::COOKIE_NAME, CspNonceCookieSubscriber::COOKIE_NAME_SECURE], $signedCookie['names']);
+        // Stated rather than left to the default, which nelmio/security-bundle deprecates since 3.4 and changes in 4.0 - every consuming app would otherwise collect that deprecation for a config it never wrote
+        $this->assertSame('sha256', $signedCookie['hash_algo']);
+    }
+
+    // NelmioSecurityBundle stays optional, and prepending for an extension that isn't there fails the container outright
+    public function testPrependExtensionSkipsTheSignedCookieWithoutTheNelmioExtension(): void
+    {
+        $container = new ContainerBuilder();
+
+        new c975LConfigBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $this->assertSame([], $container->getExtensionConfig('nelmio_security'));
+    }
+
     public function testGetPathReturnsTheBundleRootDirectory(): void
     {
         $bundle = new c975LConfigBundle();
@@ -163,6 +188,19 @@ class c975LConfigBundleTestDoctrineExtensionFixture implements ExtensionInterfac
     public function getAlias(): string
     {
         return 'doctrine';
+    }
+}
+
+// Stands in for NelmioSecurityBundle's extension, only its alias mattering to prependExtension()
+class c975LConfigBundleTestNelmioSecurityExtensionFixture implements ExtensionInterface
+{
+    public function load(array $configs, ContainerBuilder $container): void
+    {
+    }
+
+    public function getAlias(): string
+    {
+        return 'nelmio_security';
     }
 }
 

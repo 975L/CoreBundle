@@ -12,7 +12,7 @@ namespace c975L\ConfigBundle\Management;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Merges the dashboard shortcuts contributed by every ShortcutProvider (bundles depending on ConfigBundle) into a single flat, ordered list - grouped by category internally (see ShortcutProviderInterface) purely to order same-themed tiles from different bundles (e.g. every "Export" shortcut) next to each other, with no visual separation between groups so the tiles stay one compact grid
+// Merges the dashboard shortcuts contributed by every ShortcutProvider (bundles depending on ConfigBundle) into categories (see ShortcutProviderInterface), each rendered as a titled row of tiles: an admin looking for what a tile does reads one heading rather than scanning a single grid where an export sat next to a toggle
 class ShortcutBuilder
 {
     // Fallback category for a shortcut not opting into one (see ShortcutProviderInterface::getShortcuts())
@@ -25,8 +25,9 @@ class ShortcutBuilder
     ) {
     }
 
-    // Returns every shortcut, ordered by category (translated label) then by the shortcut's own (already translated) label - flat, so the template can render one grid without a heading per category
-    public function getShortcuts(): array
+    // Returns the categories, ordered by their translated label, each holding its shortcuts ordered by their own (already translated) label - the template renders one row per category, the tiles of a same-themed group coming from any number of bundles
+    /** @return list<array{label: string, shortcuts: list<array<string, mixed>>}> */
+    public function getCategories(): array
     {
         $shortcuts = ProviderMerger::merge($this->shortcutProviders, fn (ShortcutProviderInterface $provider) => $provider->getShortcuts());
 
@@ -34,22 +35,17 @@ class ShortcutBuilder
         foreach ($shortcuts as $shortcut) {
             $category = $shortcut['category'] ?? ['label' => self::OTHER_CATEGORY_LABEL, 'translation_domain' => self::OTHER_CATEGORY_TRANSLATION_DOMAIN];
             $key = $category['translation_domain'] . '.' . $category['label'];
-            $categories[$key] ??= $category + ['shortcuts' => []];
+            $categories[$key] ??= ['label' => $this->translator->trans($category['label'], [], $category['translation_domain']), 'shortcuts' => []];
             $categories[$key]['shortcuts'][] = $shortcut;
         }
 
-        uasort($categories, fn (array $a, array $b) => strcasecmp(
-            $this->translator->trans($a['label'], [], $a['translation_domain']),
-            $this->translator->trans($b['label'], [], $b['translation_domain']),
-        ));
+        uasort($categories, fn (array $a, array $b) => strcasecmp($a['label'], $b['label']));
 
-        $sortedShortcuts = [];
-        foreach ($categories as $category) {
-            $categoryShortcuts = $category['shortcuts'];
-            uasort($categoryShortcuts, fn (array $a, array $b) => strcasecmp($a['label'], $b['label']));
-            array_push($sortedShortcuts, ...array_values($categoryShortcuts));
-        }
+        return array_values(array_map(static function (array $category): array {
+            uasort($category['shortcuts'], fn (array $a, array $b) => strcasecmp($a['label'], $b['label']));
+            $category['shortcuts'] = array_values($category['shortcuts']);
 
-        return $sortedShortcuts;
+            return $category;
+        }, $categories));
     }
 }

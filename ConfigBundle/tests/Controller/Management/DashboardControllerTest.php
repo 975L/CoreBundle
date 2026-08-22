@@ -20,6 +20,7 @@ use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
@@ -29,10 +30,14 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 class DashboardControllerTest extends TestCase
 {
+    use ControllerContainerTestTrait;
+
     private ?string $projectDir = null;
 
     protected function tearDown(): void
@@ -43,7 +48,7 @@ class DashboardControllerTest extends TestCase
         }
     }
 
-    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = '', ?PaginatorPageSize $paginatorPageSize = null): DashboardController
+    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = '', ?PaginatorPageSize $paginatorPageSize = null, ?EssentialActionBuilder $essentialActionBuilder = null): DashboardController
     {
         $guidedProjectMountBuilder = $this->createStub(GuidedProjectMountBuilder::class);
         $guidedProjectMountBuilder->method('getHtml')->willReturn($guidedProjectMount);
@@ -51,8 +56,8 @@ class DashboardControllerTest extends TestCase
         $stylesheetManagementRegistry = $this->createStub(StylesheetManagementRegistry::class);
         $stylesheetManagementRegistry->method('all')->willReturn($managementStylesheets);
 
-        // site-role-admin is always set: configureMenuItems() passes it straight to setPermission(), which rejects null
-        $configs += ['site-role-admin' => 'ROLE_ADMIN'];
+        // Both bars are always set: configureMenuItems() passes the editor one straight to setPermission(), which rejects null, and index() reads them both
+        $configs += ['site-role-admin' => 'ROLE_ADMIN', 'site-role-editor' => 'ROLE_EDITOR'];
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(fn (string $key) => $configs[$key] ?? null);
 
@@ -67,7 +72,7 @@ class DashboardControllerTest extends TestCase
             $this->createStub(WhatsNewBuilder::class),
             $this->createStub(AlertBuilder::class),
             $this->createStub(ShortcutBuilder::class),
-            $this->createStub(EssentialActionBuilder::class),
+            $essentialActionBuilder ?? $this->createStub(EssentialActionBuilder::class),
             $this->createStub(DashboardWidgetBuilder::class),
             $this->createStub(OnboardingStepBuilder::class),
             $this->createStub(GuidedProjectBuilder::class),
@@ -127,6 +132,56 @@ class DashboardControllerTest extends TestCase
     }
 
     // In dev, each bundle-contributed management stylesheet is added separately, for instant reload on every CSS edit
+    // The dashboard opens to anyone standing on the back-office floor, its blocks answering for what they may see - and the floor is a voter attribute, not one named bar: no role_hierarchy is shipped, so an account holding only the admin one passes no site-role-editor gate (see BackOfficeAccessVoter)
+    public function testIndexOpensToAnyoneOnTheBackOfficeFloor(): void
+    {
+        $this->assertSame(200, $this->renderIndexFor([BackOfficeAccessVoter::ACCESS])['status']);
+    }
+
+    // The checklist walks the site's own setup, screen by screen, and an editor has the role for none of them - it is not built for them rather than gated action by action
+    public function testIndexBuildsNoEssentialActionForAnEditor(): void
+    {
+        $editor = $this->renderIndexFor([BackOfficeAccessVoter::ACCESS]);
+        $admin = $this->renderIndexFor([BackOfficeAccessVoter::ACCESS, 'ROLE_ADMIN']);
+
+        $this->assertSame([], $editor['context']['essentialActions']);
+        $this->assertSame([], $editor['context']['essentialActionsProgress']);
+        $this->assertSame([['slug' => 'site-name']], $admin['context']['essentialActions']);
+        $this->assertSame(['done' => 1, 'total' => 3], $admin['context']['essentialActionsProgress']);
+    }
+
+    // Renders index() for a user granted exactly these attributes, and hands back the status and the variables the template was given
+    private function renderIndexFor(array $granted): array
+    {
+        $essentialActionBuilder = $this->createStub(EssentialActionBuilder::class);
+        $essentialActionBuilder->method('getActions')->willReturn([['slug' => 'site-name']]);
+        $essentialActionBuilder->method('getProgress')->willReturn(['done' => 1, 'total' => 3]);
+
+        $controller = $this->createController(false, [], [], '', null, $essentialActionBuilder);
+
+        $checker = $this->createStub(AuthorizationCheckerInterface::class);
+        $checker->method('isGranted')->willReturnCallback(
+            static fn (mixed $attribute) => \in_array($attribute, $granted, true)
+        );
+
+        $context = [];
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturnCallback(
+            function (string $template, array $parameters = []) use (&$context): string {
+                $context = $parameters;
+
+                return '<html></html>';
+            }
+        );
+
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $checker,
+            'twig' => $twig,
+        ]));
+
+        return ['status' => $controller->index()->getStatusCode(), 'context' => $context];
+    }
+
     public function testConfigureAssetsAddsEachManagementStylesheetSeparatelyInDebug(): void
     {
         $this->createProjectDir(['bundles/c975lconfig/css/management.min.css']);

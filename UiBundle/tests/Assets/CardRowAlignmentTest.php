@@ -46,6 +46,17 @@ class CardRowAlignmentTest extends TestCase
         $this->assertStringNotContainsString('.cards>.flip-card{', $css, sprintf('"%s" resets a flip card\'s margin with a child combinator, which misses every card carrying an animation.', $file));
     }
 
+    // What a row holds that is not a card carries a ".width-*" utility, whose "margin: 0 auto" a flex item spends on the line's free space before "justify-content" ever sees it - the last, incomplete row of a listing drifting to the middle of a row flushed start. The child combinator is wanted here, the reset above being what reaches a card through its wrappers
+    #[DataProvider('stylesheetProvider')]
+    public function testTheRowResetsTheMarginOfWhatIsNotACard(string $file): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/\.cards>:not\(\.card,\.flip-card\)\{margin:0[;}]/',
+            $this->normalize($file),
+            sprintf('"%s" no longer resets the margin of a row item that is not a card, so a ".width-*" thumbnail spreads its own line.', $file)
+        );
+    }
+
     // The wrappers themselves generate no box, so the card stays the flex item the row stretches - the reset above is only needed because they stay in the DOM the selector is read against
     public function testTheWrappersGenerateNoBoxOfTheirOwn(): void
     {

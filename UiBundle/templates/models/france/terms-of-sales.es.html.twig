@@ -1,4 +1,4 @@
-{% set updateDate = '2026-07-09' %}
+{% set updateDate = '2026-08-22' %}
 
 <div class="legal">
 	<p class="text-center">
@@ -15,25 +15,25 @@
 	</section>
 
 	<section data-legal-id="acceptance">
-		<h2>Aceptacion</h2>
+		<h2>Aceptación</h2>
 		<div>
 			Toda compra en
 			<strong>{{ legal_var('site-name') }}</strong>
-			implica la aceptacion plena y total de las CGV vigentes.
+			implica la aceptación plena y total de las CGV vigentes.
 		</div>
 	</section>
 
 	<section data-legal-id="modification">
-		<h2>Modificacion</h2>
+		<h2>Modificación</h2>
 		<div>
-			Nos reservamos la posibilidad de modificar, total o parcialmente, y en cualquier momento, las presentes CGV. Se le invita a consultarlas regularmente para conocer los cambios introducidos. Son aplicables desde su publicacion.
+			Nos reservamos la posibilidad de modificar, total o parcialmente, y en cualquier momento, las presentes CGV. Se le invita a consultarlas regularmente para conocer los cambios introducidos. Son aplicables desde su publicación.
 		</div>
 	</section>
 
 	<section data-legal-id="prices">
 		<h2>Precios</h2>
 		<div>
-			Los precios aplicados son los vigentes el dia de la compra en
+			Los precios aplicados son los vigentes el día de la compra en
 			<strong>{{ legal_var('site-name') }}</strong>. Pueden modificarse en cualquier momento. Todos nuestros precios se indican con impuestos incluidos.
 		</div>
 	</section>
@@ -43,6 +43,19 @@
 		<div>
 			La compra se realiza mediante los medios de pago propuestos en
 			<strong>{{ legal_var('site-name') }}</strong>.
+		</div>
+	</section>
+
+	<section data-legal-id="delivery">
+		<h2>Entrega</h2>
+		<div>
+			Los artículos físicos se envían únicamente a la Francia metropolitana. Los artículos digitales se ponen a disposición para su descarga en cuanto se valida el pago y los servicios se prestan según las modalidades indicadas en su descripción.
+			<br>
+			Los gastos de envío, el importe de compra a partir del cual se ofrecen gratuitamente, en su caso, y el plazo de expedición se indican en la tienda y se recuerdan antes de la validación definitiva del pedido. Los artículos digitales y los servicios no generan gastos de envío.
+			<br>
+			En aplicación del artículo L 216-1 del código de consumo, y a falta de otra fecha indicada, el pedido se entrega sin demora injustificada y a más tardar treinta (30) días después de la celebración del contrato. Superado ese plazo, el/la usuario/a puede resolver el contrato tras habernos requerido que entreguemos en un plazo adicional razonable que haya transcurrido sin efecto, y se le reembolsa entonces la totalidad de las cantidades pagadas a más tardar catorce (14) días después de la resolución.
+			<br>
+			El riesgo de pérdida o de daño del bien se transfiere al/a la usuario/a en el momento en que el/ella, o un tercero designado por el/ella, toma posesión física del mismo.
 		</div>
 	</section>
 
@@ -56,44 +69,139 @@
 	<section data-legal-id="withdrawal">
 		<h2>Desistimiento</h2>
 		<div>
-			En aplicacion del articulo L 221-18 del codigo de consumo, el/la usuario/a dispone de un plazo de catorce (14) dias naturales para desistir y retractarse de sus compromisos. Este plazo empieza al dia siguiente de la aceptacion de la oferta en el caso de prestaciones de servicios. Si termina en sabado, domingo o dia festivo, se prorroga hasta el siguiente dia laborable. No obstante, al validar el servicio, el/la usuario/a particular acepta que empecemos a ejecutar la prestacion inmediatamente y renuncia expresamente a su derecho de desistimiento para los servicios de pago utilizados y consumidos antes de la expiracion del plazo legal de desistimiento.
+			En aplicación del artículo L 221-18 del código de consumo, el/la usuario/a dispone de un plazo de catorce (14) días naturales para desistir, sin tener que motivar su decisión. Este plazo empieza al día siguiente de la recepción del bien en el caso de una venta de bienes, y al día siguiente de la aceptación de la oferta en el caso de prestaciones de servicios. Si termina en sábado, domingo o día festivo, se prorroga hasta el siguiente día laborable.
+			<br>
+			Al validar una prestación de servicios cuya ejecución inmediata solicita, el/la usuario/a particular acepta que la empecemos antes del fin del plazo y sigue debiendo el importe correspondiente a lo que se le haya prestado hasta su desistimiento.
+			<br>
+			En aplicación del artículo L 221-28 del código de consumo, el derecho de desistimiento no puede ejercerse sobre un contenido digital suministrado sin soporte material cuya ejecución haya comenzado tras el acuerdo previo expreso del/de la usuario/a y su renuncia expresa a ese derecho, lo que ocurre con los artículos digitales puestos a disposición para su descarga en cuanto se valida el pago. Tampoco puede ejercerse sobre los bienes confeccionados según las especificaciones del/de la usuario/a o claramente personalizados, ni sobre los servicios ejecutados por completo antes del fin del plazo con su acuerdo previo expreso.
 			<br>
 			El procedimiento de desistimiento es el siguiente:
 		</div>
 		<ol>
-			<li>Hacer una solicitud de desistimiento contactandonos</li>
-			<li>Verificacion por nuestros servicios de la validez de la solicitud</li>
-			<li>Aceptacion y reembolso en el medio de pago utilizado del importe definido
+			<li>Notificarnos la decisión de desistimiento mediante una declaración inequívoca, contactándonos o utilizando el formulario siguiente</li>
+			<li>Verificación por nuestros servicios de la validez de la solicitud</li>
+			<li>Devolución del bien, en su caso, en las condiciones descritas en la sección Devoluciones</li>
+			<li>Aceptación y reembolso en el medio de pago utilizado del importe definido
 				<strong>O</strong>
-				o rechazo de la solicitud con explicaciones</li>
+				rechazo de la solicitud con explicaciones</li>
 		</ol>
+		<h3 data-legal-id="withdrawal.form">Formulario tipo de desistimiento</h3>
+		<div class="legal-boxed">
+			(Rellene y devuelva el presente formulario únicamente si desea desistir del contrato.)
+			<br>
+			A la atención de
+			<strong>{{ legal_var('site-name') }}</strong>
+			{% if config('site-address') %}
+				<br>
+				{{ legal_var('site-address') }}
+			{% endif %}
+			<br>
+			{{ legal_var('site-contact-email') }}:
+			<br>
+			Por la presente le comunico/comunicamos (*) que desisto/desistimos (*) de mi/nuestro (*) contrato de venta del bien (*)/de prestación del servicio (*) siguiente:
+			<br>
+			Pedido el (*)/recibido el (*):
+			<br>
+			Nombre del/de los consumidor/es:
+			<br>
+			Dirección del/de los consumidor/es:
+			<br>
+			Firma del/de los consumidor/es (únicamente en caso de notificación del presente formulario en papel):
+			<br>
+			Fecha:
+			<br>
+			(*) Tache lo que no proceda.
+		</div>
+	</section>
+
+	<section data-legal-id="returns">
+		<h2>Devoluciones</h2>
+		<div>
+			En caso de desistimiento, el bien debe sernos devuelto sin demora indebida y a más tardar catorce (14) días después de la notificación de la decisión de desistimiento. Salvo mención contraria en la tienda, los gastos de devolución corren a cargo del/de la usuario/a.
+			<br>
+			El bien se devuelve completo y en un estado que permita su nueva venta. La responsabilidad del/de la usuario/a solo se compromete respecto a la depreciación del bien resultante de manipulaciones distintas de las necesarias para establecer su naturaleza, sus características y su buen funcionamiento.
+			<br>
+			El reembolso, incluidos los gastos de entrega estándar iniciales, se realiza a más tardar catorce (14) días después de la recuperación del bien o de la prueba de su expedición, por el mismo medio de pago que el utilizado para el pedido. Los gastos adicionales de una modalidad de entrega más costosa que la oferta estándar no se reembolsan.
+			<br>
+			Un bien recibido dañado, incompleto o no conforme al pedido debe comunicársenos contactándonos: su devolución y su sustitución corren entonces por nuestra cuenta, sin necesidad de invocar el derecho de desistimiento.
+		</div>
+	</section>
+
+	<section data-legal-id="warranties">
+		<h2>Garantías legales</h2>
+		<div>
+			Con independencia de cualquier garantía comercial, el/la usuario/a consumidor/a se beneficia de las garantías legales reproducidas a continuación, en los términos fijados por el anexo al artículo D 211-2 del código de consumo.
+		</div>
+		<h3 data-legal-id="warranties.goods">Bienes</h3>
+		<div class="legal-boxed">
+			<p>El consumidor dispone de un plazo de dos años a partir de la entrega del bien para obtener la aplicación de la garantía legal de conformidad en caso de aparición de una falta de conformidad. Durante ese plazo, el consumidor solo debe establecer la existencia de la falta de conformidad y no la fecha de su aparición.</p>
+			<p>Cuando el contrato de venta del bien prevea el suministro de un contenido digital o de un servicio digital de manera continua durante un periodo superior a dos años, la garantía legal se aplica a ese contenido digital o servicio digital durante todo el periodo de suministro previsto. Durante ese plazo, el consumidor solo debe establecer la existencia de la falta de conformidad que afecta al contenido digital o al servicio digital y no la fecha de su aparición.</p>
+			<p>La garantía legal de conformidad conlleva la obligación para el profesional, en su caso, de suministrar todas las actualizaciones necesarias para mantener la conformidad del bien.</p>
+			<p>La garantía legal de conformidad da al consumidor derecho a la reparación o a la sustitución del bien en un plazo de treinta días tras su solicitud, sin gastos y sin mayor inconveniente para el.</p>
+			<p>Si el bien se repara en el marco de la garantía legal de conformidad, el consumidor se beneficia de una prorroga de seis meses de la garantía inicial.</p>
+			<p>Si el consumidor solicita la reparación del bien, pero el vendedor impone la sustitución, la garantía legal de conformidad se renueva por un periodo de dos años a partir de la fecha de sustitución del bien.</p>
+			<p>El consumidor puede obtener una reducción del precio de compra conservando el bien o poner fin al contrato obteniendo el reembolso íntegro contra la restitución del bien, si:</p>
+			<ol>
+				<li>El profesional se niega a reparar o a sustituir el bien;</li>
+				<li>La reparación o la sustitución del bien se produce después de un plazo de treinta días;</li>
+				<li>La reparación o la sustitución del bien ocasiona un inconveniente mayor para el consumidor, en particular cuando el consumidor soporta definitivamente los gastos de recogida o de retirada del bien no conforme, o si soporta los gastos de instalación del bien reparado o de sustitución;</li>
+				<li>La no conformidad del bien persiste pese al intento de puesta en conformidad del vendedor que ha resultado infructuoso.</li>
+			</ol>
+			<p>El consumidor también tiene derecho a una reducción del precio del bien o a la resolución del contrato cuando la falta de conformidad es tan grave que justifica que la reducción del precio o la resolución del contrato sea inmediata. El consumidor no está obligado entonces a solicitar previamente la reparación o la sustitución del bien.</p>
+			<p>El consumidor no tiene derecho a la resolución de la venta si la falta de conformidad es menor.</p>
+			<p>Todo periodo de inmovilización del bien con vistas a su reparación o a su sustitución suspende la garantía que quedaba por transcurrir hasta la entrega del bien reparado.</p>
+			<p>Los derechos mencionados anteriormente resultan de la aplicación de los artículos L. 217-1 a L. 217-32 del código de consumo.</p>
+			<p>El vendedor que obstaculice de mala fe la aplicación de la garantía legal de conformidad incurre en una multa civil de un importe máximo de 300 000 euros, que puede elevarse hasta el 10 % del volumen de negocios medio anual (artículo L. 241-5 del código de consumo).</p>
+			<p>El consumidor se beneficia igualmente de la garantía legal por vicios ocultos en aplicación de los artículos 1641 a 1649 del código civil, durante un periodo de dos años a partir del descubrimiento del defecto. Esta garantía da derecho a una reducción del precio si se conserva el bien o a un reembolso íntegro contra la restitución del bien.</p>
+		</div>
+		<h3 data-legal-id="warranties.digital">Contenidos y servicios digitales</h3>
+		<div class="legal-boxed">
+			<p>El consumidor dispone de un plazo de dos años a partir del suministro del contenido digital o del servicio digital para obtener la aplicación de la garantía legal de conformidad en caso de aparición de una falta de conformidad. Durante un plazo de un año a partir de la fecha de suministro, el consumidor solo debe establecer la existencia de la falta de conformidad y no la fecha de su aparición.</p>
+			<p>Cuando el contrato prevea que el contenido digital o el servicio digital se suministra de manera continua, la garantía legal se aplica a ese contenido digital o servicio digital durante todo el periodo de suministro previsto. Durante ese plazo, el consumidor solo debe establecer la existencia de la falta de conformidad y no la fecha de su aparición.</p>
+			<p>La garantía legal de conformidad conlleva la obligación de suministrar todas las actualizaciones necesarias para mantener la conformidad del contenido digital o del servicio digital.</p>
+			<p>La garantía legal de conformidad da al consumidor derecho a la puesta en conformidad del contenido digital o del servicio digital sin demora injustificada tras su solicitud, sin gastos y sin mayor inconveniente para el.</p>
+			<p>El consumidor puede obtener una reducción del precio conservando el contenido digital o el servicio digital, o puede poner fin al contrato obteniendo el reembolso íntegro contra la renuncia al contenido digital o al servicio digital, si:</p>
+			<ol>
+				<li>El profesional se niega a poner el contenido digital o el servicio digital en conformidad;</li>
+				<li>La puesta en conformidad del contenido digital o del servicio digital se retrasa de manera injustificada;</li>
+				<li>La puesta en conformidad del contenido digital o del servicio digital no puede producirse sin gastos impuestos al consumidor;</li>
+				<li>La puesta en conformidad del contenido digital o del servicio digital ocasiona un inconveniente mayor para el consumidor;</li>
+				<li>La no conformidad del contenido digital o del servicio digital persiste pese al intento de puesta en conformidad del profesional que ha resultado infructuoso.</li>
+			</ol>
+			<p>El consumidor también tiene derecho a una reducción del precio o a la resolución del contrato cuando la falta de conformidad es tan grave que justifica que la reducción del precio o la resolución del contrato sea inmediata. El consumidor no está obligado entonces a solicitar previamente la puesta en conformidad del contenido digital o del servicio digital.</p>
+			<p>En los casos en que la falta de conformidad sea menor, el consumidor solo tiene derecho a la anulación del contrato si el contrato no prevé el pago de un precio.</p>
+			<p>Todo periodo de indisponibilidad del contenido digital o del servicio digital con vistas a su puesta en conformidad suspende la garantía que quedaba por transcurrir hasta el suministro del contenido digital o del servicio digital de nuevo conforme.</p>
+			<p>Los derechos mencionados anteriormente resultan de la aplicación de los artículos L. 224-25-1 a L. 224-25-31 del código de consumo.</p>
+			<p>El profesional que obstaculice de mala fe la aplicación de la garantía legal de conformidad incurre en una multa civil de un importe máximo de 300 000 euros, que puede elevarse hasta el 10 % del volumen de negocios medio anual (artículo L. 242-18-1 del código de consumo).</p>
+			<p>El consumidor se beneficia, además, de la garantía legal por vicios ocultos en aplicación de los artículos 1641 a 1649 del código civil, durante un periodo de dos años a partir del descubrimiento del defecto. Esta garantía da derecho a una reducción del precio si se conserva el contenido digital o el servicio digital o a un reembolso íntegro contra la renuncia al contenido digital o al servicio digital.</p>
+		</div>
 	</section>
 
 	<section data-legal-id="liability">
 		<h2>Responsabilidad</h2>
 		<div>
-			Nuestra responsabilidad no podra verse comprometida en caso de no ejecucion o mala ejecucion del pedido debida, ya sea al/a la usuario/a, ya sea a un caso de fuerza mayor no duradero en el tiempo. En caso contrario, podra iniciarse un procedimiento de reembolso.
+			Nuestra responsabilidad no podrá verse comprometida en caso de no ejecución o mala ejecución del pedido debida, ya sea al/a la usuario/a, ya sea a un caso de fuerza mayor no duradero en el tiempo. En caso contrario, podrá iniciarse un procedimiento de reembolso.
 		</div>
 	</section>
 
 	<section data-legal-id="disputes">
 		<h2>Litigios</h2>
 		<div>
-			En caso de litigio, el procedimiento sera el siguiente:
+			En caso de litigio, el procedimiento será el siguiente:
 		</div>
 		<ol>
-			<li>Contactarnos para una solucion amistosa</li>
+			<li>Contactarnos para una solución amistosa</li>
 			<li>En caso de fracaso, contactar con un/a
 				<a href="http://www.economie.gouv.fr/mediation-conso" rel="nofollow">mediador/a</a>
 			</li>
-			<li>Como ultimo recurso, acudir al tribunal competente</li>
+			<li>Como último recurso, acudir al tribunal competente</li>
 		</ol>
 	</section>
 
 	<section data-legal-id="applicable-law">
-		<h2>Ley aplicable - Jurisdiccion competente</h2>
+		<h2>Ley aplicable - Jurisdicción competente</h2>
 		<div>
-			Las presentes CGV estan sometidas a la ley francesa. Todo litigio relativo a la interpretacion y ejecucion de estas condiciones sera competencia exclusiva de los tribunales franceses y, en particular, de los localizados en el departamento frances de la sede de la empresa editora de
+			Las presentes CGV están sometidas a la ley francesa. Todo litigio relativo a la interpretación y ejecución de estas condiciones será competencia exclusiva de los tribunales franceses y, en particular, de los localizados en el departamento francés de la sede de la empresa editora de
 			<strong>{{ legal_var('site-name') }}</strong>, tanto para usuarios/as profesionales como particulares.
 		</div>
 	</section>
@@ -101,10 +209,10 @@
 	<section data-legal-id="miscellaneous">
 		<h2>Disposiciones varias</h2>
 		<div>
-			Si una parte de las CGV resultara ilegal, invalida o inaplicable, por cualquier motivo, las disposiciones en cuestion se consideraran no escritas, sin afectar a la validez de las demas disposiciones que seguiran aplicandose, salvo si se trata de una clausula determinante que haya llevado a la compra en
+			Si una parte de las CGV resultará ilegal, inválida o inaplicable, por cualquier motivo, las disposiciones en cuestión se considerarán no escritas, sin afectar a la validez de las demás disposiciones que seguirán aplicándose, salvo si se trata de una cláusula determinante que haya llevado a la compra en
 			<strong>{{ legal_var('site-name') }}</strong>.<br>
-			Toda reclamacion debe enviarse mediante las modalidades de contacto definidas en el sitio.<br>
-			Las CGV estan sometidas al derecho frances.
+			Toda reclamación debe enviarse mediante las modalidades de contacto definidas en el sitio.<br>
+			Las CGV están sometidas al derecho francés.
 		</div>
 	</section>
 </div>

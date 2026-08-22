@@ -253,7 +253,7 @@
     height: 22px;
     border-radius: 50%;
     background: var(--primary, #007bff);
-    color: #fff;
+    color: var(--button-color);
     border: none;
     font-size: 12px;
     cursor: pointer;
@@ -268,7 +268,7 @@
 }
 
 .slider-play-pause span {
-    color: #fff;
+    color: var(--button-color);
     font-weight: bold;
 }
 

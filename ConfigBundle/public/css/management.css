@@ -121,6 +121,12 @@ a.ea-sidebar-item-link[target=_blank]::after {
   white-space: nowrap;
 }
 
+.shortcuts-category {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
 .shortcuts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
@@ -152,6 +158,18 @@ a.ea-sidebar-item-link[target=_blank]::after {
 
 .shortcut-tile:hover {
   background: var(--bs-tertiary-bg);
+}
+
+/* The tile of a thing currently switched on, whose click turns it off (maintenance, registration, a test mode - see ShortcutProviderInterface): warning-colored, so what the site has on is seen without reading every label */
+.shortcut-tile-warning {
+  border-color: var(--bs-warning-border-subtle);
+  background: var(--bs-warning-bg-subtle);
+  color: var(--bs-warning-text-emphasis);
+}
+
+/* Written after the shared hover rule, which would otherwise repaint it with the neutral background */
+.shortcut-tile-warning:hover {
+  background: var(--bs-warning-border-subtle);
 }
 
 .shortcut-tile i {

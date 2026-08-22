@@ -1,5 +1,40 @@
 [
     {
+        "date": "2026-08-22",
+        "description": [
+            {
+                "en": "The label of a button now follows the colour you picked for it: white on a dark one, black on a light one, and its icon goes with it. A pale brand colour used to carry a white label nobody could read — you can now pick the colour you want without checking what it does to your buttons",
+                "fr": "Le texte d'un bouton suit désormais la couleur que vous lui avez choisie : blanc sur une couleur foncée, noir sur une claire, et son icône suit avec. Une couleur de marque claire portait jusqu'ici un texte blanc illisible — vous pouvez maintenant choisir la couleur que vous voulez sans vérifier ce qu'elle fait à vos boutons",
+                "es": "El texto de un botón sigue ahora el color que usted eligió para él: blanco sobre uno oscuro, negro sobre uno claro, y su icono le acompaña. Un color de marca claro llevaba hasta ahora un texto blanco ilegible — ahora puede elegir el color que quiera sin comprobar qué le hace a sus botones"
+            },
+            {
+                "en": "Your terms of sales now cover the sale of goods: a delivery section, a withdrawal right running from the day the parcel arrives, a returns section, and the legal-guarantee notices the law requires word for word. Anything that does not apply to your site is hidden from the customization screen. A new \"Postal address\" setting fills in the withdrawal form, and stays empty for a site run from a home",
+                "fr": "Vos conditions générales de vente couvrent désormais la vente de biens : une section livraison, un droit de rétractation qui court à la réception du colis, une section retours et les encadrés de garanties légales que la loi impose mot pour mot. Ce qui ne concerne pas votre site se masque depuis l'écran de personnalisation. Un nouveau réglage « Adresse postale » complète le formulaire de rétractation, et reste vide pour un site édité depuis un domicile",
+                "es": "Sus condiciones generales de venta cubren ahora la venta de bienes: una sección de entrega, un derecho de desistimiento que empieza a contar en la recepción del paquete, una sección de devoluciones y los recuadros de garantías legales que la ley impone palabra por palabra. Lo que no concierne a su sitio se oculta desde la pantalla de personalización. Un nuevo ajuste «Dirección postal» completa el formulario de desistimiento, y queda vacío para un sitio gestionado desde un domicilio"
+            },
+            {
+                "en": "Your visitors can now save what your site publishes — a product, a book, a photo — with a single heart, and find it all back on a page of their own. No account needed to start a list, and signing in brings along the one they had already begun",
+                "fr": "Vos visiteurs peuvent désormais mettre de côté ce que votre site publie — un produit, un livre, une photo — d'un simple cœur, et tout retrouver sur une page qui leur est propre. Aucun compte n'est nécessaire pour commencer une liste, et se connecter y ramène celle qu'ils avaient déjà entamée",
+                "es": "Sus visitantes pueden ahora guardar lo que su sitio publica — un producto, un libro, una foto — con un simple corazón, y encontrarlo todo en una página propia. No hace falta ninguna cuenta para empezar una lista, y al iniciar sesión se recupera la que ya habían empezado"
+            },
+            {
+                "en": "A row of cards whose last line is incomplete no longer drifts to the middle: the remaining items stay aligned with those above them",
+                "fr": "Une rangée de cartes dont la dernière ligne est incomplète ne dérive plus vers le milieu : les éléments restants s'alignent sur ceux du dessus",
+                "es": "Una fila de tarjetas cuya última línea está incompleta ya no se desplaza hacia el centro: los elementos restantes quedan alineados con los de arriba"
+            },
+            {
+                "en": "The button pulling to the bottom of a page now reaches it on a listing that grows as it is scrolled: the products or strips stop loading while it scrolls, and start again as soon as you scroll yourself",
+                "fr": "Le bouton qui descend en bas de page y arrive désormais sur une liste qui s'allonge au défilement : les produits ou les planches cessent de se charger pendant le déplacement, et reprennent dès que vous faites défiler vous-même",
+                "es": "El botón que baja al final de la página ahora llega hasta él en un listado que crece al desplazarse: los productos o las láminas dejan de cargarse durante el desplazamiento y vuelven a hacerlo en cuanto se desplaza usted mismo"
+            },
+            {
+                "en": "The email test mode is now switched from a dashboard tile of its own, rather than found among the settings. While it is on, an email is shown to you instead of being sent, and the tile stays highlighted so you cannot forget it on",
+                "fr": "Le mode test des e-mails se règle désormais depuis une tuile du tableau de bord, plutôt qu'en le cherchant parmi les réglages. Tant qu'il est actif, un e-mail vous est affiché au lieu d'être envoyé, et la tuile reste mise en évidence pour que vous ne l'oubliiez pas allumé",
+                "es": "El modo de prueba de los correos se activa ahora desde una casilla propia del panel, en lugar de buscarlo entre los ajustes. Mientras está activo, un correo se le muestra en lugar de enviarse, y la casilla permanece resaltada para que no se le olvide apagarlo"
+            }
+        ]
+    },
+    {
         "date": "2026-08-21",
         "description": [
             {

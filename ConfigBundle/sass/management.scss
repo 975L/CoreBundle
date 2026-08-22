@@ -131,6 +131,13 @@ a.ea-sidebar-item-link[target="_blank"]::after {
     white-space: nowrap;
 }
 
+// The heading of one shortcuts row, quieter than the "Shortcuts" h2 above the whole block, which it must not compete with
+.shortcuts-category {
+    margin-bottom: .4rem;
+    font-size: .95rem;
+    font-weight: 600;
+}
+
 // A grid of tiles rather than pill buttons, on Bootstrap's variables so it follows the admin theme
 .shortcuts-grid {
     display: grid;
@@ -163,6 +170,18 @@ a.ea-sidebar-item-link[target="_blank"]::after {
 
 .shortcut-tile:hover {
     background: var(--bs-tertiary-bg);
+}
+
+/* The tile of a thing currently switched on, whose click turns it off (maintenance, registration, a test mode - see ShortcutProviderInterface): warning-colored, so what the site has on is seen without reading every label */
+.shortcut-tile-warning {
+    border-color: var(--bs-warning-border-subtle);
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+/* Written after the shared hover rule, which would otherwise repaint it with the neutral background */
+.shortcut-tile-warning:hover {
+    background: var(--bs-warning-border-subtle);
 }
 
 .shortcut-tile i {

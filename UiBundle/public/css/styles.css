@@ -15,6 +15,8 @@
     --alert-success-background: #d0e9c6;
     --alert-warning-background: #f9dba7;
     --audio-sticky-background: var(--background);
+    --back-pull-background-color: #bababa;
+    --back-pull-background-color-hover: #90ee90;
     --background: var(--c975l-color-background, #fff);
     --banner-title-height-large: 520px;
     --banner-title-height-medium: 360px;
@@ -52,11 +54,14 @@
     --button-background-success: rgb(40, 167, 69);
     --button-background-success-dark: rgb(40, 167, 69, 0.9);
     --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);
-    --button-color: #fff;
-    --button-icon-invert: 1;
-    --button-link-color: #fff;
-    --button-secondary-color: #000;
-    --button-secondary-icon-invert: 0;
+    --button-color: var(--c975l-button-color, #fff);
+    --button-icon-invert: var(--c975l-button-icon-invert, 1);
+    --button-link-color: var(--c975l-button-link-color, #fff);
+    --button-secondary-color: var(--c975l-button-secondary-color, #000);
+    --button-secondary-icon-invert: var(--c975l-button-secondary-icon-invert, 0);
+    --button-grey-background: lightgrey;
+    --button-grey-color: #000;
+    --button-status-color: #fff;
     --card-background: #fff;
     --card-title-size: calc(19px * var(--font-size-title-scale, 1));
     --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1));
@@ -68,6 +73,7 @@
     --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
     --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2));
     --disabled: #808080;
+    --favorite-size: 1.5em;
     --flip-card-back-background: color-mix(in srgb, var(--secondary) 30%, var(--background));
     --flip-card-border-width: 3px;
     --flip-card-front-background: var(--white);
@@ -218,10 +224,12 @@
 }
 
 .badge-success {
+  color: var(--button-status-color);
   background-color: var(--button-background-success);
 }
 
 .badge-danger {
+  color: var(--button-status-color);
   background-color: var(--button-background-danger);
 }
 
@@ -243,13 +251,13 @@
 }
 
 .badge-success:hover {
-  color: var(--button-color);
+  color: var(--button-status-color);
   background-color: var(--button-background-success-dark);
   text-decoration: none;
 }
 
 .badge-danger:hover {
-  color: var(--button-color);
+  color: var(--button-status-color);
   background-color: var(--button-background-danger-dark);
   text-decoration: none;
 }
@@ -564,6 +572,18 @@ blockquote.pull-right .small::after {
   background-color: var(--button-background-danger-dark);
 }
 
+.btn.btn-success,
+.btn.btn-success:visited,
+.btn.btn-success:hover,
+.btn.btn-success:visited:hover,
+.btn.btn-danger,
+.btn.btn-danger:visited,
+.btn.btn-danger:hover,
+.btn.btn-danger:visited:hover {
+  --button-icon-invert: 1;
+  color: var(--button-status-color);
+}
+
 .btn.btn-link,
 .btn.btn-link:visited {
   background-color: transparent;
@@ -579,8 +599,14 @@ blockquote.pull-right .small::after {
   text-decoration: underline;
 }
 
-.btn-grey {
-  background-color: lightgrey;
+.btn-grey,
+.btn.btn-grey,
+.btn.btn-grey:visited,
+.btn.btn-grey:hover,
+.btn.btn-grey:visited:hover {
+  --button-icon-invert: 0;
+  background-color: var(--button-grey-background);
+  color: var(--button-grey-color);
 }
 
 /* OTHER */
@@ -736,6 +762,10 @@ button.btn {
 }
 
 .cards .card {
+  margin: 0;
+}
+
+.cards > :not(.card, .flip-card) {
   margin: 0;
 }
 
@@ -995,6 +1025,59 @@ label[for=contact_form_username],
 .document-download__label {
   flex-grow: 1;
   line-height: 1.3;
+}
+
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+.favorite {
+  display: flex;
+  justify-content: flex-end;
+  line-height: 1;
+}
+
+.favorite-button {
+  width: var(--favorite-size);
+  height: var(--favorite-size);
+  padding: 0;
+  border: 0;
+  background-color: var(--favorite-off, color-mix(in srgb, var(--text) 25%, var(--background)));
+  cursor: pointer;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.favorite-button--on {
+  background-color: var(--favorite-on, #e0245e);
+}
+
+.favorite-menu-icon {
+  width: 1em;
+  height: 1em;
+  margin-right: 0.4em;
+  vertical-align: -0.125em;
+  fill: currentColor;
+}
+
+.favorite-menu-count {
+  margin-left: 0.4em;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.favorite-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* FLIP CARD */
@@ -1787,6 +1870,17 @@ img.white {
 .legal div {
   margin-block: 1em;
   scroll-margin-top: var(--scroll-offset, 80px);
+  text-align: justify;
+}
+
+.legal-boxed {
+  padding: 1em;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+}
+
+.legal-boxed p {
+  margin-block: 1em;
   text-align: justify;
 }
 
@@ -3499,6 +3593,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
  * with this source code in the file LICENSE.
  */
 .rating {
+  --rating-icon-on: #f5b301;
   display: flex;
   gap: 0.2em;
   margin: 0;
@@ -3520,7 +3615,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 .rating-star--on {
-  background-color: var(--rating-on, var(--secondary));
+  background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
 }
 
 .rating--star .rating-star {
@@ -3543,6 +3638,22 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM164.1 325.5C182 346.2 212.6 368 256 368s74-21.8 91.9-42.5c5.8-6.7 15.9-7.4 22.6-1.6s7.4 15.9 1.6 22.6C349.8 372.1 311.1 400 256 400s-93.8-27.9-116.1-53.5c-5.8-6.7-5.1-16.8 1.6-22.6s16.8-5.1 22.6 1.6zM144.4 208a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm192-32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z'/%3E%3C/svg%3E");
 }
 
+.rating--star {
+  --rating-icon-on: #f5b301;
+}
+
+.rating--heart {
+  --rating-icon-on: #e0245e;
+}
+
+.rating--thumbs-up {
+  --rating-icon-on: #2d7ff9;
+}
+
+.rating--face-smile {
+  --rating-icon-on: #f5b301;
+}
+
 .rating-vote {
   display: flex;
   flex-wrap: wrap;
@@ -3558,45 +3669,48 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 .rating-vote .rating-star:focus-visible {
-  outline: 2px solid var(--rating-on, var(--secondary));
+  outline: 2px solid var(--rating-on, var(--rating-icon-on, var(--secondary)));
   outline-offset: 2px;
 }
 
 @media (hover: hover) {
   .rating-vote .rating:has(.rating-star:nth-child(1):hover) .rating-star:nth-child(-n+1) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(2):hover) .rating-star:nth-child(-n+2) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(3):hover) .rating-star:nth-child(-n+3) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(4):hover) .rating-star:nth-child(-n+4) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(5):hover) .rating-star:nth-child(-n+5) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(6):hover) .rating-star:nth-child(-n+6) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(7):hover) .rating-star:nth-child(-n+7) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(8):hover) .rating-star:nth-child(-n+8) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(9):hover) .rating-star:nth-child(-n+9) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
   .rating-vote .rating:has(.rating-star:nth-child(10):hover) .rating-star:nth-child(-n+10) {
-    background-color: var(--rating-on, var(--secondary));
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
   }
 }
 @media (pointer: coarse) {
   .rating-vote {
     --rating-size: 2.2rem;
+  }
+  .rating-vote--compact {
+    --rating-size: 1.6rem;
   }
   .rating-vote .rating {
     gap: 0.3em;
@@ -3661,6 +3775,47 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
     animation: none;
   }
 }
+/* SCROLL BUTTONS */
+a.pullDown,
+a.backTop {
+  display: none;
+  width: 60px;
+  height: 60px;
+  text-indent: -9999px;
+  position: fixed;
+  z-index: 999;
+  bottom: calc(25px + var(--bottom-bar-height, 0px));
+  border-radius: 30px;
+  opacity: 0.6;
+}
+
+a.backTop {
+  right: 25px;
+  background: var(--back-pull-background-color) url("/bundles/c975lui/images/up-arrow.png") no-repeat center 40%;
+}
+
+a.pullDown {
+  left: 25px;
+  background: var(--back-pull-background-color) url("/bundles/c975lui/images/down-arrow.png") no-repeat center 40%;
+}
+
+a:hover.backTop,
+a:hover.pullDown {
+  background-color: var(--back-pull-background-color-hover);
+}
+
+a.backTop.fade-in,
+a.pullDown.fade-in,
+a.backTop.fade-out,
+a.pullDown.fade-out {
+  display: block;
+}
+
+a.backTop.fade-out,
+a.pullDown.fade-out {
+  pointer-events: none;
+}
+
 .readmore {
   max-width: var(--reading-max-width, min(75ch, 90vw));
   margin: 1em auto;
@@ -4188,7 +4343,7 @@ span {
   height: 22px;
   border-radius: 50%;
   background: var(--primary, #007bff);
-  color: #fff;
+  color: var(--button-color);
   border: none;
   font-size: 12px;
   cursor: pointer;
@@ -4203,7 +4358,7 @@ span {
 }
 
 .slider-play-pause span {
-  color: #fff;
+  color: var(--button-color);
   font-weight: bold;
 }
 

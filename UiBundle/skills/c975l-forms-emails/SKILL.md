@@ -1,6 +1,6 @@
 ---
 name: c975l-forms-emails
-description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: Form entity, FormField, FormFieldTemplate, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, site-form-gdpr, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body."
+description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: Form entity, FormField, FormFieldTemplate, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, site-form-gdpr, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, DebugPreviewCapableInterface, consumeDebugPreview."
 ---
 
 # c975L UiBundle — forms and emails
@@ -10,7 +10,7 @@ description: "Use this skill when building a form or sending an email in a Symfo
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Form.php`, `src/Entity/FormField.php`, `src/Entity/FormFieldTemplate.php`, `src/Entity/EmailTemplate.php`, `src/Controller/FormController.php`, `src/Controller/Management/FormCrudController.php`, `src/Contract/FormActionInterface.php`, `src/Service/FormSeeder.php`, `src/Service/SendEmailFormAction.php`, `src/Service/EmailService.php`, `src/Model/EmailSendRequest.php`, `src/Service/FormBotProtection.php`, `src/Form/CaptchaType.php`, `templates/components/Form/`
+`src/Entity/Form.php`, `src/Entity/FormField.php`, `src/Entity/FormFieldTemplate.php`, `src/Entity/EmailTemplate.php`, `src/Controller/FormController.php`, `src/Controller/Management/FormCrudController.php`, `src/Contract/FormActionInterface.php`, `src/Service/FormSeeder.php`, `src/Service/SendEmailFormAction.php`, `src/Service/EmailService.php`, `src/Model/EmailSendRequest.php`, `src/Controller/Management/EmailDebugShortcutController.php`, `src/Service/FormBotProtection.php`, `src/Form/CaptchaType.php`, `templates/components/Form/`
 
 **Related skills:** `c975l-blocks`, `c975l-media`, `c975l-ui-assets` in this same bundle, and `c975l-users`, `c975l-config` in ConfigBundle beside it.
 
@@ -96,6 +96,13 @@ The six address settings (`email-from`, `email-from-name`, `email-to`, `email-to
 `to:` wins. `bcc` is a real blind copy, not to be confused with `copyToEmail`, which sends a **second**
 message.
 
+**Nothing is sent while the debug mode is on.** `email-debug` (a restricted config) plus
+`ROLE_SUPER_ADMIN` makes `EmailService` render the message and stash it (`consumeDebugPreview()`)
+instead of sending it — anyone else keeps getting real sends. It is switched from the dashboard's
+**"Enable / Disable"** row (`Controller\Management\EmailDebugShortcutController`), whose tile stays
+warning-colored for as long as the mode is on. Implement `Contract\DebugPreviewCapableInterface` on
+your own form action to get the same behavior.
+
 ## Do not
 
 - **Do not write a controller for a form.** It is a `Form` row and a `FormActionInterface`.
@@ -108,3 +115,5 @@ message.
   structure would be lost without becoming editable.
 - **Do not pass more than one body** to an `EmailSendRequest`.
 - **Do not declare your own `email-*` address settings** when the six shared ones answer.
+- **Do not leave the email debug mode on.** While it is, a `ROLE_SUPER_ADMIN` only ever gets a
+  preview and no message leaves the site.

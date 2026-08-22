@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -57,6 +58,15 @@ class OnboardingStepBuilderTest extends TestCase
         return $security;
     }
 
+    // Answers the admin key the builder falls back on for a menu declaring no role of its own
+    private function createConfigService(): ConfigServiceInterface
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('ROLE_ADMIN');
+
+        return $configService;
+    }
+
     public function testGetStepsBuildsAStepForAMenuWithoutADescription(): void
     {
         $menuBuilder = $this->createMenuBuilder(
@@ -70,6 +80,7 @@ class OnboardingStepBuilderTest extends TestCase
             $this->createStub(UrlGeneratorInterface::class),
             $this->createTranslator(),
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -104,6 +115,7 @@ class OnboardingStepBuilderTest extends TestCase
             $this->createStub(UrlGeneratorInterface::class),
             $this->createTranslator(),
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -137,6 +149,7 @@ class OnboardingStepBuilderTest extends TestCase
             $this->createStub(UrlGeneratorInterface::class),
             $this->createTranslator(),
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -161,6 +174,7 @@ class OnboardingStepBuilderTest extends TestCase
             $urlGenerator,
             $this->createTranslator(),
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -191,6 +205,7 @@ class OnboardingStepBuilderTest extends TestCase
             $urlGenerator,
             $this->createTranslator(),
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame(
@@ -221,12 +236,62 @@ class OnboardingStepBuilderTest extends TestCase
             $urlGenerator,
             $this->createTranslator(),
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame(
             [['url' => 'https://example.com/showcase', 'label' => 'label.showcase', 'description' => 'description.showcase']],
             $builder->getSteps(),
         );
+    }
+
+    // A menu the sidebar doesn't draw has no href for the tour to highlight, whether the role is the entry's own or the admin default it falls back on
+    public function testGetStepsSkipsAMenuTheCurrentUserLacksTheRoleFor(): void
+    {
+        $menuBuilder = $this->createMenuBuilder(
+            ['my_entity' => [
+                'controller' => 'MyCrudController',
+                'label' => 'label.my_entity',
+                'translation_domain' => 'my_bundle',
+                'icon' => 'fas fa-star',
+                'role' => 'ROLE_SUPER_ADMIN',
+            ]],
+            [],
+        );
+
+        $builder = new OnboardingStepBuilder(
+            $menuBuilder,
+            $this->createAdminUrlGenerator(),
+            $this->createStub(UrlGeneratorInterface::class),
+            $this->createTranslator(),
+            $this->createSecurity(false),
+            $this->createConfigService(),
+        );
+
+        $this->assertSame([], $builder->getSteps());
+    }
+
+    // An entry naming no role of its own is read against 'site-role-admin', the value every one of them used to be given
+    public function testGetStepsReadsTheAdminDefaultForAMenuNamingNoRole(): void
+    {
+        $menuBuilder = $this->createMenuBuilder(
+            [['controller' => 'MyCrudController', 'label' => 'label.my_entity', 'translation_domain' => 'my_bundle', 'icon' => 'fas fa-star']],
+            [],
+        );
+
+        $configService = $this->createMock(ConfigServiceInterface::class);
+        $configService->expects($this->once())->method('get')->with('site-role-admin')->willReturn('ROLE_ADMIN');
+
+        $builder = new OnboardingStepBuilder(
+            $menuBuilder,
+            $this->createAdminUrlGenerator(),
+            $this->createStub(UrlGeneratorInterface::class),
+            $this->createTranslator(),
+            $this->createSecurity(false),
+            $configService,
+        );
+
+        $this->assertSame([], $builder->getSteps());
     }
 
     public function testGetStepsSkipsALinkTheCurrentUserLacksTheRoleFor(): void
@@ -249,6 +314,7 @@ class OnboardingStepBuilderTest extends TestCase
             $this->createStub(UrlGeneratorInterface::class),
             $this->createTranslator(),
             $this->createSecurity(false),
+            $this->createConfigService(),
         );
 
         $this->assertSame([], $builder->getSteps());
@@ -279,6 +345,7 @@ class OnboardingStepBuilderTest extends TestCase
             $this->createStub(UrlGeneratorInterface::class),
             $translator,
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame('label.site_link {"%name%":"My site"}', $builder->getSteps()[0]['label']);
@@ -303,6 +370,7 @@ class OnboardingStepBuilderTest extends TestCase
             $urlGenerator,
             $this->createTranslator(),
             $this->createSecurity(),
+            $this->createConfigService(),
         );
 
         $this->assertSame(

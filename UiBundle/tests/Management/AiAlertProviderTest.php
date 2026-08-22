@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\Config;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Entity\AiUsage;
 use c975L\UiBundle\Management\AiAlertProvider;
@@ -55,12 +56,22 @@ class AiAlertProviderTest extends TestCase
         return $client;
     }
 
+    // Names the very config entry each alert carries as its own role, the assistant screen being the admin's
+    private function createConfigService(): ConfigServiceInterface
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('ROLE_ADMIN');
+
+        return $configService;
+    }
+
     public function testReturnsBothNotEnabledAlertsOnAFreshInstall(): void
     {
         $provider = new AiAlertProvider(
             $this->createUsageTracker(),
             $this->createAssistantClient(false),
             $this->createRephraseClient(false),
+            $this->createConfigService(),
             $this->createUrlGenerator(),
         );
 
@@ -78,6 +89,7 @@ class AiAlertProviderTest extends TestCase
             $this->createUsageTracker(),
             $this->createAssistantClient(true),
             $this->createRephraseClient(true),
+            $this->createConfigService(),
             $this->createUrlGenerator(),
         );
 
@@ -90,6 +102,7 @@ class AiAlertProviderTest extends TestCase
             $this->createUsageTracker(),
             $this->createAssistantClient(true),
             $this->createRephraseClient(false),
+            $this->createConfigService(),
             $this->createUrlGenerator(),
         );
 
@@ -106,6 +119,7 @@ class AiAlertProviderTest extends TestCase
             $this->createUsageTracker(),
             $this->createAssistantClient(false),
             $this->createRephraseClient(true),
+            $this->createConfigService(),
             $this->createUrlGenerator(),
         );
 
@@ -124,6 +138,7 @@ class AiAlertProviderTest extends TestCase
             $this->createUsageTracker($usage),
             $this->createAssistantClient(true),
             $this->createRephraseClient(true),
+            $this->createConfigService(),
             $this->createUrlGenerator(),
         );
 
@@ -144,6 +159,7 @@ class AiAlertProviderTest extends TestCase
             $this->createUsageTracker($usage),
             $this->createAssistantClient(true),
             $this->createRephraseClient(true),
+            $this->createConfigService(),
             $this->createUrlGenerator(),
         );
 

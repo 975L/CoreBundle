@@ -19,6 +19,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CacheInvalidatorPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailLayoutProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\FavoriteItemProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FontProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormActionProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormBlockDependencyProviderPass;
@@ -51,6 +52,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new BlockCacheTagProviderPass());
         $container->addCompilerPass(new CacheInvalidatorPass());
         $container->addCompilerPass(new CollectionSourceProviderPass());
+        $container->addCompilerPass(new FavoriteItemProviderPass());
         $container->addCompilerPass(new GalleryShowcaseProviderPass());
         $container->addCompilerPass(new SameAsProviderPass());
         $container->addCompilerPass(new StylesheetRegistryPass());
@@ -88,6 +90,12 @@ class c975LUiBundle extends AbstractBundle
                 'ui_rating' => [
                     'policy' => 'sliding_window',
                     'limit' => 30,
+                    'interval' => '10 minutes',
+                ],
+                // The wishlist's own routes (see FavoriteController), declared for the same reason. Roomier still than the vote's: putting five things aside, then coming back to the list, is one page of ordinary browsing
+                'ui_favorite' => [
+                    'policy' => 'sliding_window',
+                    'limit' => 60,
                     'interval' => '10 minutes',
                 ],
             ],

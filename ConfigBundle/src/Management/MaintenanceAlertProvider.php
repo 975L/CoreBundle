@@ -53,6 +53,8 @@ class MaintenanceAlertProvider implements AlertProviderInterface
                 'config',
             ),
             'severity' => $severity,
+            // Its screen is the admin's own (see ConfigCrudController), and so is the shortcut that toggles it back off
+            'role' => $this->configService->get('site-role-admin'),
             'url' => $this->adminUrlGenerator
                 ->unsetAll()
                 ->setController(ConfigCrudController::class)
@@ -67,6 +69,7 @@ class MaintenanceAlertProvider implements AlertProviderInterface
                 'label' => $this->translator->trans('label.maintenance_preview_link', [], 'config'),
                 'description' => $this->translator->trans('description.maintenance_preview_link', ['%url%' => $previewUrl], 'config'),
                 'severity' => $severity,
+                'role' => $this->configService->get('site-role-admin'),
                 'url' => $previewUrl,
             ];
         }

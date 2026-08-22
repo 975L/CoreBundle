@@ -20,6 +20,8 @@ class ConfigMaintenanceTaskProvider implements MaintenanceTaskProviderInterface
             new MaintenanceTask('# #(0-2) * * *', 'c975l:sitemaps:create'),
             // robots.txt/humans.txt/llms.txt, on hours that never overlap the sitemaps': robots.txt only declares the sitemap index once that run has written one, and llms.txt lists the same urls - overlapping ranges would let a site's hash draw the two in the wrong order and ship a robots.txt without its Sitemap: line for the day
             new MaintenanceTask('# #(3-5) * * *', 'c975l:seo:files:create'),
+            // Expired session rows, nightly: PHP's own garbage collection is a dice roll the handler only prunes on, and on a managed host it can simply never come up
+            new MaintenanceTask('# #(2-4) * * *', 'c975l:config:sessions-cleanup'),
             // Failed messenger rows past their retention, nightly, once the backups have had their window
             new MaintenanceTask('# #(2-4) * * *', 'c975l:config:messenger-cleanup'),
             // Backup: every 6 hours (DB dumped table by table, plus the files declared in "archive" mode), the archives being sent offsite in the same run

@@ -1,0 +1,18 @@
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'ui' %}
+
+{# Defines specific variables #}
+{% set title = 'label.favorites'|trans %}
+
+{# Holds nothing of the visitor's own, and is served like any other page - cached and shared. What is theirs is fetched into it by assets/js/favorites.js #}
+{% set summarySocialNetwork = 'label.favorites_summary'|trans %}
+
+{% block content %}
+    <div data-controller="ui-favorites"
+         data-ui-favorites-url-value="{{ path('ui_favorite_list') }}"
+         data-ui-favorites-error-label-value="{{ 'label.favorite_error'|trans }}">
+        <p class="text text-center lead" data-ui-favorites-target="loading">{{ 'label.favorites_loading'|trans }}</p>
+        <p class="text text-center lead" data-ui-favorites-target="empty" hidden>{{ 'label.favorites_empty'|trans }}</p>
+        <div data-ui-favorites-target="list"></div>
+    </div>
+{% endblock %}

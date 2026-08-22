@@ -43,8 +43,16 @@ class FormFlashMarkupTest extends TestCase
         $this->assertStringContainsString('&lt;script&gt;', $html);
     }
 
+    // The component only reads the bag for a visitor who can actually hold a flash, so a first-time anonymous visitor is never the reason a session starts - see FlashExtension, and CookieNonceGenerator for what that costs on every request
+    public function testTheComponentReadsNoFlashWithoutASession(): void
+    {
+        $html = $this->render(['success' => ['Envoi reçu']], false);
+
+        $this->assertStringNotContainsString('alert-success', $html);
+    }
+
     /** @param array<string, string[]> $flashes */
-    private function render(array $flashes): string
+    private function render(array $flashes, bool $canHoldFlash = true): string
     {
         $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
         // Untranslated keys come back as-is, which is enough for the flash markup read above
@@ -54,6 +62,8 @@ class FormFlashMarkupTest extends TestCase
         $twig->addFunction(new TwigFunction('form_widget', static fn (): string => '', ['is_safe' => ['html']]));
         $twig->addFunction(new TwigFunction('form_end', static fn (): string => '', ['is_safe' => ['html']]));
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/'));
+        // What FlashExtension answers from the real request - covered on its own in FlashExtensionTest
+        $twig->addFunction(new TwigFunction('ui_can_hold_flash', static fn (): bool => $canHoldFlash));
 
         return $twig->render('components/Form/Form.html.twig', [
             'app' => new readonly class ($flashes) {

@@ -18,6 +18,10 @@
                 <source>label.slug_exists</source>
                 <target>The slug already exists</target>
             </trans-unit>
+            <trans-unit id="3CVOZQA">
+                <source>label.static_asset_path</source>
+                <target>This path is served as a file, the redirect would never fire</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

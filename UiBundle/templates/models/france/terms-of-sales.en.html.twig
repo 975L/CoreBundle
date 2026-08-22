@@ -1,4 +1,4 @@
-{% set updateDate = '2026-07-09' %}
+{% set updateDate = '2026-08-22' %}
 
 <div class="legal">
 	<p class="text-center">
@@ -46,6 +46,19 @@
 		</div>
 	</section>
 
+	<section data-legal-id="delivery">
+		<h2>Delivery</h2>
+		<div>
+			Physical items are shipped to mainland France only. Digital items are made available for download as soon as payment is validated, and services are provided under the conditions stated in their description.
+			<br>
+			Shipping costs, the purchase amount above which they are waived, if any, and the dispatch time are shown in the shop and repeated before the order is finally validated. Digital items and services incur no shipping costs.
+			<br>
+			Pursuant to article L 216-1 of the French Consumer Code, and unless another date is stated, the order is delivered without undue delay and no later than thirty (30) days after the contract is concluded. Beyond that period, the user may terminate the contract after having required us to deliver within a reasonable additional period that has elapsed without effect, and is then refunded all sums paid no later than fourteen (14) days after termination.
+			<br>
+			The risk of loss of or damage to the goods passes to the user when the user, or a third party designated by the user, takes physical possession of them.
+		</div>
+	</section>
+
 	<section data-legal-id="refund">
 		<h2>Refund</h2>
 		<div>
@@ -56,17 +69,112 @@
 	<section data-legal-id="withdrawal">
 		<h2>Withdrawal</h2>
 		<div>
-			Pursuant to article L 221-18 of the French Consumer Code, the user has a period of fourteen (14) clear days to withdraw and cancel their commitment. This period runs from the day after acceptance of the offer for service contracts. If it expires on a Saturday, Sunday, or public holiday, it is extended to the next working day. However, by validating the service, the private user agrees that we begin performance immediately and expressly waives the withdrawal right for paid services used and consumed before the legal withdrawal period expires.
+			Pursuant to article L 221-18 of the French Consumer Code, the user has a period of fourteen (14) clear days to withdraw, without having to give any reason. This period runs from the day after receipt of the goods for sales of goods, and from the day after acceptance of the offer for service contracts. If it expires on a Saturday, Sunday, or public holiday, it is extended to the next working day.
+			<br>
+			By validating a service whose immediate performance they request, the private user agrees that we begin it before the end of the period and remains liable for the amount corresponding to what has been provided up to their withdrawal.
+			<br>
+			Pursuant to article L 221-28 of the French Consumer Code, the withdrawal right cannot be exercised for digital content supplied on an intangible medium whose performance has begun after the user's prior express consent and express waiver of that right, which is the case for digital items made available for download as soon as payment is validated. Nor can it be exercised for goods made to the user's specifications or clearly personalised, or for services fully performed before the end of the period with the user's prior express consent.
 			<br>
 			The withdrawal procedure is as follows:
 		</div>
 		<ol>
-			<li>Submit a withdrawal request by contacting us</li>
+			<li>Notify us of the withdrawal decision by an unambiguous statement, by contacting us or using the form below</li>
 			<li>Validation of the request by our services</li>
+			<li>Return of the goods, where applicable, under the conditions described in the Returns section</li>
 			<li>Acceptance and refund to the payment method used for the defined amount
 				<strong>OR</strong>
-				or rejection of the request with explanations</li>
+				rejection of the request with explanations</li>
 		</ol>
+		<h3 data-legal-id="withdrawal.form">Model withdrawal form</h3>
+		<div class="legal-boxed">
+			(Please complete and return this form only if you wish to withdraw from the contract.)
+			<br>
+			To the attention of
+			<strong>{{ legal_var('site-name') }}</strong>
+			{% if config('site-address') %}
+				<br>
+				{{ legal_var('site-address') }}
+			{% endif %}
+			<br>
+			{{ legal_var('site-contact-email') }}:
+			<br>
+			I/we (*) hereby give notice that I/we (*) withdraw from my/our (*) contract of sale of the following goods (*)/for the provision of the following service (*):
+			<br>
+			Ordered on (*)/received on (*):
+			<br>
+			Name of consumer(s):
+			<br>
+			Address of consumer(s):
+			<br>
+			Signature of consumer(s) (only if this form is notified on paper):
+			<br>
+			Date:
+			<br>
+			(*) Delete as appropriate.
+		</div>
+	</section>
+
+	<section data-legal-id="returns">
+		<h2>Returns</h2>
+		<div>
+			In the event of withdrawal, the goods must be returned to us without undue delay and no later than fourteen (14) days after the withdrawal decision has been notified. Unless stated otherwise in the shop, return costs remain payable by the user.
+			<br>
+			The goods are returned complete and in a condition allowing them to be sold again. The user is liable only for any diminished value of the goods resulting from handling other than what is necessary to establish their nature, characteristics, and proper functioning.
+			<br>
+			The refund, including the initial standard delivery costs, is made no later than fourteen (14) days after the goods are recovered or proof of their dispatch is provided, using the same payment method as the one used for the order. Additional costs of a delivery method more expensive than the standard offer are not refunded.
+			<br>
+			Goods received damaged, incomplete, or not matching the order must be reported to us by contacting us: their return and replacement are then handled by us, with no need to invoke the withdrawal right.
+		</div>
+	</section>
+
+	<section data-legal-id="warranties">
+		<h2>Legal guarantees</h2>
+		<div>
+			Independently of any commercial guarantee, a user acting as a consumer benefits from the legal guarantees reproduced below, in the terms set by the annex to article D 211-2 of the French Consumer Code.
+		</div>
+		<h3 data-legal-id="warranties.goods">Goods</h3>
+		<div class="legal-boxed">
+			<p>The consumer has a period of two years from delivery of the goods to obtain the implementation of the legal guarantee of conformity should a lack of conformity appear. During that period, the consumer is only required to establish the existence of the lack of conformity, not the date on which it appeared.</p>
+			<p>Where the contract of sale provides for the supply of digital content or a digital service on a continuous basis for a period of more than two years, the legal guarantee applies to that digital content or digital service throughout the intended supply period. During that period, the consumer is only required to establish the existence of the lack of conformity affecting the digital content or the digital service, not the date on which it appeared.</p>
+			<p>The legal guarantee of conformity entails, where applicable, an obligation for the trader to provide all the updates necessary to keep the goods in conformity.</p>
+			<p>The legal guarantee of conformity gives the consumer the right to repair or replacement of the goods within thirty days of their request, free of charge and without major inconvenience to them.</p>
+			<p>If the goods are repaired under the legal guarantee of conformity, the consumer benefits from a six-month extension of the initial guarantee.</p>
+			<p>If the consumer requests repair of the goods but the seller imposes replacement, the legal guarantee of conformity is renewed for a period of two years from the date the goods are replaced.</p>
+			<p>The consumer may obtain a reduction in the purchase price while keeping the goods, or terminate the contract and obtain a full refund against return of the goods, if:</p>
+			<ol>
+				<li>the trader refuses to repair or replace the goods;</li>
+				<li>the repair or replacement of the goods takes place after a period of thirty days;</li>
+				<li>the repair or replacement of the goods causes major inconvenience to the consumer, in particular where the consumer definitively bears the costs of taking back or removing the non-conforming goods, or bears the costs of installing the repaired or replacement goods;</li>
+				<li>the lack of conformity of the goods persists despite the seller's unsuccessful attempt to bring them into conformity.</li>
+			</ol>
+			<p>The consumer is also entitled to a reduction in the price of the goods or to termination of the contract where the lack of conformity is so serious that it justifies an immediate price reduction or termination. In that case, the consumer is not required to request repair or replacement of the goods beforehand.</p>
+			<p>The consumer is not entitled to termination of the sale where the lack of conformity is minor.</p>
+			<p>Any period during which the goods are unavailable with a view to their repair or replacement suspends the remaining guarantee until the repaired goods are delivered.</p>
+			<p>The rights mentioned above result from the application of articles L. 217-1 to L. 217-32 of the French Consumer Code.</p>
+			<p>A seller who, in bad faith, obstructs the implementation of the legal guarantee of conformity incurs a civil fine of up to 300,000 euros, which may be raised to 10% of the average annual turnover (article L. 241-5 of the French Consumer Code).</p>
+			<p>The consumer also benefits from the legal guarantee against hidden defects under articles 1641 to 1649 of the French Civil Code, for a period of two years from discovery of the defect. That guarantee gives the right to a price reduction if the goods are kept, or to a full refund against return of the goods.</p>
+		</div>
+		<h3 data-legal-id="warranties.digital">Digital content and digital services</h3>
+		<div class="legal-boxed">
+			<p>The consumer has a period of two years from the supply of the digital content or digital service to obtain the implementation of the legal guarantee of conformity should a lack of conformity appear. For a period of one year from the date of supply, the consumer is only required to establish the existence of the lack of conformity, not the date on which it appeared.</p>
+			<p>Where the contract provides that the digital content or digital service is supplied on a continuous basis, the legal guarantee applies to that digital content or digital service throughout the intended supply period. During that period, the consumer is only required to establish the existence of the lack of conformity, not the date on which it appeared.</p>
+			<p>The legal guarantee of conformity entails an obligation to provide all the updates necessary to keep the digital content or digital service in conformity.</p>
+			<p>The legal guarantee of conformity gives the consumer the right to have the digital content or digital service brought into conformity without undue delay following their request, free of charge and without major inconvenience to them.</p>
+			<p>The consumer may obtain a price reduction while keeping the digital content or digital service, or may terminate the contract and obtain a full refund against relinquishment of the digital content or digital service, if:</p>
+			<ol>
+				<li>the trader refuses to bring the digital content or digital service into conformity;</li>
+				<li>bringing the digital content or digital service into conformity is unjustifiably delayed;</li>
+				<li>the digital content or digital service cannot be brought into conformity without costs imposed on the consumer;</li>
+				<li>bringing the digital content or digital service into conformity causes major inconvenience to the consumer;</li>
+				<li>the lack of conformity of the digital content or digital service persists despite the trader's unsuccessful attempt to bring it into conformity.</li>
+			</ol>
+			<p>The consumer is also entitled to a price reduction or to termination of the contract where the lack of conformity is so serious that it justifies an immediate price reduction or termination. In that case, the consumer is not required to request that the digital content or digital service be brought into conformity beforehand.</p>
+			<p>Where the lack of conformity is minor, the consumer is entitled to cancel the contract only if the contract does not provide for the payment of a price.</p>
+			<p>Any period during which the digital content or digital service is unavailable with a view to bringing it back into conformity suspends the remaining guarantee until the conforming digital content or digital service is supplied again.</p>
+			<p>The rights mentioned above result from the application of articles L. 224-25-1 to L. 224-25-31 of the French Consumer Code.</p>
+			<p>A trader who, in bad faith, obstructs the implementation of the legal guarantee of conformity incurs a civil fine of up to 300,000 euros, which may be raised to 10% of the average annual turnover (article L. 242-18-1 of the French Consumer Code).</p>
+			<p>The consumer also benefits from the legal guarantee against hidden defects under articles 1641 to 1649 of the French Civil Code, for a period of two years from discovery of the defect. That guarantee gives the right to a price reduction if the digital content or digital service is kept, or to a full refund against relinquishment of the digital content or digital service.</p>
+		</div>
 	</section>
 
 	<section data-legal-id="liability">

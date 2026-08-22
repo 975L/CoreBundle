@@ -10,13 +10,14 @@
 
 namespace c975L\ConfigBundle\Management;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Builds the guided-tour steps from MenuBuilder's already-aggregated menus/links, covering every entry so the tour reflects the whole sidebar - a link needing a role the current user lacks (see MenuProviderInterface::getLinks()) is skipped though, since its sidebar target isn't even rendered for them. 'description' (see MenuProviderInterface) stays optional - a step for an item without one just shows its label, no explanatory text. Each step carries the item's own resolved URL rather than an invented id/slug: assets/js/onboarding-tour.js matches it against the sidebar's own `a[href]` (no EasyAdmin template override needed, see Sidebar/Item.html.twig), the same deterministic url-generation approach already used by ConfigEditUrlResolver
+// Builds the guided-tour steps from MenuBuilder's already-aggregated menus/links, covering every entry so the tour reflects the whole sidebar - a menu or a link needing a role the current user lacks (see MenuProviderInterface) is skipped though, since its sidebar target isn't even rendered for them. 'description' (see MenuProviderInterface) stays optional - a step for an item without one just shows its label, no explanatory text. Each step carries the item's own resolved URL rather than an invented id/slug: assets/js/onboarding-tour.js matches it against the sidebar's own `a[href]` (no EasyAdmin template override needed, see Sidebar/Item.html.twig), the same deterministic url-generation approach already used by ConfigEditUrlResolver
 class OnboardingStepBuilder
 {
     public function __construct(
@@ -25,15 +26,21 @@ class OnboardingStepBuilder
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly TranslatorInterface $translator,
         private readonly Security $security,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
-    // [{url, label, description}], one per menu/link (links needing a role the user lacks excluded) - menus follow MenuBuilder::getOrderedMenus(), the same essential-then-advanced-across-sections order the sidebar itself renders, with links (already alphabetical/pinned-last, matching their own sidebar section) appended after
+    // [{url, label, description}], one per menu/link (both kinds needing a role the user lacks excluded) - menus follow MenuBuilder::getOrderedMenus(), the same essential-then-advanced-across-sections order the sidebar itself renders, with links (already alphabetical/pinned-last, matching their own sidebar section) appended after
     public function getSteps(): array
     {
         $steps = [];
 
         foreach ($this->menuBuilder->getOrderedMenus() as $menu) {
+            // Same default as MenuBuilder::getMenuItems() gives the sidebar item, and read here for the same reason it is read there: the tour is highlighted by matching an href, so an entry the sidebar doesn't draw has nothing to point at
+            if (!$this->security->isGranted($menu['role'] ?? $this->configService->get('site-role-admin'))) {
+                continue;
+            }
+
             $url = $this->adminUrlGenerator->unsetAll()
                 ->setController($menu['controller'])
                 // Same action resolution as MenuBuilder::getMenuItems(), and for the same reason: a step is highlighted by matching its url against the sidebar's own href, so an item naming its action has to be read the same way here

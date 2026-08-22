@@ -12,15 +12,17 @@ namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, opening the order sequence the satellite bundles continue (SiteBundle picks up at 50, same as the essential actions do). Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, opening the order sequence the satellite bundles continue (SiteBundle picks up at 50, same as the essential actions do). Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to an editor (see DashboardController::index()), and three of these four walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
+        private readonly ConfigServiceInterface $configService,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -44,6 +46,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'description' => 'description.guided_project_config_settings',
             'translation_domain' => 'config',
             'order' => 10,
+            // The bar ConfigCrudController sets on its own index and edit
+            'role' => $this->configService->get('site-role-admin'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_config_settings_open',
@@ -86,6 +90,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'description' => 'description.guided_project_config_health_check',
             'translation_domain' => 'config',
             'order' => 20,
+            // The bar every action of HealthCheckController sets on itself
+            'role' => $this->configService->get('site-role-admin'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_config_health_check_open',
@@ -123,6 +129,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'description' => 'description.guided_project_config_maintenance',
             'translation_domain' => 'config',
             'order' => 30,
+            // The bar the maintenance toggle shortcut declares, and the settings screen it links back to
+            'role' => $this->configService->get('site-role-admin'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_config_maintenance_open',
@@ -160,6 +168,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'description' => 'description.guided_project_config_url_metadata',
             'translation_domain' => 'config',
             'order' => 40,
+            // The bar UrlMetadataCrudController sets on its own index and edit, this one being the editor's
+            'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [
                     'label' => 'label.guided_step_config_url_metadata_open',

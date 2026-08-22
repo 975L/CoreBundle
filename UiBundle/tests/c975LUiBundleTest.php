@@ -105,7 +105,7 @@ class c975LUiBundleTest extends TestCase
 
         new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
-        $this->assertSame(['ui_form', 'ui_rating'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
+        $this->assertSame(['ui_form', 'ui_rating', 'ui_favorite'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
 
         $services = file_get_contents(__DIR__ . '/../config/services.yaml');
         $this->assertStringContainsString(
@@ -117,6 +117,11 @@ class c975LUiBundleTest extends TestCase
             '@?limiter.ui_rating',
             $services,
             'RatingController no longer asks for limiter.ui_rating, which is the name prepended here.'
+        );
+        $this->assertStringContainsString(
+            '@?limiter.ui_favorite',
+            $services,
+            'FavoriteController no longer asks for limiter.ui_favorite, which is the name prepended here.'
         );
     }
 

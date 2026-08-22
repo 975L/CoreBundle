@@ -52,6 +52,24 @@ class InfiniteScrollControllerTest extends TestCase
         $this->assertStringContainsString('this.observer?.observe(this.nextTarget);', $controller);
     }
 
+    // SiteBundle's basic.js announces the scroll it starts towards an anchor: growing during it would push the bottom of the page away from the visitor heading for it
+    public function testTheListingStopsGrowingDuringAnAnchorScroll(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('document.addEventListener("anchor:scroll", this.pause);', $controller);
+        $this->assertStringContainsString('this.observer?.disconnect();', $controller);
+    }
+
+    // The pause lasts until the visitor scrolls by themselves, which is them reading the listing again rather than the footer they asked for - "pointerdown" among them because dragging the scrollbar fires none of the other three
+    public function testTheListingGrowsAgainOnTheVisitorsOwnScroll(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('static RESUME_EVENTS = ["wheel", "touchstart", "keydown", "pointerdown"];', $controller);
+        $this->assertStringContainsString('document.addEventListener(type, this.resume, { once: true, passive: true })', $controller);
+    }
+
     private function read(string $relativePath): string
     {
         $path = \dirname(__DIR__, 2) . '/' . $relativePath;

@@ -11,7 +11,9 @@
 namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Management\ShortcutProviderInterface;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\BlockShortcutController;
+use c975L\UiBundle\Controller\Management\EmailDebugShortcutController;
 use c975L\UiBundle\Controller\Management\StylesheetShortcutController;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -19,11 +21,14 @@ class UiShortcutProvider implements ShortcutProviderInterface
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
     public function getShortcuts(): array
     {
+        $emailDebugEnabled = $this->configService->getBool($this->configService->get('email-debug'));
+
         return [
             [
                 'label' => $this->translator->trans('label.block_clear_cache', [], 'ui'),
@@ -40,6 +45,18 @@ class UiShortcutProvider implements ShortcutProviderInterface
                 'active' => false,
                 'role' => 'ROLE_SUPER_ADMIN',
                 'category' => ShortcutProviderInterface::CATEGORY_MAINTENANCE,
+            ],
+            [
+                'label' => $this->translator->trans(
+                    $emailDebugEnabled ? 'label.email_debug_disable' : 'label.email_debug_enable',
+                    [],
+                    'ui',
+                ),
+                'icon' => 'fas fa-bug',
+                'route' => EmailDebugShortcutController::TOGGLE_ROUTE,
+                'active' => $emailDebugEnabled,
+                'role' => 'ROLE_SUPER_ADMIN',
+                'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
             ],
         ];
     }

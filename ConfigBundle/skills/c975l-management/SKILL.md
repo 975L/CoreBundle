@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -42,7 +42,7 @@ class MyUrlMetadataProvider implements UrlMetadataProviderInterface
 | --- | --- | --- |
 | `MenuProviderInterface` | `getMenuSection()`, `getMenus()`, `getLinks()` | sidebar sections, entries and plain-route links |
 | `AlertProviderInterface` | `getAlerts()` | `danger` / `warning` / `info` alerts on the dashboard |
-| `ShortcutProviderInterface` | `getShortcuts()` | quick-action buttons — POST and CSRF token required |
+| `ShortcutProviderInterface` | `getShortcuts()` | quick-action tiles, one titled row per `category` — POST and CSRF token required; `'active' => true` (the thing is on, the tile turns it off) paints the tile as a warning, and such a tile belongs in `CATEGORY_TOGGLE` |
 | `DashboardWidgetProviderInterface` | `getDashboardWidgets()` | dashboard widgets |
 | `EssentialActionProviderInterface` | `getEssentialActions()` | entries of the "essential actions" checklist |
 | `GuidedProjectProviderInterface` | `getGuidedProjects()` | replayable guided tours of your screens |
@@ -69,6 +69,12 @@ Two nuances that get lost:
 
 - Menu sections sharing the same `label` **and** `translation_domain` merge under one heading, and the
   entries are sorted alphabetically on the **translated** label.
+- A menu entry, an alert and a guided project each take an optional `role`. On a menu it defaults to
+  `site-role-admin` and must be set to the bar the entry's own screen states, `setPermission()` being
+  unreadable from here: too high and the entry goes missing from a sidebar its screen would have
+  answered, too low and it leads to a 403 the guided tour walks the user to. The dashboard itself
+  opens on `BackOfficeAccessVoter::ACCESS`, not on a role, so an editor stands in it and every block
+  filters itself (see `c975l-users`).
 - `whatsnew.json` is a marketing thread for non-developer users — no `version`, no `bundle` field,
   describe a benefit. The developer changelog is `ChangeLog.md`.
 
@@ -123,6 +129,7 @@ and the container compilation of every production site breaks otherwise.
 - **Do not add a Composer dependency on another satellite bundle** to contribute to its screens.
   Implement the interface instead.
 - **Do not write a service tag** for a contribution class — the compiler pass finds it.
+- **Do not leave a menu entry on the admin default** when its own screen opens to an editor.
 - **Do not leave `Management/` out of the `src/` resource** in `services.yaml`.
 - **Do not write your own export.** Reuse `TableExporter` or `ContentExporter`.
 - **Do not match on ids when importing.** Use the natural key.

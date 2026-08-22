@@ -12,7 +12,7 @@ namespace c975L\ConfigBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Controller\Management\GuidedProjectController;
 use c975L\ConfigBundle\Management\GuidedProjectBuilder;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -33,12 +33,12 @@ class GuidedProjectControllerTest extends TestCase
         $guidedProjectBuilder = $this->createStub(GuidedProjectBuilder::class);
         $guidedProjectBuilder->method('getProject')->willReturn($project);
 
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('ROLE_ADMIN');
-
-        $controller = new GuidedProjectController($guidedProjectBuilder, $configService);
+        $controller = new GuidedProjectController($guidedProjectBuilder);
         $controller->setContainer($this->createContainer([
-            'security.authorization_checker' => $this->createAuthorizationChecker($granted),
+            // Grants the back-office floor and nothing else, the panel following a parcours from any screen the user may open - the project's own role is answered by GuidedProjectBuilder::getProject(), not here
+            'security.authorization_checker' => $granted
+                ? $this->createAuthorizationCheckerFor(BackOfficeAccessVoter::ACCESS)
+                : $this->createAuthorizationChecker(false),
         ]));
 
         return $controller;

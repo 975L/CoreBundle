@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Service\AiRephraseClient;
@@ -25,6 +26,7 @@ class AiAlertProvider implements AlertProviderInterface
         private readonly AiUsageTracker $aiUsageTracker,
         private readonly AiAssistantClientInterface $aiAssistantClient,
         private readonly AiRephraseClient $aiRephraseClient,
+        private readonly ConfigServiceInterface $configService,
         private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
@@ -67,6 +69,8 @@ class AiAlertProvider implements AlertProviderInterface
             'label' => $label,
             'description' => $description,
             'severity' => $severity,
+            // Its screen is the admin's own (see AiAssistantController), same bar as the sidebar link to it - the dashboard now renders for an editor, who could act on neither half of that screen
+            'role' => $this->configService->get('site-role-admin'),
             'url' => $this->urlGenerator->generate(AiAssistantController::INDEX_ROUTE),
         ];
     }

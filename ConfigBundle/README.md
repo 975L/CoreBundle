@@ -28,7 +28,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - **Config entries** — [declare](#defining-config-entries-for-your-bundle) · [load](#loading-config-entries-into-the-database) · [prune](#pruning-entries-no-longer-declared) · [set from the CLI](#setting-values-from-the-command-line) · [encrypt](#encrypting-sensitive-values) · [read in PHP/Twig](#reading-config-values) · [timezone](#timezone)
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
 - **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled)
-- **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows)
+- **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Sessions cleanup](#sessions-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows)
 - **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
 - **For coding agents** — [AI agent skills](#ai-agent-skills)
 
@@ -52,6 +52,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - "Health check" dashboard page (Lighthouse scores, security headers, W3C/accessibility checks...) with history, a trend chart, and CSV export, extensible via `HealthCheckProviderInterface`/`HealthCheckAdviceProviderInterface`
 - `c975l:config:backup`, dumping the database table by table and archiving `public/`+`private/`, with archive integrity verification, a retention window on the server, a dashboard alert when a backup stops running, and a weekly digest email for the sites whose dashboard you don't open daily
 - `c975l:config:messenger-cleanup`, purging failed Messenger messages past their retention and emailing a digest of the ones worth an admin's attention, with a dashboard screen to read, replay or delete them
+- `c975l:config:sessions-cleanup`, deleting the expired rows of the `sessions` table nightly, PHP's own garbage collection being a dice roll a managed host can simply never throw
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
 - `c975l:seo:files:create`, writing `robots.txt`, `humans.txt` and `llms.txt` from the `seo` configs and from the urls those same providers declare, with a monthly check reporting the AI crawlers that appeared in the community list
@@ -59,7 +60,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Url descriptions for the pages no entity carries (`site_url_metadata` table, EasyAdmin CRUD, export/import), read by the layouts, listed by `c975l:url-metadata:sync` from what each bundle declares via `UrlMetadataProviderInterface`
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps and the two cross-checked, redirect chains, deployment, and the content quality of every url any bundle declares
 - A weekly intrusion check looking for the traces rather than for the doors: an executable file where only uploads are written, a working tree no longer matching what was deployed, and a privileged account more than the run before
-- A Turbo-safe CSP nonce generator, and the `site_copyright()` Twig function
+- A Turbo-safe CSP nonce generator, holding the nonce in a signed cookie rather than in the session, and the `site_copyright()` Twig function
 - `/status/report`, serving what a site runs (versions, installed bundles, health check summary) to whoever presents its key — answers nobody unless configured, extensible via `StatusProviderInterface`, dumped locally by `c975l:status:dump`
 - Scheduled maintenance tasks declared by each bundle (`MaintenanceTaskProviderInterface`) rather than listed by the app, and spread over each install's own minutes (`ScheduleSpreader`) so sites sharing a server don't all run them at once
 - `c975l:dev-profile:run`, a dev-only command listing what the Symfony dev toolbar would flag on every page (n+1 queries, deprecations, missing translations...), extensible via `DevProfilePathProviderInterface`
@@ -552,13 +553,17 @@ security:
 
 ### Back-office access control
 
-`c975l:site:create` also declares `- { path: ^/management, roles: IS_AUTHENTICATED_FULLY }` under `access_control` in `config/packages/security.yaml` (same step again), so an anonymous visitor gets the login form instead of a bare 403. On the skeleton's `lazy: true` firewall it also makes the token resolve up front, without which `c975l/config-bundle`'s dashboard runs before the firewall has restored it. `IS_AUTHENTICATED_FULLY` rather than an admin role, on purpose: which role grants the back-office is `site-role-admin`, editable from the dashboard, so the controllers check it themselves. If your site predates this, add it yourself:
+`c975l:site:create` also declares `- { path: ^/management, roles: IS_AUTHENTICATED_FULLY }` under `access_control` in `config/packages/security.yaml` (same step again), so an anonymous visitor gets the login form instead of a bare 403. On the skeleton's `lazy: true` firewall it also makes the token resolve up front, without which `c975l/config-bundle`'s dashboard runs before the firewall has restored it. `IS_AUTHENTICATED_FULLY` rather than a role, on purpose: which roles grant the back office is editable from the dashboard (`site-role-editor`, `site-role-admin`), so the screens check it themselves. If your site predates this, add it yourself:
 
 ```yaml
 security:
     access_control:
         - { path: ^/management, roles: IS_AUTHENTICATED_FULLY }
 ```
+
+Standing in the back office at all is `BackOfficeAccessVoter::ACCESS` (`C975L_ACCESS_BACK_OFFICE`), the floor the dashboard, the "What's new" page and the guided-project panel are gated by — every other screen states its own bar on top, and every block of the dashboard filters itself by role (menus, links, alerts, shortcuts, guided projects), so what a user gets is the part of the back office that is theirs rather than a 403 on the way in. It grants on any of `site-role-editor`, `site-role-admin` or `ROLE_SUPER_ADMIN`, **held outright**: no `role_hierarchy` is shipped (same reason as `UserManagementVoter` above), so a plain `denyAccessUnlessGranted($configService->get('site-role-editor'))` would lock out an account holding only the admin role. Use the attribute — not one of the two config values — wherever a screen is open to the whole back office, EasyAdmin's `setPermission()` included, which goes through `isGranted()` just the same.
+
+The essential-actions checklist is the exception that is not gated but simply not built: it walks the site's own setup screen by screen, an editor has the role for none of them, and an empty progress bar under its heading would be worse than no heading at all.
 
 ### Account activation (`isEnabled`)
 
@@ -784,6 +789,8 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 **Section merging:** if several bundles declare the same `getMenuSection()` (identical `label` + `translation_domain`), their menus are merged under a single section header instead of being duplicated.
 
 **Alphabetical ordering:** within a section, menu items are always sorted alphabetically by their translated label.
+
+**Role:** each entry in `getMenus()` accepts an optional `'role'` key, defaulting to the `site-role-admin` value every entry used to be given. Set it to the bar the entry's own screen states — its CRUD's `setPermission(Action::INDEX, …)`, or the `denyAccessUnlessGranted()` of its `#[AdminRoute]` action — whenever that screen opens below the admin one: a media library or a redirects list an editor is meant to reach. Nothing here can read a CRUD's own `setPermission()`, so the entry has to say it. Too high and it goes missing from a sidebar its screen would have answered; too low and it leads that user to a 403, and the guided tour walks them to it — `OnboardingStepBuilder` skips a menu the current user lacks the `role` for exactly as it already skips a link.
 
 **Advanced tier:** both `getMenuSection()` and each entry in `getMenus()` accept an optional `'tier' => 'advanced'` key (default `'essential'`). Items opting into it are pulled out of their section and collected into one collapsed "Advanced" submenu at the bottom of the sidebar, instead of staying under their own section header — set it on `getMenuSection()` to move every item of that provider's section, or on an individual entry in `getMenus()` to move just that one (its section keeps its other items at the top level). Several providers commonly share one section (e.g. Config/Site/UiBundle all merge into "management"), so an item's own `tier` never drags along another provider's items sharing that same section.
 
@@ -1102,7 +1109,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 ## Contributing dashboard shortcuts from other bundles
 
-The `/management` dashboard shows a grid of quick-action tiles (e.g. clearing a cache, toggling maintenance mode) contributed by any bundle.
+The `/management` dashboard shows quick-action tiles (e.g. clearing a cache, toggling maintenance mode) contributed by any bundle, on one titled row per category.
 
 Satellite bundles contribute shortcuts by implementing `ShortcutProviderInterface` — no manual service tagging needed, `ShortcutProviderPass` auto-detects any class implementing it (same pattern as `MenuProviderInterface`):
 
@@ -1129,7 +1136,7 @@ class MyShortcutProvider implements ShortcutProviderInterface
                 'route' => MyShortcutController::TOGGLE_MAINTENANCE_ROUTE,
                 'active' => $this->isMaintenanceOn(),
                 'role' => 'ROLE_SUPER_ADMIN',
-                'category' => ShortcutProviderInterface::CATEGORY_MAINTENANCE,
+                'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
             ],
         ];
     }
@@ -1140,15 +1147,15 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 **Unlike menus/links, shortcuts trigger an action, not just navigation.** `route` must accept a `POST` request and validate its own CSRF token (`csrf_token(route)` is the token id used by the shared template) — see `ConfigShortcutController::clearCache()` for a one-shot reference implementation that clears the config cache.
 
-**`active`:** reflects an on/off state (e.g. a toggled maintenance mode) — one-shot actions with no on/off state can always return `false`. See `MaintenanceShortcutController::toggle()` for a toggle reference implementation flipping the `site-maintenance` config used by `MaintenanceListener`, with `ConfigShortcutProvider::getShortcuts()` reading that same config to decide `active` and pick the right label ("Enable"/"Disable"). It carries no styling of its own — every tile looks the same regardless of state, so a tile never reads as "currently pressed".
+**`active`:** says the thing the tile toggles is currently **on**, so clicking it turns that thing off — one-shot actions, and anything the tile does not toggle, always return `false`. See `MaintenanceShortcutController::toggle()` for a toggle reference implementation flipping the `site-maintenance` config used by `MaintenanceListener`, with `ConfigShortcutProvider::getShortcuts()` reading that same config to decide `active` and pick the right label ("Enable"/"Disable"). **The flag paints the tile**: an `active` tile wears `shortcut-tile-warning` (Bootstrap's subtle warning tokens, so it follows the admin theme), which is how an admin reads what the site currently has switched on — maintenance, registration, a bundle's test mode — without going through every label. A tile in "Enable" mode stays neutral, on purpose: nothing is on, there is nothing to notice.
 
 **`role`:** optional — omit it for a shortcut with no access restriction of its own, set it (e.g. `'ROLE_SUPER_ADMIN'`) to hide the tile from users lacking it.
 
-**`category`:** optional too — one of `ShortcutProviderInterface`'s `CATEGORY_EXPORT`/`CATEGORY_MAINTENANCE`/`CATEGORY_SITE` constants, or a custom `['label' => string, 'translation_domain' => string]` pair. Shortcuts sharing the same category (across bundles) are ordered next to each other in the grid — e.g. every export-related shortcut ends up adjacent — though the grid itself stays a single flat panel with no heading per category. Omit it to fall into the generic "Other" category.
+**`category`:** optional too — one of `ShortcutProviderInterface`'s `CATEGORY_EXPORT`/`CATEGORY_MAINTENANCE`/`CATEGORY_SITE`/`CATEGORY_TOGGLE` constants, or a custom `['label' => string, 'translation_domain' => string]` pair. Shortcuts sharing the same category (across bundles) are rendered on **one titled row of their own** — every export-related tile on the "Export" row, every on/off tile on the "Enable / Disable" one, whichever bundles they come from. Put a tile flipping something on or off in `CATEGORY_TOGGLE`: that row is what an admin scans to know the state of the site. Omit the key to fall into the generic "Other" category.
 
 **`method`:** optional, `'POST'` by default. Set it to `'GET'` for the rare tile that opens a page instead of acting — it is then rendered as a plain link, with no form and no CSRF token, and its route must be a regular `GET` page. See `ConfigPruneController::index()`, the "Obsolete configs" listing, for the reference implementation. Anything that changes state stays `POST`.
 
-**Rendering:** shortcuts are merged across every provider and ordered by category then by label by `ShortcutBuilder::getShortcuts()`, then rendered with the shared `templates/management/_shortcuts.html.twig` partial as one flat grid, each tile its own small `<form method="post">` (or an `<a>` for a `GET` one).
+**Rendering:** shortcuts are merged across every provider and grouped into categories by `ShortcutBuilder::getCategories()` — categories ordered by their translated label, tiles ordered by their own label inside each — then rendered with the shared `templates/management/_shortcuts.html.twig` partial, one `<h3>` plus one grid per category, each tile its own small `<form method="post">` (or an `<a>` for a `GET` one). A row whose tiles are all hidden by their `role` is not rendered at all, heading included.
 
 ## Contributing essential actions from other bundles
 
@@ -1319,6 +1326,7 @@ A url that changed needs a redirect whether it was a page's or a product's, and 
 - **`gone`** answers `410 Gone` instead of redirecting — for content removed with no equivalent to send anyone to. Search engines drop a 410 far faster than the plain 404 the same url would otherwise return. `toUrl` is required on every other row, a conditional constraint on the entity rather than a form-level one.
 - **`fromPath` accepts a trailing `*`**: `/apidoc/*` covers every url below it, however deep. An exact row always wins over a prefix covering it, and among prefixes the longest one wins — so `/apidoc/c975L/*` still beats a broader `/apidoc/*`. A convention resolved in `RedirectSubscriber`, not a SQL wildcard.
 - **`toUrl` accepts one too, and that pairing is what renames a tree**: `/character/*` → `/personnages/*` carries the tail over, sending `/character/tuor` to `/personnages/tuor`. A destination *without* the `*` keeps folding the whole tree onto that single url, which is what a tree removed rather than renamed needs — both are wanted, and the `*` is what tells them apart. So a renamed url tree is a handful of rows edited in the back office, not a redirecting route per old url deployed with the code. A `*` on the destination of an exact row means nothing and is left alone.
+- **A path the web server answers itself is refused**: `fromPath` rejects anything under `/assets` or `/bundles` carrying a file extension (`Redirect::STATIC_PATH_PATTERN`), and `RedirectSubscriber` returns on those without querying at all - a missing asset would otherwise be the one thing turning a 404 into a database connection, and a page full of stale image urls into a burst of them. Uploads under `/medias` are deliberately left out: a removed file there is a url someone did publish, and stays redirectable.
 - **The site root is left alone** by design.
 
 `RedirectChainHealthCheckProvider` walks the rows for chains and loops, from the database alone.
@@ -1735,6 +1743,14 @@ Everything above reads and purges the `messenger_messages` table through Doctrin
 **Exporting a set of tables.** `c975l:config:export-tables` dumps the data (no `CREATE TABLE`) of every table matching a prefix into one SQL file, meant to be replayed one-shot into an environment where the schema already exists — building content in dev then pushing it to prod after the migrations ran there. The file truncates each table and disables FK checks around the inserts, so it can be replayed as-is over existing data; `site_config` is always excluded, this bundle having its own non-destructive export. It uses the same DB credentials as `c975l:config:backup` (the `site-backup-db-*` keys), so it works even when the DB user your GUI tool uses lacks export privileges. The same dump is one click away as the **Export tables** dashboard shortcut, streamed back rather than written to `var/export`.
 
 `--prefix` (default `site_`) and `site-backup-database` must both be plain identifiers — letters, digits and underscores only. Neither can be bound as a query parameter, and a `%` or `_` in the prefix would silently widen the list of tables the dump truncates on replay.
+
+---
+
+## Sessions cleanup
+
+`c975l:config:sessions-cleanup` deletes the expired rows of the `sessions` table `PdoSessionHandler` writes to - the very `DELETE` the handler's own garbage collection runs, on a cadence instead of on a dice roll. That collection is probabilistic (`session.gc_probability`/`gc_divisor`) and only fires when PHP happens to call it, which on a managed host can be never: 14 331 rows had piled up on one site in ten days, 14 329 of them expired.
+
+Declared by `ConfigMaintenanceTaskProvider`, so it runs nightly with nothing to add to a schedule. A site storing its sessions in files has no such table and the command says so rather than failing, and one that renamed the handler's table or its `sess_lifetime` column simply has nothing found here.
 
 ---
 

@@ -31,6 +31,7 @@ class LegalModelPlaceholders
     private const array VARS = [
         'site-name' => self::ESCAPE,
         'site-owner' => self::RAW,
+        'site-address' => self::RAW_NL2BR,
         'site-director' => self::ESCAPE,
         'site-director-location' => self::ESCAPE,
         'site-contact-email' => self::ESCAPE,

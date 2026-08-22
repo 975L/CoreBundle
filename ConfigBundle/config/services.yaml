@@ -6,10 +6,10 @@ services:
 
     c975L\ConfigBundle\:
         resource: '../src/'
-        # Security/SessionNonceGenerator excluded: it implements a NelmioSecurityBundle interface, so its class isn't even autoloadable without that optional bundle - registered separately in services_nelmio.yaml (see c975LConfigBundle::loadExtension)
+        # Security/CookieNonceGenerator excluded: it implements a NelmioSecurityBundle interface, so its class isn't even autoloadable without that optional bundle - registered separately in services_nelmio.yaml (see c975LConfigBundle::loadExtension)
         # Management/DeclaredUrlsHealthCheckProvider excluded: it takes one SitemapProviderInterface, which has no single implementation to autowire - DeclaredUrlsHealthCheckPass registers one instance per sitemap provider found in the container
         # Test excluded: those classes extend PHPUnit's TestCase, a require-dev dependency absent in production - the resource scan reflects on every class it finds, so leaving them in would fail the container compilation of every consuming app
-        exclude: '../src/{DependencyInjection,Entity,Messenger,Test,Management/DeclaredUrlsHealthCheckProvider.php,Security/SessionNonceGenerator.php}'
+        exclude: '../src/{DependencyInjection,Entity,Messenger,Test,Management/DeclaredUrlsHealthCheckProvider.php,Security/CookieNonceGenerator.php}'
 
     c975L\ConfigBundle\Management\MenuBuilder:
         arguments:

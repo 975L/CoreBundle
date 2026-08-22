@@ -12,7 +12,7 @@ namespace c975L\ConfigBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Controller\Management\WhatsNewController;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Twig\Environment;
@@ -26,9 +26,6 @@ class WhatsNewControllerTest extends TestCase
         $whatsNewBuilder = $this->createStub(WhatsNewBuilder::class);
         $whatsNewBuilder->method('getAll')->willReturn(['entry-1', 'entry-2']);
 
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('site-role-admin');
-
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())
             ->method('render')
@@ -38,9 +35,10 @@ class WhatsNewControllerTest extends TestCase
             )
             ->willReturn('<html></html>');
 
-        $controller = new WhatsNewController($whatsNewBuilder, $configService);
+        $controller = new WhatsNewController($whatsNewBuilder);
         $controller->setContainer($this->createContainer([
-            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            // Grants the back-office floor and nothing else: the screen is news to everyone standing in the back office, not to one named bar
+            'security.authorization_checker' => $this->createAuthorizationCheckerFor(BackOfficeAccessVoter::ACCESS),
             'twig' => $twig,
         ]));
 
@@ -54,10 +52,7 @@ class WhatsNewControllerTest extends TestCase
     {
         $this->expectException(AccessDeniedException::class);
 
-        $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('site-role-admin');
-
-        $controller = new WhatsNewController($this->createStub(WhatsNewBuilder::class), $configService);
+        $controller = new WhatsNewController($this->createStub(WhatsNewBuilder::class));
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(false),
         ]));

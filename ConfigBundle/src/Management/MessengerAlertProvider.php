@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Entity\Config;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\MessengerFailedMessageService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -21,6 +22,7 @@ class MessengerAlertProvider implements AlertProviderInterface
 {
     public function __construct(
         private readonly MessengerFailedMessageService $messengerFailedMessageService,
+        private readonly ConfigServiceInterface $configService,
         private readonly Security $security,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly TranslatorInterface $translator,
@@ -41,6 +43,8 @@ class MessengerAlertProvider implements AlertProviderInterface
                 'label' => $this->translator->trans('label.messenger_alert_super_admin', ['%count%' => $count], 'config'),
                 'description' => $this->translator->trans('description.messenger_alert_super_admin', [], 'config'),
                 'severity' => Config::SEVERITY_DANGER,
+                // Its screen is the admin's own (see MessengerFailedController), and the only way in - the dashboard now renders for an editor, who would read an alert about something they cannot open
+                'role' => $this->configService->get('site-role-admin'),
                 'url' => $url,
             ]];
         }
@@ -49,6 +53,7 @@ class MessengerAlertProvider implements AlertProviderInterface
             'label' => $this->translator->trans('label.messenger_alert_admin', [], 'config'),
             'description' => null,
             'severity' => Config::SEVERITY_WARNING,
+            'role' => $this->configService->get('site-role-admin'),
             'url' => $url,
         ]];
     }

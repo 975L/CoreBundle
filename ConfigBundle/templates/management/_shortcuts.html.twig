@@ -1,21 +1,27 @@
-{# Renders the dashboard shortcuts as one flat grid of tiles, ordered by category with no heading per category A shortcut is a CSRF-protected POST form unless it declares 'method' => 'GET'; 'role' is optional The caller checks shortcuts|length > 0 #}
-<div class="shortcuts-grid">
-{% for shortcut in shortcuts %}
-    {% if shortcut.role is not defined or is_granted(shortcut.role) %}
-        {% if 'GET' == shortcut.method|default('POST') %}
-            <a href="{{ path(shortcut.route) }}" class="shortcut-tile">
-                <i class="{{ shortcut.icon }}"></i>
-                <span>{{ shortcut.label }}</span>
-            </a>
-        {% else %}
-            <form method="post" action="{{ path(shortcut.route) }}">
-                <input type="hidden" name="_token" value="{{ csrf_token(shortcut.route) }}">
-                <button type="submit" class="shortcut-tile">
+{# Renders the dashboard shortcuts as one titled row of tiles per category (see ShortcutBuilder), the section and each of its rows hidden when the current user has the role for none of their tiles - a heading standing above an empty grid otherwise A shortcut is a CSRF-protected POST form unless it declares 'method' => 'GET'; 'role' is optional A tile whose 'active' is true turns that thing off, and is painted as a warning so what the site currently has switched on is read at a glance #}
+{% set visibleCategories = categories|filter(category => category.shortcuts|filter(shortcut => shortcut.role is not defined or is_granted(shortcut.role))|length > 0) %}
+{% if visibleCategories|length > 0 %}
+    <h2>{{ ('label.shortcuts'|trans({}, 'config')) }}</h2>
+    {% for category in visibleCategories %}
+        <h3 class="shortcuts-category">{{ category.label }}</h3>
+        <div class="shortcuts-grid">
+        {% for shortcut in category.shortcuts|filter(shortcut => shortcut.role is not defined or is_granted(shortcut.role)) %}
+            {% set tileClass = 'shortcut-tile' ~ (shortcut.active|default(false) ? ' shortcut-tile-warning' : '') %}
+            {% if 'GET' == shortcut.method|default('POST') %}
+                <a href="{{ path(shortcut.route) }}" class="{{ tileClass }}">
                     <i class="{{ shortcut.icon }}"></i>
                     <span>{{ shortcut.label }}</span>
-                </button>
-            </form>
-        {% endif %}
-    {% endif %}
-{% endfor %}
-</div>
+                </a>
+            {% else %}
+                <form method="post" action="{{ path(shortcut.route) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token(shortcut.route) }}">
+                    <button type="submit" class="{{ tileClass }}">
+                        <i class="{{ shortcut.icon }}"></i>
+                        <span>{{ shortcut.label }}</span>
+                    </button>
+                </form>
+            {% endif %}
+        {% endfor %}
+        </div>
+    {% endfor %}
+{% endif %}

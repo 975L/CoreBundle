@@ -100,6 +100,12 @@ $radius: var(--block-radius, var(--radius-card));
     margin: 0;
 }
 
+// What a row holds that is not a card - a book's thumbnail, a serie's - carries a ".width-*" utility, and those center themselves with "margin: 0 auto". An auto margin on a flex item eats the line's free space before "justify-content" is ever consulted, so full rows have nothing to absorb and look right while the last, incomplete one drifts to the middle of a row said to be flushed start.
+// ":not()" rather than a bare "*", for the specificity: ".width-150" weighs one class and is declared later in the sheet (sass/_sizes.scss), where the argument of ":not()" counts and puts this selector ahead. A card is left out, its own reset above being what a test locks, and a flip card too, whose "margin-inline: auto" is what centers it and which drops only its block margin in a row (see sass/_flip-card.scss)
+.cards > :not(.card, .flip-card) {
+    margin: 0;
+}
+
 // The band takes the card's own accent, so a card marked "red" is not headed with a --primary blue. The fallback is what an unaccented card has always shown - and what the ".card-header" the management accordion reuses outside any card shows, --card-accent being set by the twelve classes above and by nothing else
 .card-header,
 h2.card-header {

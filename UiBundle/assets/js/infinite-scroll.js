@@ -11,6 +11,9 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
     static targets = ["list", "next", "count"];
 
+    // The gestures a visitor scrolls with, which is what tells a paused listing that it is being read again
+    static RESUME_EVENTS = ["wheel", "touchstart", "keydown", "pointerdown"];
+
     connect() {
         if (!this.hasListTarget || !this.hasNextTarget) {
             return;
@@ -21,11 +24,35 @@ export default class extends Controller {
             // Fires before the link is reached, so the items are in place by the time the visitor scrolls to them
             { rootMargin: "600px" }
         );
+        this.pause = this.pause.bind(this);
+        this.resume = this.resume.bind(this);
+        document.addEventListener("anchor:scroll", this.pause);
         this.watch();
     }
 
     disconnect() {
         this.observer?.disconnect();
+        document.removeEventListener("anchor:scroll", this.pause);
+        this.constructor.RESUME_EVENTS.forEach((type) => document.removeEventListener(type, this.resume));
+    }
+
+    // A scroll heading for an anchor - the button pulling to the bottom of the page - reaches a place that appending items would push away from it, and the visitor asking for the footer is not asking for more of the listing
+    pause() {
+        if (!this.hasNextTarget) {
+            return;
+        }
+
+        this.observer?.disconnect();
+        this.constructor.RESUME_EVENTS.forEach((type) => document.addEventListener(type, this.resume, { once: true, passive: true }));
+    }
+
+    // Scrolling again is the visitor coming back to the listing: only one of the gestures fires, so the others are taken off here
+    resume() {
+        this.constructor.RESUME_EVENTS.forEach((type) => document.removeEventListener(type, this.resume));
+
+        if (this.hasNextTarget) {
+            this.watch();
+        }
     }
 
     // Also bound on the link itself, so a click loads in place rather than leaving the page
@@ -95,6 +122,7 @@ export default class extends Controller {
     // Nothing left to load: the link goes, and with it the element the observer watches
     end() {
         this.observer?.disconnect();
+        this.constructor.RESUME_EVENTS.forEach((type) => document.removeEventListener(type, this.resume));
         if (this.hasNextTarget) {
             this.nextTarget.remove();
         }

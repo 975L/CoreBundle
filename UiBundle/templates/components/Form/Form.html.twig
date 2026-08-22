@@ -4,11 +4,14 @@
 
 {# A <div>: this block never carries a heading, and a headingless <section> is invalid HTML #}
 <div>
-    {% for label, messages in app.flashes(['success', 'danger', 'warning']) %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }}">{{ message }}</div>
+    {# Only a visitor who can hold a flash reads the bag, reading app.flashes being enough to start a session #}
+    {% if ui_can_hold_flash() %}
+        {% for label, messages in app.flashes(['success', 'danger', 'warning']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">{{ message }}</div>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
+    {% endif %}
     {# "hidden" excluded: the visitor never sees an asterisk for an invisible required field #}
     {% set hasRequired = false %}
     {% for child in form %}

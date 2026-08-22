@@ -11,7 +11,7 @@
 namespace c975L\ConfigBundle\Controller\Management;
 
 use c975L\ConfigBundle\Management\GuidedProjectBuilder;
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,7 +20,6 @@ class GuidedProjectController extends AbstractController
 {
     public function __construct(
         private readonly GuidedProjectBuilder $guidedProjectBuilder,
-        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -28,7 +27,8 @@ class GuidedProjectController extends AbstractController
     #[AdminRoute(path: '/guided-project/{slug}', name: 'guided_project_steps', options: ['methods' => ['GET']])]
     public function steps(string $slug): JsonResponse
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+        // Same floor as the dashboard the panel is started from - GuidedProjectBuilder::getProject() still answers null for a project the caller lacks the role of
+        $this->denyAccessUnlessGranted(BackOfficeAccessVoter::ACCESS);
 
         // Null both for a slug no provider declares anymore and for a project the current user lacks the role for - the panel treats the 404 the same either way, dropping the slug and forgetting it
         $project = $this->guidedProjectBuilder->getProject($slug);

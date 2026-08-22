@@ -82,6 +82,15 @@ class LegalModelPlaceholdersTest extends TestCase
         $this->assertSame('%site-secret%', $this->placeholders()->substitute('%site-secret%'));
     }
 
+    // The seller's postal address the model withdrawal form asks for: written line by line, and left to the site rather than escaped away
+    public function testSubstitutionBreaksTheSellerAddress(): void
+    {
+        $html = $this->placeholders()->substitute('<p>%site-address%</p>');
+
+        $this->assertStringContainsString("Acme & Co<br />\n1 rue du Test", $html);
+        $this->assertContains('site-address', $this->placeholders()->slugs());
+    }
+
     public function testSlugsAreListedForTheCustomizationScreen(): void
     {
         $this->assertContains('site-name', $this->placeholders()->slugs());
@@ -95,6 +104,7 @@ class LegalModelPlaceholdersTest extends TestCase
             'site-name' => 'Acme & Co',
             'site-owner' => '<strong>Owner</strong>',
             'site-hosting-provider' => "Host\nCity",
+            'site-address' => "Acme & Co\n1 rue du Test",
             default => null,
         });
 

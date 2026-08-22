@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, ROLE_SUPER_ADMIN, user-roles-available, UserManagementVoter, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, ROLE_SUPER_ADMIN, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -29,7 +29,7 @@ There is **no `role_hierarchy`**: each role is granted explicitly, so `ROLE_ADMI
 
 | Setting | Gates |
 | --- | --- |
-| `site-role-admin` | the back office as a whole, and the User screen |
+| `site-role-admin` | the site's own settings, the User screen, the health check, the failed messages |
 | `site-role-editor` | content screens — pages, menus, galleries, the front-office edit buttons |
 | `user-roles-available` | the roles (`json`) the User form offers |
 
@@ -39,6 +39,20 @@ decide which roles exist, so a plain `ROLE_ADMIN` must never reach them.
 `site-role-admin` is the one entry read before it can exist — `ConfigService::loadAll()` falls back on
 its declared default, `ROLE_ADMIN`, while the row is absent, or a fresh install would lock everyone
 out including whoever would fix it.
+
+### The back-office floor
+
+Standing in the back office at all is one voter attribute, **`BackOfficeAccessVoter::ACCESS`**
+(`C975L_ACCESS_BACK_OFFICE`), granting on any of `site-role-editor`, `site-role-admin` or
+`ROLE_SUPER_ADMIN` held outright. An attribute and not one of the two settings, for the very reason
+above: with no hierarchy, `denyAccessUnlessGranted($configService->get('site-role-editor'))` would
+lock out an account holding only the admin role — the very account the dashboard is meant for.
+
+The dashboard, the "What's new" page and the guided-project panel are gated by it; every other screen
+states its own bar on top. Each block of the dashboard then filters itself by role (menus, links,
+alerts, shortcuts, guided projects), so a user gets the part of the back office that is theirs rather
+than a 403 on the way in. The attribute works as an EasyAdmin `setPermission()` too — that goes
+through `isGranted()` just the same.
 
 ### ROLE_SUPER_ADMIN
 
@@ -93,10 +107,10 @@ security:
         - { path: ^/management, roles: IS_AUTHENTICATED_FULLY }
 ```
 
-`c975l:site:create` writes all three. `IS_AUTHENTICATED_FULLY` rather than an admin role on purpose:
-**which role grants the back office is `site-role-admin`, editable from the dashboard**, so the
-controllers check it themselves. On a `lazy: true` firewall it also makes the token resolve up front,
-without which the dashboard runs before the firewall has restored it.
+`c975l:site:create` writes all three. `IS_AUTHENTICATED_FULLY` rather than a role on purpose:
+**which roles grant the back office is editable from the dashboard**, so the screens check it
+themselves (see the back-office floor above). On a `lazy: true` firewall it also makes the token
+resolve up front, without which the dashboard runs before the firewall has restored it.
 
 `LoginRequestSubscriber` sends a POST to `app_login` carrying no usable `_username` straight back to
 the form: scanners otherwise trigger a `BadRequestHttpException` the kernel logs at `ERROR`, burying a
@@ -117,6 +131,8 @@ the registration itself.
 - **Do not add a `role_hierarchy`** expecting `ROLE_ADMIN` to imply `ROLE_EDITOR`.
 - **Do not list `ROLE_SUPER_ADMIN` in `user-roles-available`.**
 - **Do not check `ROLE_ADMIN` in a controller** — read `site-role-admin` or `site-role-editor`.
+- **Do not gate a screen open to the whole back office on `site-role-editor`** — use
+  `BackOfficeAccessVoter::ACCESS`, or an admin-only account is turned away.
 - **Do not put an admin role in the firewall's access control for `^/management`.**
 - **Do not write a `RegistrationController` or a `ResetPasswordController`.** They are `Form` rows and
   a `FormActionInterface`.

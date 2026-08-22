@@ -144,6 +144,20 @@ class MenuBuilderTest extends TestCase
         $this->assertSame('ROLE_SUPER_ADMIN', $itemDto->getPermission());
     }
 
+    // An entry naming the bar its own screen states, rather than taking the admin default: a media library or a redirects list an editor is meant to reach would be missing from their sidebar otherwise (see MenuProviderInterface::getMenus())
+    public function testGetMenuItemsAppliesTheRoleAnEntryNamesOverTheAdminDefault(): void
+    {
+        $section = ['label' => 'label.management', 'translation_domain' => 'site'];
+        $provider = $this->createProvider($section, [
+            'media' => ['controller' => 'MediaCrudController', 'label' => 'label.media_library', 'translation_domain' => 'ui', 'icon' => 'fas fa-photo-film', 'role' => 'ROLE_EDITOR'],
+        ]);
+        $builder = new MenuBuilder([$provider], $this->createConfigService('ROLE_ADMIN'), $this->createTranslator(), $this->createUrlGenerator());
+
+        $items = iterator_to_array($builder->getMenuItems(), false);
+
+        $this->assertSame('ROLE_EDITOR', $items[1]->getAsDto()->getPermission());
+    }
+
     // EasyAdmin only falls back to "index" on its own for a CRUD controller, so an entry pointing at a plain #[AdminRoute] screen would resolve to no route at all if the action were left unset (see MenuProviderInterface::getMenus())
     public function testGetMenuItemsNamesTheActionEachEntryOpens(): void
     {

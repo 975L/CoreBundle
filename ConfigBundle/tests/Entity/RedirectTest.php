@@ -53,4 +53,18 @@ class RedirectTest extends TestCase
         $this->assertTrue($redirect->isGone());
         $this->assertNull($redirect->getToUrl());
     }
+
+    // What both the constraint on fromPath and RedirectSubscriber's own guard read: AssetMapper output is refused at the form, so nobody writes a row that could never fire
+    public function testTheStaticPathPatternCoversTheAssetFolders(): void
+    {
+        $this->assertMatchesRegularExpression(Redirect::STATIC_PATH_PATTERN, '/assets/styles-a1b2c3.css');
+        $this->assertMatchesRegularExpression(Redirect::STATIC_PATH_PATTERN, '/bundles/c975lui/js/app.js');
+    }
+
+    // Uploads stay redirectable: a removed file under "/medias" is a url someone did publish, and its replacement is exactly what a row is written for
+    public function testTheStaticPathPatternLeavesUploadsAlone(): void
+    {
+        $this->assertDoesNotMatchRegularExpression(Redirect::STATIC_PATH_PATTERN, '/medias/site/guide.pdf');
+        $this->assertDoesNotMatchRegularExpression(Redirect::STATIC_PATH_PATTERN, '/old-page');
+    }
 }

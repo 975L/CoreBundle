@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Management;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\RedirectCrudController;
 use c975L\ConfigBundle\Controller\Management\UserCrudController;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 
 // To add a MenuProvider, you need to: add the Management Folder in the src/ folder of your bundle; create a MenuProvider.php file in it with a class that implements MenuProviderInterface, providing getMenuSection(), getMenus() and getLinks() methods; getLinks() can return [] if your bundle has no links to routes to expose (all bundles' links are merged into a single alphabetically-sorted section); add the declaration of the Management folder in the services.yaml file of your bundle; ConfigBundle will automatically detect the MenuProvider and add it to the menu of EasyAdmin
@@ -58,6 +59,8 @@ class MenuProvider implements MenuProviderInterface
                 'translation_domain' => 'config',
                 'icon' => 'fas fa-arrow-right',
                 'tier' => 'advanced',
+                // The bar RedirectCrudController sets on its own index and edit - a url that moved is the editor's business, whoever published the page it pointed at
+                'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_redirect',
             ],
         ];
@@ -71,6 +74,8 @@ class MenuProvider implements MenuProviderInterface
                 'name' => 'management_whatsnew_index',
                 'translation_domain' => 'config',
                 'icon' => 'fa fa-bullhorn',
+                // Same gate as the screen itself (see WhatsNewController) - without the very same key, an admin carrying no editor role passes the voter but never sees the link, no role_hierarchy being shipped
+                'role' => BackOfficeAccessVoter::ACCESS,
                 'description' => 'description.whatsnew',
             ],
             'health_check' => [
@@ -78,6 +83,8 @@ class MenuProvider implements MenuProviderInterface
                 'name' => 'management_health_check_index',
                 'translation_domain' => 'config',
                 'icon' => 'fa fa-heart-pulse',
+                // Same gate as every action of HealthCheckController, and for the same reason as the link above
+                'role' => $this->configService->get('site-role-admin'),
                 'description' => 'description.health_check',
             ],
             'content_import' => [

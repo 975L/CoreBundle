@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
+use c975L\UiBundle\Management\LinkableRouteProvider;
 use c975L\UiBundle\Management\MenuProvider;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
 use c975L\UiBundle\Management\UiShortcutProvider;
@@ -24,8 +25,9 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
     {
         return [
             new MenuProvider($this->createConfigService(), $this->createTranslator()),
-            new UiShortcutProvider($this->createTranslator()),
+            new UiShortcutProvider($this->createTranslator(), $this->createConfigService()),
             new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator()),
+            new LinkableRouteProvider(),
         ];
     }
 

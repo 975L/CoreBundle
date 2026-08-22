@@ -39,6 +39,7 @@ class ConfigMaintenanceTaskProviderTest extends TestCase
         $this->assertContains('c975l:config:backup:offsite', $commands);
         $this->assertContains('c975l:config:backup:digest', $commands);
         $this->assertContains('c975l:config:messenger-cleanup', $commands);
+        $this->assertContains('c975l:config:sessions-cleanup', $commands);
     }
 
     // The mirrored uploads are written once and weigh far more than everything else scheduled here, so they run nightly rather than riding the backup's own 6-hourly cadence

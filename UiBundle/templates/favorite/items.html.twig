@@ -1,0 +1,18 @@
+{# The cards of one visitor's list, rendered by FavoriteController::list() and injected by assets/js/favorites.js - never served as a page of its own #}
+{# Each entry is a CollectionItem, the very model the "collection" block hands its own items over as: a wishlist looks like every other listing of the site without a card of its own #}
+<div class="cards">
+    {% for favorite in favorites %}
+        <twig:c975LUi:Card:Card
+            title="{{ favorite.item.title }}"
+            titleUrl="{{ favorite.item.url|default('') }}"
+            src="{{ favorite.item.imageUrl|default('') }}"
+            alt="{{ favorite.item.title }}"
+        >
+            {% if favorite.item.description %}
+                <p>{{ favorite.item.description }}</p>
+            {% endif %}
+            {# The same heart as on the thing's own page, so a list is emptied from where it is read #}
+            <twig:c975LUi:Favorite:Button ownerType="{{ favorite.ownerType }}" ownerId="{{ favorite.ownerId }}"/>
+        </twig:c975LUi:Card:Card>
+    {% endfor %}
+</div>

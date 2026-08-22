@@ -38,7 +38,7 @@ class RedirectSubscriber implements EventSubscriberInterface
         }
 
         $path = $event->getRequest()->getPathInfo();
-        if ('/' === $path) {
+        if ('/' === $path || $this->isStaticAsset($path)) {
             return;
         }
 
@@ -62,6 +62,12 @@ class RedirectSubscriber implements EventSubscriberInterface
 
         $status = $redirect->isPermanent() ? 301 : 302;
         $event->setResponse(new RedirectResponse($toUrl, $status));
+    }
+
+    // Redirects are a url-of-a-page feature, so a request for a file that the web server did not find gets no query at all: Doctrine connects lazily and this subscriber runs on every request, so without this it is the one thing turning a missing asset into a database connection - and a page full of stale image urls into a burst of them. Uploads are left out of it: a removed file under "/medias" is a url someone did publish, and the entity refuses a row on the two prefixes covered here rather than letting it be written and never fire
+    private function isStaticAsset(string $path): bool
+    {
+        return 1 === preg_match(Redirect::STATIC_PATH_PATTERN, $path);
     }
 
     // A "*" on both sides carries the tail of the path over to the destination: "/character/*" -> "/personnages/*" sends "/character/tuor" to "/personnages/tuor", which is what a renamed url tree needs. A destination without it keeps sending the whole tree to one url, which is what a tree folded into a single page needs - both are wanted, and the "*" is what tells them apart

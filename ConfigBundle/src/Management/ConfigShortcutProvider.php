@@ -90,8 +90,8 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
                 'label' => $this->translator->trans('label.config_seo_crawlers_update', [], 'config'),
                 'icon' => 'fas fa-user-secret',
                 'route' => ConfigShortcutController::SEO_CRAWLERS_UPDATE_ROUTE,
-                // Marked active when the site really blocks them, the list being read by nothing otherwise
-                'active' => (bool) $this->configService->get('seo-robots-block-ai'),
+                // A one-shot regeneration, not a toggle: whether the site blocks AI crawlers is read from the settings screen, not from a tile the template would paint as a warning (see ShortcutProviderInterface)
+                'active' => false,
                 'role' => 'ROLE_SUPER_ADMIN',
                 'category' => ShortcutProviderInterface::CATEGORY_SITE,
             ],
@@ -113,7 +113,7 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
                 'route' => ConfigShortcutController::REGISTRATION_ENABLED_TOGGLE_ROUTE,
                 'active' => null !== $registerForm && $registerForm->isEnabled(),
                 'role' => $this->configService->get('site-role-admin'),
-                'category' => ShortcutProviderInterface::CATEGORY_SITE,
+                'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
             ],
             [
                 'label' => $this->translator->trans(
@@ -125,7 +125,7 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
                 'route' => MaintenanceShortcutController::TOGGLE_ROUTE_MAINTENANCE,
                 'active' => $maintenanceEnabled,
                 'role' => $this->configService->get('site-role-admin'),
-                'category' => ShortcutProviderInterface::CATEGORY_MAINTENANCE,
+                'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
             ],
         ];
     }

@@ -19,6 +19,7 @@ use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
+use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
@@ -66,7 +67,10 @@ class DashboardController extends AbstractDashboardController
     #[\Override]
     public function index(): Response
     {
-        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+        // The floor rather than one named bar: every block below either filters itself by role (menus, links, alerts, shortcuts, guided projects) or is only built for an admin (the essential actions), so what each user gets is the part of the back office that is theirs, not a 403 on the way in. Read BackOfficeAccessVoter for why a plain site-role-editor here would lock out an account holding only the admin one
+        $this->denyAccessUnlessGranted(BackOfficeAccessVoter::ACCESS);
+
+        $isAdmin = $this->isGranted($this->configService->get('site-role-admin'));
 
         return $this->render(
             '@c975LConfig/management/index.html.twig',
@@ -74,10 +78,11 @@ class DashboardController extends AbstractDashboardController
                 'menus' => $this->menuBuilder->getMenus(),
                 'routes' => $this->menuBuilder->getLinks(),
                 'alerts' => $this->alertBuilder->getAlerts(),
-                'shortcuts' => $this->shortcutBuilder->getShortcuts(),
+                'shortcutCategories' => $this->shortcutBuilder->getCategories(),
                 'whatsNew' => $this->whatsNewBuilder->getLatest(),
-                'essentialActions' => $this->essentialActionBuilder->getActions(),
-                'essentialActionsProgress' => $this->essentialActionBuilder->getProgress(),
+                // The checklist is the site's own setup, start to finish - an editor has the role for none of the screens it links to, so it is not built for them at all rather than gated action by action
+                'essentialActions' => $isAdmin ? $this->essentialActionBuilder->getActions() : [],
+                'essentialActionsProgress' => $isAdmin ? $this->essentialActionBuilder->getProgress() : [],
                 'widgets' => $this->dashboardWidgetBuilder->getWidgets(),
                 'onboardingSteps' => $this->onboardingStepBuilder->getSteps(),
                 'guidedProjects' => $this->guidedProjectBuilder->getProjects(),
@@ -157,7 +162,7 @@ class DashboardController extends AbstractDashboardController
     #[\Override]
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('label.dashboard', 'fa fa-home')->setPermission($this->configService->get('site-role-admin'));
+        yield MenuItem::linkToDashboard('label.dashboard', 'fa fa-home')->setPermission(BackOfficeAccessVoter::ACCESS);
 
         // Menu from bundles, grouped by section and sorted alphabetically
         yield from $this->menuBuilder->getMenuItems();

@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, Redirect entity, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -25,6 +25,7 @@ php bin/console c975l:config:backup          # dump + archive + offsite, silent 
 php bin/console c975l:config:backup:offsite  # mirror the declared upload folders
 php bin/console c975l:config:backup:digest   # emails a digest of the last 7 days
 php bin/console c975l:status:dump            # the status report, locally
+php bin/console c975l:config:sessions-cleanup # expired rows of the PdoSessionHandler table
 php bin/console c975l:dev-profile:run        # dev only: what the toolbar would flag, on every page
 ```
 
@@ -49,6 +50,10 @@ url that changed needs a redirect whether it was a page's or a product's.
   carries the tail over. A destination without the `*` folds the whole tree onto one url — both are
   wanted, and the `*` is what tells them apart.
 - The site root is left alone by design.
+- **A path the web server answers itself is refused**: `Redirect::STATIC_PATH_PATTERN` rejects anything
+  under `/assets` or `/bundles` carrying a file extension, and `RedirectSubscriber` returns on those
+  without querying — a missing asset would otherwise turn a 404 into a database connection. Uploads
+  under `/medias` stay redirectable.
 
 **Never deploy a redirecting route per old url.** A renamed tree is a handful of rows.
 
@@ -128,6 +133,12 @@ figure calling for no action is not reported.** The report is read across a doze
 
 ## Scheduler and dev profile
 
+`c975l:config:sessions-cleanup` deletes the expired rows of `PdoSessionHandler`'s `sessions` table —
+the same `DELETE` its own garbage collection runs, on a cadence instead of on a dice roll: that
+collection is probabilistic and on a managed host can simply never fire. Declared by
+`ConfigMaintenanceTaskProvider`, so it runs nightly with nothing to add to a schedule; a site storing
+its sessions in files has no such table and the command says so rather than failing.
+
 A bundle contributes scheduled work with `MaintenanceTaskProviderInterface` rather than asking each
 site to add a cron line. `DevProfilePathProviderInterface` declares the paths `c975l:dev-profile:run`
 walks — it hands each path to the **local** kernel, no HTTP and no host involved, unlike the health
@@ -138,6 +149,8 @@ check and the smoke test which fetch the live site at `site-url`.
 - **Do not serve `robots.txt`, `humans.txt`, `llms.txt` or a sitemap from a controller.**
 - **Do not point Search Console at a sub-sitemap** — only at the index.
 - **Do not write a redirecting route** for a url that changed. Add a `Redirect` row.
+- **Do not add a `Redirect` row on a path under `/assets` or `/bundles`** — the entity refuses it, and
+  the subscriber never queries for one.
 - **Do not store what an url says in code**, nor declare a url's sentences from a provider.
 - **Do not run a health check from a controller.**
 - **Do not run the checks, the sitemap or the backup against a staging database** while `site-url`

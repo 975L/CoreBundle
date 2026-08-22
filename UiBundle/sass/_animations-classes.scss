@@ -43,6 +43,14 @@
 }
 
 /* Fades */
+/* Bare, unlike everything else here: these two are toggled by javascript on an element that is not an editor's block - the scroll buttons, a basket row leaving the list */
+.fade-in {
+    animation: fadeIn 1s forwards;
+}
+.fade-out {
+    animation: fadeOut 1s forwards;
+}
+
 .animation.fade-in {
     animation: fadeIn 1s ease-in-out both;
 }

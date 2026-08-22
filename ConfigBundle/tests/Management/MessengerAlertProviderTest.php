@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\MessengerAlertProvider;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\MessengerFailedMessageService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -34,7 +35,11 @@ class MessengerAlertProviderTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
-        return new MessengerAlertProvider($service, $security, $urlGenerator, $translator);
+        // Names the very config entry the alert carries as its own role, the screen it opens being the admin's
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('ROLE_ADMIN');
+
+        return new MessengerAlertProvider($service, $configService, $security, $urlGenerator, $translator);
     }
 
     public function testNoAlertWhenNothingImportantFailed(): void

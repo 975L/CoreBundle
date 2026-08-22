@@ -134,15 +134,21 @@
         {% endblock %}
     </head>
 
-    <body>
+{# "id=top" and the "span id=bottom" closing the body are what the scroll buttons below point at #}
+    <body id="top">
         {% block body %}
+{# The two buttons a long page is walked with, ordinary anchors working without javascript #}
+            <twig:c975LUi:Scroll:Buttons />
             <main>
                 {% block flashes %}
-                    {% for label, messages in app.flashes %}
-                        {% for message in messages %}
-                            <div class="flash alert alert-{{ label }} text-center" role="alert">{{ message|raw }}</div>
+                    {# Only a visitor who can hold a flash reads the bag: reading app.flashes starts the session, and it carries no such guard of its own. A theme overriding this block takes that reading over, hence the guard inside it #}
+                    {% if ui_can_hold_flash() %}
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="flash alert alert-{{ label }} text-center" role="alert">{{ message|raw }}</div>
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
+                    {% endif %}
                 {% endblock %}
 
                 {% block content %}{% endblock %}
@@ -152,5 +158,6 @@
             <twig:c975LUi:Analytics:Matomo />
             <twig:c975LUi:Cookie:Consent />
         {% endblock %}
+        <span id="bottom"></span>
     </body>
 </html>

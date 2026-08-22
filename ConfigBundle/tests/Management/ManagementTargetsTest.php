@@ -30,8 +30,8 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
             new MenuProvider($this->createConfigService()),
             new ConfigShortcutProvider($this->createTranslator(), $this->createConfigService(), $this->createStub(FormRepository::class)),
             new ConfigEssentialActionProvider($this->createConfigService(), $this->adminUrlGenerator()),
-            new ConfigGuidedProjectProvider($this->adminUrlGenerator(), $this->urlGenerator()),
-            new SocialMenuProvider(),
+            new ConfigGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator()),
+            new SocialMenuProvider($this->createConfigService()),
             new LinkableRouteProvider(),
         ];
     }

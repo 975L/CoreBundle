@@ -21,6 +21,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity('fromPath')]
 class Redirect implements \Stringable
 {
+    // A path the web server answers itself: PHP never sees a request for a file that exists, and RedirectSubscriber returns before querying for one that does not, so a row written on such a path would simply never fire. AssetMapper output is named by digest and is never a hand-written destination, hence the two prefixes rather than every folder holding files
+    public const string STATIC_PATH_PATTERN = '#^/(?:assets|bundles)/.*\.[a-z0-9]{2,5}$#i';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -29,6 +32,7 @@ class Redirect implements \Stringable
     #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
+    #[Assert\Regex(pattern: self::STATIC_PATH_PATTERN, match: false, message: 'label.static_asset_path')]
     private ?string $fromPath = null;
 
     // Nullable since a "gone" row has nothing to redirect to - still required for every other one, hence the conditional constraint rather than a plain NotBlank

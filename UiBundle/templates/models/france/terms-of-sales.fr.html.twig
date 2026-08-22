@@ -1,4 +1,4 @@
-{% set updateDate = '2026-07-09' %}
+{% set updateDate = '2026-08-22' %}
 
 <div class="legal">
 	<p class="text-center">
@@ -46,6 +46,19 @@
 		</div>
 	</section>
 
+	<section data-legal-id="delivery">
+		<h2>Livraison</h2>
+		<div>
+			Les articles physiques sont expédiés en France métropolitaine uniquement. Les articles numériques sont mis à disposition en téléchargement dès la validation du paiement et les services sont fournis selon les modalités indiquées sur leur descriptif.
+			<br>
+			Les frais de port, le montant d'achat éventuel à partir duquel ils sont offerts et le délai d'expédition sont indiqués dans la boutique et rappelés avant la validation définitive de la commande. Les articles numériques et les services ne donnent lieu à aucun frais de port.
+			<br>
+			En application de l'article L 216-1 du code de la consommation, et à défaut d'indication d'une autre date, la commande est livrée sans retard injustifié et au plus tard trente (30) jours après la conclusion du contrat. Passé ce délai, l'utilisateur/trice peut résoudre le contrat après nous avoir enjoint de livrer dans un délai supplémentaire raisonnable resté sans effet, et est alors remboursé/e de la totalité des sommes versées au plus tard quatorze (14) jours après la résolution.
+			<br>
+			Le risque de perte ou d'endommagement du bien est transféré à l'utilisateur/trice au moment où il/elle, ou un tiers qu'il/elle a désigné, en prend physiquement possession.
+		</div>
+	</section>
+
 	<section data-legal-id="refund">
 		<h2>Remboursement</h2>
 		<div>
@@ -56,17 +69,112 @@
 	<section data-legal-id="withdrawal">
 		<h2>Rétractation</h2>
 		<div>
-			En application de l'article L 221-18 du code de la consommation, l'utilisateur/trice dispose d'un délai de quatorze (14) jours francs pour se rétracter et revenir sur ses engagements. Ce délai court à partir du lendemain de l’acceptation de l’offre dans le cas des prestations de service. Quand il expire un samedi, un dimanche ou un jour férié, il est prorogé jusqu’au prochain jour ouvrable. Toutefois, en validant le service, l'utilisateur/trice particulier/e accepte que nous commencions à exécuter la prestation immédiatement et renonce expressément à son droit de rétractation pour les services payants utilisés et consommés avant l'expiration du délai légal de rétractation.
+			En application de l'article L 221-18 du code de la consommation, l'utilisateur/trice dispose d'un délai de quatorze (14) jours francs pour se rétracter, sans avoir à motiver sa décision. Ce délai court à partir du lendemain de la réception du bien dans le cas d'une vente de biens, et à partir du lendemain de l'acceptation de l'offre dans le cas des prestations de service. Quand il expire un samedi, un dimanche ou un jour férié, il est prorogé jusqu'au prochain jour ouvrable.
+			<br>
+			En validant une prestation de service dont il/elle demande l'exécution immédiate, l'utilisateur/trice particulier/e accepte que nous la commencions avant la fin du délai et reste redevable du montant correspondant à ce qui lui a été fourni jusqu'à sa rétractation.
+			<br>
+			En application de l'article L 221-28 du code de la consommation, le droit de rétractation ne peut pas être exercé pour un contenu numérique fourni sans support matériel dont l'exécution a commencé après accord préalable exprès de l'utilisateur/trice et renoncement exprès à son droit de rétractation, ce qui est le cas des articles numériques mis à disposition en téléchargement dès la validation du paiement. Il ne peut pas non plus être exercé pour les biens confectionnés selon les spécifications de l'utilisateur/trice ou nettement personnalisés, ni pour les services pleinement exécutés avant la fin du délai avec son accord préalable exprès.
 			<br>
 			La procédure de rétractation est la suivante :
 		</div>
 		<ol>
-			<li>Faire une demande de rétractation en nous contactant</li>
+			<li>Nous notifier la décision de rétractation par une déclaration dénuée d'ambiguïté, en nous contactant ou au moyen du formulaire ci-dessous</li>
 			<li>Vérification par nos services de la validité de la demande</li>
+			<li>Renvoi du bien, le cas échéant, dans les conditions décrites à la section Retours</li>
 			<li>Acceptation et re-créditation sur le moyen de paiement utilisé du montant défini
 				<strong>OU</strong>
 				rejet de la demande avec explications</li>
 		</ol>
+		<h3 data-legal-id="withdrawal.form">Formulaire type de rétractation</h3>
+		<div class="legal-boxed">
+			(Veuillez compléter et renvoyer le présent formulaire uniquement si vous souhaitez vous rétracter du contrat.)
+			<br>
+			À l'attention de
+			<strong>{{ legal_var('site-name') }}</strong>
+			{% if config('site-address') %}
+				<br>
+				{{ legal_var('site-address') }}
+			{% endif %}
+			<br>
+			{{ legal_var('site-contact-email') }} :
+			<br>
+			Je/nous (*) vous notifie/notifions (*) par la présente ma/notre (*) rétractation du contrat portant sur la vente du bien (*)/pour la prestation de services (*) ci-dessous :
+			<br>
+			Commandé le (*)/reçu le (*) :
+			<br>
+			Nom du (des) consommateur(s) :
+			<br>
+			Adresse du (des) consommateur(s) :
+			<br>
+			Signature du (des) consommateur(s) (uniquement en cas de notification du présent formulaire sur papier) :
+			<br>
+			Date :
+			<br>
+			(*) Rayez la mention inutile.
+		</div>
+	</section>
+
+	<section data-legal-id="returns">
+		<h2>Retours</h2>
+		<div>
+			En cas de rétractation, le bien doit nous être renvoyé sans retard excessif et au plus tard quatorze (14) jours après la notification de la décision de rétractation. Sauf mention contraire dans la boutique, les frais de renvoi restent à la charge de l'utilisateur/trice.
+			<br>
+			Le bien est retourné complet et dans un état permettant sa remise en vente. La responsabilité de l'utilisateur/trice n'est engagée qu'à l'égard de la dépréciation du bien résultant de manipulations autres que celles nécessaires pour établir sa nature, ses caractéristiques et son bon fonctionnement.
+			<br>
+			Le remboursement, frais de livraison standard initiaux inclus, intervient au plus tard quatorze (14) jours après la récupération du bien ou la preuve de son expédition, par le même moyen de paiement que celui utilisé pour la commande. Les frais supplémentaires d'un mode de livraison plus coûteux que l'offre standard ne sont pas remboursés.
+			<br>
+			Un bien reçu endommagé, incomplet ou non conforme à la commande doit nous être signalé en nous contactant : son retour et son remplacement sont alors pris en charge par nos soins, sans qu'il soit nécessaire d'invoquer le droit de rétractation.
+		</div>
+	</section>
+
+	<section data-legal-id="warranties">
+		<h2>Garanties légales</h2>
+		<div>
+			Indépendamment de toute garantie commerciale, l'utilisateur/trice consommateur/trice bénéficie des garanties légales reproduites ci-dessous, dans les termes fixés par l'annexe à l'article D 211-2 du code de la consommation.
+		</div>
+		<h3 data-legal-id="warranties.goods">Biens</h3>
+		<div class="legal-boxed">
+			<p>Le consommateur dispose d'un délai de deux ans à compter de la délivrance du bien pour obtenir la mise en œuvre de la garantie légale de conformité en cas d'apparition d'un défaut de conformité. Durant ce délai, le consommateur n'est tenu d'établir que l'existence du défaut de conformité et non la date d'apparition de celui-ci.</p>
+			<p>Lorsque le contrat de vente du bien prévoit la fourniture d'un contenu numérique ou d'un service numérique de manière continue pendant une durée supérieure à deux ans, la garantie légale est applicable à ce contenu numérique ou ce service numérique tout au long de la période de fourniture prévue. Durant ce délai, le consommateur n'est tenu d'établir que l'existence du défaut de conformité affectant le contenu numérique ou le service numérique et non la date d'apparition de celui-ci.</p>
+			<p>La garantie légale de conformité emporte obligation pour le professionnel, le cas échéant, de fournir toutes les mises à jour nécessaires au maintien de la conformité du bien.</p>
+			<p>La garantie légale de conformité donne au consommateur droit à la réparation ou au remplacement du bien dans un délai de trente jours suivant sa demande, sans frais et sans inconvénient majeur pour lui.</p>
+			<p>Si le bien est réparé dans le cadre de la garantie légale de conformité, le consommateur bénéficie d'une extension de six mois de la garantie initiale.</p>
+			<p>Si le consommateur demande la réparation du bien, mais que le vendeur impose le remplacement, la garantie légale de conformité est renouvelée pour une période de deux ans à compter de la date de remplacement du bien.</p>
+			<p>Le consommateur peut obtenir une réduction du prix d'achat en conservant le bien ou mettre fin au contrat en se faisant rembourser intégralement contre restitution du bien, si :</p>
+			<ol>
+				<li>Le professionnel refuse de réparer ou de remplacer le bien ;</li>
+				<li>La réparation ou le remplacement du bien intervient après un délai de trente jours ;</li>
+				<li>La réparation ou le remplacement du bien occasionne un inconvénient majeur pour le consommateur, notamment lorsque le consommateur supporte définitivement les frais de reprise ou d'enlèvement du bien non conforme, ou s'il supporte les frais d'installation du bien réparé ou de remplacement ;</li>
+				<li>La non-conformité du bien persiste en dépit de la tentative de mise en conformité du vendeur restée infructueuse.</li>
+			</ol>
+			<p>Le consommateur a également droit à une réduction du prix du bien ou à la résolution du contrat lorsque le défaut de conformité est si grave qu'il justifie que la réduction du prix ou la résolution du contrat soit immédiate. Le consommateur n'est alors pas tenu de demander la réparation ou le remplacement du bien au préalable.</p>
+			<p>Le consommateur n'a pas droit à la résolution de la vente si le défaut de conformité est mineur.</p>
+			<p>Toute période d'immobilisation du bien en vue de sa réparation ou de son remplacement suspend la garantie qui restait à courir jusqu'à la délivrance du bien remis en état.</p>
+			<p>Les droits mentionnés ci-dessus résultent de l'application des articles L. 217-1 à L. 217-32 du code de la consommation.</p>
+			<p>Le vendeur qui fait obstacle de mauvaise foi à la mise en œuvre de la garantie légale de conformité encourt une amende civile d'un montant maximal de 300 000 euros, qui peut être porté jusqu'à 10 % du chiffre d'affaires moyen annuel (article L. 241-5 du code de la consommation).</p>
+			<p>Le consommateur bénéficie également de la garantie légale des vices cachés en application des articles 1641 à 1649 du code civil, pendant une durée de deux ans à compter de la découverte du défaut. Cette garantie donne droit à une réduction de prix si le bien est conservé ou à un remboursement intégral contre restitution du bien.</p>
+		</div>
+		<h3 data-legal-id="warranties.digital">Contenus et services numériques</h3>
+		<div class="legal-boxed">
+			<p>Le consommateur dispose d'un délai de deux ans à compter de la fourniture du contenu numérique ou du service numérique pour obtenir la mise en œuvre de la garantie légale de conformité en cas d'apparition d'un défaut de conformité. Durant un délai d'un an à compter de la date de fourniture, le consommateur n'est tenu d'établir que l'existence du défaut de conformité et non la date d'apparition de celui-ci.</p>
+			<p>Lorsque le contrat prévoit que le contenu numérique ou le service numérique est fourni de manière continue, la garantie légale est applicable à ce contenu numérique ou ce service numérique tout au long de la période de fourniture prévue. Durant ce délai, le consommateur n'est tenu d'établir que l'existence du défaut de conformité et non la date d'apparition de celui-ci.</p>
+			<p>La garantie légale de conformité emporte obligation de fournir toutes les mises à jour nécessaires au maintien de la conformité du contenu numérique ou du service numérique.</p>
+			<p>La garantie légale de conformité donne au consommateur droit à la mise en conformité du contenu numérique ou du service numérique sans retard injustifié suivant sa demande, sans frais et sans inconvénient majeur pour lui.</p>
+			<p>Le consommateur peut obtenir une réduction du prix en conservant le contenu numérique ou le service numérique, ou il peut mettre fin au contrat en se faisant rembourser intégralement contre renoncement au contenu numérique ou au service numérique, si :</p>
+			<ol>
+				<li>Le professionnel refuse de mettre le contenu numérique ou le service numérique en conformité ;</li>
+				<li>La mise en conformité du contenu numérique ou du service numérique est retardée de manière injustifiée ;</li>
+				<li>La mise en conformité du contenu numérique ou du service numérique ne peut intervenir sans frais imposés au consommateur ;</li>
+				<li>La mise en conformité du contenu numérique ou du service numérique occasionne un inconvénient majeur pour le consommateur ;</li>
+				<li>La non-conformité du contenu numérique ou du service numérique persiste en dépit de la tentative de mise en conformité du professionnel restée infructueuse.</li>
+			</ol>
+			<p>Le consommateur a également droit à une réduction du prix ou à la résolution du contrat lorsque le défaut de conformité est si grave qu'il justifie que la réduction du prix ou la résolution du contrat soit immédiate. Le consommateur n'est alors pas tenu de demander la mise en conformité du contenu numérique ou du service numérique au préalable.</p>
+			<p>Dans les cas où le défaut de conformité est mineur, le consommateur n'a droit à l'annulation du contrat que si le contrat ne prévoit pas le paiement d'un prix.</p>
+			<p>Toute période d'indisponibilité du contenu numérique ou du service numérique en vue de sa remise en conformité suspend la garantie qui restait à courir jusqu'à la fourniture du contenu numérique ou du service numérique de nouveau conforme.</p>
+			<p>Les droits mentionnés ci-dessus résultent de l'application des articles L. 224-25-1 à L. 224-25-31 du code de la consommation.</p>
+			<p>Le professionnel qui fait obstacle de mauvaise foi à la mise en œuvre de la garantie légale de conformité encourt une amende civile d'un montant maximal de 300 000 euros, qui peut être porté jusqu'à 10 % du chiffre d'affaires moyen annuel (article L. 242-18-1 du code de la consommation).</p>
+			<p>Le consommateur bénéficie, en outre, de la garantie légale des vices cachés en application des articles 1641 à 1649 du code civil, pendant une durée de deux ans à compter de la découverte du défaut. Cette garantie donne droit à une réduction de prix si le contenu numérique ou le service numérique est conservé ou à un remboursement intégral contre renonciation au contenu numérique ou au service numérique.</p>
+		</div>
 	</section>
 
 	<section data-legal-id="liability">

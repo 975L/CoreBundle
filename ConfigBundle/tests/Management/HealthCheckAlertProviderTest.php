@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\HealthCheckAlertProvider;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -43,7 +44,11 @@ class HealthCheckAlertProviderTest extends TestCase
             static fn (string $id, array $parameters = []) => strtr($id, $parameters)
         );
 
-        return new HealthCheckAlertProvider($repository, $urlGenerator, $translator);
+        // Names the very config entry the alert carries as its own role, the screen it opens being the admin's
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('ROLE_ADMIN');
+
+        return new HealthCheckAlertProvider($repository, $configService, $urlGenerator, $translator);
     }
 
     public function testNoAlertWhenNothingHasEverBeenChecked(): void

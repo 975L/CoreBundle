@@ -46,6 +46,19 @@ class MenuProviderTest extends TestCase
     }
 
     // Matches ConfigBundle's/SiteBundle's section value so a future CRUD entry here merges into the same group
+    // Three of the five screens answer an editor: without the key the entry takes the admin default and goes missing from their sidebar, with the tour step that walks to it (see MenuProviderInterface::getMenus())
+    public function testTheEditorScreensNameTheirOwnRoleAndTheOthersTakeTheAdminDefault(): void
+    {
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
+
+        $this->assertSame('ROLE_EDITOR', $menus['media']['role']);
+        $this->assertSame('ROLE_EDITOR', $menus['font']['role']);
+        $this->assertSame('ROLE_EDITOR', $menus['site_graphic']['role']);
+        // An action key and what a mail says are the admin's, so these two say nothing and fall back on the default
+        $this->assertArrayNotHasKey('role', $menus['form']);
+        $this->assertArrayNotHasKey('role', $menus['email_template']);
+    }
+
     public function testGetMenuSectionMatchesTheSharedManagementSection(): void
     {
         $provider = new MenuProvider($this->createConfigService(), $this->createTranslator());

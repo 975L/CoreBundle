@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Management;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -21,6 +22,7 @@ class HealthCheckAlertProvider implements AlertProviderInterface
 {
     public function __construct(
         private readonly HealthCheckResultRepository $healthCheckResultRepository,
+        private readonly ConfigServiceInterface $configService,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly TranslatorInterface $translator,
     ) {
@@ -49,6 +51,8 @@ class HealthCheckAlertProvider implements AlertProviderInterface
                 'config',
             ),
             'severity' => $errors > 0 ? Config::SEVERITY_DANGER : Config::SEVERITY_WARNING,
+            // Its screen is the admin's own (see HealthCheckController) - the dashboard now renders for an editor, who would read an alert about something they cannot open
+            'role' => $this->configService->get('site-role-admin'),
             'url' => $this->urlGenerator->generate('management_health_check_index'),
         ]];
     }

@@ -23,10 +23,14 @@ const LAZY_CONTROLLERS = {
     matomo: () => import('./js/matomo.js'),
     password: () => import('./js/password.js'),
     readmore: () => import('./js/readmore.js'),
+    scrollButtons: () => import('./js/scroll-buttons.js'),
     slider: () => import('./js/slider.js'),
     toc: () => import('./js/toc.js'),
     // Kebab-case identifier, same reason as cookie-consent above: every "data-ui-rating-*-value" binding is derived from it
     'ui-rating': () => import('./js/rating.js'),
+    'ui-favorite': () => import('./js/favorite.js'),
+    'ui-favorite-count': () => import('./js/favorite-count.js'),
+    'ui-favorites': () => import('./js/favorites.js'),
     videoIframe: () => import('./js/video-iframe.js'),
 };
 

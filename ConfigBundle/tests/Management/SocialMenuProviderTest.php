@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
 use c975L\ConfigBundle\Management\SocialMenuProvider;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
 
 class SocialMenuProviderTest extends TestCase
@@ -21,13 +22,13 @@ class SocialMenuProviderTest extends TestCase
     {
         $this->assertSame(
             ['label' => 'label.social', 'translation_domain' => 'social'],
-            new SocialMenuProvider()->getMenuSection(),
+            $this->createProvider()->getMenuSection(),
         );
     }
 
     public function testItContributesTheUrlMetadataScreen(): void
     {
-        $menus = new SocialMenuProvider()->getMenus();
+        $menus = $this->createProvider()->getMenus();
 
         $this->assertArrayHasKey('url_metadata', $menus);
         $this->assertSame(UrlMetadataCrudController::class, $menus['url_metadata']['controller']);
@@ -35,16 +36,29 @@ class SocialMenuProviderTest extends TestCase
         $this->assertSame('config', $menus['url_metadata']['translation_domain']);
         // Same key as url_metadata_crud_index.html.twig's own explanatory text
         $this->assertSame('label.info_url_metadata', $menus['url_metadata']['description']);
+        // The bar the screen itself sets: without it the entry would take the admin default and go missing from an editor's sidebar
+        $this->assertSame('ROLE_EDITOR', $menus['url_metadata']['role']);
     }
 
     // No tier: the screen belongs in the section itself, an 'advanced' one being collected into the collapsed submenu instead and taken out of "Social" altogether
     public function testTheScreenStaysInItsSectionRatherThanInTheAdvancedSubmenu(): void
     {
-        $this->assertArrayNotHasKey('tier', new SocialMenuProvider()->getMenus()['url_metadata']);
+        $this->assertArrayNotHasKey('tier', $this->createProvider()->getMenus()['url_metadata']);
     }
 
     public function testItContributesNoLink(): void
     {
-        $this->assertSame([], new SocialMenuProvider()->getLinks());
+        $this->assertSame([], $this->createProvider()->getLinks());
+    }
+
+    // Answers the editor key the entry names, the bar UrlMetadataCrudController sets on its own index
+    private function createProvider(): SocialMenuProvider
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnCallback(
+            static fn (string $key) => 'site-role-editor' === $key ? 'ROLE_EDITOR' : null
+        );
+
+        return new SocialMenuProvider($configService);
     }
 }

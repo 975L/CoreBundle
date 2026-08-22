@@ -1,0 +1,61 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+// The heart a visitor puts a thing aside with (components/Favorite/Button.html.twig). The same masking as sass/_rating.scss and for the same reason: masked, the glyph is painted by "background-color" and takes the theme's accent, where an <img> would paint the file's own fill and no CSS would reach it
+
+$favorite-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z'/%3E%3C/svg%3E");
+
+.favorite {
+    display: flex;
+    justify-content: flex-end;
+    line-height: 1;
+}
+
+// Sized in em, like the rating row: the heart follows the type size of wherever it is dropped, a card footer or a product sheet alike
+.favorite-button {
+    width: var(--favorite-size);
+    height: var(--favorite-size);
+    padding: 0;
+    border: 0;
+    background-color: var(--favorite-off, color-mix(in srgb, var(--text) 25%, var(--background)));
+    cursor: pointer;
+    -webkit-mask-image: $favorite-heart;
+    mask-image: $favorite-heart;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+// The red a heart is read in everywhere, sass/_rating.scss included: the sign carries its own color, where the site's accent would make the wishlist a second shape of whatever the buttons are painted in. Repeated here rather than imported, as the glyph above is, so this file stands alone
+.favorite-button--on {
+    background-color: var(--favorite-on, #e0245e);
+}
+
+// The wishlist item of a menu (templates/blocks/FavoriteLink.html.twig), both of its parts sitting inside the ".menu-label" that menu paints: sized in em and filled with currentColor, they follow that label's own type and color wherever it is read - a mobile dropdown, a desktop bar, a hover - rather than restating any of the three here
+.favorite-menu-icon {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.4em;
+    vertical-align: -0.125em;
+    fill: currentColor;
+}
+
+// A number rather than a pill: a badge would need a background of its own, and a navbar carries several a single color does not sit right on
+.favorite-menu-count {
+    margin-left: 0.4em;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+// The keyboard has to see what the pointer sees: the button is a shape cut out of a color, so it carries no outline of its own
+.favorite-button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}

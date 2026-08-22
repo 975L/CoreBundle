@@ -464,6 +464,17 @@
         "description": "description.site_owner"
     },
     {
+        "label": "label.site_address",
+        "slug": "site-address",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "textarea",
+        "group": "legal",
+        "severity": null,
+        "description": "description.site_address"
+    },
+    {
         "label": "label.site_producer",
         "slug": "site-producer",
         "sensitive": false,

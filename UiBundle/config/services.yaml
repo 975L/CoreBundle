@@ -36,6 +36,11 @@ services:
         arguments:
             $ratingLimiterFactory: '@?limiter.ui_rating'
 
+    # Same reading as the two limiters above: c975LUiBundle prepends "ui_favorite" itself, so the public wishlist routes are never served unlimited, and a site that took the limiter away still gets a controller rather than a container that refuses to compile
+    c975L\UiBundle\Controller\FavoriteController:
+        arguments:
+            $favoriteLimiterFactory: '@?limiter.ui_favorite'
+
     # NelmioSecurityBundle registers its CSP listener under its own service id alone, aliasing nothing on the class - so CspNonceProvider, which type-hints that class, is not autowirable in a consuming app and brings the whole container down on the first cache:clear
     # Wired here rather than aliased: the listener only exists once a site has configured a csp section, and a site that has not is one whose pages carry no nonce at all - it gets an empty one rather than a container that refuses to compile (see CspNonceProvider::styleNonce)
     c975L\UiBundle\Service\CspNonceProvider:
@@ -436,6 +441,23 @@ services:
               container: true
               contexts: 'flex_columns_slot'
               slot_context: 'flex_slot_nested'
+
+    # The link to this bundle's own wishlist page, offered to whoever builds menus out of these blocks (SiteBundle's navbar and footer) rather than declared over there: the page, the heart and the count are this bundle's, so the item leading to them is too, and a menu simply lists what it is offered
+    # "menu_navbar" is an exclusive context (see BlockRegistry::EXCLUSIVE_CONTEXTS): opting into it is what gets the item offered in a navbar at all, where only links are. "menu_slot" is not this bundle's own - it is the slot context of the "menu_group" a menu builds its lines with, named here so the item can be dropped into one
+    ui.block.favorite_link:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: favorite_link
+              label: "label.block_favorite_link"
+              description: "label.block_favorite_link_description"
+              form: c975L\UiBundle\Form\Block\FavoriteLinkType
+              template: '@c975LUi/blocks/FavoriteLink.html.twig'
+              category: 'label.category_navigation'
+              pickable: true
+              # Its "active" state depends on the current request path, which no shared cache entry can hold
+              cacheable: false
+              contexts: 'menu,menu_navbar,menu_slot'
 
     # The one container with no chrome of its own: a bare row (or stack) around blocks that would otherwise sit side by side at the top level, e.g. a footer menu's social links on their own line above its links.
     # No slot_context of its own, so its slots take BlockRegistry::SLOT_CONTEXT, where containers are excluded - a group can't hold another group, which is the depth guard a chromeless wrapper would otherwise miss.

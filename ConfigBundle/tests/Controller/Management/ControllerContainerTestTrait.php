@@ -41,6 +41,17 @@ trait ControllerContainerTestTrait
         return $checker;
     }
 
+    // Grants this attribute and nothing else, so a test fails the day the action is gated by a different one - unlike createAuthorizationChecker() above, which answers the same thing whatever it is asked
+    private function createAuthorizationCheckerFor(string $attribute): AuthorizationCheckerInterface
+    {
+        $checker = $this->createStub(AuthorizationCheckerInterface::class);
+        $checker->method('isGranted')->willReturnCallback(
+            static fn (mixed $asked) => $asked === $attribute
+        );
+
+        return $checker;
+    }
+
     private function createCsrfTokenManager(bool $valid): CsrfTokenManagerInterface
     {
         $manager = $this->createStub(CsrfTokenManagerInterface::class);

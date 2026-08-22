@@ -1698,6 +1698,10 @@
                 <source>label.shortcuts_category_site</source>
                 <target>Site</target>
             </trans-unit>
+            <trans-unit id="O_jC3In">
+                <source>label.shortcuts_category_toggle</source>
+                <target>Enable / Disable</target>
+            </trans-unit>
             <trans-unit id="06NLlwK">
                 <source>label.show_sensitive</source>
                 <target>Show sensitive data</target>

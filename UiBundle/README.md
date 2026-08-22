@@ -29,7 +29,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails) · [upload progress](#showing-the-progress-of-a-form-that-posts-files)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [no inline styles](#no-inline-styles) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
-- **Visitors** — [ratings](#visitor-ratings)
+- **Visitors** — [ratings](#visitor-ratings) · [wishlist](#wishlist)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections) · [confirming a title change that rewrites a slug](#confirming-a-title-change-that-rewrites-a-slug)
 - **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [deleting an entity in two steps](#deleting-an-entity-in-two-steps) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
@@ -59,6 +59,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private downloads (`PrivateFileResponseFactory`)
 - Shared plumbing every satellite bundle needs without needing SiteBundle: unique slugs, block edit URLs, sortable row attributes, generated-stylesheet writing, Vich upload options, block cache invalidation, block export/import
 - Visitor ratings for anything at all - a book, a photo, an article - one widget, one table, no mapping on the rated entity, and a scale of 1 turning the whole thing into a "like"
+- A wishlist for anything at all, on the same terms: one heart, one table, no mapping on the entity put aside, and a list started anonymously that follows the visitor to their account the moment they sign in
 - Generic Twig helpers (`nl2br`, `linkify`, `route_exists`, `template_exists`, `asset_exists`)
 - Layout invariants checked without a browser (`Testing\StylesheetCascade`, shipped for the bundles depending on this one), plus `c975l:ui:layout-audit` for what only a rendered page shows
 
@@ -95,11 +96,15 @@ php bin/console doctrine:migrations:migrate
 
 `controllers.js` (front-end) and `controllers-admin.js` (back-office: `block`, `eaSortable`, `title-confirm`, Trix editor integration) each start their own Stimulus app and are loaded as their own `<script type="module">` tag — auto-discovered and injected into the layout/dashboard, nothing to wire by hand there.
 
-Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `heroVideo`, `imageCompare`, `infiniteScroll`, `password`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
+Only `animateScroll` and `menu` are imported eagerly. `blockEditOverlay`, `captcha`, `confetti`, `heroVideo`, `imageCompare`, `infiniteScroll`, `password`, `scrollButtons`, `slider` and `videoIframe` are imported dynamically, and registered only when the current document actually contains a matching `data-controller` — AssetMapper treats a dynamic `import()` as lazy, so they get an importmap entry but no `<link rel="modulepreload">`, and a page carrying none of them downloads none of them. The check is re-run on `turbo:load`, so a page reached by Turbo navigation gets its own controllers too. Registering a new front-end controller means adding it to `LAZY_CONTROLLERS` rather than to the imports at the top of the file, unless it genuinely runs on every page.
 
 The `confetti` controller loads its `canvas-confetti` library from the copy vendored in this bundle (`public/js/confetti.browser.min.js`) rather than from a CDN. Point it elsewhere with `data-confetti-script-value="/your/own/path.js"` on the same element. It fires as soon as it connects, `document.readyState` being what it goes by rather than a `DOMContentLoaded` a lazily-imported controller has already missed, and a visitor asking for `prefers-reduced-motion: reduce` gets nothing — not even the library's download.
 
 The `infiniteScroll` controller grows a paginated listing as the visitor scrolls, with no route and no partial template of its own: it fetches the page the listing's own "next" link points to, appends the items found there, and reads that page's own link to know where to go next - or that there is nowhere left. A template opts in with `data-controller="infiniteScroll"` around the whole thing, `data-infiniteScroll-target="list"` on the element holding the items, and `data-infiniteScroll-target="next"` plus `data-action="click->infiniteScroll#load"` on the link to the next page; an optional `data-infiniteScroll-target="count"` is filled with the number of items loaded. Nothing is hidden by any of it: without javascript, and for a crawler, that link is the ordinary link to the next page it looks like, and a failed fetch leaves it clickable. ShopBundle's shop index is the first listing to use it.
+
+The listing stops growing while a scroll heading for an anchor is under way: the `scrollButtons` controller below dispatches an `anchor:scroll` event on the document before scrolling, and `infiniteScroll` disconnects its observer until the visitor scrolls by themselves - a wheel, a touch or a key. Without it, the button pulling to the bottom of the page landed in the middle of a listing that kept loading under it, the bottom moving away as it was reached. Anything else scrolling to an anchor - an app's own code, another bundle - gets the same pause by dispatching that event.
+
+The `scrollButtons` controller carries the two buttons a long page is walked with, and the scrolling of every same-page anchor with them - done here rather than by Turbo, which treats a same-page `#anchor` as a full visit. `<twig:c975LUi:Scroll:Buttons />` renders them, and the layout around it owns the two anchors they point at: `id="top"` on the `<body>`, `<span id="bottom"></span>` as its last element (this bundle's shell and SiteBundle's own layout both do). They are ordinary links, so they work with no javascript at all; the controller only adds the smooth scrolling and shows each button once there is something to go back to, or something left below. It shows them by toggling `fade-in`/`fade-out`, `sass/_scroll-buttons.scss` laying them out on those very classes - an inline style is what a nonced `style-src` drops. The corner they sit in is shared with whatever a bundle fixes to the bottom of the viewport (ShopBundle's basket bar), which publishes its height as `--bottom-bar-height` on the `<body>`: `bottom: calc(25px + var(--bottom-bar-height, 0px))` steps over it without either bundle knowing the other's classes. `--back-pull-background-color` and `--back-pull-background-color-hover` paint them.
 
 The `videoIframe` controller never injects its iframe before consent has been given, and then only once the element nears the viewport. It looks for a consent banner registered as either `cookie-consent` (what this bundle's `<twig:c975LUi:Cookie:Consent />` writes) or `cookieConsent`; with no banner in the page at all it treats the content as unrestricted and loads it on approach.
 
@@ -428,6 +433,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `document_download` | Elements | `DocumentDownloadType` | `blocks/DocumentDownload.html.twig` |
 | `expertise_banner` | Page sections | `ExpertiseBannerType` | `blocks/ExpertiseBanner.html.twig` |
 | `feature_bar` | Page sections | `FeatureBarType` | `blocks/FeatureBar.html.twig` |
+| `favorite_link` | Navigation | `FavoriteLinkType` | `blocks/FavoriteLink.html.twig` |
 | `flip_card` | Elements | `FlipCardType` | `blocks/FlipCard.html.twig` |
 | `form` | Forms | `FormPickerType` | `components/Form/FormBlock.html.twig` |
 | `hero` | Page sections | `HeroType` | `blocks/Hero.html.twig` |
@@ -1044,7 +1050,7 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 - **`Form::$enabled`** (default `true`) lets an admin pause a form without unpublishing its page or clearing `action` - `FormController` renders `components/Form/FormDisabled.html.twig` instead of the actual form/submission handling while it's off.
 - **The `form` block kind** (`Form\Block\FormPickerType`, template `components/Form/FormBlock.html.twig`) embeds any `Form` by name, anywhere a block can go. Rendering and submission handling is done by **`Controller\FormController`** (routes `ui_form_submit`/`ui_form_fragment`), not the block itself.
 - **`Contract\FormActionInterface`**/**`Registry\FormActionRegistry`** let a bundle process a `Form`'s submission (tagged provider, one `getKey()` per implementation) without UiBundle knowing what that action actually does - `Form::$action` stores which key handles a given form, `Form::$actionConfig` (raw JSON, editable straight from `FormCrudController`) is free-shape config read only by that action.
-- **`Service\SendEmailFormAction`** (key `send_email`) is the built-in provider: it lets a form built purely through the admin still notify someone by email, configured via `actionConfig`'s `to`/`from`/`replyTo`/`subject`/`template`/`senderEmailField`/`offerReceiveCopy` (all optional - unset ones fall back to the site-wide `email-*` config keys/a default template, and an unset `subject` to the translated "New message via *form name*", i.e. the same sentence the seeded notification `EmailTemplate` opens with), or `emailTemplate` (an `EmailTemplate` name, see "Email builder" below) to send a compiled `EmailTemplate` instead of `template`. It's backed by a generic **`Service\EmailService`** (`Model\EmailSendRequest` in, bool out, `getLastError()`/`consumeDebugPreview()` for the `ROLE_SUPER_ADMIN` + `email-debug` preview instead of a silent real send). A request carries exactly one body — `template` (a Twig path rendered with `context`, optionally wrapped in the site's layout via `wrapLayout`), `html` (already-rendered markup) or `text` (plain text, no template and no layout, what an operational digest written by a console command needs) — anything else is refused rather than sent as whichever the chain tested first. Implement `Contract\DebugPreviewCapableInterface` on your own action to get the same debug-preview behavior.
+- **`Service\SendEmailFormAction`** (key `send_email`) is the built-in provider: it lets a form built purely through the admin still notify someone by email, configured via `actionConfig`'s `to`/`from`/`replyTo`/`subject`/`template`/`senderEmailField`/`offerReceiveCopy` (all optional - unset ones fall back to the site-wide `email-*` config keys/a default template, and an unset `subject` to the translated "New message via *form name*", i.e. the same sentence the seeded notification `EmailTemplate` opens with), or `emailTemplate` (an `EmailTemplate` name, see "Email builder" below) to send a compiled `EmailTemplate` instead of `template`. It's backed by a generic **`Service\EmailService`** (`Model\EmailSendRequest` in, bool out, `getLastError()`/`consumeDebugPreview()` for the `ROLE_SUPER_ADMIN` + `email-debug` preview instead of a silent real send). A request carries exactly one body — `template` (a Twig path rendered with `context`, optionally wrapped in the site's layout via `wrapLayout`), `html` (already-rendered markup) or `text` (plain text, no template and no layout, what an operational digest written by a console command needs) — anything else is refused rather than sent as whichever the chain tested first. Implement `Contract\DebugPreviewCapableInterface` on your own action to get the same debug-preview behavior. That debug mode is turned on and off from a dashboard tile of its own (**"Enable/disable the email debug"**, `ROLE_SUPER_ADMIN`, on the "Enable / Disable" row): `Controller\Management\EmailDebugShortcutController` flips the `email-debug` config, which is a restricted key an admin would otherwise have to find on the Config screen. The tile is warning-colored for as long as the mode is on — while it is, a `ROLE_SUPER_ADMIN` sees a preview and **nothing is actually sent**, which is worth seeing at a glance from the dashboard rather than discovering from a customer.
 - **Protection**, shared with every other c975L public form (contact/register/reset): a rotating honeypot + submission-timing check (`Service\FormBotProtection`, merges what used to be separate SiteBundle/ContactFormBundle implementations), site-wide GDPR checkbox and reCAPTCHA v3 (`Service\CaptchaVerifier`/`Form\CaptchaType`, a no-op unless the `recaptcha3-site-key`/`recaptcha3-secret-key` ConfigBundle keys are both filled in - see [reCAPTCHA](#recaptcha)), and a shared rate limiter (`Service\RateLimiterGuard` consuming `limiter.ui_form`, which this bundle prepends itself - `sliding_window`, 5 attempts per 10 minutes - so every public Form is limited with nothing to configure; a site declaring its own `ui_form` in `config/packages/rate_limiter.yaml` still decides, its config being merged over that default). That limiter counts a caller rather than an address (`isAcceptedForIp()`): an IPv4 address is counted whole, an IPv6 one by its /64, the block a subscriber holds otherwise opening as many fresh buckets as it holds addresses. Every `email`-typed field also gets a live MX/A DNS check (`Validator\Constraints\DnsEmail`) on top of format/`Assert\Email` validation, and every required `checkbox`-typed field uses `IsTrue` (an unchecked box isn't `NotBlank`).
 - **`Form::$links`** (`Form\FormLinkType`, its own label/url collection on `FormCrudController`) are the links shown right under a form's submit button - typically the way out of a dead end (register's "already have an account, sign in", a reset-password form's way back). They live on the `Form` itself, inside `actionConfig` rather than in a column of their own, so they follow it everywhere it's rendered: through the `form` block, through the bare route, and through the standalone re-render a failed submission goes through.
 - **`Service\FormPrefillHelper`** lets app code pre-fill (and lock) a `Form`'s field(s) from session right before redirecting a visitor to it (e.g. a listing page's "Contact us about this" link setting the `subject` field) - no query string needed, cleared automatically once the submission succeeds.
@@ -1099,8 +1105,14 @@ Drop the widget where the score belongs:
 
 | Slug | What it does |
 |---|---|
-| `ui-rating-icon` | `star`, `heart`, `thumbs-up` or `face-smile` — the glyph the whole scale is drawn with (`sass/_rating.scss` masks each one) |
+| `ui-rating-icon` | `star`, `heart`, `thumbs-up` or `face-smile` — the glyph the whole scale is drawn with, painted in the color that sign carries everywhere else — golden for a star, red for a heart, blue for a thumb (`sass/_rating.scss` holds both) |
 | `ui-rating-scale` | 1 to 10. **1 turns the rating into a "like"**: one icon, clicking it again takes the vote back, and the tally prints how many voted instead of an average |
+
+**The color rides with the glyph.** A lit icon is painted in the color of its own sign rather than in the
+site's accent, so a heart and a star are no longer the same mark drawn twice. The four colors live in
+`sass/_rating.scss` and no theme retunes them one by one — they belong to the sign, not to the site. A site
+wanting one accent back on all four sets **`--rating-on`**, which wins over every glyph; `--rating-off`
+still paints the rest of the row.
 
 **One vote each, without a login.** An authenticated visitor is keyed on their account (`u<id>`), so their vote follows them to another browser and cannot be renewed. Anyone else is keyed on a random 32-hex token their own browser mints **on the click** and keeps in `localStorage` — best-effort by construction (clearing the browser's storage buys another vote) but it needs no cookie banner, nothing being stored for someone who merely reads the page, and no address of theirs is kept anywhere. Both end up in the same `voter` column, under one unique constraint on `(owner_type, owner_id, voter)`.
 
@@ -1121,7 +1133,69 @@ Only a listing rendered **outside the block cache** should ask for it: the html 
 
 **Reading the tallies yourself** — `ui_rating(ownerType, ownerId)` returns `{average, count, scale, icon}`, and `ui_ratings(ownerType, ids)` returns one tally per id **in a single query**, which is what a listing needs to avoid an N+1.
 
+**Publishing the tally to a search engine.** `Service\RatingSnippetBuilder` returns the schema.org `AggregateRating` node built from that same tally - `build('book', $id)`, or `buildFromAggregate($aggregate)` when the listing already read it. A *fragment*, not a graph: schema.org reads an aggregate rating as a property of the thing rated, so the bundle owning that thing nests the node in its own (see ShopBundle's `ProductSnippetBuilder`), and an owner nobody voted on returns `[]` rather than a zeroed node Google rejects the whole rich result for.
+
 **Cleaning up after a deletion.** `ownerType` is a name and not a relation, so nothing cascades. Whichever service deletes the rated row for good calls `RatingRepository::deleteForOwner('book', $id)` — on the permanent delete only, never when the row is merely trashed: a restored book must find its notes where it left them (see BookBundle's `BookTrashManager`).
+
+---
+
+## Wishlist
+
+A visitor puts a thing aside and finds it back on a page of their own. Same terms as [ratings](#visitor-ratings) above: the thing is **named, not related** - `Entity\Favorite` carries an `ownerType` string and an `ownerId`, the vocabulary `Contract\BlockOwnerResolverInterface` already round-trips - so no bundle maps a collection it never reads, and this one never hears about what the list holds.
+
+Drop the heart where the thing is shown:
+
+```twig
+<twig:c975LUi:Favorite:Button ownerType="shop_product" ownerId="{{ product.id }}"/>
+```
+
+**Turning the rows back into cards.** A `Favorite` stores a name and an id and nothing else, so a list is unreadable until whoever owns that name resolves it. Implement `Contract\FavoriteItemProviderInterface` in the bundle owning the thing (auto-discovered, no tag needed - see `DependencyInjection\Compiler\FavoriteItemProviderPass`):
+
+```php
+class ProductFavoriteItemProvider implements FavoriteItemProviderInterface
+{
+    public function supports(string $ownerType): bool
+    {
+        return 'shop_product' === $ownerType;
+    }
+
+    // The whole page at once - a list of thirty entries must not run thirty queries
+    public function getItems(string $ownerType, array $ownerIds): array
+    {
+        $items = [];
+        foreach ($this->productRepository->findBy(['id' => $ownerIds, 'published' => true]) as $product) {
+            $items[$product->getId()] = new CollectionItem(...);
+        }
+
+        return $items;
+    }
+}
+```
+
+The items come back as the very `Model\CollectionItem` the `collection` block hands its own over as, so a wishlist looks like every other listing without a card of its own. Leaving out what the visitor may no longer see - a draft, something trashed, something withdrawn from sale - is the provider's own call, being the only one that knows what "published" means for its kind of thing. A kind **nobody** implements simply does not show: an entry pointing at a bundle the site has since removed is dropped rather than drawn empty, and stays in the table for the day it comes back.
+
+**Whose list it is.** An authenticated visitor is keyed on their account (`u<id>`), so their list follows them to another browser. Anyone else is keyed on a random 32-hex token their own browser mints **on the click** and keeps in `localStorage` - its own store, not the rating one, so clearing one feature does not lose the other. Both end up in the same `holder` column, under one unique constraint on `(owner_type, owner_id, holder)`, which is what lets a list started anonymously be **handed over to the account** the moment the visitor signs in: every request carrying a token while authenticated merges it, so a list built in one tab reaches an account signed in in another.
+
+**Why it goes through its own routes.** Same reading as the vote's - the page carrying a heart is served public and shared, so what one visitor put aside never travels in its html:
+
+| Route | Method | What it answers |
+| --- | --- | --- |
+| `ui_favorite_page` (`/favorites`) | GET | The empty shell, cacheable like any other page - `assets/js/favorites.js` fetches what is personal into it |
+| `ui_favorite_toggle` (`/favorite/{ownerType}/{ownerId}`) | POST | `{favorited, count}`, `no-store` - the server decides, the browser never assumes |
+| `ui_favorite_list` (`/favorites/list`) | POST | The rendered cards, plus the `keys` every heart of the site repaints itself from. POST and not GET because of the token, which must not reach a url |
+
+Those routes take **no CSRF token**, for the reason the vote's does not: a token would make the server open a session, and a `Set-Cookie` is exactly what the shared cache would keep and hand to the next visitor. In its place, a JSON body, an `Origin`/`Referer` that is this site's own, and the `ui_favorite` rate limiter this bundle prepends for you.
+
+**Reacting to a click.** The button dispatches `ui-favorite:changed` with `{count}`, bubbling - what a navbar icon printing "3" listens to, rather than being handed a reference to the controller. `assets/js/favorite-count.js` is that listener: it paints `data-ui-favorite-count-target="count"` from the browser's own store on connect, then from the event, binding it with `@window` since the heart announcing it sits far from the navbar. The wishlist page dispatches it too, so a browser whose storage was behind corrects itself on that visit.
+
+**Reaching the page.** Two ways, both offered from here rather than added to whoever builds the menus:
+
+- `Management\LinkableRouteProvider` offers `ui_favorite_page` as a menu target, so "Ma liste" is pickable in a navbar or a footer from the back office - the page being backed by no `Page`, nothing else could ever point at it. A plain menu link, text only.
+- the `favorite_link` block: the same link with the heart in front of the label and, after it, how many things this browser holds put aside. Its own kind rather than a generic link aimed at that route, neither the heart nor the count having a place on one. It declares the `menu`, `menu_navbar` and `menu_slot` contexts, so a navbar offers it too, and is not cacheable - its "active" state depends on the current request path. Its only field is an optional `label`, overriding this bundle's own wording. It writes the `.menu-item`/`.menu-link`/`.menu-label` shape a menu publishes, and is painted by that bundle's own stylesheet - the heart and the count sitting inside the label so they follow its type and color, wherever it is read.
+
+**Styling.** Three tokens, all optional and all in `scaffold/assets/styles/themes/ui.css`: `--favorite-on` (the filled heart, the same red the rating heart is read in), `--favorite-off` and `--favorite-size`.
+
+**Cleaning up after a deletion.** Nothing cascades here either: `FavoriteRepository::deleteForOwner('shop_product', $id)` - or `deleteForOwners()` for a set - on the permanent delete only, never when the row is merely trashed.
 
 ---
 
@@ -1443,9 +1517,9 @@ heading and its first sub-section, so rewriting a section leaves its sub-section
 ### `%config%` markers
 
 The models read the site's own data through `legal_var()` rather than `config()`: `site-name`, `site-owner`,
-`site-director`, `site-director-location`, `site-contact-email`, `site-contact-phone`, `site-producer`,
-`site-hosting-provider` and `site-dpo` - all nine declared by ConfigBundle, so they are there whatever else the
-site installs. It resolves on the spot, so a model rendered any way at all — a
+`site-address`, `site-director`, `site-director-location`, `site-contact-email`, `site-contact-phone`,
+`site-producer`, `site-hosting-provider` and `site-dpo` - all ten declared by ConfigBundle, so they are there
+whatever else the site installs. It resolves on the spot, so a model rendered any way at all — a
 `legal_model` block, or the plain `{% include %}` shown above — reads as finished text, with nothing to
 post-process.
 
@@ -1477,7 +1551,7 @@ A site that never customized anything reports nothing at all — it simply keeps
 
 ## Generic Twig filters and functions
 
-Five general-purpose helpers, none of them tied to blocks or media - they live here rather than in SiteBundle (where they started) so an app running on ConfigBundle + UiBundle alone still has them.
+Six general-purpose helpers, none of them tied to blocks or media - they live here rather than in SiteBundle (where they started) so an app running on ConfigBundle + UiBundle alone still has them.
 
 | Helper | Role |
 | --- | --- |
@@ -1486,6 +1560,7 @@ Five general-purpose helpers, none of them tied to blocks or media - they live h
 | `route_exists(name)` | Whether a route of that name is declared - what a shared template needs before linking to a route only some installs declare |
 | `template_exists(path)` | Whether `templates/<path>` exists in the app, for an override a bundle offers but doesn't ship |
 | `asset_exists(path)` | Whether `public/<path>` or `assets/<path>` exists, same idea for an optional image/stylesheet |
+| `ui_can_hold_flash()` | Whether this visitor can hold a flash at all - reading `app.flashes` starts the session and carries no guard of its own, so a template printing flashes wraps that reading in this one (the bundle's own `layout.html.twig` and `Form` component do) |
 
 ## Reusable Twig components
 
@@ -1506,6 +1581,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Contact:Details>` | Contact details panel, publishing the same fields as a schema.org JSON-LD graph |
 | `<twig:c975LUi:Cta:Band>` | Centered call-to-action panel (title/text/button) |
 | `<twig:c975LUi:Expertise:Banner>` | Dark panel with text and a list of tags |
+| `<twig:c975LUi:Favorite:Button>` | The heart a visitor puts a thing aside with, repainted from their own browser |
 | `<twig:c975LUi:Feature:Bar>` | Row of short arguments (title + caption) |
 | `<twig:c975LUi:Hero:Hero>` | Header banner with title, subtitle, optional CTA buttons and image or background video |
 | `<twig:c975LUi:Image:Icon>` | Small icon image |

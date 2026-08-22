@@ -254,6 +254,14 @@
                 <source>flash.block_moved</source>
                 <target>Bloque movido</target>
             </trans-unit>
+            <trans-unit id="zZS.xzE">
+                <source>flash.email_debug_disabled</source>
+                <target>Modo depuración de correos desactivado</target>
+            </trans-unit>
+            <trans-unit id="bV9Rzxu">
+                <source>flash.email_debug_enabled</source>
+                <target>Modo depuración de correos activado</target>
+            </trans-unit>
             <trans-unit id="tymp2.R">
                 <source>flash.font_bulk_import_invalid_token</source>
                 <target>Formulario no válido o expirado, inténtelo de nuevo.</target>
@@ -766,6 +774,14 @@
                 <source>label.block_expertise_banner_description</source>
                 <target>Panel oscuro con texto y una lista de etiquetas</target>
             </trans-unit>
+            <trans-unit id="NhXaGJe">
+                <source>label.block_favorite_link</source>
+                <target>Enlace a la lista de favoritos</target>
+            </trans-unit>
+            <trans-unit id="tY8jCoR">
+                <source>label.block_favorite_link_description</source>
+                <target>Enlace a la página "Mi lista", con el corazón y el número de elementos guardados</target>
+            </trans-unit>
             <trans-unit id="wwgapeb">
                 <source>label.block_feature_bar</source>
                 <target>Barra de argumentos</target>
@@ -970,6 +986,10 @@
                 <source>label.blocks</source>
                 <target>Bloques</target>
             </trans-unit>
+            <trans-unit id="XvxGxaO">
+                <source>label.bottom</source>
+                <target>Abajo</target>
+            </trans-unit>
             <trans-unit id="Veb3Xov">
                 <source>label.button_label</source>
                 <target>Etiqueta del botón</target>
@@ -1033,6 +1053,10 @@
             <trans-unit id="d1._mOj">
                 <source>label.category_media</source>
                 <target>Multimedia</target>
+            </trans-unit>
+            <trans-unit id="tKFuD86">
+                <source>label.category_navigation</source>
+                <target>Navegación</target>
             </trans-unit>
             <trans-unit id="dtctwtg">
                 <source>label.category_sections</source>
@@ -1442,6 +1466,14 @@
                 <source>label.email_blocks</source>
                 <target>Bloques</target>
             </trans-unit>
+            <trans-unit id="DvlQwSN">
+                <source>label.email_debug_disable</source>
+                <target>Desactivar depuración de correos</target>
+            </trans-unit>
+            <trans-unit id="ipl0q1h">
+                <source>label.email_debug_enable</source>
+                <target>Activar depuración de correos</target>
+            </trans-unit>
             <trans-unit id="btmHLEL">
                 <source>label.email_templates</source>
                 <target>Plantillas de email</target>
@@ -1465,6 +1497,42 @@
             <trans-unit id="akTKyKA">
                 <source>label.favicon</source>
                 <target>Favicon</target>
+            </trans-unit>
+            <trans-unit id="3k2awPT">
+                <source>label.favorite_add</source>
+                <target>Guardar para después</target>
+            </trans-unit>
+            <trans-unit id="UpgAJNA">
+                <source>label.favorite_error</source>
+                <target>No se ha podido actualizar tu lista</target>
+            </trans-unit>
+            <trans-unit id="eCbDbr_">
+                <source>label.favorite_link_label</source>
+                <target>Etiqueta</target>
+            </trans-unit>
+            <trans-unit id="Ums8g.4">
+                <source>label.favorite_link_label_help</source>
+                <target>Vacío = "Mi lista"</target>
+            </trans-unit>
+            <trans-unit id="aN09MMD">
+                <source>label.favorite_remove</source>
+                <target>Quitar de mi lista</target>
+            </trans-unit>
+            <trans-unit id="EquT.Mz">
+                <source>label.favorites</source>
+                <target>Mi lista</target>
+            </trans-unit>
+            <trans-unit id="U2iy6aJ">
+                <source>label.favorites_empty</source>
+                <target>Tu lista está vacía</target>
+            </trans-unit>
+            <trans-unit id="7UyXjEU">
+                <source>label.favorites_loading</source>
+                <target>Cargando tu lista…</target>
+            </trans-unit>
+            <trans-unit id="M9eTlar">
+                <source>label.favorites_summary</source>
+                <target>Los artículos que has guardado</target>
             </trans-unit>
             <trans-unit id="aSdYCtp">
                 <source>label.field_label</source>
@@ -2853,6 +2921,10 @@
             <trans-unit id="OfFGV9I">
                 <source>label.toc</source>
                 <target>Sumario</target>
+            </trans-unit>
+            <trans-unit id="EFzqLuK">
+                <source>label.top</source>
+                <target>Arriba</target>
             </trans-unit>
             <trans-unit id="wPJiQJ5">
                 <source>label.total</source>

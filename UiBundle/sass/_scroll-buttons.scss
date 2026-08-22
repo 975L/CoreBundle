@@ -1,0 +1,43 @@
+/* SCROLL BUTTONS */
+a.pullDown,
+a.backTop {
+    display: none;
+    width: 60px;
+    height: 60px;
+    text-indent: -9999px;
+    position: fixed;
+    z-index: 999;
+    // Stepping over whatever a bundle fixes to the bottom of the viewport - a basket bar, a cookie banner - which publishes its own height in the token, the corner staying at 25px when nothing does
+    bottom: calc(25px + var(--bottom-bar-height, 0px));
+    border-radius: 30px;
+    opacity: 0.6;
+}
+
+a.backTop {
+    right: 25px;
+    background: var(--back-pull-background-color) url('/bundles/c975lui/images/up-arrow.png') no-repeat center 40%;
+}
+
+a.pullDown {
+    left: 25px;
+    background: var(--back-pull-background-color) url('/bundles/c975lui/images/down-arrow.png') no-repeat center 40%;
+}
+
+a:hover.backTop,
+a:hover.pullDown {
+    background-color: var(--back-pull-background-color-hover);
+}
+
+// Laid out by the classes the controller toggles rather than by an inline style, which a nonced style-src drops. A button carrying neither is one the page has not shown yet, and it stays out of the flow
+a.backTop.fade-in,
+a.pullDown.fade-in,
+a.backTop.fade-out,
+a.pullDown.fade-out {
+    display: block;
+}
+
+// The fading out leaves it transparent but still there: nothing is clickable in that corner once it is gone
+a.backTop.fade-out,
+a.pullDown.fade-out {
+    pointer-events: none;
+}

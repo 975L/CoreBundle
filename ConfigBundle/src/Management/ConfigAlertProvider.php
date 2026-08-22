@@ -40,6 +40,8 @@ class ConfigAlertProvider implements AlertProviderInterface
                 'label' => $this->configLabelResolver->resolve($config),
                 'description' => $config->getDescription(),
                 'severity' => $config->getSeverity(),
+                // Its screen is the admin's own (see ConfigCrudController) - the dashboard now renders for an editor, who would read an alert about a setting they cannot open
+                'role' => $this->configService->get('site-role-admin'),
                 'url' => $this->editUrl($config),
             ];
         }
@@ -54,6 +56,7 @@ class ConfigAlertProvider implements AlertProviderInterface
                 'label' => $this->configLabelResolver->resolve($config),
                 'description' => $this->translator->trans('description.config_unreadable', [], 'config'),
                 'severity' => Config::SEVERITY_DANGER,
+                'role' => $this->configService->get('site-role-admin'),
                 'url' => $this->editUrl($config),
             ];
         }

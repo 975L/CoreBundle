@@ -133,6 +133,35 @@ class ConfigAlertProviderTest extends TestCase
         $this->assertSame(Config::SEVERITY_DANGER, $alerts[0]['severity']);
     }
 
+    // The dashboard renders for an editor now, who has no business reading the site's own settings - both kinds of alert carry the admin bar so AlertBuilder drops them for that user
+    public function testEveryAlertCarriesTheAdminRole(): void
+    {
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findRequiringAttention')->willReturn([$this->createConfig(42, 'site-name', Config::SEVERITY_WARNING)]);
+        $repository->method('findSensitiveWithValue')->willReturn([$this->createConfig(11, 'stripe-secret', Config::SEVERITY_DANGER)]);
+
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->method('setAction')->willReturnSelf();
+        $adminUrlGenerator->method('setEntityId')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/config/42/edit');
+
+        $provider = new ConfigAlertProvider(
+            $repository,
+            $adminUrlGenerator,
+            $this->createResolver(),
+            $this->createConfigService(['site-role-admin' => 'ROLE_ADMIN']),
+            $this->createTranslator(),
+        );
+
+        $alerts = $provider->getAlerts();
+
+        $this->assertCount(2, $alerts);
+        $this->assertSame('ROLE_ADMIN', $alerts[0]['role']);
+        $this->assertSame('ROLE_ADMIN', $alerts[1]['role']);
+    }
+
     // The configuration as the site reads it: a sensitive value it could not decrypt is empty here while the row still holds its ciphertext
     private function createConfigService(array $values): ConfigServiceInterface
     {

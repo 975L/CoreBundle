@@ -1,0 +1,18 @@
+{# The menu item leading to the wishlist page, offered to whoever builds menus out of this bundle's blocks (SiteBundle's navbar and footer) rather than added over there: the heart and the count belong to the feature, not to the menu #}
+{# The ".menu-*" classes are the item shape a menu publishes, the very ones its own links carry - written here so this block sits in the row like the others, and painted by that bundle's own stylesheet #}
+{% set url = path('ui_favorite_page') %}
+{% set currentPath = app.request.pathinfo %}
+{% set isActive = url == currentPath %}
+{# Nothing personal is printed: a navbar is part of a page served cached and shared, so the count is painted by assets/js/favorite-count.js from the visitor's own browser #}
+<div class="{{ isActive ? 'menu-item active' : 'menu-item' }}" data-controller="ui-favorite-count" data-action="ui-favorite:changed@window->ui-favorite-count#update">
+    <a href="{{ url }}" class="menu-link" {% if isActive %}aria-current="page"{% endif %}>
+        {# Inside the label rather than beside it: ".menu-label" is what carries the color, a mobile dropdown and a desktop bar painting it differently, and a "currentColor" fill follows it there for free - the hover included #}
+        <span class="menu-label">
+            <svg class="favorite-menu-icon" viewBox="0 0 512 512" aria-hidden="true" focusable="false">
+                <path d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"/>
+            </svg>
+            {{ label|default('') is not empty ? label : 'label.favorites'|trans({}, 'ui') }}
+            <span class="favorite-menu-count" data-ui-favorite-count-target="count" hidden></span>
+        </span>
+    </a>
+</div>
