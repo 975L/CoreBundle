@@ -17,6 +17,10 @@ use c975L\UiBundle\Service\EmailService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\MailerInterface;
@@ -47,6 +51,7 @@ class EmailServiceTest extends TestCase
         bool $isSuperAdmin = false,
         string $renderedHtml = '',
         ?EmailLayoutRegistry $emailLayoutRegistry = null,
+        ?RequestStack $requestStack = null,
     ): EmailService {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnCallback(
@@ -65,7 +70,18 @@ class EmailServiceTest extends TestCase
         $twig = $this->createStub(Environment::class);
         $twig->method('render')->willReturn($renderedHtml);
 
-        return new EmailService($configService, $mailer, $twig, $emailLayoutRegistry ?? new EmailLayoutRegistry(), $security);
+        return new EmailService($configService, $mailer, $twig, $emailLayoutRegistry ?? new EmailLayoutRegistry(), $security, $requestStack ?? $this->createRequestStack());
+    }
+
+    // A request carrying a session, which is where debug mode leaves its previews - the whole condition, so a stack built without one is what "no session" looks like
+    private function createRequestStack(bool $withSession = true): RequestStack
+    {
+        $request = new Request();
+        if ($withSession) {
+            $request->setSession(new Session(new MockArraySessionStorage()));
+        }
+
+        return new RequestStack([$request]);
     }
 
     public function testSendBuildsEmailFromRequestAndCallsMailerOnce(): void
@@ -169,16 +185,16 @@ class EmailServiceTest extends TestCase
         $this->assertTrue($result);
         $this->assertCount(0, $mailer->sent);
 
-        $preview = $service->consumeDebugPreview();
-        $this->assertNotNull($preview);
-        $this->assertStringContainsString('EMAIL DEBUG', $preview);
-        $this->assertStringContainsString('Hello', $preview);
-        $this->assertStringContainsString('<p>Rendered email</p>', $preview);
-        $this->assertStringContainsString('From: from@example.com', $preview);
-        $this->assertStringContainsString('To: to@example.com', $preview);
+        $previews = $service->consumeDebugPreviews();
+        $this->assertCount(1, $previews);
+        $this->assertStringContainsString('EMAIL DEBUG', $previews[0]);
+        $this->assertStringContainsString('Hello', $previews[0]);
+        $this->assertStringContainsString('<p>Rendered email</p>', $previews[0]);
+        $this->assertStringContainsString('From: from@example.com', $previews[0]);
+        $this->assertStringContainsString('To: to@example.com', $previews[0]);
 
-        // consumeDebugPreview() clears the stash, so a second call returns nothing
-        $this->assertNull($service->consumeDebugPreview());
+        // consumeDebugPreviews() clears the stash, so a second call returns nothing
+        $this->assertSame([], $service->consumeDebugPreviews());
     }
 
     public function testSendStashesOnePreviewPerEmailWhenCopyToEmailSetInDebugMode(): void
@@ -204,14 +220,13 @@ class EmailServiceTest extends TestCase
         $this->assertTrue($result);
         $this->assertCount(0, $mailer->sent);
 
-        $preview = $service->consumeDebugPreview();
-        $this->assertNotNull($preview);
+        $previews = $service->consumeDebugPreviews();
         // Both the "to" recipient email and the sender's copy must be kept, not just the last one
-        $this->assertSame(2, substr_count($preview, 'EMAIL DEBUG'));
-        $this->assertStringContainsString('To: to@example.com', $preview);
-        $this->assertStringContainsString('To: sender@example.com', $preview);
+        $this->assertCount(2, $previews);
+        $this->assertStringContainsString('To: to@example.com', $previews[0]);
+        $this->assertStringContainsString('To: sender@example.com', $previews[1]);
 
-        $this->assertNull($service->consumeDebugPreview());
+        $this->assertSame([], $service->consumeDebugPreviews());
     }
 
     public function testSendStillSendsEmailWhenDebugModeEnabledButUserIsNotSuperAdmin(): void
@@ -326,10 +341,10 @@ class EmailServiceTest extends TestCase
             text: 'Everything <ok>',
         ));
 
-        $preview = $service->consumeDebugPreview();
+        $previews = $service->consumeDebugPreviews();
 
         $this->assertSame([], $mailer->sent);
-        $this->assertStringContainsString('<pre style="white-space:pre-wrap;">Everything &lt;ok&gt;</pre>', $preview);
+        $this->assertStringContainsString('<pre style="white-space:pre-wrap;">Everything &lt;ok&gt;</pre>', $previews[0]);
     }
 
     // With no template there is nothing to re-render, so the debug preview uses the html body directly
@@ -350,7 +365,31 @@ class EmailServiceTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertCount(0, $mailer->sent);
-        $this->assertStringContainsString('<p>Already rendered</p>', (string) $service->consumeDebugPreview());
+        $this->assertStringContainsString('<p>Already rendered</p>', $service->consumeDebugPreviews()[0]);
+    }
+
+    // Debug mode holds an email back only when there is a session to leave its preview in - a console command or a webhook sends for real rather than destroying the message silently
+    public function testSendStillSendsEmailInDebugModeWhenThereIsNoSessionToStashThePreviewIn(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService(
+            $mailer,
+            ['email-debug' => 'true'],
+            isSuperAdmin: true,
+            requestStack: $this->createRequestStack(withSession: false),
+        );
+
+        $result = $service->send(new EmailSendRequest(
+            subject: 'Hello',
+            context: [],
+            html: '<p>body</p>',
+            from: 'from@example.com',
+            to: 'to@example.com',
+        ));
+
+        $this->assertTrue($result);
+        $this->assertCount(1, $mailer->sent);
+        $this->assertSame([], $service->consumeDebugPreviews());
     }
 
     // A bundle shipping the body of its email alone: the layout comes from whichever EmailLayoutProviderInterface is registered, so the branding stays in one place instead of one {% extends %} per bundle

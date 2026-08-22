@@ -1474,6 +1474,10 @@
                 <source>label.email_debug_enable</source>
                 <target>Enable email debug</target>
             </trans-unit>
+            <trans-unit id="hKKOick">
+                <source>label.email_debug_preview</source>
+                <target>Preview of the email debug mode held back</target>
+            </trans-unit>
             <trans-unit id="btmHLEL">
                 <source>label.email_templates</source>
                 <target>Email templates</target>

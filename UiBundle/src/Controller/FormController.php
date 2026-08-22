@@ -10,7 +10,6 @@
 
 namespace c975L\UiBundle\Controller;
 
-use c975L\UiBundle\Contract\DebugPreviewCapableInterface;
 use c975L\UiBundle\Contract\RequiresAnonymousInterface;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Form\FormSubmissionType;
@@ -156,14 +155,6 @@ class FormController extends AbstractController
                 // Only clear on an actual success - a failed action leaves the prefill in place, same resilience a "?s=..." query string would naturally have on a retry
                 if ($success) {
                     $this->prefillHelper->clear($request, $uiForm->getName());
-                }
-
-                // e.g. SendEmailFormAction renders instead of actually sending in debug mode (ROLE_SUPER_ADMIN + "email-debug") - show that instead of the usual flash+redirect, or debug mode would otherwise look identical to a real send with no way to inspect it
-                if ($action instanceof DebugPreviewCapableInterface) {
-                    $debugPreview = $action->consumeDebugPreview();
-                    if (null !== $debugPreview) {
-                        return new Response($debugPreview);
-                    }
                 }
 
                 // A form that emails its submission (contact and the like) says so - "your message has been sent"; every other action keeps the generic wording, a registration or a password reset request being no message sent by the visitor

@@ -1,5 +1,23 @@
 # ChangeLog
 
+## v1.14.1
+
+Debug mode shows every email, whatever sent it
+
+### UiBundle
+
+- `EmailService` leaves its debug preview in the session, every email of the site being shown the same way whatever sent it (22/08/2026)
+- `EmailService::consumeDebugPreview()` becomes `consumeDebugPreviews()`, returning one preview per email (22/08/2026) [BC-Break]
+- Removed `Contract\DebugPreviewCapableInterface` and the `FormController` branch reading it (22/08/2026) [BC-Break]
+- `SendEmailFormAction` no longer declares a preview of its own, a form action having nothing left to implement (22/08/2026) [BC-Break]
+- Added `Email:DebugPreview`, rendered by the layout above the flashes (22/08/2026)
+- Added `Twig\EmailDebugExtension` and its `ui_email_debug_previews()` function (22/08/2026)
+- Added `label.email_debug_preview` to the three `ui` catalogues (22/08/2026)
+- Added `.email-debug-preview` to `sass/_iframe.scss` (22/08/2026)
+- The README documents the single circuit and the component showing it (22/08/2026)
+- The `c975l-forms-emails` skill carries the session preview and the component drawing it (22/08/2026)
+- Added `EmailDebugExtensionTest` and `DebugPreviewMarkupTest`, and extended `EmailServiceTest` (22/08/2026)
+
 ## v1.14.0
 
 A visitor puts aside what the site publishes and finds it back

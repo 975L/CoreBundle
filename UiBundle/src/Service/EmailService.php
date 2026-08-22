@@ -15,14 +15,17 @@ use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Registry\EmailLayoutRegistry;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 
 // Generalizes what used to be c975L\ContactFormBundle\Service\EmailService (from/to/replyTo resolution with a ConfigService fallback, "receive a copy" support, debug preview for ROLE_SUPER_ADMIN) so any bundle can send an email from an EmailSendRequest - see SendEmailFormAction for the FormActionInterface provider built on top of this
 class EmailService
 {
-    /** @var string[] */
-    private array $debugPreviews = [];
+    // Where the previews wait for the page that shows them - a session attribute and not a flash, the layout rendering every flash it finds as an alert and an email being a whole html document
+    public const string DEBUG_PREVIEWS_KEY = 'ui_email_debug_previews';
+
     private ?string $lastError = null;
 
     public function __construct(
@@ -31,6 +34,7 @@ class EmailService
         private readonly \Twig\Environment $twig,
         private readonly EmailLayoutRegistry $emailLayoutRegistry,
         private readonly Security $security,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -117,17 +121,18 @@ class EmailService
     public function send(EmailSendRequest $request): bool
     {
         $this->lastError = null;
+        $debug = $this->isDebugPreviewing();
 
         try {
             foreach ($this->buildEmails($request) as $email) {
-                if ($this->security->isGranted('ROLE_SUPER_ADMIN') && $this->configService->getBool($this->configService->get('email-debug'))) {
+                if ($debug) {
                     // A request built with "html" (see EmailSendRequest) has no template to re-render - its body is already the rendered result. A "text" one has no markup at all, so the preview shows it as it will be received, monospaced
                     $renderedEmail = match (true) {
                         null !== $email->getHtmlTemplate() => $this->twig->render($email->getHtmlTemplate(), $email->getContext()),
                         null !== $email->getHtmlBody() => (string) $email->getHtmlBody(),
                         default => sprintf('<pre style="white-space:pre-wrap;">%s</pre>', htmlspecialchars((string) $email->getTextBody())),
                     };
-                    $this->debugPreviews[] = $this->wrapDebugEmail($email, $renderedEmail);
+                    $this->stashDebugPreview($this->wrapDebugEmail($email, $renderedEmail));
                     continue;
                 }
                 $this->mailer->send($email);
@@ -147,17 +152,51 @@ class EmailService
         return $this->lastError;
     }
 
-    // Returns and clears the stashed debug previews, one per email that was rendered instead of sent
-    public function consumeDebugPreview(): ?string
+    // Read here and nowhere else, so whichever page follows the send shows the preview (see the Email:DebugPreview component the layout renders) - and the session being part of the condition, an email with nowhere to leave one is sent for real rather than destroyed silently
+    private function isDebugPreviewing(): bool
     {
-        if ([] === $this->debugPreviews) {
-            return null;
+        return null !== $this->session()
+            && $this->security->isGranted('ROLE_SUPER_ADMIN')
+            && $this->configService->getBool($this->configService->get('email-debug'));
+    }
+
+    // Appended rather than written over: one submission can send an email and its copy, and a redirect can follow another send
+    private function stashDebugPreview(string $preview): void
+    {
+        $session = $this->session();
+        if (null === $session) {
+            return;
         }
 
-        $preview = implode('<hr style="margin:24px 0;border:none;border-top:2px dashed #999;">', $this->debugPreviews);
-        $this->debugPreviews = [];
+        $previews = $session->get(self::DEBUG_PREVIEWS_KEY, []);
+        $previews[] = $preview;
+        $session->set(self::DEBUG_PREVIEWS_KEY, $previews);
+    }
 
-        return $preview;
+    /**
+     * Returns and clears the stashed debug previews, one per email that was rendered instead of sent.
+     *
+     * @return string[]
+     */
+    public function consumeDebugPreviews(): array
+    {
+        $session = $this->session();
+        if (null === $session) {
+            return [];
+        }
+
+        $previews = $session->get(self::DEBUG_PREVIEWS_KEY, []);
+        $session->remove(self::DEBUG_PREVIEWS_KEY);
+
+        return $previews;
+    }
+
+    // getSession() raises on a request that has none - a console command, a webhook - so the request is asked first
+    private function session(): ?SessionInterface
+    {
+        $request = $this->requestStack->getCurrentRequest();
+
+        return null !== $request && $request->hasSession() ? $request->getSession() : null;
     }
 
     // Inserts a debug banner with the subject and addresses right after <body>, keeping a single valid HTML document

@@ -1,5 +1,16 @@
 # UPGRADE
 
+## To v1.14.1
+
+`email-debug` used to hold an email back into an in-memory stash only `FormController` knew how to read, so an email sent from anywhere else - a message handler, a command, a webhook - was neither shown nor sent, and `send()` still answered `true`. The preview now waits in the session, and the layout shows it on whichever page follows: `EmailService::send()` is the single place the mode is read, whatever dispatched the email.
+
+Nothing to do in an app, unless it implemented the capability itself. `Contract\DebugPreviewCapableInterface` is gone, along with `SendEmailFormAction::consumeDebugPreview()`: a form action has nothing to declare any more. A theme replacing `@c975LUi/layout.html.twig` wholesale has `<twig:c975LUi:Email:DebugPreview/>` to add above its flashes, everything else inheriting it. An email sent with no session to leave a preview in - a console command - goes out for real rather than being destroyed silently.
+
+| Before | After |
+|---|---|
+| `$emailService->consumeDebugPreview()` (a string or null) | `$emailService->consumeDebugPreviews()` (one string per email) |
+| `class MyAction implements FormActionInterface, DebugPreviewCapableInterface` | `class MyAction implements FormActionInterface` |
+
 ## To v1.14.0
 
 `Security\SessionNonceGenerator` is now `Security\CookieNonceGenerator`. The CSP nonce is held in a signed cookie instead of the session, which opened a connection to the session store on every request of every anonymous visitor. Nothing to change in an app: the service is registered by the bundle, and both cookie names — `csp_nonce` and, over https, `__Host-csp_nonce` — are prepended to `nelmio_security.signed_cookie.names`, along with `hash_algo: sha256`. Only an app that referenced the old class by name has an import to update.

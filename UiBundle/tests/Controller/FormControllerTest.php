@@ -10,7 +10,6 @@
 
 namespace c975L\UiBundle\Tests\Controller;
 
-use c975L\UiBundle\Contract\DebugPreviewCapableInterface;
 use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Contract\RequiresAnonymousInterface;
 use c975L\UiBundle\Controller\FormController;
@@ -539,37 +538,5 @@ class FormControllerTest extends TestCase
         )->submit('contact', $request);
 
         $this->assertTrue($request->getSession()->getFlashBag()->has('danger'));
-    }
-
-    // Debug mode (see SendEmailFormAction): the preview response bypasses the usual flash+redirect entirely
-    public function testSubmitReturnsRawDebugPreviewWithoutFlashingOrRedirecting(): void
-    {
-        $action = new class implements FormActionInterface, DebugPreviewCapableInterface {
-            public function getKey(): string
-            {
-                return 'send_email';
-            }
-
-            public function handle(Form $form, array $submittedData): bool
-            {
-                return true;
-            }
-
-            public function consumeDebugPreview(): ?string
-            {
-                return '<html>debug preview</html>';
-            }
-        };
-        $actionRegistry = $this->createStub(FormActionRegistry::class);
-        $actionRegistry->method('get')->willReturn($action);
-
-        $request = $this->createRequest('POST', 'http://localhost/page');
-        $response = $this->createController(
-            $this->createSubmittedForm(true, true),
-            actionRegistry: $actionRegistry,
-        )->submit('contact', $request);
-
-        $this->assertSame('<html>debug preview</html>', $response->getContent());
-        $this->assertFalse($request->getSession()->getFlashBag()->has('success'));
     }
 }

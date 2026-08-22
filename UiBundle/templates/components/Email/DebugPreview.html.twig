@@ -1,0 +1,10 @@
+{# <twig:c975LUi:Email:DebugPreview/> #}
+
+{# Reading the stash starts the session, so the same guard as the flashes block: an anonymous visitor never has a preview waiting and must not pay a connection to the session store for it #}
+{% if ui_can_hold_flash() %}
+    {% set previews = ui_email_debug_previews() %}
+    {# Each email is a whole html document, so it is shown in a frame of its own rather than poured into the page - the red "EMAIL DEBUG (not sent)" banner is already inside it #}
+    {% for preview in previews %}
+        <iframe class="email-debug-preview" title="{{ 'label.email_debug_preview'|trans({}, 'ui') }}" sandbox srcdoc="{{ preview|e('html_attr') }}"></iframe>
+    {% endfor %}
+{% endif %}

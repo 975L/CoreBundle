@@ -10,7 +10,6 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
-use c975L\UiBundle\Contract\DebugPreviewCapableInterface;
 use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
@@ -42,21 +41,6 @@ class SendEmailFormActionTest extends TestCase
         );
 
         return new SendEmailFormAction($emailService, $emailTemplateRepository, $emailTemplateRenderer, $translator);
-    }
-
-    public function testImplementsDebugPreviewCapableInterface(): void
-    {
-        $this->assertInstanceOf(DebugPreviewCapableInterface::class, $this->createAction($this->createStub(EmailService::class)));
-    }
-
-    public function testConsumeDebugPreviewDelegatesToEmailService(): void
-    {
-        $emailService = $this->createStub(EmailService::class);
-        $emailService->method('consumeDebugPreview')->willReturn('<html>preview</html>');
-
-        $action = $this->createAction($emailService);
-
-        $this->assertSame('<html>preview</html>', $action->consumeDebugPreview());
     }
 
     private function buildForm(string $name, ?array $actionConfig, array $fields): Form

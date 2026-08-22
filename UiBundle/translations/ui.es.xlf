@@ -1474,6 +1474,10 @@
                 <source>label.email_debug_enable</source>
                 <target>Activar depuración de correos</target>
             </trans-unit>
+            <trans-unit id="hKKOick">
+                <source>label.email_debug_preview</source>
+                <target>Vista previa del correo retenido por el modo depuración</target>
+            </trans-unit>
             <trans-unit id="btmHLEL">
                 <source>label.email_templates</source>
                 <target>Plantillas de email</target>

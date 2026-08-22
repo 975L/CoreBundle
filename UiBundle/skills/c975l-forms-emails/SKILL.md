@@ -1,6 +1,6 @@
 ---
 name: c975l-forms-emails
-description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: Form entity, FormField, FormFieldTemplate, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, site-form-gdpr, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, DebugPreviewCapableInterface, consumeDebugPreview."
+description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: Form entity, FormField, FormFieldTemplate, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, site-form-gdpr, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview."
 ---
 
 # c975L UiBundle — forms and emails
@@ -10,7 +10,7 @@ description: "Use this skill when building a form or sending an email in a Symfo
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Form.php`, `src/Entity/FormField.php`, `src/Entity/FormFieldTemplate.php`, `src/Entity/EmailTemplate.php`, `src/Controller/FormController.php`, `src/Controller/Management/FormCrudController.php`, `src/Contract/FormActionInterface.php`, `src/Service/FormSeeder.php`, `src/Service/SendEmailFormAction.php`, `src/Service/EmailService.php`, `src/Model/EmailSendRequest.php`, `src/Controller/Management/EmailDebugShortcutController.php`, `src/Service/FormBotProtection.php`, `src/Form/CaptchaType.php`, `templates/components/Form/`
+`src/Entity/Form.php`, `src/Entity/FormField.php`, `src/Entity/FormFieldTemplate.php`, `src/Entity/EmailTemplate.php`, `src/Controller/FormController.php`, `src/Controller/Management/FormCrudController.php`, `src/Contract/FormActionInterface.php`, `src/Service/FormSeeder.php`, `src/Service/SendEmailFormAction.php`, `src/Service/EmailService.php`, `src/Model/EmailSendRequest.php`, `src/Controller/Management/EmailDebugShortcutController.php`, `src/Service/FormBotProtection.php`, `src/Form/CaptchaType.php`, `src/Twig/EmailDebugExtension.php`, `templates/components/Form/`, `templates/components/Email/`
 
 **Related skills:** `c975l-blocks`, `c975l-media`, `c975l-ui-assets` in this same bundle, and `c975l-users`, `c975l-config` in ConfigBundle beside it.
 
@@ -97,11 +97,15 @@ The six address settings (`email-from`, `email-from-name`, `email-to`, `email-to
 message.
 
 **Nothing is sent while the debug mode is on.** `email-debug` (a restricted config) plus
-`ROLE_SUPER_ADMIN` makes `EmailService` render the message and stash it (`consumeDebugPreview()`)
-instead of sending it — anyone else keeps getting real sends. It is switched from the dashboard's
-**"Enable / Disable"** row (`Controller\Management\EmailDebugShortcutController`), whose tile stays
-warning-colored for as long as the mode is on. Implement `Contract\DebugPreviewCapableInterface` on
-your own form action to get the same behavior.
+`ROLE_SUPER_ADMIN` makes `EmailService` render the message and stash its preview in the session
+instead of sending it — anyone else keeps getting real sends. Whichever page follows shows it, the
+layout rendering `<twig:c975LUi:Email:DebugPreview/>` above the flashes, so an email dispatched from a
+message handler or a command is as visible as one a form sent. Nothing to implement anywhere: every
+email of the site goes out through `EmailService::send()`, which is the only place the mode is read.
+A send with no session to stash a preview in goes out for real rather than being destroyed silently.
+It is switched from the dashboard's **"Enable / Disable"** row
+(`Controller\Management\EmailDebugShortcutController`), whose tile stays warning-colored for as long
+as the mode is on.
 
 ## Do not
 

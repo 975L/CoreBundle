@@ -140,6 +140,9 @@
 {# The two buttons a long page is walked with, ordinary anchors working without javascript #}
             <twig:c975LUi:Scroll:Buttons />
             <main>
+                {# Before the flashes and outside their block: what debug mode held back is shown whichever page follows the send, a theme overriding the block below taking nothing of this over #}
+                <twig:c975LUi:Email:DebugPreview />
+
                 {% block flashes %}
                     {# Only a visitor who can hold a flash reads the bag: reading app.flashes starts the session, and it carries no such guard of its own. A theme overriding this block takes that reading over, hence the guard inside it #}
                     {% if ui_can_hold_flash() %}

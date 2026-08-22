@@ -1474,6 +1474,10 @@
                 <source>label.email_debug_enable</source>
                 <target>Activer le debug des emails</target>
             </trans-unit>
+            <trans-unit id="hKKOick">
+                <source>label.email_debug_preview</source>
+                <target>Aperçu de l'email retenu par le mode debug</target>
+            </trans-unit>
             <trans-unit id="btmHLEL">
                 <source>label.email_templates</source>
                 <target>Modèles d'email</target>

@@ -1573,6 +1573,17 @@ iframe {
   margin: 0.5em auto 0.5em auto;
 }
 
+.email-debug-preview {
+  display: block;
+  width: 100%;
+  max-width: 700px;
+  height: 70vh;
+  aspect-ratio: auto;
+  margin: 1em auto;
+  border: 2px dashed var(--alert-danger-color, #9c3a44);
+  background-color: #fff;
+}
+
 .image-compare {
   max-width: var(--reading-max-width, min(75ch, 90vw));
   margin: var(--image-compare-margin-block, 3em) auto;
