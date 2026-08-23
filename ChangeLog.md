@@ -1,5 +1,20 @@
 # ChangeLog
 
+## v1.15.2
+
+Each bundle's guided projects run their own thousand-block
+
+### ConfigBundle
+
+- `GuidedProjectProviderInterface` states every bundle's thousand-block, at a step of 10, instead of each provider recopying a range (23/08/2026)
+- `ConfigGuidedProjectProvider` runs the 1000 block (23/08/2026)
+- Updated `ConfigGuidedProjectProviderTest` (23/08/2026)
+
+### UiBundle
+
+- `UiGuidedProjectProvider` runs the 3000 block, its nine projects back at a step of 10 (23/08/2026)
+- Updated `UiGuidedProjectProviderTest` (23/08/2026)
+
 ## v1.15.1
 
 iOS no longer turns the dates and prices of a page into phone links

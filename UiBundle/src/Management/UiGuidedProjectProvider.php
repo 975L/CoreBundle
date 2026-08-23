@@ -26,7 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, continuing the order sequence after ConfigBundle (10-40) and SiteBundle (50-80), and running 90-110 - the range SocialBundle and GalleryBundle both state as this bundle's, SocialBundle's own opening at 120. Seven of them run at a step of 3 from 90, not the 10 the earlier bundles use: an order shared with another provider's leaves their sequence to the order the providers happen to be registered in (see GuidedProjectBuilder), which is exactly what "order" exists to decide. The eighth sits at 104, slipped between the forms (102) and the e-mail templates (105) rather than appended at the end, the catalog it walks being what those two screens both open - carrying on at a step of 3 would have put it at 111, outside the range, and renumbering the lot to fit it is what leaving gaps exists to avoid. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the four occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the four occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -67,8 +67,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_review',
             'description' => 'description.guided_project_ui_review',
             'translation_domain' => 'ui',
-            // Last of this bundle's reserved range, the walk-through being appended after the eight above
-            'order' => 110,
+            // Last of the nine, the walk-through being appended after the eight above
+            'order' => 3090,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [
@@ -111,7 +111,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_media',
             'description' => 'description.guided_project_ui_media',
             'translation_domain' => 'ui',
-            'order' => 90,
+            'order' => 3010,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [
@@ -155,7 +155,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_site_graphic',
             'description' => 'description.guided_project_ui_site_graphic',
             'translation_domain' => 'ui',
-            'order' => 93,
+            'order' => 3020,
             // Its own screen is the editor's (see SiteGraphicCrudController), the graphics being content like any other
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
@@ -195,7 +195,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_legal_model',
             'description' => 'description.guided_project_ui_legal_model',
             'translation_domain' => 'ui',
-            'order' => 96,
+            'order' => 3030,
             // The gate both actions of LegalModelController set on themselves
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
@@ -248,7 +248,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_ai_assistant',
             'description' => 'description.guided_project_ui_ai_assistant',
             'translation_domain' => 'ui',
-            'order' => 99,
+            'order' => 3040,
             // The bar index() sets on itself, and the one rephrase() answers to - the question/answer half of the screen asks for ROLE_SUPER_ADMIN and simply does not render below it, which is why no step points into it
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -300,7 +300,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_form',
             'description' => 'description.guided_project_ui_form',
             'translation_domain' => 'ui',
-            'order' => 102,
+            'order' => 3050,
             // FormCrudController is admin-only, an action key being what a form does once submitted - an editor offered this parcours would get a 403 on its very first step
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -348,8 +348,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_form_field_template',
             'description' => 'description.guided_project_ui_form_field_template',
             'translation_domain' => 'ui',
-            // Slotted between the forms and the e-mail templates, the two screens whose own toolbar opens this catalog - the 90-110 range being what it is, an eighth project takes the value left between them rather than pushing the whole sequence up
-            'order' => 104,
+            // Slotted between the forms and the e-mail templates, the two screens whose own toolbar opens this catalog, rather than appended after the sequence it belongs in the middle of
+            'order' => 3060,
             // The gate FormFieldTemplateCrudController sets on every one of its actions, its own catalog() included
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -403,7 +403,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_email_template',
             'description' => 'description.guided_project_ui_email_template',
             'translation_domain' => 'ui',
-            'order' => 105,
+            'order' => 3070,
             // Same gate as FormCrudController, and for the same reason: what an e-mail template holds is sent to real people
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -447,7 +447,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_font',
             'description' => 'description.guided_project_ui_font',
             'translation_domain' => 'ui',
-            'order' => 108,
+            'order' => 3080,
             // The screen this walks is the editor's; only its "exportSelection" is stricter, and no step here uses it (see FontCrudController)
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

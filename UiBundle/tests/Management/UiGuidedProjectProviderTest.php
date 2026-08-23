@@ -76,23 +76,23 @@ class UiGuidedProjectProviderTest extends TestCase
         return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService());
     }
 
-    // Continues the sequence after ConfigBundle (10-40) and SiteBundle (50-80)
+    // The 3000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
     public function testGetGuidedProjectsContinuesTheOrderSequence(): void
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
         $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review'], array_column($projects, 'slug'));
-        $this->assertSame([90, 93, 96, 99, 102, 104, 105, 108, 110], array_column($projects, 'order'));
+        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090], array_column($projects, 'order'));
     }
 
-    // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's range is the 90-110 SocialBundle and GalleryBundle both state as its own, SocialBundle's opening at 120
+    // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's own block is the 3000 GuidedProjectProviderInterface reserves it
     public function testEveryOrderStaysWithinThisBundlesReservedRange(): void
     {
         $orders = array_column($this->createProvider()->getGuidedProjects(), 'order', 'slug');
 
         foreach ($orders as $slug => $order) {
-            $this->assertGreaterThanOrEqual(90, $order, sprintf('Project "%s" reaches into SiteBundle\'s range', $slug));
-            $this->assertLessThanOrEqual(110, $order, sprintf('Project "%s" reaches into SocialBundle\'s range, whose own sequence opens at 120', $slug));
+            $this->assertGreaterThanOrEqual(3000, $order, sprintf('Project "%s" reaches into SiteBundle\'s own 2000 block', $slug));
+            $this->assertLessThanOrEqual(3999, $order, sprintf('Project "%s" reaches into SocialBundle\'s own 4000 block', $slug));
         }
 
         $this->assertSameSize($orders, array_unique($orders), 'Two projects sharing an order leave their sequence to chance');

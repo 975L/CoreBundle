@@ -18,7 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, opening the order sequence the satellite bundles continue (SiteBundle picks up at 50, same as the essential actions do). Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to an editor (see DashboardController::index()), and three of these five walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to an editor (see DashboardController::index()), and three of these five walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -47,8 +47,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_config_not_found',
             'description' => 'description.guided_project_config_not_found',
             'translation_domain' => 'config',
-            // Slipped between the maintenance rehearsal and the url metadata, next to the redirects this walks to rather than appended after the range
-            'order' => 35,
+            // Slipped between the maintenance rehearsal and the url metadata, next to the redirects this walks to rather than appended after the last of them
+            'order' => 1040,
             // The bar NotFoundCrudController sets on its own index and on its "createRedirect", and the one RedirectCrudController sets on the "new" this ends up on
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
@@ -99,7 +99,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_config_settings',
             'description' => 'description.guided_project_config_settings',
             'translation_domain' => 'config',
-            'order' => 10,
+            'order' => 1010,
             // The bar ConfigCrudController sets on its own index and edit
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -143,7 +143,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_config_health_check',
             'description' => 'description.guided_project_config_health_check',
             'translation_domain' => 'config',
-            'order' => 20,
+            'order' => 1020,
             // The bar every action of HealthCheckController sets on itself
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -182,7 +182,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_config_maintenance',
             'description' => 'description.guided_project_config_maintenance',
             'translation_domain' => 'config',
-            'order' => 30,
+            'order' => 1030,
             // The bar the maintenance toggle shortcut declares, and the settings screen it links back to
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -221,7 +221,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_config_url_metadata',
             'description' => 'description.guided_project_config_url_metadata',
             'translation_domain' => 'config',
-            'order' => 40,
+            'order' => 1050,
             // The bar UrlMetadataCrudController sets on its own index and edit, this one being the editor's
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

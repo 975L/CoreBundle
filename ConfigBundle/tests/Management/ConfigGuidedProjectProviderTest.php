@@ -53,7 +53,7 @@ class ConfigGuidedProjectProviderTest extends TestCase
         return new ConfigGuidedProjectProvider($this->createAdminUrlGenerator(), $configService, $this->createUrlGenerator($routes));
     }
 
-    // ConfigBundle opens the sequence the satellite bundles continue - SiteBundle picks up at 50
+    // The 1000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
     public function testGetGuidedProjectsOpensTheOrderSequence(): void
     {
         $projects = $this->createProvider()->getGuidedProjects();
@@ -62,8 +62,8 @@ class ConfigGuidedProjectProviderTest extends TestCase
             ['config-settings', 'config-health-check', 'config-maintenance', 'config-not-found', 'config-url-metadata'],
             array_column($projects, 'slug')
         );
-        // 35 rather than a value after 40: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with
-        $this->assertSame([10, 20, 30, 35, 40], array_column($projects, 'order'));
+        // 1040 rather than a value after 1050: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with
+        $this->assertSame([1010, 1020, 1030, 1040, 1050], array_column($projects, 'order'));
     }
 
     // A project is offered on a dashboard an editor now reaches, so one walking an admin screen has to say so or its very first step answers a 403
