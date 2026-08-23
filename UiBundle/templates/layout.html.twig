@@ -55,6 +55,8 @@
                 <meta charset="UTF-8">
                 {# The comma is not optional: the viewport content is a comma-separated list, so "width=device-width initial-scale=1.0" is one single unparseable token and the whole directive is dropped #}
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                {# Without it iOS turns anything shaped like a number - a date, a reference, a price - into a phone link, restyling it and making it tappable #}
+                <meta name="format-detection" content="telephone=no">
 
                 {# Turbo reads this to nonce the inline tags it re-executes, which the CSP would otherwise block. It nonces its progress bar's own <style> with the very same value (see ProgressBar.createStylesheetElement), so the value has to be one style-src carries as well as script-src - hence both being asked for, in this order: NelmioSecurityBundle mints one nonce per response (ContentSecurityPolicyListener::doGetNonce caches it) and stamps it into whichever directive was asked, so two adjacent calls hand back the same string and put it in both #}
                 {# Nonceing style-src on every page and not only on the ones rendering an inline <style> (the Banner component, say) is deliberate: a nonce present on a directive disables 'unsafe-inline' for it, so a rule varying page by page would break inline styles on those pages alone #}

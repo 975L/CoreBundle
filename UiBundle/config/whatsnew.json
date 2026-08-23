@@ -50,6 +50,11 @@
                 "en": "In an email model, the block carrying the message's own data — an order's lines, the fields somebody filled in — can no longer be deleted: its delete button is gone, where deleting it was undone at save time anyway. You can still move it wherever you want in the model.",
                 "fr": "Dans un modèle d'e-mail, le bloc qui porte les données du message — les lignes d'une commande, les champs remplis par quelqu'un — ne peut plus être supprimé : son bouton de suppression a disparu, là où la suppression était de toute façon annulée à l'enregistrement. Vous pouvez toujours le déplacer où vous voulez dans le modèle.",
                 "es": "En un modelo de correo, el bloque que lleva los datos del mensaje — las líneas de un pedido, los campos que alguien rellenó — ya no puede eliminarse: su botón de eliminar ha desaparecido, donde la eliminación se deshacía igualmente al guardar. Sigue pudiendo moverlo donde quiera dentro del modelo."
+            },
+            {
+                "en": "On an iPhone, the dates, prices and reference numbers your site shows are no longer turned into telephone links — blue, underlined, and calling nothing when tapped. They now read as the text you wrote.",
+                "fr": "Sur iPhone, les dates, les prix et les numéros de référence affichés par votre site ne sont plus transformés en liens téléphoniques — bleus, soulignés, et n'appelant rien quand on les touche. Ils s'affichent désormais comme le texte que vous avez écrit.",
+                "es": "En el iPhone, las fechas, los precios y los números de referencia que muestra su sitio ya no se convierten en enlaces telefónicos — azules, subrayados y que no llaman a nada al tocarlos. Ahora se muestran como el texto que usted escribió."
             }
         ]
     },

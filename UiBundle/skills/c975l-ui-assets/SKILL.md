@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -82,6 +82,9 @@ one of them.
   `<meta name="csp-nonce">`: Turbo nonces the inline tags it re-executes with that value *and* its own
   progress-bar `<style>`, so both directives have to carry it. NelmioSecurityBundle mints one nonce per
   response, so two adjacent `csp_nonce()` calls hand back the same string and put it in both.
+- **`format-detection` is fixed at `telephone=no`**, a tag the layout always writes: left out, iOS turns
+  anything shaped like a number - a date, a reference, a price - into a tappable phone link, restyled and
+  pointing nowhere useful. `FormatDetectionMetaTest` asserts it on the shipped template.
 - **`bodyClasses`/`bodyClass` land on `<body>`**, not on the content: a screen laid on its own background - a
   photo gallery, a reader - paints the navbar and the footer with it too.
 - **Preconnects** merge the `site-preconnect` list with Matomo's origin, that one gated on

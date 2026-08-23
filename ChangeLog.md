@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.15.1
+
+iOS no longer turns the dates and prices of a page into phone links
+
+### UiBundle
+
+- The layout writes `<meta name="format-detection" content="telephone=no">` again (23/08/2026)
+- Added `FormatDetectionMetaTest` (23/08/2026)
+- The `c975l-ui-assets` skill carries the tag, next to the CSP nonce (23/08/2026)
+
 ## v1.15.0
 
 An e-mail is written once per language, and carries its documents
