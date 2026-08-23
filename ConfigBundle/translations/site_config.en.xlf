@@ -34,6 +34,18 @@
                 <source>description.email_to_name</source>
                 <target>Name used to receive the notifications from the site.</target>
             </trans-unit>
+            <trans-unit id="qsbLUOC">
+                <source>description.login_google_oauth_client_id</source>
+                <target>Client id ("OAuth client ID") of this site's Google project, which enables the "Continue with Google" button on the login page. See the "Connect Google login" procedure. Leave empty not to offer Google login.</target>
+            </trans-unit>
+            <trans-unit id="RkXZwtj">
+                <source>description.login_google_oauth_client_secret</source>
+                <target>Client secret matching the id above. Never share it: on its own it lets anyone impersonate this site with Google.</target>
+            </trans-unit>
+            <trans-unit id="4mD1gVh">
+                <source>description.made_by_wording</source>
+                <target>Wording of the credit in the footer: made ("Made by") or powered ("Powered by"), for a site running the system without having been built by it</target>
+            </trans-unit>
             <trans-unit id="FXZbjDI">
                 <source>description.seo_humans_from</source>
                 <target>Country the site is run from, as shown in humans.txt, e.g. France</target>
@@ -194,6 +206,10 @@
                 <source>description.site_name</source>
                 <target>Name of the web site: i.e. Example.com</target>
             </trans-unit>
+            <trans-unit id="lehRCin">
+                <source>description.site_not_found_retention_days</source>
+                <target>Number of days a broken link stays listed after it was last requested. 0 keeps everything.</target>
+            </trans-unit>
             <trans-unit id="._1mRZ4">
                 <source>description.site_owner</source>
                 <target>Website owner, shown in the legal notice (HTML allowed)</target>
@@ -265,6 +281,18 @@
             <trans-unit id="Tbwp4sB">
                 <source>label.email_to_name</source>
                 <target>Email (to) Name</target>
+            </trans-unit>
+            <trans-unit id=".GtjiDJ">
+                <source>label.login_google_oauth_client_id</source>
+                <target>Google OAuth client id</target>
+            </trans-unit>
+            <trans-unit id="RXa3x8Q">
+                <source>label.login_google_oauth_client_secret</source>
+                <target>Google OAuth client secret</target>
+            </trans-unit>
+            <trans-unit id="I_2UGaK">
+                <source>label.made_by_wording</source>
+                <target>Made By Wording</target>
             </trans-unit>
             <trans-unit id="5LRQEmv">
                 <source>label.seo_humans_from</source>
@@ -425,6 +453,10 @@
             <trans-unit id="rK0YMvt">
                 <source>label.site_name</source>
                 <target>Site Name</target>
+            </trans-unit>
+            <trans-unit id="14esafT">
+                <source>label.site_not_found_retention_days</source>
+                <target>Broken links retention (days)</target>
             </trans-unit>
             <trans-unit id="hbt28u1">
                 <source>label.site_owner</source>

@@ -1,0 +1,24 @@
+{% extends 'layout.html.twig' %}
+{% trans_default_domain 'ui' %}
+
+{# Defines specific variables #}
+{% set title = 'label.review_form_title'|trans({'%name%': item.title}) %}
+
+{# Nothing here is worth finding through a search engine, and the page carries a session-bound form #}
+{% set robots = 'noindex, follow' %}
+
+{% block content %}
+    <p class="text lead">{{ 'label.review_form_intro'|trans({'%name%': item.title}) }}</p>
+
+    {{ form_start(form) }}
+        {# The errors bound to no field - an expired token, say - without which the page redisplays saying nothing #}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">{{ 'label.review_form_submit'|trans }}</button>
+        </div>
+    {{ form_end(form) }}
+
+    {# L111-7-2: the visitor has to be told what becomes of what they write, before they write it #}
+    <p class="text text-muted">{{ 'label.review_form_moderation_notice'|trans }}</p>
+{% endblock %}

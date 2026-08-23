@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" target-language="fr" datatype="plaintext" original="validators.en.xlf">
         <body>
+            <trans-unit id="KXmAAjZ">
+                <source>error.email_template_name_locale_taken</source>
+                <target>Un modèle d'email porte déjà ce nom dans cette langue</target>
+            </trans-unit>
             <trans-unit id="QVfWY7f">
                 <source>label.block_media_required</source>
                 <target>Une image est nécessaire pour ce type de bloc.</target>

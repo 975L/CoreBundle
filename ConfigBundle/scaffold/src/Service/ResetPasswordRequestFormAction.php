@@ -36,7 +36,7 @@ class ResetPasswordRequestFormAction implements FormActionInterface, RequiresAno
     // Always returns true, whether or not the submitted email matches an account - never reveals which, same generic "form_submitted" flash either way (see c975L\UiBundle\Controller\FormController::submit())
     public function handle(Form $form, array $submittedData): bool
     {
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $submittedData['email']]);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $this->requireEmail($submittedData)]);
         if (null === $user) {
             return true;
         }
@@ -70,5 +70,16 @@ class ResetPasswordRequestFormAction implements FormActionInterface, RequiresAno
         ));
 
         return true;
+    }
+
+    // The "reset_password_request" Form is editable in the back-office, so a renamed or deleted field would otherwise turn every request into an "Undefined array key" - a silent 500 naming nothing. A configuration error, hence LogicException rather than a flash addressed to the visitor.
+    /** @param array<string, mixed> $submittedData */
+    private function requireEmail(array $submittedData): string
+    {
+        if (!is_string($submittedData['email'] ?? null)) {
+            throw new \LogicException('The "reset_password_request" form must keep a field named "email"; restore it in the back-office, a password cannot be reset without it.');
+        }
+
+        return $submittedData['email'];
     }
 }

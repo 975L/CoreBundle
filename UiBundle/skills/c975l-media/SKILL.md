@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, PlaceholderMediaProviderInterface, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, PlaceholderMediaProviderInterface, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
 ---
 
 # c975L UiBundle — media and uploads
@@ -70,6 +70,12 @@ everything written is webp, a format saved without EXIF, so nothing downstream r
 - `Contract\VichPrivateFileInterface` plus `Service\PrivateFileResponseFactory::createDownloadResponse()`
   serve a paid file from outside `public/`. **It only builds the response — the access check stays your
   controller's job.**
+- `createInlineResponse()` on the same service is for a private file meant to be **looked at in the page**
+  rather than saved — a paywalled photo or video. Inline disposition, response marked `private` so no shared
+  cache keeps what one visitor paid for, `nosniff`, and `Range` requests left to `BinaryFileResponse`: without
+  them a video plays from its start and cannot be moved through. **Do not reach for `createDownloadResponse()`
+  and change its disposition afterwards.** The access check is still yours — PaymentBundle's
+  `BasketRepository::hasPaidFor()` when a purchase is what gates it.
 
 ## Checking the files are still there
 
@@ -128,6 +134,41 @@ megabytes, then the processing, which has no percentage to give and is shown as 
 `<progress>`. Anything the server answers that is not that json is taken to be the form rendered again
 with its errors, and swapped in place. The submit is taken away for the wait, handed back if the
 network refuses the batch.
+
+## Generating a PDF
+
+`Contract\PdfGeneratorInterface` turns a Twig template - or markup already rendered - into the bytes of a PDF.
+Ask for the **interface**, never for an engine:
+
+```php
+$pdf = $this->pdfGenerator->render('@app/invoice.html.twig', ['order' => $order]);
+$pdf = $this->pdfGenerator->render('@app/card.html.twig', ['card' => $card], ['paper' => [85.6, 54]]);
+```
+
+`options`: `paper` (a named size, or `[width, height]` **in millimetres** for a document that is an object rather
+than a page - a card, a ticket, a label), `orientation`, `basePath` (what a relative image path resolves against,
+`public/` by default).
+
+**Two engines, one setting.** `DompdfGenerator` is pure PHP and ships as a `require`, so it runs wherever Composer
+does; `WeasyPrintGenerator` shells out to the `weasyprint` binary and draws modern CSS. `ui-pdf-engine` picks:
+`auto` (default - the binary is asked, not the configuration), `dompdf` or `weasyprint`. `ui-pdf-weasyprint-path`
+locates the command where it is not on the PATH. `Service\PdfGenerator` is what the contract is aliased to and
+what decides; `Management\PdfEngineHealthCheckProvider` says which engine a site landed on.
+
+Shipping the WeasyPrint class costs nobody a dependency - the same reasoning as Ghostscript for the thumbnails
+above: an optional binary, a graceful fallback, a dashboard row saying whether it answers.
+
+**Write every print template against the weaker engine**: absolute positioning, stated lengths, millimetres, no
+stylesheet shared with the screen. Dompdf reads CSS 2.1 - no flexbox, no grid, no custom properties - and a
+template is shipped to sites running either engine.
+
+- **Do not inject `DompdfGenerator` or `WeasyPrintGenerator`** - inject `PdfGeneratorInterface` and let the site's
+  setting decide.
+- **Do not reuse a screen stylesheet in a print template.** They share no layout model.
+- **Do not turn remote fetching on.** A document is drawn out of markup an admin typed; an engine allowed to fetch
+  a url of that markup's choosing is an SSRF.
+- **Do not write a PDF to `public/`** to serve it - answer the bytes with a `Response` and the right headers.
+
 
 ## Do not
 

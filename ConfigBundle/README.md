@@ -57,6 +57,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
 - `c975l:seo:files:create`, writing `robots.txt`, `humans.txt` and `llms.txt` from the `seo` configs and from the urls those same providers declare, with a monthly check reporting the AI crawlers that appeared in the community list
 - Url redirects and `410 Gone` rows (`site_redirect` table, EasyAdmin CRUD, export/import, chain/loop check), answering before the router, a `*` on both sides renaming a whole url tree
+- Broken links recorded as they are followed (`site_not_found` table, EasyAdmin CRUD, one click to the redirect that answers it), with a dashboard alert on the ones the site's own pages carry - and none of the scanner noise a 404 log is made of
 - Url descriptions for the pages no entity carries (`site_url_metadata` table, EasyAdmin CRUD, export/import), read by the layouts, listed by `c975l:url-metadata:sync` from what each bundle declares via `UrlMetadataProviderInterface`
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps and the two cross-checked, redirect chains, deployment, and the content quality of every url any bundle declares
 - A weekly intrusion check looking for the traces rather than for the doors: an executable file where only uploads are written, a working tree no longer matching what was deployed, and a privileged account more than the run before
@@ -65,6 +66,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Scheduled maintenance tasks declared by each bundle (`MaintenanceTaskProviderInterface`) rather than listed by the app, and spread over each install's own minutes (`ScheduleSpreader`) so sites sharing a server don't all run them at once
 - `c975l:dev-profile:run`, a dev-only command listing what the Symfony dev toolbar would flag on every page (n+1 queries, deprecations, missing translations...), extensible via `DevProfilePathProviderInterface`
 - The ecosystem's account layer: `User` CRUD, registration, email confirmation and password reset, on forms and emails seeded once and editable from the back-office afterwards
+- "Sign in with Google" on the login page, enabled by filling two config keys and nothing else — no new dependency, no migration, and extensible to other providers via `OAuthLoginProviderInterface`
 - `c975l:scaffold:install`, installing every installed c975L bundle's scaffold files into the app and backing up whatever it would replace, and `c975l:config:user-create` to bootstrap the first admin on an app with no site foundation
 
 ## Installation
@@ -579,6 +581,60 @@ security:
 ```
 
 This lets you disable a user from the backoffice (`isEnabled` isn't readonly, unlike `isVerified`) to lock them out without deleting their account — a verified user with `isEnabled = false` still can't log in.
+
+### Signing in with Google (OAuth)
+
+Fill the `login-google-oauth-client-id` and `login-google-oauth-client-secret` configs (`security` group, both `restricted`, the secret `sensitive`) and a "Continue with Google" button appears on the login page. Leave them empty — which is how every site starts — and the login page stays exactly as it was: the component renders nothing at all, and `/connect/google` answers 404. The `connecter-google` procedure, readable from the back-office, walks through getting those two values from the Google Cloud console; the redirect uri to declare there is `https://your-site/connect/google/check`.
+
+Use one Google project per site rather than one shared between several: the application name set on the consent screen is what the visitor reads in "Sign in to …". Ask for the `openid` and `email` scopes only — both are non-sensitive, which is what lets a site publish its Google application without going through a review.
+
+Nothing has to be declared in an application's `security.yaml`: there is no custom authenticator, the account being logged in programmatically once the provider has answered (`Security::login()`), which runs the firewall's own `UserChecker` on the way. The only scaffold file this touches is `templates/security/login.html.twig`, which renders `<twig:c975LConfig:Security:OAuthLogin/>` — run `c975l:scaffold:install --path=templates/security/login.html.twig` on a site built before this existed.
+
+Accounts are linked by email alone, so there is no per-provider column and no migration:
+
+| The provider vouched for | What happens |
+|---|---|
+| An address no account carries | The account is created, verified and enabled, with a random password nobody holds |
+| An account with `isEnabled = true` | It is logged in as it stands, its password and roles untouched |
+| An account with `isEnabled = false` | Its password is replaced **before** it is enabled, and the visitor is told |
+| An address the provider doesn't mark as verified | Refused, nothing is read or written |
+
+The third row is what makes the second safe. Anyone can register someone else's address at the public form without ever confirming it; `UserChecker` blocks that account today, and enabling it as it stands would hand it to its real owner with the password whoever registered it still working. The provider having just proved the address, it becomes the only authority on that account. The last row is what makes linking by email safe at all — a provider that doesn't guarantee the address is refused rather than trusted.
+
+An OAuth account gets a random hashed password rather than a nullable column: the entity is copied into every site, so a nullable password would mean a migration everywhere plus a null to guard in the login form and in the password reset. Its owner reaches it through "forgot password" if they want one.
+
+A site that unchecked its "register" Form has closed registration to every door, this one included: an address no
+account carries is refused rather than signed up, while an account that already exists goes on signing in. And
+`/connect/{provider}` takes an optional `redirect`, a path of this site only - anything leading off-site is dropped
+rather than corrected - so a visitor comes back where they clicked rather than on the home page (PaymentBundle's
+order pages use it, see its "Inviting a guest buyer to open an account").
+
+#### Adding another provider
+
+Implement `c975L\ConfigBundle\Security\OAuthLoginProviderInterface` anywhere — this bundle, another c975L bundle, an application. It is collected on its own (`TaggedInterfacePass`), so there is no list to edit and `/connect/{provider}` routes it by `getKey()` the day it appears:
+
+```php
+class FacebookOAuthLoginProvider implements OAuthLoginProviderInterface
+{
+    public function getKey(): string
+    {
+        return 'facebook';
+    }
+
+    // getName(), getAuthorizationEndpoint(), getTokenEndpoint(), getScope(),
+    // getClientIdSlug(), getClientSecretSlug()...
+
+    // The one place providers genuinely diverge: Facebook wants its fields listed,
+    // Apple says it in the id_token instead of answering a userinfo endpoint
+    public function fetchIdentity(string $accessToken): ?OAuthIdentity
+    {
+        // ...
+        return new OAuthIdentity($email, $emailVerified);
+    }
+}
+```
+
+Declare its two config keys in your own bundle's `configs.json` (the interface asks for their slugs rather than deriving them, so a provider owns its keys), and add its icon to the `OAuthLogin` component. The authorization code flow itself is written once in `OAuthLoginClient` and never per provider.
 
 ### Being notified of new accounts
 
@@ -1330,6 +1386,20 @@ A url that changed needs a redirect whether it was a page's or a product's, and 
 - **The site root is left alone** by design.
 
 `RedirectChainHealthCheckProvider` walks the rows for chains and loops, from the database alone.
+
+## Broken links
+
+Monolog's production handler excludes `404` on purpose: the mail it would otherwise send is scanners walking `/wp-admin`, and burying a real broken link in that is the same as not knowing about it at all. So a link that breaks is known only when someone reports it - or never.
+
+`EventSubscriber\NotFoundSubscriber` records the ones that came **from a link**: a `NotFoundHttpException` on a `GET` carrying a `Referer`, which a browser following a link always sends and a scanner practically never does. That single filter is what separates a broken link from the traffic a 404 otherwise attracts, and it needs no list of paths to exclude. `Entity\NotFound` (table `site_not_found`) holds one row per path - `path`, the last `referer`, `internal`, `hits`, `firstSeen`, `lastSeen` - listed from *Management → Advanced → Broken links*.
+
+- **`internal` is what the dashboard alerts on.** A referer on the site's own host means one of our pages carries the dead link and it is ours to fix; anything else is a stale link another site publishes, worth a redirect when convenient. `NotFoundAlertProvider` counts only the first kind.
+- **One row per path, never per hit**, and the query string is dropped: the same url shared with and without tracking parameters is one broken link and one thing to fix. The table grows with the number of dead urls, not with the traffic hitting them.
+- **A row carries an action to the answer**: *Create the redirect* opens a new `Redirect` with `fromPath` already filled in, deleting the row being the other way to close it.
+- **Nothing here can turn a 404 into a 500.** The row is written in plain SQL on the connection rather than through the entity manager, which a failed flush would close - taking down the error page rendering right after it, menus and blocks and all - and any failure at all is swallowed, including the missing table of a site that has not migrated yet.
+- **`c975l:config:not-found-cleanup`** deletes what nothing has followed for `site-not-found-retention-days` (90 by default, `0` keeping everything), weekly. A link that stopped being followed is a link nobody publishes any more.
+- **A referer is a `http`/`https` url or nothing**: the header is whatever its sender wrote, and `javascript://papa-calin.com/…` carries this very host - it would be filed as one of our own broken links and listed as a link to click on.
+- **410 rows are never recorded**: a `Redirect` marked `gone` is an answer someone decided on, not a link that broke.
 
 ## Url metadata — what a listing says of itself
 
@@ -2243,6 +2313,9 @@ class MyService
 
 {# What a footer credit shows: none, logo, name or logo-name #}
 {{ credits_mode('display-made-by') }}
+
+{# How the "Made by" credit is worded: label.made_by or label.powered_by #}
+{{ made_by_label()|trans({}, 'site') }}
 ```
 
 `credits_mode()` is how `display-made-by` and `display-hosted-by` are read — never `config()` directly. Both
@@ -2250,6 +2323,12 @@ entries were a `bool` before `v1.6`, and a stored value is never rewritten by `c
 holding `"true"` gets `logo` back (all a credit could show then) and `"false"` gets `none`, where `config()`
 would hand over the string `"false"`, truthy in Twig. It always answers one of the four modes, so a template
 only has to ask whether the mode holds `logo`, `name`, or both.
+
+`made_by_label()` answers the same way for the wording of that credit: `made-by-wording` is `made` or
+`powered`, and the function hands back the translation key going with it — `label.made_by` (« Réalisé par »)
+or `label.powered_by` (« Propulsé par »). Both live in SiteBundle's `site` catalogue. The distinction is who
+the credit names: the party that *built* the site, or the one whose system it merely *runs* — true of any
+site installed by a third party. Anything else, an unset row included, keeps `label.made_by`.
 
 ---
 

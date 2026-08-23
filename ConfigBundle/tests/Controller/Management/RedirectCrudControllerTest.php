@@ -21,9 +21,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Context\RequestContext;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\FieldProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -92,6 +95,22 @@ class RedirectCrudControllerTest extends TestCase
         return $fields;
     }
 
+    // The screen listing the broken links sends the admin here with the dead path in the query (see NotFoundCrudController), the destination being the one decision left to make
+    private function createControllerOnANewRedirect(array $query): RedirectCrudController
+    {
+        $contextProvider = $this->createStub(AdminContextProviderInterface::class);
+        $contextProvider->method('getContext')->willReturn(
+            AdminContext::forTesting(RequestContext::forTesting(new Request($query)))
+        );
+
+        $controller = $this->createController();
+        $controller->setContainer($this->createContainer([
+            AdminContextProviderInterface::class => $contextProvider,
+        ]));
+
+        return $controller;
+    }
+
     public function testGetEntityFqcnIsTheRedirectEntity(): void
     {
         $this->assertSame(Redirect::class, RedirectCrudController::getEntityFqcn());
@@ -111,6 +130,20 @@ class RedirectCrudControllerTest extends TestCase
 
         $this->assertTrue($fields['fromPath']->getAsDto()->getFormTypeOption('required'));
         $this->assertFalse($fields['toUrl']->getAsDto()->getFormTypeOption('required'));
+    }
+
+    public function testCreateEntityPrefillsTheSourcePathHandedInTheQuery(): void
+    {
+        $redirect = $this->createControllerOnANewRedirect(['fromPath' => '/histoire/disparue'])->createEntity(Redirect::class);
+
+        $this->assertSame('/histoire/disparue', $redirect->getFromPath());
+    }
+
+    // A redirect created from the menu carries no path, and an empty one would only make the form say the field is required twice
+    public function testCreateEntityLeavesTheSourcePathAloneWithoutOne(): void
+    {
+        $this->assertNull($this->createControllerOnANewRedirect([])->createEntity(Redirect::class)->getFromPath());
+        $this->assertNull($this->createControllerOnANewRedirect(['fromPath' => ''])->createEntity(Redirect::class)->getFromPath());
     }
 
     public function testConfigureActionsBuildsWithoutError(): void

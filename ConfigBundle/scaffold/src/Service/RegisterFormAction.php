@@ -30,19 +30,36 @@ class RegisterFormAction implements FormActionInterface, RequiresAnonymousInterf
     // $submittedData keyed by FormField::getName() - "email"/"plainPassword"/"cgu". CGU's own required-checkbox constraint is already enforced generically by FormSubmissionType, nothing to check here.
     public function handle(Form $form, array $submittedData): bool
     {
+        $email = $this->requireField($submittedData, 'email');
+        $plainPassword = $this->requireField($submittedData, 'plainPassword');
+
         // Silently succeed without creating anything or sending any email - same "never reveal" stance as password-reset, avoids leaking which emails are already registered
-        if (null !== $this->userRepository->findOneBy(['email' => $submittedData['email']])) {
+        if (null !== $this->userRepository->findOneBy(['email' => $email])) {
             return true;
         }
 
-        $user = new User()->setEmail($submittedData['email']);
+        $user = new User()->setEmail($email);
 
-        return $this->userRegistrar->register(
+        // Registration succeeds as soon as the account is persisted: register() returns void on purpose, an undelivered confirmation email leaving a usable account the visitor can ask a new email for
+        $this->userRegistrar->register(
             $user,
-            $submittedData['plainPassword'],
+            $plainPassword,
             'app_verify_email',
             $this->configService->get('site-name') . ' - ' . $this->translator->trans('label.confirm_your_email', [], 'config'),
             (string) $user->getEmail(),
         );
+
+        return true;
+    }
+
+    // The "register" Form is editable in the back-office, so a renamed or deleted field would otherwise turn every sign-up into an "Undefined array key" then a TypeError inside UserRegistrar - a silent 500 naming nothing. A configuration error, hence LogicException rather than a flash addressed to the visitor.
+    /** @param array<string, mixed> $submittedData */
+    private function requireField(array $submittedData, string $name): string
+    {
+        if (!is_string($submittedData[$name] ?? null)) {
+            throw new \LogicException(sprintf('The "register" form must keep a field named "%s"; restore it in the back-office, accounts cannot be created without it.', $name));
+        }
+
+        return $submittedData[$name];
     }
 }

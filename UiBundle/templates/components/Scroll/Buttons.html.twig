@@ -1,7 +1,6 @@
 {# <twig:c975LUi:Scroll:Buttons/> #}
-{# The two buttons a long page is walked with, pulling to its top and to its bottom. They are ordinary anchors, working without javascript: the layout rendering them carries an "id=top" on its body and a "span id=bottom" as its last element (see @c975LUi/layout.html.twig and SiteBundle's own), which is what they point at #}
-{# The whole request uri rather than the hash alone: a relative url resolves against the <base href> every page carries, and would leave the address stripped of its own path #}
+{# The two buttons a long page is walked with, pulling to its top and to its bottom. They are ordinary anchors, working without javascript: the layout rendering them carries an "id=top" on its body and a "span id=bottom" as its last element (see @c975LUi/layout.html.twig), which is what they point at #}
 <div data-controller="scrollButtons">
-    <a href="{{ app.request.uri }}#top" class="backTop" aria-label="{{ 'label.top'|trans({}, 'ui') }}" data-scrollButtons-target="top">{{ 'label.top'|trans({}, 'ui') }}</a>
-    <a href="{{ app.request.uri }}#bottom" class="pullDown" aria-label="{{ 'label.bottom'|trans({}, 'ui') }}" data-scrollButtons-target="bottom"></a>
+    <a href="#top" class="backTop" aria-label="{{ 'label.top'|trans({}, 'ui') }}" data-scrollButtons-target="top">{{ 'label.top'|trans({}, 'ui') }}</a>
+    <a href="#bottom" class="pullDown" aria-label="{{ 'label.bottom'|trans({}, 'ui') }}" data-scrollButtons-target="bottom"></a>
 </div>

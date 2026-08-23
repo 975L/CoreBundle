@@ -30,13 +30,13 @@ class CreditsExtensionTest extends TestCase
         return new CreditsExtension($configService);
     }
 
-    public function testGetFunctionsExposesACreditsModeTwigFunction(): void
+    public function testGetFunctionsExposesTheCreditsTwigFunctions(): void
     {
         $functions = new AttributeExtension(CreditsExtension::class)->getFunctions();
 
-        $this->assertCount(1, $functions);
-        $this->assertInstanceOf(TwigFunction::class, $functions[0]);
-        $this->assertSame('credits_mode', $functions[0]->getName());
+        $this->assertCount(2, $functions);
+        $this->assertContainsOnlyInstancesOf(TwigFunction::class, $functions);
+        $this->assertSame(['credits_mode', 'made_by_label'], array_map(static fn (TwigFunction $function): string => $function->getName(), $functions));
     }
 
     public function testEveryDeclaredModeIsReturnedAsItIs(): void
@@ -55,6 +55,10 @@ class CreditsExtensionTest extends TestCase
             if (in_array($config['slug'], ['display-made-by', 'display-hosted-by'], true)) {
                 $this->assertSame(CreditsExtension::MODES, $config['choices'], sprintf('"%s" offers other modes than the extension knows', $config['slug']));
             }
+
+            if ('made-by-wording' === $config['slug']) {
+                $this->assertSame(CreditsExtension::WORDINGS, $config['choices'], '"made-by-wording" offers other wordings than the extension knows');
+            }
         }
     }
 
@@ -70,6 +74,15 @@ class CreditsExtensionTest extends TestCase
     {
         $this->assertSame(CreditsExtension::MODE_LOGO, $this->createExtension('true')->getCreditsMode('display-hosted-by'));
         $this->assertSame(CreditsExtension::MODE_NONE, $this->createExtension('false')->getCreditsMode('display-hosted-by'));
+    }
+
+    // Only the explicit "powered" wording credits the system rather than the maker, everything else - unset row included - keeping the historical "Made by"
+    public function testOnlyThePoweredWordingChangesTheLabel(): void
+    {
+        $this->assertSame('label.powered_by', $this->createExtension(CreditsExtension::WORDING_POWERED)->getMadeByLabel());
+        $this->assertSame('label.made_by', $this->createExtension(CreditsExtension::WORDING_MADE)->getMadeByLabel());
+        $this->assertSame('label.made_by', $this->createExtension(null)->getMadeByLabel());
+        $this->assertSame('label.made_by', $this->createExtension('whatever')->getMadeByLabel());
     }
 
     // An empty row (or a slug nothing declares) shows nothing rather than falling back on a credit the site never asked for

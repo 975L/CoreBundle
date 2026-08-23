@@ -1,5 +1,59 @@
 [
     {
+        "date": "2026-08-23",
+        "description": [
+            {
+                "en": "Your e-mail models now receive the blocks a new feature adds to them, instead of only new sites getting those. The block is added at the end of the model, once, and never comes back if you remove it - what you compose stays yours. The deployment command tells you how many were added.",
+                "fr": "Vos modèles d'e-mail reçoivent désormais les blocs qu'une nouveauté leur ajoute, au lieu que seuls les nouveaux sites en profitent. Le bloc est ajouté à la fin du modèle, une seule fois, et ne revient jamais si vous le retirez - ce que vous composez reste le vôtre. La commande de déploiement vous indique combien ont été ajoutés.",
+                "es": "Sus modelos de correo reciben ahora los bloques que una novedad les añade, en lugar de que solo los sitios nuevos los tengan. El bloque se añade al final del modelo, una sola vez, y nunca vuelve si usted lo quita: lo que compone sigue siendo suyo. El comando de despliegue le indica cuántos se han añadido."
+            },
+            {
+                "en": "You can now attach a document to any of your transactional emails. Open Email templates, pick the email — an order confirmation, for instance — and tick the documents it should carry: your terms of sale, your privacy policy, whatever your modules offer. The file attached is the version your site publishes, so a clause you rewrite this evening is in tomorrow's emails without you doing anything. Worth doing for a shop: the law asks that a customer be given the terms they accepted on something they keep, and a link to a page you can rewrite is not that.",
+                "fr": "Vous pouvez désormais joindre un document à n'importe lequel de vos emails automatiques. Ouvrez Modèles d'emails, choisissez l'email — la confirmation de commande, par exemple — et cochez les documents qu'il doit emporter : vos conditions générales de vente, votre politique de confidentialité, ce que vos modules proposent. Le fichier joint est la version que votre site publie : une clause que vous réécrivez ce soir part dans les emails de demain, sans rien faire. Utile pour une boutique : la loi demande que le client reçoive les conditions qu'il a acceptées sur un support qu'il conserve, et un lien vers une page que vous pouvez réécrire n'en est pas un.",
+                "es": "Ahora puede adjuntar un documento a cualquiera de sus correos automáticos. Abra Plantillas de correo, elija el correo — la confirmación de pedido, por ejemplo — y marque los documentos que debe llevar: sus condiciones generales de venta, su política de privacidad, lo que ofrezcan sus módulos. El archivo adjunto es la versión que publica su sitio: una cláusula que reescriba esta noche saldrá en los correos de mañana, sin hacer nada. Útil para una tienda: la ley exige que el cliente reciba las condiciones que aceptó en un soporte que conserve, y un enlace a una página que usted puede reescribir no lo es."
+            },
+            {
+                "en": "Your visitors can now leave a written review on anything your site lists — a book, a product, a photo — with their name, an optional score and a few words. Nothing appears on the site until you have read it: every review waits in a new \"Avis\" screen where you publish it, turn it down, or answer it publicly. A score left with a review counts into the same average as the stars your visitors click, and goes back out if you turn the review down. The reviews your site imports from Google now sit in that same screen, side by side with what your own readers wrote. Turn it all on with the \"Activer les avis\" setting.",
+                "fr": "Vos visiteurs peuvent désormais laisser un avis rédigé sur ce que votre site présente — un livre, un produit, une photo — avec leur nom, une note facultative et quelques mots. Rien ne s'affiche avant que vous l'ayez lu : chaque avis attend dans un nouvel écran « Avis », où vous le publiez, l'écartez, ou y répondez publiquement. Une note laissée avec un avis compte dans la même moyenne que les étoiles cliquées par vos visiteurs, et en ressort si vous écartez l'avis. Les avis que votre site importe de Google se retrouvent dans ce même écran, à côté de ce que vos lecteurs ont écrit. À activer par le réglage « Activer les avis »."
+            },
+            {
+                "en": "Your site can now hand over documents as PDFs — and it draws them as well as your server allows: where the WeasyPrint tool is installed it is used automatically, and everywhere else a built-in engine takes over, with nothing to set up. A new line in the health check tells you which one your site landed on.",
+                "fr": "Votre site peut désormais remettre des documents en PDF — et il les dessine aussi bien que votre serveur le permet : là où l'outil WeasyPrint est installé, il est utilisé automatiquement, et partout ailleurs un moteur intégré prend le relais, sans rien à régler. Une nouvelle ligne du bilan de santé vous dit lequel votre site a retenu.",
+                "es": "Su sitio puede ahora entregar documentos en PDF — y los dibuja tan bien como su servidor lo permite: allí donde la herramienta WeasyPrint está instalada, se utiliza automáticamente, y en los demás casos un motor integrado toma el relevo, sin nada que configurar. Una nueva línea del chequeo de salud le dice cuál ha retenido su sitio."
+            },
+            {
+                "en": "Your emails are now written once per language rather than once for everybody. Each email exists as its own version in each language your site answers in, and a customer is written to in the one they ordered in - not in yours, and not in whichever happened to be on screen when the email left.",
+                "fr": "Vos emails s'écrivent désormais une fois par langue, et non plus une fois pour tout le monde. Chaque email existe dans chacune des langues de votre site, et un client est adressé dans celle où il a commandé — pas dans la vôtre, ni dans celle qui se trouvait à l'écran au moment de l'envoi.",
+                "es": "Sus correos se escriben ahora una vez por idioma, y no una sola vez para todos. Cada correo existe en cada uno de los idiomas de su sitio, y a un cliente se le escribe en aquel en el que hizo el pedido — no en el suyo, ni en el que estuviera en pantalla al enviarse."
+            },
+            {
+                "en": "The pencil over a form on your site now opens the form itself, where its fields and labels are, instead of the one line the page holds about it. The email preview has one too, taking you straight back to where that email is composed.",
+                "fr": "Le crayon au survol d'un formulaire de votre site ouvre désormais le formulaire lui-même, là où sont ses champs et leurs libellés, au lieu de la seule ligne que la page contient à son sujet. L'aperçu d'un email en a un aussi, qui ramène directement là où cet email se compose.",
+                "es": "El lápiz sobre un formulario de su sitio abre ahora el formulario en sí, donde están sus campos y sus etiquetas, en lugar de la única línea que la página guarda sobre él. La vista previa de un correo también tiene uno, que lleva directamente a donde se compone ese correo."
+            },
+            {
+                "en": "The dashboard now says which emails your site is unable to send. An email a module expects and your site has no version of goes out as nothing at all, silently - a password reset nobody receives looks exactly like one that worked. It is now listed, with the one command that fixes it.",
+                "fr": "Le tableau de bord annonce désormais les emails que votre site est incapable d'envoyer. Un email attendu par un module et dont votre site n'a aucune version ne part pas du tout, sans rien dire — un mot de passe oublié que personne ne reçoit ressemble exactement à un envoi réussi. Il est maintenant listé, avec la commande qui le corrige.",
+                "es": "El panel indica ahora los correos que su sitio no puede enviar. Un correo que un módulo espera y del que su sitio no tiene ninguna versión no sale en absoluto, sin decir nada — una contraseña olvidada que nadie recibe se parece exactamente a un envío correcto. Ahora aparece en la lista, junto con el comando que lo corrige."
+            },
+            {
+                "en": "A flip card can now take the shape of a bank card. The new \"Bank card\" ratio sizes it exactly as one is held in the hand, which is what a gift card, a membership card or a business card needs to read as the object it copies.",
+                "fr": "Une carte retournable peut désormais prendre la forme d'une carte bancaire. Le nouveau format « Carte bancaire » lui donne exactement les proportions d'une carte que l'on tient en main, ce qu'il faut à une carte cadeau, une carte de membre ou une carte de visite pour ressembler à l'objet qu'elle copie.",
+                "es": "Una tarjeta giratoria puede ahora tomar la forma de una tarjeta bancaria. El nuevo formato «Tarjeta bancaria» le da exactamente las proporciones de una tarjeta que se sostiene en la mano, que es lo que necesita una tarjeta regalo, una tarjeta de socio o una tarjeta de visita para parecerse al objeto que copia."
+            },
+            {
+                "en": "Published reviews can now be shown on any page of your site: add a “Collection” block where you want them and pick “Reviews” as its source — there is no special block to look for, and the wall refreshes on its own as soon as you publish one.",
+                "fr": "Les avis publiés peuvent désormais s'afficher sur n'importe quelle page de votre site : ajoutez un bloc « Collection » à l'endroit voulu et choisissez « Avis » comme source — aucun bloc particulier à chercher, et le mur se rafraîchit tout seul dès que vous en publiez un.",
+                "es": "Las opiniones publicadas ya pueden mostrarse en cualquier página de su sitio: añada un bloque «Colección» donde las quiera y elija «Opiniones» como fuente — no hay que buscar ningún bloque especial, y el muro se actualiza solo en cuanto publica una."
+            },
+            {
+                "en": "In an email model, the block carrying the message's own data — an order's lines, the fields somebody filled in — can no longer be deleted: its delete button is gone, where deleting it was undone at save time anyway. You can still move it wherever you want in the model.",
+                "fr": "Dans un modèle d'e-mail, le bloc qui porte les données du message — les lignes d'une commande, les champs remplis par quelqu'un — ne peut plus être supprimé : son bouton de suppression a disparu, là où la suppression était de toute façon annulée à l'enregistrement. Vous pouvez toujours le déplacer où vous voulez dans le modèle.",
+                "es": "En un modelo de correo, el bloque que lleva los datos del mensaje — las líneas de un pedido, los campos que alguien rellenó — ya no puede eliminarse: su botón de eliminar ha desaparecido, donde la eliminación se deshacía igualmente al guardar. Sigue pudiendo moverlo donde quiera dentro del modelo."
+            }
+        ]
+    },
+    {
         "date": "2026-08-22",
         "description": [
             {

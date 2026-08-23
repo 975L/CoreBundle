@@ -13,8 +13,7 @@
         <ul class="toc-list">
             {% for entry in entries %}
                 <li class="toc-item">
-                    {# The path is repeated before the fragment on purpose: SiteBundle's layout writes a <base href="…/">, and a bare "#anchor" resolves against that base rather than against the page - every entry then leading to the home page #}
-                    <a class="toc-link" href="{{ app.request.requestUri }}#{{ entry.anchor }}" data-toc-target="link" data-toc-anchor="{{ entry.anchor }}">{{ entry.label }}</a>
+                    <a class="toc-link" href="#{{ entry.anchor }}" data-toc-target="link" data-toc-anchor="{{ entry.anchor }}">{{ entry.label }}</a>
                 </li>
             {% endfor %}
         </ul>

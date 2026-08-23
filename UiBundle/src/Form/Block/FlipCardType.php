@@ -28,6 +28,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 // No url/button pair on either face on purpose: both contents are Trix editors, which already write links
 class FlipCardType extends AbstractType
 {
+    // The slider's own list plus the one shape a slider has no use for: a card held in the hand, i.e. the ID-1 format a bank card and a gift card share (see sass/_flip-card.scss). Added here rather than in SliderType so a slider is never offered a ratio meaning nothing to a run of images
+    public const RATIO_CHOICES = SliderType::RATIO_CHOICES + ['label.ratio_credit_card' => 'credit-card'];
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -65,12 +68,12 @@ class FlipCardType extends AbstractType
                     'h4' => 'h4',
                 ],
             ])
-            // The very list a slider offers, reused rather than restated - the same reuse SiteBundle's
-            // ArticlesSliderType already makes of it. Its own help text is not reused though: a slider's ratio crops an image, where this one is a floor under the card's box, not a crop (see sass/_flip-card.scss)
+            // The list a slider offers, reused rather than restated - the same reuse SiteBundle's
+            // ArticlesSliderType already makes of it - plus the card format of its own. Its own help text is not reused though: a slider's ratio crops an image, where this one is a floor under the card's box, not a crop (see sass/_flip-card.scss)
             ->add('ratio', ChoiceType::class, [
                 'label' => 'label.ratio',
                 'help' => 'label.flip_card_ratio_help',
-                'choices' => SliderType::RATIO_CHOICES,
+                'choices' => self::RATIO_CHOICES,
             ])
             // Both faces at once, being the two sides of one object: the corner and the lift are what makes it that object, and a turn changing either would read as a swap rather than as a rotation
             ->add('size', BlockCardSizeChoiceType::class)

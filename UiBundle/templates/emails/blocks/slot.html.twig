@@ -1,0 +1,9 @@
+{# Renders one named fragment the sending code computed - the order's lines, its delivery address, its download links. Named by the block's "label" and handed over in the "slots" variable of EmailTemplateRenderer::render(); renders nothing when that fragment is empty, which is what keeps an order carrying no gift card from showing an empty row #}
+{# Written out raw, and the only block that is: this html comes from a bundle's own Twig, never from anything an admin typed - see EmailTemplateRenderer::blockContext(), which keeps it away from substitute() and from contentToHtml() #}
+{% if slot is not empty %}
+    <tr>
+        <td class="text-left" style="padding:0 24px 16px;">
+            {{ slot|raw }}
+        </td>
+    </tr>
+{% endif %}

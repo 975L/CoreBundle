@@ -27,9 +27,10 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 
 - **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
 - **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails) · [upload progress](#showing-the-progress-of-a-form-that-posts-files)
+- **Page shell** — [the page layout](#the-page-layout)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [no inline styles](#no-inline-styles) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
-- **Visitors** — [ratings](#visitor-ratings) · [wishlist](#wishlist)
+- **Visitors** — [ratings](#visitor-ratings) · [reviews](#visitor-reviews) · [wishlist](#wishlist)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections) · [confirming a title change that rewrites a slug](#confirming-a-title-change-that-rewrites-a-slug)
 - **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [deleting an entity in two steps](#deleting-an-entity-in-two-steps) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
@@ -47,7 +48,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Watermarking on upload for entities that opt in, the dark or light signature picked on the luminance of the very corner it lands in
 - Admin-editable theme (colors, fonts, light/dark mode) compiled to CSS custom properties, and inlinable into emails
 - GDPR cookie banner (`vanilla-cookieconsent` v3, self-hosted), carrying its own enabled/disabled guard
-- A minimal page layout with the theme, the site graphics, the share tags and the banner, for an app running without SiteBundle
+- The page shell every c975L site renders through, and the single source for the `<head>` - SiteBundle's own layout extends it rather than restating it, so a site gains or loses SiteBundle without touching a template
 - Media Library in EasyAdmin: browse every `Media` regardless of how it's attached, and see where it's used
 - AJAX kind-switcher in EasyAdmin, saving in one go and carrying over what the fields both kinds share already held
 - Text kinds, the `card` and the `cta_band` carry a free **Site CSS classes** field, so a site's own theme classes reach a block the bundle knows nothing about (filtered at render, opt-in per kind)
@@ -56,9 +57,10 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Automatic CSS injection: bundles declare their stylesheets via a service tag, rendered by `bundle_stylesheets()` in Twig
 - Reusable drag-and-drop sortable scripts for any EasyAdmin `CollectionField` and for the rows of any EasyAdmin index, plus the touch-capable drag gesture behind them (`assets/js/pointer-sort.js`) on its own, for a bundle sorting something that is neither
 - Font-family provider contract (`FontProviderInterface`/`FontRegistry`) plus a generic `FontChoiceType` select, reused by ConfigBundle's font-kind config fields
-- Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private downloads (`PrivateFileResponseFactory`)
+- Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private files (`PrivateFileResponseFactory`), downloaded as an attachment or drawn inline in the page behind a paywall
 - Shared plumbing every satellite bundle needs without needing SiteBundle: unique slugs, block edit URLs, sortable row attributes, generated-stylesheet writing, Vich upload options, block cache invalidation, block export/import
 - Visitor ratings for anything at all - a book, a photo, an article - one widget, one table, no mapping on the rated entity, and a scale of 1 turning the whole thing into a "like"
+- Visitor reviews on those same terms - a written opinion held back until it is read, a score feeding the very average the stars feed, a "verified" badge a bundle has to vouch for, and the reviews a platform exports sitting beside them
 - A wishlist for anything at all, on the same terms: one heart, one table, no mapping on the entity put aside, and a list started anonymously that follows the visitor to their account the moment they sign in
 - Generic Twig helpers (`nl2br`, `linkify`, `route_exists`, `template_exists`, `asset_exists`)
 - Layout invariants checked without a browser (`Testing\StylesheetCascade`, shipped for the bundles depending on this one), plus `c975l:ui:layout-audit` for what only a rendered page shows
@@ -142,6 +144,36 @@ Blocks are managed through EasyAdmin at `/management`, provided by `c975l/config
 That's it — `eaSortable`, `block`, and Trix are then available on every `/management` page.
 
 Any `/management` form can also be opened straight on one of its fields by adding a `focusField=<property>` query param to its URL — the `fieldFocus` controller opens that field's own tab, scrolls to it and focuses it, instead of dropping the user at the top of a form holding dozens of fields. SiteBundle's page health check advice links this way, BookBundle's display pages from the pencil hovering each of their sections. A `CollectionField` prints neither name nor id of its own — EasyAdmin renders its label as a `<legend>` — so it is reached through the entries it holds, or through its prototype when it holds none.
+
+---
+
+## The page layout
+
+`@c975LUi/layout.html.twig` is the shell every c975L site renders through, and the single source for the `<head>`. SiteBundle's own layout **extends** it and adds only what having `Page`s, menus and a navbar brings, so nothing in the head is written twice; the scaffolded `templates/layout.html.twig` extends whichever of the two is installed, which is what lets a site gain or lose SiteBundle without a template changing.
+
+**What the template rendering a page sets.** All optional, all read with `is defined`, so a template setting none of them still renders:
+
+| Variable | What it does |
+|---|---|
+| `title` | The `<h1>` the `heading` block prints, and the `<title>`/`og:title`, suffixed with the site name |
+| `headingDisplayed` | `false` keeps the title in the tab and out of the page |
+| `robots` | The `robots` meta. `index, follow` by default, `noindex, follow` on an error page (`status_code >= 400`) - set it yourself on a page not worth finding, as the review form does |
+| `summarySocialNetwork` | The `description` meta and `og:description`, reduced to plain text so a rich-text column can feed it raw without publishing escaped markup |
+| `ogImage` / `ogImageAlt` | The share image and what it shows, when the template knows better than the media library does |
+| `alternates` | `hreflang => absolute url` for the same page in other languages. A group is read as a whole, so every page of it names all of them, itself included |
+| `bodyClass` | A block, not a variable: the class this one page adds to `<body>` |
+
+**What a child layout hands over.** A layout extending this one sets `ogImageMedia`, `headingDisplayed`, `bodyClasses` and `bodyControllers` as top-level `{% set %}`s: Twig compiles the child's body ahead of the parent's, so they are already set when this file reads them - which is how SiteBundle feeds the head from its own entities without this bundle knowing a single one of them.
+
+**The blocks to fill.** `header` and `footer` are empty here, filled by a layout that has a navbar or footer menus. `main` wraps `heading`, `flashes`, `container` (holding `content`) and `share` (holding `navigationBottom`); `container` adds no wrapper of its own, so a layout centring its content on a grid puts one around it. In the head: `meta`, `preconnect`, `fontPreload`, `stylesheets`, `javascripts`/`importmap` and `title`.
+
+`bodyClasses` and `bodyClass` land on `<body>` rather than on the content, so a screen laid on its own background - a photo gallery, a reader - paints the navbar and the footer with it too.
+
+**Preconnects** merge the `site-preconnect` list with Matomo's own origin, that one gated on `site-enable-matomo`: a site whose tracking is off never opens a connection to a third party it sends nothing to.
+
+**Flashes** are read only behind `ui_can_hold_flash()`, reading `app.flashes` being what starts a session. A label outside `success`/`info`/`warning`/`danger` is mapped onto its tint (`error` becomes `danger`, `notice` becomes `info`) or falls back on `info`, rather than printing black ink on the dark page's own background, and the message keeps the line breaks it was written with.
+
+**The CSP nonce** is minted for `script-src` and `style-src` in the same breath and printed once as `<meta name="csp-nonce">`: Turbo nonces the inline tags it re-executes with that value *and* its own progress-bar `<style>`, so it has to be carried by both directives. Nonceing `style-src` on every page and not only where an inline `<style>` is rendered is deliberate - a nonce on a directive disables `'unsafe-inline'` for it, so a rule varying page by page would break inline styles on those pages alone.
 
 ---
 
@@ -415,6 +447,10 @@ The controller works from a `<div>` wrapping the form as well as from the form i
 
 ## Built-in block kinds
 
+![UiBundle blocks](../.github/images/UiBlocks.png)
+
+One tile per kind, captured on the showcase at [bundles.975l.com](https://bundles.975l.com/pages/blocks/Ui) - a kind with several variants shows only its first one, and a kind with no example there has no tile. Colors are the showcase's own theme, not what a site with its own theme renders.
+
 The bundle ships the following kinds out of the box (see `config/services.yaml` for the exact service definitions):
 
 | Kind | Category | Form type | Template |
@@ -486,7 +522,7 @@ Same box as a `card`, with a second face behind it: a title, an image and a rich
 
 **The card is the control.** Clicking it - anywhere on it - turns it, and the block offers no other gesture. The toggle is a real `<button>` filling the whole face (`position: absolute; inset: 0`), sitting *under* the content at `z-index: 0`; the title and the body are lifted above it and made `pointer-events: none`, so a click on the image, the heading or a paragraph falls straight through to it. What takes the pointer back is what is itself a control - `a`, `button`, `input`, `summary` inside the body - so a verso offering three buttons still offers three buttons, and clicking anywhere around them turns the card back. The alternative, wrapping a face in a `<button>`, is not open: a heading and a rich text are flow content, and a `<button>` holding either is invalid. Being invisible, the toggle carries a focus ring of its own, drawn inside the face.
 
-**Ratio** offers the very list a `slider` does (`SliderType::RATIO_CHOICES`, reused rather than restated - the same reuse `c975L/SiteBundle`'s `ArticlesSliderType` already makes of it), and a ratio here is a **floor under the card's shape, not a crop**: each `.flip-card-ratio-*` class only names its own `--flip-card-ratio`, which an empty cell-mate of the two faces reads to hold the row open. A face holding more than that shape simply grows past it, so a row of cards lines up on one shape without a long content ever being clipped or pushed behind a scrollbar. **Libre** declares no class at all, and the card keeps the height of its tallest face. That is also why `--flip-card-ratio` is not in the scaffolded theme: it is set per variant, like `--card-accent`, and one value in `:root` would give every flip card on the site one shape.
+**Ratio** offers the list a `slider` does (`SliderType::RATIO_CHOICES`, reused rather than restated - the same reuse `c975L/SiteBundle`'s `ArticlesSliderType` already makes of it) plus one shape of its own, **Carte bancaire** (`credit-card`, `856 / 540`): the ID-1 format a bank card and a gift card share, written as its millimetres rather than rounded to `3/2`, which is a whole millimetre out over the width of a card. It lives in `FlipCardType::RATIO_CHOICES` and not in the slider's list, a run of images having no use for it - `c975L/PaymentBundle` renders a gift card with it. A ratio here is a **floor under the card's shape, not a crop**: each `.flip-card-ratio-*` class only names its own `--flip-card-ratio`, which an empty cell-mate of the two faces reads to hold the row open. A face holding more than that shape simply grows past it, so a row of cards lines up on one shape without a long content ever being clipped or pushed behind a scrollbar. **Libre** declares no class at all, and the card keeps the height of its tallest face. That is also why `--flip-card-ratio` is not in the scaffolded theme: it is set per variant, like `--card-accent`, and one value in `:root` would give every flip card on the site one shape.
 
 Hovered, the card sways five degrees to say it can be turned - `rotateY5deg`, the very keyframes `.animation.rotate-y5deg` runs (`sass/_animations.scss`, compiled into `animations.css`, which `StylesheetProvider` loads before this sheet). It runs under the pointer only, never on its own, and stays off a card already turned: those keyframes write the whole `transform`, and would drop the back face back to the front at every cycle.
 
@@ -1054,7 +1090,7 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 - **Protection**, shared with every other c975L public form (contact/register/reset): a rotating honeypot + submission-timing check (`Service\FormBotProtection`, merges what used to be separate SiteBundle/ContactFormBundle implementations), site-wide GDPR checkbox and reCAPTCHA v3 (`Service\CaptchaVerifier`/`Form\CaptchaType`, a no-op unless the `recaptcha3-site-key`/`recaptcha3-secret-key` ConfigBundle keys are both filled in - see [reCAPTCHA](#recaptcha)), and a shared rate limiter (`Service\RateLimiterGuard` consuming `limiter.ui_form`, which this bundle prepends itself - `sliding_window`, 5 attempts per 10 minutes - so every public Form is limited with nothing to configure; a site declaring its own `ui_form` in `config/packages/rate_limiter.yaml` still decides, its config being merged over that default). That limiter counts a caller rather than an address (`isAcceptedForIp()`): an IPv4 address is counted whole, an IPv6 one by its /64, the block a subscriber holds otherwise opening as many fresh buckets as it holds addresses. Every `email`-typed field also gets a live MX/A DNS check (`Validator\Constraints\DnsEmail`) on top of format/`Assert\Email` validation, and every required `checkbox`-typed field uses `IsTrue` (an unchecked box isn't `NotBlank`).
 - **`Form::$links`** (`Form\FormLinkType`, its own label/url collection on `FormCrudController`) are the links shown right under a form's submit button - typically the way out of a dead end (register's "already have an account, sign in", a reset-password form's way back). They live on the `Form` itself, inside `actionConfig` rather than in a column of their own, so they follow it everywhere it's rendered: through the `form` block, through the bare route, and through the standalone re-render a failed submission goes through.
 - **`Service\FormPrefillHelper`** lets app code pre-fill (and lock) a `Form`'s field(s) from session right before redirecting a visitor to it (e.g. a listing page's "Contact us about this" link setting the `subject` field) - no query string needed, cleared automatically once the submission succeeds.
-- **`Service\FormSeeder`** is how a bundle gets its own `Form`/`EmailTemplate` rows in place out of the box: `ensureForm(name, coreFieldsByLocale, action, actionConfig, linksByLocale)` and `ensureEmailTemplate(name, blocksByLocale)`, both idempotent, both seeding `restricted` rows. A `Form` seeded by an earlier version is backfilled in place rather than left stale, and a field's `url` - like the form's own `links` - is only ever written while it's still unset, so an admin's edit is never overwritten. Neither method flushes - the caller decides when, so a batch of seeds stays one transaction.
+- **`Service\FormSeeder`** is how a bundle gets its own `Form`/`EmailTemplate` rows in place out of the box: `ensureForm(name, coreFieldsByLocale, action, actionConfig, linksByLocale)` and `ensureEmailTemplate(name, blocksByLocale)`, both idempotent, both seeding `restricted` rows. A `Form` seeded by an earlier version is backfilled in place rather than left stale, and a field's `url` - like the form's own `links` - is only ever written while it's still unset, so an admin's edit is never overwritten. `ensureEmailTemplate()` backfills the same way and returns how many data blocks it added (see "A declaration that grows after the sites were built"). Neither method flushes - the caller decides when, so a batch of seeds stays one transaction.
 - **`Contract\FormPageUrlProviderInterface`**/**`Registry\FormPageUrlRegistry`** and the **`form_url(name)`** Twig function answer where a named `Form` is actually reachable on the front end. A bundle displaying that form on something richer than this bundle's bare `ui_form_submit` route contributes its URL (SiteBundle answers with the `Page` carrying the matching `form` block, an admin-editable per-locale slug); the first provider with an answer wins, and with none the bare route is used - so a template linking to a form never has to know which bundles are installed.
 - **Two ConfigBundle keys** drive the shared protections, both under the *form* group: `site-form-delay` (seconds a submission must take at minimum, the timing half of `FormBotProtection`) and `site-form-gdpr` (whether the site-wide consent checkbox is shown). They live here rather than in SiteBundle, this bundle's form layer being what reads them.
 
@@ -1136,6 +1172,24 @@ Only a listing rendered **outside the block cache** should ask for it: the html 
 **Publishing the tally to a search engine.** `Service\RatingSnippetBuilder` returns the schema.org `AggregateRating` node built from that same tally - `build('book', $id)`, or `buildFromAggregate($aggregate)` when the listing already read it. A *fragment*, not a graph: schema.org reads an aggregate rating as a property of the thing rated, so the bundle owning that thing nests the node in its own (see ShopBundle's `ProductSnippetBuilder`), and an owner nobody voted on returns `[]` rather than a zeroed node Google rejects the whole rich result for.
 
 **Cleaning up after a deletion.** `ownerType` is a name and not a relation, so nothing cascades. Whichever service deletes the rated row for good calls `RatingRepository::deleteForOwner('book', $id)` — on the permanent delete only, never when the row is merely trashed: a restored book must find its notes where it left them (see BookBundle's `BookTrashManager`).
+
+---
+
+## Visitor reviews
+
+A visitor writes a few words about something the site presents, and nothing shows until somebody has read it. Same terms as [ratings](#visitor-ratings) above: the thing is **named, not related** - `Entity\Review` carries an `ownerType` string and an `ownerId` - so no bundle maps a collection it never reads. Turned on by the **`ui-enable-reviews`** config, and every visitor-facing query filters on `ReviewStatus::Published`, so nothing else is ever served.
+
+**Leaving one.** `GET|POST /review/{ownerType}/{ownerId}` (`ui_review_new`, `Form\ReviewType`): a name, an e-mail, an optional score, a text, a honeypot, and no account needed. A page of its own rather than a form on the reviewed page, which is served from a shared cache no session may travel with. The `ui_review` rate limiter allows three an hour per caller.
+
+**Moderating.** `Controller\Management\ReviewCrudController` publishes, rejects and deletes a review written on the site, and only ever answers an imported one. `ReviewStatus` is `Pending`, `Published` or `Rejected` - a submission is held back, an import is born published.
+
+**The score.** A review is scored out of `Review::SCALE` (5), whatever `ui-rating-scale` says for the ratings widget. Publishing a scored review records it in `Rating` under a key derived from the author's e-mail, so it counts in the very average the clicked stars feed; rejecting it takes it back out (`ReviewService::syncRating()`).
+
+**The "verified" badge is earned, never assumed.** Implement `Contract\ReviewVerifierInterface` - `supports(ownerType)`, `hasObtained(ownerType, ownerId, email)`, auto-discovered by interface with no tag - and the bundle that sells, lends or serves that kind of thing answers for it, every other kind staying unverified. `ReviewService::submit()` settles it once, at submission, and never recomputes it: an order archived years later must not un-verify a review. `label.review_form_moderation_notice` states the site's own check, which art. L111-7-2 asks it to.
+
+**Answering an imported review** carries the answer back to the platform it came from: implement `Contract\ReviewReplyPublisherInterface` (`supports(Review)`, `publish(Review)`, same auto-discovery). With no publisher registered, `ReviewService::canReply()` answers `false` on every review rather than the screen meeting a missing service.
+
+**Showing them.** `ui_reviews(ownerType, ownerId, limit)` and `ui_reviews_enabled()` in Twig, plus `<twig:c975LUi:Review:List>` for one thing's own page. For the site-wide "what people say about us" wall, `Service\ReviewCollectionSourceProvider` offers every published review to the generic `collection` block - an editor picks **Avis** as its source, so the reviews need no block kind of their own, and both draws share `collection/ReviewItem.html.twig` so they never drift apart. `Listener\ReviewCacheInvalidationListener` empties the `ui_reviews` cache tag once per flush rather than once per row, so a moderator publishing one and a sync importing five hundred both cost the same single invalidation.
 
 ---
 
@@ -1234,6 +1288,14 @@ A separate, email-safe (table layout, inline CSS, no JS) block-based system for 
 
 - **`resolve_css_variables`** (`Twig\CssVariableExtension`, backed by `Service\CssVariableResolver`) replaces every `var()` and `color-mix()` by the value it resolves to, from the `:root` declarations of the stylesheet it is given. No mail client resolves a custom property, and a CSS inliner copies declarations verbatim into `style=""` attributes - so without it an email reaches Gmail, Outlook and most mobile clients with all its colored declarations dropped. Apply it to the whole `<style>` **before** inlining. `EmailStylesheetTest` fails if an email rule reads a token the stylesheet doesn't declare.
 
+- **One row per language.** `EmailTemplate::$name` is unique **with** its `locale`, not on its own: one e-mail is one name, written once per language the site answers in. `renderNamed(name, variables, locale)` takes the **recipient's** language - not the request's and not the site's, since a reminder goes out from a nightly command and a shipping notice from the shopkeeper's own click - and `EmailTemplateRepository::findForRendering()` tries it, then the site's own, then whichever version exists: a customer who ordered in a language the shop has since stopped writing that e-mail in still gets the e-mail. `FormSeeder::ensureEmailTemplate()` seeds one row per enabled locale, and the site's own language always gets one even when the declaring bundle ships no wording for it - an empty template is one an admin can fill, whereas no template at all is an e-mail that silently never leaves.
+- **`slot` blocks** are the one kind whose content the code supplies rather than the admin: a fragment the sending bundle rendered - an order's lines, its delivery address, its download links - named by the block's `label` and handed over in the `slots` key of `$variables`. It is written out raw, deliberately kept away from `substitute()` and from the escaping every other block goes through, which is safe **only** because that markup comes from a bundle's own Twig and never from anything typed in the back-office. A slot holding nothing renders nothing at all, so an order carrying no gift card shows no empty row where one would have been. `c975l/payment-bundle` composes its six order e-mails this way.
+- **Declaring an email** rather than seeding it on the spot: implement `Contract\EmailTemplateProviderInterface::getEmailTemplates(): array` (auto-discovered, no tag) and return `name => locale => blocks`. One declaration, four readers - **`c975l:ui:email-templates:ensure`** seeds what a site is missing and touches nothing else (safe on every deployment, **put it in your `deploy.yml`**: it is the only thing that reaches a site built before your bundle gained that e-mail), **`EmailTemplateRenderer::renderNamed()`** renders the declaration itself when the site has no row for it, **`Management\EmailTemplateHealthCheckProvider`** reports on the dashboard the e-mails whose wording no admin can edit yet and the ones that would go out empty, and anything else that needs to know which e-mails a site is supposed to be able to send reads the same registry. A bundle that seeded its templates from inside its own installer is invisible to the other three, which is how a site ends up silently unable to send a password reset.
+- **Data blocks move, they are never deleted.** `slot` and `fields_table` are the two kinds the code fills in, and they are what an e-mail is *for*: an order confirmation without the order's lines confirms nothing, a contact notification without the submitted fields says only that somebody wrote. On a **restricted** template - one a bundle declared and `ensure` seeded - `EmailTemplateCrudController` puts back any data block a submission dropped, and `EmailBlockType` locks a saved one's kind and slot name (retyping a `slot` into a `text` is a deletion by another road). Reordering, and every sentence around them, stay the admin's. An admin's *own* template is theirs entirely - the same line the locked name and the hidden delete action already draw. The button is taken out of the page by `email-data-block.js`, but the page is only the courtesy: the guarantee is server-side, a row removed in the browser reaching the server as nothing more than an absence.
+- **A declaration that grows after the sites were built.** `ensure` used to only ever create a template that was missing, so a block added to an e-mail reached the sites created after it and no others. It now **backfills the data blocks a template never had**, appended at its end - the order of a composed template being the admin's, there is no telling where a new block belongs among blocks they have moved around. `EmailTemplate::$seededBlocks` records what each template has been offered, which is the whole difference between one that never received a block and one whose admin took it out: without it, a backfill would put back on every deployment what somebody removed on purpose. Wording is never backfilled - a sentence is the admin's to write and has no identity to match on. The command says how many blocks it added, a block appearing in an e-mail a site already sends being something its admin should read there rather than discover.
+- **Upgrading a site that already had templates** needs nothing by hand. The `locale` column arrives through a generated migration, which carries the ALTER and no row update - `doctrine:migrations:diff` compares schemas, not data - so every existing template lands with an empty locale. `c975l:ui:email-templates:ensure` adopts those rows into the site's own language before it seeds anything, which is what keeps it from writing a second `password_reset` beside the admin's own. Run it after the migration (it already sits in `deploy.yml`, right after `c975l:config:load-all`).
+- **Do not ship a Twig body beside a declared e-mail.** It reads like a safety net and is really a second copy of the same sentences: `c975l/payment-bundle` shipped both for one release and they had already drifted. `renderNamed()` falling back on the declaration gives the same protection - a row deleted in the back-office still sends - from the single source the row was seeded from. Keep a Twig body only for what no provider declares, the way `SendEmailFormAction` does for an admin-built Form.
+- **Where the default wording lives.** Put the sentences in your translation catalogue and have the provider read them (`PaymentEmailTemplateProvider` is the worked example), rather than writing them into the PHP: the same string then serves the seeded row, the fallback render and any language a translator adds later. Map catalogue parameters onto block placeholders as you go - `trans('label.x', ['%days%' => '{{ days }}'], ...)` - the two syntaxes having to meet somewhere, and `{{ days }}` being the one the back-office editor documents. Declare the locales your catalogues actually cover: iterating `kernel.enabled_locales` and calling `trans()` blindly seeds a Spanish row full of English, the translator answering every locale by falling back.
 - **`SendEmailFormAction`** resolves the email body from `Form::$actionConfig`'s `template` (a Twig path, e.g. one that itself calls `email_template_body()` - see above, the default `send_email` config), falling back to the legacy `@c975LUi/emails/form_submission.html.twig` when unset. An `emailTemplate` key, naming an `EmailTemplate` directly, is also available and takes over instead when set and found (rendered standalone via `render()`, no layout) - handy for a Form built purely through the admin in an app with no dedicated Twig template of its own to point `template` at.
 
 ---
@@ -2078,6 +2140,109 @@ prevent — hence a parameter the app opts into, not a prepended config.
 
 ---
 
+## Generating PDFs
+
+`Contract\PdfGeneratorInterface` turns a Twig template - or markup already rendered - into the bytes of a PDF, so
+a page a site publishes can also be handed over as a file. `c975l/payment-bundle` prints a gift card with it and
+`c975l/shop-bundle` its terms of sales, which is what the law calls a durable medium.
+
+```php
+$pdf = $this->pdfGenerator->render('@c975LShop/shop/terms_of_sales_pdf.html.twig', ['issuedOn' => new \DateTime()]);
+$pdf = $this->pdfGenerator->render('@app/card.html.twig', ['card' => $card], ['paper' => [85.6, 54]]);
+```
+
+`options` takes `paper` (a named size, or `[width, height]` **in millimetres** for a document that is an object
+rather than a page - a card, a ticket, a label), `orientation`, and `basePath` (the directory a relative image path
+is resolved against, `public/` by default).
+
+### Two engines, and one setting that picks
+
+**The engine is a question about the server, not about this bundle**, so two ship and a setting decides:
+
+| Engine | Needs | Draws |
+| --- | --- | --- |
+| `Service\DompdfGenerator` | nothing - pure PHP, `dompdf/dompdf` is a `require` | CSS 2.1: no flexbox, no grid, no custom properties |
+| `Service\WeasyPrintGenerator` | the `weasyprint` command on the server | modern CSS, `@page`, real typography |
+
+**`ui-pdf-engine`** takes `auto` (the default), `dompdf` or `weasyprint`:
+
+- **`auto`** asks the binary, not the configuration: WeasyPrint where it answers, Dompdf everywhere else. One
+  codebase deployed across a fleet then renders as well as each server allows, **with nothing to wire site by
+  site** - which is the whole reason the setting exists.
+- **`dompdf`** pins the engine this bundle ships, so every environment draws the same document, a developer's
+  laptop included.
+- **`weasyprint`** pins the other with no fallback: a server that loses the binary says so loudly rather than
+  quietly going back to an engine the document was never proofread against.
+
+**`ui-pdf-weasyprint-path`** is empty when `weasyprint` is found as it stands; on managed hosting it commonly
+lives in a Python environment of its own, and its full path goes here. `Management\PdfEngineHealthCheckProvider`
+prints which engine a site actually landed on, and turns red only on the one case worth it - `weasyprint` pinned
+where the binary does not answer.
+
+Nothing shipping `WeasyPrintGenerator` costs anybody anything: it shells out to a binary through
+`symfony/process`, exactly as the PDF thumbnails below shell out to Ghostscript. **No Composer dependency, and a
+site without the binary never reaches the class.**
+
+### Writing a print template
+
+Write against the **weaker** of the two, always: a template is shipped to sites running either. That means
+absolute positioning, stated lengths, millimetres, and no stylesheet shared with the screen.
+
+Two guards on the default engine, deliberately off and to be left off: it fetches **nothing remote** (a document
+is drawn out of markup an admin typed, and an engine allowed to fetch a url of that markup's choosing is an
+SSRF), and it is penned under `public/` (a template naming `../../.env` reads nothing). **WeasyPrint's command
+line offers neither**, which is the reason the engine that can say no stays the default - a site turning the
+other on is trusting the markup it prints. Print templates in this ecosystem name no remote url.
+
+The page size is an argument to one engine and CSS to the other: pass `paper` and both are handled
+(`WeasyPrintGenerator` writes the `@page { size: … }` rule into the document itself).
+
+### Attaching a document to an email
+
+`Model\EmailAttachment` + `EmailSendRequest::$attachments`:
+
+```php
+new EmailSendRequest(
+    subject: $subject, context: [], template: $template, to: $email,
+    attachments: [new EmailAttachment('conditions-generales-de-vente.pdf', $pdf)],
+);
+```
+
+The bytes and not a path: what is attached is commonly a document drawn for that very message and written nowhere.
+A copy sent to `copyToEmail` carries the same files - it is the same message, sent to a second address. In debug
+mode the preview **names** the attached files and never carries them: the preview lives in the session.
+
+That is the low-level path, for a caller holding the file already. **Which documents a named e-mail carries is an
+admin's answer, not a bundle's**, and it is stored beside the blocks that make up its body:
+
+- Implement **`Contract\EmailAttachmentProviderInterface`** (auto-discovered, no tag - see
+  `Registry\EmailAttachmentRegistry` / `DependencyInjection\Compiler\EmailAttachmentProviderPass`) and return
+  `kind => how the builder names it` from `getAttachmentKinds()`. The label is a `TranslatableInterface` carrying
+  its own domain, so a document a shop offers is named in that bundle's catalogue and not in this one's. Namespace
+  your kinds (`legal:`, `shop:`) - a kind is stored as it is in the template's row, so it is renamed the way a
+  column is: never in place.
+- `createAttachment(kind, context)` draws it, or returns **null** when there is nothing to attach - a kind another
+  provider owns, an order holding no gift card, an invoice not drawn yet. An e-mail that leaves without one of its
+  files beats an order that is never confirmed at all, so a provider unable to draw its document says so rather
+  than throwing.
+- The admin ticks them per template, in **Email templates → Attachments** (`EmailTemplate::$attachments`, a JSON
+  column of kinds). Nothing is ticked by default: whether an order confirmation travels with the terms of sale is a
+  shopkeeper's decision about their own shop.
+- The sender asks **`EmailTemplateRenderer::attachmentsFor(name, context, locale)`** and passes the result to
+  `EmailSendRequest::$attachments`. `c975l/payment-bundle`'s `BasketEmailFactory` is the worked example: it hands
+  over the order and the language it was placed in, and every basket e-mail gains the feature at once.
+- Read off the site's own row only. An e-mail falling back on the wording a bundle declares (a row deleted in the
+  back-office, see `renderNamed()`) goes out on its own until `c975l:ui:email-templates:ensure` seeds the row again.
+
+**`Service\LegalDocumentAttachmentProvider`** ships one such provider: every model of `LegalModelCatalog`, as
+`legal:france/terms-of-sales` and so on, drawn through `Service\LegalDocument` - so the file a customer keeps and
+the page they can go back to are the same document, and the PDF is redrawn the moment its text changes. The file is
+named in the recipient's language (`conditions-generales-de-vente.pdf`, not `france-terms-of-sales.pdf`).
+
+Why attach rather than link, where the law asks for a **durable medium**: a link points at a page that can be
+rewritten afterwards, which is exactly what the requirement excludes (art. L221-13 of the Code de la consommation,
+and CJEU C-49/11 on the hyperlink). A file in the customer's mailbox is one.
+
 ## PDF thumbnails
 
 When a `.pdf` file is uploaded through VichUploader on **any entity** (no interface required), the bundle automatically generates a `.webp` thumbnail of the first page next to it (`document.pdf` → `document.webp` - the extension is replaced, not appended), via Ghostscript + Imagine/GD.
@@ -2105,6 +2270,8 @@ Implement `Contract\VichMediaNamableInterface::getVichMediaPath(): string` on th
 - `Listener\MediaFileRemoveListener` deletes the underlying file from `public/` whenever such an entity is removed - a generic `preRemove` Doctrine listener, auto-registered, that needs no per-entity listener of your own.
 
 For a **private** download (e.g. a paid file in a shop) instead of a public one, also implement `Contract\VichPrivateFileInterface` (see [PDF thumbnails](#pdf-thumbnails) above) and use `Service\PrivateFileResponseFactory::createDownloadResponse(string $absoluteFilePath, string $downloadFilename): ?BinaryFileResponse` from your own controller to build the attachment response (`null` if the file is missing) - it only builds the response, access control (checking the current user actually purchased/owns the file) stays your controller's job.
+
+For a private file the visitor is meant to **look at in the page** rather than save - a paywalled photo, video or PDF - use `createInlineResponse(string $absoluteFilePath, ?string $filename = null): ?BinaryFileResponse` from the same service. It sets an inline disposition (the file's own name when none is given), marks the response `private` so no shared cache keeps a copy of what one visitor paid for, adds `X-Content-Type-Options: nosniff`, and leaves `BinaryFileResponse` free to answer `Range` requests - without those a video plays from its start and cannot be moved through. Access control stays your controller's job here too: PaymentBundle's `BasketRepository::hasPaidFor()` answers "has this buyer paid for this item" if that is what gates it.
 
 ### Three sizes of one image
 

@@ -48,6 +48,20 @@ class RedirectCrudController extends AbstractCrudController
         return Redirect::class;
     }
 
+    // The path arrives prefilled when the admin comes from the broken-links screen (see NotFoundCrudController), where it was already established that this very url is being asked for and answers nothing - retyping it is the one way left to get it wrong
+    #[\Override]
+    public function createEntity(string $entityFqcn): Redirect
+    {
+        $redirect = new Redirect();
+
+        $fromPath = $this->getContext()?->getRequest()->query->get('fromPath');
+        if (\is_string($fromPath) && '' !== $fromPath) {
+            $redirect->setFromPath($fromPath);
+        }
+
+        return $redirect;
+    }
+
     #[\Override]
     public function configureFields(string $pageName): iterable
     {

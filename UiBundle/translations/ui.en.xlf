@@ -18,6 +18,10 @@
                 <source>action.font_bulk_import</source>
                 <target>Bulk import</target>
             </trans-unit>
+            <trans-unit id="6AhEKNM">
+                <source>description.email_attachments</source>
+                <target>Documents travelling with this email. A legal document is attached as the site publishes it, the PDF being redrawn as soon as its text changes.</target>
+            </trans-unit>
             <trans-unit id="FczgMxS">
                 <source>description.guided_project_ui_ai_assistant</source>
                 <target>Set up the rephrasing key, then try it out on the screen's own textarea before ever pressing that button under a real field</target>
@@ -45,6 +49,10 @@
             <trans-unit id="uJW0NPA">
                 <source>description.guided_project_ui_media</source>
                 <target>Give an image its alternative text and its credits in the library where every picture of the site ends up, whatever screen uploaded it</target>
+            </trans-unit>
+            <trans-unit id="m0_DD2W">
+                <source>description.guided_project_ui_review</source>
+                <target>Publish, turn down or answer what your readers wrote — and what the platforms sent back.</target>
             </trans-unit>
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
@@ -77,6 +85,10 @@
             <trans-unit id="yRkVSz0">
                 <source>description.guided_step_ui_ai_assistant_text</source>
                 <target>This textarea belongs to no page of the site: whatever is tried in it is thrown away, which is what makes it the place to find out what the rephrasing gives</target>
+            </trans-unit>
+            <trans-unit id="Sz9PehJ">
+                <source>description.guided_step_ui_email_template_attachments</source>
+                <target>A legal document is attached as the site publishes it, and its PDF is redrawn as soon as the text changes - so an email sent months later still carries the version in force.</target>
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
@@ -205,6 +217,26 @@
             <trans-unit id="Q.J7GM.">
                 <source>description.guided_step_ui_media_pick</source>
                 <target>The thumbnail opens its own form. A site-wide graphic (favicon, logo…) opens the "Site graphics" screen instead, which is where those are edited.</target>
+            </trans-unit>
+            <trans-unit id="RbaTJVU">
+                <source>description.guided_step_ui_review_done</source>
+                <target>The published review shows on the page of the book or product it is about, with its date.</target>
+            </trans-unit>
+            <trans-unit id=".i5Cczl">
+                <source>description.guided_step_ui_review_open</source>
+                <target>Pending reviews come first: none of them shows anywhere on the site until you have read it.</target>
+            </trans-unit>
+            <trans-unit id="HmXaT6b">
+                <source>description.guided_step_ui_review_pick</source>
+                <target>The text, the score and the name are its author's: this screen does not rewrite them.</target>
+            </trans-unit>
+            <trans-unit id="dGJXfNy">
+                <source>description.guided_step_ui_review_reply</source>
+                <target>Your answer shows under the review. For a review from a platform, it is sent back there as soon as you save.</target>
+            </trans-unit>
+            <trans-unit id="bU5qJGO">
+                <source>description.guided_step_ui_review_status</source>
+                <target>"Published" shows it on the page it is about and counts its score into the average; "Rejected" takes it back out. A review from a platform cannot be changed here.</target>
             </trans-unit>
             <trans-unit id="fqjZMNb">
                 <source>description.guided_step_ui_site_graphic_done</source>
@@ -1378,6 +1410,10 @@
                 <source>label.email</source>
                 <target>Email</target>
             </trans-unit>
+            <trans-unit id="l9SGQEP">
+                <source>label.email_attachments</source>
+                <target>Attachments</target>
+            </trans-unit>
             <trans-unit id="2yOsQwt">
                 <source>label.email_block_alt</source>
                 <target>Alt text</target>
@@ -1416,7 +1452,7 @@
             </trans-unit>
             <trans-unit id="ynNAvLE">
                 <source>label.email_block_label_help</source>
-                <target>Used by "Button" blocks</target>
+                <target>Used by "Button" blocks, and by "Computed fragment" ones to name the fragment</target>
             </trans-unit>
             <trans-unit id="1.nnpZV">
                 <source>label.email_block_level</source>
@@ -1445,6 +1481,10 @@
             <trans-unit id="xwVOhi1">
                 <source>label.email_block_type_image</source>
                 <target>Image</target>
+            </trans-unit>
+            <trans-unit id="UlOKaRm">
+                <source>label.email_block_type_slot</source>
+                <target>Computed fragment</target>
             </trans-unit>
             <trans-unit id="PgFPB.F">
                 <source>label.email_block_type_spacer</source>
@@ -1898,6 +1938,10 @@
                 <source>label.guided_project_ui_media</source>
                 <target>Fix what a picture says about itself</target>
             </trans-unit>
+            <trans-unit id="PyQTwnL">
+                <source>label.guided_project_ui_review</source>
+                <target>Moderate the reviews</target>
+            </trans-unit>
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Put the site's own graphics in place</target>
@@ -1929,6 +1973,10 @@
             <trans-unit id="eMrSX2A">
                 <source>label.guided_step_ui_ai_assistant_text</source>
                 <target>Paste a text to rephrase</target>
+            </trans-unit>
+            <trans-unit id="I.z0lt6">
+                <source>label.guided_step_ui_email_template_attachments</source>
+                <target>Attach the documents that travel with it</target>
             </trans-unit>
             <trans-unit id="PB512zY">
                 <source>label.guided_step_ui_email_template_blocks</source>
@@ -2085,6 +2133,30 @@
             <trans-unit id="Sr6aDii">
                 <source>label.guided_step_ui_media_save</source>
                 <target>Save the media</target>
+            </trans-unit>
+            <trans-unit id="DocjKzx">
+                <source>label.guided_step_ui_review_done</source>
+                <target>Done</target>
+            </trans-unit>
+            <trans-unit id="SJgfnWf">
+                <source>label.guided_step_ui_review_open</source>
+                <target>Open the reviews screen</target>
+            </trans-unit>
+            <trans-unit id="aFtF3fT">
+                <source>label.guided_step_ui_review_pick</source>
+                <target>Open one review</target>
+            </trans-unit>
+            <trans-unit id="9hc9GY5">
+                <source>label.guided_step_ui_review_reply</source>
+                <target>Answer publicly</target>
+            </trans-unit>
+            <trans-unit id="955_od_">
+                <source>label.guided_step_ui_review_save</source>
+                <target>Save</target>
+            </trans-unit>
+            <trans-unit id="3LYBAk0">
+                <source>label.guided_step_ui_review_status</source>
+                <target>Decide what becomes of it</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>
@@ -2258,6 +2330,10 @@
                 <source>label.info_media</source>
                 <target>All uploaded media (pages, blocks, site graphics). Edit a media's caption, alt text or credits; site-wide graphics (favicon, logo...) stay read-only here and are managed from Site graphics.</target>
             </trans-unit>
+            <trans-unit id="zkQpL1I">
+                <source>label.info_reviews</source>
+                <target>The reviews left on the site and those imported from a platform. On the first, the status is yours to set and the row can be deleted; on the second, only the public reply is yours.</target>
+            </trans-unit>
             <trans-unit id="MwU6S3V">
                 <source>label.info_site_graphic</source>
                 <target>Site-wide graphics: favicon, Apple Touch icon, default Open Graph image, logo and error images. Each role (except error image) can only be used once; replace the file to update it.</target>
@@ -2390,6 +2466,10 @@
                 <source>label.link_label</source>
                 <target>Link label</target>
             </trans-unit>
+            <trans-unit id="V3mBDm2">
+                <source>label.locale</source>
+                <target>Language</target>
+            </trans-unit>
             <trans-unit id="CicLx_A">
                 <source>label.logo</source>
                 <target>Logo</target>
@@ -2497,6 +2577,14 @@
             <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
                 <target>Confirm password</target>
+            </trans-unit>
+            <trans-unit id="46sA9Gp">
+                <source>label.pdf_engine_summary_available</source>
+                <target>PDFs are drawn by “%engine%”. WeasyPrint answers on this server.</target>
+            </trans-unit>
+            <trans-unit id="O0xPMrb">
+                <source>label.pdf_engine_summary_missing</source>
+                <target>PDFs are drawn by “%engine%”. WeasyPrint does not answer on this server.</target>
             </trans-unit>
             <trans-unit id="KXf3t5l">
                 <source>label.phone</source>
@@ -2626,6 +2714,10 @@
                 <source>label.ratio_9_16</source>
                 <target>9:16 (story)</target>
             </trans-unit>
+            <trans-unit id="_lFPBMx">
+                <source>label.ratio_credit_card</source>
+                <target>Bank card (85.6 x 54 mm)</target>
+            </trans-unit>
             <trans-unit id="PQpF61w">
                 <source>label.ratio_free</source>
                 <target>Free</target>
@@ -2653,6 +2745,118 @@
             <trans-unit id="_iSWIYI">
                 <source>label.restricted</source>
                 <target>Restricted</target>
+            </trans-unit>
+            <trans-unit id="v8wA8im">
+                <source>label.review</source>
+                <target>Review</target>
+            </trans-unit>
+            <trans-unit id="MmMODqe">
+                <source>label.review_author</source>
+                <target>Author</target>
+            </trans-unit>
+            <trans-unit id="CT9ZlZS">
+                <source>label.review_author_email</source>
+                <target>E-mail</target>
+            </trans-unit>
+            <trans-unit id="1cpgR1E">
+                <source>label.review_comment</source>
+                <target>Review</target>
+            </trans-unit>
+            <trans-unit id="FyZPljX">
+                <source>label.review_form_comment</source>
+                <target>Your review</target>
+            </trans-unit>
+            <trans-unit id="JOiqYxH">
+                <source>label.review_form_email</source>
+                <target>Your e-mail</target>
+            </trans-unit>
+            <trans-unit id="m.D_ui7">
+                <source>label.review_form_email_help</source>
+                <target>Never displayed: it is only used to answer you.</target>
+            </trans-unit>
+            <trans-unit id="D.4swnH">
+                <source>label.review_form_intro</source>
+                <target>Your review of "%name%" will be read before it is published.</target>
+            </trans-unit>
+            <trans-unit id="6wAr97D">
+                <source>label.review_form_moderation_notice</source>
+                <target>Reviews are read before being published and displayed with their date. A review is marked "verified" when its e-mail matches a purchase. No review is paid for, and none is removed for being unfavourable.</target>
+            </trans-unit>
+            <trans-unit id="MceC1MW">
+                <source>label.review_form_name</source>
+                <target>Your name</target>
+            </trans-unit>
+            <trans-unit id="b3bJ_Xc">
+                <source>label.review_form_rating</source>
+                <target>Your rating</target>
+            </trans-unit>
+            <trans-unit id="6SRcZW8">
+                <source>label.review_form_rating_none</source>
+                <target>No rating</target>
+            </trans-unit>
+            <trans-unit id="EDbGxsf">
+                <source>label.review_form_submit</source>
+                <target>Send my review</target>
+            </trans-unit>
+            <trans-unit id="pfnCf5f">
+                <source>label.review_form_submit_link</source>
+                <target>Write a review</target>
+            </trans-unit>
+            <trans-unit id="I33eGqu">
+                <source>label.review_form_title</source>
+                <target>Review %name%</target>
+            </trans-unit>
+            <trans-unit id="GKh6AKC">
+                <source>label.review_owner</source>
+                <target>About</target>
+            </trans-unit>
+            <trans-unit id="NYV_onC">
+                <source>label.review_published_at</source>
+                <target>Published on</target>
+            </trans-unit>
+            <trans-unit id="8ZUrZE5">
+                <source>label.review_rating</source>
+                <target>Rating</target>
+            </trans-unit>
+            <trans-unit id="1ej3NQp">
+                <source>label.review_reply</source>
+                <target>Public reply</target>
+            </trans-unit>
+            <trans-unit id="B4BXRXE">
+                <source>label.review_reply_help</source>
+                <target>Published on the platform as soon as it is saved; emptying it removes the reply.</target>
+            </trans-unit>
+            <trans-unit id="QeGrNPM">
+                <source>label.review_source</source>
+                <target>Source</target>
+            </trans-unit>
+            <trans-unit id="Tpqonzi">
+                <source>label.review_status</source>
+                <target>Status</target>
+            </trans-unit>
+            <trans-unit id="b7_zxE0">
+                <source>label.review_status_pending</source>
+                <target>Pending</target>
+            </trans-unit>
+            <trans-unit id="yn8oDfu">
+                <source>label.review_status_published</source>
+                <target>Published</target>
+            </trans-unit>
+            <trans-unit id="d7F8a.k">
+                <source>label.review_status_rejected</source>
+                <target>Rejected</target>
+            </trans-unit>
+            <trans-unit id="dMxRFXX">
+                <source>label.reviews</source>
+                <target>Customer reviews</target>
+            </trans-unit>
+            <trans-unit id="I5Q3dri">
+                <source>label.reviews_collection_source</source>
+                <target>Customer reviews</target>
+            </trans-unit>
+            <trans-unit id="XXk17ET">
+                <source>label.reviews_empty</source>
+                <target>No review yet.</target>
             </trans-unit>
             <trans-unit id="uKaQklK">
                 <source>label.rights_reserved</source>
@@ -3082,6 +3286,26 @@
                 <source>label.width_help</source>
                 <target>Auto-detected on upload, in pixels</target>
             </trans-unit>
+            <trans-unit id="WLPk5w2">
+                <source>review.anonymous_author</source>
+                <target>Anonymous</target>
+            </trans-unit>
+            <trans-unit id="pyMBi7y">
+                <source>review.rating</source>
+                <target>Rating: %rating% out of 5</target>
+            </trans-unit>
+            <trans-unit id="WzaMA3.">
+                <source>review.reply</source>
+                <target>Owner's reply</target>
+            </trans-unit>
+            <trans-unit id="TrZcNxS">
+                <source>review.see_original</source>
+                <target>See the original review</target>
+            </trans-unit>
+            <trans-unit id="PK5gbBx">
+                <source>review.verified</source>
+                <target>Verified review</target>
+            </trans-unit>
             <trans-unit id="2lWOypu">
                 <source>text.cookies_banner</source>
                 <target>This site uses a session cookie required for it to work, and may embed third-party content (videos, etc.) requiring your consent.</target>
@@ -3097,6 +3321,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>You are logged in as %user%,</target>
+            </trans-unit>
+            <trans-unit id="JdqcjEg">
+                <source>text.review_submitted</source>
+                <target>Thank you, your review has been sent. It will be published once read.</target>
             </trans-unit>
             <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>

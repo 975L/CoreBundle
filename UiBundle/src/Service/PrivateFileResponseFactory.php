@@ -26,4 +26,21 @@ class PrivateFileResponseFactory implements PrivateFileResponseFactoryInterface
 
         return $response;
     }
+
+    public function createInlineResponse(string $absoluteFilePath, ?string $filename = null): ?BinaryFileResponse
+    {
+        if (!file_exists($absoluteFilePath)) {
+            return null;
+        }
+
+        // Seeking through a video needs nothing added here: BinaryFileResponse answers Range requests on its own when it prepares itself
+        $response = new BinaryFileResponse($absoluteFilePath);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $filename ?? basename($absoluteFilePath));
+
+        // Private, so no shared cache keeps a copy of what only this visitor paid for, and nosniff, an inline file being read by the browser rather than saved
+        $response->setPrivate();
+        $response->headers->set('X-Content-Type-Options', 'nosniff');
+
+        return $response;
+    }
 }

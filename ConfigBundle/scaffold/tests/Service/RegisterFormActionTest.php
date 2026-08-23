@@ -62,6 +62,25 @@ class RegisterFormActionTest extends TestCase
         $this->assertTrue($action->handle(new Form(), ['email' => 'taken@example.test', 'plainPassword' => 'Str0ng!Password']));
     }
 
+    // A field renamed or deleted in the back-office is a configuration error, and it names itself instead of dying as an "Undefined array key" then a TypeError inside UserRegistrar
+    public function testHandleThrowsWhenAnExpectedFieldIsMissing(): void
+    {
+        $userRegistrar = $this->createMock(UserRegistrar::class);
+        $userRegistrar->expects($this->never())->method('register');
+
+        $action = new RegisterFormAction(
+            $this->createStub(UserRepository::class),
+            $userRegistrar,
+            $this->createConfigService(),
+            $this->createTranslator(),
+        );
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('must keep a field named "plainPassword"');
+
+        $action->handle(new Form(), ['email' => 'new@example.test']);
+    }
+
     public function testHandleRegistersNewUserAndReturnsTrueWhenEmailIsFree(): void
     {
         $userRepository = $this->createStub(UserRepository::class);
@@ -74,7 +93,7 @@ class RegisterFormActionTest extends TestCase
             'app_verify_email',
             'Example - label.confirm_your_email',
             'new@example.test',
-        )->willReturn(true);
+        );
 
         $action = new RegisterFormAction($userRepository, $userRegistrar, $this->createConfigService(), $this->createTranslator());
 

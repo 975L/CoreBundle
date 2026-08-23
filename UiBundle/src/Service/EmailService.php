@@ -99,6 +99,11 @@ class EmailService
         }
         $email->context($request->context);
 
+        // Attached after the body, and to the message rather than to the request: a copy sent elsewhere is a clone of this one, so it carries the same files - it is the same message, sent to a second address
+        foreach ($request->attachments as $attachment) {
+            $email->attach($attachment->content, $attachment->filename, $attachment->contentType);
+        }
+
         if (null !== $request->bcc) {
             $email->bcc(new Address($request->bcc));
         }
@@ -199,13 +204,22 @@ class EmailService
         return null !== $request && $request->hasSession() ? $request->getSession() : null;
     }
 
-    // Inserts a debug banner with the subject and addresses right after <body>, keeping a single valid HTML document
+    // The names of what travels with the message, never its bytes: the preview is rendered into the session, and a document of a few hundred kilobytes stashed there would be carried by every request until the next page reads it
+    private function formatDebugAttachments(TemplatedEmail $email): string
+    {
+        $names = array_map(static fn ($attachment): string => (string) $attachment->getFilename(), $email->getAttachments());
+
+        return [] === $names ? '' : '<br>' . htmlspecialchars(sprintf('Attachments: %s', implode(', ', $names)));
+    }
+
+    // Inserts a debug banner with the subject, the addresses and the attached files right after <body>, keeping a single valid HTML document
     private function wrapDebugEmail(TemplatedEmail $email, string $renderedEmail): string
     {
         $banner = sprintf(
-            '<div style="margin:0;padding:8px 16px;background:#e53e3e;color:#fff;font-family:sans-serif;font-weight:bold;">EMAIL DEBUG (not sent) — %s<br>%s</div>',
+            '<div style="margin:0;padding:8px 16px;background:#e53e3e;color:#fff;font-family:sans-serif;font-weight:bold;">EMAIL DEBUG (not sent) — %s<br>%s%s</div>',
             htmlspecialchars($email->getSubject() ?? ''),
-            $this->formatDebugAddresses($email)
+            $this->formatDebugAddresses($email),
+            $this->formatDebugAttachments($email)
         );
 
         if (1 === preg_match('/<body[^>]*>/i', $renderedEmail)) {

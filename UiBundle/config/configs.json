@@ -39,7 +39,11 @@
         "restricted": false,
         "value": null,
         "kind": "choice",
-        "choices": ["anthropic", "openai", "euria"],
+        "choices": [
+            "anthropic",
+            "openai",
+            "euria"
+        ],
         "group": "ai",
         "severity": null,
         "description": "description.ai_assistant_rephrase_provider"
@@ -260,7 +264,11 @@
         "restricted": false,
         "value": "auto",
         "kind": "choice",
-        "choices": ["auto", "light", "dark"],
+        "choices": [
+            "auto",
+            "light",
+            "dark"
+        ],
         "group": "theme",
         "severity": null,
         "description": "description.theme_mode"
@@ -349,7 +357,12 @@
         "restricted": false,
         "value": "bottom-right",
         "kind": "choice",
-        "choices": ["top-left", "top-right", "bottom-right", "bottom-left"],
+        "choices": [
+            "top-left",
+            "top-right",
+            "bottom-right",
+            "bottom-left"
+        ],
         "group": "general",
         "severity": null,
         "description": "description.watermark_position"
@@ -383,10 +396,26 @@
         "restricted": false,
         "value": "star",
         "kind": "choice",
-        "choices": ["star", "heart", "thumbs-up", "face-smile"],
+        "choices": [
+            "star",
+            "heart",
+            "thumbs-up",
+            "face-smile"
+        ],
         "group": "general",
         "severity": null,
         "description": "description.ui_rating_icon"
+    },
+    {
+        "label": "label.ui_enable_reviews",
+        "slug": "ui-enable-reviews",
+        "sensitive": false,
+        "restricted": false,
+        "value": "false",
+        "kind": "bool",
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_enable_reviews"
     },
     {
         "label": "label.ui_rating_scale",
@@ -395,9 +424,47 @@
         "restricted": false,
         "value": "5",
         "kind": "choice",
-        "choices": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+        "choices": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+        ],
         "group": "general",
         "severity": null,
         "description": "description.ui_rating_scale"
+    },
+    {
+        "label": "label.ui_pdf_engine",
+        "slug": "ui-pdf-engine",
+        "sensitive": false,
+        "restricted": true,
+        "value": "auto",
+        "kind": "choice",
+        "choices": [
+            "auto",
+            "dompdf",
+            "weasyprint"
+        ],
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_pdf_engine"
+    },
+    {
+        "label": "label.ui_pdf_weasyprint_path",
+        "slug": "ui-pdf-weasyprint-path",
+        "sensitive": false,
+        "restricted": true,
+        "value": null,
+        "kind": "text",
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_pdf_weasyprint_path"
     }
 ]

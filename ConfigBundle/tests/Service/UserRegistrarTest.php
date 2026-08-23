@@ -42,11 +42,34 @@ class UserRegistrarTest extends TestCase
         $userCreationNotifier->expects($this->once())->method('notify')->with($user);
 
         $registrar = new UserRegistrar($passwordHasher, $entityManager, $emailVerifier, $userCreationNotifier);
-        $result = $registrar->register($user, 'Str0ngPassword!', 'app_verify_email', 'Confirm your email', 'new-user@example.test');
+        $registrar->register($user, 'Str0ngPassword!', 'app_verify_email', 'Confirm your email', 'new-user@example.test');
 
-        $this->assertTrue($result);
         $this->assertSame('hashed-password', $user->getPassword());
         $this->assertNotNull($user->getCreation());
         $this->assertNotNull($user->getModification());
+    }
+
+    // The account is flushed before the confirmation email is even attempted, so an undelivered one must leave a registered user behind rather than an exception the caller would report as a failure
+    public function testRegisterStillNotifiesWhenConfirmationEmailFails(): void
+    {
+        $user = new UserStub('new-user@example.test');
+
+        $passwordHasher = $this->createStub(UserPasswordHasherInterface::class);
+        $passwordHasher->method('hashPassword')->willReturn('hashed-password');
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('persist')->with($user);
+        $entityManager->expects($this->once())->method('flush');
+
+        $emailVerifier = $this->createMock(EmailVerifier::class);
+        $emailVerifier->expects($this->once())->method('sendEmailConfirmation')->willReturn(false);
+
+        $userCreationNotifier = $this->createMock(UserCreationNotifier::class);
+        $userCreationNotifier->expects($this->once())->method('notify')->with($user);
+
+        $registrar = new UserRegistrar($passwordHasher, $entityManager, $emailVerifier, $userCreationNotifier);
+        $registrar->register($user, 'Str0ngPassword!', 'app_verify_email', 'Confirm your email', 'new-user@example.test');
+
+        $this->assertSame('hashed-password', $user->getPassword());
     }
 }

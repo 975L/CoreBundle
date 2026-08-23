@@ -18,6 +18,10 @@
                 <source>action.font_bulk_import</source>
                 <target>Importación masiva</target>
             </trans-unit>
+            <trans-unit id="6AhEKNM">
+                <source>description.email_attachments</source>
+                <target>Documentos que acompañan a este correo. Un documento legal se adjunta tal como lo publica el sitio, y el PDF se regenera en cuanto cambia su texto.</target>
+            </trans-unit>
             <trans-unit id="FczgMxS">
                 <source>description.guided_project_ui_ai_assistant</source>
                 <target>Configurar la clave de reformulación, y luego probarla en el área de texto de la propia pantalla antes de pulsar ese botón bajo un campo real</target>
@@ -45,6 +49,10 @@
             <trans-unit id="uJW0NPA">
                 <source>description.guided_project_ui_media</source>
                 <target>Dar a una imagen su texto alternativo y sus créditos, en la biblioteca donde acaba toda imagen del sitio, sea cual sea la pantalla que la subió</target>
+            </trans-unit>
+            <trans-unit id="m0_DD2W">
+                <source>description.guided_project_ui_review</source>
+                <target>Publicar, descartar o responder a lo que han escrito sus lectores — y a lo que le han devuelto las plataformas.</target>
             </trans-unit>
             <trans-unit id="GHBZCNG">
                 <source>description.guided_project_ui_site_graphic</source>
@@ -77,6 +85,10 @@
             <trans-unit id="yRkVSz0">
                 <source>description.guided_step_ui_ai_assistant_text</source>
                 <target>Esta área de texto no pertenece a ninguna página del sitio: lo que se prueba en ella se descarta, lo que la convierte en el lugar para descubrir qué da la reformulación</target>
+            </trans-unit>
+            <trans-unit id="Sz9PehJ">
+                <source>description.guided_step_ui_email_template_attachments</source>
+                <target>Un documento legal se adjunta tal como lo publica el sitio, y su PDF se regenera en cuanto cambia el texto: así, un correo enviado meses después sigue llevando la versión vigente.</target>
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
@@ -205,6 +217,26 @@
             <trans-unit id="Q.J7GM.">
                 <source>description.guided_step_ui_media_pick</source>
                 <target>La miniatura abre su propia ficha. Un gráfico global del sitio (favicon, logotipo…) abre en cambio la pantalla «Gráficos del sitio», donde se editan esos.</target>
+            </trans-unit>
+            <trans-unit id="RbaTJVU">
+                <source>description.guided_step_ui_review_done</source>
+                <target>La opinión publicada aparece en la página del libro o del producto correspondiente, con su fecha.</target>
+            </trans-unit>
+            <trans-unit id=".i5Cczl">
+                <source>description.guided_step_ui_review_open</source>
+                <target>Las opiniones pendientes encabezan la lista: ninguna aparece en el sitio mientras no la haya leído.</target>
+            </trans-unit>
+            <trans-unit id="HmXaT6b">
+                <source>description.guided_step_ui_review_pick</source>
+                <target>El texto, la nota y el nombre son de su autor: esta pantalla no los reescribe.</target>
+            </trans-unit>
+            <trans-unit id="dGJXfNy">
+                <source>description.guided_step_ui_review_reply</source>
+                <target>Su respuesta se muestra bajo la opinión. Para una opinión venida de una plataforma, se le devuelve al guardar.</target>
+            </trans-unit>
+            <trans-unit id="bU5qJGO">
+                <source>description.guided_step_ui_review_status</source>
+                <target>«Publicado» la muestra en la página correspondiente y cuenta su nota en la media; «Rechazado» la retira. Una opinión venida de una plataforma no se modifica aquí.</target>
             </trans-unit>
             <trans-unit id="fqjZMNb">
                 <source>description.guided_step_ui_site_graphic_done</source>
@@ -1378,6 +1410,10 @@
                 <source>label.email</source>
                 <target>Correo electrónico</target>
             </trans-unit>
+            <trans-unit id="l9SGQEP">
+                <source>label.email_attachments</source>
+                <target>Archivos adjuntos</target>
+            </trans-unit>
             <trans-unit id="2yOsQwt">
                 <source>label.email_block_alt</source>
                 <target>Texto alternativo</target>
@@ -1416,7 +1452,7 @@
             </trans-unit>
             <trans-unit id="ynNAvLE">
                 <source>label.email_block_label_help</source>
-                <target>Usado por los bloques "Botón"</target>
+                <target>Usado por los bloques «Botón», y por los de «Fragmento calculado» para nombrar el fragmento</target>
             </trans-unit>
             <trans-unit id="1.nnpZV">
                 <source>label.email_block_level</source>
@@ -1445,6 +1481,10 @@
             <trans-unit id="xwVOhi1">
                 <source>label.email_block_type_image</source>
                 <target>Imagen</target>
+            </trans-unit>
+            <trans-unit id="UlOKaRm">
+                <source>label.email_block_type_slot</source>
+                <target>Fragmento calculado</target>
             </trans-unit>
             <trans-unit id="PgFPB.F">
                 <source>label.email_block_type_spacer</source>
@@ -1898,6 +1938,10 @@
                 <source>label.guided_project_ui_media</source>
                 <target>Corregir lo que una imagen dice de sí misma</target>
             </trans-unit>
+            <trans-unit id="PyQTwnL">
+                <source>label.guided_project_ui_review</source>
+                <target>Moderar las opiniones</target>
+            </trans-unit>
             <trans-unit id="42UrnqR">
                 <source>label.guided_project_ui_site_graphic</source>
                 <target>Colocar los gráficos propios del sitio</target>
@@ -1929,6 +1973,10 @@
             <trans-unit id="eMrSX2A">
                 <source>label.guided_step_ui_ai_assistant_text</source>
                 <target>Pegar un texto para reformular</target>
+            </trans-unit>
+            <trans-unit id="I.z0lt6">
+                <source>label.guided_step_ui_email_template_attachments</source>
+                <target>Adjuntar los documentos que van con él</target>
             </trans-unit>
             <trans-unit id="PB512zY">
                 <source>label.guided_step_ui_email_template_blocks</source>
@@ -2085,6 +2133,30 @@
             <trans-unit id="Sr6aDii">
                 <source>label.guided_step_ui_media_save</source>
                 <target>Guardar el medio</target>
+            </trans-unit>
+            <trans-unit id="DocjKzx">
+                <source>label.guided_step_ui_review_done</source>
+                <target>Terminado</target>
+            </trans-unit>
+            <trans-unit id="SJgfnWf">
+                <source>label.guided_step_ui_review_open</source>
+                <target>Abrir la pantalla de opiniones</target>
+            </trans-unit>
+            <trans-unit id="aFtF3fT">
+                <source>label.guided_step_ui_review_pick</source>
+                <target>Abrir una opinión</target>
+            </trans-unit>
+            <trans-unit id="9hc9GY5">
+                <source>label.guided_step_ui_review_reply</source>
+                <target>Responder públicamente</target>
+            </trans-unit>
+            <trans-unit id="955_od_">
+                <source>label.guided_step_ui_review_save</source>
+                <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="3LYBAk0">
+                <source>label.guided_step_ui_review_status</source>
+                <target>Decidir su suerte</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>
@@ -2258,6 +2330,10 @@
                 <source>label.info_media</source>
                 <target>Todos los archivos multimedia subidos (páginas, bloques, gráficos del sitio). Modifique la leyenda, el texto alternativo o los créditos de un archivo; los gráficos globales del sitio (favicon, logo...) permanecen de solo lectura aquí y se gestionan desde Gráficos del sitio.</target>
             </trans-unit>
+            <trans-unit id="zkQpL1I">
+                <source>label.info_reviews</source>
+                <target>Las opiniones dejadas en el sitio y las importadas de una plataforma. En las primeras, el estado es tuyo y la fila se puede eliminar; en las segundas, solo la respuesta pública.</target>
+            </trans-unit>
             <trans-unit id="MwU6S3V">
                 <source>label.info_site_graphic</source>
                 <target>Gráficos globales del sitio: favicon, icono Apple Touch, imagen Open Graph por defecto, logo e imágenes de error. Cada rol (salvo la imagen de error) solo puede usarse una vez; reemplace el archivo para actualizarlo.</target>
@@ -2390,6 +2466,10 @@
                 <source>label.link_label</source>
                 <target>Texto del enlace</target>
             </trans-unit>
+            <trans-unit id="V3mBDm2">
+                <source>label.locale</source>
+                <target>Idioma</target>
+            </trans-unit>
             <trans-unit id="CicLx_A">
                 <source>label.logo</source>
                 <target>Logo</target>
@@ -2497,6 +2577,14 @@
             <trans-unit id="hz5aZk6">
                 <source>label.password_confirm</source>
                 <target>Confirmación de la contraseña</target>
+            </trans-unit>
+            <trans-unit id="46sA9Gp">
+                <source>label.pdf_engine_summary_available</source>
+                <target>Los PDF los dibuja «%engine%». WeasyPrint responde en este servidor.</target>
+            </trans-unit>
+            <trans-unit id="O0xPMrb">
+                <source>label.pdf_engine_summary_missing</source>
+                <target>Los PDF los dibuja «%engine%». WeasyPrint no responde en este servidor.</target>
             </trans-unit>
             <trans-unit id="KXf3t5l">
                 <source>label.phone</source>
@@ -2626,6 +2714,10 @@
                 <source>label.ratio_9_16</source>
                 <target>9:16 (story)</target>
             </trans-unit>
+            <trans-unit id="_lFPBMx">
+                <source>label.ratio_credit_card</source>
+                <target>Tarjeta bancaria (85,6 x 54 mm)</target>
+            </trans-unit>
             <trans-unit id="PQpF61w">
                 <source>label.ratio_free</source>
                 <target>Libre</target>
@@ -2653,6 +2745,118 @@
             <trans-unit id="_iSWIYI">
                 <source>label.restricted</source>
                 <target>Restringido</target>
+            </trans-unit>
+            <trans-unit id="v8wA8im">
+                <source>label.review</source>
+                <target>Opinión</target>
+            </trans-unit>
+            <trans-unit id="MmMODqe">
+                <source>label.review_author</source>
+                <target>Autor</target>
+            </trans-unit>
+            <trans-unit id="CT9ZlZS">
+                <source>label.review_author_email</source>
+                <target>Correo electrónico</target>
+            </trans-unit>
+            <trans-unit id="1cpgR1E">
+                <source>label.review_comment</source>
+                <target>Opinión</target>
+            </trans-unit>
+            <trans-unit id="FyZPljX">
+                <source>label.review_form_comment</source>
+                <target>Su opinión</target>
+            </trans-unit>
+            <trans-unit id="JOiqYxH">
+                <source>label.review_form_email</source>
+                <target>Su correo electrónico</target>
+            </trans-unit>
+            <trans-unit id="m.D_ui7">
+                <source>label.review_form_email_help</source>
+                <target>Nunca se muestra: solo sirve para responderle.</target>
+            </trans-unit>
+            <trans-unit id="D.4swnH">
+                <source>label.review_form_intro</source>
+                <target>Su opinión sobre «%name%» se leerá antes de publicarse.</target>
+            </trans-unit>
+            <trans-unit id="6wAr97D">
+                <source>label.review_form_moderation_notice</source>
+                <target>Las opiniones se leen antes de publicarse y se muestran con su fecha. Una opinión se marca «verificada» cuando su correo corresponde a una compra. Ninguna opinión está remunerada y ninguna se retira por ser desfavorable.</target>
+            </trans-unit>
+            <trans-unit id="MceC1MW">
+                <source>label.review_form_name</source>
+                <target>Su nombre</target>
+            </trans-unit>
+            <trans-unit id="b3bJ_Xc">
+                <source>label.review_form_rating</source>
+                <target>Su nota</target>
+            </trans-unit>
+            <trans-unit id="6SRcZW8">
+                <source>label.review_form_rating_none</source>
+                <target>Sin nota</target>
+            </trans-unit>
+            <trans-unit id="EDbGxsf">
+                <source>label.review_form_submit</source>
+                <target>Enviar mi opinión</target>
+            </trans-unit>
+            <trans-unit id="pfnCf5f">
+                <source>label.review_form_submit_link</source>
+                <target>Dejar mi opinión</target>
+            </trans-unit>
+            <trans-unit id="I33eGqu">
+                <source>label.review_form_title</source>
+                <target>Opinar sobre %name%</target>
+            </trans-unit>
+            <trans-unit id="GKh6AKC">
+                <source>label.review_owner</source>
+                <target>Sobre</target>
+            </trans-unit>
+            <trans-unit id="NYV_onC">
+                <source>label.review_published_at</source>
+                <target>Publicada el</target>
+            </trans-unit>
+            <trans-unit id="8ZUrZE5">
+                <source>label.review_rating</source>
+                <target>Valoración</target>
+            </trans-unit>
+            <trans-unit id="1ej3NQp">
+                <source>label.review_reply</source>
+                <target>Respuesta pública</target>
+            </trans-unit>
+            <trans-unit id="B4BXRXE">
+                <source>label.review_reply_help</source>
+                <target>Se publica en la plataforma al guardar; vaciarla elimina la respuesta.</target>
+            </trans-unit>
+            <trans-unit id="QeGrNPM">
+                <source>label.review_source</source>
+                <target>Fuente</target>
+            </trans-unit>
+            <trans-unit id="Tpqonzi">
+                <source>label.review_status</source>
+                <target>Estado</target>
+            </trans-unit>
+            <trans-unit id="b7_zxE0">
+                <source>label.review_status_pending</source>
+                <target>Pendiente</target>
+            </trans-unit>
+            <trans-unit id="yn8oDfu">
+                <source>label.review_status_published</source>
+                <target>Publicado</target>
+            </trans-unit>
+            <trans-unit id="d7F8a.k">
+                <source>label.review_status_rejected</source>
+                <target>Rechazado</target>
+            </trans-unit>
+            <trans-unit id="dMxRFXX">
+                <source>label.reviews</source>
+                <target>Opiniones de clientes</target>
+            </trans-unit>
+            <trans-unit id="I5Q3dri">
+                <source>label.reviews_collection_source</source>
+                <target>Opiniones de clientes</target>
+            </trans-unit>
+            <trans-unit id="XXk17ET">
+                <source>label.reviews_empty</source>
+                <target>Todavía no hay opiniones.</target>
             </trans-unit>
             <trans-unit id="uKaQklK">
                 <source>label.rights_reserved</source>
@@ -3082,6 +3286,26 @@
                 <source>label.width_help</source>
                 <target>Detectada automáticamente al subir, en píxeles</target>
             </trans-unit>
+            <trans-unit id="WLPk5w2">
+                <source>review.anonymous_author</source>
+                <target>Anónimo</target>
+            </trans-unit>
+            <trans-unit id="pyMBi7y">
+                <source>review.rating</source>
+                <target>Valoración: %rating% sobre 5</target>
+            </trans-unit>
+            <trans-unit id="WzaMA3.">
+                <source>review.reply</source>
+                <target>Respuesta del responsable</target>
+            </trans-unit>
+            <trans-unit id="TrZcNxS">
+                <source>review.see_original</source>
+                <target>Ver la opinión original</target>
+            </trans-unit>
+            <trans-unit id="PK5gbBx">
+                <source>review.verified</source>
+                <target>Opinión verificada</target>
+            </trans-unit>
             <trans-unit id="2lWOypu">
                 <source>text.cookies_banner</source>
                 <target>Este sitio utiliza una cookie de sesión necesaria para su funcionamiento y puede incluir contenido de terceros (vídeos, etc.) que requiere su consentimiento.</target>
@@ -3097,6 +3321,10 @@
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
                 <target>Has iniciado sesión como %user%,</target>
+            </trans-unit>
+            <trans-unit id="JdqcjEg">
+                <source>text.review_submitted</source>
+                <target>Gracias, su opinión se ha enviado. Se publicará tras su lectura.</target>
             </trans-unit>
             <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>

@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-08-23",
+        "description": [
+            {
+                "en": "Your visitors can now sign in with their Google account, without having to invent yet another password: fill the two Google keys in Configuration → Security, and a \"Continue with Google\" button appears on your login page. Leave them empty and nothing changes. The \"Connect Google login\" procedure walks you through getting those keys.",
+                "fr": "Vos visiteurs peuvent désormais se connecter avec leur compte Google, sans avoir à inventer un mot de passe de plus : renseignez les deux clés Google dans Configuration → Sécurité, et un bouton « Continuer avec Google » apparaît sur votre page de connexion. Laissez-les vides et rien ne change. La procédure « Connecter la connexion Google » vous guide pas à pas pour obtenir ces clés.",
+                "es": "Sus visitantes pueden ahora iniciar sesión con su cuenta de Google, sin tener que inventar una contraseña más: rellene las dos claves de Google en Configuración → Seguridad y aparecerá un botón «Continuar con Google» en su página de inicio de sesión. Déjelas vacías y nada cambia. El procedimiento «Conectar el inicio de sesión con Google» le guía paso a paso para obtener esas claves."
+            },
+            {
+                "en": "A link that no longer leads anywhere now says so on your dashboard, instead of being noticed the day someone tells you about it: every address someone reached by following a link and that answers nothing is listed, with the page carrying that link, and one click turns it into a redirect. Only real links are recorded, never the addresses scanners try at random",
+                "fr": "Un lien qui ne mène plus nulle part se signale désormais sur votre tableau de bord, au lieu d'être découvert le jour où quelqu'un vous le dit : chaque adresse atteinte en suivant un lien et qui ne répond plus est listée, avec la page qui porte ce lien, et un clic la transforme en redirection. Seuls les vrais liens sont enregistrés, jamais les adresses tentées au hasard par les robots",
+                "es": "Un enlace que ya no lleva a ninguna parte se indica ahora en su panel, en lugar de descubrirse el día en que alguien se lo dice: cada dirección a la que se llegó siguiendo un enlace y que ya no responde aparece en la lista, junto con la página que contiene ese enlace, y un clic la convierte en una redirección. Solo se registran los enlaces reales, nunca las direcciones que los robots prueban al azar"
+            },
+            {
+                "en": "The \"Made by\" credit of the footer can now read \"Powered by\" instead: a new setting says whether the party you credit built the site or simply provides the system it runs on",
+                "fr": "Le crédit « Réalisé par » du pied de page peut désormais afficher « Propulsé par » : un nouveau réglage indique si celui que vous créditez a réalisé le site ou fournit simplement le système qui le fait fonctionner",
+                "es": "El crédito «Hecho por» del pie de página puede ahora mostrar «Impulsado por»: un nuevo ajuste indica si aquel a quien acredita ha realizado el sitio o simplemente proporciona el sistema que lo hace funcionar"
+            },
+            {
+                "en": "A guided walk now takes you from a broken link to the redirect that answers it: open Guided projects and pick “Turn a broken link into a redirect”. It walks you through the screen step by step, so the job gets done once without you having to work out where each button is.",
+                "fr": "Un parcours guidé vous accompagne désormais du lien mort jusqu'à la redirection qui y répond : ouvrez les Projets guidés et choisissez « Transformer un lien mort en redirection ». Il vous fait traverser l'écran étape par étape, pour faire le travail une fois sans avoir à chercher où se trouve chaque bouton.",
+                "es": "Un recorrido guiado le acompaña ahora desde el enlace roto hasta la redirección que lo resuelve: abra Proyectos guiados y elija «Convertir un enlace roto en una redirección». Le lleva por la pantalla paso a paso, para hacer el trabajo una vez sin tener que averiguar dónde está cada botón."
+            }
+        ]
+    },
+    {
         "date": "2026-08-22",
         "description": [
             {

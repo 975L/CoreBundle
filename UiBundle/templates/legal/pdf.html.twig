@@ -1,0 +1,20 @@
+{# A legal document as a file the reader keeps. Written against the weaker of the two engines: no flexbox, no grid, no custom properties #}
+<html lang="{{ locale }}">
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page { margin: 20mm 18mm; }
+        body { font-family: "DejaVu Sans", sans-serif; font-size: 9.5pt; line-height: 1.45; color: #222; }
+        h1 { font-size: 15pt; margin: 0 0 5mm 0; }
+        h2 { font-size: 11pt; margin: 6mm 0 2mm 0; }
+        h3 { font-size: 10pt; margin: 4mm 0 1.5mm 0; }
+        p, li { margin: 0 0 2mm 0; }
+        ul, ol { margin: 0 0 2mm 6mm; padding: 0; }
+        table { width: 100%; border-collapse: collapse; margin: 0 0 3mm 0; }
+        th, td { border: 0.2mm solid #999; padding: 1.5mm; text-align: left; font-size: 8.5pt; }
+        {# The framed notices the law imposes word for word have to read as the boxes they are #}
+        blockquote { margin: 0 0 3mm 0; padding: 2mm 3mm; border: 0.3mm solid #666; }
+    </style>
+</head>
+<body>{{ html|raw }}</body>
+</html>

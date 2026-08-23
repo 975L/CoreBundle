@@ -134,6 +134,18 @@
                 <source>description.theme_mode</source>
                 <target>Display mode applied site-wide for every visitor</target>
             </trans-unit>
+            <trans-unit id="5gWmNrB">
+                <source>description.ui_enable_reviews</source>
+                <target>Lets visitors submit a review, displays the published ones and the menu moderating them. Leave to false until reviews are expected.</target>
+            </trans-unit>
+            <trans-unit id="z8AyzGD">
+                <source>description.ui_pdf_engine</source>
+                <target>What draws the documents the site hands over as PDFs. “Automatic” uses WeasyPrint wherever it is installed on the server — the rendering is markedly better there — and otherwise falls back on the engine shipped with the bundle, which works everywhere. Pin an engine to have every environment produce exactly the same document.</target>
+            </trans-unit>
+            <trans-unit id="oJCCxE.">
+                <source>description.ui_pdf_weasyprint_path</source>
+                <target>Leave empty if the “weasyprint” command is found as it stands. On shared or managed hosting it is commonly installed in a Python environment of its own: state its full path then, for instance /home/clients/xxx/venv/bin/weasyprint.</target>
+            </trans-unit>
             <trans-unit id="RVA3kky">
                 <source>description.ui_rating_icon</source>
                 <target>The symbol visitors rate with: star, heart, thumb or smile</target>
@@ -289,6 +301,18 @@
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>
                 <target>Block showcase - Url</target>
+            </trans-unit>
+            <trans-unit id="xJvR5pw">
+                <source>label.ui_enable_reviews</source>
+                <target>Enable reviews</target>
+            </trans-unit>
+            <trans-unit id="JOHdv5C">
+                <source>label.ui_pdf_engine</source>
+                <target>PDF engine</target>
+            </trans-unit>
+            <trans-unit id="KQWPYr_">
+                <source>label.ui_pdf_weasyprint_path</source>
+                <target>WeasyPrint command path</target>
             </trans-unit>
             <trans-unit id="H42R_Op">
                 <source>label.ui_rating_icon</source>

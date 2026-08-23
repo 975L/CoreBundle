@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -10,7 +10,7 @@ description: "Use this skill when running, monitoring or backing up a Symfony ap
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Command/`, `src/Entity/Redirect.php`, `src/Entity/UrlMetadata.php`, `src/EventSubscriber/`, `src/Management/`, `src/Scheduler/`, `src/Service/`, `templates/management/`
+`src/Command/`, `src/Entity/Redirect.php`, `src/Entity/NotFound.php`, `src/Entity/UrlMetadata.php`, `src/Repository/NotFoundRepository.php`, `src/Management/NotFoundAlertProvider.php`, `src/EventSubscriber/`, `src/Management/`, `src/Scheduler/`, `src/Service/`, `templates/management/`
 
 **Related skills:** `c975l-config`, `c975l-management`, `c975l-users` in this same bundle.
 
@@ -56,6 +56,32 @@ url that changed needs a redirect whether it was a page's or a product's.
   under `/medias` stay redirectable.
 
 **Never deploy a redirecting route per old url.** A renamed tree is a handful of rows.
+
+## Broken links
+
+`Entity\NotFound` (`site_not_found`) is one row per dead path — `path` (unique), the `referer` that led
+there, whether that referer is `internal` (this very host), a `hits` count and `firstSeen`/`lastSeen`.
+It answers the question the redirects above cannot: **which** url needs one.
+
+- **Only 404s carrying a `Referer` are recorded**, on `GET`, and never on a `410`. That header is what
+  separates a link that broke from the noise a 404 otherwise attracts: a browser following a link always
+  sends one, and the scanners walking `/wp-admin` do not. Monolog is deliberately not this place - its
+  prod handler excludes 404 precisely because the mail would be 99% scanners, and the same noise would
+  drown a table just as well.
+- **Paths the web server answers itself are skipped**, the same `Redirect::STATIC_PATH_PATTERN` the
+  redirects decline: a missing asset is a deployment matter, not a published url anyone can be sent to.
+- **The row is written in plain SQL on the connection**, not through the entity manager: a flush failing
+  inside `kernel.exception` would close it and take the error page down with it. Every failure is
+  swallowed - a site whose migration has not run yet simply takes no note, and a 404 never becomes a 500.
+- **`internal` is taken on trust and only ever believed loosely.** A referer is written by whoever sent
+  the request, scheme included, so anyone can file their own 404s as broken links of yours.
+  `NotFoundAlertProvider` alerts on those alone: an external dead link is a redirect to make when
+  convenient, not something to interrupt anyone with.
+- **`NotFoundCrudController` is read-only but for deleting**, and carries a *Create the redirect* action
+  opening a new `Redirect` on that very path (`RedirectCrudController::createEntity()` prefills
+  `fromPath` from the query). The `config-not-found` guided project walks that whole path.
+- **`c975l:config:not-found-cleanup`** and its weekly `MaintenanceTask` delete what nothing has followed
+  for `site-not-found-retention-days` - 90 by default, `0` keeping everything.
 
 ## Url metadata
 
@@ -145,6 +171,9 @@ walks — it hands each path to the **local** kernel, no HTTP and no host involv
 check and the smoke test which fetch the live site at `site-url`.
 
 ## Do not
+
+- **Do not log broken links through Monolog** — its prod handler excludes 404 on purpose. The
+  `Referer` guard is what keeps the table about links and not about scanners.
 
 - **Do not serve `robots.txt`, `humans.txt`, `llms.txt` or a sitemap from a controller.**
 - **Do not point Search Console at a sub-sitemap** — only at the index.

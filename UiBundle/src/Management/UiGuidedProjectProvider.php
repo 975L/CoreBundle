@@ -19,7 +19,9 @@ use c975L\UiBundle\Controller\Management\FormCrudController;
 use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
+use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
+use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -32,12 +34,13 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         private readonly ConfigServiceInterface $configService,
         // The legal documents screen is a plain controller carrying an #[AdminRoute], not a CRUD one, so its url comes from the router rather than from EasyAdmin's generator
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly ReviewService $reviewService,
     ) {
     }
 
     public function getGuidedProjects(): array
     {
-        return [
+        $projects = [
             $this->mediaProject(),
             $this->siteGraphicProject(),
             $this->legalModelProject(),
@@ -46,6 +49,57 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->formFieldTemplateProject(),
             $this->emailTemplateProject(),
             $this->fontProject(),
+        ];
+
+        // Same gate as the screen it walks to (see MenuProvider): a walk-through of a feature the site neither collects nor shows is one more thing to explain
+        if ($this->reviewService->isEnabled()) {
+            $projects[] = $this->reviewProject();
+        }
+
+        return $projects;
+    }
+
+    // The one screen where a review becomes readable, or does not - a site collecting reviews nobody publishes shows none, and nothing says why
+    private function reviewProject(): array
+    {
+        return [
+            'slug' => 'ui-review',
+            'label' => 'label.guided_project_ui_review',
+            'description' => 'description.guided_project_ui_review',
+            'translation_domain' => 'ui',
+            // Last of this bundle's reserved range, the walk-through being appended after the eight above
+            'order' => 110,
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_review_open',
+                    'description' => 'description.guided_step_ui_review_open',
+                    'url' => $this->indexUrl(ReviewCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_review_pick',
+                    'description' => 'description.guided_step_ui_review_pick',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_review_status',
+                    'description' => 'description.guided_step_ui_review_status',
+                    'highlight' => '#Review_status',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_review_reply',
+                    'description' => 'description.guided_step_ui_review_reply',
+                    'highlight' => '#Review_replyComment',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_review_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_review_done',
+                    'description' => 'description.guided_step_ui_review_done',
+                ],
+            ],
         ];
     }
 
@@ -366,6 +420,12 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_ui_email_template_blocks',
                     'description' => 'description.guided_step_ui_email_template_blocks',
                     'highlight' => '[data-ea-collection-field]',
+                ],
+                [
+                    // An expanded multiple ChoiceField, so Symfony puts the field's own id on the box wrapping the checkboxes rather than on an input. attachmentField() drops it entirely when no bundle offers anything to attach - this one always ships LegalDocumentAttachmentProvider, so the box is there wherever this parcours is
+                    'label' => 'label.guided_step_ui_email_template_attachments',
+                    'description' => 'description.guided_step_ui_email_template_attachments',
+                    'highlight' => '#EmailTemplate_attachments',
                 ],
                 [
                     'label' => 'label.guided_step_ui_email_template_save',

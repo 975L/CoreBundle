@@ -10,13 +10,15 @@
 
 namespace c975L\ConfigBundle\Service;
 
+use c975L\UiBundle\Contract\EmailTemplateProviderInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Service\FormSeeder;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 // The "register" and "reset_password_request" Forms and the two emails they send, seeded here rather than by SiteBundle's DefaultPagesImporter as they used to be: an app running Config+Ui plus a satellite bundle but no site foundation still needs an account to be creatable. Idempotent, so calling it again on an existing site is a no-op
-class UserFormSeeder
+class UserFormSeeder implements EmailTemplateProviderInterface
 {
     // name => [type, label, url], one set per locale - FormSubmissionType renders FormField labels as literal text (translation_domain: false, an admin is expected to type real text, not a key), so these have to be actual words, picked once for kernel.default_locale since Form::$name is unique site-wide. "cgu"'s url points at that locale's own terms-of-use legal page, kept as a plain relative "/pages/{slug}" path (no router involved) since it's only ever read back once by FormSubmissionType - a site without those pages simply shows the label without a link
     private const array REGISTER_CORE_FIELDS = [
@@ -83,48 +85,47 @@ class UserFormSeeder
     ];
 
     // One EmailBlock tuple set per locale, unused positions left null. "{{ signed_url }}"/"{{ expires_at }}" are resolved by EmailVerifier at send time
-    private const array ACCOUNT_VALIDATION_BLOCKS = [
-        'fr' => [
-            [EmailBlock::TYPE_HEADING, 'Confirmez votre adresse email', EmailBlock::LEVEL_H1, null, null, null],
-            [EmailBlock::TYPE_TEXT, null, null, 'Merci de votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email.', null, null],
-            [EmailBlock::TYPE_BUTTON, null, null, null, 'Confirmer mon email', '{{ signed_url }}'],
-            [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
-        ],
-        'en' => [
-            [EmailBlock::TYPE_HEADING, 'Confirm your email address', EmailBlock::LEVEL_H1, null, null, null],
-            [EmailBlock::TYPE_TEXT, null, null, 'Thanks for registering. Click the button below to confirm your email address.', null, null],
-            [EmailBlock::TYPE_BUTTON, null, null, null, 'Confirm my email', '{{ signed_url }}'],
-            [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
-        ],
-        'es' => [
-            [EmailBlock::TYPE_HEADING, 'Confirma tu dirección de email', EmailBlock::LEVEL_H1, null, null, null],
-            [EmailBlock::TYPE_TEXT, null, null, 'Gracias por registrarte. Haz clic en el botón de abajo para confirmar tu dirección de email.', null, null],
-            [EmailBlock::TYPE_BUTTON, null, null, null, 'Confirmar mi email', '{{ signed_url }}'],
-            [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
-        ],
-    ];
+    // The languages this bundle ships a config catalogue for. Listed rather than read from kernel.enabled_locales: the translator answers every locale by falling back on the default one, so iterating the site's languages would seed a Spanish row holding French sentences
+    private const array LOCALES = ['fr', 'en', 'es'];
 
-    // "{{ reset_url }}"/"{{ expires_at }}" are resolved by the scaffolded ResetPasswordRequestFormAction
-    private const array PASSWORD_RESET_BLOCKS = [
-        'fr' => [
-            [EmailBlock::TYPE_HEADING, 'Réinitialisation de votre mot de passe', EmailBlock::LEVEL_H1, null, null, null],
-            [EmailBlock::TYPE_TEXT, null, null, 'Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.', null, null],
-            [EmailBlock::TYPE_BUTTON, null, null, null, 'Réinitialiser mon mot de passe', '{{ reset_url }}'],
-            [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
-        ],
-        'en' => [
-            [EmailBlock::TYPE_HEADING, 'Reset your password', EmailBlock::LEVEL_H1, null, null, null],
-            [EmailBlock::TYPE_TEXT, null, null, 'You requested a password reset. Click the button below to choose a new one.', null, null],
-            [EmailBlock::TYPE_BUTTON, null, null, null, 'Reset my password', '{{ reset_url }}'],
-            [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
-        ],
-        'es' => [
-            [EmailBlock::TYPE_HEADING, 'Restablece tu contraseña', EmailBlock::LEVEL_H1, null, null, null],
-            [EmailBlock::TYPE_TEXT, null, null, 'Has solicitado restablecer tu contraseña. Haz clic en el botón de abajo para elegir una nueva.', null, null],
-            [EmailBlock::TYPE_BUTTON, null, null, null, 'Restablecer mi contraseña', '{{ reset_url }}'],
-            [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
-        ],
-    ];
+    /**
+     * The two e-mails the account flow sends, as blocks an admin composes.
+     *
+     * Only the structure is written here, every sentence being read from the translation catalogue - the one place
+     * this bundle's default wording lives, and what a translator edits for a language it does not ship yet. What an
+     * admin rewrites afterwards is the seeded row, which neither this nor the catalogue ever overwrites.
+     *
+     * "{{ signed_url }}", "{{ reset_url }}" and "{{ expires_at }}" are resolved by EmailVerifier and by the
+     * scaffolded ResetPasswordRequestFormAction; the last one is a whole block of its own, holding a placeholder and
+     * no sentence, so it needs no key.
+     *
+     * @return array<string, array<string, list<array{0: string, 1: ?string, 2: ?string, 3: ?string, 4: ?string, 5: ?string}>>>
+     */
+    private function accountEmailBlocks(): array
+    {
+        $blocks = [];
+        foreach (self::LOCALES as $locale) {
+            $blocks[EmailVerifier::EMAIL_TEMPLATE][$locale] = [
+                [EmailBlock::TYPE_HEADING, $this->trans('label.account_validation_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],
+                [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.account_validation_text', $locale), null, null],
+                [EmailBlock::TYPE_BUTTON, null, null, null, $this->trans('label.account_validation_button', $locale), '{{ signed_url }}'],
+                [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
+            ];
+            $blocks['password_reset'][$locale] = [
+                [EmailBlock::TYPE_HEADING, $this->trans('label.password_reset_heading', $locale), EmailBlock::LEVEL_H1, null, null, null],
+                [EmailBlock::TYPE_TEXT, null, null, $this->trans('label.password_reset_text', $locale), null, null],
+                [EmailBlock::TYPE_BUTTON, null, null, null, $this->trans('label.password_reset_button', $locale), '{{ reset_url }}'],
+                [EmailBlock::TYPE_TEXT, null, null, '{{ expires_at }}', null, null],
+            ];
+        }
+
+        return $blocks;
+    }
+
+    private function trans(string $key, string $locale): string
+    {
+        return $this->translator->trans($key, [], 'config', $locale);
+    }
 
     // The FormActionInterface key the register Form carries, and the only thing telling that Form apart from any other - seeded here, read back by RegistrationStatusProvider to answer whether accounts can still be created at all
     public const string REGISTER_ACTION = 'register';
@@ -132,20 +133,26 @@ class UserFormSeeder
     public function __construct(
         private readonly FormSeeder $formSeeder,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
-    // The whole account-creation flow: the form itself, plus the email its action sends
+    // Declared as well as seeded: the same two definitions are what c975l:ui:email-templates:ensure brings to a site built before they existed, and what the health check reports missing
+    public function getEmailTemplates(): array
+    {
+        return $this->accountEmailBlocks();
+    }
+
     public function ensureRegisterForm(): void
     {
         $this->formSeeder->ensureForm('register', self::REGISTER_CORE_FIELDS, self::REGISTER_ACTION, linksByLocale: self::REGISTER_LINKS);
-        $this->formSeeder->ensureEmailTemplate(EmailVerifier::EMAIL_TEMPLATE, self::ACCOUNT_VALIDATION_BLOCKS);
+        $this->formSeeder->ensureEmailTemplate(EmailVerifier::EMAIL_TEMPLATE, $this->accountEmailBlocks()[EmailVerifier::EMAIL_TEMPLATE]);
     }
 
     public function ensureResetPasswordRequestForm(): void
     {
         $this->formSeeder->ensureForm('reset_password_request', self::RESET_PASSWORD_REQUEST_CORE_FIELDS, 'reset_password_request', linksByLocale: self::RESET_PASSWORD_REQUEST_LINKS);
-        $this->formSeeder->ensureEmailTemplate('password_reset', self::PASSWORD_RESET_BLOCKS);
+        $this->formSeeder->ensureEmailTemplate('password_reset', $this->accountEmailBlocks()['password_reset']);
     }
 
     // Both flows in one go, flushed - what a caller with nothing else to seed wants (see c975l:config:user-create); a caller batching several seeds calls the two methods above and flushes once itself

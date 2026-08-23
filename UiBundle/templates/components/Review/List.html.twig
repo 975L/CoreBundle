@@ -1,0 +1,25 @@
+{# The published reviews of one thing, drawn on that thing's own page by the "reviews" Twig function (see ReviewRuntime) #}
+{# Each review is drawn by the very card the "collection" block uses for the review wall, so the two never drift apart #}
+{% trans_default_domain 'ui' %}
+<section class="reviews">
+    <h2>{{ 'label.reviews'|trans }}</h2>
+
+    {% if reviews is empty %}
+        <p class="text">{{ 'label.reviews_empty'|trans }}</p>
+    {% else %}
+        <div class="reviews-list">
+            {% for review in reviews %}
+                {% include '@c975LUi/collection/ReviewItem.html.twig' with {
+                    title: review.title,
+                    content: review.description,
+                    imageUrl: review.imageUrl,
+                    url: review.url,
+                }|merge(review.data) only %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <p class="text-center">
+        <a href="{{ path('ui_review_new', {ownerType: ownerType, ownerId: ownerId}) }}" class="btn btn-primary">{{ 'label.review_form_submit_link'|trans }}</a>
+    </p>
+</section>

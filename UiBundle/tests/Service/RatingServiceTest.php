@@ -191,6 +191,81 @@ class RatingServiceTest extends TestCase
         return $repository;
     }
 
+    // A review published twice must leave its score where it is, where vote() would read the same value and take it back
+    public function testRecordStoresAScoreWithoutTheToggle(): void
+    {
+        $rating = new Rating()->setOwnerType('book')->setOwnerId(12)->setVoter('abc')->setValue(4);
+
+        $repository = $this->createMock(RatingRepository::class);
+        $repository->method('findOneByVoter')->willReturn($rating);
+
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->never())->method('remove');
+        $manager->expects($this->once())->method('flush');
+
+        $this->service($repository, $manager)->record('book', 12, 4, 'abc');
+
+        $this->assertSame(4, $rating->getValue());
+    }
+
+    public function testRecordInsertsAVoteNobodyCastYet(): void
+    {
+        $repository = $this->createMock(RatingRepository::class);
+        $repository->method('findOneByVoter')->willReturn(null);
+
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->once())->method('persist');
+        $manager->expects($this->once())->method('flush');
+
+        $this->service($repository, $manager)->record('book', 12, 3, 'abc');
+    }
+
+    // The site's own scale bounds what is stored, whoever the caller is
+    public function testRecordClampsTheScoreToTheSiteScale(): void
+    {
+        $repository = $this->createMock(RatingRepository::class);
+        $repository->method('findOneByVoter')->willReturn(null);
+
+        $stored = null;
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->method('persist')->willReturnCallback(function (object $rating) use (&$stored): void {
+            $stored = $rating;
+        });
+
+        $this->service($repository, $manager)->record('book', 12, 99, 'abc');
+
+        $this->assertInstanceOf(Rating::class, $stored);
+        $this->assertSame(5, $stored->getValue());
+    }
+
+    // A review rejected after the fact must not keep weighing on an average nobody can read it under
+    public function testWithdrawRemovesTheScoreThatWasRecorded(): void
+    {
+        $rating = new Rating()->setOwnerType('book')->setOwnerId(12)->setVoter('abc')->setValue(4);
+
+        $repository = $this->createMock(RatingRepository::class);
+        $repository->method('findOneByVoter')->willReturn($rating);
+
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->once())->method('remove')->with($rating);
+        $manager->expects($this->once())->method('flush');
+
+        $this->service($repository, $manager)->withdraw('book', 12, 'abc');
+    }
+
+    // Rejecting something that was never published is a no-op rather than a failure - syncRating() calls this on every save
+    public function testWithdrawDoesNothingWhenNoScoreWasRecorded(): void
+    {
+        $repository = $this->createMock(RatingRepository::class);
+        $repository->method('findOneByVoter')->willReturn(null);
+
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->never())->method('remove');
+        $manager->expects($this->never())->method('flush');
+
+        $this->service($repository, $manager)->withdraw('book', 12, 'abc');
+    }
+
     private function service(
         ?RatingRepository $repository = null,
         ?EntityManagerInterface $manager = null,

@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Model\EmailAttachment;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Registry\EmailLayoutRegistry;
 use c975L\UiBundle\Service\EmailService;
@@ -162,6 +163,75 @@ class EmailServiceTest extends TestCase
 
         $this->assertFalse($result);
         $this->assertSame('SMTP connection refused', $service->getLastError());
+    }
+
+    // What the law calls a durable medium travels with the message: a link points at a page that can be rewritten, a file the customer keeps cannot
+    public function testAnAttachmentTravelsWithTheMessage(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer);
+
+        $service->send(new EmailSendRequest(
+            subject: 'Hello',
+            context: [],
+            template: 'emails/test.html.twig',
+            from: 'from@example.com',
+            to: 'to@example.com',
+            attachments: [new EmailAttachment('cgv.pdf', '%PDF-1.7 fake')],
+        ));
+
+        $this->assertCount(1, $mailer->sent);
+        $attachments = $mailer->sent[0]->getAttachments();
+        $this->assertCount(1, $attachments);
+        $this->assertSame('cgv.pdf', $attachments[0]->getFilename());
+        $this->assertSame('%PDF-1.7 fake', $attachments[0]->getBody());
+        $this->assertStringStartsWith('application/pdf', (string) $attachments[0]->getPreparedHeaders()->get('Content-Type')?->getBodyAsString());
+    }
+
+    // The copy is the same message sent to a second address, so it carries the same files - a shop archiving its orders keeps the document it sent
+    public function testTheCopySentElsewhereCarriesTheSameFiles(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService($mailer);
+
+        $service->send(new EmailSendRequest(
+            subject: 'Hello',
+            context: [],
+            template: 'emails/test.html.twig',
+            from: 'from@example.com',
+            to: 'to@example.com',
+            copyToEmail: 'archive@example.com',
+            attachments: [new EmailAttachment('cgv.pdf', '%PDF-1.7 fake')],
+        ));
+
+        $this->assertCount(2, $mailer->sent);
+        $this->assertCount(1, $mailer->sent[1]->getAttachments());
+    }
+
+    // Named and never stashed: the preview is written into the session, and a document of a few hundred kilobytes there would travel with every request until a page reads it
+    public function testTheDebugPreviewNamesTheAttachedFilesWithoutCarryingThem(): void
+    {
+        $mailer = $this->createRecordingMailer();
+        $service = $this->createService(
+            $mailer,
+            ['email-debug' => 'true'],
+            isSuperAdmin: true,
+            renderedHtml: '<html><body><p>Rendered email</p></body></html>',
+        );
+
+        $service->send(new EmailSendRequest(
+            subject: 'Hello',
+            context: [],
+            template: 'emails/test.html.twig',
+            from: 'from@example.com',
+            to: 'to@example.com',
+            attachments: [new EmailAttachment('cgv.pdf', '%PDF-1.7 fake')],
+        ));
+
+        $previews = $service->consumeDebugPreviews();
+        $this->assertCount(1, $previews);
+        $this->assertStringContainsString('Attachments: cgv.pdf', $previews[0]);
+        $this->assertStringNotContainsString('%PDF-1.7 fake', $previews[0]);
     }
 
     public function testSendStashesRenderedHtmlAsDebugPreviewAndDoesNotSendEmailWhenDebugModeEnabledForSuperAdmin(): void

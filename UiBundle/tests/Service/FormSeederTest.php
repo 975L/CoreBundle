@@ -10,11 +10,13 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
+use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Repository\FormRepository;
+use c975L\UiBundle\Service\EmailTemplateFactory;
 use c975L\UiBundle\Service\FormSeeder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -239,13 +241,88 @@ class FormSeederTest extends TestCase
         $this->assertSame([0, 1], array_map(static fn ($block): int => $block->getPosition(), $blocks));
     }
 
-    // Idempotent the same way, and with no backfill: an existing template's blocks stay the admin's
+    // Idempotent the same way: an existing template's wording stays the admin's, a sentence having no identity to match on and never being backfilled - only data blocks are, below
     public function testEnsureEmailTemplateDoesNotSeedTwice(): void
     {
         $seeder = $this->seeder('en', null, new EmailTemplate());
 
         $seeder->ensureEmailTemplate('account_validation', ['en' => [['heading', 'Welcome', 'h1', null, null, null]]]);
 
+        $this->assertSame([], $this->persisted);
+    }
+
+    // A declaration goes on growing after the sites using it were built: without this, a slot added to an e-mail would only ever reach the sites created after it
+    public function testEnsureEmailTemplateGivesAnExistingTemplateADataBlockItNeverHad(): void
+    {
+        $existing = new EmailTemplate()->setName('confirm_order')->setLocale('en')
+            ->addBlock(new EmailBlock()->setType(EmailBlock::TYPE_TEXT)->setContent('Thanks')->setPosition(0))
+            ->addBlock(new EmailBlock()->setType(EmailBlock::TYPE_SLOT)->setLabel('items')->setPosition(1));
+        $seeder = $this->seeder('en', null, $existing);
+
+        $seeder->ensureEmailTemplate('confirm_order', ['en' => [
+            ['text', null, null, 'Thanks', null, null],
+            ['slot', null, null, null, 'items', null],
+            ['slot', null, null, null, 'account_invitation', null],
+        ]]);
+
+        $blocks = $existing->getBlocks()->toArray();
+        $this->assertCount(3, $blocks);
+        // Appended rather than put at its declared position: the order of a composed template is the admin's
+        $this->assertSame('account_invitation', $blocks[2]->getLabel());
+        $this->assertSame(2, $blocks[2]->getPosition());
+        $this->assertSame([$existing], $this->persisted);
+    }
+
+    // The second deployment must not hand it a second copy
+    public function testEnsureEmailTemplateBackfillsADataBlockOnlyOnce(): void
+    {
+        $existing = new EmailTemplate()->setName('confirm_order')->setLocale('en');
+        $seeder = $this->seeder('en', null, $existing);
+
+        $declaration = ['en' => [['slot', null, null, null, 'account_invitation', null]]];
+        $seeder->ensureEmailTemplate('confirm_order', $declaration);
+        $seeder->ensureEmailTemplate('confirm_order', $declaration);
+
+        $this->assertCount(1, $existing->getBlocks());
+        $this->assertSame(['account_invitation'], $existing->getSeededBlocks());
+    }
+
+    // The whole point of remembering what was offered: put back on every deployment what somebody removed on purpose is worse than never offering it
+    public function testEnsureEmailTemplateNeverPutsBackADataBlockAnAdminRemoved(): void
+    {
+        $existing = new EmailTemplate()->setName('confirm_order')->setLocale('en')->setSeededBlocks(['account_invitation']);
+        $seeder = $this->seeder('en', null, $existing);
+
+        $seeder->ensureEmailTemplate('confirm_order', ['en' => [['slot', null, null, null, 'account_invitation', null]]]);
+
+        $this->assertCount(0, $existing->getBlocks());
+    }
+
+    // Seeded before that column existed: what it already holds is recorded on the first run, so removing it afterwards sticks
+    public function testEnsureEmailTemplateRecordsTheDataBlocksATemplateAlreadyHolds(): void
+    {
+        $existing = new EmailTemplate()->setName('confirm_order')->setLocale('en')
+            ->addBlock(new EmailBlock()->setType(EmailBlock::TYPE_SLOT)->setLabel('items')->setPosition(0));
+        $seeder = $this->seeder('en', null, $existing);
+
+        $seeder->ensureEmailTemplate('confirm_order', ['en' => [['slot', null, null, null, 'items', null]]]);
+
+        $this->assertCount(1, $existing->getBlocks());
+        $this->assertSame(['items'], $existing->getSeededBlocks());
+    }
+
+    // A sentence is the admin's to write and has no identity to match on: backfilling one would put back wording they deleted, or duplicate wording they rewrote
+    public function testEnsureEmailTemplateNeverBackfillsWording(): void
+    {
+        $existing = new EmailTemplate()->setName('confirm_order')->setLocale('en');
+        $seeder = $this->seeder('en', null, $existing);
+
+        $seeder->ensureEmailTemplate('confirm_order', ['en' => [
+            ['text', null, null, 'A sentence this template does not carry', null, null],
+            ['heading', 'A heading either', 'h1', null, null, null],
+        ]]);
+
+        $this->assertCount(0, $existing->getBlocks());
         $this->assertSame([], $this->persisted);
     }
 
@@ -259,6 +336,7 @@ class FormSeederTest extends TestCase
             $entityManager,
             $this->formRepository(null),
             $this->emailTemplateRepository(null),
+            new EmailTemplateFactory(),
             'en'
         );
 
@@ -266,7 +344,63 @@ class FormSeederTest extends TestCase
         $seeder->ensureEmailTemplate('account_validation', ['en' => [['heading', 'Welcome', 'h1', null, null, null]]]);
     }
 
-    private function seeder(string $defaultLocale, ?Form $existingForm = null, ?EmailTemplate $existingEmailTemplate = null): FormSeeder
+    // One e-mail, one row per language it is written in: the person editing the German version edits German text, never a locale column on a French one
+    public function testEnsureEmailTemplateSeedsOneRowPerLanguageItIsWrittenIn(): void
+    {
+        $seeder = $this->seeder('fr', enabledLocales: ['fr', 'en']);
+
+        $seeder->ensureEmailTemplate('account_validation', [
+            'fr' => [['heading', 'Bienvenue', 'h1', null, null, null]],
+            'en' => [['heading', 'Welcome', 'h1', null, null, null]],
+        ]);
+
+        $seeded = array_values(array_filter($this->persisted, static fn (object $e): bool => $e instanceof EmailTemplate));
+        $this->assertCount(2, $seeded);
+        $this->assertSame(['fr', 'en'], array_map(static fn (EmailTemplate $t): ?string => $t->getLocale(), $seeded));
+    }
+
+    // A language the caller wrote nothing in gets nothing rather than somebody else's words - the site's own language being the exception, covered above
+    public function testEnsureEmailTemplateSkipsAnExtraLanguageItShipsNoBlocksFor(): void
+    {
+        $seeder = $this->seeder('fr', enabledLocales: ['fr', 'de']);
+
+        $seeder->ensureEmailTemplate('account_validation', [
+            'fr' => [['heading', 'Bienvenue', 'h1', null, null, null]],
+        ]);
+
+        $emailTemplate = $this->onlyPersisted(EmailTemplate::class);
+        $this->assertSame('fr', $emailTemplate->getLocale());
+    }
+
+    // A row written before e-mails had a language is the site's own row, given that language instead of being left beside a duplicate of itself - c975l:ui:email-templates:ensure does the same for every row at once, and neither has to run before the other
+    public function testEnsureEmailTemplateAdoptsARowWrittenBeforeEmailsHadALanguage(): void
+    {
+        $legacy = new EmailTemplate()->setName('account_validation')->setLocale('');
+        $seeder = $this->seeder('fr', localelessEmailTemplate: $legacy);
+
+        $seeder->ensureEmailTemplate('account_validation', ['fr' => [['heading', 'Bienvenue', 'h1', null, null, null]]]);
+
+        $this->assertSame('fr', $legacy->getLocale());
+        $this->assertSame([], array_filter($this->persisted, static fn (object $e): bool => $e instanceof EmailTemplate));
+    }
+
+    // Only the site's own language adopts it: the row it belonged to was the one e-mail there was, and giving it to a language the site merely answers in would take it from the site's own
+    public function testEnsureEmailTemplateNeverAdoptsARowForAnExtraLanguage(): void
+    {
+        $legacy = new EmailTemplate()->setName('account_validation')->setLocale('');
+        $seeder = $this->seeder('fr', localelessEmailTemplate: $legacy, enabledLocales: ['fr', 'en']);
+
+        $seeder->ensureEmailTemplate('account_validation', [
+            'fr' => [['heading', 'Bienvenue', 'h1', null, null, null]],
+            'en' => [['heading', 'Welcome', 'h1', null, null, null]],
+        ]);
+
+        $this->assertSame('fr', $legacy->getLocale());
+        $emailTemplate = $this->onlyPersisted(EmailTemplate::class);
+        $this->assertSame('en', $emailTemplate->getLocale());
+    }
+
+    private function seeder(string $defaultLocale, ?Form $existingForm = null, ?EmailTemplate $existingEmailTemplate = null, array $enabledLocales = [], ?EmailTemplate $localelessEmailTemplate = null): FormSeeder
     {
         $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('persist')->willReturnCallback(function (object $entity): void {
@@ -276,8 +410,10 @@ class FormSeederTest extends TestCase
         return new FormSeeder(
             $entityManager,
             $this->formRepository($existingForm),
-            $this->emailTemplateRepository($existingEmailTemplate),
-            $defaultLocale
+            $this->emailTemplateRepository($existingEmailTemplate, $localelessEmailTemplate),
+            new EmailTemplateFactory(),
+            $defaultLocale,
+            $enabledLocales
         );
     }
 
@@ -289,10 +425,11 @@ class FormSeederTest extends TestCase
         return $repository;
     }
 
-    private function emailTemplateRepository(?EmailTemplate $existing): EmailTemplateRepository
+    // Answers on the pair it is asked about, the seeder looking a row up by name and locale and, for the site's own language only, by the empty locale rows written before that column existed
+    private function emailTemplateRepository(?EmailTemplate $existing, ?EmailTemplate $localeless = null): EmailTemplateRepository
     {
         $repository = $this->createStub(EmailTemplateRepository::class);
-        $repository->method('findOneBy')->willReturn($existing);
+        $repository->method('findOneBy')->willReturnCallback(static fn (array $criteria): ?EmailTemplate => '' === ($criteria['locale'] ?? null) ? $localeless : $existing);
 
         return $repository;
     }

@@ -78,6 +78,10 @@
                 <source>description.guided_project_config_maintenance</source>
                 <target>Ensayar en frío la maniobra que nadie quiere descubrir el día en que hay que hacerla</target>
             </trans-unit>
+            <trans-unit id="wod7rWu">
+                <source>description.guided_project_config_not_found</source>
+                <target>El sitio anota cada ruta que un visitante pidió sin encontrarla. Esa lista es lo que dice qué enlace, aquí o en otro sitio, sigue apuntando a una página que se ha movido.</target>
+            </trans-unit>
             <trans-unit id="kwjx7gS">
                 <source>description.guided_project_config_settings</source>
                 <target>Encontrar un ajuste, modificarlo y entender qué hace el panel con él</target>
@@ -125,6 +129,30 @@
             <trans-unit id="xVtLKDB">
                 <source>description.guided_step_config_maintenance_open</source>
                 <target>Los accesos directos del panel son acciones inmediatas, sin pantalla intermedia.</target>
+            </trans-unit>
+            <trans-unit id="HKhTHza">
+                <source>description.guided_step_config_not_found_create</source>
+                <target>El botón abre una nueva redirección con la ruta rota ya rellenada.</target>
+            </trans-unit>
+            <trans-unit id="RzywLrh">
+                <source>description.guided_step_config_not_found_done</source>
+                <target>Esa ruta lleva ahora a la página elegida, tanto para un visitante como para un buscador. La fila permanece en la lista mientras algo siga tocándola.</target>
+            </trans-unit>
+            <trans-unit id="luoawAN">
+                <source>description.guided_step_config_not_found_from</source>
+                <target>Nada que escribir: es la que mostró la lista, copiada tal cual.</target>
+            </trans-unit>
+            <trans-unit id="ImyN0zc">
+                <source>description.guided_step_config_not_found_open</source>
+                <target>En la barra lateral, bajo Avanzado. Las filas las escriben las propias peticiones, nunca se añaden a mano.</target>
+            </trans-unit>
+            <trans-unit id="xzmrPZF">
+                <source>description.guided_step_config_not_found_row</source>
+                <target>La ruta visitada más recientemente va primero. Su número de visitas dice cuánto tráfico se pierde, y la columna interna dice si el enlace roto está en las páginas del propio sitio: ese se corrige editando la página, no con una redirección.</target>
+            </trans-unit>
+            <trans-unit id="eyq1i2_">
+                <source>description.guided_step_config_not_found_to</source>
+                <target>La página que lo sustituye. La única decisión que queda.</target>
             </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
@@ -201,6 +229,10 @@
             <trans-unit id="5OjCR2m">
                 <source>description.messenger_failed</source>
                 <target>Mensajes no enviados; los casos menores (lista negra, spam) se purgan tras la retención.</target>
+            </trans-unit>
+            <trans-unit id="ZpY7bgI">
+                <source>description.not_found_alert</source>
+                <target>Estos enlaces están en páginas del propio sitio y ya no llevan a ninguna parte: corrija el enlace en la página que lo contiene o cree una redirección a su nueva dirección.</target>
             </trans-unit>
             <trans-unit id="QEO2q6_">
                 <source>description.site_link</source>
@@ -322,6 +354,26 @@
                 <source>flash.messenger_retry_success</source>
                 <target>Mensaje #%id% enviado correctamente</target>
             </trans-unit>
+            <trans-unit id="U28CY6m">
+                <source>flash.oauth_account_disabled</source>
+                <target>Esta cuenta ha sido desactivada: no se puede completar el inicio de sesión.</target>
+            </trans-unit>
+            <trans-unit id="OJfchXg">
+                <source>flash.oauth_email_not_verified</source>
+                <target>Su proveedor no confirma que esta dirección de email sea suya: no se puede completar el inicio de sesión.</target>
+            </trans-unit>
+            <trans-unit id="rbMPpuf">
+                <source>flash.oauth_login_failed</source>
+                <target>El inicio de sesión no se ha completado. Inténtelo de nuevo.</target>
+            </trans-unit>
+            <trans-unit id="Q7TtjTV">
+                <source>flash.oauth_password_reset</source>
+                <target>Su cuenta nunca se había confirmado: ahora está activada y su antigua contraseña ha sido sustituida. Use «Contraseña olvidada» si desea definir una nueva.</target>
+            </trans-unit>
+            <trans-unit id="JgqGyTm">
+                <source>flash.oauth_registration_closed</source>
+                <target>Este sitio no acepta nuevos registros por el momento.</target>
+            </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
                 <target>Registro de usuarios deshabilitado</target>
@@ -341,6 +393,18 @@
             <trans-unit id="2R4Y3Vo">
                 <source>help.value_theme_color</source>
                 <target>Hexadecimal (#b30000), rgb()/rgba(), hsl()/hsla(), o un nombre CSS (ej. tomato)</target>
+            </trans-unit>
+            <trans-unit id="s0jNbR8">
+                <source>label.account_validation_button</source>
+                <target>Confirmar mi email</target>
+            </trans-unit>
+            <trans-unit id="Y8l5zfM">
+                <source>label.account_validation_heading</source>
+                <target>Confirma tu dirección de email</target>
+            </trans-unit>
+            <trans-unit id="oGL31b7">
+                <source>label.account_validation_text</source>
+                <target>Gracias por registrarte. Haz clic en el botón de abajo para confirmar tu dirección de email.</target>
             </trans-unit>
             <trans-unit id="IDGH76b">
                 <source>label.backup_alert_error</source>
@@ -482,9 +546,17 @@
                 <source>label.content_import_help</source>
                 <target>Sube una exportación (zip) generada por la acción de exportación de un bundle (por ejemplo, una página exportada desde la pantalla Páginas).</target>
             </trans-unit>
+            <trans-unit id="JyVc3aS">
+                <source>label.continue_with</source>
+                <target>Continuar con %provider%</target>
+            </trans-unit>
             <trans-unit id="BOyuRcf">
                 <source>label.create_account</source>
                 <target>Crear una cuenta</target>
+            </trans-unit>
+            <trans-unit id="NtMvjVP">
+                <source>label.create_redirect</source>
+                <target>Crear la redirección</target>
             </trans-unit>
             <trans-unit id="emPIlPf">
                 <source>label.creation</source>
@@ -646,6 +718,10 @@
                 <source>label.guided_project_config_maintenance</source>
                 <target>Poner el sitio en mantenimiento</target>
             </trans-unit>
+            <trans-unit id="qkkr11A">
+                <source>label.guided_project_config_not_found</source>
+                <target>Convertir un enlace roto en una redirección</target>
+            </trans-unit>
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
                 <target>Ajustar la configuración del sitio</target>
@@ -729,6 +805,34 @@
             <trans-unit id="uiJ8s5u">
                 <source>label.guided_step_config_maintenance_open</source>
                 <target>Abrir el panel</target>
+            </trans-unit>
+            <trans-unit id="xFx6uZf">
+                <source>label.guided_step_config_not_found_create</source>
+                <target>Crear la redirección</target>
+            </trans-unit>
+            <trans-unit id="KMbK52l">
+                <source>label.guided_step_config_not_found_done</source>
+                <target>El enlace vuelve a responder</target>
+            </trans-unit>
+            <trans-unit id="f2z41Re">
+                <source>label.guided_step_config_not_found_from</source>
+                <target>La ruta ya está puesta</target>
+            </trans-unit>
+            <trans-unit id="Nkq6Fow">
+                <source>label.guided_step_config_not_found_open</source>
+                <target>Abrir las páginas no encontradas</target>
+            </trans-unit>
+            <trans-unit id="Tt6pK7x">
+                <source>label.guided_step_config_not_found_row</source>
+                <target>Leer la primera fila</target>
+            </trans-unit>
+            <trans-unit id="k91PKkp">
+                <source>label.guided_step_config_not_found_save</source>
+                <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="7lBTKQZ">
+                <source>label.guided_step_config_not_found_to</source>
+                <target>Decir adónde lleva</target>
             </trans-unit>
             <trans-unit id="yK2RVv_">
                 <source>label.guided_step_config_settings_alerts</source>
@@ -1374,6 +1478,10 @@
                 <source>label.hide_sensitive</source>
                 <target>Ocultar datos sensibles</target>
             </trans-unit>
+            <trans-unit id="p4rGI4c">
+                <source>label.info_not_found</source>
+                <target>Lista de enlaces rotos: las URL que ya no existen y a las que alguien llegó siguiendo un enlace. Solo se registran las peticiones procedentes de un enlace, nunca los intentos de intrusión, que no llevan ninguno.</target>
+            </trans-unit>
             <trans-unit id="rszWvKi">
                 <source>label.info_redirect</source>
                 <target>Lista de las redirecciones de URL del sitio. Puede crear, modificar o eliminar una redirección; compruebe bien la URL de origen y de destino, un error puede romper un enlace o provocar un bucle de redirección.</target>
@@ -1590,6 +1698,34 @@
                 <source>label.no_whatsnew</source>
                 <target>Todavía no hay notas de versión</target>
             </trans-unit>
+            <trans-unit id="HeAOf.l">
+                <source>label.not_found_alert</source>
+                <target>%count% enlace(s) roto(s) en páginas del sitio</target>
+            </trans-unit>
+            <trans-unit id="QKR8I05">
+                <source>label.not_found_hits</source>
+                <target>Peticiones</target>
+            </trans-unit>
+            <trans-unit id="J5iGNiy">
+                <source>label.not_found_internal</source>
+                <target>Enlace interno</target>
+            </trans-unit>
+            <trans-unit id="CEWbR07">
+                <source>label.not_found_last_seen</source>
+                <target>Última petición</target>
+            </trans-unit>
+            <trans-unit id="fg0Gjj9">
+                <source>label.not_found_path</source>
+                <target>URL solicitada</target>
+            </trans-unit>
+            <trans-unit id="WaoI6eE">
+                <source>label.not_found_referer</source>
+                <target>Página de origen</target>
+            </trans-unit>
+            <trans-unit id="qdtwz.x">
+                <source>label.not_founds</source>
+                <target>Enlaces rotos</target>
+            </trans-unit>
             <trans-unit id="qm9C7WD">
                 <source>label.onboarding_close</source>
                 <target>Cerrar</target>
@@ -1618,9 +1754,21 @@
                 <source>label.password_confirm</source>
                 <target>Confirmar la contraseña</target>
             </trans-unit>
+            <trans-unit id="zxTbn.n">
+                <source>label.password_reset_button</source>
+                <target>Restablecer mi contraseña</target>
+            </trans-unit>
+            <trans-unit id="DZFms4V">
+                <source>label.password_reset_heading</source>
+                <target>Restablece tu contraseña</target>
+            </trans-unit>
             <trans-unit id="LLkv7Ba">
                 <source>label.password_reset_request</source>
                 <target>Su solicitud de restablecimiento de contraseña</target>
+            </trans-unit>
+            <trans-unit id="D9R27I6">
+                <source>label.password_reset_text</source>
+                <target>Has solicitado restablecer tu contraseña. Haz clic en el botón de abajo para elegir una nueva.</target>
             </trans-unit>
             <trans-unit id="A.D0sBG">
                 <source>label.permanent</source>

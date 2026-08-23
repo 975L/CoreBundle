@@ -1,5 +1,130 @@
 # UPGRADE
 
+## Unreleased
+
+**`site_email_template` gains a `locale` column, and its name is no longer unique on its own.** One e-mail is now
+written once per language the site answers in, so the pair names a row where the name used to (see
+`EmailTemplateRepository::findForRendering()`, which tries the recipient's language, then the site's, then any):
+
+```sql
+ALTER TABLE site_email_template ADD locale VARCHAR(5) NOT NULL DEFAULT '';
+DROP INDEX UNIQ_... ON site_email_template; -- Doctrine's own name for the old unique on "name" alone
+CREATE UNIQUE INDEX UNIQ_email_template_name_locale ON site_email_template (name, locale);
+```
+
+The generated migration writes the index names itself - check the one dropped is the old unique on `name` alone.
+The `DEFAULT` is the same caveat as the two columns below: the table already holds rows, and a new `NOT NULL`
+column without one is refused on them.
+
+**Then run `c975l:ui:email-templates:ensure`.** The migration brings the column and never the rows: every template
+a site already had comes out of it with an empty language, which is not the site's, so nothing would find them
+again. The command gives them the site's own language - it never seeds a duplicate beside them, and neither does
+`c975l:config:user-create`, both going through the same adoption. It is safe on every deployment, and says how
+many templates it adopted.
+
+**`site_email_template` gains a `seeded_blocks` column.** A declaration goes on growing after the sites using it
+were built, and `c975l:ui:email-templates:ensure` could only ever create a template that was missing, never give
+an existing one a block its bundle has since declared - so a block added to an e-mail only reached the sites
+created after it. It now backfills the data blocks (slots, fields tables) a template never had, appended at its
+end, and this column is what keeps that to once each:
+
+```sql
+ALTER TABLE site_email_template ADD seeded_blocks JSON NOT NULL DEFAULT '[]';
+```
+
+Same `DEFAULT` caveat as the `attachments` column below: the table already holds rows, and a new `NOT NULL`
+column without one backfills them with the empty string, which is not valid JSON. Check the generated migration
+says so before running it.
+
+Without that memory a backfill has no way to tell a template that never received a block from one whose admin
+took that block out, and would put it back on every deployment. The first run after the migration records what
+each template already holds, so removing a block afterwards sticks. Wording is never backfilled - a sentence is
+the admin's to write and has no identity to match on.
+
+The command says how many blocks it added, PaymentBundle's own `account_invitation` being the first to travel
+this way.
+
+**`site_email_template` gains an `attachments` column.** Which documents a named e-mail travels with is now an
+admin's answer, stored beside the blocks that make up its body. Generate the migration as usual:
+
+```sql
+ALTER TABLE site_email_template ADD attachments JSON NOT NULL DEFAULT '[]';
+```
+
+The `DEFAULT` matters and `doctrine:migrations:diff` writes it (the column declares it): the table already holds
+rows, and a new `NOT NULL` column without one backfills them with the empty string, which is not valid JSON - the
+same reason the reviews' `status` below carries one. Check the generated migration says so before running it.
+
+Nothing is ticked by default and nothing changes on its own: an order confirmation goes out exactly as before
+until somebody ticks a document on it, in **Email templates → Attachments**. Attaching the terms of sale to a
+shop's order confirmation is worth doing - a link points at a page that can be rewritten, which is not the durable
+medium a distance sale owes its customer (art. L221-13 du Code de la consommation, CJEU C-49/11).
+
+**The reviews moved from SocialBundle to UiBundle.** They used to be two things in two bundles sharing
+ten columns out of eleven: what a platform was asked for, and — from this release — what a visitor
+writes on the site. One `Review` entity now holds both, in the same `site_review` table, `source`
+telling them apart (`'site'` for a submission, the platform's own name for an import).
+
+For a site already importing reviews:
+
+- **The table gains five columns and loosens two.** A generated migration writes them, but `status` is
+  `NOT NULL` with no default, so the existing rows have to be filled in the same statement:
+
+  ```sql
+  ALTER TABLE site_review
+      ADD owner_type VARCHAR(50) DEFAULT NULL,
+      ADD owner_id INT DEFAULT NULL,
+      ADD status VARCHAR(20) NOT NULL DEFAULT 'published',
+      ADD author_email VARCHAR(255) DEFAULT NULL,
+      CHANGE external_id external_id VARCHAR(255) DEFAULT NULL,
+      CHANGE rating rating SMALLINT DEFAULT NULL;
+  CREATE INDEX idx_review_owner ON site_review (owner_type, owner_id);
+  CREATE INDEX idx_review_status ON site_review (status);
+  ```
+
+  `'published'` is the right value for every row already there: they come from a platform that
+  moderated them. Drop the `DEFAULT` afterwards if you would rather every future write said so.
+- **`social-enable-reviews` became `ui-enable-reviews`.** `c975l:config:load-all` adds the new key at
+  `false`; set it to what the old one held, and delete the old row — nothing reads it any more.
+- **`c975L\SocialBundle\Entity\Review` is now `c975L\UiBundle\Entity\Review`**, and so are its
+  repository, its CRUD controller, its collection source provider and its cache listener. The
+  collection source key is `ui.collection.reviews` (was `social.collection.reviews`) and its cache tag
+  `ui_reviews` (was `social_reviews`) — a page whose collection block points at the old key renders
+  empty until it is pointed at the new one.
+- **A platform pushing replies now implements `c975L\UiBundle\Contract\ReviewReplyPublisherInterface`.**
+  SocialBundle's own `ReviewReplyPublisher` already does; a bundle of your own answering another
+  platform has to declare it too, and is then found by interface with no tag.
+- **The item template moved** to `@c975LUi/collection/ReviewItem.html.twig`, and its translation keys
+  from the `social` catalogue to `ui`. An app overriding that template moves its copy to
+  `templates/bundles/c975LUiBundle/collection/`.
+- **The `--review-*` theme tokens** moved from SocialBundle's scaffolded `social.css` to UiBundle's
+  `ui.css`. A site that uncommented one moves the line across; left where it is, it paints nothing.
+
+To show a book's reviews on its page, include `@c975LUi/components/Review/List.html.twig` with the
+`reviews`, `ownerType` and `ownerId` it needs — BookBundle's own display template already does. The
+page it is shown on has to be resolvable by a `FavoriteItemProviderInterface`, which is how the
+submission page names what is being reviewed.
+
+**`@c975LUi/layout.html.twig` is now the only page shell.** SiteBundle's layout extends it instead of
+copying it, so the `<head>` is written once: what the two had drifted apart on is settled here — the
+share image states its `intrinsicWidth`/`intrinsicHeight` (the raw columns accept a css length, which
+Open Graph does not read), the Matomo preconnect is gated on `site-enable-matomo`, `site-preconnect` is
+honoured, and the flash labels are mapped onto the four tinted variants. The layout also grew what only
+the site shell had: the `<h1>`, the `hreflang` alternates and the share band include.
+
+Two renames for an app or a satellite bundle:
+
+- **`{% block title %}` is the `<title>` tag; the `<h1>` is the new `{% block heading %}`.** A template
+  suppressing its heading with `{% block title %}{% endblock %}` empties the browser tab instead —
+  rename it. BookBundle's three display templates were doing exactly that.
+- **A layout extending this one adds to the `<body>` through variables, not markup**: `bodyClasses` for
+  a site-wide class (written before the `bodyClass` block a page fills), `bodyControllers` for a
+  Stimulus controller next to the `password` one this layout declares, `ogImageMedia` to open the share
+  image cascade, `headingDisplayed` to silence the heading.
+
+Matomo and the cookie banner are rendered by this layout, so a site overriding its footer keeps both.
+Nothing to run.
+
 ## To v1.14.1
 
 `email-debug` used to hold an email back into an in-memory stash only `FormController` knew how to read, so an email sent from anywhere else - a message handler, a command, a webhook - was neither shown nor sent, and `send()` still answered `true`. The preview now waits in the session, and the layout shows it on whichever page follows: `EmailService::send()` is the single place the mode is read, whatever dispatched the email.
@@ -996,3 +1121,11 @@ public function reorderBlocks(): void
 ```
 
 **Added `Service\BuildFileWriter`**, replacing SiteBundle's `Listener\Trait\BuildFileWriterTrait` — a trait shared across bundles is only ever analysed against the users living in the same package, so its callers' own `$projectDir` looked write-only to PHPStan. Static and stateless, same behaviour. Its `ArchiveFileTrait` counterpart became `c975L\ConfigBundle\Management\ArchiveFileRegistrar` for the same reason.
+
+**`UserRegistrar::register()` returns `void`.** Its `bool` was `$confirmationSent`, but the account is persisted before the e-mail is even attempted: a confirmation that never left made `handle()` report a failure over an account that existed, and the visitor's next attempt hit the "e-mail already taken" branch, which returns `true` without sending anything - an account nothing could unlock. **Update your `RegisterFormAction`**: call `register()` without using its result, then `return true;` - the account exists, and the visitor can ask for a new verification e-mail.
+
+```php
+$this->userRegistrar->register($user, $plainPassword, 'app_verify_email', $subject, (string) $user->getEmail());
+
+return true;
+```

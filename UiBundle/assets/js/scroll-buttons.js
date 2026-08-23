@@ -48,7 +48,7 @@ export default class extends Controller {
         }
 
         event.preventDefault();
-        // The whole address rather than the hash alone: a relative url resolves against the <base href> every page carries, which would leave the address stripped of its own path
+        // The whole address rather than the hash alone, so the entry pushed carries the path and the query the visitor is on
         history.pushState(null, "", url.href);
         // A listing growing during the scroll moves the target away before it is reached: the infiniteScroll controller pauses on this event, and resumes as soon as the visitor scrolls by themselves
         document.dispatchEvent(new CustomEvent("anchor:scroll"));

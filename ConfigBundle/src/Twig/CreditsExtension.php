@@ -13,7 +13,7 @@ namespace c975L\ConfigBundle\Twig;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Twig\Attribute\AsTwigFunction;
 
-// What the "Made by"/"Hosted by" credits of a footer show - "display-made-by" and "display-hosted-by" are a choice between the four modes below, read through here rather than directly so the legacy value a site upgraded from the bool era still holds is understood in one place
+// What the "Made by"/"Hosted by" credits of a footer show - "display-made-by" and "display-hosted-by" are a choice between the four modes below, and how the "Made by" one is worded, read through here rather than directly so the legacy value a site upgraded from the bool era still holds is understood in one place
 class CreditsExtension
 {
     public const MODE_NONE = 'none';
@@ -27,6 +27,15 @@ class CreditsExtension
         self::MODE_LOGO,
         self::MODE_NAME,
         self::MODE_LOGO_NAME,
+    ];
+
+    public const WORDING_MADE = 'made';
+    public const WORDING_POWERED = 'powered';
+
+    // The same list, in the same order, as the "choices" the "made-by-wording" entry declares in config/configs.json
+    public const WORDINGS = [
+        self::WORDING_MADE,
+        self::WORDING_POWERED,
     ];
 
     public function __construct(
@@ -46,5 +55,12 @@ class CreditsExtension
 
         // Both entries were a "bool" until 10/08/2026, and the value of an existing row is never rewritten by c975l:config:load-all (see ConfigService::syncMetadata) - a site upgraded but not re-configured yet still holds true/false, read as a real bool before that command turns the kind into a choice and as the raw string afterwards. Either way it means the logo, the only thing these credits could show back then
         return $this->configService->getBool($value) ? self::MODE_LOGO : self::MODE_NONE;
+    }
+
+    // The translation key the "Made by" credits label uses, "made-by-wording" telling apart a site built by the credited party ("Made by") from one only running its system ("Powered by")
+    #[AsTwigFunction('made_by_label')]
+    public function getMadeByLabel(): string
+    {
+        return self::WORDING_POWERED === $this->configService->get('made-by-wording') ? 'label.powered_by' : 'label.made_by';
     }
 }

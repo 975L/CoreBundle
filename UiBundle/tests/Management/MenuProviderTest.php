@@ -18,11 +18,20 @@ use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Management\MenuProvider;
+use c975L\UiBundle\Service\ReviewService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuProviderTest extends TestCase
 {
+    private function createReviewService(bool $enabled = true): ReviewService
+    {
+        $reviewService = $this->createStub(ReviewService::class);
+        $reviewService->method('isEnabled')->willReturn($enabled);
+
+        return $reviewService;
+    }
+
     private function createConfigService(?string $showcaseUrl = null): ConfigServiceInterface
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
@@ -49,7 +58,7 @@ class MenuProviderTest extends TestCase
     // Three of the five screens answer an editor: without the key the entry takes the admin default and goes missing from their sidebar, with the tour step that walks to it (see MenuProviderInterface::getMenus())
     public function testTheEditorScreensNameTheirOwnRoleAndTheOthersTakeTheAdminDefault(): void
     {
-        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService())->getMenus();
 
         $this->assertSame('ROLE_EDITOR', $menus['media']['role']);
         $this->assertSame('ROLE_EDITOR', $menus['font']['role']);
@@ -61,7 +70,7 @@ class MenuProviderTest extends TestCase
 
     public function testGetMenuSectionMatchesTheSharedManagementSection(): void
     {
-        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator());
+        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService());
 
         $this->assertSame(['label' => 'label.management', 'translation_domain' => 'site'], $provider->getMenuSection());
     }
@@ -69,9 +78,9 @@ class MenuProviderTest extends TestCase
     // This bundle's own CRUD entries, which SiteBundle used to declare on its behalf - a site without SiteBundle got none of them
     public function testGetMenusReturnsThisBundlesOwnCrudEntries(): void
     {
-        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService())->getMenus();
 
-        $this->assertSame(['media', 'form', 'email_template', 'font', 'site_graphic'], array_keys($menus));
+        $this->assertSame(['media', 'form', 'email_template', 'font', 'site_graphic', 'review'], array_keys($menus));
         $this->assertSame(MediaCrudController::class, $menus['media']['controller']);
         $this->assertSame(FormCrudController::class, $menus['form']['controller']);
         $this->assertSame(EmailTemplateCrudController::class, $menus['email_template']['controller']);
@@ -86,7 +95,7 @@ class MenuProviderTest extends TestCase
     // The media library is a day-to-day screen and stays at the top level; forms, email templates, fonts and the site graphics are set up once, so they belong in MenuBuilder's collapsed "Advanced" submenu
     public function testOnlyTheSetupOnceScreensAreTieredAsAdvanced(): void
     {
-        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService())->getMenus();
 
         $this->assertArrayNotHasKey('tier', $menus['media']);
 
@@ -98,7 +107,7 @@ class MenuProviderTest extends TestCase
     // Every entry's 'description' reuses the exact same key as its own screen's explanatory text - one text, not a separate onboarding-only string
     public function testGetMenusDescriptionReusesEachScreensOwnExplanatoryText(): void
     {
-        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator())->getMenus();
+        $menus = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService())->getMenus();
 
         $this->assertSame('label.info_media', $menus['media']['description']);
         $this->assertSame('label.info_form', $menus['form']['description']);
@@ -110,7 +119,7 @@ class MenuProviderTest extends TestCase
     // An external url, not a route name, the showcase living on its own site
     public function testGetLinksReturnsTheBlockShowcaseLinkFromTheConfig(): void
     {
-        $provider = new MenuProvider($this->createConfigService('https://example.org/pages/blocks'), $this->createTranslator());
+        $provider = new MenuProvider($this->createConfigService('https://example.org/pages/blocks'), $this->createTranslator(), $this->createReviewService());
 
         $links = $provider->getLinks();
 
@@ -125,7 +134,7 @@ class MenuProviderTest extends TestCase
     // The one non-CRUD screen of this bundle: customizing a legal model is not an entity CRUD, it edits one block's delta against templates the bundle ships (see LegalModelController)
     public function testGetLinksContributesTheLegalModelsScreen(): void
     {
-        $links = new MenuProvider($this->createConfigService(), $this->createTranslator())->getLinks();
+        $links = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService())->getLinks();
 
         $this->assertSame(LegalModelController::INDEX_ROUTE, $links['legal_models']['name']);
         $this->assertSame('ui', $links['legal_models']['translation_domain']);
@@ -138,7 +147,7 @@ class MenuProviderTest extends TestCase
     // An app installed before the key existed (its configs.json not reloaded yet) still gets a working link
     public function testGetLinksFallsBackOnTheEcosystemShowcaseWhenTheConfigIsEmpty(): void
     {
-        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator());
+        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService());
 
         $this->assertSame(MenuProvider::BLOCK_SHOWCASE_URL, $provider->getLinks()['block_showcase']['url']);
         $this->assertSame('https://bundles.975l.com/pages/blocks', MenuProvider::BLOCK_SHOWCASE_URL);
@@ -158,7 +167,7 @@ class MenuProviderTest extends TestCase
     // 'role' matches the page's own minimum bar, a plain editor being unable to act on either section
     public function testGetLinksReturnsTheAiAssistantLinkWithTheHardcodedNameTranslatedSuffixAndRole(): void
     {
-        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator('AI Agent'));
+        $provider = new MenuProvider($this->createConfigService(), $this->createTranslator('AI Agent'), $this->createReviewService());
 
         $links = $provider->getLinks();
 

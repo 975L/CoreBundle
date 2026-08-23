@@ -35,6 +35,7 @@ use c975L\ConfigBundle\Management\StatusProviderInterface;
 use c975L\ConfigBundle\Management\UrlMetadataProviderInterface;
 use c975L\ConfigBundle\Management\WhatsNewProviderInterface;
 use c975L\ConfigBundle\Scheduler\MaintenanceTaskProviderInterface;
+use c975L\ConfigBundle\Security\OAuthLoginProviderInterface;
 use Nelmio\SecurityBundle\ContentSecurityPolicy\NonceGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -97,6 +98,8 @@ class c975LConfigBundle extends AbstractBundle
         $container->addCompilerPass(new TaggedInterfacePass(StatusProviderInterface::class, 'c975l.status_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(MaintenanceTaskProviderInterface::class, 'c975l.maintenance_task_provider'));
         $container->addCompilerPass(new TaggedInterfacePass(BackupPathProviderInterface::class, 'c975l.backup_path_provider'));
+        // Collected by OAuthLoginProviderRegistry: a "sign in with X" shipped by another bundle or by an application is enabled by existing, with no list to edit here
+        $container->addCompilerPass(new TaggedInterfacePass(OAuthLoginProviderInterface::class, 'c975l.oauth_login_provider'));
         // Only ever has anything to collect in dev, every implementation being marked #[When('dev')] - the pass itself stays registered in every environment, it simply tags nothing in prod
         $container->addCompilerPass(new TaggedInterfacePass(DevProfilePathProviderInterface::class, 'c975l.dev_profile_path_provider'));
 

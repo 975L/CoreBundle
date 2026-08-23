@@ -257,6 +257,10 @@ $hint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox
 .flip-card-ratio-21-9 {
     --flip-card-ratio: 21 / 9;
 }
+// The one the slider does not offer (see FlipCardType::RATIO_CHOICES): the ID-1 format of a bank or a gift card, 85.6 by 53.98 mm. Written as the millimetres themselves rather than rounded to 3/2, which is a whole millimetre off over the width of a card and reads as a card that is not quite one
+.flip-card-ratio-credit-card {
+    --flip-card-ratio: 856 / 540;
+}
 
 // The fold is the card's own shape - this "preserve-3d" and the verso's own rotateY above - declared in the sheet rather than keyed on a class the controller adds on connect, which flashed the whole verso on every load.
 // The one case that needs it undone - a browser running no JS at all, where the toggles stay hidden and the back face would be unreachable - is undone at the end of this file, under "@media (scripting: none)".

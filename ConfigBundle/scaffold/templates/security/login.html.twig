@@ -34,5 +34,8 @@
                 <a href="{{ form_url('register') }}">{{ 'label.create_account'|trans({}, 'config') }}</a>
             </div>
         </form>
+
+        {# One button per login provider configured in the back office ("Google OAuth client id"…), and nothing at all when none is - see c975L\ConfigBundle\Twig\OAuthLoginExtension #}
+        <twig:c975LConfig:Security:OAuthLogin/>
     {% endif %}
 {% endblock %}

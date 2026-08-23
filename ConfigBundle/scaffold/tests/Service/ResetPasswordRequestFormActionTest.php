@@ -88,6 +88,27 @@ class ResetPasswordRequestFormActionTest extends TestCase
         $this->assertTrue($action->handle(new Form(), ['email' => 'unknown@example.test']));
     }
 
+    // A field renamed or deleted in the back-office is a configuration error, and it names itself instead of dying as an "Undefined array key"
+    public function testHandleThrowsWhenTheEmailFieldIsMissing(): void
+    {
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->never())->method('send');
+
+        $action = new ResetPasswordRequestFormAction(
+            $this->createEntityManager(new User()),
+            $this->createStub(ResetPasswordHelperInterface::class),
+            $emailService,
+            $this->createEmailTemplateRenderer(),
+            $this->createTranslator(),
+            $this->createUrlGenerator(),
+        );
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('must keep a field named "email"');
+
+        $action->handle(new Form(), ['unexpected' => 'someone@example.test']);
+    }
+
     public function testHandleReturnsTrueWithoutSendingWhenTokenGenerationFails(): void
     {
         $resetPasswordHelper = $this->createStub(ResetPasswordHelperInterface::class);

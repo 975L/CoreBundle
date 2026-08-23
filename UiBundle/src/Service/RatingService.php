@@ -128,6 +128,52 @@ class RatingService
         return ['value' => $own] + $this->ratingRepository->getAggregate($ownerType, $ownerId);
     }
 
+    /**
+     * Stores a score without the toggle above, for a caller that is not a visitor clicking twice.
+     *
+     * A review's rating is written this way when the review is let through moderation (see ReviewService): re-publishing a review already published must leave its score where it is, where vote() would read the same value and take it back.
+     *
+     * The voter key is the caller's business - a review derives one from the author's e-mail so that two reviews by the same person count once, the same way two clicks from one browser do.
+     */
+    public function record(string $ownerType, int $ownerId, int $value, string $voter): void
+    {
+        $value = max(1, min($this->getScale(), $value));
+
+        $rating = $this->ratingRepository->findOneByVoter($ownerType, $ownerId, $voter);
+
+        if (null === $rating) {
+            $rating = new Rating()
+                ->setOwnerType($ownerType)
+                ->setOwnerId($ownerId)
+                ->setVoter($voter)
+                ->setValue($value)
+            ;
+            $this->entityManager->persist($rating);
+        } else {
+            $rating->setValue($value);
+        }
+
+        // Same race as in vote(), same answer: two moderation screens publishing the same review at once both insert, and the second one is told so rather than answering 500
+        try {
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException) {
+            throw new ConflictHttpException();
+        }
+    }
+
+    // Takes a recorded score back, for when what carried it stops being published - a review rejected after the fact must not keep weighing on an average nobody can read it under
+    public function withdraw(string $ownerType, int $ownerId, string $voter): void
+    {
+        $rating = $this->ratingRepository->findOneByVoter($ownerType, $ownerId, $voter);
+
+        if (null === $rating) {
+            return;
+        }
+
+        $this->entityManager->remove($rating);
+        $this->entityManager->flush();
+    }
+
     private function readConfigString(string $key, string $default): string
     {
         if (!$this->configService->hasParameter($key)) {

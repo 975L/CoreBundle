@@ -13,8 +13,12 @@ namespace c975L\UiBundle\Service;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
+use c975L\UiBundle\Model\EmailAttachment;
+use c975L\UiBundle\Registry\EmailAttachmentRegistry;
 use c975L\UiBundle\Registry\EmailLayoutRegistry;
+use c975L\UiBundle\Registry\EmailTemplateProviderRegistry;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // Compiles an EmailTemplate's blocks into one email-safe HTML document; separate from render_block(), the email-safe vocabulary being deliberately closed
 class EmailTemplateRenderer
@@ -23,23 +27,84 @@ class EmailTemplateRenderer
         private readonly \Twig\Environment $twig,
         private readonly ConfigServiceInterface $configService,
         private readonly EmailLayoutRegistry $emailLayoutRegistry,
+        private readonly EmailAttachmentRegistry $emailAttachmentRegistry,
         private readonly EmailTemplateRepository $emailTemplateRepository,
+        private readonly EmailTemplateProviderRegistry $emailTemplateProviderRegistry,
+        private readonly EmailTemplateFactory $emailTemplateFactory,
+        #[Autowire(param: 'kernel.default_locale')]
+        private readonly string $defaultLocale = 'en',
     ) {
     }
 
     /**
      * Same as render(), for a template designated by name rather than held as an entity - what a bundle sending a
      * transactional email has (a fixed name it seeded, e.g. ConfigBundle's "account_validation"), instead of a
-     * per-app Twig file it would have to know the path of. Null when no template carries that name, so the caller
-     * decides what a missing template means rather than sending a blank email.
+     * per-app Twig file it would have to know the path of.
+     *
+     * The site's own row first, the wording the bundle declares second (see declared()), null only when neither
+     * exists - a name no installed bundle knows and no admin composed, which the caller decides the meaning of
+     * rather than being handed a blank email.
+     *
+     * The locale is the recipient's, not the site's and not the request's: a reminder sent by a nightly command and
+     * a shipping notice sent by the shopkeeper's click are both written to somebody who was never party to either
+     * (see EmailTemplateRepository::findForRendering for what happens when that language has no version).
      *
      * @param array<string, scalar|array<string, mixed>> $variables see renderBody()
      */
-    public function renderNamed(string $name, array $variables = []): ?string
+    public function renderNamed(string $name, array $variables = [], ?string $locale = null): ?string
     {
-        $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name]);
+        $emailTemplate = $this->emailTemplateRepository->findForRendering($name, $locale, $this->defaultLocale)
+            ?? $this->declared($name, $locale);
 
         return null !== $emailTemplate ? $this->render($emailTemplate, $variables) : null;
+    }
+
+    /**
+     * The files that same named template says it travels with, drawn.
+     *
+     * Read from the site's own row, which is the only place the answer lives: the wording a bundle declares is a
+     * body and nothing else, so an email falling back on it (a row deleted in the back-office, see declared())
+     * goes out on its own. That gap closes the moment c975l:ui:email-templates:ensure seeds the row again.
+     *
+     * @param array<string, mixed> $context what the providers are drawing about - see EmailAttachmentProviderInterface
+     *
+     * @return list<EmailAttachment>
+     */
+    public function attachmentsFor(string $name, array $context = [], ?string $locale = null): array
+    {
+        $emailTemplate = $this->emailTemplateRepository->findForRendering($name, $locale, $this->defaultLocale);
+
+        if (null === $emailTemplate || [] === $emailTemplate->getAttachments()) {
+            return [];
+        }
+
+        // Only merged when there is one to merge: "+" keeps the left-hand key, so an unset $locale would overwrite the one the caller already put in the context and send the terms of sale in the site's language instead of the reader's. Not $context + [...] either, which would ignore a locale the caller asked for outright
+        return $this->emailAttachmentRegistry->resolve($emailTemplate->getAttachments(), (null !== $locale ? ['locale' => $locale] : []) + $context);
+    }
+
+    /**
+     * The wording an installed bundle declares, built and rendered without ever reaching the database.
+     *
+     * What an email falls back on for the one gap c975l:ui:email-templates:ensure cannot close on its own: a row
+     * deleted in the back-office, between that click and the next deployment. It is the very declaration the row
+     * was seeded from, so the two can never say different things - which is what a Twig body sitting beside the
+     * template could not promise, and why this bundle no longer ships one.
+     */
+    private function declared(string $name, ?string $locale): ?EmailTemplate
+    {
+        $blocksByLocale = $this->emailTemplateProviderRegistry->getDeclaredTemplates()[$name] ?? null;
+        if (null === $blocksByLocale) {
+            return null;
+        }
+
+        // Same order of preference as EmailTemplateRepository::findForRendering(): the recipient's language, the site's, then whichever the bundle happens to ship
+        foreach ([$locale, $this->defaultLocale, array_key_first($blocksByLocale)] as $wanted) {
+            if (null !== $wanted && [] !== ($blocksByLocale[$wanted] ?? [])) {
+                return $this->emailTemplateFactory->build($name, $wanted, $blocksByLocale[$wanted]);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -67,7 +132,9 @@ class EmailTemplateRenderer
      *                                                              plus an optional "fields" array consumed by any
      *                                                              EmailBlock::TYPE_FIELDS_TABLE block (e.g. a Form
      *                                                              submission's label => submitted value pairs, see
-     *                                                              SendEmailFormAction)
+     *                                                              SendEmailFormAction), plus an optional "slots"
+     *                                                              array of name => already-rendered html read by
+     *                                                              EmailBlock::TYPE_SLOT blocks (see blockContext())
      */
     public function renderBody(EmailTemplate $emailTemplate, array $variables = []): string
     {
@@ -104,6 +171,7 @@ class EmailTemplateRenderer
             EmailBlock::TYPE_DIVIDER => '@c975LUi/emails/blocks/divider.html.twig',
             EmailBlock::TYPE_SPACER => '@c975LUi/emails/blocks/spacer.html.twig',
             EmailBlock::TYPE_FIELDS_TABLE => '@c975LUi/emails/blocks/fields_table.html.twig',
+            EmailBlock::TYPE_SLOT => '@c975LUi/emails/blocks/slot.html.twig',
             default => throw new \InvalidArgumentException(sprintf('Unknown EmailBlock type "%s"', $type)),
         };
     }
@@ -121,6 +189,8 @@ class EmailTemplateRenderer
             'alt' => $this->substitute($block->getAlt(), $variables),
             'height' => $block->getHeight() ?? 24,
             'fields' => $variables['fields'] ?? [],
+            // Straight from the caller, past substitute() and past contentToHtml(): a slot is markup a bundle rendered, and escaping it or running admin-authored placeholders through it would either break it or make it the injection hole the rest of this class avoids
+            'slot' => EmailBlock::TYPE_SLOT === $block->getType() ? ($variables['slots'][$block->getLabel()] ?? '') : '',
         ];
     }
 

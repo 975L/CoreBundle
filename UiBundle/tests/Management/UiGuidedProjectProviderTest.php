@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
+use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +22,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UiGuidedProjectProviderTest extends TestCase
 {
+    private function createReviewService(bool $enabled = true): ReviewService
+    {
+        $reviewService = $this->createStub(ReviewService::class);
+        $reviewService->method('isEnabled')->willReturn($enabled);
+
+        return $reviewService;
+    }
+
     private function createAdminUrlGenerator(array &$controllers = []): AdminUrlGeneratorInterface
     {
         $generator = $this->createStub(AdminUrlGeneratorInterface::class);
@@ -64,7 +73,7 @@ class UiGuidedProjectProviderTest extends TestCase
 
     private function createProvider(array &$controllers = [], array &$routes = []): UiGuidedProjectProvider
     {
-        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes));
+        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService());
     }
 
     // Continues the sequence after ConfigBundle (10-40) and SiteBundle (50-80)
@@ -72,8 +81,8 @@ class UiGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-form-field-template', 'ui-email-template', 'ui-font'], array_column($projects, 'slug'));
-        $this->assertSame([90, 93, 96, 99, 102, 104, 105, 108], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review'], array_column($projects, 'slug'));
+        $this->assertSame([90, 93, 96, 99, 102, 104, 105, 108, 110], array_column($projects, 'order'));
     }
 
     // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's range is the 90-110 SocialBundle and GalleryBundle both state as its own, SocialBundle's opening at 120
@@ -101,6 +110,7 @@ class UiGuidedProjectProviderTest extends TestCase
             'ui-form-field-template' => 'ROLE_ADMIN',
             'ui-email-template' => 'ROLE_ADMIN',
             'ui-font' => 'ROLE_EDITOR',
+            'ui-review' => 'ROLE_EDITOR',
         ];
 
         foreach ($this->createProvider()->getGuidedProjects() as $project) {
@@ -155,7 +165,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController'],
+            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }

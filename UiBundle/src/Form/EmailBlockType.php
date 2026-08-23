@@ -21,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 // Flat shape: every kind shares one set of columns, each meaningful only for the kinds named in its help text
@@ -39,6 +40,7 @@ class EmailBlockType extends AbstractType
                     'label.email_block_type_divider' => EmailBlock::TYPE_DIVIDER,
                     'label.email_block_type_spacer' => EmailBlock::TYPE_SPACER,
                     'label.email_block_type_fields_table' => EmailBlock::TYPE_FIELDS_TABLE,
+                    'label.email_block_type_slot' => EmailBlock::TYPE_SLOT,
                 ],
             ])
             ->add('heading', TextType::class, [
@@ -91,10 +93,26 @@ class EmailBlockType extends AbstractType
             FormEvents::PRE_SET_DATA,
             function (PreSetDataEvent $event): void {
                 $block = $event->getData();
+                $form = $event->getForm();
 
-                CollectionReconciler::addIdField($event->getForm(), $block instanceof EmailBlock ? $block->getId() : null);
+                CollectionReconciler::addIdField($form, $block instanceof EmailBlock ? $block->getId() : null);
+
+                // A saved data block keeps the kind it is and the fragment it names. Both are locked rather than merely hidden, retyping a "slot" into a "text" being a deletion by another road - and a disabled field is neither submitted nor overwritten. Only saved ones: the choice list still offers both kinds, which is how an admin adds a slot a bundle update has started declaring
+                if ($block instanceof EmailBlock && null !== $block->getId() && $block->isDataBlock()) {
+                    $this->lock($form, 'type');
+                    $this->lock($form, 'label');
+                }
             }
         );
+    }
+
+    // Re-adds one field with the same type and options it was built with, plus "disabled" - the only way to change an option once buildForm() has run
+    private function lock(FormInterface $form, string $name): void
+    {
+        $child = $form->get($name);
+        $config = $child->getConfig();
+
+        $form->add($name, $config->getType()->getInnerType()::class, ['disabled' => true] + $config->getOptions());
     }
 
     public function configureOptions(OptionsResolver $resolver): void

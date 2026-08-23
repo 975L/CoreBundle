@@ -11,13 +11,14 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
+use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
 use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, opening the order sequence the satellite bundles continue (SiteBundle picks up at 50, same as the essential actions do). Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to an editor (see DashboardController::index()), and three of these four walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, opening the order sequence the satellite bundles continue (SiteBundle picks up at 50, same as the essential actions do). Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to an editor (see DashboardController::index()), and three of these five walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -33,7 +34,60 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->settingsProject(),
             $this->healthCheckProject(),
             $this->maintenanceProject(),
+            $this->notFoundProject(),
             $this->urlMetadataProject(),
+        ];
+    }
+
+    // A link that leads nowhere is reported by nobody and answered by nothing until someone turns it into a redirect - the one screen where the two ends of that job meet
+    private function notFoundProject(): array
+    {
+        return [
+            'slug' => 'config-not-found',
+            'label' => 'label.guided_project_config_not_found',
+            'description' => 'description.guided_project_config_not_found',
+            'translation_domain' => 'config',
+            // Slipped between the maintenance rehearsal and the url metadata, next to the redirects this walks to rather than appended after the range
+            'order' => 35,
+            // The bar NotFoundCrudController sets on its own index and on its "createRedirect", and the one RedirectCrudController sets on the "new" this ends up on
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_not_found_open',
+                    'description' => 'description.guided_step_config_not_found_open',
+                    'url' => $this->indexUrl(NotFoundCrudController::class),
+                ],
+                [
+                    // Sorted by "lastSeen" descending (see NotFoundCrudController::configureCrud()), so the first row is the link that broke most recently
+                    'label' => 'label.guided_step_config_not_found_row',
+                    'description' => 'description.guided_step_config_not_found_row',
+                    'highlight' => 'table tbody tr:first-child',
+                ],
+                [
+                    // A custom action, so EasyAdmin names its button after it just the same - it opens RedirectCrudController's "new" with the dead path already set (see its createEntity())
+                    'label' => 'label.guided_step_config_not_found_create',
+                    'description' => 'description.guided_step_config_not_found_create',
+                    'highlight' => '.action-createRedirect',
+                ],
+                [
+                    'label' => 'label.guided_step_config_not_found_from',
+                    'description' => 'description.guided_step_config_not_found_from',
+                    'highlight' => '#Redirect_fromPath',
+                ],
+                [
+                    'label' => 'label.guided_step_config_not_found_to',
+                    'description' => 'description.guided_step_config_not_found_to',
+                    'highlight' => '#Redirect_toUrl',
+                ],
+                [
+                    'label' => 'label.guided_step_config_not_found_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_config_not_found_done',
+                    'description' => 'description.guided_step_config_not_found_done',
+                ],
+            ],
         ];
     }
 

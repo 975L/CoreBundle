@@ -78,6 +78,10 @@
                 <source>description.guided_project_config_maintenance</source>
                 <target>Répéter à froid la manœuvre qu'on ne veut pas découvrir le jour où il faut la faire</target>
             </trans-unit>
+            <trans-unit id="wod7rWu">
+                <source>description.guided_project_config_not_found</source>
+                <target>Le site note chaque chemin demandé par un visiteur sans être trouvé. Cette liste est ce qui dit quel lien, ici ou sur un autre site, pointe encore vers une page qui a bougé.</target>
+            </trans-unit>
             <trans-unit id="kwjx7gS">
                 <source>description.guided_project_config_settings</source>
                 <target>Trouver un réglage, le modifier, et comprendre ce que le tableau de bord en fait</target>
@@ -125,6 +129,30 @@
             <trans-unit id="xVtLKDB">
                 <source>description.guided_step_config_maintenance_open</source>
                 <target>Les raccourcis du tableau de bord sont des actions immédiates, sans écran intermédiaire.</target>
+            </trans-unit>
+            <trans-unit id="HKhTHza">
+                <source>description.guided_step_config_not_found_create</source>
+                <target>Le bouton ouvre une nouvelle redirection avec le chemin mort déjà rempli.</target>
+            </trans-unit>
+            <trans-unit id="RzywLrh">
+                <source>description.guided_step_config_not_found_done</source>
+                <target>Ce chemin mène désormais à la page choisie, pour un visiteur comme pour un moteur de recherche. La ligne reste dans la liste tant que quelque chose la touche encore.</target>
+            </trans-unit>
+            <trans-unit id="luoawAN">
+                <source>description.guided_step_config_not_found_from</source>
+                <target>Rien à taper : c'est celui que la liste a montré, recopié tel quel.</target>
+            </trans-unit>
+            <trans-unit id="ImyN0zc">
+                <source>description.guided_step_config_not_found_open</source>
+                <target>Dans la barre latérale, sous Avancé. Les lignes sont écrites par les requêtes elles-mêmes, jamais à la main.</target>
+            </trans-unit>
+            <trans-unit id="xzmrPZF">
+                <source>description.guided_step_config_not_found_row</source>
+                <target>Le chemin touché le plus récemment vient en premier. Son nombre de visites dit combien de trafic se perd, et la colonne interne dit si le lien cassé est sur les pages du site — celui-là se corrige en éditant la page, pas par une redirection.</target>
+            </trans-unit>
+            <trans-unit id="eyq1i2_">
+                <source>description.guided_step_config_not_found_to</source>
+                <target>La page qui le remplace. La seule décision qui reste.</target>
             </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
@@ -201,6 +229,10 @@
             <trans-unit id="5OjCR2m">
                 <source>description.messenger_failed</source>
                 <target>Messages non envoyés ; les cas mineurs (blacklist, spam) sont purgés après rétention.</target>
+            </trans-unit>
+            <trans-unit id="ZpY7bgI">
+                <source>description.not_found_alert</source>
+                <target>Ces liens figurent sur des pages du site et ne mènent plus à rien : corrigez le lien sur la page qui le porte, ou créez une redirection vers sa nouvelle adresse.</target>
             </trans-unit>
             <trans-unit id="QEO2q6_">
                 <source>description.site_link</source>
@@ -322,6 +354,26 @@
                 <source>flash.messenger_retry_success</source>
                 <target>Message #%id% envoyé avec succès</target>
             </trans-unit>
+            <trans-unit id="U28CY6m">
+                <source>flash.oauth_account_disabled</source>
+                <target>Ce compte a été désactivé : la connexion ne peut pas être établie.</target>
+            </trans-unit>
+            <trans-unit id="OJfchXg">
+                <source>flash.oauth_email_not_verified</source>
+                <target>Votre fournisseur ne confirme pas que cette adresse email est bien la vôtre : la connexion ne peut pas être établie.</target>
+            </trans-unit>
+            <trans-unit id="rbMPpuf">
+                <source>flash.oauth_login_failed</source>
+                <target>La connexion n'a pas abouti. Merci de réessayer.</target>
+            </trans-unit>
+            <trans-unit id="Q7TtjTV">
+                <source>flash.oauth_password_reset</source>
+                <target>Votre compte n'avait jamais été confirmé : il est désormais activé, et son ancien mot de passe a été remplacé. Utilisez « Mot de passe oublié » si vous souhaitez en définir un nouveau.</target>
+            </trans-unit>
+            <trans-unit id="JgqGyTm">
+                <source>flash.oauth_registration_closed</source>
+                <target>Ce site n'accepte pas de nouvelles inscriptions pour le moment.</target>
+            </trans-unit>
             <trans-unit id="ZD8H9hY">
                 <source>flash.user_registration_disabled</source>
                 <target>Inscription des utilisateurs désactivée</target>
@@ -341,6 +393,18 @@
             <trans-unit id="2R4Y3Vo">
                 <source>help.value_theme_color</source>
                 <target>Hexadécimal (#b30000), rgb()/rgba(), hsl()/hsla(), ou un nom CSS (ex. tomato)</target>
+            </trans-unit>
+            <trans-unit id="s0jNbR8">
+                <source>label.account_validation_button</source>
+                <target>Confirmer mon email</target>
+            </trans-unit>
+            <trans-unit id="Y8l5zfM">
+                <source>label.account_validation_heading</source>
+                <target>Confirmez votre adresse email</target>
+            </trans-unit>
+            <trans-unit id="oGL31b7">
+                <source>label.account_validation_text</source>
+                <target>Merci de votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email.</target>
             </trans-unit>
             <trans-unit id="IDGH76b">
                 <source>label.backup_alert_error</source>
@@ -482,9 +546,17 @@
                 <source>label.content_import_help</source>
                 <target>Importez un export (zip) généré par l'action d'export d'un bundle (par exemple une page exportée depuis l'écran Pages).</target>
             </trans-unit>
+            <trans-unit id="JyVc3aS">
+                <source>label.continue_with</source>
+                <target>Continuer avec %provider%</target>
+            </trans-unit>
             <trans-unit id="BOyuRcf">
                 <source>label.create_account</source>
                 <target>Créer un compte</target>
+            </trans-unit>
+            <trans-unit id="NtMvjVP">
+                <source>label.create_redirect</source>
+                <target>Créer la redirection</target>
             </trans-unit>
             <trans-unit id="emPIlPf">
                 <source>label.creation</source>
@@ -646,6 +718,10 @@
                 <source>label.guided_project_config_maintenance</source>
                 <target>Mettre le site en maintenance</target>
             </trans-unit>
+            <trans-unit id="qkkr11A">
+                <source>label.guided_project_config_not_found</source>
+                <target>Transformer un lien mort en redirection</target>
+            </trans-unit>
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
                 <target>Régler la configuration du site</target>
@@ -729,6 +805,34 @@
             <trans-unit id="uiJ8s5u">
                 <source>label.guided_step_config_maintenance_open</source>
                 <target>Ouvrir le tableau de bord</target>
+            </trans-unit>
+            <trans-unit id="xFx6uZf">
+                <source>label.guided_step_config_not_found_create</source>
+                <target>Créer la redirection</target>
+            </trans-unit>
+            <trans-unit id="KMbK52l">
+                <source>label.guided_step_config_not_found_done</source>
+                <target>Le lien répond de nouveau</target>
+            </trans-unit>
+            <trans-unit id="f2z41Re">
+                <source>label.guided_step_config_not_found_from</source>
+                <target>Le chemin est déjà là</target>
+            </trans-unit>
+            <trans-unit id="Nkq6Fow">
+                <source>label.guided_step_config_not_found_open</source>
+                <target>Ouvrir les pages introuvables</target>
+            </trans-unit>
+            <trans-unit id="Tt6pK7x">
+                <source>label.guided_step_config_not_found_row</source>
+                <target>Lire la première ligne</target>
+            </trans-unit>
+            <trans-unit id="k91PKkp">
+                <source>label.guided_step_config_not_found_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="7lBTKQZ">
+                <source>label.guided_step_config_not_found_to</source>
+                <target>Dire où il mène</target>
             </trans-unit>
             <trans-unit id="yK2RVv_">
                 <source>label.guided_step_config_settings_alerts</source>
@@ -1374,6 +1478,10 @@
                 <source>label.hide_sensitive</source>
                 <target>Masquer données sensibles</target>
             </trans-unit>
+            <trans-unit id="p4rGI4c">
+                <source>label.info_not_found</source>
+                <target>Liste des liens cassés : les URL qui n'existent plus et sur lesquelles quelqu'un est arrivé en suivant un lien. Seules les demandes venant d'un lien sont enregistrées, jamais les tentatives d'intrusion, qui n'en portent pas.</target>
+            </trans-unit>
             <trans-unit id="rszWvKi">
                 <source>label.info_redirect</source>
                 <target>Liste des redirections d'URL du site. Vous pouvez créer, modifier ou supprimer une redirection ; vérifiez l'URL de départ et de destination, une erreur peut casser un lien ou provoquer une boucle de redirection.</target>
@@ -1590,6 +1698,34 @@
                 <source>label.no_whatsnew</source>
                 <target>Aucune note de version pour l'instant</target>
             </trans-unit>
+            <trans-unit id="HeAOf.l">
+                <source>label.not_found_alert</source>
+                <target>%count% lien(s) cassé(s) sur des pages du site</target>
+            </trans-unit>
+            <trans-unit id="QKR8I05">
+                <source>label.not_found_hits</source>
+                <target>Demandes</target>
+            </trans-unit>
+            <trans-unit id="J5iGNiy">
+                <source>label.not_found_internal</source>
+                <target>Lien interne</target>
+            </trans-unit>
+            <trans-unit id="CEWbR07">
+                <source>label.not_found_last_seen</source>
+                <target>Dernière demande</target>
+            </trans-unit>
+            <trans-unit id="fg0Gjj9">
+                <source>label.not_found_path</source>
+                <target>URL demandée</target>
+            </trans-unit>
+            <trans-unit id="WaoI6eE">
+                <source>label.not_found_referer</source>
+                <target>Page d'origine</target>
+            </trans-unit>
+            <trans-unit id="qdtwz.x">
+                <source>label.not_founds</source>
+                <target>Liens cassés</target>
+            </trans-unit>
             <trans-unit id="qm9C7WD">
                 <source>label.onboarding_close</source>
                 <target>Fermer</target>
@@ -1618,9 +1754,21 @@
                 <source>label.password_confirm</source>
                 <target>Confirmer le mot de passe</target>
             </trans-unit>
+            <trans-unit id="zxTbn.n">
+                <source>label.password_reset_button</source>
+                <target>Réinitialiser mon mot de passe</target>
+            </trans-unit>
+            <trans-unit id="DZFms4V">
+                <source>label.password_reset_heading</source>
+                <target>Réinitialisation de votre mot de passe</target>
+            </trans-unit>
             <trans-unit id="LLkv7Ba">
                 <source>label.password_reset_request</source>
                 <target>Votre demande de réinitialisation de mot de passe</target>
+            </trans-unit>
+            <trans-unit id="D9R27I6">
+                <source>label.password_reset_text</source>
+                <target>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour en choisir un nouveau.</target>
             </trans-unit>
             <trans-unit id="A.D0sBG">
                 <source>label.permanent</source>

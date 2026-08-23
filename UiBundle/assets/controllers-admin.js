@@ -6,6 +6,7 @@ import BlockCollectionController from './js/block-collection.js';
 import BlockDuplicateController from './js/block-duplicate.js';
 import BlockFocusController from './js/block-focus.js';
 import EaIndexSortController from './js/ea-index-sort.js';
+import EmailDataBlockController from './js/email-data-block.js';
 import EaSortableController from './js/ea-sortable.js';
 import FieldFocusController from './js/field-focus.js';
 import FormFieldTemplateController from './js/form-field-template.js';
@@ -26,6 +27,7 @@ app.register('blockCollection', BlockCollectionController);
 app.register('blockDuplicate', BlockDuplicateController);
 app.register('blockFocus', BlockFocusController);
 app.register('eaIndexSort', EaIndexSortController);
+app.register('emailDataBlock', EmailDataBlockController);
 app.register('eaSortable', EaSortableController);
 app.register('fieldFocus', FieldFocusController);
 app.register('formFieldTemplate', FormFieldTemplateController);
@@ -36,8 +38,8 @@ app.register('title-confirm', TitleConfirmController);
 // Same again, the three messages being read from data-upload-progress-*-message-value - armed by any bundle's form through UploadProgress::formAttr(), never mounted on <body>: it takes over the submit of the form it sits on
 app.register('upload-progress', UploadProgressController);
 
-// Mount eaIndexSort, eaSortable, blockCollection, blockDuplicate, blockFocus, fieldFocus and formFieldTemplate on <body> automatically: EasyAdmin's layout never sets data-controller itself, so without this none of the index-row reordering, drag-and-drop, new-block scroll/focus, duplicate-block, used-in-media-library scroll/focus, focus-a-named-field or add-field-from-template behaviors would ever connect.
+// Mount eaIndexSort, eaSortable, blockCollection, blockDuplicate, blockFocus, emailDataBlock, fieldFocus and formFieldTemplate on <body> automatically: EasyAdmin's layout never sets data-controller itself, so without this none of the index-row reordering, drag-and-drop, new-block scroll/focus, duplicate-block, used-in-media-library scroll/focus, undeletable-data-block, focus-a-named-field or add-field-from-template behaviors would ever connect.
 document.body.setAttribute(
     'data-controller',
-    [document.body.dataset.controller, 'eaIndexSort', 'eaSortable', 'blockCollection', 'blockDuplicate', 'blockFocus', 'fieldFocus', 'formFieldTemplate'].filter(Boolean).join(' ')
+    [document.body.dataset.controller, 'eaIndexSort', 'eaSortable', 'blockCollection', 'blockDuplicate', 'blockFocus', 'emailDataBlock', 'fieldFocus', 'formFieldTemplate'].filter(Boolean).join(' ')
 );

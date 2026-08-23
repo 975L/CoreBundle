@@ -59,10 +59,11 @@ class ConfigGuidedProjectProviderTest extends TestCase
         $projects = $this->createProvider()->getGuidedProjects();
 
         $this->assertSame(
-            ['config-settings', 'config-health-check', 'config-maintenance', 'config-url-metadata'],
+            ['config-settings', 'config-health-check', 'config-maintenance', 'config-not-found', 'config-url-metadata'],
             array_column($projects, 'slug')
         );
-        $this->assertSame([10, 20, 30, 40], array_column($projects, 'order'));
+        // 35 rather than a value after 40: the missing pages are walked to the redirects, the screen the url metadata has nothing to do with
+        $this->assertSame([10, 20, 30, 35, 40], array_column($projects, 'order'));
     }
 
     // A project is offered on a dashboard an editor now reaches, so one walking an admin screen has to say so or its very first step answers a 403
@@ -78,7 +79,8 @@ class ConfigGuidedProjectProviderTest extends TestCase
                 'config-settings' => 'site-role-admin',
                 'config-health-check' => 'site-role-admin',
                 'config-maintenance' => 'site-role-admin',
-                // The only one of the four whose screen answers an editor (see UrlMetadataCrudController)
+                // The two of the five whose screens answer an editor (see NotFoundCrudController, UrlMetadataCrudController)
+                'config-not-found' => 'site-role-editor',
                 'config-url-metadata' => 'site-role-editor',
             ],
             $roles,
@@ -132,15 +134,23 @@ class ConfigGuidedProjectProviderTest extends TestCase
         }
     }
 
+    // EasyAdmin's own actions, plus the ones this bundle's controllers declare themselves: ActionFactory names a button "action-" . the action's name either way, so a custom action is just as legitimate a target as a built-in one - what stays caught is a name no one declares at all
     private function easyAdminActionNames(): array
     {
         $constants = new \ReflectionClass(Action::class)->getConstants();
 
-        return array_values(array_filter(
+        $names = array_values(array_filter(
             $constants,
             static fn (string $name): bool => !str_starts_with($name, 'TYPE_'),
             ARRAY_FILTER_USE_KEY
         ));
+
+        foreach (glob(\dirname(__DIR__, 2) . '/src/Controller/Management/*.php') ?: [] as $controller) {
+            preg_match_all("/Action::new\(\s*'([^']+)'/", file_get_contents($controller) ?: '', $matches);
+            $names = [...$names, ...$matches[1]];
+        }
+
+        return $names;
     }
 
     // Only the opening step leaves the screen, everything after it walking the one the user has been sent to

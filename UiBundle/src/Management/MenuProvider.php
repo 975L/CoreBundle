@@ -18,7 +18,9 @@ use c975L\UiBundle\Controller\Management\FontCrudController;
 use c975L\UiBundle\Controller\Management\FormCrudController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
+use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
+use c975L\UiBundle\Service\ReviewService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuProvider implements MenuProviderInterface
@@ -29,6 +31,7 @@ class MenuProvider implements MenuProviderInterface
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly TranslatorInterface $translator,
+        private readonly ReviewService $reviewService,
     ) {
     }
 
@@ -44,13 +47,13 @@ class MenuProvider implements MenuProviderInterface
     // This bundle's own CRUD entries, declared here rather than by SiteBundle as they used to be: a site running Config+Ui plus a satellite bundle (shop, book...) but no SiteBundle had no media library, no forms and no email templates in its back-office at all
     public function getMenus(): array
     {
-        return [
+        $menus = [
             'media' => [
                 'controller' => MediaCrudController::class,
                 'label' => 'label.media_library',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-photo-film',
-                // The bar MediaCrudController sets on its own index, and the reason this entry is the one this bundle keeps essential
+                // The bar MediaCrudController sets on its own index, and the reason this entry is one of the two this bundle keeps essential - the reviews below being the other, both being looked at on any given day
                 'role' => $this->configService->get('site-role-editor'),
                 // Same key as the screen's own explanatory text - one text, reused, not a separate onboarding-only string (see MenuProviderInterface::getMenus())
                 'description' => 'label.info_media',
@@ -92,6 +95,21 @@ class MenuProvider implements MenuProviderInterface
                 'description' => 'label.info_site_graphic',
             ],
         ];
+
+        // Only displayed if reviews are turned on site-wide: a screen for a feature the site neither collects nor shows is one more thing to explain in a sidebar
+        if ($this->reviewService->isEnabled()) {
+            $menus['review'] = [
+                'controller' => ReviewCrudController::class,
+                'label' => 'label.reviews',
+                'translation_domain' => 'ui',
+                'icon' => 'fas fa-star',
+                // The bar ReviewCrudController states on its own rows
+                'role' => $this->configService->get('site-role-editor'),
+                'description' => 'label.info_reviews',
+            ];
+        }
+
+        return $menus;
     }
 
     // An external url (not a route name), the showcase living on its own site - configurable so an app can point at its own, falling back on the ecosystem's when the key is empty or missing (an app installed before the key existed, its configs.json not reloaded yet)

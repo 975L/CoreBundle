@@ -25,6 +25,7 @@
     "require": {
         "php": ">=8.4",
         "doctrine/orm": "^3.6",
+        "dompdf/dompdf": "^3.1",
         "dragonmantank/cron-expression": "^3.6",
         "easycorp/easyadmin-bundle": "^5.1",
         "egulias/email-validator": "^4.0",

@@ -34,6 +34,18 @@
                 <source>description.email_to_name</source>
                 <target>Nombre utilizado para recibir las notificaciones desde el sitio.</target>
             </trans-unit>
+            <trans-unit id="qsbLUOC">
+                <source>description.login_google_oauth_client_id</source>
+                <target>Identificador de cliente («ID de cliente de OAuth») del proyecto de Google de este sitio, que activa el botón «Continuar con Google» en la página de inicio de sesión. Véase el procedimiento «Conectar el inicio de sesión con Google». Dejar vacío para no ofrecer el inicio de sesión con Google.</target>
+            </trans-unit>
+            <trans-unit id="RkXZwtj">
+                <source>description.login_google_oauth_client_secret</source>
+                <target>Secreto de cliente asociado al identificador anterior. No debe difundirse nunca: por sí solo permite hacerse pasar por este sitio ante Google.</target>
+            </trans-unit>
+            <trans-unit id="4mD1gVh">
+                <source>description.made_by_wording</source>
+                <target>Redacción del crédito en el pie de página: made («Hecho por») o powered («Impulsado por»), para un sitio que usa el sistema sin haber sido realizado por él</target>
+            </trans-unit>
             <trans-unit id="FXZbjDI">
                 <source>description.seo_humans_from</source>
                 <target>País desde el que se administra el sitio, tal como aparece en humans.txt, p. ej. Francia</target>
@@ -194,6 +206,10 @@
                 <source>description.site_name</source>
                 <target>Nombre del sitio web: ej. Example.com</target>
             </trans-unit>
+            <trans-unit id="lehRCin">
+                <source>description.site_not_found_retention_days</source>
+                <target>Número de días que un enlace roto permanece en la lista tras la última petición. 0 lo conserva todo.</target>
+            </trans-unit>
             <trans-unit id="._1mRZ4">
                 <source>description.site_owner</source>
                 <target>Propietario del sitio, mostrado en el aviso legal (HTML permitido)</target>
@@ -265,6 +281,18 @@
             <trans-unit id="Tbwp4sB">
                 <source>label.email_to_name</source>
                 <target>Nombre del correo (destinatario)</target>
+            </trans-unit>
+            <trans-unit id=".GtjiDJ">
+                <source>label.login_google_oauth_client_id</source>
+                <target>Identificador de cliente OAuth de Google</target>
+            </trans-unit>
+            <trans-unit id="RXa3x8Q">
+                <source>label.login_google_oauth_client_secret</source>
+                <target>Secreto de cliente OAuth de Google</target>
+            </trans-unit>
+            <trans-unit id="I_2UGaK">
+                <source>label.made_by_wording</source>
+                <target>Redacción del crédito «Hecho por»</target>
             </trans-unit>
             <trans-unit id="5LRQEmv">
                 <source>label.seo_humans_from</source>
@@ -425,6 +453,10 @@
             <trans-unit id="rK0YMvt">
                 <source>label.site_name</source>
                 <target>Nombre del sitio</target>
+            </trans-unit>
+            <trans-unit id="14esafT">
+                <source>label.site_not_found_retention_days</source>
+                <target>Conservación de enlaces rotos (días)</target>
             </trans-unit>
             <trans-unit id="hbt28u1">
                 <source>label.site_owner</source>

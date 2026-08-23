@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Assets;
 
+use c975L\UiBundle\Form\Block\FlipCardType;
 use PHPUnit\Framework\TestCase;
 
 // A card folded in 3D hides its back face from the eye only: everything that makes the fold usable by a keyboard, a screen reader, or a browser with no JS at all is spread over three files that no browser here runs, so each end is checked against the contract the other two assume
@@ -253,10 +254,30 @@ class FlipCardAccessibilityTest extends TestCase
         }
     }
 
-    // Written by the component against the closed list, never interpolated from what a block stored
+    // Written by the component against the closed list, never interpolated from what a block stored - and that list is read off the form's own choices rather than typed here, a ratio offered on the edit screen and unknown to the component rendering as no shape at all
     public function testTheRatioClassIsMatchedRatherThanBuiltFromStoredData(): void
     {
-        $this->assertStringContainsString("{% set ratioClass = ratio|default('free') in ['2-3', '3-4', '9-16', '1-1', '3-2', '4-3', '16-9', '21-9'] ? 'flip-card-ratio-' ~ ratio : '' %}", $this->read(self::COMPONENT));
+        $offered = array_values(array_filter(FlipCardType::RATIO_CHOICES, static fn (string $ratio): bool => 'free' !== $ratio));
+        $closedList = "['" . implode("', '", $offered) . "']";
+
+        $this->assertStringContainsString("{% set ratioClass = ratio|default('free') in " . $closedList . " ? 'flip-card-ratio-' ~ ratio : '' %}", $this->read(self::COMPONENT));
+    }
+
+    // Every shape the edit screen offers has a class to write, the card format included: a value stored by the form and declared nowhere in the sheet leaves the card with no ratio at all
+    public function testEveryOfferedRatioIsDeclaredByTheStylesheet(): void
+    {
+        $stylesheet = $this->read(self::STYLESHEET);
+
+        foreach (FlipCardType::RATIO_CHOICES as $ratio) {
+            if ('free' === $ratio) {
+                continue;
+            }
+
+            $this->assertStringContainsString('.flip-card-ratio-' . $ratio . ' {', $stylesheet, sprintf('"%s" offers the "%s" ratio and declares no class for it.', self::STYLESHEET, $ratio));
+        }
+
+        // The one shape a slider has no use for, written as the millimetres of the ID-1 format rather than rounded to 3/2
+        $this->assertMatchesRegularExpression('/\.flip-card-ratio-credit-card \{\s*--flip-card-ratio: 856 \/ 540;\s*\}/', $stylesheet);
     }
 
     // Blocks of both card kinds share one ".cards" row rather than each opening its own

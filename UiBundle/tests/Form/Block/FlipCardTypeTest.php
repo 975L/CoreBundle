@@ -86,13 +86,19 @@ class FlipCardTypeTest extends TestCase
         $this->assertArrayNotHasKey('backLevel', $added);
     }
 
-    // The very list a slider offers, reused rather than restated - a card gaining a ratio the slider has and this one hasn't is exactly what a copied list drifts into
-    public function testTheRatioChoicesAreTheSliderSOwn(): void
+    // The list a slider offers, reused rather than restated - a card losing a ratio the slider has is exactly what a copied list drifts into - plus the one shape a run of images has no use for
+    public function testTheRatioChoicesAreTheSliderSOwnPlusTheCardFormat(): void
     {
         $added = $this->buildAddedFields();
 
-        $this->assertSame(SliderType::RATIO_CHOICES, $added['ratio']['choices']);
+        $this->assertSame(SliderType::RATIO_CHOICES + ['label.ratio_credit_card' => 'credit-card'], $added['ratio']['choices']);
         $this->assertSame('free', reset($added['ratio']['choices']), 'The free ratio should stay first, an unset value falling back on it.');
+    }
+
+    // Added on the card's own type and not on the slider's: an ID-1 card format means nothing to a run of images
+    public function testTheCardFormatIsNotOfferedByTheSlider(): void
+    {
+        $this->assertNotContains('credit-card', SliderType::RATIO_CHOICES);
     }
 
     // A slider's ratio crops an image, this one is a floor under the card's box - the same help text would say the wrong thing

@@ -11,14 +11,22 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Contract\EmailAttachmentProviderInterface;
+use c975L\UiBundle\Contract\EmailTemplateProviderInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
+use c975L\UiBundle\Model\EmailAttachment;
+use c975L\UiBundle\Registry\EmailAttachmentRegistry;
 use c975L\UiBundle\Registry\EmailLayoutRegistry;
+use c975L\UiBundle\Registry\EmailTemplateProviderRegistry;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
+use c975L\UiBundle\Service\EmailTemplateFactory;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+
+use function Symfony\Component\Translation\t;
 
 class EmailTemplateRendererTest extends TestCase
 {
@@ -30,7 +38,7 @@ class EmailTemplateRendererTest extends TestCase
         $configService = $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => $siteUrl]);
 
         // No EmailLayoutProviderInterface registered - render() falls back to the standalone _wrapper.html.twig
-        return new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry(), $this->createStub(EmailTemplateRepository::class));
+        return new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry(), new EmailAttachmentRegistry(), $this->createStub(EmailTemplateRepository::class), new EmailTemplateProviderRegistry(), new EmailTemplateFactory());
     }
 
     private function addBlock(EmailTemplate $emailTemplate, string $type): EmailBlock
@@ -230,7 +238,7 @@ class EmailTemplateRendererTest extends TestCase
             }
         });
 
-        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, $registry, $this->createStub(EmailTemplateRepository::class));
+        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, $registry, new EmailAttachmentRegistry(), $this->createStub(EmailTemplateRepository::class), new EmailTemplateProviderRegistry(), new EmailTemplateFactory());
 
         $emailTemplate = new EmailTemplate();
         $this->addBlock($emailTemplate, EmailBlock::TYPE_HEADING)->setHeading('Hello');
@@ -253,14 +261,214 @@ class EmailTemplateRendererTest extends TestCase
         $configService = $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => 'https://example.test']);
 
         $repository = $this->createStub(EmailTemplateRepository::class);
-        $repository->method('findOneBy')->willReturnMap([
-            [['name' => 'account_validation'], null, $emailTemplate],
-            [['name' => 'renamed_away'], null, null],
-        ]);
+        $repository->method('findForRendering')->willReturnCallback(
+            static fn (string $name): ?EmailTemplate => 'account_validation' === $name ? $emailTemplate : null
+        );
 
-        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry(), $repository);
+        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry(), new EmailAttachmentRegistry(), $repository, new EmailTemplateProviderRegistry(), new EmailTemplateFactory());
 
         $this->assertStringContainsString('Hello', (string) $renderer->renderNamed('account_validation'));
         $this->assertNull($renderer->renderNamed('renamed_away'));
+    }
+
+    /**
+     * The row deleted in the back-office, which is the one gap c975l:ui:email-templates:ensure cannot close on its own.
+     *
+     * What is rendered then is the declaration the row was seeded from, so the sentence a customer reads is the same
+     * either way - the guarantee a Twig body sitting beside the template could never give.
+     */
+    public function testAMissingRowFallsBackOnTheWordingItsBundleDeclares(): void
+    {
+        $registry = new EmailTemplateProviderRegistry();
+        $registry->addProvider(new class implements EmailTemplateProviderInterface {
+            public function getEmailTemplates(): array
+            {
+                return ['password_reset' => [
+                    'fr' => [['heading', 'Mot de passe oublié', 'h1', null, null, null]],
+                    'en' => [['heading', 'Password forgotten', 'h1', null, null, null]],
+                ]];
+            }
+        });
+
+        $renderer = $this->rendererWithNoRows($registry);
+
+        // The recipient's language first, the site's default when the bundle ships nothing in theirs
+        $this->assertStringContainsString('Password forgotten', (string) $renderer->renderNamed('password_reset', [], 'en'));
+        $this->assertStringContainsString('Mot de passe oublié', (string) $renderer->renderNamed('password_reset', [], 'fr'));
+        $this->assertStringContainsString('Mot de passe oublié', (string) $renderer->renderNamed('password_reset', [], 'de'));
+    }
+
+    // A name an admin invented and no bundle declares still comes back null, SendEmailFormAction reading that as "use the Twig path this Form names"
+    public function testANameNobodyDeclaresIsStillNull(): void
+    {
+        $this->assertNull($this->rendererWithNoRows(new EmailTemplateProviderRegistry())->renderNamed('invented_by_an_admin'));
+    }
+
+    // Which documents an email carries is read off the site's own row, beside the blocks that make up its body
+    public function testANamedTemplateCarriesTheDocumentsItsRowSaysItDoes(): void
+    {
+        $attachments = $this->rendererFor(new EmailTemplate()->setAttachments(['invoice']))
+            ->attachmentsFor('confirm_order', ['basket' => 'the order'], 'fr');
+
+        $this->assertSame(['invoice.pdf'], array_map(static fn (EmailAttachment $a): string => $a->filename, $attachments));
+    }
+
+    // The recipient's language travels with the request, a document being drawn in the language the email is written in
+    public function testTheLanguageTheEmailIsWrittenInReachesWhoeverDrawsTheDocument(): void
+    {
+        $seen = [];
+        $renderer = $this->rendererFor(new EmailTemplate()->setAttachments(['invoice']), $seen);
+
+        $renderer->attachmentsFor('confirm_order', ['basket' => 'the order'], 'de');
+
+        $this->assertSame(['locale' => 'de', 'basket' => 'the order'], $seen);
+    }
+
+    // A caller naming the language in the context and not in the argument is not asking for the site's: merging the null over it would have drawn the terms of sale in the wrong language
+    public function testALanguageCarriedByTheContextAloneSurvives(): void
+    {
+        $seen = [];
+        $renderer = $this->rendererFor(new EmailTemplate()->setAttachments(['invoice']), $seen);
+
+        $renderer->attachmentsFor('confirm_order', ['locale' => 'de', 'basket' => 'the order']);
+
+        $this->assertSame(['locale' => 'de', 'basket' => 'the order'], $seen);
+    }
+
+    public function testATemplateTickingNothingTravelsAlone(): void
+    {
+        $this->assertSame([], $this->rendererFor(new EmailTemplate())->attachmentsFor('confirm_order'));
+    }
+
+    /**
+     * A row deleted in the back-office: the wording a bundle declares is a body and nothing else, so the email goes
+     * out on its own until c975l:ui:email-templates:ensure seeds the row again.
+     */
+    public function testAnEmailFallingBackOnADeclaredBodyTravelsAlone(): void
+    {
+        $this->assertSame([], $this->rendererWithNoRows(new EmailTemplateProviderRegistry())->attachmentsFor('confirm_order'));
+    }
+
+    // A renderer whose repository answers that row, and whose one provider draws an "invoice" recording what it was asked with
+    private function rendererFor(EmailTemplate $emailTemplate, array &$seen = []): EmailTemplateRenderer
+    {
+        $loader = new FilesystemLoader();
+        $loader->addPath(__DIR__ . '/../../templates', 'c975LUi');
+
+        $repository = $this->createStub(EmailTemplateRepository::class);
+        $repository->method('findForRendering')->willReturn($emailTemplate);
+
+        $registry = new EmailAttachmentRegistry();
+        $registry->addProvider(new class ($seen) implements EmailAttachmentProviderInterface {
+            public function __construct(private array &$seen)
+            {
+            }
+
+            public function getAttachmentKinds(): array
+            {
+                return ['invoice' => t('label.invoice', [], 'ui')];
+            }
+
+            public function createAttachment(string $kind, array $context): ?EmailAttachment
+            {
+                $this->seen = $context;
+
+                return new EmailAttachment('invoice.pdf', '%PDF-1.7');
+            }
+        });
+
+        return new EmailTemplateRenderer(
+            new Environment($loader),
+            $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => 'https://example.test']),
+            new EmailLayoutRegistry(),
+            $registry,
+            $repository,
+            new EmailTemplateProviderRegistry(),
+            new EmailTemplateFactory(),
+            'fr'
+        );
+    }
+
+    private function rendererWithNoRows(EmailTemplateProviderRegistry $registry): EmailTemplateRenderer
+    {
+        $loader = new FilesystemLoader();
+        $loader->addPath(__DIR__ . '/../../templates', 'c975LUi');
+
+        $repository = $this->createStub(EmailTemplateRepository::class);
+        $repository->method('findForRendering')->willReturn(null);
+
+        return new EmailTemplateRenderer(
+            new Environment($loader),
+            $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => 'https://example.test']),
+            new EmailLayoutRegistry(),
+            new EmailAttachmentRegistry(),
+            $repository,
+            $registry,
+            new EmailTemplateFactory(),
+            'fr'
+        );
+    }
+
+    // The one block whose html is written out as it came: a fragment a bundle rendered, never anything an admin typed
+    public function testASlotBlockWritesTheFragmentTheCallerHandedOver(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_SLOT)->setLabel('items');
+
+        $html = $this->createRenderer()->renderBody($emailTemplate, ['slots' => ['items' => '<table id="the-order"></table>']]);
+
+        $this->assertStringContainsString('<table id="the-order"></table>', $html);
+    }
+
+    // An order carrying no gift card must not show the gap where one would have been: an empty fragment takes its row with it
+    public function testASlotWithNothingInItRendersNothingAtAll(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_SLOT)->setLabel('gift_cards');
+
+        $html = $this->createRenderer()->renderBody($emailTemplate, ['slots' => ['gift_cards' => '']]);
+
+        $this->assertStringNotContainsString('<td', $html);
+    }
+
+    // A slot names a fragment, it does not name a placeholder: running admin-authored "{{ }}" through markup a bundle rendered is the injection hole the rest of this class exists to avoid
+    public function testASlotIsNeverResolvedAgainstThePlaceholders(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_SLOT)->setLabel('items');
+
+        $html = $this->createRenderer()->renderBody($emailTemplate, [
+            'slots' => ['items' => '<p>{{ secret }}</p>'],
+            'secret' => 'leaked',
+        ]);
+
+        $this->assertStringContainsString('{{ secret }}', $html);
+        $this->assertStringNotContainsString('leaked', $html);
+    }
+
+    // The language is the recipient's, and it has to reach the lookup: a reminder sent by a nightly command carries the customer's, which is neither the request's nor the site's
+    public function testRenderNamedHandsTheRecipientsLanguageToTheLookup(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_HEADING)->setHeading('Hallo');
+
+        $loader = new FilesystemLoader();
+        $loader->addPath(__DIR__ . '/../../templates', 'c975LUi');
+        $configService = $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => 'https://example.test']);
+
+        $asked = [];
+        $repository = $this->createStub(EmailTemplateRepository::class);
+        $repository->method('findForRendering')->willReturnCallback(
+            function (string $name, ?string $locale, string $defaultLocale) use (&$asked, $emailTemplate): EmailTemplate {
+                $asked = [$name, $locale, $defaultLocale];
+
+                return $emailTemplate;
+            }
+        );
+
+        $renderer = new EmailTemplateRenderer(new Environment($loader), $configService, new EmailLayoutRegistry(), new EmailAttachmentRegistry(), $repository, new EmailTemplateProviderRegistry(), new EmailTemplateFactory(), 'fr');
+        $renderer->renderNamed('basket_reminder', [], 'de');
+
+        $this->assertSame(['basket_reminder', 'de', 'fr'], $asked);
     }
 }

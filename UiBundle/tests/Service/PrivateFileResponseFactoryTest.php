@@ -53,6 +53,53 @@ class PrivateFileResponseFactoryTest extends TestCase
         $this->assertStringContainsString('filename=invoice.pdf', $response->headers->get('Content-Disposition'));
     }
 
+    public function testCreateInlineResponseReturnsNullWhenFileIsMissing(): void
+    {
+        $factory = new PrivateFileResponseFactory();
+
+        $this->assertNull($factory->createInlineResponse($this->sourceDir . '/missing.mp4'));
+    }
+
+    public function testCreateInlineResponseBuildsAnInlineResponseTheBrowserPlaysInThePage(): void
+    {
+        $absolutePath = $this->sourceDir . '/asset-abc123.mp4';
+        file_put_contents($absolutePath, 'content');
+
+        $factory = new PrivateFileResponseFactory();
+        $response = $factory->createInlineResponse($absolutePath, 'teaser.mp4');
+
+        $this->assertNotNull($response);
+        $this->assertSame($absolutePath, $response->getFile()->getPathname());
+        $this->assertStringStartsWith(ResponseHeaderBag::DISPOSITION_INLINE, $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('filename=teaser.mp4', $response->headers->get('Content-Disposition'));
+    }
+
+    // A paid asset kept by a shared cache would be served to whoever asks that cache next
+    public function testCreateInlineResponseIsPrivateAndNosniff(): void
+    {
+        $absolutePath = $this->sourceDir . '/asset-abc123.jpg';
+        file_put_contents($absolutePath, 'content');
+
+        $factory = new PrivateFileResponseFactory();
+        $response = $factory->createInlineResponse($absolutePath);
+
+        $this->assertTrue($response->headers->hasCacheControlDirective('private'));
+        $this->assertFalse($response->headers->hasCacheControlDirective('public'));
+        $this->assertSame('nosniff', $response->headers->get('X-Content-Type-Options'));
+    }
+
+    // The file's own name when none is given, so a caller gating a media never has to repeat it
+    public function testCreateInlineResponseFallsBackToTheFilesOwnName(): void
+    {
+        $absolutePath = $this->sourceDir . '/asset-abc123.jpg';
+        file_put_contents($absolutePath, 'content');
+
+        $factory = new PrivateFileResponseFactory();
+        $response = $factory->createInlineResponse($absolutePath);
+
+        $this->assertStringContainsString('filename=asset-abc123.jpg', $response->headers->get('Content-Disposition'));
+    }
+
     // Regression: rebuilding the filename via SplFileInfo::getBasename()/getExtension() used to append a stray trailing dot when $downloadFilename had no extension
     public function testCreateDownloadResponseDoesNotAppendATrailingDotForAnExtensionLessFilename(): void
     {

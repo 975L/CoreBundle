@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Service\LegalDocument;
 use c975L\UiBundle\Service\LegalModelCatalog;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
 use c975L\UiBundle\Service\LegalModelRenderer;
@@ -21,6 +22,7 @@ class LegalModelExtension
 {
     public function __construct(
         private readonly LegalModelRenderer $renderer,
+        private readonly LegalDocument $legalDocument,
         private readonly LegalModelPlaceholders $placeholders,
         private readonly RequestStack $requestStack,
     ) {
@@ -43,6 +45,16 @@ class LegalModelExtension
             (string) ($data['model'] ?? ''),
             $data['latestUpdate'] ?? null,
             (array) ($data['customization'] ?? []),
+        );
+    }
+
+    // The site's own copy of a document, which is the only one a customer ever accepted: the "legal_model" block's version where the site rewrote it, the model as shipped otherwise. What every page, file and attachment carrying a legal document reads, so none of them can come to say something else (see LegalDocument)
+    #[AsTwigFunction('legal_document_html', isSafe: ['html'])]
+    public function legalDocumentHtml(string $model, ?string $locale = null): string
+    {
+        return $this->legalDocument->html(
+            $model,
+            $locale ?? $this->requestStack->getCurrentRequest()?->getLocale() ?? LegalModelCatalog::FALLBACK_LOCALE,
         );
     }
 

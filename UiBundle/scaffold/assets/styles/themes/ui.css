@@ -62,6 +62,28 @@
     /* --rating-off: color-mix(in srgb, var(--text) 25%, var(--background)); */
     /* --rating-size: 1.1em; */
 
+    /* The reviews section drawn on the reviewed thing's own page, and the grid of cards inside it */
+    /* --reviews-margin-block: 2rem; */
+    /* --review-min-width: 18rem; */
+    /* --review-list-gap: 1rem; */
+
+    /* A review card as rendered inside a "collection" block - transparent by default, i.e. the page shows through, the surrounding block owning the surface */
+    /* --review-background: transparent; */
+    /* --review-border-color: #dcdcdc; */
+    /* --review-gap: 0.5rem; */
+    /* --review-padding: 1rem; */
+    /* --review-radius: 0.5rem; */
+
+    /* The author's avatar, always square whatever the platform serves */
+    /* --review-avatar-size: 48px; */
+
+    /* The rating row. Both are set, an unfilled star staying in the flow so every card's rating takes the same width */
+    /* --review-star-color: #d0d0d0; */
+    /* --review-star-color-filled: #f5a623; */
+
+    /* The date, the verified badge and the reply label, all secondary to the review itself */
+    /* --review-secondary-size: 0.875em; */
+
     /* The wishlist heart - the same two-color reading as the rating row above: filled in the red a heart is read in once the visitor put the thing aside, a quarter of the page ink until then. Sized in em so it follows the type size of the card or the sheet it is dropped in */
     /* --favorite-on: #e0245e; */
     /* --favorite-off: color-mix(in srgb, var(--text) 25%, var(--background)); */

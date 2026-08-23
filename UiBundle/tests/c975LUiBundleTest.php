@@ -105,7 +105,7 @@ class c975LUiBundleTest extends TestCase
 
         new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
-        $this->assertSame(['ui_form', 'ui_rating', 'ui_favorite'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
+        $this->assertSame(['ui_form', 'ui_rating', 'ui_favorite', 'ui_review'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
 
         $services = file_get_contents(__DIR__ . '/../config/services.yaml');
         $this->assertStringContainsString(

@@ -14,9 +14,10 @@ namespace c975L\UiBundle\Model;
 final class EmailSendRequest
 {
     /**
-     * @param ?string $bcc        a blind copy, invisible to the recipient - unlike copyToEmail, which sends a second, separate message. What a shop keeping a record of every order email needs
-     * @param bool    $wrapLayout only meaningful alongside "template": renders it and wraps the result through EmailLayoutRegistry before sending, so a bundle's own email body comes out in the site's branded layout without that template having to {% extends %} a path it would have to know. The body template must then render the body alone, with no layout of its own. Ignored on an "html" request, already-rendered markup being the caller's own call
-     * @param ?string $text       a plain-text body, sent as such - no template, no layout, nothing to render. What an operational digest written by a command needs: it goes to an administrator, not to a visitor, and gains nothing from branding. Last parameter so the positional signature stays what it was
+     * @param ?string           $bcc         a blind copy, invisible to the recipient - unlike copyToEmail, which sends a second, separate message. What a shop keeping a record of every order email needs
+     * @param bool              $wrapLayout  only meaningful alongside "template": renders it and wraps the result through EmailLayoutRegistry before sending, so a bundle's own email body comes out in the site's branded layout without that template having to {% extends %} a path it would have to know. The body template must then render the body alone, with no layout of its own. Ignored on an "html" request, already-rendered markup being the caller's own call
+     * @param ?string           $text        a plain-text body, sent as such - no template, no layout, nothing to render. What an operational digest written by a command needs: it goes to an administrator, not to a visitor, and gains nothing from branding
+     * @param EmailAttachment[] $attachments files travelling with the message. Appended last, like $text before it, so the positional signature stays what it was. A copy sent to copyToEmail carries them too - it is the same message, sent to a second address
      */
     public function __construct(
         public readonly string $subject,
@@ -33,6 +34,7 @@ final class EmailSendRequest
         public readonly ?string $bcc = null,
         public readonly bool $wrapLayout = false,
         public readonly ?string $text = null,
+        public readonly array $attachments = [],
     ) {
     }
 }

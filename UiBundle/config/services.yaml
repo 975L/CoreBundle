@@ -12,6 +12,9 @@ services:
         # Video/ excluded: an enum and the value object it builds, read statically by whoever needs them - autowiring ResolvedVideo fails on the enum the container refuses to instantiate
         exclude: '../src/{DependencyInjection,Entity,Maker,Model,Testing,Video}'
 
+    # Three classes implement PdfGeneratorInterface - the two engines and the service picking between them - so the contract has to say which one a caller gets. It is the picker: which engine draws a document is decided per site from "ui-pdf-engine", and nothing calling for a PDF has to know there are two (see PdfGenerator)
+    c975L\UiBundle\Contract\PdfGeneratorInterface: '@c975L\UiBundle\Service\PdfGenerator'
+
     c975L\UiBundle\Service\StylesheetProvider:
         tags:
             - { name: 'ui.stylesheet', priority: 100 }
@@ -40,6 +43,11 @@ services:
     c975L\UiBundle\Controller\FavoriteController:
         arguments:
             $favoriteLimiterFactory: '@?limiter.ui_favorite'
+
+    # Same reading again for the public review form, which writes a row anyone can ask for
+    c975L\UiBundle\Controller\ReviewController:
+        arguments:
+            $reviewLimiterFactory: '@?limiter.ui_review'
 
     # NelmioSecurityBundle registers its CSP listener under its own service id alone, aliasing nothing on the class - so CspNonceProvider, which type-hints that class, is not autowirable in a consuming app and brings the whole container down on the first cache:clear
     # Wired here rather than aliased: the listener only exists once a site has configured a csp section, and a site that has not is one whose pages carry no nonce at all - it gets an empty one rather than a container that refuses to compile (see CspNonceProvider::styleNonce)

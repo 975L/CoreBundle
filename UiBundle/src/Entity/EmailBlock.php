@@ -26,6 +26,9 @@ class EmailBlock
     public const TYPE_SPACER = 'spacer';
     public const TYPE_FIELDS_TABLE = 'fields_table';
 
+    // A fragment the sending code computes and hands over, not something an admin writes: an order's lines, its delivery address, its download links. The block says where it goes and under which name, the code says what it holds (see EmailTemplateRenderer and the "slots" variable)
+    public const TYPE_SLOT = 'slot';
+
     public const TYPES = [
         self::TYPE_HEADING,
         self::TYPE_TEXT,
@@ -34,6 +37,13 @@ class EmailBlock
         self::TYPE_DIVIDER,
         self::TYPE_SPACER,
         self::TYPE_FIELDS_TABLE,
+        self::TYPE_SLOT,
+    ];
+
+    // The two kinds whose content the code supplies rather than the admin: an order's lines, a form's submitted fields. They are what makes an email carry what it is for, so a seeded template keeps them - they move, they are never deleted (see EmailTemplateCrudController and EmailBlockType)
+    public const DATA_TYPES = [
+        self::TYPE_FIELDS_TABLE,
+        self::TYPE_SLOT,
     ];
 
     public const LEVEL_H1 = 'h1';
@@ -85,6 +95,12 @@ class EmailBlock
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    // Whether this block is one the code fills in, and so one a seeded template must keep
+    public function isDataBlock(): bool
+    {
+        return in_array($this->type, self::DATA_TYPES, true);
     }
 
     public function getEmailTemplate(): ?EmailTemplate

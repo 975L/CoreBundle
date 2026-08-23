@@ -12,15 +12,15 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// SiteBundle's layout writes a <base href="…/">, against which a bare "#anchor" resolves: every entry of the summary then leads to the home page, silently, on every site running that layout
+// A bare fragment is what a summary entry links to - it used to have to name the page first, the layout writing a <base href="…/"> a fragment resolved against, which sent every entry to the home page. The base went with the merge into this bundle's layout in 08/2026
 class TocAnchorHrefTest extends TestCase
 {
-    public function testAnEntryNamesThePageBeforeItsFragment(): void
+    public function testAnEntryLinksToItsFragmentAlone(): void
     {
         $twig = $this->template();
 
-        $this->assertStringContainsString('href="{{ app.request.requestUri }}#{{ entry.anchor }}"', $twig);
-        $this->assertStringNotContainsString('href="#{{ entry.anchor }}"', $twig, 'A bare fragment resolves against the layout\'s <base>, sending every summary entry to the home page.');
+        $this->assertStringContainsString('href="#{{ entry.anchor }}"', $twig);
+        $this->assertStringNotContainsString('app.request.requestUri', $twig, 'Naming the page before the fragment makes every summary entry a full navigation, the layout writing no <base> to resolve against any more.');
     }
 
     // The controller reads the anchor off the attribute, never off the href: that is what keeps the two independent

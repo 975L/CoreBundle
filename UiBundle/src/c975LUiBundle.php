@@ -18,7 +18,9 @@ use c975L\UiBundle\DependencyInjection\Compiler\BlockOwnerResolverPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CacheInvalidatorPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\EmailAttachmentProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailLayoutProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\EmailTemplateProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FavoriteItemProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FontProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormActionProviderPass;
@@ -28,6 +30,8 @@ use c975L\UiBundle\DependencyInjection\Compiler\FormThemeRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\GalleryShowcaseProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\MediaUsageProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\ReviewReplyPublisherPass;
+use c975L\UiBundle\DependencyInjection\Compiler\ReviewVerifierPass;
 use c975L\UiBundle\DependencyInjection\Compiler\SameAsProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ScriptAdminRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ScriptRegistryPass;
@@ -46,6 +50,7 @@ class c975LUiBundle extends AbstractBundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new BlockRegistryPass());
+        $container->addCompilerPass(new EmailTemplateProviderPass());
         $container->addCompilerPass(new BlockFixtureProviderPass());
         $container->addCompilerPass(new PlaceholderMediaProviderPass());
         $container->addCompilerPass(new BlockOwnerResolverPass());
@@ -55,6 +60,8 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new FavoriteItemProviderPass());
         $container->addCompilerPass(new GalleryShowcaseProviderPass());
         $container->addCompilerPass(new SameAsProviderPass());
+        $container->addCompilerPass(new ReviewReplyPublisherPass());
+        $container->addCompilerPass(new ReviewVerifierPass());
         $container->addCompilerPass(new StylesheetRegistryPass());
         $container->addCompilerPass(new StylesheetManagementRegistryPass());
         $container->addCompilerPass(new ScriptRegistryPass());
@@ -64,6 +71,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new BlockEditUrlProviderPass());
         $container->addCompilerPass(new BlockLocationProviderPass());
         $container->addCompilerPass(new EmailLayoutProviderPass());
+        $container->addCompilerPass(new EmailAttachmentProviderPass());
         $container->addCompilerPass(new FontProviderPass());
         $container->addCompilerPass(new FormThemeRegistryPass());
         $container->addCompilerPass(new FormActionProviderPass());
@@ -97,6 +105,12 @@ class c975LUiBundle extends AbstractBundle
                     'policy' => 'sliding_window',
                     'limit' => 60,
                     'interval' => '10 minutes',
+                ],
+                // The public review form (see ReviewController), declared for the same reason. Far tighter than the three above: writing a review is a rare, deliberate act, and three an hour from one caller is already more than anyone has to say
+                'ui_review' => [
+                    'policy' => 'sliding_window',
+                    'limit' => 3,
+                    'interval' => '1 hour',
                 ],
             ],
         ]);

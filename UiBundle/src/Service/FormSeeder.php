@@ -26,8 +26,12 @@ class FormSeeder
         private readonly EntityManagerInterface $entityManager,
         private readonly FormRepository $formRepository,
         private readonly EmailTemplateRepository $emailTemplateRepository,
+        private readonly EmailTemplateFactory $emailTemplateFactory,
         #[Autowire(param: 'kernel.default_locale')]
         private readonly string $defaultLocale,
+        /** @var string[] */
+        #[Autowire(param: 'kernel.enabled_locales')]
+        private readonly array $enabledLocales = [],
     ) {
     }
 
@@ -70,24 +74,105 @@ class FormSeeder
     }
 
     /**
-     * Idempotent, seeding a restricted EmailTemplate whose name is locked but whose blocks stay editable.
+     * Idempotent, seeding one restricted EmailTemplate per language the site answers in - name locked, blocks editable.
+     *
+     * One row per locale and not one row with translated blocks: an e-mail is composed in the back-office as the
+     * thing it is read as, so the person writing the German one edits German text, and a language nobody writes
+     * simply has no row (see EmailTemplateRepository::findForRendering for what is sent then).
+     *
+     * A template written before e-mails carried a language is adopted rather than duplicated: the site's own row is
+     * that very one, given the locale it was always read in (see adoptLocaleless() - c975l:ui:email-templates:ensure
+     * does the same for every row at once, and neither has to run before the other).
+     *
+     * The site's own language always gets its row, even when the caller ships no blocks for it and none in English:
+     * an empty template is one an admin can fill, whereas no template at all is an e-mail nobody can edit - it is
+     * still sent, EmailTemplateRenderer::renderNamed() falling back on the declaration this was seeded from, but
+     * the back-office has nothing to show for it. The other languages are seeded only where the caller actually
+     * wrote them - never with somebody else's words.
      *
      * @param array<string, array<int, array{0: string, 1: ?string, 2: ?string, 3: ?string, 4: ?string, 5: ?string}>> $blocksByLocale locale => list of [type, heading, level, content, label, url] tuples, unused positions left null
+     *
+     * @return int how many data blocks were backfilled into templates already in place - reported by the command, a
+     *             block appearing in a site's e-mail being something its admin should read about rather than discover
      */
-    public function ensureEmailTemplate(string $name, array $blocksByLocale): void
+    public function ensureEmailTemplate(string $name, array $blocksByLocale): int
     {
-        if (null !== $this->emailTemplateRepository->findOneBy(['name' => $name])) {
-            return;
+        $backfilled = 0;
+
+        foreach (array_unique([$this->defaultLocale, ...$this->enabledLocales]) as $locale) {
+            $isDefault = $locale === $this->defaultLocale;
+            $blocks = $blocksByLocale[$locale] ?? ($isDefault ? ($blocksByLocale['en'] ?? []) : []);
+            if (!$isDefault && [] === $blocks) {
+                continue;
+            }
+
+            $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name, 'locale' => $locale])
+                ?? ($isDefault ? $this->adoptLocaleless($name) : null);
+
+            if ($emailTemplate instanceof EmailTemplate) {
+                $backfilled += $this->backfillEmailTemplate($emailTemplate, $blocks);
+
+                continue;
+            }
+
+            $this->entityManager->persist($this->emailTemplateFactory->build($name, $locale, $blocks));
         }
 
-        $blocks = $this->forLocale($blocksByLocale);
+        return $backfilled;
+    }
 
-        $emailTemplate = new EmailTemplate()
-            ->setName($name)
-            ->setRestricted(true);
+    // A template written before e-mails had a language, given the site's own rather than left beside a duplicate of itself. Only looked up when the site's locale has no row of its own, so the collision c975l:ui:email-templates:ensure warns about (both versions in place, one name for the two) can't be reached from here. The row is managed, so nothing is persisted: the caller's flush carries it, as it does everything else seeded here
+    private function adoptLocaleless(string $name): ?EmailTemplate
+    {
+        $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name, 'locale' => '']);
 
-        $position = 0;
+        return $emailTemplate?->setLocale($this->defaultLocale);
+    }
+
+    /**
+     * Gives a template already in place the data blocks its declaration has gained since - once each, and never again.
+     *
+     * A declaration goes on growing after the sites that use it were built: without this, a block added to an e-mail
+     * would only ever reach the sites created after it, which is no way to ship a feature. Only data blocks (slots,
+     * fields tables) are backfilled - they carry what the code renders and are identified by their name, whereas a
+     * sentence is the admin's to write and has no identity to match on.
+     *
+     * "Once each" is what $seededBlocks is for: a block this template has already been offered is never offered
+     * again, so one an admin took out on purpose stays out instead of coming back on every deployment. A template
+     * seeded before that column existed records what it already holds on the first run, and only receives what it
+     * genuinely never had.
+     *
+     * Appended at the end rather than at its declared position: the order of a composed template is the admin's,
+     * and there is no telling where a new block belongs among blocks they have moved around.
+     *
+     * @param array<int, array{0: string, 1: ?string, 2: ?string, 3: ?string, 4: ?string, 5: ?string}> $blocks
+     */
+    private function backfillEmailTemplate(EmailTemplate $emailTemplate, array $blocks): int
+    {
+        $added = 0;
+        $held = [];
+        $position = -1;
+        foreach ($emailTemplate->getBlocks() as $block) {
+            $position = max($position, $block->getPosition() ?? 0);
+            if ($block->isDataBlock() && null !== $block->getLabel()) {
+                $held[] = $block->getLabel();
+            }
+        }
+
+        $changed = false;
         foreach ($blocks as [$type, $heading, $level, $content, $label, $url]) {
+            if (!in_array($type, EmailBlock::DATA_TYPES, true) || null === $label) {
+                continue;
+            }
+
+            // Held right now, or offered once before and since removed: either way this template has had it
+            if (in_array($label, $held, true) || $emailTemplate->hasBlockBeenSeeded($label)) {
+                $emailTemplate->markBlockSeeded($label);
+                $changed = true;
+
+                continue;
+            }
+
             $emailTemplate->addBlock(
                 new EmailBlock()
                     ->setType($type)
@@ -96,11 +181,18 @@ class FormSeeder
                     ->setContent($content)
                     ->setLabel($label)
                     ->setUrl($url)
-                    ->setPosition($position++)
+                    ->setPosition(++$position)
             );
+            $emailTemplate->markBlockSeeded($label);
+            $changed = true;
+            ++$added;
         }
 
-        $this->entityManager->persist($emailTemplate);
+        if ($changed) {
+            $this->entityManager->persist($emailTemplate);
+        }
+
+        return $added;
     }
 
     // A Form seeded by an earlier version brought up to date in place - only ever on a still-restricted Form/field, so nothing an admin has taken over is touched

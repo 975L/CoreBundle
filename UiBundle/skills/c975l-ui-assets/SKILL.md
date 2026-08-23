@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, toc.js, --icon-filter."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -10,7 +10,7 @@ description: "Use this skill when a stylesheet, a script, a font or a design tok
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Listener/ThemeVariablesCssListener.php`, `sass/_tokens.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`
+`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Listener/ThemeVariablesCssListener.php`, `sass/_tokens.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`, `templates/layout.html.twig`
 
 **Related skills:** `c975l-blocks`, `c975l-media`, `c975l-forms-emails` in this same bundle, and `c975l-config` in ConfigBundle beside it.
 
@@ -48,6 +48,51 @@ imported dynamically, so **`connect()` usually runs after the page's DOMContentL
 An icon laid on the page itself is an `<img>`, which paints its file's own black and takes no
 `currentColor`: the ambience states the treatment in `--icon-filter`, `none` leaving a colored file
 alone. `.btn .icon` and `.card-header .icon` carry their own inversion and weigh more.
+
+## The page layout
+
+`@c975LUi/layout.html.twig` is the shell every c975L site renders through, and the **single source for the
+`<head>`**. SiteBundle's own layout `{% extends %}` it and adds only what having `Page`s, menus and a navbar
+brings; the scaffolded `templates/layout.html.twig` extends whichever of the two is installed, so a site gains
+or loses SiteBundle without a template changing. Nothing in the head is written twice.
+
+**What the template rendering a page may set** - all optional, all read with `is defined`:
+
+| Variable | What it does |
+|---|---|
+| `title` | The `<h1>` the `heading` block prints, and the `<title>`/`og:title`, suffixed with the site name |
+| `headingDisplayed` | `false` keeps the title in the tab and out of the page |
+| `robots` | The `robots` meta - `index, follow` by default, `noindex, follow` on an error page. Set it on a page not worth finding |
+| `summarySocialNetwork` | The `description` meta and `og:description`, reduced to plain text |
+| `ogImage` / `ogImageAlt` | The share image and what it shows, when the template knows better than the media library |
+| `alternates` | `hreflang => absolute url` for the same page in other languages, the group named whole |
+| `bodyClass` | A **block**: the class this one page adds to `<body>` |
+
+**A child layout hands its own values over** as top-level `{% set %}`s - `ogImageMedia`, `headingDisplayed`,
+`bodyClasses`, `bodyControllers`. Twig compiles the child's body ahead of the parent's, so they are already set
+when the parent reads them: that is how SiteBundle feeds the head from its entities without this bundle knowing
+one of them.
+
+**Blocks to fill:** `header` and `footer` are empty here, filled by a layout that has a navbar or footer menus.
+`main` wraps `heading`, `flashes`, `container` (holding `content`) and `share` (holding `navigationBottom`);
+`container` adds no wrapper of its own. In the head: `meta`, `preconnect`, `fontPreload`, `stylesheets`,
+`javascripts`/`importmap`, `title`.
+
+- **The CSP nonce is minted for `script-src` *and* `style-src`** in the same breath and printed once as
+  `<meta name="csp-nonce">`: Turbo nonces the inline tags it re-executes with that value *and* its own
+  progress-bar `<style>`, so both directives have to carry it. NelmioSecurityBundle mints one nonce per
+  response, so two adjacent `csp_nonce()` calls hand back the same string and put it in both.
+- **`bodyClasses`/`bodyClass` land on `<body>`**, not on the content: a screen laid on its own background - a
+  photo gallery, a reader - paints the navbar and the footer with it too.
+- **Preconnects** merge the `site-preconnect` list with Matomo's origin, that one gated on
+  `site-enable-matomo`: tracking off means no connection opened to a third party the site sends nothing to.
+- **Flashes are read only behind `ui_can_hold_flash()`** - reading `app.flashes` is what starts a session. A
+  label outside `success`/`info`/`warning`/`danger` is mapped onto its tint (`error`, `notice`) or falls back
+  on `info`, rather than printing black ink on the dark page's own background.
+- **An optional bundle's markup is `include`d, never called.** Twig resolves a function call at compile time
+  and an include at render time, so a template calling a bundle's function answers 500 on every page of a site
+  not installing it, whatever runtime guard wraps it. The share band is
+  `include('@c975LSocial/shareButtons/default.html.twig', ignore_missing: true)` for exactly that reason.
 
 ## The token layers
 
@@ -118,3 +163,7 @@ every bundle that copies it.
 - **Do not subscribe a lazily-imported controller to DOMContentLoaded** without reading
   `document.readyState` first.
 - **Do not hand-roll a drag gesture or a move grip** — `pointer-sort.js` and `sort-icon.js` are shared.
+- **Do not restate a `<head>` tag in a child layout** — extend `@c975LUi/layout.html.twig` and set the
+  variable it already reads.
+- **Do not call an optional bundle's Twig function from a shared template** — `include` its fragment with
+  `ignore_missing: true`. A call is resolved at compile time and 500s where that bundle is absent.

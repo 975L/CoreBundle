@@ -23,4 +23,23 @@ class EmailTemplateRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, EmailTemplate::class);
     }
+
+    /**
+     * The version of that e-mail to send to somebody being written to in that language.
+     *
+     * Three tries rather than one: the language asked for, the site's own, then whichever version exists. A
+     * customer who ordered in a language the shop has since stopped writing that e-mail in still gets the e-mail,
+     * in another language - which is worth more to them than the silence of a template nobody wrote.
+     */
+    public function findForRendering(string $name, ?string $locale, string $defaultLocale): ?EmailTemplate
+    {
+        foreach (array_unique(array_filter([$locale, $defaultLocale])) as $wanted) {
+            $emailTemplate = $this->findOneBy(['name' => $name, 'locale' => $wanted]);
+            if (null !== $emailTemplate) {
+                return $emailTemplate;
+            }
+        }
+
+        return $this->findOneBy(['name' => $name], ['locale' => 'ASC']);
+    }
 }

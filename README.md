@@ -47,6 +47,12 @@ return [
 ];
 ```
 
+## What the blocks look like
+
+![UiBundle blocks](.github/images/UiBlocks.png)
+
+One tile per kind of the 32 UiBundle ships, captured on the showcase at [bundles.975l.com](https://bundles.975l.com/pages/blocks/Ui), where every one of them is rendered live. A page is composed out of them in the back-office, with no template written for it - see [Built-in block kinds](UiBundle/README.md#built-in-block-kinds) for what each one takes.
+
 ## Documentation
 
 Each bundle keeps its own README, unchanged:

@@ -22,6 +22,7 @@ use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Twig\CreditsExtension;
 use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
 use c975L\UiBundle\Registry\ScriptAdminRegistry;
@@ -61,6 +62,10 @@ class DashboardControllerTest extends TestCase
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(fn (string $key) => $configs[$key] ?? null);
 
+        // Echoes the key back, so a test can tell which label the menu item was built from
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(static fn (string $id): string => $id);
+
         // Stands in for the real asset packages, which turn a logical path into its digested public URL
         $packages = $this->createStub(Packages::class);
         $packages->method('getUrl')->willReturnCallback(
@@ -78,11 +83,12 @@ class DashboardControllerTest extends TestCase
             $this->createStub(GuidedProjectBuilder::class),
             $guidedProjectMountBuilder,
             $configService,
+            new CreditsExtension($configService),
             $this->createStub(ScriptAdminRegistry::class),
             $stylesheetManagementRegistry,
             $this->createStub(FormThemeRegistry::class),
             $paginatorPageSize ?? new PaginatorPageSize(new RequestStack()),
-            $this->createStub(TranslatorInterface::class),
+            $translator,
             $packages,
             $debug,
             $this->projectDir ?? sys_get_temp_dir(),
@@ -117,6 +123,18 @@ class DashboardControllerTest extends TestCase
         }
 
         rmdir($directory);
+    }
+
+    private function getMadeByLabel(DashboardController $controller): ?string
+    {
+        foreach ($controller->configureMenuItems() as $item) {
+            $label = $item->getAsDto()->getLabel();
+            if (is_string($label) && preg_match('/<span>([^<]*)<\/span>/', $label, $match)) {
+                return $match[1];
+            }
+        }
+
+        return null;
     }
 
     private function getMadeByLogoSrc(DashboardController $controller): ?string
@@ -260,6 +278,18 @@ class DashboardControllerTest extends TestCase
     }
 
     // A config still holding the absolute URL used before must keep working
+    // The sidebar credit follows the same wording config as the footer one: a site only running the system is "Powered by", not "Made by"
+    public function testMadeByMenuItemFollowsTheWordingConfig(): void
+    {
+        $configs = [
+            'site-made-by-logo' => 'images/logo-975l.svg',
+            'site-made-by-url' => 'https://975l.com',
+        ];
+
+        $this->assertSame('label.made_by', $this->getMadeByLabel($this->createController(false, [], $configs)));
+        $this->assertSame('label.powered_by', $this->getMadeByLabel($this->createController(false, [], $configs + ['made-by-wording' => 'powered'])));
+    }
+
     public function testMadeByLogoAbsoluteUrlIsLeftUntouched(): void
     {
         $controller = $this->createController(false, [], [

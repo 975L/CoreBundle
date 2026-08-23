@@ -72,9 +72,9 @@ class MinimalLayoutTest extends TestCase
     {
         $layout = $this->layout();
 
-        $this->assertStringContainsString('<meta property="og:image:width" content="{{ ogImageMedia.width }}">', $layout);
-        $this->assertStringContainsString('<meta property="og:image:height" content="{{ ogImageMedia.height }}">', $layout);
-        $this->assertStringContainsString('ogImageMedia is not null and ogImageMedia.width and ogImageMedia.height', $layout);
+        $this->assertStringContainsString('<meta property="og:image:width" content="{{ ogImageMedia.intrinsicWidth }}">', $layout);
+        $this->assertStringContainsString('<meta property="og:image:height" content="{{ ogImageMedia.intrinsicHeight }}">', $layout);
+        $this->assertStringContainsString('ogImageMedia is not null and ogImageMedia.intrinsicWidth and ogImageMedia.intrinsicHeight', $layout);
     }
 
     // The three fallbacks are picked as medias and turned into an url once, so the alt and the dimensions above are read off whichever one won
@@ -119,7 +119,7 @@ class MinimalLayoutTest extends TestCase
     {
         $layout = $this->layout();
 
-        $this->assertStringContainsString('<link rel="preconnect" href="{{ matomoOrigin }}">', $layout);
+        $this->assertStringContainsString('<link rel="preconnect" href="{{ preconnectUrl }}">', $layout);
         $this->assertStringContainsString('matomoOrigin != app.request.getSchemeAndHttpHost()', $layout);
         $this->assertStringContainsString("{% set matomoOrigin = config('site-enable-matomo') and config('site-matomo-url') ?", $layout, 'the preconnect must follow the very switch that decides whether the snippet is rendered');
         $this->assertLessThan(

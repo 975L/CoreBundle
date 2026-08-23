@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Twig;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Service\LegalDocument;
 use c975L\UiBundle\Service\LegalModelCatalog;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
 use c975L\UiBundle\Service\LegalModelRenderer;
@@ -49,6 +50,7 @@ class LegalModelExtensionTest extends TestCase
 
         return new LegalModelExtension(
             new LegalModelRenderer($twig, $placeholders, new LegalModelCatalog()),
+            $this->createStub(LegalDocument::class),
             $placeholders,
             $requestStack,
         );
@@ -68,7 +70,7 @@ class LegalModelExtensionTest extends TestCase
         $functions = new AttributeExtension(LegalModelExtension::class)->getFunctions();
         $names = array_map(static fn ($function): string => $function->getName(), $functions);
 
-        $this->assertSame(['legal_var', 'legal_model', 'legal_model_html'], $names);
+        $this->assertSame(['legal_var', 'legal_model', 'legal_document_html', 'legal_model_html'], $names);
         foreach ($functions as $function) {
             $this->assertSame(['html'], $function->getSafe(new \Twig\Node\TextNode('', 0)));
         }

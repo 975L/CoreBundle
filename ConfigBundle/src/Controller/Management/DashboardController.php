@@ -21,6 +21,7 @@ use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Twig\CreditsExtension;
 use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
 use c975L\UiBundle\Registry\ScriptAdminRegistry;
@@ -51,6 +52,7 @@ class DashboardController extends AbstractDashboardController
         private readonly GuidedProjectBuilder $guidedProjectBuilder,
         private readonly GuidedProjectMountBuilder $guidedProjectMountBuilder,
         private readonly ConfigServiceInterface $configService,
+        private readonly CreditsExtension $creditsExtension,
         private readonly ScriptAdminRegistry $scriptAdminRegistry,
         private readonly StylesheetManagementRegistry $stylesheetManagementRegistry,
         private readonly FormThemeRegistry $formThemeRegistry,
@@ -174,7 +176,7 @@ class DashboardController extends AbstractDashboardController
         $madeByLogo = $this->configService->get('site-made-by-logo');
         $madeByUrl = $this->configService->get('site-made-by-url');
         if ($madeByLogo && $madeByUrl) {
-            $madeByLabel = htmlspecialchars($this->translator->trans('label.made_by', [], 'site'), ENT_QUOTES);
+            $madeByLabel = htmlspecialchars($this->translator->trans($this->creditsExtension->getMadeByLabel(), [], 'site'), ENT_QUOTES);
             // Through the asset packages: the label is raw HTML, so a relative path would resolve against /management/
             yield MenuItem::linkToUrl(
                 sprintf(

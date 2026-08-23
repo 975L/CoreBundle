@@ -11,6 +11,7 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
+use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
 use c975L\ConfigBundle\Controller\Management\RedirectCrudController;
 use c975L\ConfigBundle\Controller\Management\UserCrudController;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
@@ -51,6 +52,16 @@ class MenuProvider implements MenuProviderInterface
                 'icon' => 'fas fa-users',
                 // Same key as user_crud_index.html.twig/user_crud_edit.html.twig's own explanatory text - one text, reused, not a separate onboarding-only string (see MenuProviderInterface::getMenus())
                 'description' => 'label.info_user',
+            ],
+            // Sits next to the redirects and one tier down for the same reason: what the screen lists is the paths a redirect is missing on (see NotFoundCrudController), which is the same job seen from the other end
+            'not_found' => [
+                'controller' => NotFoundCrudController::class,
+                'label' => 'label.not_founds',
+                'translation_domain' => 'config',
+                'icon' => 'fas fa-link-slash',
+                'tier' => 'advanced',
+                'role' => $this->configService->get('site-role-editor'),
+                'description' => 'label.info_not_found',
             ],
             // Also declared here rather than by SiteBundle: a url that changed needs a redirect whether it was a Page's or a product's, and the rows answer before the router, so they never depended on page management
             'redirect' => [

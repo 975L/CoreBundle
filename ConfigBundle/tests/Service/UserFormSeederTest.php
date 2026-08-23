@@ -18,9 +18,13 @@ use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Repository\FormRepository;
+use c975L\UiBundle\Service\EmailTemplateFactory;
 use c975L\UiBundle\Service\FormSeeder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Translation\Loader\XliffFileLoader;
+use Symfony\Component\Translation\Translator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserFormSeederTest extends TestCase
 {
@@ -51,9 +55,44 @@ class UserFormSeederTest extends TestCase
         );
 
         return new UserFormSeeder(
-            new FormSeeder($entityManager, $formRepository, $emailTemplateRepository, $defaultLocale),
-            $entityManager
+            new FormSeeder($entityManager, $formRepository, $emailTemplateRepository, new EmailTemplateFactory(), $defaultLocale),
+            $entityManager,
+            self::translator()
         );
+    }
+
+    // Nothing seeded is a translation key left unresolved, in any of the three languages: it would be that string, not the sentence, that a visitor receives
+    public function testEverySentenceOfTheAccountEmailsIsTranslated(): void
+    {
+        $persisted = [];
+
+        foreach ($this->createSeeder($persisted)->getEmailTemplates() as $name => $blocksByLocale) {
+            $this->assertSame(['fr', 'en', 'es'], array_keys($blocksByLocale), $name);
+
+            foreach ($blocksByLocale as $locale => $blocks) {
+                foreach ($blocks as [, $heading, , , $label]) {
+                    foreach ([$heading, $label] as $wording) {
+                        $this->assertDoesNotMatchRegularExpression(
+                            '/^label\\./',
+                            (string) $wording,
+                            sprintf('"%s" (%s, %s) holds an untranslated key', $wording, $name, $locale)
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    // The bundle's real catalogues, the seeded wording being read from them: a mistyped key is not an error anywhere, trans() hands back the key and it is that string which would be seeded and mailed
+    private static function translator(): TranslatorInterface
+    {
+        $translator = new Translator('fr');
+        $translator->addLoader('xlf', new XliffFileLoader());
+        foreach (['fr', 'en', 'es'] as $locale) {
+            $translator->addResource('xlf', __DIR__ . '/../../translations/config.' . $locale . '.xlf', $locale, 'config');
+        }
+
+        return $translator;
     }
 
     /** @return list<Form> */

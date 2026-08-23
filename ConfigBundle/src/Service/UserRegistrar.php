@@ -26,7 +26,7 @@ class UserRegistrar
     ) {
     }
 
-    public function register(PasswordAuthenticatedUserInterface & UserInterface $user, string $plainPassword, string $verifyEmailRouteName, string $subject, string $to): bool
+    public function register(PasswordAuthenticatedUserInterface & UserInterface $user, string $plainPassword, string $verifyEmailRouteName, string $subject, string $to): void
     {
         // Symfony's interface only declares getPassword(), the setter living on the app's own entity (see the scaffold's User): checked rather than assumed, so a divergent entity says so instead of fataling
         if (!method_exists($user, 'setPassword')) {
@@ -46,11 +46,8 @@ class UserRegistrar
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $confirmationSent = $this->emailVerifier->sendEmailConfirmation($verifyEmailRouteName, $user, $subject, $to);
-
-        // Sent whatever happened to the confirmation email, the account existing either way - and its own result is dropped on purpose, a notification the visitor knows nothing about having no business turning their registration into a failure
+        // Results dropped on purpose, both of them: once flushed the account exists, and neither an undelivered confirmation email nor a notification the visitor knows nothing about has any business turning their registration into a failure - the visitor can always ask for a new verification email
+        $this->emailVerifier->sendEmailConfirmation($verifyEmailRouteName, $user, $subject, $to);
         $this->userCreationNotifier->notify($user);
-
-        return $confirmationSent;
     }
 }
