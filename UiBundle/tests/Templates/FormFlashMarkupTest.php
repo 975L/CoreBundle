@@ -64,6 +64,8 @@ class FormFlashMarkupTest extends TestCase
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/'));
         // What FlashExtension answers from the real request - covered on its own in FlashExtensionTest
         $twig->addFunction(new TwigFunction('ui_can_hold_flash', static fn (): bool => $canHoldFlash));
+        // ConfigBundle's own function, unrelated to the flash markup: answered empty so the GDPR information line stays out of the way
+        $twig->addFunction(new TwigFunction('config', static fn (string $slug): mixed => null));
 
         return $twig->render('components/Form/Form.html.twig', [
             'app' => new readonly class ($flashes) {

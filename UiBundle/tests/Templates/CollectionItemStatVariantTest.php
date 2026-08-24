@@ -59,6 +59,14 @@ class CollectionItemStatVariantTest extends TestCase
         $this->assertStringContainsString('class="card--accent-primary shadow"', $this->render(['title' => 'Kalaan', 'class' => ['card--accent-primary', 'shadow']]));
     }
 
+    // The "compact" variant is a class on the card and not a markup of its own, so it has to reach it beside whatever class the item already carried
+    public function testTheCompactVariantAddsItsClassToTheOneTheItemAlreadyCarries(): void
+    {
+        $this->assertStringContainsString('class="card--compact"', $this->render(['title' => 'Kalaan', 'content' => 'Text', 'variant' => 'compact']));
+        $this->assertStringContainsString('class="faction-guilde card--compact"', $this->render(['title' => 'Kalaan', 'content' => 'Text', 'class' => 'faction-guilde', 'variant' => 'compact']));
+        $this->assertStringNotContainsString('card--compact', $this->render(['title' => 'Kalaan', 'content' => 'Text']));
+    }
+
     // An item carrying none of them is the plain teaser this kind has always rendered
     public function testAnItemCarryingNoneOfThemKeepsThePlainCard(): void
     {

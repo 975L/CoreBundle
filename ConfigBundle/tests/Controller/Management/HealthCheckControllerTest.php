@@ -24,6 +24,7 @@ use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ExportFormat;
 use c975L\ConfigBundle\Service\Export\TableExporter;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -90,6 +91,11 @@ class HealthCheckControllerTest extends TestCase
         return $runProgress;
     }
 
+    private function createManager(): EntityManagerInterface
+    {
+        return $this->createStub(EntityManagerInterface::class);
+    }
+
     private function createTrendChartBuilder(): HealthCheckTrendChartBuilder
     {
         $builder = $this->createStub(HealthCheckTrendChartBuilder::class);
@@ -136,6 +142,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -197,6 +204,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -245,6 +253,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -289,6 +298,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -326,6 +336,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress($progress),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -361,6 +372,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(['done' => 12, 'total' => 12, 'finished' => true, 'timedOut' => false]),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -403,6 +415,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $healthCheckRunProgress,
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -429,6 +442,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(false),
@@ -469,6 +483,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $messageBus,
             $healthCheckRunProgress,
+            $this->createManager(),
         );
         [$requestStack, $session] = $this->createRequestStackWithSession();
         $controller->setContainer($this->createContainer([
@@ -518,6 +533,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $messageBus,
             $healthCheckRunProgress,
+            $this->createManager(),
         );
         [$requestStack] = $this->createRequestStackWithSession();
         $controller->setContainer($this->createContainer([
@@ -555,6 +571,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $messageBus,
             $healthCheckRunProgress,
+            $this->createManager(),
         );
         [$requestStack, $session] = $this->createRequestStackWithSession();
         $controller->setContainer($this->createContainer([
@@ -585,6 +602,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(false),
@@ -606,6 +624,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(['done' => 3, 'total' => 12, 'finished' => false, 'timedOut' => false]),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -631,6 +650,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -657,6 +677,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(false),
@@ -689,6 +710,7 @@ class HealthCheckControllerTest extends TestCase
                 'status' => HealthCheckResult::STATUS_OK,
                 'summary' => 'Perf 95',
                 'checkedAt' => '2026-07-24 10:00:00',
+                'acknowledgedAt' => '',
             ]])
             ->willReturn($expectedResponse);
 
@@ -703,6 +725,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(true),
@@ -726,11 +749,117 @@ class HealthCheckControllerTest extends TestCase
             $this->createTranslator(),
             $this->createMessageBus(),
             $this->createRunProgress(),
+            $this->createManager(),
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker(false),
         ]));
 
         $controller->exportCsv();
+    }
+
+    // What an admin who just fixed something has instead of re-running the whole check
+    public function testAcknowledgeStampsTheRowAndFlushes(): void
+    {
+        $result = new HealthCheckResult()->setKind('book-links')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_ERROR)->setSummary('broken')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+
+        $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
+        $healthCheckResultRepository->method('find')->willReturn($result);
+
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->once())->method('flush');
+
+        $response = $this->acknowledgeThrough($healthCheckResultRepository, $manager, true, new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(['acknowledged' => true], json_decode($response->getContent(), true));
+        $this->assertTrue($result->isAcknowledged());
+    }
+
+    // Toggles rather than sets: an acknowledgement clicked by mistake is otherwise unrecoverable from the screen it was made on
+    public function testAcknowledgeClearsTheStampOnAnAlreadyAcknowledgedRow(): void
+    {
+        $result = new HealthCheckResult()->setKind('book-links')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_ERROR)->setSummary('broken')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'))->setAcknowledgedAt(new \DateTime('2026-07-25 09:00:00'));
+
+        $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
+        $healthCheckResultRepository->method('find')->willReturn($result);
+
+        $response = $this->acknowledgeThrough($healthCheckResultRepository, $this->createManager(), true, new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['acknowledged' => false], json_decode($response->getContent(), true));
+        $this->assertFalse($result->isAcknowledged());
+    }
+
+    // The token travels as a header, the button sending a fetch rather than submitting a form
+    public function testAcknowledgeReadsTheTokenFromTheRequestHeader(): void
+    {
+        $result = new HealthCheckResult()->setKind('book-links')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_ERROR)->setSummary('broken')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+
+        $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
+        $healthCheckResultRepository->method('find')->willReturn($result);
+
+        $request = new Request();
+        $request->headers->set('X-CSRF-Token', 'valid-token');
+
+        $response = $this->acknowledgeThrough($healthCheckResultRepository, $this->createManager(), true, $request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertTrue($result->isAcknowledged());
+    }
+
+    public function testAcknowledgeRejectsAnInvalidToken(): void
+    {
+        $result = new HealthCheckResult()->setKind('book-links')->setUrl('https://example.com/')->setStatus(HealthCheckResult::STATUS_ERROR)->setSummary('broken')->setCheckedAt(new \DateTime('2026-07-24 10:00:00'));
+
+        $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
+        $healthCheckResultRepository->method('find')->willReturn($result);
+
+        $manager = $this->createMock(EntityManagerInterface::class);
+        $manager->expects($this->never())->method('flush');
+
+        $response = $this->acknowledgeThrough($healthCheckResultRepository, $manager, false, new Request([], ['_token' => 'wrong-token']));
+
+        $this->assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertFalse($result->isAcknowledged());
+    }
+
+    public function testAcknowledgeAnswers404WhenTheRowIsGone(): void
+    {
+        $healthCheckResultRepository = $this->createStub(HealthCheckResultRepository::class);
+        $healthCheckResultRepository->method('find')->willReturn(null);
+
+        $response = $this->acknowledgeThrough($healthCheckResultRepository, $this->createManager(), true, new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    public function testAcknowledgeDeniesAccessWhenNotGranted(): void
+    {
+        $this->expectException(AccessDeniedException::class);
+
+        $this->acknowledgeThrough($this->createStub(HealthCheckResultRepository::class), $this->createManager(), true, new Request(), false);
+    }
+
+    private function acknowledgeThrough(HealthCheckResultRepository $healthCheckResultRepository, EntityManagerInterface $manager, bool $validToken, Request $request, bool $granted = true): Response
+    {
+        $controller = new HealthCheckController(
+            $healthCheckResultRepository,
+            $this->createStub(HealthCheckRunner::class),
+            $this->createAlertBuilder(),
+            $this->createAdviceBuilder(),
+            $this->createTableExporter(),
+            $this->createTrendChartBuilder(),
+            $this->createConfigService(),
+            $this->createTranslator(),
+            $this->createMessageBus(),
+            $this->createRunProgress(),
+            $manager,
+        );
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker($granted),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager($validToken),
+        ]));
+
+        return $controller->acknowledge($request, 12);
     }
 }

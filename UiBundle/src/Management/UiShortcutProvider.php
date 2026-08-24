@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Management\ShortcutProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\BlockShortcutController;
 use c975L\UiBundle\Controller\Management\EmailDebugShortcutController;
+use c975L\UiBundle\Controller\Management\ReviewShortcutController;
 use c975L\UiBundle\Controller\Management\StylesheetShortcutController;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -28,6 +29,7 @@ class UiShortcutProvider implements ShortcutProviderInterface
     public function getShortcuts(): array
     {
         $emailDebugEnabled = $this->configService->getBool($this->configService->get('email-debug'));
+        $reviewsEnabled = $this->configService->getBool($this->configService->get('ui-enable-reviews'));
 
         return [
             [
@@ -56,6 +58,18 @@ class UiShortcutProvider implements ShortcutProviderInterface
                 'route' => EmailDebugShortcutController::TOGGLE_ROUTE,
                 'active' => $emailDebugEnabled,
                 'role' => 'ROLE_SUPER_ADMIN',
+                'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
+            ],
+            [
+                'label' => $this->translator->trans(
+                    $reviewsEnabled ? 'label.reviews_disable' : 'label.reviews_enable',
+                    [],
+                    'ui',
+                ),
+                'icon' => 'fas fa-star',
+                'route' => ReviewShortcutController::TOGGLE_ROUTE,
+                'active' => $reviewsEnabled,
+                'role' => $this->configService->get('site-role-admin'),
                 'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
             ],
         ];

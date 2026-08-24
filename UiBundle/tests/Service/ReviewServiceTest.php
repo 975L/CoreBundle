@@ -17,6 +17,7 @@ use c975L\UiBundle\Registry\ReviewReplyRegistry;
 use c975L\UiBundle\Registry\ReviewVerifierRegistry;
 use c975L\UiBundle\Repository\ReviewRepository;
 use c975L\UiBundle\Service\RatingService;
+use c975L\UiBundle\Service\ReviewNotifier;
 use c975L\UiBundle\Service\ReviewService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -73,8 +74,33 @@ class ReviewServiceTest extends TestCase
         $review = $this->localReview(ReviewStatus::Published, 4);
 
         $ratingService = $this->createMock(RatingService::class);
+        $ratingService->method('getScale')->willReturn(5);
         $ratingService->expects($this->once())->method('record')->with('book', 12, 4, $this->anything());
         $ratingService->expects($this->never())->method('withdraw');
+
+        $this->service(ratingService: $ratingService)->syncRating($review);
+    }
+
+    // A review is always written out of five, the ratings are held on whatever the site set: 4/5 goes into the average of a site on ten as an 8, not as a 4
+    public function testTheScoreIsCarriedOverToTheScaleTheSiteHoldsItsRatingsOn(): void
+    {
+        $review = $this->localReview(ReviewStatus::Published, 4);
+
+        $ratingService = $this->createMock(RatingService::class);
+        $ratingService->method('getScale')->willReturn(10);
+        $ratingService->expects($this->once())->method('record')->with('book', 12, 8, $this->anything());
+
+        $this->service(ratingService: $ratingService)->syncRating($review);
+    }
+
+    // Rounded rather than truncated, and never below one: the lowest score anyone can leave is not a nought
+    public function testTheLowestScoreStaysAScoreOnEveryScale(): void
+    {
+        $review = $this->localReview(ReviewStatus::Published, 1);
+
+        $ratingService = $this->createMock(RatingService::class);
+        $ratingService->method('getScale')->willReturn(2);
+        $ratingService->expects($this->once())->method('record')->with('book', 12, 1, $this->anything());
 
         $this->service(ratingService: $ratingService)->syncRating($review);
     }
@@ -85,6 +111,7 @@ class ReviewServiceTest extends TestCase
         $review = $this->localReview(ReviewStatus::Rejected, 4);
 
         $ratingService = $this->createMock(RatingService::class);
+        $ratingService->method('getScale')->willReturn(5);
         $ratingService->expects($this->never())->method('record');
         $ratingService->expects($this->once())->method('withdraw')->with('book', 12, $this->anything());
 
@@ -97,6 +124,7 @@ class ReviewServiceTest extends TestCase
         $review = $this->localReview(ReviewStatus::Published, null);
 
         $ratingService = $this->createMock(RatingService::class);
+        $ratingService->method('getScale')->willReturn(5);
         $ratingService->expects($this->never())->method('record');
         $ratingService->expects($this->once())->method('withdraw');
 
@@ -109,6 +137,7 @@ class ReviewServiceTest extends TestCase
         $review = new Review()->setStatus(ReviewStatus::Published)->setRating(5);
 
         $ratingService = $this->createMock(RatingService::class);
+        $ratingService->method('getScale')->willReturn(5);
         $ratingService->expects($this->never())->method('record');
         $ratingService->expects($this->never())->method('withdraw');
 
@@ -128,6 +157,7 @@ class ReviewServiceTest extends TestCase
         ;
 
         $ratingService = $this->createMock(RatingService::class);
+        $ratingService->method('getScale')->willReturn(5);
         $ratingService->expects($this->never())->method('record');
         $ratingService->expects($this->never())->method('withdraw');
 
@@ -210,6 +240,15 @@ class ReviewServiceTest extends TestCase
         ;
     }
 
+    // A review nobody is told about waits in a screen nobody has a reason to open - the site is written to once what the visitor wrote is safely stored
+    public function testTheSiteIsToldOnceTheSubmissionIsStored(): void
+    {
+        $notifier = $this->createMock(ReviewNotifier::class);
+        $notifier->expects($this->once())->method('notify');
+
+        $this->service(notifier: $notifier)->submit(new Review()->setAuthorName('Jean D.')->setComment('Impeccable'));
+    }
+
     /**
      * @param array<string, string> $configs
      */
@@ -219,6 +258,7 @@ class ReviewServiceTest extends TestCase
         ?ReviewReplyRegistry $replyRegistry = null,
         array $configs = [],
         bool $verified = false,
+        ?ReviewNotifier $notifier = null,
     ): ReviewService {
         $configService = $this->createMock(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnCallback(fn (string $key): bool => \array_key_exists($key, $configs));
@@ -235,6 +275,7 @@ class ReviewServiceTest extends TestCase
             $verifierRegistry,
             $manager ?? $this->createMock(EntityManagerInterface::class),
             $configService,
+            $notifier ?? $this->createMock(ReviewNotifier::class),
         );
     }
 }

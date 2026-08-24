@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Management\ShortcutProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\BlockShortcutController;
 use c975L\UiBundle\Controller\Management\EmailDebugShortcutController;
+use c975L\UiBundle\Controller\Management\ReviewShortcutController;
 use c975L\UiBundle\Controller\Management\StylesheetShortcutController;
 use c975L\UiBundle\Management\UiShortcutProvider;
 use PHPUnit\Framework\TestCase;
@@ -30,11 +31,16 @@ class UiShortcutProviderTest extends TestCase
         return $translator;
     }
 
-    // Config double answering the "email-debug" key alone, the only one this provider reads
-    private function createConfigService(bool $emailDebugEnabled): ConfigServiceInterface
+    // Config double answering each key the provider reads with its own value - get() hands back the very slug so getBool() can tell the two switches apart, the provider reading them one through the other
+    private function createConfigService(bool $emailDebugEnabled, bool $reviewsEnabled = false): ConfigServiceInterface
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('getBool')->willReturn($emailDebugEnabled);
+        $configService->method('get')->willReturnCallback(static fn (string $key) => 'site-role-admin' === $key ? 'ROLE_ADMIN' : $key);
+        $configService->method('getBool')->willReturnCallback(static fn ($value) => match ($value) {
+            'email-debug' => $emailDebugEnabled,
+            'ui-enable-reviews' => $reviewsEnabled,
+            default => false,
+        });
 
         return $configService;
     }
@@ -45,7 +51,7 @@ class UiShortcutProviderTest extends TestCase
 
         $shortcuts = $provider->getShortcuts();
 
-        $this->assertCount(3, $shortcuts);
+        $this->assertCount(4, $shortcuts);
         $this->assertSame('label.block_clear_cache', $shortcuts[0]['label']);
         $this->assertSame(BlockShortcutController::CLEAR_CACHE_ROUTE, $shortcuts[0]['route']);
         $this->assertFalse($shortcuts[0]['active']);
@@ -89,5 +95,31 @@ class UiShortcutProviderTest extends TestCase
 
         $this->assertSame('label.email_debug_disable', $shortcuts[2]['label']);
         $this->assertTrue($shortcuts[2]['active']);
+    }
+
+    // Reviews off: the tile offers to turn them on, and stays neutral - a site collecting no review is not a site in a state to signal
+    public function testGetShortcutsOffersToEnableTheReviewsWhenTheyAreOff(): void
+    {
+        $provider = new UiShortcutProvider($this->createTranslator(), $this->createConfigService(false));
+
+        $shortcuts = $provider->getShortcuts();
+
+        $this->assertSame('label.reviews_enable', $shortcuts[3]['label']);
+        $this->assertSame(ReviewShortcutController::TOGGLE_ROUTE, $shortcuts[3]['route']);
+        $this->assertFalse($shortcuts[3]['active']);
+        $this->assertSame('ROLE_ADMIN', $shortcuts[3]['role']);
+        $this->assertSame(ShortcutProviderInterface::CATEGORY_TOGGLE, $shortcuts[3]['category']);
+    }
+
+    // Reviews on: the tile turns them off, and carries no 'warning' of its own - every tile saying "disable" is painted as one, ShortcutBuilder filling the flag from 'active'
+    public function testGetShortcutsOffersToDisableTheReviewsWhenTheyAreOn(): void
+    {
+        $provider = new UiShortcutProvider($this->createTranslator(), $this->createConfigService(false, reviewsEnabled: true));
+
+        $shortcuts = $provider->getShortcuts();
+
+        $this->assertSame('label.reviews_disable', $shortcuts[3]['label']);
+        $this->assertTrue($shortcuts[3]['active']);
+        $this->assertArrayNotHasKey('warning', $shortcuts[3]);
     }
 }

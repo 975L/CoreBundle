@@ -41,12 +41,15 @@ class ReviewType extends AbstractType
         $builder
             ->add('authorName', TextType::class, [
                 'label' => t('label.review_form_name', [], 'ui'),
+                // What the browser already knows about whoever is filling this, offered rather than typed again (WCAG 1.3.5)
+                'attr' => ['autocomplete' => 'name'],
                 'constraints' => [new NotBlank(), new Length(max: 255)],
             ])
             // Never displayed with the review: it is how the site answers its author, and how their score is kept apart from anyone else's (see ReviewService::voterFor())
             ->add('authorEmail', EmailType::class, [
                 'label' => t('label.review_form_email', [], 'ui'),
                 'help' => t('label.review_form_email_help', [], 'ui'),
+                'attr' => ['autocomplete' => 'email'],
                 'constraints' => [new NotBlank(), new Email(), new Length(max: 255)],
             ])
             // Optional on purpose: someone who wants to say something without scoring anything is still leaving a review, and forcing a number would make them invent one. Out of five and not on the site's ui-rating-scale: that setting is the ratings' own, and a review shown beside an imported one has to be read on the same scale as it (see Review::SCALE)
@@ -55,9 +58,14 @@ class ReviewType extends AbstractType
                 'choices' => array_combine(range(1, Review::SCALE), range(1, Review::SCALE)),
                 'placeholder' => t('label.review_form_rating_none', [], 'ui'),
                 'required' => false,
+                // Radios rather than a select, drawn as the very stars the published review will show (see form/review_rating_theme.html.twig): what is being asked for is a score out of five, and a drop-down list of five numbers says that less well than five stars do
+                'expanded' => true,
+                'block_prefix' => 'c975l_ui_review_rating',
             ])
             ->add('comment', TextareaType::class, [
                 'label' => t('label.review_form_comment', [], 'ui'),
+                // Ten rows like every other textarea this bundle renders (see FormSubmissionType): what is asked for here is a few sentences, and a two-row box asks for a few words
+                'attr' => ['rows' => 10],
                 'constraints' => [new NotBlank(), new Length(max: ReviewService::MAX_COMMENT_LENGTH)],
             ])
         ;

@@ -74,10 +74,6 @@
                 <source>description.site_form_delay</source>
                 <target>Délai minimum, en secondes, entre l'affichage et l'envoi d'un formulaire public avant de le considérer comme un bot</target>
             </trans-unit>
-            <trans-unit id="a2s6MLC">
-                <source>description.site_form_gdpr</source>
-                <target>Ajoute une case de consentement RGPD obligatoire aux formulaires publics</target>
-            </trans-unit>
             <trans-unit id="QbsOHOo">
                 <source>description.site_matomo_id</source>
                 <target>Identifiant du site Matomo (entier)</target>
@@ -209,10 +205,6 @@
             <trans-unit id="UdYcxIh">
                 <source>label.site_form_delay</source>
                 <target>Délai anti-bot des formulaires publics</target>
-            </trans-unit>
-            <trans-unit id="jM0HrcE">
-                <source>label.site_form_gdpr</source>
-                <target>Afficher la case à cocher RGPD sur les formulaires publics</target>
             </trans-unit>
             <trans-unit id="EDDAHIQ">
                 <source>label.site_matomo_id</source>

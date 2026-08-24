@@ -188,4 +188,47 @@ class ComponentCenteringAnalyzerTest extends TestCase
 
         $this->assertSame(['div', 'section'], $found);
     }
+
+    // What a page-wide rule meets is the element and not one of its classes: folded onto each class, a card is a "card" and a "box-shadow" standing apart, and the margin ".card" states no longer covers the utility written beside it
+    public function testElementsKeepsTheClassesOfOneElementTogether(): void
+    {
+        $tags = $this->writeTemplate('Card.html.twig', '<article class="card box-shadow">x</article>');
+
+        $this->assertSame([['classes' => ['card', 'box-shadow'], 'tags' => ['article']]], $tags);
+    }
+
+    // The same reading of a tag built by a Twig expression as tagsByClass(), the two answering off the very same scan
+    public function testElementsResolvesATagBuiltByATwigExpression(): void
+    {
+        $elements = $this->writeTemplate('Head.html.twig', "{% set tag = title ? 'section' : 'div' %}\n<{{ tag }} class=\"section-head\">x</{{ tag }}>");
+
+        $this->assertCount(1, $elements);
+        $this->assertSame(['section-head'], $elements[0]['classes']);
+
+        $found = $elements[0]['tags'];
+        sort($found);
+
+        $this->assertSame(['div', 'section'], $found);
+    }
+
+    // An element whose class list opens on a Twig expression names no class this reading can trust, and is left out rather than reported under an empty one
+    public function testElementsSkipsAnElementWithNoLiteralLeadingClass(): void
+    {
+        $this->assertSame([], $this->writeTemplate('Bare.html.twig', '<div class="{{ class }}">x</div>'));
+    }
+
+    // Writes one component template in a directory of its own, elements() scanning "<directory>/*/*.html.twig" as the real test does over templates/components
+    private function writeTemplate(string $name, string $twig): array
+    {
+        $templates = $this->directory . '/Component';
+        mkdir($templates, 0777, true);
+        file_put_contents($templates . '/' . $name, $twig);
+
+        $elements = ComponentCenteringAnalyzer::elements($this->directory);
+
+        unlink($templates . '/' . $name);
+        rmdir($templates);
+
+        return $elements;
+    }
 }

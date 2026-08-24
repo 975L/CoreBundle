@@ -790,7 +790,7 @@ Consecutive `card` and `flip_card` blocks are wrapped in one `.cards` flex row (
 
 `CardRowAlignmentTest` locks both, and the `display: contents` on the two wrappers they depend on.
 
-**How many fit on a line is the width's business, not the row's.** The row is a plain wrapping flex row of fixed-width items — three cards and their two gaps, six compact ones and their five, two big ones and their one — and that count holds because `--card-width` / `--card-width-compact` / `--card-width-big` are **read off the page measure** rather than written down (`sass/_tokens.scss`): each is the measure minus its two gutters minus the row's own gaps, divided by three, by six or by two, capped at `380px` / `190px` / `570px` and at `90vw` / `45vw` / `90vw`. On the default `1440px` page they resolve to exactly those caps, so nothing moves; on a site framing its content tighter — a `--section-wrap-max-width` of `1200px`, say — they narrow on a screen wide enough to hold the gutter at its `64px` cap, and the row still holds three, six and two. A hand-written `380px` did not: it was a number computed against the default measure, and every site that narrowed the wrap silently dropped a card off the line and had to recalculate the token for itself.
+**How many fit on a line is the width's business, not the row's.** The row is a plain wrapping flex row of fixed-width items — three cards and their two gaps, six compact ones and their five, two big ones and their one — and that count holds because `--card-width` / `--card-width-compact` / `--card-width-big` are **read off the page measure** rather than written down (`sass/_tokens.scss`): each is the measure minus its two gutters minus the row's own gaps, divided by three, by six or by two, capped at `380px` / `190px` / `570px`, and capped again on the viewport itself: `90vw` for the plain and the big card, which are one to the line on a phone anyway, and for the compact one what the wrap leaves once its two gutters and the one gap between a pair are taken off, halved — a compact card is meant to be counted **two at a time on a phone**, and `45vw` was not that: two of them plus that gap came to more than the wrap leaves, so the row broke to one card a line, the very look the size exists to avoid. On the default `1440px` page they all resolve to exactly those caps, so nothing moves; on a site framing its content tighter — a `--section-wrap-max-width` of `1200px`, say — they narrow on a screen wide enough to hold the gutter at its `64px` cap, and the row still holds three, six and two. A hand-written `380px` did not: it was a number computed against the default measure, and every site that narrowed the wrap silently dropped a card off the line and had to recalculate the token for itself.
 
 **What the row puts between two cards is a token too.** `--cards-gap` (`20px` by default) is declared in the token layer like every other one, read by `.cards` and read back by the three widths above, which take two of those gaps off, or five, or one. Widening it in a theme widens the row's gutters and narrows its cards in the same breath, where the two used to be a `20px` on the row and a hand-copied `40px` / `100px` / `20px` in the widths, free to drift apart.
 
@@ -1092,7 +1092,7 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 - **`Service\FormPrefillHelper`** lets app code pre-fill (and lock) a `Form`'s field(s) from session right before redirecting a visitor to it (e.g. a listing page's "Contact us about this" link setting the `subject` field) - no query string needed, cleared automatically once the submission succeeds.
 - **`Service\FormSeeder`** is how a bundle gets its own `Form`/`EmailTemplate` rows in place out of the box: `ensureForm(name, coreFieldsByLocale, action, actionConfig, linksByLocale)` and `ensureEmailTemplate(name, blocksByLocale)`, both idempotent, both seeding `restricted` rows. A `Form` seeded by an earlier version is backfilled in place rather than left stale, and a field's `url` - like the form's own `links` - is only ever written while it's still unset, so an admin's edit is never overwritten. `ensureEmailTemplate()` backfills the same way and returns how many data blocks it added (see "A declaration that grows after the sites were built"). Neither method flushes - the caller decides when, so a batch of seeds stays one transaction.
 - **`Contract\FormPageUrlProviderInterface`**/**`Registry\FormPageUrlRegistry`** and the **`form_url(name)`** Twig function answer where a named `Form` is actually reachable on the front end. A bundle displaying that form on something richer than this bundle's bare `ui_form_submit` route contributes its URL (SiteBundle answers with the `Page` carrying the matching `form` block, an admin-editable per-locale slug); the first provider with an answer wins, and with none the bare route is used - so a template linking to a form never has to know which bundles are installed.
-- **Two ConfigBundle keys** drive the shared protections, both under the *form* group: `site-form-delay` (seconds a submission must take at minimum, the timing half of `FormBotProtection`) and `site-form-gdpr` (whether the site-wide consent checkbox is shown). They live here rather than in SiteBundle, this bundle's form layer being what reads them.
+- **One ConfigBundle key** drives the shared protections, under the *form* group: `site-form-delay` (seconds a submission must take at minimum, the timing half of `FormBotProtection`). It lives here rather than in SiteBundle, this bundle's form layer being what reads it. The GDPR information line rendered under every form reads `url-privacy-policy` instead, declared by ConfigBundle among the other legal urls.
 
 ### reCAPTCHA
 
@@ -1177,19 +1177,21 @@ Only a listing rendered **outside the block cache** should ask for it: the html 
 
 ## Visitor reviews
 
-A visitor writes a few words about something the site presents, and nothing shows until somebody has read it. Same terms as [ratings](#visitor-ratings) above: the thing is **named, not related** - `Entity\Review` carries an `ownerType` string and an `ownerId` - so no bundle maps a collection it never reads. Turned on by the **`ui-enable-reviews`** config, and every visitor-facing query filters on `ReviewStatus::Published`, so nothing else is ever served.
+A visitor writes a few words about something the site presents, and nothing shows until somebody has read it. Same terms as [ratings](#visitor-ratings) above: the thing is **named, not related** - `Entity\Review` carries an `ownerType` string and an `ownerId` - so no bundle maps a collection it never reads. Turned on by the **`ui-enable-reviews`** config — flipped from the dashboard's own toggle row as well as from the Config screen (`Controller\Management\ReviewShortcutController`, `site-role-admin`, a switch that central being looked for on the dashboard rather than in a list of a hundred settings) — and every visitor-facing query filters on `ReviewStatus::Published`, so nothing else is ever served.
 
-**Leaving one.** `GET|POST /review/{ownerType}/{ownerId}` (`ui_review_new`, `Form\ReviewType`): a name, an e-mail, an optional score, a text, a honeypot, and no account needed. A page of its own rather than a form on the reviewed page, which is served from a shared cache no session may travel with. The `ui_review` rate limiter allows three an hour per caller.
+**Leaving one.** `GET|POST /review/{token}` (`ui_review_new`, `Form\ReviewType`): a name, an e-mail, an optional score drawn as the very stars the published review will carry, a text, a honeypot, and no account needed. The route names what is reviewed through a token `Service\ReviewTokenSigner` signs with the app secret, never through its id — a public url prints no database id, and `/review/book/1..n` walks nothing. **Build the link with `ui_review_url(ownerType, ownerId)`**, `path()` having no id to be given any more. The `ui_review` rate limiter allows three an hour per caller.
 
-**Moderating.** `Controller\Management\ReviewCrudController` publishes, rejects and deletes a review written on the site, and only ever answers an imported one. `ReviewStatus` is `Pending`, `Published` or `Rejected` - a submission is held back, an import is born published.
+**Where the form opens.** Under the reviewed thing, in a `<details>` fold whose panel is fetched on the first open (`assets/js/review-form.js`): the same route serves the form alone to an XHR and the whole page to a plain visit, so the sheet around it stays a page a shared cache may hold — no session, no CSRF token, no `Set-Cookie` — and a visitor with javascript off follows the summary's plain link to that same url. `Service\ReviewNotifier` then tells the site's own `email-to` address that something was written, in the site's locale and never in the visitor's, its result ignored: a review is stored whatever the mailer answers. `Management\ReviewAlertProvider` says on the dashboard how many are waiting.
 
-**The score.** A review is scored out of `Review::SCALE` (5), whatever `ui-rating-scale` says for the ratings widget. Publishing a scored review records it in `Rating` under a key derived from the author's e-mail, so it counts in the very average the clicked stars feed; rejecting it takes it back out (`ReviewService::syncRating()`).
+**Moderating.** `Controller\Management\ReviewCrudController` publishes, rejects and deletes a review written on the site, and only ever answers an imported one. Publishing and rejecting are one-click actions, from the list as well as from the review itself, each carrying the CSRF token its route checks; a **view on site** action opens the page the review is about, and the list names that page rather than printing `book 24`. Deleting sits on the review itself and not on the list — turning a text down is the moderator's everyday gesture, erasing it is not. `ReviewStatus` is `Pending`, `Published` or `Rejected` - a submission is held back, an import is born published.
+
+**The score.** A review is scored out of `Review::SCALE` (5), whatever `ui-rating-scale` says for the ratings widget. Publishing a scored review records it in `Rating` under a key derived from the author's e-mail, so it counts in the very average the clicked stars feed — **converted to the site's own scale on the way in**, a 5/5 otherwise entering the average as a 5/10 on a site set to ten; rejecting it takes it back out (`ReviewService::syncRating()`).
 
 **The "verified" badge is earned, never assumed.** Implement `Contract\ReviewVerifierInterface` - `supports(ownerType)`, `hasObtained(ownerType, ownerId, email)`, auto-discovered by interface with no tag - and the bundle that sells, lends or serves that kind of thing answers for it, every other kind staying unverified. `ReviewService::submit()` settles it once, at submission, and never recomputes it: an order archived years later must not un-verify a review. `label.review_form_moderation_notice` states the site's own check, which art. L111-7-2 asks it to.
 
 **Answering an imported review** carries the answer back to the platform it came from: implement `Contract\ReviewReplyPublisherInterface` (`supports(Review)`, `publish(Review)`, same auto-discovery). With no publisher registered, `ReviewService::canReply()` answers `false` on every review rather than the screen meeting a missing service.
 
-**Showing them.** `ui_reviews(ownerType, ownerId, limit)` and `ui_reviews_enabled()` in Twig, plus `<twig:c975LUi:Review:List>` for one thing's own page. For the site-wide "what people say about us" wall, `Service\ReviewCollectionSourceProvider` offers every published review to the generic `collection` block - an editor picks **Avis** as its source, so the reviews need no block kind of their own, and both draws share `collection/ReviewItem.html.twig` so they never drift apart. `Listener\ReviewCacheInvalidationListener` empties the `ui_reviews` cache tag once per flush rather than once per row, so a moderator publishing one and a sync importing five hundred both cost the same single invalidation.
+**Showing them.** `ui_reviews_section(ownerType, ownerId)` renders the whole section — the published reviews and the fold the form opens in — and holds it in the same tagged cache the page's blocks are in, so what used to be a query per display is a query per change; it answers an empty string while the feature is off. `ui_reviews(ownerType, ownerId, limit)`, `ui_reviews_enabled()` and `<twig:c975LUi:Review:List>` stay for a page laying the section out its own way, the caching then being its own to do. For the site-wide "what people say about us" wall, `Service\ReviewCollectionSourceProvider` offers every published review to the generic `collection` block - an editor picks **Avis** as its source, so the reviews need no block kind of their own, and both draws share `collection/ReviewItem.html.twig` so they never drift apart. `Listener\ReviewCacheInvalidationListener` empties the `ui_reviews` cache tag once per flush rather than once per row, so a moderator publishing one and a sync importing five hundred both cost the same single invalidation.
 
 ---
 
@@ -1275,7 +1277,7 @@ The Font list's "Bulk import" toolbar action (`Controller\Management\FontBulkImp
 
 A separate, email-safe (table layout, inline CSS, no JS) block-based system for composing email bodies (`Entity\EmailTemplate`/`EmailBlock`, tables `site_email_template`/`site_email_block`) - deliberately **not** a reuse of the page `Block` system: an email-safe vocabulary has to stay closed (no arbitrary markup can survive Outlook/Gmail), so `EmailBlock::$type` resolves through a plain `match()` in `Service\EmailTemplateRenderer` instead of a DI-tagged registry, and every kind shares one flat set of columns (same principle as `FormField`, see its own docblock) instead of a per-kind dynamic sub-form.
 
-- **`Controller\Management\EmailTemplateCrudController`** (the "Email templates" menu entry this bundle contributes) lists/creates/edits every `EmailTemplate`. Its `blocks` collection is a drag-and-drop `CollectionField` of `Form\EmailBlockType` entries, same sortable mechanism as `Form`'s own `fields`. A "Preview" action renders the compiled HTML in a new tab (admin-only, placeholder variables left untouched). Both this index and `FormCrudController`'s own show a GDPR guidance note linking straight to the `site-form-gdpr` config row, via `Twig\ConfigLinkExtension`'s **`config_edit_url(slug)`** function (falls back to the plain Config list when that slug hasn't been loaded into DB yet).
+- **`Controller\Management\EmailTemplateCrudController`** (the "Email templates" menu entry this bundle contributes) lists/creates/edits every `EmailTemplate`. Its `blocks` collection is a drag-and-drop `CollectionField` of `Form\EmailBlockType` entries, same sortable mechanism as `Form`'s own `fields`. A "Preview" action renders the compiled HTML in a new tab (admin-only, placeholder variables left untouched). Both this index and `FormCrudController`'s own show a GDPR guidance note linking straight to the `url-privacy-policy` config row, via `Twig\ConfigLinkExtension`'s **`config_edit_url(slug)`** function (falls back to the plain Config list when that slug hasn't been loaded into DB yet).
 - **Block kinds** (`EmailBlock::TYPE_*`): `heading` (h1/h2), `text` (plain text, split into `<p>` paragraphs on blank lines - deliberately not rich/Trix text, keeps the email-safe HTML fully server-controlled), `button` (bulletproof table-based button), `image` (a plain URL for now, not a Media picker - see below), `divider`, `spacer`, and `fields_table` (renders a `variables['fields']` label ⇒ value array as a table, e.g. a `Form` submission's answers - see `SendEmailFormAction` below).
 - **`image`'s url** can be just a path (e.g. `/medias/logo.webp`) instead of a full absolute URL - `EmailTemplateRenderer` resolves it against the single `site-url` ConfigBundle parameter (same one `fullLayout.html.twig` itself already builds the logo's `src` from), so the domain lives in one place instead of being hand-typed into every image block and going stale the day it changes. An already-absolute url (`http(s)://`, an external/CDN image) is left as-is.
 - **Placeholders**: any `heading`/`content`/`label`/`url`/`alt` field may contain a `{{ variable_name }}` token, resolved by `EmailTemplateRenderer` via a literal `strtr()` against the `$variables` array passed to `render()`/`renderBody()` - **not** real Twig evaluation (an `EmailBlock`'s text is admin-authored data, not code; handing it to `Twig::createTemplate()` would open a server-side template injection hole).
@@ -1487,6 +1489,13 @@ the locale a filename suffix:
 They pull the site's own data from ConfigBundle as they render, and a few sections only appear once the
 matching config value is filled in — `site-other-cookies` and `site-other-copyright` add their own section,
 `site-owner` the "Owner" one, and the Matomo opt-out link in the cookies policy needs `site-matomo-url`.
+
+One config works the other way round: **`site-has-accounts`** (bool, `true` by default, *legal* group) drops
+the privacy policy's account, password and login-identifier passages on a site holding no accounts — a document
+describing processing that does not exist is worse than a shorter one. It is a setting rather than a check on a
+route or a form, none of which would answer: the login page exists everywhere for the administrator, the
+register form is seeded everywhere by `c975l:user:create`, and accounts outlive a closed registration. Only the
+`User` entity would really answer, and it lives in the site's own scaffold, out of a bundle's reach.
 
 **Feel free to contribute translations or add templates for other countries.**
 
@@ -1778,6 +1787,19 @@ the compiled stylesheets.
     titleAside="{{ book.publishedAt|date('d/m/Y') }}" />
 ```
 
+`tag` says which element the card is drawn as — `'article'` for a card standing for one self-contained
+thing (a book, a lot of a lottery, an item pulled from a source), `'section'` for one part of the page
+holding it (a book's "Listen" panel), `'div'` — the default — for a panel that is neither. It is set by
+the **calling template** and by nothing else: no form offers it and no editor sees it, the component
+being handed a title and some content, which says nothing of what its card stands for. The value is
+matched against those three and falls back on `div`, the same rule as `background` and `variant`:
+nothing must be able to write a tag name into the markup. `.card` and every rule under it are written
+on the class, so the look does not move — `CardStatVariantTest` locks both the prop and the fallback.
+
+```twig
+<twig:c975LUi:Card:Card tag="article" title="{{ book.title }}" lang="{{ book.language }}" />
+```
+
 ### Collection: a live grid sourced from another bundle
 
 The `collection` kind lets an editor drop a section on a page that always shows the latest N items
@@ -1809,7 +1831,7 @@ same three forever. The draw is made at render time, which means the block itsel
 entries all the same, each keyed on the item and not on the draw, so only the grid wrapper is rebuilt.
 
 The section head — eyebrow, title and the "see all" link (`linkLabel`/`linkUrl`) — is rendered the same
-way in both presentations (`variant`), the portfolio one only borrowing `portfolio-grid`'s markup so it
+way in every presentation (`variant`), the portfolio one only borrowing `portfolio-grid`'s markup so it
 matches a real `portfolio_grid` sitting on the same page.
 
 A bundle exposes its entities to this block by implementing `CollectionSourceProviderInterface`
@@ -1898,8 +1920,13 @@ straight into the transient `collection_item` Block's own teaser button, so a co
 call-to-action reads the same as a manually placed `card`'s.
 
 The `collection` block's own **Presentation** field (`variant`) switches every item's markup at once,
-without an app-level template override: `''` (default) renders each item as a `card`, `'portfolio'`
-reuses `portfolio_grid`'s own markup/CSS instead (see `CollectionItem.html.twig`).
+without an app-level template override: `''` (default) renders each item as a `card`, `'compact'`
+renders the same card at a thumbnail's width (`.card--compact`), and `'portfolio'` reuses
+`portfolio_grid`'s own markup/CSS instead (see `CollectionItem.html.twig`).
+
+A source shipping an item template of its own (`itemTemplate`) is handed the same `variant` and decides
+what it means for its own card — `c975L/BookBundle`'s `BookItem.html.twig` drops the book's summary
+under `'compact'`, three lines of prose across 190px not being read.
 
 #### Richer items
 
@@ -2018,6 +2045,10 @@ as plain text, same as today.
 ### Video and audio blocks: driven by the uploaded file
 
 The `video` and `audio` kinds carry no file path and no format field of their own: both are read back from the uploaded `Media` (its stored `mimeType`). `video` accepts `video/mp4,video/webm,video/ogg` plus an optional `image/*` used as the player's cover, told apart by mimetype in `blocks/Video.html.twig`; `audio` accepts `audio/mpeg,audio/ogg,audio/wav`. `VideoType` keeps only the player's own display fields — `options` (`autoplay`/`muted`/`loop`) plus the same `title`/`description`/`width`/`height`/`class` as `VideoIframeType`, and `AudioType` the same `title`/`description`/`class` (no `width`/`height`, an `<audio>` element has no such attributes). All three kinds render the same `<figure>` / `<h3 …-title>` / `<figcaption …-description>` structure, on a `video-`, `video-iframe-` or `audio-` class prefix sharing one set of sass rules (see `sass/_images.scss`).
+
+**Dropped straight in a page, the figure measures itself.** A bare `video`, `video_iframe` or `audio` block hangs under `.blocks` with no `.section-wrap` around it, so it ran the full width of the screen while every section above and below it stopped at the shared measure — and its title sat against that screen's edge, at a browser's default heading size, right under the 42px `.section-title` of the section before it. `sass/_images.scss` gives the figure that measure itself (`--section-wrap-max-width` / `--body-max-width`, `--section-wrap-gutter`, and one `--section-space` of room on its top edge only, so any two blocks are parted by exactly one step) and draws its title on `.section-title`'s own scale and `--section-head-indent` staircase. Scoped to `:is(.blocks, .block-animation, .block-editable) > …`, so **a slot is untouched**: inside a `video_grid` cell, a `flex_column` or a `section_cards` slot the figure is not a child of `.blocks`, and goes on filling the cell it was placed in with the quieter title that cell has room for. Same answer, and the same reasons, as `.blocks > .contact-details` above; `MediaFigureMeasureTest` locks the rules.
+
+**A `video_iframe`'s width and height are optional.** `sass/_iframe.scss` draws a bare `<iframe>` at `width: 95vw; max-width: 400px`, which is right for a frame dropped anywhere in a page and wrong for a player: a `video_iframe` with no size typed in the back-office came out as wide as the viewport, behind a grey consent box just as wide. The player fills the figure that measures it now, so leaving both fields empty is the sensible default rather than the broken one. Typing a **Width** — or a **Height**, the other being derived at 16:9 — still caps it: `video-iframe.js` writes an `#id`-scoped `max-width` on the whole component, cover and player alike, and an id beats a class.
 
 `<twig:c975LUi:Audio:Audio>` takes one more prop the `audio` block does not offer: `sticky="true"`, which adds `audio-figure--sticky` and makes the player come to rest against the bottom of the screen, following the reader down a long page the way `.toc` rests against its top. It is `position: sticky` and not `fixed`, so the player takes its own room at the end of the flow and hides nothing under it — which is also why it has to be a **direct child of the column it accompanies**: a sticky element never leaves its own containing block, and one nested in a card would stick to that card's few hundred pixels. The ground it writes on is `--audio-sticky-background`, which cannot be transparent.
 
@@ -2847,6 +2878,8 @@ foreach ($analyzer->analyse(ComponentCenteringAnalyzer::tagsByClass($myBundleDir
     self::fail(ComponentCenteringAnalyzer::describe($violation));
 }
 ```
+
+`tagsByClass()` folds that reading onto each class, which is what `analyse()` takes. `elements()` keeps it element by element instead — one entry per element, with every class it carries and the tags it is rendered as — for a test asking what a page-wide rule meets rather than which class declares what: a card is a `card box-shadow`, and the margin `.card` states covers the `box-shadow` written next to it. `SectionMarginResetTest` reads it that way.
 
 They're excluded from the service container (see the `Testing/` entry in `config/services.yaml`) — test utilities that ship, in the same spirit as Symfony's own `Test` namespaces.
 

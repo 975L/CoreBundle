@@ -112,6 +112,8 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
                 'icon' => 'fas fa-user-plus',
                 'route' => ConfigShortcutController::REGISTRATION_ENABLED_TOGGLE_ROUTE,
                 'active' => null !== $registerForm && $registerForm->isEnabled(),
+                // The one toggle whose "off" is the state to signal: a site letting nobody register (or whose form was never seeded) looks exactly like one that works, hence the flag reversed here rather than inherited from 'active' (see ShortcutProviderInterface)
+                'warning' => null === $registerForm || !$registerForm->isEnabled(),
                 'role' => $this->configService->get('site-role-admin'),
                 'category' => ShortcutProviderInterface::CATEGORY_TOGGLE,
             ],

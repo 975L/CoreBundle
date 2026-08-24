@@ -8,11 +8,12 @@
         <div class="review-item-identity">
             {# A platform can serve a review with no display name, which is said rather than left blank #}
             <p class="review-item-author">{{ title ?: 'review.anonymous_author'|trans({}, 'ui') }}</p>
-            {# Stars are decorative markup, the accessible name carrying the figure itself. A review carrying no rating shows none: someone said something without scoring anything, and five empty stars would read as a nought #}
+            {# The very row of icons a rating is read in everywhere else on the site (see sass/_rating.scss), out of five whatever the site set its own scale to: an imported review is on five, and two cards side by side have to be read on the same scale #}
+            {# Icons are decorative markup, the accessible name carrying the figure itself. A review carrying no rating shows none: someone said something without scoring anything, and five empty icons would read as a nought #}
             {% if rating %}
-                <p class="review-item-rating" aria-label="{{ 'review.rating'|trans({'%rating%': rating}, 'ui') }}">
+                <p class="rating rating--star review-item-rating" aria-label="{{ 'review.rating'|trans({'%rating%': rating}, 'ui') }}">
                     {% for star in 1..5 %}
-                        <span class="review-item-star{{ star <= rating ? ' review-item-star--filled' }}" aria-hidden="true">★</span>
+                        <span class="rating-star{{ star <= rating ? ' rating-star--on' : '' }}" aria-hidden="true"></span>
                     {% endfor %}
                 </p>
             {% endif %}

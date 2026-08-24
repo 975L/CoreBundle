@@ -29,6 +29,7 @@ const LAZY_CONTROLLERS = {
     // Kebab-case identifier, same reason as cookie-consent above: every "data-ui-rating-*-value" binding is derived from it
     'ui-rating': () => import('./js/rating.js'),
     'ui-favorite': () => import('./js/favorite.js'),
+    'ui-review-form': () => import('./js/review-form.js'),
     'ui-favorite-count': () => import('./js/favorite-count.js'),
     'ui-favorites': () => import('./js/favorites.js'),
     videoIframe: () => import('./js/video-iframe.js'),

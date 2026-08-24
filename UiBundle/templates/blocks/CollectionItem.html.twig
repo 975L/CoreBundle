@@ -25,8 +25,11 @@
     {# A source may hand back anything its own item has to say (see CollectionItem::$data); these four are the ones the Card already knows how to draw, and they open its "stat" variant - a portrait, a qualifying line, a score and a row of key figures, exactly the card an app renders itself when it holds the entity rather than a collection item #}
     {% set cardClass = class|default('') %}
     {% set cardClass = cardClass is iterable ? cardClass|join(' ') : cardClass %}
+    {# The "compact" variant is the same card at a thumbnail's width, so it adds a class rather than a branch of markup of its own (see sass/_cards.scss) #}
+    {% set cardClass = variant|default('') == 'compact' ? (cardClass ~ ' card--compact')|trim : cardClass %}
     {% if eyebrow|default('') or rating|default('') != '' or stats|default([])|length %}
         <twig:c975LUi:Card:Card
+            tag="article"
             id="{{ id|default('') }}"
             title="{{ title }}"
             titleUrl="{{ detailUrl|default('') ?: url|default('') }}"
@@ -42,7 +45,7 @@
             {% if itemContent %}{{ itemContent|raw|nl2br }}{% endif %}
         </twig:c975LUi:Card:Card>
     {% elseif resolvedImageUrl or url %}
-        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ cardClass }}">
+        <twig:c975LUi:Card:Card tag="article" id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" class="{{ cardClass }}">
             {% if resolvedImageUrl %}
                 {# Pixel size so the card reserves its image's box; nothing when the image is a bare string #}
                 {% set cardMedia = block.media|length > 0 ? block.media|first : null %}
@@ -55,6 +58,6 @@
             </div>
         </twig:c975LUi:Card:Card>
     {% else %}
-        <twig:c975LUi:Card:Card id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" content="{{ content }}" class="{{ cardClass }}"/>
+        <twig:c975LUi:Card:Card tag="article" id="{{ id|default('') }}" title="{{ title }}" titleUrl="{{ detailUrl|default('') }}" level="{{ level|default('') }}" content="{{ content }}" class="{{ cardClass }}"/>
     {% endif %}
 {% endif %}

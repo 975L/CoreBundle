@@ -27,6 +27,29 @@ enum ReviewStatus: string implements TranslatableInterface
         return $translator->trans('label.review_status_' . $this->value, [], 'ui', $locale);
     }
 
+    /**
+     * The badge of a status as EasyAdmin hands it over, which is not always the case itself.
+     *
+     * Its badge selector is called with the choice as ChoiceConfigurator flattened it: the case name for an enum implementing TranslatableInterface - which this one does - its value otherwise, and the case itself when something else asks. All three are answered here rather than in the screen, which has no business knowing how the three are told apart.
+     *
+     * Anything else falls back on Pending: a badge is decoration, and a status nobody recognises is not worth a 500 on a screen whose whole job is to show what is waiting.
+     */
+    public static function badgeFor(mixed $value): string
+    {
+        if ($value instanceof self) {
+            return $value->badge();
+        }
+
+        $name = \is_scalar($value) ? (string) $value : '';
+        foreach (self::cases() as $case) {
+            if ($case->value === $name || $case->name === $name) {
+                return $case->badge();
+            }
+        }
+
+        return self::Pending->badge();
+    }
+
     // The bootstrap badge the moderation screen paints the status in - what is waiting has to be the one that catches the eye
     public function badge(): string
     {

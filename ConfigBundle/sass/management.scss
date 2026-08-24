@@ -44,6 +44,12 @@ ul {
     margin-left: .5rem;
 }
 
+// The acknowledge button's column: kept to its content so it never steals width from the summary, which is the cell that actually has something to say
+.health-check-actions {
+    width: 1%;
+    white-space: nowrap;
+}
+
 // Collapsed list of the offenders behind an advice line, its own marker removed, urls breaking inside the cell
 .health-check-advice-items > summary {
     cursor: pointer;

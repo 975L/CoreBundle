@@ -35,7 +35,7 @@ $favorite-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 
 // The red a heart is read in everywhere, sass/_rating.scss included: the sign carries its own color, where the site's accent would make the wishlist a second shape of whatever the buttons are painted in. Repeated here rather than imported, as the glyph above is, so this file stands alone
 .favorite-button--on {
-    background-color: var(--favorite-on, #e0245e);
+    background-color: var(--favorite-on, #e60000);
 }
 
 // The wishlist item of a menu (templates/blocks/FavoriteLink.html.twig), both of its parts sitting inside the ".menu-label" that menu paints: sized in em and filled with currentColor, they follow that label's own type and color wherever it is read - a mobile dropdown, a desktop bar, a hover - rather than restating any of the three here

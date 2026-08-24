@@ -89,7 +89,8 @@ Protections, all shared with every other public form:
   included;
 - a rotating honeypot and a minimum submit delay (`site-form-delay`, default 3 seconds) — either
   failing redirects back with the very same flash a real submission gets, giving a bot no signal;
-- a GDPR checkbox (`site-form-gdpr`) and, for registration, a terms-of-use one;
+- a GDPR information line pointing at `url-privacy-policy`, never a consent checkbox, and, for
+  registration, a terms-of-use one;
 - a **duplicate email succeeds silently** — same flash, no account, no email — the same non-revealing
   stance a reset request has for an unknown address;
 - rate limiting by caller through the shared `limiter.ui_form` (sliding window, 5 per 10 minutes),

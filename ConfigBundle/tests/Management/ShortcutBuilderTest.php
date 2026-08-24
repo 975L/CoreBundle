@@ -96,6 +96,38 @@ class ShortcutBuilderTest extends TestCase
         $this->assertSame(['label.shortcuts_category_export', 'label.shortcuts_category_other'], array_column($builder->getCategories(), 'label'));
     }
 
+    // A provider saying nothing about 'warning' gets the historical behaviour: the tile of a thing currently on is the one painted (see ShortcutProviderInterface)
+    public function testGetCategoriesFillsTheWarningFlagFromActive(): void
+    {
+        $provider = $this->createProvider([
+            ['label' => 'on', 'active' => true],
+            ['label' => 'off', 'active' => false],
+            ['label' => 'no-active'],
+        ]);
+        $builder = new ShortcutBuilder([$provider], $this->createTranslator());
+
+        $shortcuts = array_column($builder->getCategories()[0]['shortcuts'], 'warning', 'label');
+
+        $this->assertTrue($shortcuts['on']);
+        $this->assertFalse($shortcuts['off']);
+        $this->assertFalse($shortcuts['no-active'], 'A tile with no "active" key at all must not be painted.');
+    }
+
+    // The whole point of the flag: an open registration is active and yet needs no warning
+    public function testGetCategoriesKeepsTheWarningFlagSetByTheProvider(): void
+    {
+        $provider = $this->createProvider([
+            ['label' => 'open', 'active' => true, 'warning' => false],
+            ['label' => 'closed', 'active' => false, 'warning' => true],
+        ]);
+        $builder = new ShortcutBuilder([$provider], $this->createTranslator());
+
+        $shortcuts = array_column($builder->getCategories()[0]['shortcuts'], 'warning', 'label');
+
+        $this->assertFalse($shortcuts['open']);
+        $this->assertTrue($shortcuts['closed']);
+    }
+
     public function testGetCategoriesReturnsEmptyArrayWhenNoProviders(): void
     {
         $builder = new ShortcutBuilder([], $this->createTranslator());

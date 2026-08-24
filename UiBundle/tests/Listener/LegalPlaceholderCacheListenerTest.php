@@ -84,6 +84,18 @@ class LegalPlaceholderCacheListenerTest extends TestCase
         $listener->postFlush(new PostFlushEventArgs($this->entityManager()));
     }
 
+    // The bug this was written for: a model branching on a setting it never prints depends on it just as much, and "site-has-accounts" turned off left the account sections standing on an already rendered page
+    public function testASettingTheModelsOnlyBranchOnAlsoInvalidates(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')
+            ->with([LegalModelCacheTagProvider::CACHE_TAG]);
+
+        $listener = $this->listener($cache);
+        $listener->postUpdate(new PostUpdateEventArgs($this->config('site-has-accounts'), $this->entityManager()));
+        $listener->postFlush(new PostFlushEventArgs($this->entityManager()));
+    }
+
     // A config the legal models are not allowed to print, and any other entity, must cost nothing
     public function testUnrelatedConfigsAndEntitiesLeaveTheCacheAlone(): void
     {

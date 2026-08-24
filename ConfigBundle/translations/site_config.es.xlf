@@ -154,6 +154,10 @@
                 <source>description.site_first_online_date</source>
                 <target>Fecha en que el sitio se puso en línea (AAAA-MM-JJ)</target>
             </trans-unit>
+            <trans-unit id="FIPEVvW">
+                <source>description.site_has_accounts</source>
+                <target>Sin marcar, las reglas de confidencialidad dejan de describir una cuenta, una contraseña y un identificador de conexión: en un sitio que no las tiene, ese texto describe tratamientos que no existen. Déjelo marcado en cuanto existan cuentas, aunque los registros estén cerrados. La entidad User vive en el scaffold del sitio y no en un paquete, por lo que nada puede responder a esto por sí solo.</target>
+            </trans-unit>
             <trans-unit id="i3DuFCW">
                 <source>description.site_health_check_retention_days</source>
                 <target>Número de días de historial de los estados de salud conservados en la base de datos. El último resultado de cada control se conserva siempre, sea cual sea su antigüedad. 0 conserva todo el historial</target>
@@ -238,6 +242,10 @@
                 <source>description.site_url</source>
                 <target>URL del sitio web, ej. https://example.com</target>
             </trans-unit>
+            <trans-unit id="33UDJI1">
+                <source>description.url_privacy_policy</source>
+                <target>URL de las reglas de confidencialidad, p. ej. https://example.com/pages/privacy-policy</target>
+            </trans-unit>
             <trans-unit id="UfelsWV">
                 <source>description.url_terms_of_use</source>
                 <target>URL de condiciones de uso, ej. https://example.com/pages/terms-of-use</target>
@@ -284,11 +292,11 @@
             </trans-unit>
             <trans-unit id=".GtjiDJ">
                 <source>label.login_google_oauth_client_id</source>
-                <target>Identificador de cliente OAuth de Google</target>
+                <target>Identificador de cliente OAuth de Google (inicio de sesión)</target>
             </trans-unit>
             <trans-unit id="RXa3x8Q">
                 <source>label.login_google_oauth_client_secret</source>
-                <target>Secreto de cliente OAuth de Google</target>
+                <target>Secreto de cliente OAuth de Google (inicio de sesión)</target>
             </trans-unit>
             <trans-unit id="I_2UGaK">
                 <source>label.made_by_wording</source>
@@ -402,6 +410,10 @@
                 <source>label.site_first_online_date</source>
                 <target>Fecha de puesta en línea del sitio</target>
             </trans-unit>
+            <trans-unit id="zUClJPo">
+                <source>label.site_has_accounts</source>
+                <target>El sitio tiene cuentas de usuario</target>
+            </trans-unit>
             <trans-unit id="utObxle">
                 <source>label.site_health_check_retention_days</source>
                 <target>Retención del estado de salud (días)</target>
@@ -485,6 +497,10 @@
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>
                 <target>URL del sitio</target>
+            </trans-unit>
+            <trans-unit id="kIEhVZz">
+                <source>label.url_privacy_policy</source>
+                <target>URL de las reglas de confidencialidad</target>
             </trans-unit>
             <trans-unit id="jkiAkco">
                 <source>label.url_terms_of_use</source>

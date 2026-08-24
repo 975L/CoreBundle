@@ -33,6 +33,9 @@ class ShortcutBuilder
 
         $categories = [];
         foreach ($shortcuts as $shortcut) {
+            // What a tile warns about is not always the thing being on: an open registration is the normal state of a site, maintenance on is not. Filled from 'active' when the provider does not decide, so a tile toggling something on keeps painting itself as a warning (see ShortcutProviderInterface)
+            $shortcut['warning'] ??= $shortcut['active'] ?? false;
+
             $category = $shortcut['category'] ?? ['label' => self::OTHER_CATEGORY_LABEL, 'translation_domain' => self::OTHER_CATEGORY_TRANSLATION_DOMAIN];
             $key = $category['translation_domain'] . '.' . $category['label'];
             $categories[$key] ??= ['label' => $this->translator->trans($category['label'], [], $category['translation_domain']), 'shortcuts' => []];

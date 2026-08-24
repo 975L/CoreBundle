@@ -41,6 +41,30 @@ final class ComponentCenteringAnalyzer
     {
         $tags = [];
 
+        foreach (self::elements(...$templateDirectories) as $element) {
+            foreach ($element['classes'] as $class) {
+                foreach ($element['tags'] as $tag) {
+                    $tags[$class][$tag] = true;
+                }
+            }
+        }
+
+        return array_map(array_keys(...), $tags);
+    }
+
+    /**
+     * The same reading, kept element by element rather than folded onto each class: an element carries a
+     * component's own class beside the utilities written next to it, and what a page-wide rule meets is the
+     * element - a card is a "card box-shadow", and the margin ".card" states covers the box-shadow too.
+     *
+     * @param string ...$templateDirectories directories holding the component templates, scanned recursively
+     *
+     * @return list<array{classes: list<string>, tags: list<string>}>
+     */
+    public static function elements(string ...$templateDirectories): array
+    {
+        $elements = [];
+
         foreach ($templateDirectories as $directory) {
             foreach (glob($directory . '/*/*.html.twig') ?: [] as $template) {
                 $twig = (string) file_get_contents($template);
@@ -48,20 +72,18 @@ final class ComponentCenteringAnalyzer
 
                 foreach ($matches as $match) {
                     // Only the literal leading classes: what follows a "{{" is a Twig expression, unknown until rendered
-                    foreach (preg_split('/\s+/', trim($match[2][0])) ?: [] as $class) {
-                        if ('' === $class) {
-                            continue;
-                        }
+                    $classes = array_values(array_filter(preg_split('/\s+/', trim($match[2][0])) ?: [], static fn (string $class): bool => '' !== $class));
 
-                        foreach (self::tagNames($match[1][0], $twig, (int) $match[1][1]) as $tag) {
-                            $tags[$class][$tag] = true;
-                        }
+                    if ([] === $classes) {
+                        continue;
                     }
+
+                    $elements[] = ['classes' => $classes, 'tags' => self::tagNames($match[1][0], $twig, (int) $match[1][1])];
                 }
             }
         }
 
-        return array_map(array_keys(...), $tags);
+        return $elements;
     }
 
     // The tags an element is rendered as. Half the sections pick theirs at runtime ("<{{ tag }}"), so the literals of the expression are what names them - the whole of the page-section family is invisible to a reading that only takes a written-out tag.

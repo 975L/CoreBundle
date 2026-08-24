@@ -44,18 +44,9 @@
     font-weight: 600;
 }
 
+// Everything the row is made of is sass/_rating.scss's, this only keeps it out of the paragraph flow the card lays its lines in
 .review-item-rating {
     margin: 0;
-    line-height: 1;
-}
-
-// Unfilled stars stay in the flow rather than being dropped, so every card's rating occupies the same width
-.review-item-star {
-    color: var(--review-star-color, #d0d0d0);
-}
-
-.review-item-star--filled {
-    color: var(--review-star-color-filled, #f5a623);
 }
 
 .review-item-comment {
@@ -88,4 +79,73 @@
 .review-item-verified::before {
     content: '✓';
     margin-inline-end: 0.25em;
+}
+
+// The score field of the review form (see templates/form/review_rating_theme.html.twig): the very row of icons a rating is read and given in everywhere else, a radio standing where Rating:Rating has a button - what is asked for then looks like what will be shown
+.review-rating {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--review-gap, 0.5rem);
+}
+
+// Laid out right-to-left: the markup runs from five down to one, so a checked radio is followed in the DOM by every lesser icon, which is what the sibling rules below light up - a mask has no "previous siblings" selector (see sass/_rating.scss)
+// Bigger than a row that is only read: this one is aimed at and clicked
+.review-rating .rating {
+    --rating-size: var(--review-rating-star-size, 2rem);
+    position: relative;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+// Out of sight but not out of the tab order: the radio is what a keyboard moves through, the icon beside it being all there is to see
+.review-rating input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.review-rating .rating-star {
+    cursor: pointer;
+}
+
+// The icon checked and every lesser one, which follow it in the reversed markup
+.review-rating input:checked ~ .rating-star {
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
+}
+
+.review-rating input:focus-visible + .rating-star {
+    outline: 2px solid var(--rating-on, var(--rating-icon-on, var(--secondary)));
+    outline-offset: 2px;
+}
+
+// Under the pointer the row previews what a click would set, so the score already picked is dropped for as long as that lasts. Left out where there is no pointer to preview with, a touch screen reporting a "hover" it never leaves - same reading as the vote widget's own preview
+@media (hover: hover) {
+    .review-rating .rating:hover input:checked ~ .rating-star {
+        background-color: var(--rating-off, color-mix(in srgb, var(--text) 25%, var(--background)));
+    }
+
+    .review-rating .rating .rating-star:hover,
+    .review-rating .rating .rating-star:hover ~ .rating-star {
+        background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
+    }
+}
+
+// The empty choice, read beside the icons rather than as one of them
+.review-rating-none {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: var(--review-secondary-size, 0.875em);
+}
+
+// The fold the form is opened from, under the reviews of the thing it is about
+.review-form {
+    margin-block-start: var(--review-list-gap, 1rem);
+}
+
+.review-form-summary {
+    cursor: pointer;
+    text-align: center;
 }

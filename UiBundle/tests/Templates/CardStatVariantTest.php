@@ -107,6 +107,27 @@ class CardStatVariantTest extends TestCase
         $this->assertStringContainsString('<div class="card-body">', $html);
     }
 
+    // The element the card is drawn as: set by the template calling it, so that a card standing for one self-contained thing is not a <div> like the panel next to it
+    public function testTheTagPropDrawsTheCardAsTheElementTheCallerAsksFor(): void
+    {
+        foreach (['article', 'section'] as $tag) {
+            $html = $this->render(['title' => 'Kalaan', 'tag' => $tag]);
+
+            $this->assertStringContainsString('<' . $tag . ' class="card box-shadow', $html);
+            $this->assertStringContainsString('</' . $tag . '>', $html);
+        }
+    }
+
+    // Matched and not interpolated: nothing must be able to write a tag name into the markup, and a caller asking for none keeps the <div> every card has always been
+    public function testAnUnknownTagFallsBackOnTheDiv(): void
+    {
+        foreach (['', 'script', 'p onclick="x"'] as $tag) {
+            $this->assertStringContainsString('<div class="card box-shadow', $this->render(['title' => 'Kalaan', 'tag' => $tag]));
+        }
+
+        $this->assertStringContainsString('<div class="card box-shadow', $this->render(['title' => 'Kalaan']));
+    }
+
     /**
      * The bare environment the component renderer would otherwise bring: the "props" tag and the "attributes" it empties, without which the template no longer parses.
      *

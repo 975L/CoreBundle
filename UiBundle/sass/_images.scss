@@ -60,9 +60,11 @@ img.white {
     text-align: center;
 }
 
-// Responsive cap only - the real width/height come from video-iframe.js's #id-scoped rule
+// A player fills the box it stands in. "iframe { width: 95vw; max-width: 400px }" (sass/_iframe.scss) is written for a frame dropped bare in a page, and left a video block either as wide as the viewport or capped at 400px - which is why a width/height had to be typed in the back-office for it to come out at any sane size at all. The figure's own measure is what bounds it now (see the standalone rule further down), and an admin-set size stays an optional ceiling, applied by video-iframe.js's #id-scoped rule
 .video-iframe-consent iframe {
+    width: 100%;
     max-width: 100%;
+    margin: 0;
 }
 
 .video-iframe-placeholder {
@@ -160,6 +162,34 @@ img.white {
 .video-iframe-description,
 .audio-description {
     margin-top: 0.5rem;
+}
+
+// A bare "video", "video_iframe" or "audio" block hangs straight under ".blocks", with no ".section-wrap" around it to measure it: the figure ran the full width of the page and its title sat against the screen's edge, where every section above and below it stops at the shared measure and starts at its gutter. Same answer as ".blocks > .contact-details" (sass/_contact-details.scss), with padding rather than margins: the figure paints neither border nor background, so its content edge is the one that has to line up
+// Never inside a "video_grid" cell, a "flex_column" or a "section_cards" slot: a slot is not a child of ".blocks", and goes on filling the cell it was placed in
+:is(.blocks, .block-animation, .block-editable) > :is(.video-figure, .video-iframe-figure, .audio-figure) {
+    // Restated for UiBundle alone, as .section-wrap does: else the gutters add to the measure instead of fitting inside it
+    box-sizing: border-box;
+    max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
+    margin-inline: auto;
+    padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+}
+
+// The page's one vertical step, read from the token every section reads (see sass/_page-sections.scss), on the top edge only: any two blocks are then parted by exactly one of them
+// A sticky audio player is left out: it paints --audio-sticky-background over its own padding, and a step of this size would follow the reader down the page as a band rather than as the thin bar it is meant to be
+:is(.blocks, .block-animation, .block-editable) > :is(.video-figure, .video-iframe-figure, .audio-figure):not(.audio-figure--sticky) {
+    padding-top: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
+// Standing on its own in the page, a media title is a section's title and reads as one: same family (stated above), same scale, same staircase indent as ".section-title". Scoped to the standalone block alone - the very same title inside a "video_grid" cell keeps the quieter h3 look the cell has room for
+:is(.blocks, .block-animation, .block-editable) > :is(.video-figure, .video-iframe-figure, .audio-figure) > :is(.video-title, .video-iframe-title, .audio-title) {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-size: calc(clamp(30px, 4.4vw, 42px) * var(--font-size-title-scale, 1));
+    line-height: 1.1;
+    // Not ".section-title"'s 48px: that gap parts a head from the grid under it, where this title sits straight on its own player
+    margin-bottom: clamp(16px, 2vw, 24px);
+    padding-inline-start: var(--section-head-indent, 32px);
 }
 
 // The player that follows the reader down the page instead of waiting where it was printed. Sticky rather than fixed: it takes its own room at the end of the column, so nothing is ever hidden under it, and it stops where that column stops

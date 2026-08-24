@@ -12,18 +12,20 @@ namespace c975L\ConfigBundle\Tests\Templates;
 
 use PHPUnit\Framework\TestCase;
 
-// A tile whose click turns something off (maintenance, registration, a bundle's test mode - see ShortcutProviderInterface) is warning-colored, so an admin reads what the site currently has switched on without going through every label. The class the template writes and the rule the stylesheets declare are two files apart, and a class nothing paints leaves every tile looking the same.
+// A tile whose current state deserves attention (maintenance on, a bundle's test mode on, registration closed - see ShortcutProviderInterface) is warning-colored, so an admin reads what the site is doing without going through every label. The class the template writes and the rule the stylesheets declare are two files apart, and a class nothing paints leaves every tile looking the same.
 class ShortcutTileWarningTest extends TestCase
 {
     private const array CSS = ['/public/css/management.css', '/public/css/management.min.css'];
 
     private const string WARNING_CLASS = 'shortcut-tile-warning';
 
-    public function testTheTemplateWearsTheWarningClassOnAnActiveTileOnly(): void
+    public function testTheTemplateWearsTheWarningClassOnAWarningTileOnly(): void
     {
         $template = $this->template();
 
-        $this->assertStringContainsString("shortcut.active|default(false) ? ' " . self::WARNING_CLASS . "' : ''", $template, 'The warning class no longer follows the tile\'s "active" flag.');
+        $this->assertStringContainsString("shortcut.warning|default(false) ? ' " . self::WARNING_CLASS . "' : ''", $template, 'The warning class no longer follows the tile\'s "warning" flag.');
+        // Reading 'active' here would repaint an open registration, whose tile deliberately sets 'warning' => false
+        $this->assertStringNotContainsString("shortcut.active|default(false) ? ' " . self::WARNING_CLASS . "'", $template);
     }
 
     // Every row carries its category heading, the grouping being the whole point of building categories rather than one flat grid

@@ -30,7 +30,11 @@ class HealthCheckAlertProvider implements AlertProviderInterface
 
     public function getAlerts(): array
     {
-        $results = $this->healthCheckResultRepository->findLatestPerUrlAndKind();
+        // Acknowledged rows left out: an admin who declared one dealt with has said there is nothing left to open the Health check page for, and the next run records a fresh unacknowledged row if they were wrong
+        $results = array_filter(
+            $this->healthCheckResultRepository->findLatestPerUrlAndKind(),
+            static fn (HealthCheckResult $result) => !$result->isAcknowledged()
+        );
 
         $errors = $this->count($results, HealthCheckResult::STATUS_ERROR);
         $warnings = $this->count($results, HealthCheckResult::STATUS_WARNING);

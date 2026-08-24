@@ -74,10 +74,6 @@
                 <source>description.site_form_delay</source>
                 <target>Minimum delay, in seconds, between showing and submitting a public form before treating it as a bot</target>
             </trans-unit>
-            <trans-unit id="a2s6MLC">
-                <source>description.site_form_gdpr</source>
-                <target>Adds a mandatory GDPR consent checkbox to public forms</target>
-            </trans-unit>
             <trans-unit id="QbsOHOo">
                 <source>description.site_matomo_id</source>
                 <target>Matomo site ID (integer)</target>
@@ -209,10 +205,6 @@
             <trans-unit id="UdYcxIh">
                 <source>label.site_form_delay</source>
                 <target>Public forms anti-bot delay</target>
-            </trans-unit>
-            <trans-unit id="jM0HrcE">
-                <source>label.site_form_gdpr</source>
-                <target>Show GDPR consent checkbox on public forms</target>
             </trans-unit>
             <trans-unit id="EDDAHIQ">
                 <source>label.site_matomo_id</source>

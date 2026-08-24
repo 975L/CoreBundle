@@ -30,7 +30,7 @@ class ConfigLinkExtensionTest extends TestCase
     public function testLinksToTheConfigsEditPageWhenTheSlugIsAlreadyLoaded(): void
     {
         $configRepository = $this->createStub(ConfigRepository::class);
-        $configRepository->method('findOneBy')->willReturn($this->createConfig('site-form-gdpr', 42));
+        $configRepository->method('findOneBy')->willReturn($this->createConfig('url-privacy-policy', 42));
 
         $urlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);
         $urlGenerator->method('unsetAll')->willReturnSelf();
@@ -41,7 +41,7 @@ class ConfigLinkExtensionTest extends TestCase
 
         $extension = new ConfigLinkExtension($configRepository, new ConfigEditUrlResolver($urlGenerator));
 
-        $this->assertSame('/management/config/42/edit', $extension->configEditUrl('site-form-gdpr'));
+        $this->assertSame('/management/config/42/edit', $extension->configEditUrl('url-privacy-policy'));
     }
 
     // A slug never loaded into DB falls back to the plain Config list, not a broken entity id
@@ -59,6 +59,6 @@ class ConfigLinkExtensionTest extends TestCase
 
         $extension = new ConfigLinkExtension($configRepository, new ConfigEditUrlResolver($urlGenerator));
 
-        $this->assertSame('/management/config', $extension->configEditUrl('site-form-gdpr'));
+        $this->assertSame('/management/config', $extension->configEditUrl('url-privacy-policy'));
     }
 }

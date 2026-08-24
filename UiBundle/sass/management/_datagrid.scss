@@ -1,0 +1,7 @@
+/* DATAGRID WIDTH (EasyAdmin crud/index.html.twig) */
+
+// The dashboard nests two grids whose content column is sized "auto", and an auto track never shrinks below what it holds: a table carrying many columns widens the whole page instead of scrolling, and wrapping that table in .table-responsive does nothing on its own since the wrapper grows with it. Naming a zero minimum is what keeps the track inside the viewport and hands the overflow to the wrapper
+.wrapper > .main-content,
+.content-wrapper > .content {
+    min-inline-size: 0;
+}

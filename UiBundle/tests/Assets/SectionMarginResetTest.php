@@ -86,16 +86,20 @@ class SectionMarginResetTest extends TestCase
         $reset = $this->reset('styles.min.css');
         $cascade = StylesheetCascade::fromFiles($root . '/public/css/styles.css');
 
-        foreach (ComponentCenteringAnalyzer::tagsByClass($root . '/templates/components') as $class => $tags) {
+        foreach (ComponentCenteringAnalyzer::elements($root . '/templates/components') as $element) {
             // Only what is rendered as a <section>: SiteBundle's rule reaches nothing else
-            if (!in_array('section', $tags, true) || $this->setsItsOwnBlockMargin($cascade, (string) $class)) {
+            if (!in_array('section', $element['tags'], true)) {
                 continue;
             }
 
-            $this->assertStringContainsString(
-                '.' . $class,
-                $reset,
-                sprintf('".%s" is rendered as a <section> but is named neither by the margin reset nor by a block margin of its own.', $class)
+            // Read on the whole element and not on each of its classes: what the page-wide rule meets is the element, so a utility written beside a component's own class is covered by whatever that class states - a card is a "card box-shadow", and ".card" states the margin for both
+            if (array_any($element['classes'], fn (string $class): bool => $this->setsItsOwnBlockMargin($cascade, $class))) {
+                continue;
+            }
+
+            $this->assertTrue(
+                array_any($element['classes'], static fn (string $class): bool => str_contains($reset, '.' . $class)),
+                sprintf('"%s" is rendered as a <section> but is named neither by the margin reset nor by a block margin of its own.', '.' . implode('.', $element['classes']))
             );
         }
     }

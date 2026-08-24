@@ -59,7 +59,7 @@ class FormSubmissionTypeTest extends TestCase
         return $field;
     }
 
-    private function createType(bool $gdpr = false, bool $recaptcha = false): FormSubmissionType
+    private function createType(bool $recaptcha = false): FormSubmissionType
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnMap([
@@ -69,7 +69,6 @@ class FormSubmissionTypeTest extends TestCase
         $configService->method('get')->willReturnMap([
             ['recaptcha3-site-key', $recaptcha ? 'site-key' : null],
             ['recaptcha3-secret-key', $recaptcha ? 'secret-key' : null],
-            ['site-form-gdpr', $gdpr],
         ]);
         $configService->method('getContainerParameter')->willReturn(null);
 
@@ -82,10 +81,10 @@ class FormSubmissionTypeTest extends TestCase
 
         $captchaVerifier = new CaptchaVerifier($this->createStub(HttpClientInterface::class), $configService, $requestStack);
 
-        return new FormSubmissionType(new FormBotProtection($configService), $configService, $requestStack, $translator, $captchaVerifier);
+        return new FormSubmissionType(new FormBotProtection($configService), $requestStack, $translator, $captchaVerifier);
     }
 
-    private function buildAddedFields(array $fields, bool $offerReceiveCopy = false, bool $gdpr = false, bool $recaptcha = false, array $prefill = []): array
+    private function buildAddedFields(array $fields, bool $offerReceiveCopy = false, bool $recaptcha = false, array $prefill = []): array
     {
         $added = [];
         $builder = $this->createStub(FormBuilderInterface::class);
@@ -95,7 +94,7 @@ class FormSubmissionTypeTest extends TestCase
             return $builder;
         });
 
-        $this->createType($gdpr, $recaptcha)->buildForm($builder, ['fields' => $fields, 'offerReceiveCopy' => $offerReceiveCopy, 'prefill' => $prefill]);
+        $this->createType($recaptcha)->buildForm($builder, ['fields' => $fields, 'offerReceiveCopy' => $offerReceiveCopy, 'prefill' => $prefill]);
 
         return $added;
     }
@@ -258,7 +257,7 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertStringContainsString('href="https://example.com/cgu?a=1&amp;b=2"', $added['cgu']['options']['label']);
     }
 
-    // Honeypot is unconditional - no config needed, same as contact/register/reset. With no fields/gdpr/recaptcha/receiveCopy, it's the only field added
+    // Honeypot is unconditional - no config needed, same as contact/register/reset. With no fields/recaptcha/receiveCopy, it is the only field added
     public function testHoneypotFieldIsAlwaysAdded(): void
     {
         $added = $this->buildAddedFields([]);
@@ -288,21 +287,10 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertTrue($form->getData()['receiveCopy'] ?? null, 'The visitor checked "receive a copy" and the action was handed no such key, so no copy was ever sent.');
     }
 
-    public function testGdprFieldAddedOnlyWhenConfigured(): void
+    // A consent the visitor cannot refuse without giving up the form is not a consent (GDPR article 4.11), and answering them rests on the site's legitimate interest anyway: what they are owed is the information line Form.html.twig renders, never a box
+    public function testNoGdprCheckboxIsEverAdded(): void
     {
-        $this->assertArrayNotHasKey('gdpr', $this->buildAddedFields([], gdpr: false));
-
-        $added = $this->buildAddedFields([], gdpr: true);
-        $this->assertSame(CheckboxType::class, $added['gdpr']['type']);
-        $this->assertTrue($added['gdpr']['options']['required']);
-    }
-
-    // The label was read from the consuming app's "site" domain, which owes this bundle nothing: a site that never declared the key got the raw "text.gdpr" next to the checkbox
-    public function testGdprLabelIsReadFromTheBundlesOwnDomain(): void
-    {
-        $added = $this->buildAddedFields([], gdpr: true);
-
-        $this->assertArrayNotHasKey('translation_domain', $added['gdpr']['options']);
+        $this->assertArrayNotHasKey('gdpr', $this->buildAddedFields([]));
     }
 
     public function testCaptchaFieldAddedOnlyWhenBothKeysConfigured(): void

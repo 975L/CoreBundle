@@ -37,5 +37,11 @@
                 {{ 'text.form_required_note'|trans }}
             </p>
         {% endif %}
+        {# What article 13 of the GDPR actually asks for, where a consent checkbox never belonged: answering the visitor rests on the site's legitimate interest, not on a box they had no choice but to tick. Skipped rather than shown broken when the admin has not filled the url in #}
+        {% if config('url-privacy-policy') %}
+            <p class="text-muted small">
+                {{ 'text.gdpr_information'|trans({'%privacyUrl%': config('url-privacy-policy')})|raw }}
+            </p>
+        {% endif %}
     {{ form_end(form) }}
 </div>

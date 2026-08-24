@@ -1,0 +1,16 @@
+{# The review form on its own, rendered inside review/new.html.twig and served alone to the fold under the reviewed thing (see ReviewController::new()) #}
+{% trans_default_domain 'ui' %}
+{# The score field alone is redrawn, as the very stars the published review will carry - the rest of the form is rendered by whatever theme the site set #}
+{% form_theme form '@c975LUi/form/review_rating_theme.html.twig' %}
+
+{{ form_start(form) }}
+    {# The errors bound to no field - an expired token, say - without which the page redisplays saying nothing #}
+    {{ form_errors(form) }}
+    {{ form_widget(form) }}
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">{{ 'label.review_form_submit'|trans }}</button>
+    </div>
+{{ form_end(form) }}
+
+{# L111-7-2: the visitor has to be told what becomes of what they write, before they write it #}
+<p class="text text-muted">{{ 'label.review_form_moderation_notice'|trans }}</p>

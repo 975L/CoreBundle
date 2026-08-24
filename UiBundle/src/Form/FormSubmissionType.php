@@ -10,7 +10,6 @@
 
 namespace c975L\UiBundle\Form;
 
-use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Service\CaptchaVerifier;
 use c975L\UiBundle\Service\FormBotProtection;
@@ -37,12 +36,11 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot (always), GDPR/captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy")
+// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot (always), captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy")
 class FormSubmissionType extends AbstractType
 {
     public function __construct(
         private readonly FormBotProtection $botProtection,
-        private readonly ConfigServiceInterface $configService,
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly CaptchaVerifier $captchaVerifier,
@@ -113,7 +111,7 @@ class FormSubmissionType extends AbstractType
         }
 
         if ($options['offerReceiveCopy']) {
-            // Mapped, unlike the gdpr/captcha boxes below: this one is the only protection field whose answer an action has to read back, and FormController hands the action nothing but the form's own data - an unmapped child never appears there, so the copy was silently never sent
+            // Mapped, unlike the captcha box below: this one is the only protection field whose answer an action has to read back, and FormController hands the action nothing but the form's own data - an unmapped child never appears there, so the copy was silently never sent
             $builder->add('receiveCopy', CheckboxType::class, [
                 'label' => 'label.receive_copy',
                 'required' => false,
@@ -124,19 +122,6 @@ class FormSubmissionType extends AbstractType
         if ($this->captchaVerifier->isEnabled()) {
             $builder->add('captcha', CaptchaType::class, [
                 'action_name' => 'ui_form',
-            ]);
-        }
-
-        // Falls back to true if "site-form-gdpr" isn't seeded yet, an app having to run ConfigBundle's config load for this bundle's own configs.json keys to exist
-        if ($this->configService->get('site-form-gdpr') ?? true) {
-            $builder->add('gdpr', CheckboxType::class, [
-                'label' => 'text.gdpr',
-                'required' => true,
-                'mapped' => false,
-                // 'required' alone is HTML5-only - this is what actually rejects an unchecked box server-side. Same generic message as any other required checkbox field above, no GDPR-specific wording needed
-                'constraints' => [
-                    new IsTrue(message: 'text.checkbox_required'),
-                ],
             ]);
         }
     }

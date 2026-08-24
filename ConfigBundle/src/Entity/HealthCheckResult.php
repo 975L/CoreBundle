@@ -24,7 +24,7 @@ class HealthCheckResult
     public const STATUS_OK = 'ok';
     public const STATUS_WARNING = 'warning';
     public const STATUS_ERROR = 'error';
-    // Not ok/warning/error: the check itself never ran (eg. the page doesn't resolve on the checked environment yet) - kept visually neutral rather than a warning/error color, since there's nothing actionable about a page that simply isn't deployed there
+    // Not ok/warning/error: no verdict could be reached, either because the check never ran (eg. the page doesn't resolve on the checked environment yet) or because the target is up but turns automated probes down (a store answering 403 to a HEAD). Kept visually neutral rather than a warning/error color, and left out of the dashboard table's default view along with the ok rows: neither case is something an editor can act upon, and a red row nobody can act on is what makes a dashboard get ignored
     public const STATUS_SKIPPED = 'skipped';
 
     public const STATUSES = [
@@ -69,6 +69,10 @@ class HealthCheckResult
 
     #[ORM\Column(name: 'checked_at', type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $checkedAt;
+
+    // When an admin declared this very row dealt with, from the dashboard's own table - it then leaves the table's default view and stops counting towards the dashboard alert, while staying in the table and in the CSV export the audit trail is made of. Borne by the row and not by the (url, kind) pair on purpose: rows are appended, never updated, so the next run records a fresh unacknowledged one and a problem that was not actually fixed comes straight back
+    #[ORM\Column(name: 'acknowledged_at', type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $acknowledgedAt = null;
 
     public function getId(): ?int
     {
@@ -169,5 +173,22 @@ class HealthCheckResult
         $this->checkedAt = $checkedAt;
 
         return $this;
+    }
+
+    public function getAcknowledgedAt(): ?\DateTimeInterface
+    {
+        return $this->acknowledgedAt;
+    }
+
+    public function setAcknowledgedAt(?\DateTimeInterface $acknowledgedAt): static
+    {
+        $this->acknowledgedAt = $acknowledgedAt;
+
+        return $this;
+    }
+
+    public function isAcknowledged(): bool
+    {
+        return null !== $this->acknowledgedAt;
     }
 }

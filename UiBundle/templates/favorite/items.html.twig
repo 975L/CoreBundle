@@ -3,6 +3,7 @@
 <div class="cards">
     {% for favorite in favorites %}
         <twig:c975LUi:Card:Card
+            tag="article"
             title="{{ favorite.item.title }}"
             titleUrl="{{ favorite.item.url|default('') }}"
             src="{{ favorite.item.imageUrl|default('') }}"

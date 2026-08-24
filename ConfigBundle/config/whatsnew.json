@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-24",
+        "description": [
+            {
+                "en": "Your Health check page now opens on what is left to do - the warnings and errors nobody has dealt with - instead of listing every passing check beside them. A ✓ button on a row marks it as fixed and takes it off the page right away, with no need to re-run a check that takes minutes. Everything recorded is still one click away, under \"All statuses\".",
+                "fr": "Votre page Contrôle de santé s'ouvre désormais sur ce qu'il reste à faire - les avertissements et les erreurs dont personne ne s'est occupé - au lieu de lister à côté toutes les vérifications qui passent. Un bouton ✓ sur une ligne la marque comme corrigée et la retire de la page aussitôt, sans avoir à relancer un contrôle qui dure plusieurs minutes. Tout ce qui est enregistré reste à un clic, sous « Tous les statuts ».",
+                "es": "Su página de Control de estado se abre ahora en lo que queda por hacer - las advertencias y los errores de los que nadie se ha ocupado - en lugar de enumerar al lado todas las verificaciones que pasan. Un botón ✓ en una fila la marca como corregida y la retira de la página enseguida, sin tener que relanzar un control que dura varios minutos. Todo lo registrado sigue a un clic, en «Todos los estados»."
+            }
+        ]
+    },
+    {
+        "date": "2026-08-24",
+        "description": [
+            {
+                "en": "The registration tile on your dashboard now lights up when registration is closed - or was never set up at all - instead of when it is open. A site nobody can sign up to used to look exactly like one that works; now it says so at a glance.",
+                "fr": "La tuile d'inscription de votre tableau de bord s'allume désormais quand les inscriptions sont fermées - ou n'ont jamais été mises en place - au lieu de s'allumer quand elles sont ouvertes. Un site où personne ne peut s'inscrire ressemblait exactement à un site qui fonctionne ; il le dit maintenant d'un coup d'œil.",
+                "es": "La casilla de registro de su panel se enciende ahora cuando el registro está cerrado - o nunca se ha configurado - en lugar de encenderse cuando está abierto. Un sitio en el que nadie puede registrarse parecía exactamente uno que funciona; ahora lo dice de un vistazo."
+            }
+        ]
+    },
+    {
         "date": "2026-08-23",
         "description": [
             {

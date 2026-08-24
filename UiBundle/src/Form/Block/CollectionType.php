@@ -80,12 +80,14 @@ class CollectionType extends AbstractType
                 'required' => false,
             ])
             // Picked up by CollectionItem.html.twig to switch its markup - keeps every collection sharing the same "collection_item" kind/template (see class-level comment) while still allowing a visually different presentation per Collection block instance, no app-level template override needed
+            // "compact" is not a markup of its own but the card at a thumbnail's width (".card--compact", see sass/_cards.scss) - a rail of covers put forward under a page that has its own subject, where full-width cards would each read as one
             ->add('variant', ChoiceType::class, [
                 'label' => 'label.variant',
                 'help' => 'label.variant_help',
                 'required' => false,
                 'choices' => [
                     'label.variant_card' => '',
+                    'label.variant_compact' => 'compact',
                     'label.variant_portfolio' => 'portfolio',
                 ],
             ]);

@@ -93,21 +93,29 @@ class BlockCacheInvalidationListener
         return $tags;
     }
 
-    // Block::removeSlot() nulls the owning side in PHP as soon as a slot is dropped from the form's collection, same as removeMedia() below - the pre-flush snapshot is what still holds the container it was taken out of
+    // Block::removeSlot() nulls the owning side in PHP as soon as a slot is dropped from the form's collection, same as removeMedia() below - the change set is what still holds the container it was taken out of (see resolveOwner())
     private function resolveParentBlock(Block $block, EntityManagerInterface $em): ?Block
     {
-        $parent = $block->getParentBlock()
-            ?? ($em->getUnitOfWork()->getOriginalEntityData($block)['parentBlock'] ?? null);
-
-        return $parent instanceof Block ? $parent : null;
+        return $this->resolveOwner($block, 'parentBlock', $block->getParentBlock(), $em);
     }
 
-    // Block::removeMedia() nulls the owning side in PHP as soon as a Media is dropped from the form's collection - well before flush() runs - so by the time this listener fires, $media->getBlock() is already null. Doctrine's pre-flush snapshot still holds the original reference, since application code mutating a property doesn't touch it.
+    // Block::removeMedia() nulls the owning side in PHP as soon as a Media is dropped from the form's collection - well before flush() runs - so by the time this listener fires, $media->getBlock() is already null (see resolveOwner())
     private function resolveMediaBlock(Media $media, EntityManagerInterface $em): ?Block
     {
-        $block = $media->getBlock()
-            ?? ($em->getUnitOfWork()->getOriginalEntityData($media)['block'] ?? null);
+        return $this->resolveOwner($media, 'block', $media->getBlock(), $em);
+    }
 
-        return $block instanceof Block ? $block : null;
+    // The block an entity was attached to before the flush deleting it. The change set comes first: computeChangeSets() overwrites the pre-flush snapshot with the null the collection removal wrote, so getOriginalEntityData() gives back that null by the time preRemove fires, where the change set kept the pair and its old value is the block whose cached html is now stale
+    private function resolveOwner(object $entity, string $field, ?Block $current, EntityManagerInterface $em): ?Block
+    {
+        if (null !== $current) {
+            return $current;
+        }
+
+        $unitOfWork = $em->getUnitOfWork();
+        $owner = $unitOfWork->getEntityChangeSet($entity)[$field][0]
+            ?? ($unitOfWork->getOriginalEntityData($entity)[$field] ?? null);
+
+        return $owner instanceof Block ? $owner : null;
     }
 }

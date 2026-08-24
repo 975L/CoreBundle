@@ -22,6 +22,8 @@ class ReviewExtension extends AbstractExtension
         return [
             new TwigFunction('ui_reviews', [ReviewRuntime::class, 'reviews']),
             new TwigFunction('ui_reviews_enabled', [ReviewRuntime::class, 'reviewsEnabled']),
+            new TwigFunction('ui_review_url', [ReviewRuntime::class, 'url']),
+            new TwigFunction('ui_reviews_section', [ReviewRuntime::class, 'section']),
         ];
     }
 }

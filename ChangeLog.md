@@ -1,5 +1,89 @@
 # ChangeLog
 
+## v1.16.0
+
+A form informs the visitor instead of making them tick a box
+
+### ConfigBundle
+
+- The Health check table opens on the warning and error rows nobody has acknowledged instead of listing every conforming row beside them (24/08/2026)
+- A *Tous les statuts* option and a count of what is hidden keep the rest one click away (24/08/2026)
+- `label.health_check_status_skipped` reads *Non vérifiable* / *Not verifiable* / *No verificable* (24/08/2026)
+- `HealthCheckResult` carries an `acknowledged_at` column, stamped or cleared from the table itself (24/08/2026)
+- UPGRADE.md says what that column costs a site already running: the `ALTER`, run before the first visit to the page (24/08/2026)
+- `HealthCheckController::acknowledge()` toggles it on `site-role-admin` and a CSRF token, answering JSON (24/08/2026)
+- An acknowledgement is borne by the row and not by the (url, kind) pair, the next run recording a fresh unacknowledged one (24/08/2026)
+- `HealthCheckAlertProvider` leaves acknowledged rows out of the dashboard alert (24/08/2026)
+- The CSV export gains an `acknowledgedAt` column rather than dropping those rows (24/08/2026)
+- Extended `HealthCheckControllerTest` and `HealthCheckAlertProviderTest` (24/08/2026)
+- `login-google-oauth-client-secret` carries the *info* severity instead of *warning* (24/08/2026)
+- Its two labels say *(connexion)* in the `site_config` catalogs, telling them from SocialBundle's review keys (24/08/2026)
+- Added `url-privacy-policy` to the *legal* group, beside `url-terms-of-use` (24/08/2026)
+- Added `site-has-accounts` to the *legal* group, on by default (24/08/2026)
+- `ShortcutProviderInterface` takes an optional `warning` key, saying the current state deserves an admin's attention (24/08/2026)
+- `ShortcutBuilder` fills it from `active` when the provider leaves it out (24/08/2026)
+- The registration tile warns on a closed - or never seeded - form, instead of on an open one (24/08/2026)
+- The dashboard template paints a tile on `warning` rather than on `active` (24/08/2026)
+- The README and the `c975l-users` skill state the information line where they stated the checkbox (24/08/2026)
+- The README and the `c975l-management` skill document `warning` (24/08/2026)
+- The `c975l-operations` skill states the default view and how a row is acknowledged (24/08/2026)
+- Extended `ConfigShortcutProviderTest`, `ShortcutBuilderTest` and `ShortcutTileWarningTest` (24/08/2026)
+
+### UiBundle
+
+- `FormSubmissionType` no longer adds a GDPR consent checkbox (24/08/2026) [BC-Break]
+- `Form.html.twig` renders `text.gdpr_information` instead, linking to the page `url-privacy-policy` names, and nothing at all while that setting is empty (24/08/2026)
+- Dropped the `site-form-gdpr` setting and the `text.gdpr` key from the `ui` catalogs; `c975l:config:prune --force` takes the orphan row away (24/08/2026) [BC-Break]
+- The Forms and Email templates indexes link their GDPR note to `url-privacy-policy` (24/08/2026)
+- The privacy policy drops its account, password and login-identifier passages while `site-has-accounts` is off (24/08/2026)
+- `LegalPlaceholderCacheListener` also drops the cached legal renders when a setting the models only branch on changes (24/08/2026)
+- `ui_review_new` is `/review/{token}` instead of `/review/{ownerType}/{ownerId}` (24/08/2026) [BC-Break]
+- Added `ReviewTokenSigner`, signing `ownerType:ownerId` with the app secret (24/08/2026)
+- Added the `ui_review_url()` Twig function, which is how that link is built now (24/08/2026)
+- Added `ui_reviews_section()`, rendering the whole section once and holding it in the blocks' own tagged cache (24/08/2026)
+- The form opens in a `<details>` fold under the reviewed thing, fetched on the first open (`review-form.js`, `review/_form.html.twig`) (24/08/2026)
+- The same route serves the form alone to an XHR and the whole page to a plain visit (24/08/2026)
+- The score field is five radios drawn as the stars the published review carries (`form/review_rating_theme.html.twig`) (24/08/2026)
+- `ReviewItem` reads its score in the very row of icons a rating is read in everywhere else (24/08/2026)
+- The name and email fields carry an `autocomplete` attribute, and the comment ten rows (24/08/2026)
+- Added `ReviewNotifier`, telling the site's `email-to` address that a review was written (24/08/2026)
+- `ReviewService::submit()` calls it after the flush, its result ignored (24/08/2026)
+- Added `ReviewAlertProvider`, saying on the dashboard how many reviews are waiting (24/08/2026)
+- A review's score enters the ratings on the site's own scale, a 5/5 no longer counting as a 5/10 where the site rates out of ten (24/08/2026)
+- `ReviewCrudController` publishes and rejects in one click, from the list as well as from the review itself (24/08/2026)
+- It gains a *view on site* action, and names the reviewed page where it printed an owner type (24/08/2026)
+- Deleting moves to the review itself, the pencil becoming the reply action it opens (24/08/2026)
+- `ReviewStatus::badgeFor()` answers the value EasyAdmin hands its badge selector, a callable typed the other way round taking the whole screen down (24/08/2026)
+- `ReviewShortcutController` flips `ui-enable-reviews` from the dashboard, on `site-role-admin` (24/08/2026)
+- `UiShortcutProvider` draws that tile in the toggle row (24/08/2026)
+- The `collection` block's **Presentation** field offers a third look, `compact`, drawing the same cards at a thumbnail's width (24/08/2026)
+- A source shipping an item template of its own is handed the same `variant` (24/08/2026)
+- The block showcase prints the three looks the field offers (`GalleryShowcaseProvider`) (24/08/2026)
+- Added `label.variant_compact` to the three `ui` catalogues (24/08/2026)
+- `Card:Card` takes a `tag` prop - `article`, `section` or the `div` it has always been - matched and never interpolated (24/08/2026)
+- A collection item and a wishlist entry are drawn as `<article>` (24/08/2026)
+- `BlockCacheInvalidationListener` reads the change set before the pre-flush snapshot, a media or a slot removed as an orphan no longer leaving its container's cached html stale (24/08/2026)
+- `ComponentCenteringAnalyzer::elements()` reports the classes element by element, `SectionMarginResetTest` reading the block margin on the whole element (24/08/2026)
+- A `video`, `video_iframe` or `audio` block dropped straight in a page stops at the page measure and starts at the gutter (24/08/2026)
+- The title of such a block is drawn at a `.section-title`'s scale and on its staircase indent (24/08/2026)
+- The `video_iframe` player fills the figure it stands in, the back-office **Width** and **Height** becoming an optional ceiling (24/08/2026)
+- `--card-width-compact` caps on what the wrap leaves for a pair rather than on `45vw` (24/08/2026)
+- `--favorite-on` defaults to `#e60000`, the red the rest of the interface reads (24/08/2026)
+- The scaffolded theme mirrors both new defaults (24/08/2026)
+- Added `management/_datagrid.scss`, a zero minimum on the dashboard's content track so a wide table scrolls instead of widening the page (24/08/2026)
+- The README documents the `tag` prop, the third presentation and the standalone media figure (24/08/2026)
+- The README and the `c975l-blocks` skill state the token url, the fetched fold, the notification and the moderation actions (24/08/2026)
+- The `c975l-forms-emails` skill states the information line, the `c975l-blocks` one `site-has-accounts` and the reviews tile (24/08/2026)
+- The README states what `ComponentCenteringAnalyzer::elements()` answers that `tagsByClass()` does not (24/08/2026)
+- `UPGRADE.md` walks an app through the dropped checkbox and the review url (24/08/2026)
+- Added `MediaFigureMeasureTest`, locking the standalone media rules in the compiled stylesheets (24/08/2026)
+- Added `FormGdprInformationTest`, locking the line's wording, its link and its absence on an empty setting (24/08/2026)
+- Added `ReviewTokenSignerTest`, `ReviewNotifierTest`, `ReviewAlertProviderTest`, `ReviewShortcutControllerTest`, `ReviewRatingWidgetRenderTest` and `ReviewStatusTest` (24/08/2026)
+- Extended `ComponentCenteringAnalyzerTest` with `elements()` (24/08/2026)
+- Extended `UiShortcutProviderTest`, `LegalModelTemplatesTest`, `ReviewServiceTest`, `ReviewRuntimeTest`, `ReviewControllerTest` and `ReviewCrudControllerTest` (24/08/2026)
+- Extended `CardStatVariantTest`, `CollectionItemStatVariantTest`, `CollectionTypeTest`, `GalleryShowcaseProviderTest` and `BlockCacheInvalidationListenerTest` (24/08/2026)
+- Updated `FormSubmissionTypeTest`, `FormFlashMarkupTest` and `ConfigLinkExtensionTest` for the dropped checkbox (24/08/2026)
+
 ## v1.15.2
 
 Each bundle's guided projects run their own thousand-block

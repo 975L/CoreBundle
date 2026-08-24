@@ -95,11 +95,12 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         return ['' => $this->blockExtension->renderBlock($section)];
     }
 
-    // Both looks the "variant" field offers, the portfolio one borrowing PortfolioGrid's own grid and head (see Collection/Grid.html.twig)
+    // The three looks the "variant" field offers: the portfolio one borrowing PortfolioGrid's own grid and head (see Collection/Grid.html.twig), the compact one the same cards at a thumbnail's width (see sass/_cards.scss)
     private function collectionVariants(): array
     {
         return [
             'Cartes' => $this->renderCollection(null),
+            'Cartes compactes' => $this->renderCollection('compact'),
             'Portfolio' => $this->renderCollection('portfolio'),
         ];
     }

@@ -64,6 +64,27 @@ class HealthCheckAlertProviderTest extends TestCase
         $this->assertSame([], $this->createProvider($results)->getAlerts());
     }
 
+    // An admin who declared a row dealt with has said there is nothing left to open the Health check page for - and the next run records a fresh unacknowledged row if they were wrong
+    public function testAcknowledgedRowsRaiseNoAlert(): void
+    {
+        $acknowledged = $this->createResult(HealthCheckResult::STATUS_ERROR)->setAcknowledgedAt(new \DateTime('2026-07-27 09:00:00'));
+
+        $this->assertSame([], $this->createProvider([$acknowledged])->getAlerts());
+    }
+
+    public function testAcknowledgedRowsAreLeftOutOfTheCount(): void
+    {
+        $results = [
+            $this->createResult(HealthCheckResult::STATUS_ERROR),
+            $this->createResult(HealthCheckResult::STATUS_ERROR)->setAcknowledgedAt(new \DateTime('2026-07-27 09:00:00')),
+        ];
+
+        $alerts = $this->createProvider($results)->getAlerts();
+
+        $this->assertCount(1, $alerts);
+        $this->assertSame('label.health_check_alert_errors', strtr($alerts[0]['label'], ['1' => '%count%']));
+    }
+
     public function testAnErrorRaisesADangerAlertCountingTheErrorsOnly(): void
     {
         $results = [

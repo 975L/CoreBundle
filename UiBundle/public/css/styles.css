@@ -70,7 +70,7 @@
     --card-header-aside-opacity: 0.8;
     --cards-gap: 20px;
     --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3));
-    --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
+    --card-width-compact: min(calc((100vw - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
     --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2));
     --disabled: #808080;
     --favorite-size: 1.5em;
@@ -1058,7 +1058,7 @@ label[for=contact_form_username],
 }
 
 .favorite-button--on {
-  background-color: var(--favorite-on, #e0245e);
+  background-color: var(--favorite-on, #e60000);
 }
 
 .favorite-menu-icon {
@@ -1750,7 +1750,9 @@ img.white {
 }
 
 .video-iframe-consent iframe {
+  width: 100%;
   max-width: 100%;
+  margin: 0;
 }
 
 .video-iframe-placeholder {
@@ -1839,6 +1841,27 @@ img.white {
 .video-iframe-description,
 .audio-description {
   margin-top: 0.5rem;
+}
+
+:is(.blocks, .block-animation, .block-editable) > :is(.video-figure, .video-iframe-figure, .audio-figure) {
+  box-sizing: border-box;
+  max-width: var(--section-wrap-max-width, var(--body-max-width, 1440px));
+  margin-inline: auto;
+  padding-left: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+  padding-right: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+}
+
+:is(.blocks, .block-animation, .block-editable) > :is(.video-figure, .video-iframe-figure, .audio-figure):not(.audio-figure--sticky) {
+  padding-top: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
+:is(.blocks, .block-animation, .block-editable) > :is(.video-figure, .video-iframe-figure, .audio-figure) > :is(.video-title, .video-iframe-title, .audio-title) {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-size: calc(clamp(30px, 4.4vw, 42px) * var(--font-size-title-scale, 1));
+  line-height: 1.1;
+  margin-bottom: clamp(16px, 2vw, 24px);
+  padding-inline-start: var(--section-head-indent, 32px);
 }
 
 .audio-figure--sticky {
@@ -3924,15 +3947,6 @@ a.pullDown.fade-out {
 
 .review-item-rating {
   margin: 0;
-  line-height: 1;
-}
-
-.review-item-star {
-  color: var(--review-star-color, #d0d0d0);
-}
-
-.review-item-star--filled {
-  color: var(--review-star-color-filled, #f5a623);
 }
 
 .review-item-comment {
@@ -3964,6 +3978,65 @@ a.pullDown.fade-out {
 .review-item-verified::before {
   content: "✓";
   margin-inline-end: 0.25em;
+}
+
+.review-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--review-gap, 0.5rem);
+}
+
+.review-rating .rating {
+  --rating-size: var(--review-rating-star-size, 2rem);
+  position: relative;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.review-rating input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.review-rating .rating-star {
+  cursor: pointer;
+}
+
+.review-rating input:checked ~ .rating-star {
+  background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
+}
+
+.review-rating input:focus-visible + .rating-star {
+  outline: 2px solid var(--rating-on, var(--rating-icon-on, var(--secondary)));
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .review-rating .rating:hover input:checked ~ .rating-star {
+    background-color: var(--rating-off, color-mix(in srgb, var(--text) 25%, var(--background)));
+  }
+  .review-rating .rating .rating-star:hover,
+  .review-rating .rating .rating-star:hover ~ .rating-star {
+    background-color: var(--rating-on, var(--rating-icon-on, var(--secondary)));
+  }
+}
+.review-rating-none {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--review-secondary-size, 0.875em);
+}
+
+.review-form {
+  margin-block-start: var(--review-list-gap, 1rem);
+}
+
+.review-form-summary {
+  cursor: pointer;
+  text-align: center;
 }
 
 /* RICH TEXT */

@@ -148,17 +148,6 @@
         "description": "description.site_form_delay"
     },
     {
-        "label": "label.site_form_gdpr",
-        "slug": "site-form-gdpr",
-        "sensitive": false,
-        "restricted": true,
-        "value": "true",
-        "kind": "bool",
-        "group": "form",
-        "severity": "warning",
-        "description": "description.site_form_gdpr"
-    },
-    {
         "label": "label.theme_color_primary",
         "slug": "theme-color-primary",
         "sensitive": false,

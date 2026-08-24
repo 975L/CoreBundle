@@ -28,6 +28,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 #[AsDoctrineListener(event: Events::postFlush)]
 class LegalPlaceholderCacheListener
 {
+    // The settings a model reads without ever printing, which no placeholder list knows about: a model branching on one of them depends on it exactly as much as on a marker it substitutes, and a cached render that outlives the change says what the site stopped doing
+    private const array CONDITION_SLUGS = [
+        'site-has-accounts',
+    ];
+
     // The per-entity events only raise this flag: the back-office saves the whole config group at once, which would otherwise invalidate the same tag once per row, inside the transaction
     private bool $stale = false;
 
@@ -62,10 +67,14 @@ class LegalPlaceholderCacheListener
         $this->cache->invalidateTags([LegalModelCacheTagProvider::CACHE_TAG]);
     }
 
-    // Only the slugs the models are actually allowed to print, so renaming an unrelated config costs nothing
+    // Only the slugs the models are actually allowed to print, plus the ones they branch on, so renaming an unrelated config costs nothing
     private function markIfPlaceholderConfig(object $entity): void
     {
-        if ($entity instanceof Config && in_array($entity->getSlug(), $this->placeholders->slugs(), true)) {
+        if (!$entity instanceof Config) {
+            return;
+        }
+
+        if (in_array($entity->getSlug(), [...$this->placeholders->slugs(), ...self::CONDITION_SLUGS], true)) {
             $this->stale = true;
         }
     }

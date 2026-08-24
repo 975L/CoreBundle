@@ -42,6 +42,11 @@ ul {
   margin-left: 0.5rem;
 }
 
+.health-check-actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
 .health-check-advice-items > summary {
   cursor: pointer;
 }

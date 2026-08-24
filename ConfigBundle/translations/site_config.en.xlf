@@ -154,6 +154,10 @@
                 <source>description.site_first_online_date</source>
                 <target>Date when the site went online (YYYY-MM-DD)</target>
             </trans-unit>
+            <trans-unit id="FIPEVvW">
+                <source>description.site_has_accounts</source>
+                <target>Unchecked, the privacy policy stops describing an account, a password and a login identifier: on a site holding none, that text describes processing that does not exist. Leave it checked as soon as accounts exist, even with registrations closed. The User entity lives in the site's scaffold rather than in a bundle, so nothing can answer this on its own.</target>
+            </trans-unit>
             <trans-unit id="i3DuFCW">
                 <source>description.site_health_check_retention_days</source>
                 <target>Number of days of health check history kept in database. The latest result of each check is always kept, whatever its age. 0 keeps every result</target>
@@ -238,6 +242,10 @@
                 <source>description.site_url</source>
                 <target>URL of the website i.e. https://example.com</target>
             </trans-unit>
+            <trans-unit id="33UDJI1">
+                <source>description.url_privacy_policy</source>
+                <target>Privacy policy URL, e.g. https://example.com/pages/privacy-policy</target>
+            </trans-unit>
             <trans-unit id="UfelsWV">
                 <source>description.url_terms_of_use</source>
                 <target>Terms of use page URL, e.g. https://example.com/pages/terms-of-use</target>
@@ -284,11 +292,11 @@
             </trans-unit>
             <trans-unit id=".GtjiDJ">
                 <source>label.login_google_oauth_client_id</source>
-                <target>Google OAuth client id</target>
+                <target>Google OAuth client id (sign-in)</target>
             </trans-unit>
             <trans-unit id="RXa3x8Q">
                 <source>label.login_google_oauth_client_secret</source>
-                <target>Google OAuth client secret</target>
+                <target>Google OAuth client secret (sign-in)</target>
             </trans-unit>
             <trans-unit id="I_2UGaK">
                 <source>label.made_by_wording</source>
@@ -402,6 +410,10 @@
                 <source>label.site_first_online_date</source>
                 <target>Site first online date</target>
             </trans-unit>
+            <trans-unit id="zUClJPo">
+                <source>label.site_has_accounts</source>
+                <target>The site holds user accounts</target>
+            </trans-unit>
             <trans-unit id="utObxle">
                 <source>label.site_health_check_retention_days</source>
                 <target>Health Check Retention (days)</target>
@@ -485,6 +497,10 @@
             <trans-unit id="rDTDQ70">
                 <source>label.site_url</source>
                 <target>Site URL</target>
+            </trans-unit>
+            <trans-unit id="kIEhVZz">
+                <source>label.url_privacy_policy</source>
+                <target>Privacy policy URL</target>
             </trans-unit>
             <trans-unit id="jkiAkco">
                 <source>label.url_terms_of_use</source>

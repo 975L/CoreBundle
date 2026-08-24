@@ -26,10 +26,12 @@
 	<section data-legal-id="email-addresses">
 		<h2>Adresses email</h2>
 		<div>
-			Nous ne diffusons pas les adresses emails que vous prenez le soin de nous laisser. Elles sont uniquement utilisées pour communiquer avec vous et constituent l'identifiant de connexion au site web.
+			Nous ne diffusons pas les adresses emails que vous prenez le soin de nous laisser. Elles sont uniquement utilisées pour communiquer avec vous{% if config('site-has-accounts') %} et constituent l'identifiant de connexion au site web{% endif %}.
 		</div>
 	</section>
 
+	{# A site with no accounts has neither account nor password to describe, and a text describing them describes processing that does not exist. A setting rather than a route or a form: the login exists everywhere for the administrator, the register form is seeded everywhere by c975l:user:create, and accounts outlive closed registrations - only the User entity would really answer, and it lives in the site's scaffold, out of a bundle's reach #}
+	{% if config('site-has-accounts') %}
 	<section data-legal-id="account">
 		<h2>Compte</h2>
 		<div>
@@ -53,6 +55,7 @@
 			<strong>{{ legal_var('site-name') }}</strong>.
 		</div>
 	</section>
+	{% endif %}
 
 	<section data-legal-id="your-rights">
 		<h2>Vos droits</h2>
@@ -152,9 +155,11 @@
 		<div>
 			Nous utilisons un grand nombre d'outils techniques et organisationnels généralement reconnus, pour assurer la protection de vos données personnelles contre les accès ou la communication non autorisés. Toutefois, comme vous le savez sans doute, il n'existe pas de protection parfaite. Nous n'offrons donc aucune garantie à cet égard.
 		</div>
+		{% if config('site-has-accounts') %}
 		<div>
 			La sécurité des données personnelles est aussi l'affaire des utilisateurs qui s'engagent à conserver la confidentialité de leur identifiant et de leur mot de passe. Les utilisateurs s'engagent également à ne pas partager leur compte.
 		</div>
+		{% endif %}
 
 		<h3 data-legal-id="regulations.data-archiving">Archivage des données</h3>
 		<div>

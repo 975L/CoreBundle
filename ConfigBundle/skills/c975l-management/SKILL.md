@@ -42,7 +42,7 @@ class MyUrlMetadataProvider implements UrlMetadataProviderInterface
 | --- | --- | --- |
 | `MenuProviderInterface` | `getMenuSection()`, `getMenus()`, `getLinks()` | sidebar sections, entries and plain-route links |
 | `AlertProviderInterface` | `getAlerts()` | `danger` / `warning` / `info` alerts on the dashboard |
-| `ShortcutProviderInterface` | `getShortcuts()` | quick-action tiles, one titled row per `category` — POST and CSRF token required; `'active' => true` (the thing is on, the tile turns it off) paints the tile as a warning, and such a tile belongs in `CATEGORY_TOGGLE` |
+| `ShortcutProviderInterface` | `getShortcuts()` | quick-action tiles, one titled row per `category` — POST and CSRF token required; `'active' => true` says the thing is on and the tile turns it off, `'warning' => true` paints the tile (optional, filled from `active` when left out, set it yourself where the state to signal is the *off* one), and such a tile belongs in `CATEGORY_TOGGLE` |
 | `DashboardWidgetProviderInterface` | `getDashboardWidgets()` | dashboard widgets |
 | `EssentialActionProviderInterface` | `getEssentialActions()` | entries of the "essential actions" checklist |
 | `GuidedProjectProviderInterface` | `getGuidedProjects()` | replayable guided tours of your screens |

@@ -890,6 +890,14 @@
                 <source>label.health_check</source>
                 <target>Bilan de santé</target>
             </trans-unit>
+            <trans-unit id="gDxHDIU">
+                <source>label.health_check_acknowledge</source>
+                <target>Marquer comme corrigé</target>
+            </trans-unit>
+            <trans-unit id="rDepKjK">
+                <source>label.health_check_acknowledge_undo</source>
+                <target>Annuler le marquage</target>
+            </trans-unit>
             <trans-unit id="ZVYErlG">
                 <source>label.health_check_advice_backup_errors</source>
                 <target>%count% erreur(s) pendant la sauvegarde</target>
@@ -1130,6 +1138,10 @@
                 <source>label.health_check_gauge_seo</source>
                 <target>SEO</target>
             </trans-unit>
+            <trans-unit id="EE_LHR0">
+                <source>label.health_check_hidden_count</source>
+                <target>%count% ligne(s) masquée(s) par le filtre en cours</target>
+            </trans-unit>
             <trans-unit id="xg0h98_">
                 <source>label.health_check_host_variant_absent</source>
                 <target>Aucun site servi sous %host%</target>
@@ -1241,6 +1253,10 @@
             <trans-unit id="ywo1XVT">
                 <source>label.health_check_not_found_wrong_status</source>
                 <target>Une url inexistante répond HTTP %status% au lieu de 404</target>
+            </trans-unit>
+            <trans-unit id="PpRmHVL">
+                <source>label.health_check_nothing_to_handle</source>
+                <target>Rien à traiter : aucune vérification n'attend d'action de votre part.</target>
             </trans-unit>
             <trans-unit id="6XIJPsF">
                 <source>label.health_check_pages_heading</source>
@@ -1410,6 +1426,10 @@
                 <source>label.health_check_status</source>
                 <target>Statut</target>
             </trans-unit>
+            <trans-unit id="1BOSlV2">
+                <source>label.health_check_status_all</source>
+                <target>Tous les statuts</target>
+            </trans-unit>
             <trans-unit id="JvPh_wR">
                 <source>label.health_check_status_error</source>
                 <target>Erreur</target>
@@ -1420,7 +1440,11 @@
             </trans-unit>
             <trans-unit id="_qvT.iU">
                 <source>label.health_check_status_skipped</source>
-                <target>Non testé</target>
+                <target>Non vérifiable</target>
+            </trans-unit>
+            <trans-unit id="ZielnoK">
+                <source>label.health_check_status_unresolved</source>
+                <target>À traiter</target>
             </trans-unit>
             <trans-unit id="FK6UmpN">
                 <source>label.health_check_status_warning</source>

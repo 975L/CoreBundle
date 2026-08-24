@@ -270,6 +270,10 @@
                 <source>description.legal_placeholders</source>
                 <target>Estos marcadores se sustituyen por la configuración del sitio al mostrarse la página, también en sus propios textos:</target>
             </trans-unit>
+            <trans-unit id="34glBYg">
+                <source>description.reviews_pending_alert</source>
+                <target>Mientras una opinión no se publique o se descarte, su autor se queda sin respuesta y no se muestra nada en la página correspondiente.</target>
+            </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
                 <target>Caché de renderizado vaciada</target>
@@ -317,6 +321,22 @@
             <trans-unit id="qRTOhD8">
                 <source>flash.media_used_not_deleted</source>
                 <target>Este medio se utiliza en otro lugar y no se ha eliminado. Sepárelo primero, la lista «Utilizado en» de su formulario indica dónde.</target>
+            </trans-unit>
+            <trans-unit id="wFeLs7k">
+                <source>flash.review_published</source>
+                <target>Opinión publicada</target>
+            </trans-unit>
+            <trans-unit id="UscDr9v">
+                <source>flash.review_rejected</source>
+                <target>Opinión descartada</target>
+            </trans-unit>
+            <trans-unit id="z.eMEX8">
+                <source>flash.reviews_disabled</source>
+                <target>Opiniones desactivadas</target>
+            </trans-unit>
+            <trans-unit id="skvF7f2">
+                <source>flash.reviews_enabled</source>
+                <target>Opiniones activadas</target>
             </trans-unit>
             <trans-unit id="pYFXZHg">
                 <source>flash.stylesheet_compiled</source>
@@ -2320,7 +2340,7 @@
             </trans-unit>
             <trans-unit id="Cdp6GrZ">
                 <source>label.info_form_gdpr</source>
-                <target>Casilla RGPD añadida automáticamente a los formularios, según %link_open%esta clave%link_close%.</target>
+                <target>Línea de información RGPD añadida automáticamente bajo los formularios, en cuanto %link_open%esta clave%link_close% indica la dirección de las reglas de confidencialidad.</target>
             </trans-unit>
             <trans-unit id="KDIeeFV">
                 <source>label.info_legal_model</source>
@@ -2774,13 +2794,17 @@
                 <source>label.review_form_email_help</source>
                 <target>Nunca se muestra: solo sirve para responderle.</target>
             </trans-unit>
+            <trans-unit id="UYY05R8">
+                <source>label.review_form_error</source>
+                <target>No se ha podido cargar el formulario. Utilice el enlace de arriba.</target>
+            </trans-unit>
             <trans-unit id="D.4swnH">
                 <source>label.review_form_intro</source>
-                <target>Su opinión sobre «%name%» se leerá antes de publicarse.</target>
+                <target>Su opinión sobre «%name%» se publicará una vez aprobada.</target>
             </trans-unit>
             <trans-unit id="6wAr97D">
                 <source>label.review_form_moderation_notice</source>
-                <target>Las opiniones se leen antes de publicarse y se muestran con su fecha. Una opinión se marca «verificada» cuando su correo corresponde a una compra. Ninguna opinión está remunerada y ninguna se retira por ser desfavorable.</target>
+                <target>Cada opinión se aprueba antes de publicarse y luego se muestra con su fecha. Una opinión se marca «verificada» cuando su correo corresponde a una compra. Ninguna opinión está remunerada, y una opinión solo se descarta si es injuriosa, ajena al tema o manifiestamente falsa - nunca por ser desfavorable.</target>
             </trans-unit>
             <trans-unit id="MceC1MW">
                 <source>label.review_form_name</source>
@@ -2810,6 +2834,10 @@
                 <source>label.review_owner</source>
                 <target>Sobre</target>
             </trans-unit>
+            <trans-unit id="vcY8JTV">
+                <source>label.review_publish</source>
+                <target>Publicar</target>
+            </trans-unit>
             <trans-unit id="NYV_onC">
                 <source>label.review_published_at</source>
                 <target>Publicada el</target>
@@ -2817,6 +2845,10 @@
             <trans-unit id="8ZUrZE5">
                 <source>label.review_rating</source>
                 <target>Valoración</target>
+            </trans-unit>
+            <trans-unit id="olD7kOW">
+                <source>label.review_reject</source>
+                <target>Descartar</target>
             </trans-unit>
             <trans-unit id="1ej3NQp">
                 <source>label.review_reply</source>
@@ -2846,6 +2878,14 @@
                 <source>label.review_status_rejected</source>
                 <target>Rechazado</target>
             </trans-unit>
+            <trans-unit id="DmWyb1C">
+                <source>label.review_submitted_notification</source>
+                <target>Nueva opinión por moderar</target>
+            </trans-unit>
+            <trans-unit id="SXrSokW">
+                <source>label.review_view_on_site</source>
+                <target>Ver en el sitio</target>
+            </trans-unit>
             <trans-unit id="dMxRFXX">
                 <source>label.reviews</source>
                 <target>Opiniones de clientes</target>
@@ -2854,9 +2894,21 @@
                 <source>label.reviews_collection_source</source>
                 <target>Opiniones de clientes</target>
             </trans-unit>
+            <trans-unit id="2Gk2EaM">
+                <source>label.reviews_disable</source>
+                <target>Desactivar las opiniones</target>
+            </trans-unit>
             <trans-unit id="XXk17ET">
                 <source>label.reviews_empty</source>
                 <target>Todavía no hay opiniones.</target>
+            </trans-unit>
+            <trans-unit id="0zqsOvX">
+                <source>label.reviews_enable</source>
+                <target>Activar las opiniones</target>
+            </trans-unit>
+            <trans-unit id="NtWuABo">
+                <source>label.reviews_pending_alert</source>
+                <target>%count% opiniones pendientes de moderación</target>
             </trans-unit>
             <trans-unit id="uKaQklK">
                 <source>label.rights_reserved</source>
@@ -3170,6 +3222,10 @@
                 <source>label.variant_card</source>
                 <target>Tarjeta (por defecto)</target>
             </trans-unit>
+            <trans-unit id="s.EyNwI">
+                <source>label.variant_compact</source>
+                <target>Tarjeta compacta</target>
+            </trans-unit>
             <trans-unit id="db5EUws">
                 <source>label.variant_help</source>
                 <target>Cómo se muestran los items, aplicado a toda la colección.</target>
@@ -3314,9 +3370,9 @@
                 <source>text.form_required_note</source>
                 <target>* Campo obligatorio</target>
             </trans-unit>
-            <trans-unit id="fqCFO6G">
-                <source>text.gdpr</source>
-                <target>Acepto que este sitio web almacena los datos enviados para que pueda responder a mi solicitud</target>
+            <trans-unit id="YkALKHi">
+                <source>text.gdpr_information</source>
+                <target><![CDATA[Los datos que introduce aquí solo sirven para tramitar su solicitud. Sus derechos y el plazo de conservación se detallan en las <a href="%privacyUrl%" target="_blank">Reglas de confidencialidad</a>.]]></target>
             </trans-unit>
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
@@ -3325,6 +3381,17 @@
             <trans-unit id="JdqcjEg">
                 <source>text.review_submitted</source>
                 <target>Gracias, su opinión se ha enviado. Se publicará tras su lectura.</target>
+            </trans-unit>
+            <trans-unit id="SM78qKf">
+                <source>text.review_submitted_notification</source>
+                <target>Un visitante acaba de dejar una opinión.
+
+Autor: %author%
+Valoración: %rating%
+
+%comment%
+
+Está esperando a ser publicada o descartada en la pantalla «Opiniones» del back-office.</target>
             </trans-unit>
             <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>

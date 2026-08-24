@@ -74,6 +74,41 @@ class BlockCacheInvalidationListenerTest extends TestCase
             ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
     }
 
+    // What actually happens on an orphan removal: computeChangeSets() has already overwritten the snapshot with the null the collection removal wrote, and only the change set still holds the block the media was taken out of
+    public function testPreRemoveResolvesBlockIdFromTheChangeSetWhenTheSnapshotWasAlreadyOverwritten(): void
+    {
+        $block = $this->createConfiguredStub(Block::class, ['getId' => 24]);
+        $media = new Media();
+
+        $unitOfWork = $this->createStub(UnitOfWork::class);
+        $unitOfWork->method('getEntityChangeSet')->willReturn(['block' => [$block, null]]);
+        $unitOfWork->method('getOriginalEntityData')->willReturn(['block' => null]);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_24']);
+
+        new BlockCacheInvalidationListener($cache)
+            ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+    }
+
+    // Same overwriting, one level up: a slot dropped from its container leaves that container's html holding it verbatim
+    public function testPreRemoveResolvesTheContainerFromTheChangeSetOfARemovedSlot(): void
+    {
+        $container = $this->createConfiguredStub(Block::class, ['getId' => 12]);
+        $slot = $this->createConfiguredStub(Block::class, ['getId' => 13]);
+
+        $unitOfWork = $this->createStub(UnitOfWork::class);
+        $unitOfWork->method('getEntityChangeSet')->willReturnCallback(
+            static fn (object $entity) => $entity === $slot ? ['parentBlock' => [$container, null]] : []
+        );
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_13', 'block_12']);
+
+        new BlockCacheInvalidationListener($cache)
+            ->preRemove(new PreRemoveEventArgs($slot, $this->createEntityManager($unitOfWork)));
+    }
+
     public function testPreRemoveUsesTheMediaLiveBlockReferenceWhenStillPresent(): void
     {
         $block = $this->createConfiguredStub(Block::class, ['getId' => 3]);

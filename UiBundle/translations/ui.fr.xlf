@@ -270,6 +270,10 @@
                 <source>description.legal_placeholders</source>
                 <target>Ces marqueurs sont remplacés par la configuration du site au moment de l'affichage, y compris dans vos propres textes :</target>
             </trans-unit>
+            <trans-unit id="34glBYg">
+                <source>description.reviews_pending_alert</source>
+                <target>Tant qu'un avis n'est pas publié ou écarté, son auteur reste sans réponse et rien ne s'affiche sur la page concernée.</target>
+            </trans-unit>
             <trans-unit id="_QnNrWi">
                 <source>flash.block_cache_cleared</source>
                 <target>Cache de rendu vidé</target>
@@ -317,6 +321,22 @@
             <trans-unit id="qRTOhD8">
                 <source>flash.media_used_not_deleted</source>
                 <target>Ce média est utilisé ailleurs et n'a pas été supprimé. Détachez-le d'abord, la liste « Utilisé dans » de son formulaire indique où.</target>
+            </trans-unit>
+            <trans-unit id="wFeLs7k">
+                <source>flash.review_published</source>
+                <target>Avis publié</target>
+            </trans-unit>
+            <trans-unit id="UscDr9v">
+                <source>flash.review_rejected</source>
+                <target>Avis écarté</target>
+            </trans-unit>
+            <trans-unit id="z.eMEX8">
+                <source>flash.reviews_disabled</source>
+                <target>Avis désactivés</target>
+            </trans-unit>
+            <trans-unit id="skvF7f2">
+                <source>flash.reviews_enabled</source>
+                <target>Avis activés</target>
             </trans-unit>
             <trans-unit id="pYFXZHg">
                 <source>flash.stylesheet_compiled</source>
@@ -2320,7 +2340,7 @@
             </trans-unit>
             <trans-unit id="Cdp6GrZ">
                 <source>label.info_form_gdpr</source>
-                <target>Case RGPD ajoutée automatiquement aux formulaires, selon %link_open%cette clé%link_close%.</target>
+                <target>Ligne d'information RGPD ajoutée automatiquement sous les formulaires, dès que %link_open%cette clé%link_close% donne l'adresse des règles de confidentialité.</target>
             </trans-unit>
             <trans-unit id="KDIeeFV">
                 <source>label.info_legal_model</source>
@@ -2774,13 +2794,17 @@
                 <source>label.review_form_email_help</source>
                 <target>Jamais affiché : il sert uniquement à vous répondre.</target>
             </trans-unit>
+            <trans-unit id="UYY05R8">
+                <source>label.review_form_error</source>
+                <target>Le formulaire n'a pas pu être chargé. Utilisez le lien ci-dessus.</target>
+            </trans-unit>
             <trans-unit id="D.4swnH">
                 <source>label.review_form_intro</source>
-                <target>Votre avis sur « %name% » sera lu avant d'être publié.</target>
+                <target>Votre avis sur « %name% » sera publié après approbation.</target>
             </trans-unit>
             <trans-unit id="6wAr97D">
                 <source>label.review_form_moderation_notice</source>
-                <target>Les avis sont lus avant publication et affichés avec leur date. Un avis est marqué « vérifié » lorsque son courriel correspond à un achat. Aucun avis n'est rémunéré et aucun n'est retiré parce qu'il déplaît.</target>
+                <target>Chaque avis est approuvé avant d'être publié, puis affiché avec sa date. Un avis est marqué « vérifié » lorsque son courriel correspond à un achat. Aucun avis n'est rémunéré, et un avis n'est écarté que s'il est injurieux, hors sujet ou manifestement faux - jamais parce qu'il est négatif.</target>
             </trans-unit>
             <trans-unit id="MceC1MW">
                 <source>label.review_form_name</source>
@@ -2810,6 +2834,10 @@
                 <source>label.review_owner</source>
                 <target>Concerne</target>
             </trans-unit>
+            <trans-unit id="vcY8JTV">
+                <source>label.review_publish</source>
+                <target>Publier</target>
+            </trans-unit>
             <trans-unit id="NYV_onC">
                 <source>label.review_published_at</source>
                 <target>Publié le</target>
@@ -2817,6 +2845,10 @@
             <trans-unit id="8ZUrZE5">
                 <source>label.review_rating</source>
                 <target>Note</target>
+            </trans-unit>
+            <trans-unit id="olD7kOW">
+                <source>label.review_reject</source>
+                <target>Écarter</target>
             </trans-unit>
             <trans-unit id="1ej3NQp">
                 <source>label.review_reply</source>
@@ -2846,6 +2878,14 @@
                 <source>label.review_status_rejected</source>
                 <target>Rejeté</target>
             </trans-unit>
+            <trans-unit id="DmWyb1C">
+                <source>label.review_submitted_notification</source>
+                <target>Nouvel avis à modérer</target>
+            </trans-unit>
+            <trans-unit id="SXrSokW">
+                <source>label.review_view_on_site</source>
+                <target>Voir sur le site</target>
+            </trans-unit>
             <trans-unit id="dMxRFXX">
                 <source>label.reviews</source>
                 <target>Avis clients</target>
@@ -2854,9 +2894,21 @@
                 <source>label.reviews_collection_source</source>
                 <target>Avis clients</target>
             </trans-unit>
+            <trans-unit id="2Gk2EaM">
+                <source>label.reviews_disable</source>
+                <target>Désactiver les avis</target>
+            </trans-unit>
             <trans-unit id="XXk17ET">
                 <source>label.reviews_empty</source>
                 <target>Aucun avis pour l'instant.</target>
+            </trans-unit>
+            <trans-unit id="0zqsOvX">
+                <source>label.reviews_enable</source>
+                <target>Activer les avis</target>
+            </trans-unit>
+            <trans-unit id="NtWuABo">
+                <source>label.reviews_pending_alert</source>
+                <target>%count% avis en attente de modération</target>
             </trans-unit>
             <trans-unit id="uKaQklK">
                 <source>label.rights_reserved</source>
@@ -3170,6 +3222,10 @@
                 <source>label.variant_card</source>
                 <target>Carte (par défaut)</target>
             </trans-unit>
+            <trans-unit id="s.EyNwI">
+                <source>label.variant_compact</source>
+                <target>Carte compacte</target>
+            </trans-unit>
             <trans-unit id="db5EUws">
                 <source>label.variant_help</source>
                 <target>Mode d'affichage des items, appliqué à toute la collection.</target>
@@ -3314,9 +3370,9 @@
                 <source>text.form_required_note</source>
                 <target>* Champ requis</target>
             </trans-unit>
-            <trans-unit id="fqCFO6G">
-                <source>text.gdpr</source>
-                <target>Je consens que ce site Web stocke les données soumises afin qu'il puisse répondre à ma demande</target>
+            <trans-unit id="YkALKHi">
+                <source>text.gdpr_information</source>
+                <target><![CDATA[Les données que vous saisissez ici ne servent qu'à traiter votre demande. Vos droits et la durée de conservation sont détaillés dans les <a href="%privacyUrl%" target="_blank">Règles de confidentialité</a>.]]></target>
             </trans-unit>
             <trans-unit id="vcT08Ej">
                 <source>text.logged_in_as</source>
@@ -3325,6 +3381,17 @@
             <trans-unit id="JdqcjEg">
                 <source>text.review_submitted</source>
                 <target>Merci, votre avis a bien été envoyé. Il sera publié après relecture.</target>
+            </trans-unit>
+            <trans-unit id="SM78qKf">
+                <source>text.review_submitted_notification</source>
+                <target>Un visiteur vient de laisser un avis.
+
+Auteur : %author%
+Note : %rating%
+
+%comment%
+
+Il attend d'être publié ou écarté dans l'écran « Avis » du back-office.</target>
             </trans-unit>
             <trans-unit id="2HHle1V">
                 <source>text.svg_text_not_vectorized</source>

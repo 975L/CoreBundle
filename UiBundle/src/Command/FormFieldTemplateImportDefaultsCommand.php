@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// Seeds a starter FormFieldTemplate catalog - idempotent, matched by "name": an app that already ran this once, or an admin who edited/deleted a seeded row since, is never overwritten. Also run by SiteBundle's "c975l:site:create" wizard (same pattern as its own "c975l:config:load-all" call), so every new site starts with this catalog already filled in. No RGPD consent template here: every generic Form already gets its own sitewide consent checkbox for free (see FormSubmissionType's "gdpr" field, config-driven via "site-form-gdpr") - a template for it would just invite a confusing second checkbox
+// Seeds a starter FormFieldTemplate catalog - idempotent, matched by "name": an app that already ran this once, or an admin who edited/deleted a seeded row since, is never overwritten. Also run by SiteBundle's "c975l:site:create" wizard (same pattern as its own "c975l:config:load-all" call), so every new site starts with this catalog already filled in. No RGPD consent template here: answering a form rests on the site's legitimate interest and not on a consent, so what the visitor is owed is the information line Form.html.twig renders under every form (see "text.gdpr_information" and the "url-privacy-policy" setting), never a box to tick
 #[AsCommand(name: 'c975l:ui:form-field-template:import-defaults', description: 'Imports default FormFieldTemplate rows')]
 class FormFieldTemplateImportDefaultsCommand extends Command
 {

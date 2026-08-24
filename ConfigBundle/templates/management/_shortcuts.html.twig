@@ -1,4 +1,4 @@
-{# Renders the dashboard shortcuts as one titled row of tiles per category (see ShortcutBuilder), the section and each of its rows hidden when the current user has the role for none of their tiles - a heading standing above an empty grid otherwise A shortcut is a CSRF-protected POST form unless it declares 'method' => 'GET'; 'role' is optional A tile whose 'active' is true turns that thing off, and is painted as a warning so what the site currently has switched on is read at a glance #}
+{# Renders the dashboard shortcuts as one titled row of tiles per category (see ShortcutBuilder), the section and each of its rows hidden when the current user has the role for none of their tiles - a heading standing above an empty grid otherwise A shortcut is a CSRF-protected POST form unless it declares 'method' => 'GET'; 'role' is optional A tile whose 'active' is true turns that thing off; the one painted as a warning is the one whose 'warning' flag is true - filled from 'active' by ShortcutBuilder unless the provider says otherwise, a state worth an admin's attention not always being the state "on" #}
 {% set visibleCategories = categories|filter(category => category.shortcuts|filter(shortcut => shortcut.role is not defined or is_granted(shortcut.role))|length > 0) %}
 {% if visibleCategories|length > 0 %}
     <h2>{{ ('label.shortcuts'|trans({}, 'config')) }}</h2>
@@ -6,7 +6,7 @@
         <h3 class="shortcuts-category">{{ category.label }}</h3>
         <div class="shortcuts-grid">
         {% for shortcut in category.shortcuts|filter(shortcut => shortcut.role is not defined or is_granted(shortcut.role)) %}
-            {% set tileClass = 'shortcut-tile' ~ (shortcut.active|default(false) ? ' shortcut-tile-warning' : '') %}
+            {% set tileClass = 'shortcut-tile' ~ (shortcut.warning|default(false) ? ' shortcut-tile-warning' : '') %}
             {% if 'GET' == shortcut.method|default('POST') %}
                 <a href="{{ path(shortcut.route) }}" class="{{ tileClass }}">
                     <i class="{{ shortcut.icon }}"></i>

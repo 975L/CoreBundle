@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -127,6 +127,18 @@ fixed set of urls: an empty run clears the kind.
 Checks run from `c975l:health-check:run` only, never from a controller, so a slow or paid API call
 never blocks a request. **Run them against production's own database**: the url list comes from
 whichever database is connected, while the urls always point at `site-url`.
+
+**Reading the dashboard**: the table opens on the warning and error rows nobody has declared dealt
+with, not on every row recorded — a passing site records hundreds of `ok` ones. `skipped` is labelled
+*not verifiable* and is hidden with them: it covers a target that is up and turns automated probes
+down (a store answering `403` to a `HEAD`) as much as a page never reached, and neither is an editor's
+to fix. Return `STATUS_SKIPPED` for those rather than an error nobody can act on.
+
+**A fixed row is acknowledged, never re-run**: the ✓ button stamps `HealthCheckResult::setAcknowledgedAt()`
+and the row leaves the default view and the dashboard alert on the spot. The stamp is borne by the
+row, not by the (url, kind) pair — rows are appended, so the next run records a fresh unacknowledged
+one and a problem that was not actually fixed comes back on its own. Do not delete a result row to
+clear the dashboard: the export is an audit artefact, and the next run would recreate it anyway.
 
 ## Backup
 

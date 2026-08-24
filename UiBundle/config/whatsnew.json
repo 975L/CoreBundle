@@ -1,5 +1,60 @@
 [
     {
+        "date": "2026-08-24",
+        "description": [
+            {
+                "en": "The consent checkbox is gone from your public forms, replaced by a short line telling the visitor what their data is used for and linking to your privacy policy. A box someone cannot refuse without giving up the form was never a real consent, and answering a visitor who wrote to you does not need one. Fill the new \"Privacy policy URL\" setting, in Configuration - Legal, and the line appears under every form; leave it empty and nothing is shown.",
+                "fr": "La case de consentement a disparu de vos formulaires publics, remplacée par une courte phrase qui dit au visiteur à quoi servent ses données et renvoie à vos règles de confidentialité. Une case qu'on ne peut pas refuser sans renoncer au formulaire n'a jamais été un vrai consentement, et répondre à un visiteur qui vous écrit n'en demande pas. Renseignez le nouveau réglage « URL des règles de confidentialité », dans Configuration - Légal, et la phrase apparaît sous chaque formulaire ; laissez-le vide et rien ne s'affiche.",
+                "es": "La casilla de consentimiento ha desaparecido de sus formularios públicos, sustituida por una frase breve que dice al visitante para qué sirven sus datos y remite a sus reglas de confidencialidad. Una casilla que no se puede rechazar sin renunciar al formulario nunca fue un consentimiento real, y responder a un visitante que le escribe no lo exige. Rellene el nuevo ajuste « URL de las reglas de confidencialidad », en Configuración - Legal, y la frase aparece bajo cada formulario; déjelo vacío y no se muestra nada."
+            },
+            {
+                "en": "A collection block offers a third presentation, \"Compact card\": the same cards at a thumbnail's width, for a row of covers put forward under a page that has its own subject. On a phone they hold two to the line rather than one.",
+                "fr": "Un bloc collection propose une troisième présentation, « Carte compacte » : les mêmes cartes à la largeur d'une vignette, pour une rangée de couvertures mise en avant sous une page qui a son propre sujet. Sur un téléphone, elles tiennent à deux par ligne plutôt qu'à une.",
+                "es": "Un bloque colección ofrece una tercera presentación, « Tarjeta compacta »: las mismas tarjetas al ancho de una miniatura, para una fila de portadas destacada bajo una página que tiene su propio tema. En un teléfono caben dos por línea en lugar de una."
+            },
+            {
+                "en": "A video or an audio player placed on its own in a page now lines up with the rest of that page instead of running edge to edge, and its title is drawn at the size of the section titles around it. A video from YouTube or Vimeo also fills the space it is given without you having to type a width and a height: those two fields are now an optional maximum rather than the only thing giving the player a size.",
+                "fr": "Une vidéo ou un lecteur audio posé seul dans une page s'aligne désormais sur le reste de cette page au lieu de courir d'un bord à l'autre, et son titre est dessiné à la taille des titres de section qui l'entourent. Une vidéo YouTube ou Vimeo remplit aussi la place qu'on lui donne sans que vous ayez à saisir une largeur et une hauteur : ces deux champs sont maintenant un maximum facultatif, et non plus la seule chose qui donnait une taille au lecteur.",
+                "es": "Un vídeo o un reproductor de audio colocado solo en una página se alinea ahora con el resto de esa página en lugar de ir de borde a borde, y su título se dibuja al tamaño de los títulos de sección que lo rodean. Un vídeo de YouTube o Vimeo llena también el espacio que se le da sin que usted tenga que indicar un ancho y una altura: esos dos campos son ahora un máximo opcional, y no lo único que daba tamaño al reproductor."
+            },
+            {
+                "en": "Removing an image or a part from a block now refreshes the page showing it straight away. Until now that page could go on displaying what you had just taken out, until something else made it rebuild.",
+                "fr": "Retirer une image ou un élément d'un bloc rafraîchit désormais aussitôt la page qui l'affiche. Jusqu'ici, cette page pouvait continuer à montrer ce que vous veniez d'enlever, jusqu'à ce qu'autre chose la fasse se reconstruire.",
+                "es": "Quitar una imagen o un elemento de un bloque actualiza ahora de inmediato la página que lo muestra. Hasta ahora, esa página podía seguir mostrando lo que usted acababa de quitar, hasta que otra cosa la reconstruyera."
+            },
+            {
+                "en": "Your privacy policy now describes only what your site actually does. A site that holds no visitor accounts drops the paragraphs about accounts, passwords and login identifiers on its own - a document describing things that do not happen is worse than a shorter one. The \"Site with accounts\" setting, in Configuration - Legal, says which case yours is; it is on by default, so nothing changes unless you turn it off.",
+                "fr": "Vos règles de confidentialité ne décrivent plus que ce que votre site fait réellement. Un site sans comptes visiteurs laisse tomber de lui-même les paragraphes sur les comptes, les mots de passe et les identifiants de connexion — un document qui décrit ce qui n'a pas lieu vaut moins qu'un document plus court. Le réglage « Site avec comptes », dans Configuration - Légal, dit dans quel cas est le vôtre ; il est actif par défaut, donc rien ne change tant que vous ne le désactivez pas.",
+                "es": "Sus reglas de confidencialidad describen ahora solo lo que su sitio hace realmente. Un sitio sin cuentas de visitante deja caer por sí solo los párrafos sobre cuentas, contraseñas e identificadores de conexión: un documento que describe lo que no ocurre vale menos que uno más corto. El ajuste « Sitio con cuentas », en Configuración - Legal, dice en qué caso está el suyo; está activo por defecto, así que nada cambia mientras no lo desactive."
+            },
+            {
+                "en": "Reviews are turned on and off straight from your dashboard, with the other switches, instead of being looked for in the settings list. The tile says which state your site is in, and one click flips it: the review form, the moderation screen and the reviews shown on your pages all follow.",
+                "fr": "Les avis s'activent et se désactivent directement depuis votre tableau de bord, avec les autres interrupteurs, au lieu d'être à chercher dans la liste des réglages. La tuile dit dans quel état est votre site, et un clic l'inverse : le formulaire d'avis, l'écran de modération et les avis affichés sur vos pages suivent.",
+                "es": "Las opiniones se activan y desactivan directamente desde su panel, junto a los demás interruptores, en lugar de buscarlas en la lista de ajustes. La casilla dice en qué estado está su sitio, y un clic lo invierte: el formulario de opinión, la pantalla de moderación y las opiniones mostradas en sus páginas lo siguen."
+            },
+            {
+                "en": "The review form now opens under the thing being reviewed instead of on a page of its own, and the score is given by clicking stars rather than by picking a number in a list",
+                "fr": "Le formulaire d'avis s'ouvre désormais sous l'élément concerné au lieu d'une page à part, et la note se donne en cliquant des étoiles plutôt qu'en choisissant un nombre dans une liste",
+                "es": "El formulario de opinión se abre ahora bajo el elemento en cuestión en lugar de en una página aparte, y la puntuación se da pulsando estrellas en vez de eligiendo un número en una lista"
+            },
+            {
+                "en": "You are emailed as soon as a visitor leaves a review, and your dashboard says how many are waiting to be read: nothing of a review shows on the site before you have read it",
+                "fr": "Vous recevez un email dès qu'un visiteur laisse un avis, et votre tableau de bord indique combien attendent d'être lus : rien d'un avis ne s'affiche sur le site avant que vous l'ayez lu",
+                "es": "Recibe un correo en cuanto un visitante deja una opinión, y su panel indica cuántas esperan lectura: nada de una opinión se muestra en el sitio antes de que la haya leído"
+            },
+            {
+                "en": "Publishing or turning down a review takes one click, from the list as well as from the review itself, and each line now names the page it was written about instead of a number",
+                "fr": "Publier ou refuser un avis se fait en un clic, depuis la liste comme depuis l'avis lui-même, et chaque ligne nomme désormais la page concernée au lieu d'un numéro",
+                "es": "Publicar o rechazar una opinión se hace en un clic, desde la lista y desde la propia opinión, y cada línea nombra ahora la página en cuestión en lugar de un número"
+            },
+            {
+                "en": "A score left in a review now counts in the average on your own rating scale: a 5 out of 5 no longer entered the average as a 5 out of 10 on a site rating out of ten",
+                "fr": "Une note laissée dans un avis compte désormais dans la moyenne à votre propre échelle : un 5 sur 5 n'entre plus dans la moyenne comme un 5 sur 10 sur un site qui note sur dix",
+                "es": "Una puntuación dejada en una opinión cuenta ahora en la media según su propia escala: un 5 sobre 5 ya no entra en la media como un 5 sobre 10 en un sitio que puntúa sobre diez"
+            }
+        ]
+    },
+    {
         "date": "2026-08-23",
         "description": [
             {

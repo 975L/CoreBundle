@@ -3,15 +3,20 @@
 
 {# Each row carries its raw status/kind and a lowercased search blob for assets/js/health-check-table.js #}
 {# group ?? true: off for the "Site" section (see index.html.twig) - its rows are site-wide checks, not tied to any one page, so grouping/highlighting them by url doesn't make sense there #}
-<div data-controller="health-check-table" data-health-check-table-group-value="{{ (group ?? true) ? 'true' : 'false' }}">
+<div data-controller="health-check-table"
+    data-health-check-table-group-value="{{ (group ?? true) ? 'true' : 'false' }}"
+    data-health-check-table-token-value="{{ csrf_token('management_health_check_acknowledge') }}"
+    data-health-check-table-hidden-count-message-value="{{ 'label.health_check_hidden_count'|trans({'%count%': '__count__'}, 'config') }}">
     {# Not |default(true): Twig's default filter falls back whenever the value is "empty", and false counts as empty - it would silently turn a real showFilters:false back into true #}
     {% if showFilters ?? true %}
         <div class="mb-3 d-flex gap-2 flex-wrap">
             <input type="search" class="form-control health-check-filter"
                 placeholder="{{ 'label.health_check_filter_placeholder'|trans({}, 'config') }}"
                 data-health-check-table-target="filter" data-action="input->health-check-table#filterRows">
+            {# "unresolved" is not a stored status but the view this page opens on: warning + error, minus what an admin already declared dealt with. A dashboard whose every conforming row is listed is one nobody reads - the rows are still all there, one option away #}
             <select class="form-select health-check-select" data-health-check-table-target="status" data-action="change->health-check-table#filterRows">
-                <option value="">{{ 'label.health_check_status'|trans({}, 'config') }}</option>
+                <option value="unresolved" selected>{{ 'label.health_check_status_unresolved'|trans({}, 'config') }}</option>
+                <option value="">{{ 'label.health_check_status_all'|trans({}, 'config') }}</option>
                 <option value="ok">{{ 'label.health_check_status_ok'|trans({}, 'config') }}</option>
                 <option value="warning">{{ 'label.health_check_status_warning'|trans({}, 'config') }}</option>
                 <option value="error">{{ 'label.health_check_status_error'|trans({}, 'config') }}</option>
@@ -33,6 +38,7 @@
                 <th class="health-check-sortable" data-health-check-table-target="header" data-action="click->health-check-table#sort">{{ ('label.health_check_kind'|trans({}, 'config')) }}</th>
                 <th class="health-check-sortable" data-health-check-table-target="header" data-action="click->health-check-table#sort">{{ ('label.health_check_status'|trans({}, 'config')) }}</th>
                 <th>{{ ('label.health_check_summary'|trans({}, 'config')) }}</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +47,7 @@
                     data-status="{{ result.status }}"
                     data-kind="{{ result.kind }}"
                     data-url="{{ result.url }}"
+                    data-acknowledged="{{ result.acknowledged ? '1' : '0' }}"
                     data-search-text="{{ (result.url ~ ' ' ~ result.label ~ ' ' ~ result.summary)|lower }}"
                 >
                     {# The inner span (not the <td> itself) is what JS toggles (health-check-table.js#updateGrouping) when this row's url repeats the previous visible row's - keeps the <td> itself always present so the table's column alignment survives, and re-evaluated after every sort/filter since rowspan can't survive the table's client-side row reordering #}
@@ -98,12 +105,34 @@
                             </ul>
                         {% endif %}
                     </td>
+                    {# Only where there is something to declare dealt with: an ok or unverifiable row is already out of the default view, and marking it would mean nothing. A button and a fetch rather than a form, this table also being rendered inside EasyAdmin's own edit form (see c975l/site-bundle's Page health check tab), where a nested <form> is invalid HTML #}
+                    <td class="health-check-actions">
+                        {% if result.id and (result.acknowledged or result.status in ['warning', 'error']) %}
+                            <button type="button" class="btn btn-sm btn-link health-check-acknowledge"
+                                data-action="health-check-table#acknowledge"
+                                data-health-check-table-url-param="{{ path('management_health_check_acknowledge', {id: result.id}) }}"
+                                title="{{ (result.acknowledged ? 'label.health_check_acknowledge_undo' : 'label.health_check_acknowledge')|trans({}, 'config') }}">
+                                <i class="fa {{ result.acknowledged ? 'fa-rotate-left' : 'fa-check' }}"></i>
+                            </button>
+                        {% endif %}
+                    </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="4">{{ ('label.no_health_check'|trans({}, 'config')) }}</td>
+                    <td colspan="5">{{ ('label.no_health_check'|trans({}, 'config')) }}</td>
                 </tr>
             {% endfor %}
+            {# The default view hides every conforming row, so a healthy site would otherwise land on an empty table reading as a check that never ran. Shown by the controller when the current filter leaves nothing at all - never rendered when there is nothing recorded either, the loop's own else branch saying that already #}
+            {% if results is not empty %}
+                <tr data-health-check-table-target="empty" hidden>
+                    <td colspan="5">{{ ('label.health_check_nothing_to_handle'|trans({}, 'config')) }}</td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
+
+    {# What the current view is leaving out, so the default "to handle" view never reads as "the site has nothing else recorded". Hidden by the controller itself when the count is zero #}
+    {% if showFilters ?? true %}
+        <p class="text-muted small health-check-hidden-count" data-health-check-table-target="hiddenCount" hidden></p>
+    {% endif %}
 </div>

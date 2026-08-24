@@ -122,6 +122,32 @@ class ConfigShortcutProviderTest extends TestCase
         $this->assertTrue($provider->getShortcuts()[8]['active']);
     }
 
+    // The tile of an open registration stays neutral, unlike every other toggle: what an admin needs to spot is a site nobody can sign up to (see ShortcutProviderInterface)
+    public function testGetShortcutsWarnsOnAClosedRegistrationOnly(): void
+    {
+        $translator = $this->createTranslator();
+
+        $open = new ConfigShortcutProvider($translator, $this->createConfigService([]), $this->createFormRepository(true));
+        $closed = new ConfigShortcutProvider($translator, $this->createConfigService([]), $this->createFormRepository());
+        $absent = new ConfigShortcutProvider($translator, $this->createConfigService([]), $this->createFormRepository(null));
+
+        $this->assertFalse($open->getShortcuts()[8]['warning']);
+        $this->assertTrue($closed->getShortcuts()[8]['warning']);
+        $this->assertTrue($absent->getShortcuts()[8]['warning']);
+    }
+
+    // Maintenance keeps the plain reading, its tile inheriting the flag from 'active' in ShortcutBuilder
+    public function testGetShortcutsLeavesTheWarningFlagToTheBuilderForEveryOtherTile(): void
+    {
+        $provider = new ConfigShortcutProvider($this->createTranslator(), $this->createConfigService(['site-maintenance' => true]), $this->createFormRepository());
+
+        foreach ($provider->getShortcuts() as $shortcut) {
+            if (ConfigShortcutController::REGISTRATION_ENABLED_TOGGLE_ROUTE !== $shortcut['route']) {
+                $this->assertArrayNotHasKey('warning', $shortcut);
+            }
+        }
+    }
+
     // No "register" Form seeded yet counts as disabled, same as an explicit false
     public function testGetShortcutsTreatsAMissingRegisterFormAsDisabled(): void
     {

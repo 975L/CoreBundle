@@ -5,7 +5,7 @@
 
     {# XLIFF 1.2 doesn't allow raw HTML inside <source>/<target> (breaks strict XML parsing elsewhere) - the anchor tag is built here in Twig around %link_open%/%link_close% placeholders instead #}
     <p>{{ 'label.info_form_gdpr'|trans({
-        '%link_open%': '<a href="' ~ config_edit_url('site-form-gdpr') ~ '">',
+        '%link_open%': '<a href="' ~ config_edit_url('url-privacy-policy') ~ '">',
         '%link_close%': '</a>',
     }, 'ui')|raw }}</p>
     <p>{{ 'label.info_email_debug'|trans({

@@ -3,9 +3,9 @@
 {% block main %}
     <p>{{ ('label.info_form'|trans({}, 'ui')) }}</p>
 
-    {# Same note/key as email_template_crud_index.html.twig - shared translation, this is the more natural home for it since it's Forms that actually get the automatic GDPR checkbox #}
+    {# Same note/key as email_template_crud_index.html.twig - shared translation, this is the more natural home for it since it's Forms that actually carry the automatic GDPR information line #}
     <p>{{ 'label.info_form_gdpr'|trans({
-        '%link_open%': '<a href="' ~ config_edit_url('site-form-gdpr') ~ '">',
+        '%link_open%': '<a href="' ~ config_edit_url('url-privacy-policy') ~ '">',
         '%link_close%': '</a>',
     }, 'ui')|raw }}</p>
 

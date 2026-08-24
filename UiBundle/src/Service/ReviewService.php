@@ -31,6 +31,7 @@ class ReviewService
         private readonly ReviewVerifierRegistry $reviewVerifierRegistry,
         private readonly EntityManagerInterface $entityManager,
         private readonly ConfigServiceInterface $configService,
+        private readonly ReviewNotifier $reviewNotifier,
     ) {
     }
 
@@ -60,6 +61,9 @@ class ReviewService
 
         $this->entityManager->persist($review);
         $this->entityManager->flush();
+
+        // After the flush and its result ignored: what the visitor wrote is stored whatever the mailer answers, and a site with no "email-to" seeded still collects reviews
+        $this->reviewNotifier->notify($review);
     }
 
     /**
@@ -84,7 +88,7 @@ class ReviewService
         }
 
         if (ReviewStatus::Published === $review->getStatus() && null !== $review->getRating()) {
-            $this->ratingService->record($ownerType, $ownerId, $review->getRating(), $voter);
+            $this->ratingService->record($ownerType, $ownerId, $this->onSiteScale($review->getRating()), $voter);
 
             return;
         }
@@ -108,6 +112,20 @@ class ReviewService
 
         $this->reviewReplyRegistry->publish($review);
         $this->entityManager->flush();
+    }
+
+    /**
+     * The score as the ratings hold it, a review writing it on a scale of its own.
+     *
+     * A review is always out of five (Review::SCALE), so a local one and one imported from a platform are read on the same scale; the ratings are held on whatever the site set in "ui-rating-scale". Left as it is, a 5/5 would go into the average as a 5/10 on a site that set ten.
+     *
+     * Rounded rather than truncated, and never below one: a 1/5 is a 2/10, not a nought.
+     */
+    private function onSiteScale(int $rating): int
+    {
+        $scale = $this->ratingService->getScale();
+
+        return Review::SCALE === $scale ? $rating : max(1, (int) round($rating * $scale / Review::SCALE));
     }
 
     // An emptied textarea arrives as "" and means "remove the reply", which only null says on a platform's side. Public and static so the moderation screen compares what it is about to store against what is stored, rather than "" against null on every save

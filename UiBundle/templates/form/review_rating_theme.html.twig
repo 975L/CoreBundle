@@ -1,0 +1,23 @@
+{# Widget for ReviewType's "rating" field (block_prefix "c975l_ui_review_rating") - declared by review/_form.html.twig alone, the only template rendering that form #}
+{# The very row of icons a rating is read and given in everywhere else (see components/Rating/Rating.html.twig), with a radio where that widget has a button: the score travels with the rest of the form, where a vote is sent on its own by fetch and has no form to belong to #}
+{% block c975l_ui_review_rating_widget %}
+    <div class="review-rating">
+        {# Reversed on purpose: laid out right-to-left by the stylesheet, a checked radio then precedes every icon to its left in the DOM, which is what lights them all up to it with no javascript at all (see sass/_reviews.scss) #}
+        <p class="rating rating--star">
+            {% for star in form|filter(choice => choice.vars.value is not empty)|reverse %}
+                {{ form_widget(star) }}
+                {# The label carries the whole reading - "Noter 3 sur 5" - the icon itself being cut out of a color by the stylesheet and named by nothing #}
+                <label class="rating-star" for="{{ star.vars.id }}">
+                    <span class="sr-only">{{ 'label.rating_give'|trans({'%value%': star.vars.value, '%scale%': form.vars.choices|length}, 'ui') }}</span>
+                </label>
+            {% endfor %}
+        </p>
+        {# The empty choice, kept out of the icon run: inside it, checking "no score" would light up every icon it precedes #}
+        {% for empty in form|filter(choice => choice.vars.value is empty) %}
+            <div class="review-rating-none">
+                {{ form_widget(empty) }}
+                <label for="{{ empty.vars.id }}">{{ empty.vars.label|trans({}, 'ui') }}</label>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

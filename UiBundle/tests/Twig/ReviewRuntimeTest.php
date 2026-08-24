@@ -14,8 +14,14 @@ use c975L\UiBundle\Entity\Review;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Repository\ReviewRepository;
 use c975L\UiBundle\Service\ReviewService;
+use c975L\UiBundle\Service\ReviewTokenSigner;
 use c975L\UiBundle\Twig\ReviewRuntime;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Twig\Environment;
 
 // What a page asks for to draw the reviews of the thing it is about
 class ReviewRuntimeTest extends TestCase
@@ -47,7 +53,7 @@ class ReviewRuntimeTest extends TestCase
         $reviewService = $this->createStub(ReviewService::class);
         $reviewService->method('isEnabled')->willReturn(false);
 
-        new ReviewRuntime($repository, $reviewService)->reviews('book', 12);
+        $this->runtimeWith($repository, $reviewService)->reviews('book', 12);
     }
 
     // What a template reads to decide on its own whether to draw the section and its "leave a review" link
@@ -55,6 +61,75 @@ class ReviewRuntimeTest extends TestCase
     {
         $this->assertTrue($this->runtime(true)->reviewsEnabled());
         $this->assertFalse($this->runtime(false)->reviewsEnabled());
+    }
+
+    // The url a visitor writes on names what is reviewed through a signed token, never through its id - which is the whole point of building it here rather than with a path() call
+    public function testTheFormUrlCarriesASignedTokenAndNoId(): void
+    {
+        $url = $this->runtime(true)->url('book', 12);
+
+        $this->assertStringStartsWith('/ui_review_new/', $url);
+        $this->assertStringNotContainsString('12', $url);
+        $this->assertSame(
+            ['ownerType' => 'book', 'ownerId' => 12],
+            $this->signer()->unsign(substr($url, \strlen('/ui_review_new/')))
+        );
+    }
+
+    // Nothing in the section belongs to one visitor, so it is rendered once and kept - in the very cache the blocks of the page around it are held in
+    public function testTheSectionIsRenderedThroughTheCacheItIsTaggedIn(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('get')->willReturn('<section class="reviews"></section>');
+
+        $runtime = $this->runtimeWith(
+            $this->createStub(ReviewRepository::class),
+            $this->enabledService(true),
+            $cache,
+            new RequestStack([new Request()]),
+        );
+
+        $this->assertSame('<section class="reviews"></section>', (string) $runtime->section('book', 12));
+    }
+
+    // A site collecting no reviews draws no section at all, and nothing about it is stored - the sheets carry no condition of their own any more
+    public function testNoSectionIsRenderedNorStoredWhileTheFeatureIsOff(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('get');
+
+        $runtime = $this->runtimeWith(
+            $this->createStub(ReviewRepository::class),
+            $this->enabledService(false),
+            $cache,
+            new RequestStack([new Request()]),
+        );
+
+        $this->assertSame('', (string) $runtime->section('book', 12));
+    }
+
+    // Rendered outside any http request - a console command, a messenger worker - the locale of that render being nobody's: rendered, never stored (same reading as the blocks' own cache)
+    public function testTheSectionIsNotStoredOutsideAnyRequest(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('get');
+
+        $runtime = $this->runtimeWith(
+            $this->createStub(ReviewRepository::class),
+            $this->enabledService(true),
+            $cache,
+            new RequestStack(),
+        );
+
+        $this->assertSame('', (string) $runtime->section('book', 12));
+    }
+
+    private function enabledService(bool $enabled): ReviewService
+    {
+        $reviewService = $this->createStub(ReviewService::class);
+        $reviewService->method('isEnabled')->willReturn($enabled);
+
+        return $reviewService;
     }
 
     private function review(): Review
@@ -74,6 +149,39 @@ class ReviewRuntimeTest extends TestCase
         $reviewService = $this->createStub(ReviewService::class);
         $reviewService->method('isEnabled')->willReturn($enabled);
 
-        return new ReviewRuntime($repository, $reviewService);
+        return $this->runtimeWith($repository, $reviewService);
+    }
+
+    private function runtimeWith(
+        ReviewRepository $repository,
+        ReviewService $reviewService,
+        ?TagAwareCacheInterface $cache = null,
+        ?RequestStack $requestStack = null,
+    ): ReviewRuntime {
+        return new ReviewRuntime(
+            $repository,
+            $reviewService,
+            $this->signer(),
+            $this->urlGenerator(),
+            $this->createStub(Environment::class),
+            $cache ?? $this->createStub(TagAwareCacheInterface::class),
+            $requestStack ?? new RequestStack(),
+        );
+    }
+
+    private function signer(): ReviewTokenSigner
+    {
+        return new ReviewTokenSigner('a-secret');
+    }
+
+    // Answers with the route and the parameters it was given, so what the runtime signed is readable in the url it returns
+    private function urlGenerator(): UrlGeneratorInterface
+    {
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturnCallback(
+            static fn (string $route, array $parameters = []) => '/' . $route . '/' . ($parameters['token'] ?? '')
+        );
+
+        return $urlGenerator;
     }
 }

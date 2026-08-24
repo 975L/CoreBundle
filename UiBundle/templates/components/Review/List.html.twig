@@ -19,7 +19,16 @@
         </div>
     {% endif %}
 
-    <p class="text-center">
-        <a href="{{ path('ui_review_new', {ownerType: ownerType, ownerId: ownerId}) }}" class="btn btn-primary">{{ 'label.review_form_submit_link'|trans }}</a>
-    </p>
+    {# The form opens here rather than on a page of its own, and is fetched only once the fold is opened: the sheet around it carries no session and no cookie, and a visitor who never writes a review is served none (see assets/js/review-form.js) #}
+    {# Without javascript the summary is a plain link to that same url, which then answers with the whole page #}
+    {% set formUrl = ui_review_url(ownerType, ownerId) %}
+    <details class="review-form"
+             data-controller="ui-review-form"
+             data-ui-review-form-url-value="{{ formUrl }}"
+             data-ui-review-form-error-label-value="{{ 'label.review_form_error'|trans }}">
+        <summary class="review-form-summary">
+            <a href="{{ formUrl }}" data-ui-review-form-target="link">{{ 'label.review_form_submit_link'|trans }}</a>
+        </summary>
+        <div data-ui-review-form-target="panel"></div>
+    </details>
 </section>

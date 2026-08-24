@@ -21,12 +21,16 @@
     height = "",
     eyebrow = "",
     rating = "",
-    stats = []
+    stats = [],
+    tag = "div"
 %}
 {# id/data-animation only written when actually set, same as every other component here - an empty id="" is invalid HTML (and every card after the first a "duplicate ID" on top of it), and animate-scroll.js reads data-animation as the class name to add, so an empty one is nothing to animate anyway #}
 {# The variant declares itself by its own props, no "variant" string to keep in step with them #}
 {% set isStat = src or eyebrow or rating != "" or stats|length %}
-<div class="card box-shadow{{ isStat ? " card--stat" : "" }} {{ class }}"{% if id %} id="{{ id }}"{% endif %}{% if dataAnimation %} data-animation="{{ dataAnimation }}"{% endif %}{% if lang %} lang="{{ lang }}"{% endif %}{{ attributes }}>
+{# The element the card is drawn as. Set by the calling template and by nothing else - no form offers it, no editor sees it: the component is handed a title and some content, which says nothing of what the card stands for, where the template drawing it knows. "article" for a card standing for one self-contained thing (a book, a lot, an item of a source), "section" for one part of the page holding it, and "div" - the default - for a panel that is neither, which is what every caller written before this prop asks for #}
+{# Matched and never interpolated all the same, the same rule as "background" and "variant": nothing must be able to write a tag name into the markup #}
+{% set tag = tag|default('div') in ['article', 'section'] ? tag : 'div' %}
+<{{ tag }} class="card box-shadow{{ isStat ? " card--stat" : "" }} {{ class }}"{% if id %} id="{{ id }}"{% endif %}{% if dataAnimation %} data-animation="{{ dataAnimation }}"{% endif %}{% if lang %} lang="{{ lang }}"{% endif %}{{ attributes }}>
     {# "length" and not != "": an empty icon reaches the card as [] as often as "" (Section:Features passes [] when its card has no icon), and [] != "" is true in Twig, which sent the card reading icon[0] on an empty array #}
     {% if icon|length %}
         <{{ level|default('h2') }} class="card-header">{% if titleAside %}<span class="card-header__title">{% endif %}<twig:c975LUi:Image:Icon src="{{ icon[0] }}" class="{{ icon[1] }}" width="{{ icon[2] }}" height="{{ icon[3] }}"/> {% if titleUrl %}<a href="{{ titleUrl }}">{{ title }}</a>{% else %}{{ title }}{% endif %}{% if titleAside %}</span><span class="card-header__aside">{{ titleAside }}</span>{% endif %}</{{ level|default('h2') }}>
@@ -65,4 +69,4 @@
         {# Declared as a prop rather than left to exist or not: a card called self-closing nests nothing, and a bare "content" raised an error where a card reduced to its title is a perfectly legitimate call #}
         {% block content %}{{ content|raw|nl2br }}{% endblock %}
     </div>
-</div>
+</{{ tag }}>

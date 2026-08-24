@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui-enable-reviews, ui_review_new, moderation, avis, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash."
 ---
 
 # c975L UiBundle — blocks
@@ -10,7 +10,7 @@ description: "Use this skill when working with page blocks in a Symfony applicat
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `config/services.yaml`
+`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `src/Service/ReviewTokenSigner.php`, `src/Service/ReviewNotifier.php`, `src/Management/ReviewAlertProvider.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `config/services.yaml`
 
 **Related skills:** `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-config`, `c975l-management` in ConfigBundle beside it.
 
@@ -150,6 +150,12 @@ the `legal_model` block renders them and the **Legal models** screen customizes 
 section. A site running a shop with no page management needs them just as much. **Do not write legal
 text into a template**, and do not duplicate the models in a satellite bundle.
 
+A model states only the processing the site actually does: `site-has-accounts` (bool, `true` by
+default) drops the account, password and login-identifier passages of the privacy policy on a site
+holding no accounts, a text describing processing that does not exist being worse than a short one.
+A setting rather than a check on a route or a form — the login exists everywhere for the
+administrator, and accounts outlive a closed registration.
+
 ## Visitor ratings
 
 Anything at all is rated by a visitor, blocks or not — the rated thing is **named**, never related:
@@ -215,27 +221,38 @@ c975l/social-bundle's `ReviewsSourceInterface`). Only `source` tells them apart:
 two entities — ten columns out of eleven were the same.
 
 ```twig
-{% if ui_reviews_enabled() %}
-    {% include '@c975LUi/components/Review/List.html.twig' with {
-        reviews: ui_reviews('book', book.id),
-        ownerType: 'book',
-        ownerId: book.id,
-    } only %}
-{% endif %}
+{# The whole section - the published reviews and the fold the form opens in - rendered once and kept #}
+{{ ui_reviews_section('book', book.id) }}
 ```
+
+`ui_reviews_section()` holds its render in the same tagged cache the page's blocks are in, emptied on
+every review written, imported or moderated, and answers an empty string while `ui-enable-reviews` is
+off. Reach for `ui_reviews()` and the `Review/List` component directly only to lay the section out
+differently — the caching is then yours to do.
 
 - **`ui-enable-reviews`** (bool, `false` by default) gates the whole feature at once: the public form,
   the management screen, the collection source. Off, `ui_reviews()` returns `[]` rather than failing.
+  It is flipped from the dashboard's own toggle row as well as from the Config screen
+  (`Controller\Management\ReviewShortcutController`, `site-role-admin`).
 - **A submission is born `pending` and unverified**, whatever the form sent — the two fields deciding
   whether a text is readable and whether the site vouches for it are never the author's to fill.
   `ReviewStatus` is `pending` / `published` / `rejected`; an import is born `published`, its platform
   having moderated it already.
 - **Nothing but `published` is ever served**: every repository method a visitor reaches goes through
   `publishedQueryBuilder()`, so adding one never adds a way around moderation.
-- **`GET|POST /review/{ownerType}/{ownerId}` (`ui_review_new`) is a page of its own**, not a form on the
-  reviewed page: those are served from a shared cache, where a session, a CSRF token and a `Set-Cookie`
-  must never travel. It resolves what is being reviewed through `FavoriteItemProviderInterface` — the
-  wishlist's own providers, rather than a contract of its own — and 404s on an id nobody claims.
+- **`GET|POST /review/{token}` (`ui_review_new`) names what is reviewed through a signed token**, never
+  through its id: `ReviewTokenSigner` signs `ownerType:ownerId` with the app secret, so a public url
+  prints no database id and `/review/book/1..n` walks nothing. Build it with `ui_review_url()` and
+  never with `path()`, which has no id to be given any more. It resolves what is being reviewed
+  through `FavoriteItemProviderInterface` — the wishlist's own providers, rather than a contract of
+  its own — and 404s on an unsigned token as on an id nobody claims.
+- **The form is fetched, not printed.** The section renders a `<details>` fold whose panel loads the
+  form on the first open (`assets/js/review-form.js`); the same route serves the form alone to an
+  XHR and the whole page to a plain visit, so the sheet around it carries no session, no CSRF token
+  and no `Set-Cookie`, and works with javascript off as a plain link.
+- **A submitted review is notified to the site.** `ReviewNotifier` sends the site's own `email-to`
+  address a plain-text notice in the site's locale, its result ignored — a review is stored whatever
+  the mailer answers. `ReviewAlertProvider` says on the dashboard how many are waiting.
 - **The score goes into the same average as the clicks.** Publishing a review carrying a rating calls
   `RatingService::record()` under a voter derived from the author's e-mail (a truncated sha-256, so
   `Rating` still holds no address of anyone); rejecting or deleting it calls `withdraw()`.
@@ -323,5 +340,7 @@ them** rather than writing a walk of your own. A content export never carries th
   this bundle's `layout.html.twig` and `Form` component do.
 - **Do not call `RatingRepository::deleteForOwner()` from a trash action** — only from the
   permanent delete.
+- **Do not build the review url with `path('ui_review_new', ...)`** — the route takes a signed token,
+  which only `ui_review_url()` (or `ReviewTokenSigner::sign()`) mints.
 - **Do not add a built-in kind to this bundle from an app** — `c975l:ui:block:create` generates into
   the app's own namespace, which is where a one-off kind belongs.

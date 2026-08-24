@@ -75,12 +75,13 @@ class CollectionTypeTest extends TestCase
         }
     }
 
-    public function testVariantChoicesOfferCardAndPortfolio(): void
+    public function testVariantChoicesOfferCardCompactAndPortfolio(): void
     {
         $added = $this->buildAddedFields(new CollectionSourceRegistry());
 
         $this->assertSame([
             'label.variant_card' => '',
+            'label.variant_compact' => 'compact',
             'label.variant_portfolio' => 'portfolio',
         ], $added['variant']['choices']);
     }

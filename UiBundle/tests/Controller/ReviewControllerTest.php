@@ -16,6 +16,7 @@ use c975L\UiBundle\Registry\FavoriteItemRegistry;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Service\RateLimiterGuard;
 use c975L\UiBundle\Service\ReviewService;
+use c975L\UiBundle\Service\ReviewTokenSigner;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -29,7 +30,7 @@ class ReviewControllerTest extends TestCase
     {
         $this->expectException(NotFoundHttpException::class);
 
-        $this->controller(enabled: false)->new('book', 12, new Request());
+        $this->controller(enabled: false)->new(self::token(), new Request());
     }
 
     // An id nobody claims, or one whose owner is not published: there is nothing to review, and nothing to name the page after
@@ -37,7 +38,15 @@ class ReviewControllerTest extends TestCase
     {
         $this->expectException(NotFoundHttpException::class);
 
-        $this->controller(resolved: [])->new('book', 12, new Request());
+        $this->controller(resolved: [])->new(self::token(), new Request());
+    }
+
+    // A token nobody signed names nothing at all, and is answered exactly like an id nobody claims - without it the route would resolve whatever a visitor chose to write in the url
+    public function testAForgedTokenIsNotFound(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->controller()->new('Ym9vazoxMw.0000000000000000', new Request());
     }
 
     // The bot check must not even be reached on a page that is not served: it would start a timer in a session for a form nobody gets
@@ -47,10 +56,21 @@ class ReviewControllerTest extends TestCase
         $botProtection->expects($this->never())->method('startTimer');
 
         try {
-            $this->controller(enabled: false, botProtection: $botProtection)->new('book', 12, new Request());
+            $this->controller(enabled: false, botProtection: $botProtection)->new(self::token(), new Request());
         } catch (NotFoundHttpException) {
             // The gate is what this checks; the expectation above is what witnesses it
         }
+    }
+
+    // A token this site signed, naming the book the three tests above ask for
+    private static function token(): string
+    {
+        return self::signer()->sign('book', 12);
+    }
+
+    private static function signer(): ReviewTokenSigner
+    {
+        return new ReviewTokenSigner('a-secret');
     }
 
     /**
@@ -71,6 +91,7 @@ class ReviewControllerTest extends TestCase
 
         return new ReviewController(
             $reviewService,
+            self::signer(),
             $favoriteItemRegistry,
             $botProtection ?? $this->createStub(FormBotProtection::class),
             $this->createStub(RateLimiterGuard::class),

@@ -26,10 +26,12 @@
 	<section data-legal-id="email-addresses">
 		<h2>Direcciones de correo electrónico</h2>
 		<div>
-			No difundimos las direcciones de correo electrónico que nos deja. Se utilizan únicamente para comunicarnos con usted y constituyen el identificador de inicio de sesión en el sitio web.
+			No difundimos las direcciones de correo electrónico que nos deja. Se utilizan únicamente para comunicarnos con usted{% if config('site-has-accounts') %} y constituyen el identificador de inicio de sesión en el sitio web{% endif %}.
 		</div>
 	</section>
 
+	{# A site with no accounts has neither account nor password to describe, and a text describing them describes processing that does not exist. A setting rather than a route or a form: the login exists everywhere for the administrator, the register form is seeded everywhere by c975l:user:create, and accounts outlive closed registrations - only the User entity would really answer, and it lives in the site's scaffold, out of a bundle's reach #}
+	{% if config('site-has-accounts') %}
 	<section data-legal-id="account">
 		<h2>Cuenta</h2>
 		<div>
@@ -53,6 +55,7 @@
 			<strong>{{ legal_var('site-name') }}</strong>.
 		</div>
 	</section>
+	{% endif %}
 
 	<section data-legal-id="your-rights">
 		<h2>Sus derechos</h2>
@@ -152,9 +155,11 @@
 		<div>
 			Utilizamos una serie de herramientas técnicas y organizacionales generalmente reconocidas para asegurar la protección de sus datos personales contra acceso o comunicación no autorizada. Sin embargo, como probablemente sepa, no existe protección perfecta. Por lo tanto, no ofrecemos garantía alguna al respecto.
 		</div>
+		{% if config('site-has-accounts') %}
 		<div>
 			La seguridad de los datos personales también es responsabilidad de los usuarios que se comprometen a mantener confidencial su identificador y contraseña. Los usuarios también se comprometen a no compartir su cuenta.
 		</div>
+		{% endif %}
 
 		<h3 data-legal-id="regulations.data-archiving">Archivado de datos</h3>
 		<div>

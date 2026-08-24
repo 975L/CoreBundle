@@ -10,15 +10,6 @@
 {% block content %}
     <p class="text lead">{{ 'label.review_form_intro'|trans({'%name%': item.title}) }}</p>
 
-    {{ form_start(form) }}
-        {# The errors bound to no field - an expired token, say - without which the page redisplays saying nothing #}
-        {{ form_errors(form) }}
-        {{ form_widget(form) }}
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">{{ 'label.review_form_submit'|trans }}</button>
-        </div>
-    {{ form_end(form) }}
-
-    {# L111-7-2: the visitor has to be told what becomes of what they write, before they write it #}
-    <p class="text text-muted">{{ 'label.review_form_moderation_notice'|trans }}</p>
+    {# The same fragment the fold under the reviewed thing loads, so the two never drift apart #}
+    {{ include('@c975LUi/review/_form.html.twig') }}
 {% endblock %}

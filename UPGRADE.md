@@ -2,6 +2,52 @@
 
 ## Unreleased
 
+**`site_health_check_result` gains an `acknowledged_at` column.** An admin who has just fixed something marks the
+row as dealt with from the Health check table itself, rather than re-running a check that takes minutes and hits
+every external platform again (see `HealthCheckController::acknowledge()`). Nullable, so the table's existing rows
+need nothing beyond the column:
+
+```sql
+ALTER TABLE site_health_check_result ADD acknowledged_at DATETIME DEFAULT NULL;
+```
+
+**Generate and run the migration before the first visit to `/management/health-check`**: the page selects the
+whole entity, so a deployed bundle whose database is missing the column answers an SQL error, not a degraded page.
+
+Two display changes go with it, nothing to run for either: the table opens on the warning and error rows nobody
+has acknowledged instead of listing every conforming row beside them (*Tous les statuts* shows them all back), and
+`label.health_check_status_skipped` reads *Non vérifiable* rather than *Non testé* - the status covers a platform
+that is up and turns automated probes down as much as a page that was never reached. A site overriding that key in
+its own `translations/` keeps its own wording.
+
+**The GDPR consent checkbox is gone from every public form.** Answering a visitor who wrote to you rests on the
+site's legitimate interest, not on a consent, and a box they cannot refuse without giving up the form was never
+one. `FormSubmissionType` no longer adds the `gdpr` field, and `Form.html.twig` renders an information line
+instead - `text.gdpr_information`, linking to the page the new `url-privacy-policy` setting names. **Fill that
+setting** (Configuration → Legal) after running `c975l:config:load-all`: while it is empty the line is skipped
+entirely, and the form then says nothing at all. A site whose form action read the submitted `gdpr` value has
+nothing left to read.
+
+**`site-form-gdpr` is dropped.** `load-all` never deletes, so the row stays in `site_config` until it is taken
+away:
+
+```bash
+php bin/console c975l:config:prune --force
+```
+
+The `text.gdpr` key goes with it, out of the three `ui` catalogues - an app that overrode it in its own
+`translations/` can drop that override too.
+
+**The review form's url changed shape.** `ui_review_new` was `/review/{ownerType}/{ownerId}` and is
+`/review/{token}` now: what is reviewed travels signed by `ReviewTokenSigner` rather than as a
+database id a public url had no business printing, and which `/review/book/1..n` walked the whole
+catalog with. **Replace every `path('ui_review_new', {ownerType: ..., ownerId: ...})` with
+`ui_review_url(ownerType, ownerId)`** - the route takes no id any more, so the old call fails at
+render time. A page rendering the reviews itself is better off calling `ui_reviews_section()`, which
+draws the list, the fold and that link at once and holds the whole of it in the blocks' own cache.
+Nothing to run, and nothing to migrate: the old urls simply answer 404, which is what an address
+naming a row by its id should have done all along.
+
 **`site_email_template` gains a `locale` column, and its name is no longer unique on its own.** One e-mail is now
 written once per language the site answers in, so the pair names a row where the name used to (see
 `EmailTemplateRepository::findForRendering()`, which tries the recipient's language, then the site's, then any):

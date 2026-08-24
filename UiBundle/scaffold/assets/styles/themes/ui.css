@@ -77,15 +77,14 @@
     /* The author's avatar, always square whatever the platform serves */
     /* --review-avatar-size: 48px; */
 
-    /* The rating row. Both are set, an unfilled star staying in the flow so every card's rating takes the same width */
-    /* --review-star-color: #d0d0d0; */
-    /* --review-star-color-filled: #f5a623; */
+    /* The icons of the review form, the one place a visitor sets a score by clicking them rather than reading them - what they are painted in is the rating row's own affair, above */
+    /* --review-rating-star-size: 2rem; */
 
     /* The date, the verified badge and the reply label, all secondary to the review itself */
     /* --review-secondary-size: 0.875em; */
 
     /* The wishlist heart - the same two-color reading as the rating row above: filled in the red a heart is read in once the visitor put the thing aside, a quarter of the page ink until then. Sized in em so it follows the type size of the card or the sheet it is dropped in */
-    /* --favorite-on: #e0245e; */
+    /* --favorite-on: #e60000; */
     /* --favorite-off: color-mix(in srgb, var(--text) 25%, var(--background)); */
     /* --favorite-size: 1.5em; */
 
@@ -146,7 +145,7 @@
     /* What a ".cards" row puts between two cards, read by the row itself and by the widths below */
     /* --cards-gap: 20px; */
     /* --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3)); */
-    /* --card-width-compact: min(45vw, 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
+    /* --card-width-compact: min(calc((100vw - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
     /* --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2)); */
     /* The card title's own size, stated rather than inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact card steps down once more */
     /* --card-title-size: calc(19px * var(--font-size-title-scale, 1)); */

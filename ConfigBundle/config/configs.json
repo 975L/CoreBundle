@@ -432,6 +432,28 @@
         "description": "description.display_hosted_by"
     },
     {
+        "label": "label.site_has_accounts",
+        "slug": "site-has-accounts",
+        "sensitive": false,
+        "restricted": false,
+        "value": "true",
+        "kind": "bool",
+        "group": "legal",
+        "severity": null,
+        "description": "description.site_has_accounts"
+    },
+    {
+        "label": "label.url_privacy_policy",
+        "slug": "url-privacy-policy",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "legal",
+        "severity": "warning",
+        "description": "description.url_privacy_policy"
+    },
+    {
         "label": "label.url_terms_of_use",
         "slug": "url-terms-of-use",
         "sensitive": false,
@@ -742,7 +764,7 @@
         "value": null,
         "kind": "text",
         "group": "security",
-        "severity": "warning",
+        "severity": "info",
         "description": "description.login_google_oauth_client_secret"
     }
 ]

@@ -25,6 +25,7 @@ use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ExportFormat;
 use c975L\ConfigBundle\Service\Export\TableExporter;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Messenger\RunCommandMessage;
@@ -40,6 +41,9 @@ class HealthCheckController extends AbstractController
     // EasyAdmin prefixes this with the Dashboard's own route name, giving management_health_check_run
     public const RUN_ROUTE = 'management_health_check_run';
 
+    // Same prefixing, giving management_health_check_acknowledge - the token the table's acknowledge button sends is minted under this very name (see _table.html.twig)
+    public const ACKNOWLEDGE_ROUTE = 'management_health_check_acknowledge';
+
     // Kinds checked once for the whole site (infrastructure-level: TLS cert, security headers, security misconfiguration, robots.txt/sitemap, sitemaps cross-checked against robots.txt, redirect chains, http/https + 404 deployment checks, database load, last backup, uploaded svg files, declared files, ai crawlers list) rather than once per page - shown in their own "Site" section instead of the per-page table, see index()
     private const array SITE_WIDE_KINDS = ['security-headers', 'security-misconfig', 'ssl-certificate', 'seo-files', 'redirect-chains', 'deployment', 'svg-fonts', 'files-ui', AiCrawlersHealthCheckProvider::KIND, DatabaseLoadHealthCheckProvider::KIND, BackupResultRecorder::KIND, SitemapRobotsHealthCheckProvider::KIND];
 
@@ -54,6 +58,7 @@ class HealthCheckController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly MessageBusInterface $messageBus,
         private readonly HealthCheckRunProgress $healthCheckRunProgress,
+        private readonly EntityManagerInterface $manager,
     ) {
     }
 
@@ -135,6 +140,31 @@ class HealthCheckController extends AbstractController
         return $this->redirectToRoute('management_health_check_index');
     }
 
+    // Declares one row dealt with, or takes that back - what an admin who just fixed something has instead of re-running the whole check, a run costing minutes and hitting every external platform again. Toggles rather than sets, an acknowledgement clicked by mistake being otherwise unrecoverable from the screen it was made on. Answers JSON and redirects nothing: the table updates the row in place (see the health-check-table Stimulus controller), the point being not to reload a page the admin is working through
+    #[AdminRoute(
+        path: '/health-check/{id}/acknowledge',
+        name: 'health_check_acknowledge',
+        options: ['methods' => ['POST'], 'requirements' => ['id' => '\\d+']]
+    )]
+    public function acknowledge(Request $request, int $id): JsonResponse
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+
+        if (!$this->isCsrfTokenValid(self::ACKNOWLEDGE_ROUTE, $request->request->get('_token') ?? $request->headers->get('X-CSRF-Token'))) {
+            return $this->json(['error' => $this->translator->trans('flash.health_check_run_invalid_token', [], 'config')], Response::HTTP_BAD_REQUEST);
+        }
+
+        $result = $this->healthCheckResultRepository->find($id);
+        if (null === $result) {
+            return $this->json(['error' => $this->translator->trans('label.no_health_check', [], 'config')], Response::HTTP_NOT_FOUND);
+        }
+
+        $result->setAcknowledgedAt($result->isAcknowledged() ? null : new \DateTime());
+        $this->manager->flush();
+
+        return $this->json(['acknowledged' => $result->isAcknowledged()]);
+    }
+
     // How far along the run this admin queued is, polled by the progress banner (see the health-check-progress Stimulus controller) - the jobs run in a Messenger worker, so the page has no other way of telling a run still going from one whose worker was never started. Returns a finished run when there's nothing being followed, the banner then having nothing left to wait for
     #[AdminRoute(path: '/health-check/progress', name: 'health_check_progress')]
     public function progress(): JsonResponse
@@ -160,6 +190,8 @@ class HealthCheckController extends AbstractController
                 'status' => $result->getStatus(),
                 'summary' => $result->getSummary(),
                 'checkedAt' => $result->getCheckedAt()->format('Y-m-d H:i:s'),
+                // Empty on all but the rows an admin declared dealt with - the export being the audit artefact, a row leaving the dashboard's default view must still say so here rather than simply disappear
+                'acknowledgedAt' => $result->getAcknowledgedAt()?->format('Y-m-d H:i:s') ?? '',
             ],
             $this->healthCheckResultRepository->findLatestPerUrlAndKind(),
         );
