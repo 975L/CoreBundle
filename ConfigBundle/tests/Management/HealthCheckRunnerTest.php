@@ -18,6 +18,10 @@ use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
 use c975L\ConfigBundle\Management\HealthCheckSiteWideInterface;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Exception as DriverException;
+use Doctrine\DBAL\Exception\ConnectionLost;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -109,6 +113,56 @@ class HealthCheckRunnerTest extends TestCase
 
         // Every row from the same provider run shares the same checkedAt, so they can be grouped as one run
         $this->assertEquals($persisted[0]->getCheckedAt(), $persisted[1]->getCheckedAt());
+    }
+
+    // A run checking thousands of urls spends minutes on http requests without touching the database, long enough for the server to have dropped the connection meanwhile - Messenger's own ping happens before the message is handled, so everything the providers produced would be lost on the flush ("MySQL server has gone away")
+    public function testRunClosesADroppedConnectionBeforeFlushing(): void
+    {
+        $platform = $this->createStub(AbstractPlatform::class);
+        $platform->method('getDummySelectSQL')->willReturn('SELECT 1');
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('isConnected')->willReturn(true);
+        $connection->method('getDatabasePlatform')->willReturn($platform);
+        $connection->method('executeQuery')->willThrowException(new ConnectionLost($this->createStub(DriverException::class), null));
+        // Closing is all it takes: DBAL reconnects lazily, so the flush below opens a fresh connection on its own. Checked at least once rather than exactly once - the connection is pinged before each provider as well as before the flush, and this stub answers "gone away" every time
+        $connection->expects($this->atLeastOnce())->method('close');
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('getConnection')->willReturn($connection);
+        $entityManager->expects($this->once())->method('flush');
+
+        $runner = new HealthCheckRunner(
+            [$this->createProvider('urls-book', [['url' => 'https://example.com/books/1', 'label' => null, 'status' => HealthCheckResult::STATUS_OK, 'summary' => 'ok', 'details' => null]])],
+            $entityManager,
+            $this->createStub(HealthCheckResultRepository::class),
+        );
+
+        $this->assertSame(['urls-book' => 1], $runner->run());
+    }
+
+    // A connection that is still alive is only paid a "SELECT 1" for, and stays open
+    public function testRunKeepsALiveConnectionOpen(): void
+    {
+        $platform = $this->createStub(AbstractPlatform::class);
+        $platform->method('getDummySelectSQL')->willReturn('SELECT 1');
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('isConnected')->willReturn(true);
+        $connection->method('getDatabasePlatform')->willReturn($platform);
+        $connection->expects($this->never())->method('close');
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('getConnection')->willReturn($connection);
+        $entityManager->expects($this->once())->method('flush');
+
+        $runner = new HealthCheckRunner(
+            [$this->createProvider('urls-book', [['url' => 'https://example.com/books/1', 'label' => null, 'status' => HealthCheckResult::STATUS_OK, 'summary' => 'ok', 'details' => null]])],
+            $entityManager,
+            $this->createStub(HealthCheckResultRepository::class),
+        );
+
+        $runner->run();
     }
 
     public function testRunReturnsZeroCountForAProviderWithNoRows(): void

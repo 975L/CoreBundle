@@ -383,6 +383,22 @@ class ContentQualityClientTest extends TestCase
         $this->assertSame(ContentQualityClient::LINK_BROKEN, $client->checkLink('https://example.com/pages/missing/'));
     }
 
+    // A host answering that it filters or rate limits this client is not called a second time - the GET would learn nothing, and insisting is how a server's IP ends up blocked
+    public function testCheckLinkDoesNotRetryAHostThatFiltersTheChecker(): void
+    {
+        $methods = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$methods): MockResponse {
+            $methods[] = $method;
+
+            return new MockResponse('', ['http_code' => 403]);
+        });
+        $client = new ContentQualityClient($httpClient);
+
+        // Reported as unknown all the same, filtered being an implementation detail of the retry
+        $this->assertSame(ContentQualityClient::LINK_UNKNOWN, $client->checkLink('https://shop.example/book'));
+        $this->assertSame(['HEAD'], $methods);
+    }
+
     // No retry when the HEAD already concluded
     public function testCheckLinkDoesNotRetryAConclusiveHead(): void
     {

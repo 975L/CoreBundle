@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\ContentOffenceLocatorRegistry;
 use c975L\ConfigBundle\Management\ContentQualityAnalyzer;
 use c975L\ConfigBundle\Management\DeclaredUrlsHealthCheckProvider;
+use c975L\ConfigBundle\Management\ExternalLinkCheckSchedule;
 use c975L\ConfigBundle\Management\SitemapProviderInterface;
 use c975L\ConfigBundle\Service\ContentQualityClient;
 use c975L\ConfigBundle\Service\UrlStatusChecker;
@@ -53,7 +54,17 @@ class DeclaredUrlsHealthCheckProviderTest extends TestCase
             $checker ?? $this->createStub(UrlStatusChecker::class),
             $this->createStub(ContentOffenceLocatorRegistry::class),
             $this->createTranslator(),
+            $this->createSchedule(),
         );
+    }
+
+    // The external link pass is due, which is the run of urls never checked before - what every test here describes
+    private function createSchedule(): ExternalLinkCheckSchedule
+    {
+        $schedule = $this->createStub(ExternalLinkCheckSchedule::class);
+        $schedule->method('decide')->willReturn(['due' => true, 'checkedAt' => '2026-08-25T18:00:00+02:00', 'broken' => []]);
+
+        return $schedule;
     }
 
     // $status >= 400 stands for a url that isn't there: the analysis response answers it, and reading it throws, exactly as HttpClient does on a 4xx

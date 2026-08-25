@@ -65,6 +65,30 @@ class HealthCheckResultRepository extends ServiceEntityRepository
         return $latest;
     }
 
+    // The most recent row of each (url, kind) among the given urls - what a check reading back what the run before it recorded needs for a whole batch at once (see ExternalLinkCheckSchedule), one query rather than one per url. Per (url, kind) and not per url alone: the same url is checked by several providers, and keeping one row per url would hand back whichever kind ran last rather than the one carrying what the caller is looking for. Deduped in PHP the same way as findLatestPerUrlAndKind(), the rows of one run's urls being exactly the small dataset retention keeps
+    // @return HealthCheckResult[]
+    public function findLatestPerUrlAndKindIn(array $urls): array
+    {
+        if (!$urls) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('h')
+            ->andWhere('h.url IN (:urls)')
+            ->setParameter('urls', $urls)
+            ->orderBy('h.checkedAt', 'DESC')
+            ->addOrderBy('h.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        $latest = [];
+        foreach ($rows as $row) {
+            $latest[$row->getUrl() . '|' . $row->getKind()] ??= $row;
+        }
+
+        return array_values($latest);
+    }
+
     // The single most recent row of one (url, kind), or null if that pair was never checked - what a provider comparing a run against the one before it needs (see IntrusionHealthCheckProvider, which reads one integer out of it). Bounded in SQL rather than deduped in PHP like findLatestPerUrlAndKind(): reading one row must not hydrate a history that grows with every run
     public function findLatestByUrlAndKind(string $url, string $kind): ?HealthCheckResult
     {

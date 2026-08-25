@@ -22,6 +22,10 @@
                 <source>action.health_check_export</source>
                 <target>Exportar (CSV)</target>
             </trans-unit>
+            <trans-unit id="XeYmbNl">
+                <source>action.health_check_report</source>
+                <target>Informe de diagnóstico (JSON)</target>
+            </trans-unit>
             <trans-unit id="uNJVXca">
                 <source>action.health_check_run</source>
                 <target>Ejecutar el chequeo de salud ahora</target>

@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -112,6 +112,18 @@ content-quality analysis over the urls a bundle already declares for its sitemap
 **Nothing to implement bundle-side** — declaring the sitemap is enough. Do not write a per-bundle
 content check, and do not remount in an `extra` status section what it already reports.
 
+**Internal and external links are not checked on the same cadence.** The links inside the site are
+checked every run, in batches of ten. The links leaving it are called **once a month**
+(`ExternalLinkCheckSchedule::INTERVAL_DAYS`), the runs in between reporting back what that pass found,
+so a dead external link stays on the dashboard without its host being called every week — the date of
+the last real pass travels in each row's `details`, under `externalLinksCheckedAt`. When they are
+called they are spread over their hosts, at most one url per host in flight at a time: a site linking
+mostly to two or three merchants would otherwise fire ten requests at one of them at once, from a
+single server address, which is what gets that address rate limited and then blocked. A host answering
+`403`, `429` or `999` is not retried in `GET` (`ContentQualityClient::FILTERED_STATUSES`) — that
+answer describes a filtered client, where the `405`/`501` a retry does resolve describes a method a
+server refuses.
+
 **For the files a bundle stores rather than the urls it publishes**, UiBundle ships
 `AbstractDeclaredFilesHealthCheckProvider`: extend it, yield the files your rows name, and every one
 missing from `public/` is reported as an error (kinds `files-ui`, `files-site`, `files-gallery`). It is
@@ -139,6 +151,15 @@ and the row leaves the default view and the dashboard alert on the spot. The sta
 row, not by the (url, kind) pair — rows are appended, so the next run records a fresh unacknowledged
 one and a problem that was not actually fixed comes back on its own. Do not delete a result row to
 clear the dashboard: the export is an audit artefact, and the next run would recreate it anyway.
+
+**Two exports, one run.** *Export (CSV)* is the dated audit trace — one line per (url, kind), opened
+in a spreadsheet, kept. *Diagnostic report (JSON)* is the diagnosis: every row needing action, the
+acknowledged ones included, carrying the checkers' own `details` payload, under the site's identity,
+environment and bundle versions (`HealthCheckReportBuilder`, which is `StatusReportBuilder`'s report
+plus those details). It is the file to attach to a ticket or hand to an assistant, where a screenshot
+of the table says only *what* is wrong. `ok` and `skipped` rows are left out, `checks.counts` still
+saying how many there were, and nothing is capped — unlike `/status/report`'s own issue list, which
+travels over the network.
 
 ## Backup
 
@@ -194,6 +215,7 @@ check and the smoke test which fetch the live site at `site-url`.
   the subscriber never queries for one.
 - **Do not store what an url says in code**, nor declare a url's sentences from a provider.
 - **Do not run a health check from a controller.**
+- **Do not call external links on every run**, and do not retry a `403`/`429`/`999` in `GET`.
 - **Do not run the checks, the sitemap or the backup against a staging database** while `site-url`
   points at production.
 - **Do not back up code, templates or asset sources.**

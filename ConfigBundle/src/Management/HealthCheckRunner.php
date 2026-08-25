@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Management;
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 
 // Runs every registered HealthCheckProvider and persists their rows - called from c975l:health-check:run only (see HealthCheckProviderInterface), never from a controller, so a slow third-party API call never blocks a dashboard request
@@ -43,6 +44,9 @@ class HealthCheckRunner
 
             $checkedAt = new \DateTime();
 
+            // Before the provider rather than only before the flush: the one before it may have spent minutes on http requests, and a provider reading the database as it opens (see ContentQualityAnalyzer) would throw on a dropped connection - straight into the catch below, which would skip it without a trace
+            $this->reconnectIfLost();
+
             // One provider throwing must not take the run down with it: rows are only flushed once every provider has run, so an exception here would discard what the providers before it already produced, and the ones after it would never run at all
             try {
                 $rows = $provider->runChecks();
@@ -62,6 +66,11 @@ class HealthCheckRunner
             $counts[$kind] = \count($rows);
         }
 
+        // Same again before the write: the last provider's own http requests are just as long, and everything every provider produced would be lost on the flush below ("MySQL server has gone away")
+        if (array_sum($counts) > 0 || $exhaustiveUrls) {
+            $this->reconnectIfLost();
+        }
+
         // Skips flush() entirely on a true no-op (no provider matched $onlyKinds, or every matched provider returned zero rows) - flush() walks the whole UnitOfWork's changeset, not just what this method touched, so there's a real cost to paying for it when nothing was persisted
         if (array_sum($counts) > 0) {
             $this->entityManager->flush();
@@ -73,6 +82,22 @@ class HealthCheckRunner
         }
 
         return $counts;
+    }
+
+    // Closes a connection the server has already dropped, so the next query opens a fresh one - a health check run spends minutes on http requests without touching the database, which is long enough for the server to have dropped it meanwhile, and Messenger's own ping happens before the message is handled, so it is of no help here - DBAL reconnects lazily, and the pending persists live in the UnitOfWork, not in the connection, so nothing is lost. Same shape as Symfony's DoctrinePingConnectionMiddleware: a connection never opened is left alone, a live one is only paid a "SELECT 1" for
+    private function reconnectIfLost(): void
+    {
+        $connection = $this->entityManager->getConnection();
+
+        if (!$connection->isConnected()) {
+            return;
+        }
+
+        try {
+            $connection->executeQuery($connection->getDatabasePlatform()->getDummySelectSQL());
+        } catch (DBALException) {
+            $connection->close();
+        }
     }
 
     // The cadence a provider declares: the instance is asked first, for the rare provider whose class is registered several times over and whose instances differ (see HealthCheckFrequencyAwareInterface), then the class attribute, then weekly. Read by reflection rather than resolved at compile time on purpose - this runs once a week from a cron, and the alternative is a second compiler pass for a string

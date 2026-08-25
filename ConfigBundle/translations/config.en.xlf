@@ -22,6 +22,10 @@
                 <source>action.health_check_export</source>
                 <target>Export (CSV)</target>
             </trans-unit>
+            <trans-unit id="XeYmbNl">
+                <source>action.health_check_report</source>
+                <target>Diagnostic report (JSON)</target>
+            </trans-unit>
             <trans-unit id="uNJVXca">
                 <source>action.health_check_run</source>
                 <target>Run health check now</target>

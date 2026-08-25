@@ -89,7 +89,9 @@
         // What a ".cards" row puts between two cards, read by the row itself and by whoever measures a card off it - the three widths below take two of those gaps off, or five, or one
         --cards-gap: 20px;
         --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3));
-        --card-width-compact: min(calc((100vw - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
+        // The viewport's own width, named rather than written: the W3C CSS validator refuses any subtraction mixing a "vw" length with a var() it cannot resolve ("The types are incompatible"), which is valid CSS but reports as an error rather than as the benign warning custom properties otherwise get. Read through a custom property, the same expression validates and resolves identically in every browser
+        --viewport-width: 100vw;
+        --card-width-compact: min(calc((var(--viewport-width) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
         // Two to the row, one gap between them, and a 570px cap that is the same number as the other two: 380 * 3, 190 * 6 and 570 * 2 are one and the same 1140px of cards, which is what makes the three read as one series rather than three values
         --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2));
         --disabled: #808080;

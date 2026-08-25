@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+**`ContentQualityAnalyzer` takes one more argument.** Its last constructor argument is now an
+`ExternalLinkCheckSchedule`, which decides whether a run calls the external links of the pages it analyzes or
+reports back what the last monthly pass found (see ConfigBundle's README). Nothing to do in an application - the
+service is autowired - but any code building the analyzer by hand has to hand it over, `c975l/site-bundle`'s own
+`ContentQualityHealthCheckProviderTest` included.
+
 **KnpPaginatorBundle is gone.** No listing in the c975L bundles renders page links any more - they grow as the
 visitor scrolls (see `infiniteScroll` in UiBundle's README) - and the pages they walk are cut by UiBundle's own
 `Paginator`. Once every c975L bundle a site holds has been updated, the package and what registered it go:

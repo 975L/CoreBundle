@@ -16,6 +16,8 @@
             <button type="submit" class="btn btn-primary">{{ 'action.health_check_run'|trans({}, 'config') }}</button>
         </form>
         <a href="{{ path('management_health_check_export') }}" class="btn btn-outline-secondary">{{ 'action.health_check_export'|trans({}, 'config') }}</a>
+        {# The diagnosis, where the export beside it is the dated audit trace: same run, every row needing action carrying the checkers' own details #}
+        <a href="{{ path('management_health_check_report') }}" class="btn btn-outline-secondary">{{ 'action.health_check_report'|trans({}, 'config') }}</a>
     </div>
 
     {% if runProgress %}

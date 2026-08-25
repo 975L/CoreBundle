@@ -17,6 +17,7 @@ use c975L\ConfigBundle\Management\AlertBuilder;
 use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\DatabaseLoadHealthCheckProvider;
 use c975L\ConfigBundle\Management\HealthCheckAdviceBuilder;
+use c975L\ConfigBundle\Management\HealthCheckReportBuilder;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
 use c975L\ConfigBundle\Management\HealthCheckRunProgress;
 use c975L\ConfigBundle\Management\HealthCheckTrendChartBuilder;
@@ -52,6 +53,7 @@ class HealthCheckController extends AbstractController
         private readonly HealthCheckRunner $healthCheckRunner,
         private readonly AlertBuilder $alertBuilder,
         private readonly HealthCheckAdviceBuilder $healthCheckAdviceBuilder,
+        private readonly HealthCheckReportBuilder $healthCheckReportBuilder,
         private readonly TableExporter $tableExporter,
         private readonly HealthCheckTrendChartBuilder $healthCheckTrendChartBuilder,
         private readonly ConfigServiceInterface $configService,
@@ -204,6 +206,27 @@ class HealthCheckController extends AbstractController
         );
 
         return $this->tableExporter->export(ExportFormat::Csv, 'health_check', $rows);
+    }
+
+    // The same run as the CSV above, as the report whoever fixes the site reads: every row needing action with the checkers' own details, under the versions this site runs (see HealthCheckReportBuilder). The CSV is the audit artefact - one line per url/kind, opened in a spreadsheet, kept as a dated trace; this one is the diagnosis, and a "details" column is what no spreadsheet ever reads.
+    //
+    // Downloaded rather than served inline: it is meant to be handed over - attached to a ticket, dropped into an assistant - and a browser rendering json in a tab is a page to copy out of rather than a file to pass on
+    #[AdminRoute(path: '/health-check/report', name: 'health_check_report')]
+    public function report(): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+
+        $response = new JsonResponse($this->healthCheckReportBuilder->build());
+        $response->setEncodingOptions(\JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+
+        // Dated the way TableExporter names its own files, so a report and the CSV taken beside it sort together. It doesn't go through the exporter itself: that one encodes a table of rows, and this is a document
+        $response->headers->set('Content-Disposition', 'attachment; filename="health_check_report_' . date('Ymd_His') . '.json"');
+
+        // The site's own state, read by whoever is fixing it: never a shared cache's to hold
+        $response->setPrivate();
+        $response->headers->addCacheControlDirective('no-store');
+
+        return $response;
     }
 
     // @param HealthCheckResult[] $results

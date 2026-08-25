@@ -27,8 +27,14 @@ class ContentQualityClient
     public const LINK_BROKEN = 'broken';
     public const LINK_UNKNOWN = 'unknown';
 
+    // Just as inconclusive as LINK_UNKNOWN, and told apart from it for one reason: the server answered, and answered that it filters or rate limits this client (see FILTERED_STATUSES). Retrying such a url in GET learns nothing and calls a host that just said so a second time, which is how a server's IP ends up blocked - so a caller retrying its unknowns (see ContentQualityAnalyzer) leaves these alone. The public single-url helpers below keep answering LINK_UNKNOWN, this being an implementation detail of the retry
+    public const LINK_FILTERED = 'filtered';
+
     // Statuses that describe how the *server* treats this client rather than whether the url exists: the method it refuses (405/501), the bot filtering big retailers/social sites answer datacenter IPs with (403, and LinkedIn's own non-standard 999), and rate limiting (429). All inconclusive, never broken. Public so ContentQualityAnalyzer judges a page the same way rather than keeping its own copy - a site behind a WAF would otherwise have every one of its own pages reported as an error
     public const INCONCLUSIVE_STATUSES = [403, 405, 429, 501, 999];
+
+    // The subset of those that describes a client being filtered or rate limited rather than a method being refused - the difference decides whether a second, heavier GET is worth firing at that host (see LINK_FILTERED): a 405/501 is a url that serves perfectly well in GET, a 403/429/999 is a host asking to be left alone
+    public const FILTERED_STATUSES = [403, 429, 999];
 
     // Identifies the checker honestly (a WAF operator can look it up and allow it) while keeping the "Mozilla/5.0 (compatible; ...)" shape crawlers have used since Googlebot, which far fewer filters reject outright than a bare library default. Sites that still answer 403 are reported as inconclusive, not as broken - see INCONCLUSIVE_STATUSES
     private const string LINK_CHECK_USER_AGENT = 'Mozilla/5.0 (compatible; c975LHealthCheck/1.0; +https://github.com/975L/SiteBundle)';
@@ -100,20 +106,23 @@ class ContentQualityClient
         }
 
         return match (true) {
+            \in_array($status, self::FILTERED_STATUSES, true) => self::LINK_FILTERED,
             \in_array($status, self::INCONCLUSIVE_STATUSES, true) => self::LINK_UNKNOWN,
             $status >= 400 => self::LINK_BROKEN,
             default => self::LINK_OK,
         };
     }
 
-    // Convenience for a single-URL check, HEAD then GET - returns one of the LINK_* verdicts, catching a synchronous failure from request() itself the same way as a failed transfer
+    // Convenience for a single-URL check, HEAD then GET - returns LINK_OK, LINK_BROKEN or LINK_UNKNOWN, catching a synchronous failure from request() itself the same way as a failed transfer. A host answering that it filters this client is reported as unknown and not retried (see LINK_FILTERED)
     public function checkLink(string $url): string
     {
         $verdict = $this->readLinkCheckSafely(fn (): ResponseInterface => $this->requestLinkCheck($url));
 
-        return self::LINK_UNKNOWN === $verdict
-            ? $this->readLinkCheckSafely(fn (): ResponseInterface => $this->requestLinkCheckFallback($url))
-            : $verdict;
+        if (self::LINK_UNKNOWN === $verdict) {
+            $verdict = $this->readLinkCheckSafely(fn (): ResponseInterface => $this->requestLinkCheckFallback($url));
+        }
+
+        return self::LINK_FILTERED === $verdict ? self::LINK_UNKNOWN : $verdict;
     }
 
     // True only on a conclusive LINK_BROKEN - an unreachable host is not reported as a broken link

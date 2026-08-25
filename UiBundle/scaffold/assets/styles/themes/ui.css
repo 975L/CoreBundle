@@ -145,7 +145,9 @@
     /* What a ".cards" row puts between two cards, read by the row itself and by the widths below */
     /* --cards-gap: 20px; */
     /* --card-width: min(90vw, 380px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 40px) / 3)); */
-    /* --card-width-compact: min(calc((100vw - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
+    /* The viewport's own width, read through a token rather than written as "100vw" below: the W3C CSS validator refuses any subtraction mixing a "vw" length with a var() it cannot resolve, and reports it as an error on every page */
+    /* --viewport-width: 100vw; */
+    /* --card-width-compact: min(calc((var(--viewport-width) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
     /* --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2)); */
     /* The card title's own size, stated rather than inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact card steps down once more */
     /* --card-title-size: calc(19px * var(--font-size-title-scale, 1)); */

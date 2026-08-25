@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -126,6 +126,11 @@ property's value is substituted where the declaration sits, not where the token 
 only, every derived token resolves once against the root palette and descends already computed, and a
 scope opened below cannot repaint it.
 
+**Read the viewport through `--viewport-width`, never as a bare `100vw`.** A `calc()` subtracting a
+`var()` from a `vw` length is valid CSS that the W3C validator reports as an *error* ("The types are
+incompatible") on every page of a site — read through a custom property the same expression validates,
+and resolves identically in every browser. `--card-width-compact` is the one that hit it.
+
 Stay out of a theme file: colors and fonts, the per-variant section tokens mixed inside
 `.section--bg-*` rules (declaring them in `:root` collapses the three variants — retune
 `--section-bg-*` instead), and the tokens JavaScript writes at runtime.
@@ -190,6 +195,8 @@ every bundle that copies it.
 - **Do not import a stylesheet from `assets/app.js`.**
 - **Do not load a site's `app` entry in the back office.**
 - **Do not declare a token on `:root` alone**, and do not read a token without declaring its default.
+- **Do not write a bare `vw` length into a `calc()` that also subtracts a `var()`** — use
+  `--viewport-width`.
 - **Do not set colors or fonts in a theme file** — they belong to the admin.
 - **Do not put a second `@layer` in this bundle's stylesheets.**
 - **Do not ship an empty theme file** "for later".

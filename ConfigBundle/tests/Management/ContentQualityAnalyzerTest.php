@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Management\ContentOffenceLocatorRegistry;
 use c975L\ConfigBundle\Management\ContentQualityAnalyzer;
+use c975L\ConfigBundle\Management\ExternalLinkCheckSchedule;
 use c975L\ConfigBundle\Service\ContentQualityClient;
 use c975L\ConfigBundle\Service\UrlStatusChecker;
 use PHPUnit\Framework\TestCase;
@@ -66,13 +67,24 @@ class ContentQualityAnalyzerTest extends TestCase
         ContentQualityClient $client,
         ?UrlStatusChecker $checker = null,
         ?ContentOffenceLocatorRegistry $registry = null,
+        ?ExternalLinkCheckSchedule $schedule = null,
     ): ContentQualityAnalyzer {
         return new ContentQualityAnalyzer(
             $client,
             $checker ?? $this->createStub(UrlStatusChecker::class),
             $registry ?? new ContentOffenceLocatorRegistry(),
             $this->createTranslator(),
+            $schedule ?? $this->createSchedule(true),
         );
+    }
+
+    // The external link pass is due unless a test says otherwise - the run of a url never checked before, which is what every other test here describes
+    private function createSchedule(bool $due, array $broken = []): ExternalLinkCheckSchedule
+    {
+        $schedule = $this->createStub(ExternalLinkCheckSchedule::class);
+        $schedule->method('decide')->willReturn(['due' => $due, 'checkedAt' => '2026-08-25T18:00:00+02:00', 'broken' => $broken]);
+
+        return $schedule;
     }
 
     // read() answers the canonical of whichever url it was handed, so a clean analysis stays clean for every url a test declares - a page claiming another url as its canonical is what a test sets up on purpose
@@ -244,6 +256,84 @@ class ContentQualityAnalyzerTest extends TestCase
         $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[1]['status']);
         $this->assertSame([], $rows[1]['details']['brokenLinks']);
         $this->assertCount(1, $rows[1]['details']['brokenExternalLinks']);
+    }
+
+    // Ten requests fired at once at whichever host comes up ten times in a row is what gets a server's IP rate limited, then blocked - external links are spread over their hosts, at most one per batch, so the same host is never called twice concurrently
+    public function testAnalyzeSpreadsExternalLinkChecksOverTheirHosts(): void
+    {
+        $calls = [];
+
+        $client = $this->createStub(ContentQualityClient::class);
+        $client->method('request')->willReturn($this->createResponse());
+        $client->method('read')->willReturnCallback($this->readsCleanly(['externalLinks' => ['https://shop.example/a', 'https://shop.example/b', 'https://other.example/c']] + self::GOOD_ANALYSIS));
+        $client->method('requestLinkCheck')->willReturnCallback(function (string $url) use (&$calls): ResponseInterface {
+            $calls[] = $url;
+
+            return $this->createResponse();
+        });
+        $client->method('readLinkCheck')->willReturnCallback(function () use (&$calls): string {
+            $calls[] = 'read';
+
+            return ContentQualityClient::LINK_OK;
+        });
+
+        $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one')]);
+
+        // The first batch takes one url per host, the second the shop's remaining one - the two shop urls are never in flight together
+        $this->assertSame(
+            ['https://shop.example/a', 'https://other.example/c', 'read', 'read', 'https://shop.example/b', 'read'],
+            $calls
+        );
+    }
+
+    // In between two monthly passes the external links are not called at all, and what the last pass found is reported back - the dashboard keeps showing a dead external link without its host being called every week
+    public function testAnalyzeReportsBackTheExternalVerdictsOfAPassNotDueAgain(): void
+    {
+        $client = $this->createMock(ContentQualityClient::class);
+        $client->method('request')->willReturn($this->createResponse());
+        $client->method('read')->willReturnCallback($this->readsCleanly(['externalLinks' => ['https://shop.example/gone', 'https://shop.example/live']] + self::GOOD_ANALYSIS));
+        $client->expects($this->never())->method('requestLinkCheck');
+        $client->expects($this->never())->method('requestLinkCheckFallback');
+
+        $schedule = $this->createSchedule(false, ['https://shop.example/gone' => true]);
+        $rows = $this->createAnalyzer($client, null, null, $schedule)->analyze([$this->entry('https://example.com/one')]);
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[0]['status']);
+        $this->assertSame('https://shop.example/gone', $rows[0]['details']['brokenExternalLinks'][0]['url']);
+        // The previous date is carried into the new row, otherwise the next run would find none and call the links again
+        $this->assertSame('2026-08-25T18:00:00+02:00', $rows[0]['details'][ExternalLinkCheckSchedule::CHECKED_AT_KEY]);
+    }
+
+    // The site's own pages are checked every run whatever the external links do - they are our own server, and a dead internal link is ours to fix now
+    public function testAnalyzeStillChecksInternalLinksWhenTheExternalPassIsNotDue(): void
+    {
+        $client = $this->createMock(ContentQualityClient::class);
+        $client->method('request')->willReturn($this->createResponse());
+        $client->method('read')->willReturnCallback($this->readsCleanly(['internalLinks' => ['https://example.com/gone'], 'externalLinks' => ['https://shop.example/a']] + self::GOOD_ANALYSIS));
+        $client->expects($this->once())->method('requestLinkCheck')->with('https://example.com/gone')->willReturn($this->createResponse(404));
+        $client->method('readLinkCheck')->willReturn(ContentQualityClient::LINK_BROKEN);
+
+        $rows = $this->createAnalyzer($client, null, null, $this->createSchedule(false))->analyze([$this->entry('https://example.com/one')]);
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $rows[0]['status']);
+        $this->assertSame('https://example.com/gone', $rows[0]['details']['brokenLinks'][0]['url']);
+    }
+
+    // A host answering that it filters this client is not called a second time: the GET would learn nothing, and insisting is how a server's IP ends up blocked
+    public function testAnalyzeDoesNotRetryALinkWhoseHostFiltersTheChecker(): void
+    {
+        $client = $this->createMock(ContentQualityClient::class);
+        $client->method('request')->willReturn($this->createResponse());
+        $client->method('read')->willReturnCallback($this->readsCleanly(['externalLinks' => ['https://shop.example/book']] + self::GOOD_ANALYSIS));
+        $client->method('requestLinkCheck')->willReturn($this->createResponse(403));
+        $client->expects($this->never())->method('requestLinkCheckFallback');
+        $client->method('readLinkCheck')->willReturn(ContentQualityClient::LINK_FILTERED);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one')]);
+
+        // Filtered is not broken: the link stays out of the list, exactly like a still unknown one
+        $this->assertSame(HealthCheckResult::STATUS_OK, $rows[0]['status']);
+        $this->assertSame([], $rows[0]['details']['brokenExternalLinks']);
     }
 
     // A link the HEAD pass couldn't conclude on is retried once in GET, so only a real answer ever ends up reported as broken

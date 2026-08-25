@@ -44,16 +44,20 @@ class ContentQualityAnalyzer
         private readonly UrlStatusChecker $urlStatusChecker,
         private readonly ContentOffenceLocatorRegistry $offenceLocatorRegistry,
         private readonly TranslatorInterface $translator,
+        private readonly ExternalLinkCheckSchedule $externalLinkCheckSchedule,
     ) {
     }
 
     // @param list<array{url: string, label: ?string, editUrl: ?string, source: ?object, indexable?: bool}> $entries - 'source' is what lets an offence be traced back to the screen holding it (see ContentOffenceLocatorInterface), so an entry without one still gets every check, just without those links. 'indexable' says the caller declares this url to search engines (a sitemap url, see DeclaredUrlsHealthCheckProvider) and is what turns the noindex check on: absent, it stays off, since a caller listing every page it holds - ContentQualityHealthCheckProvider does - passes pages that are meant to carry a noindex, and reporting those would leave them orange forever with nothing to fix
     public function analyze(array $entries): array
     {
-        $analyses = $this->analyzeUrls($entries);
-        $brokenLinks = $this->checkBrokenLinks($analyses);
+        // Read before the first http request rather than alongside the link checks: a run analyzing thousands of urls spends minutes on those without touching the database, which is long enough for the server to have dropped the connection meanwhile (see HealthCheckRunner::reconnectIfLost())
+        $externalLinkCheck = $this->externalLinkCheckSchedule->decide(array_column($entries, 'url'));
 
-        return array_map(fn (array $entry) => $this->buildRow($entry, $brokenLinks), $analyses);
+        $analyses = $this->analyzeUrls($entries);
+        $brokenLinks = $this->checkBrokenLinks($analyses, $externalLinkCheck);
+
+        return array_map(fn (array $entry) => $this->buildRow($entry, $brokenLinks, $externalLinkCheck['checkedAt']), $analyses);
     }
 
     // Every analysis request of a batch is fired before any of its responses is read, letting the HttpClient transport run them concurrently instead of paying each page's timeout serially - but one batch at a time (see BATCH_SIZE), so a bundle declaring thousands of urls doesn't queue them all behind an already-running timeout, nor hold every response in memory at once. Failures are kept alongside successes rather than thrown away, so buildRow() can still emit a row for a page whose content couldn't be analyzed. Rows are keyed by the page's own position (not appended as each branch resolves) and ksort()ed back at the end, so a not-found/failed page in the middle of the list doesn't shuffle every row after it to the bottom
@@ -135,32 +139,84 @@ class ContentQualityAnalyzer
         return $status >= 400 ? $status : null;
     }
 
-    // Every link found on every page, internal and external together, deduped, each checked once regardless of how many pages link to it - fired in batches (see BATCH_SIZE), then whatever the HEAD pass couldn't conclude on retried once in GET, so that only a real >= 400 answer ever ends up reported as broken. Internal and external are checked in the same pass (one dedup, one set of batches, no external host hit twice because two pages link to it) and only told apart when building each page's row
-    private function checkBrokenLinks(array $analyses): array
+    // Every link found on every page, deduped, each checked once regardless of how many pages link to it - fired in batches (see BATCH_SIZE), then whatever the HEAD pass couldn't conclude on retried once in GET, so that only a real >= 400 answer ever ends up reported as broken. Internal and external links are checked apart, and only because they are not batched the same way (see batchesByHost()): a batch of this site's own pages is a batch against our own server, a batch of external ones is somebody else's server to be careful with. The dedup is per group, which loses nothing - the same url cannot be internal on one page and external on another, both being decided against the same site's host
+    private function checkBrokenLinks(array $analyses, array $externalLinkCheck): array
     {
-        $allLinks = [];
+        $internalLinks = [];
+        $externalLinks = [];
         foreach ($analyses as $entry) {
-            foreach (array_merge($entry['analysis']['internalLinks'] ?? [], $entry['analysis']['externalLinks'] ?? []) as $link) {
-                $allLinks[$link] = true;
+            foreach ($entry['analysis']['internalLinks'] ?? [] as $link) {
+                $internalLinks[$link] = true;
+            }
+
+            foreach ($entry['analysis']['externalLinks'] ?? [] as $link) {
+                $externalLinks[$link] = true;
             }
         }
 
-        $verdicts = $this->runLinkChecks(array_keys($allLinks), fn (string $link) => $this->contentQualityClient->requestLinkCheck($link));
+        // A link still unknown after both passes stays out of the broken list - a timeout of the run's own making says nothing about the link
+        $broken = array_map(
+            static fn (string $verdict): bool => ContentQualityClient::LINK_BROKEN === $verdict,
+            $this->checkLinkGroup(array_keys($internalLinks), fn (array $links): array => array_chunk($links, self::BATCH_SIZE)),
+        );
+
+        // The external links are only called on the runs that are due for them (see ExternalLinkCheckSchedule) - the ones in between report back what that pass found, so a dead external link stays on the dashboard without its host being called again
+        if (!$externalLinkCheck['due']) {
+            return $broken + $externalLinkCheck['broken'];
+        }
+
+        return $broken + array_map(
+            static fn (string $verdict): bool => ContentQualityClient::LINK_BROKEN === $verdict,
+            $this->checkLinkGroup(array_keys($externalLinks), fn (array $links): array => $this->batchesByHost($links)),
+        );
+    }
+
+    // One group of links checked through, HEAD first then GET for whatever the HEAD couldn't conclude on - $batcher is what decides how many of them are in flight together, and the retry goes through it again rather than through a plain chunk, so a group being careful with its hosts stays careful on the second pass too. A host that answered that it filters this client is not retried (see ContentQualityClient::LINK_FILTERED): the GET would learn nothing and call it a second time
+    private function checkLinkGroup(array $links, callable $batcher): array
+    {
+        $verdicts = $this->runLinkChecks($batcher($links), fn (string $link) => $this->contentQualityClient->requestLinkCheck($link));
 
         $inconclusive = array_keys($verdicts, ContentQualityClient::LINK_UNKNOWN, true);
         if ($inconclusive) {
-            $verdicts = array_replace($verdicts, $this->runLinkChecks($inconclusive, fn (string $link) => $this->contentQualityClient->requestLinkCheckFallback($link)));
+            $verdicts = array_replace($verdicts, $this->runLinkChecks($batcher($inconclusive), fn (string $link) => $this->contentQualityClient->requestLinkCheckFallback($link)));
         }
 
-        // A link still unknown after both passes stays out of the broken list - a timeout of the run's own making says nothing about the link
-        return array_map(static fn (string $verdict): bool => ContentQualityClient::LINK_BROKEN === $verdict, $verdicts);
+        return $verdicts;
+    }
+
+    // Batches spreading the links over their hosts, at most one url per host in each - a plain chunk would fire ten requests at once at whichever host happens to come up ten times in a row, which on a site linking mostly to two or three merchants is every batch, and is what gets a server's IP rate limited then blocked. Batches stay BATCH_SIZE wide whenever there are that many distinct hosts left, so spreading costs nothing but the order the links are checked in
+    private function batchesByHost(array $links): array
+    {
+        $byHost = [];
+        foreach ($links as $link) {
+            $byHost[(string) parse_url($link, \PHP_URL_HOST)][] = $link;
+        }
+
+        $batches = [];
+        while ($byHost) {
+            $batch = [];
+            foreach (array_keys($byHost) as $host) {
+                $batch[] = array_shift($byHost[$host]);
+                if (!$byHost[$host]) {
+                    unset($byHost[$host]);
+                }
+
+                if (self::BATCH_SIZE === \count($batch)) {
+                    break;
+                }
+            }
+
+            $batches[] = $batch;
+        }
+
+        return $batches;
     }
 
     // Each batch requested in full before any of it is read, so a batch still runs concurrently - request() itself can throw before any response exists (a malformed url), which is as inconclusive as a failed transfer
-    private function runLinkChecks(array $links, callable $request): array
+    private function runLinkChecks(array $batches, callable $request): array
     {
         $verdicts = [];
-        foreach (array_chunk($links, self::BATCH_SIZE) as $batch) {
+        foreach ($batches as $batch) {
             $pending = [];
             foreach ($batch as $link) {
                 try {
@@ -178,13 +234,13 @@ class ContentQualityAnalyzer
         return $verdicts;
     }
 
-    private function buildRow(array $entry, array $brokenLinks): array
+    private function buildRow(array $entry, array $brokenLinks, string $externalLinksCheckedAt): array
     {
         if (null === $entry['analysis']) {
             return $this->buildFailedRow($entry);
         }
 
-        $details = $this->buildDetails($entry, $brokenLinks);
+        $details = $this->buildDetails($entry, $brokenLinks, $externalLinksCheckedAt);
         $issues = array_merge($this->redirectIssue($details), $this->summarizeIssues($details));
 
         return [
@@ -245,7 +301,7 @@ class ContentQualityAnalyzer
     }
 
     // Everything found on one page, in the shape both summarizeIssues() and PageHealthCheckAdviceBuilder read
-    private function buildDetails(array $entry, array $brokenLinks): array
+    private function buildDetails(array $entry, array $brokenLinks, string $externalLinksCheckedAt): array
     {
         $analysis = $entry['analysis'];
         $titleLength = mb_strlen($analysis['title'] ?? '');
@@ -267,6 +323,8 @@ class ContentQualityAnalyzer
             'imagesWithoutAlt' => $this->describeImages($entry['source'], $analysis['imagesWithoutAlt']),
             'brokenLinks' => $this->describeBrokenLinks($entry, $brokenLinks, 'internalLinks'),
             'brokenExternalLinks' => $this->describeBrokenLinks($entry, $brokenLinks, 'externalLinks'),
+            // When those external links were last really called - carried by every row, including the ones only reporting a previous pass back (see ExternalLinkCheckSchedule)
+            ExternalLinkCheckSchedule::CHECKED_AT_KEY => $externalLinksCheckedAt,
             // null when the url answered 200 directly, which is what a checked url is expected to do (see describeRedirect())
             'redirect' => $entry['redirect'],
         ];

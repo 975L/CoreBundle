@@ -17,6 +17,7 @@ use c975L\ConfigBundle\Management\AlertBuilder;
 use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\DatabaseLoadHealthCheckProvider;
 use c975L\ConfigBundle\Management\HealthCheckAdviceBuilder;
+use c975L\ConfigBundle\Management\HealthCheckReportBuilder;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
 use c975L\ConfigBundle\Management\HealthCheckRunProgress;
 use c975L\ConfigBundle\Management\HealthCheckTrendChartBuilder;
@@ -73,6 +74,14 @@ class HealthCheckControllerTest extends TestCase
     private function createTableExporter(): TableExporter
     {
         return $this->createStub(TableExporter::class);
+    }
+
+    private function createReportBuilder(array $report = []): HealthCheckReportBuilder
+    {
+        $reportBuilder = $this->createStub(HealthCheckReportBuilder::class);
+        $reportBuilder->method('build')->willReturn($report);
+
+        return $reportBuilder;
     }
 
     private function createMessageBus(): MessageBusInterface
@@ -136,6 +145,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(['danger' => ['some-alert']]),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -198,6 +208,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder([]),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -247,6 +258,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder([]),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -292,6 +304,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder([]),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -330,6 +343,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder([]),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -366,6 +380,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder([]),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -409,6 +424,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -436,6 +452,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -477,6 +494,7 @@ class HealthCheckControllerTest extends TestCase
             $healthCheckRunner,
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -527,6 +545,7 @@ class HealthCheckControllerTest extends TestCase
             $healthCheckRunner,
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -565,6 +584,7 @@ class HealthCheckControllerTest extends TestCase
             $healthCheckRunner,
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -596,6 +616,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -618,6 +639,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -644,6 +666,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -671,6 +694,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -719,6 +743,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $tableExporter,
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -743,6 +768,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),
@@ -756,6 +782,60 @@ class HealthCheckControllerTest extends TestCase
         ]));
 
         $controller->exportCsv();
+    }
+
+    // The report is handed over rather than read on screen: whoever fixes the site gets a file to attach, not a json tab to copy out of
+    public function testReportDownloadsTheBuiltReportAsJson(): void
+    {
+        $controller = new HealthCheckController(
+            $this->createStub(HealthCheckResultRepository::class),
+            $this->createStub(HealthCheckRunner::class),
+            $this->createAlertBuilder(),
+            $this->createAdviceBuilder(),
+            $this->createReportBuilder(['site' => 'https://example.com', 'results' => [['kind' => 'w3c-css']]]),
+            $this->createTableExporter(),
+            $this->createTrendChartBuilder(),
+            $this->createConfigService(),
+            $this->createTranslator(),
+            $this->createMessageBus(),
+            $this->createRunProgress(),
+            $this->createManager(),
+        );
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+        ]));
+
+        $response = $controller->report();
+
+        $this->assertJsonStringEqualsJsonString('{"site":"https://example.com","results":[{"kind":"w3c-css"}]}', (string) $response->getContent());
+        $this->assertStringStartsWith('attachment; filename="health_check_report_', (string) $response->headers->get('Content-Disposition'));
+        // The site's own state, never a shared cache's to hold
+        $this->assertTrue($response->headers->hasCacheControlDirective('no-store'));
+    }
+
+    public function testReportDeniesAccessWhenNotGranted(): void
+    {
+        $this->expectException(AccessDeniedException::class);
+
+        $controller = new HealthCheckController(
+            $this->createStub(HealthCheckResultRepository::class),
+            $this->createStub(HealthCheckRunner::class),
+            $this->createAlertBuilder(),
+            $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
+            $this->createTableExporter(),
+            $this->createTrendChartBuilder(),
+            $this->createConfigService(),
+            $this->createTranslator(),
+            $this->createMessageBus(),
+            $this->createRunProgress(),
+            $this->createManager(),
+        );
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(false),
+        ]));
+
+        $controller->report();
     }
 
     // What an admin who just fixed something has instead of re-running the whole check
@@ -847,6 +927,7 @@ class HealthCheckControllerTest extends TestCase
             $this->createStub(HealthCheckRunner::class),
             $this->createAlertBuilder(),
             $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
             $this->createTableExporter(),
             $this->createTrendChartBuilder(),
             $this->createConfigService(),

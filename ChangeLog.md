@@ -1,5 +1,33 @@
 # ChangeLog
 
+## v1.17.3
+
+The health check hands its run over, and spares the hosts it links to
+
+### UiBundle
+
+- Added `--viewport-width`, read by `--card-width-compact` in place of a bare `100vw` (25/08/2026)
+- Fixed the W3C CSS validator reporting an error on every page of a site, a `calc()` subtracting a `var()` from a `vw` length (25/08/2026)
+- The `c975l-ui-assets` skill states `--viewport-width` and the rule it carries (25/08/2026)
+
+### ConfigBundle
+
+- Added `HealthCheckReportBuilder`, the status report plus the rows needing action, carrying the checkers' own `details` (25/08/2026)
+- Added a "Diagnostic report (JSON)" button beside the CSV export on the health check page (25/08/2026)
+- Added `action.health_check_report` to the `config` domain, in the three locales (25/08/2026)
+- `HealthCheckRunner` reconnects a database connection the server dropped, before each provider and before the flush (25/08/2026)
+- Added `ExternalLinkCheckSchedule`, calling external links once a month and reporting that pass back on the runs in between (25/08/2026)
+- `ContentQualityAnalyzer` takes it as a last constructor argument, internal links staying checked every run (25/08/2026)
+- External link checks are spread over their hosts, at most one url per host in flight at a time (25/08/2026)
+- A link whose host answers 403/429/999 is no longer retried in GET (25/08/2026)
+- Added `ContentQualityClient::LINK_FILTERED` and `FILTERED_STATUSES`, telling those apart from the 405/501 a GET retry resolves (25/08/2026)
+- Added `HealthCheckResultRepository::findLatestPerUrlAndKindIn()`, the latest row of each (url, kind) of a batch of urls in one query (25/08/2026)
+- The README states the link check cadence and the diagnostic report beside the CSV (25/08/2026)
+- The `c975l-operations` skill states both, and that a filtered host is not called again (25/08/2026)
+- UPGRADE.md says what `ContentQualityAnalyzer`'s extra argument costs a site building it by hand (25/08/2026)
+- Added `ExternalLinkCheckScheduleTest`, `HealthCheckReportBuilderTest` and `HealthCheckResultRepositoryTest` (25/08/2026)
+- Extended `ContentQualityAnalyzerTest`, `HealthCheckRunnerTest`, `ContentQualityClientTest`, `HealthCheckControllerTest` and `DeclaredUrlsHealthCheckProviderTest` (25/08/2026)
+
 ## v1.17.2
 
 A listing grows as it is read, and no bundle pages any more
