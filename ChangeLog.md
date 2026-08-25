@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.17.0
+
+Every container kind of the showcase has an example
+
+### UiBundle
+
+- `GalleryShowcaseProvider` covers `block_group`, in both directions, and `video_grid` (25/08/2026)
+- Added `BlockRegistry::getContexts()`, reading back the contexts a kind opted into (25/08/2026)
+- Added `label.gallery_showcase_block_group`, `label.gallery_showcase_video_grid` and their descriptions to the `ui` domain, in the three locales (25/08/2026)
+- The README states `getContexts()` and the kinds the showcase provider now covers (25/08/2026)
+- The `c975l-blocks` skill states `getContexts()` beside the `contexts` option (25/08/2026)
+- Extended `BlockRegistryTest` and `GalleryShowcaseProviderTest` (25/08/2026)
+
 ## v1.16.0
 
 A form informs the visitor instead of making them tick a box

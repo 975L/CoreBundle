@@ -1862,6 +1862,14 @@
                 <source>label.front_title</source>
                 <target>Título del anverso</target>
             </trans-unit>
+            <trans-unit id="e3kRK6y">
+                <source>label.gallery_showcase_block_group</source>
+                <target>Grupo de bloques</target>
+            </trans-unit>
+            <trans-unit id="KXIiaTC">
+                <source>label.gallery_showcase_block_group_description</source>
+                <target>Una fila (o una pila) sin envoltura propia, alrededor de bloques que de otro modo ocuparían cada uno su línea.</target>
+            </trans-unit>
             <trans-unit id="3NDFv4Q">
                 <source>label.gallery_showcase_collection</source>
                 <target>Colección</target>
@@ -1893,6 +1901,14 @@
             <trans-unit id="ZgxEnHs">
                 <source>label.gallery_showcase_section_cards_description</source>
                 <target>Una fila de tarjetas completas bajo un título de sección, con su propia ancla.</target>
+            </trans-unit>
+            <trans-unit id="CFFl.iH">
+                <source>label.gallery_showcase_video_grid</source>
+                <target>Cuadrícula de vídeos</target>
+            </trans-unit>
+            <trans-unit id="tOZXzoP">
+                <source>label.gallery_showcase_video_grid_description</source>
+                <target>Un título de sección seguido de reproductores de vídeo colocados uno al lado del otro, cada uno representado como si estuviera solo en la página.</target>
             </trans-unit>
             <trans-unit id="b_WLGhv">
                 <source>label.group_direction</source>

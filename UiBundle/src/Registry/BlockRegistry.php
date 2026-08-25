@@ -214,6 +214,15 @@ class BlockRegistry
         return $this->get($kind)['slotContext'];
     }
 
+    // The contexts a kind opted into, empty meaning "offered everywhere" - a non-empty list is what makes a kind reachable only inside a parent (a container's slots, a menu), which is what a listing of every kind has to say of one it can show nothing of on its own
+    /**
+     * @return list<string>
+     */
+    public function getContexts(string $kind): array
+    {
+        return $this->get($kind)['contexts'];
+    }
+
     // groupBy()'s own eligibility rules, exposed standalone so BlockMoveController can check an existing block
     public function isAllowedInContext(string $kind, ?string $context): bool
     {

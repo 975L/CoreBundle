@@ -243,6 +243,17 @@ class BlockRegistryTest extends TestCase
         $this->assertSame(BlockRegistry::SLOT_CONTEXT, $registry->getSlotContext('flex_columns'));
     }
 
+    // A kind offered everywhere opted into nothing, which is what tells it apart from one only reachable inside a parent
+    public function testGetContextsIsEmptyUntilAKindOptsIn(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register('article', 'label.article', ArticleFormStub::class, 'article.html.twig');
+        $registry->register('flex_column', 'label.flex_column', ArticleFormStub::class, 'flex_column.html.twig', contexts: ['flex_columns_slot']);
+
+        $this->assertSame([], $registry->getContexts('article'));
+        $this->assertSame(['flex_columns_slot'], $registry->getContexts('flex_column'));
+    }
+
     public function testGetSlotContextCanBeOverridden(): void
     {
         $registry = new BlockRegistry($this->createTranslator());

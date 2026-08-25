@@ -17,7 +17,7 @@ use c975L\UiBundle\Twig\BlockExtension;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
-// Shows the three built-in kinds no BlockFixtureProvider entry can express in a block showcase (see GalleryShowcaseRegistry): "flex_columns" and "section_cards" hold their content in Block::$slots, a relation rather than the plain data array a fixture is, and "collection" pulls its items live from a CollectionSourceRegistry no showcase has. Rendered here instead with never-persisted blocks - the same pipeline a real block goes through, just fed in memory. Each one sets "kind", which suppresses the empty preview card the showcase would otherwise draw for it.
+// Shows the built-in kinds no BlockFixtureProvider entry can express in a block showcase (see GalleryShowcaseRegistry): "flex_columns", "section_cards", "block_group" and "video_grid" hold their content in Block::$slots, a relation rather than the plain data array a fixture is, and "collection" pulls its items live from a CollectionSourceRegistry no showcase has. Rendered here instead with never-persisted blocks - the same pipeline a real block goes through, just fed in memory. Each one sets "kind", which suppresses the empty preview card the showcase would otherwise draw for it.
 class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
 {
     // The same shape CollectionRuntime::renderItems() builds from a source's own CollectionItem, so a preview item renders exactly as a real one
@@ -27,7 +27,7 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         ['title' => 'Troisième entrée', 'content' => 'La source décide du nombre d\'entrées, la limite du block les tronque.'],
     ];
 
-    // PlaceholderMediaRegistry optional for the same reason as BlockFixtureProvider's own - only the portfolio variant uses an image, and the bundle ships none itself
+    // PlaceholderMediaRegistry optional for the same reason as BlockFixtureProvider's own - only the portfolio variant and the video grid read one, and the bundle ships none itself
     public function __construct(
         private readonly BlockExtension $blockExtension,
         private readonly Environment $twig,
@@ -59,7 +59,70 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
                 'kind' => 'collection_entry',
                 'variants' => ['' => $this->renderCollectionEntry()],
             ],
+            $this->translator->trans('label.gallery_showcase_block_group', [], 'ui') => [
+                'description' => $this->translator->trans('label.gallery_showcase_block_group_description', [], 'ui'),
+                'kind' => 'block_group',
+                'variants' => $this->blockGroupVariants(),
+            ],
+            $this->translator->trans('label.gallery_showcase_video_grid', [], 'ui') => [
+                'description' => $this->translator->trans('label.gallery_showcase_video_grid_description', [], 'ui'),
+                'kind' => 'video_grid',
+                'variants' => ['' => $this->renderVideoGrid()],
+            ],
         ];
+    }
+
+    // The two directions its own form offers, that being the whole of what a chromeless wrapper does to what it holds - a single row would show a row of buttons and nothing of the kind itself
+    private function blockGroupVariants(): array
+    {
+        return [
+            'En ligne' => $this->renderBlockGroup('row'),
+            'En colonne' => $this->renderBlockGroup('column'),
+        ];
+    }
+
+    // Buttons rather than text: what a group is reached for is exactly the blocks that would otherwise sit alone on their own line, and a button is the shortest of them
+    private function renderBlockGroup(string $direction): string
+    {
+        $group = new Block()->setKind('block_group')->setData([
+            'direction' => $direction,
+            'justify' => 'center',
+        ]);
+
+        foreach (['Premier', 'Deuxième', 'Troisième'] as $position => $label) {
+            $group->addSlot($this->buttonSlot($label)->setPosition($position));
+        }
+
+        return $this->blockExtension->renderBlock($group);
+    }
+
+    // Two players under a section head, the grid only placing what its slots already are. Their source is the same wrapped placeholder "video_iframe" own fixture uses - empty when the app declares none, each player then showing the block's own consent placeholder with nothing behind it
+    private function renderVideoGrid(): string
+    {
+        $grid = new Block()->setKind('video_grid')->setData([
+            'eyebrow' => 'Surtitre de la section',
+            'title' => 'Deux vidéos côte à côte',
+            'linkLabel' => 'Toutes les vidéos',
+            'linkUrl' => '#',
+        ]);
+
+        $embed = $this->placeholderMedia?->getVideoEmbed();
+        $src = null !== $embed && '' !== $embed ? '/' . $embed : '';
+
+        foreach (['Première vidéo', 'Deuxième vidéo'] as $position => $title) {
+            $grid->addSlot(
+                new Block()->setKind('video_iframe')->setPosition($position)->setData([
+                    'src' => $src,
+                    'title' => $title,
+                    'description' => 'La légende que porte chaque vidéo de la grille.',
+                    'width' => '560',
+                    'height' => '315',
+                    'class' => [],
+                ])
+            );
+        }
+
+        return $this->blockExtension->renderBlock($grid);
     }
 
     // Two width splits rather than one row: the twelfths carried by each column are the whole point of this kind, and a single balanced row would never show them at work
@@ -179,6 +242,19 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
             // Empty: the anchor a real editor would set has no use in a preview, and would collide with the page's own anchors
             'slug' => '',
             'content' => $content,
+        ]);
+    }
+
+    private function buttonSlot(string $label): Block
+    {
+        return new Block()->setKind('button')->setData([
+            'label' => $label,
+            'url' => 'https://example.com',
+            'type' => 'primary',
+            'target' => '',
+            'icon' => '',
+            'download' => false,
+            'inline' => false,
         ]);
     }
 

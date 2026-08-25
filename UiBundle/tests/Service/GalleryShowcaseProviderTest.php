@@ -28,13 +28,13 @@ class GalleryShowcaseProviderTest extends TestCase
     /** @var array<int, array{0: string, 1: array<string, mixed>}> */
     private array $twigRenders = [];
 
-    // The four built-in kinds a BlockFixtureProvider entry can't express - two containers and two live-sourced - and no other: everything else belongs in the fixtures
-    public function testTheFourKindsNoFixtureCanExpressAreCovered(): void
+    // The six built-in kinds a BlockFixtureProvider entry can't express - four containers and two live-sourced - and no other: everything else belongs in the fixtures
+    public function testTheSixKindsNoFixtureCanExpressAreCovered(): void
     {
         $showcases = $this->createProvider()->getShowcases();
 
         $this->assertSame(
-            ['flex_columns', 'section_cards', 'collection', 'collection_entry'],
+            ['flex_columns', 'section_cards', 'collection', 'collection_entry', 'block_group', 'video_grid'],
             array_column($showcases, 'kind')
         );
     }
@@ -149,6 +149,50 @@ class GalleryShowcaseProviderTest extends TestCase
 
         foreach ($this->renderedOfKind('collection_item') as $item) {
             $this->assertSame('', $item->getData()['imageUrl']);
+        }
+    }
+
+    // The two directions its own form offers, that being the whole of what a chromeless wrapper does to what it holds
+    public function testBlockGroupShowsBothDirectionsAroundTheSameButtons(): void
+    {
+        $variants = $this->createProvider()->getShowcases()['label.gallery_showcase_block_group']['variants'];
+
+        $this->assertSame(['En ligne', 'En colonne'], array_keys($variants));
+
+        $groups = $this->renderedOfKind('block_group');
+        $this->assertSame(['row', 'column'], array_map(static fn (Block $group): string => $group->getData()['direction'], $groups));
+        foreach ($groups as $group) {
+            $this->assertCount(3, $group->getSlots());
+            foreach ($group->getSlots() as $position => $button) {
+                $this->assertSame('button', $button->getKind());
+                $this->assertSame($position, $button->getPosition());
+            }
+        }
+    }
+
+    // The grid only places what its slots already are, each of them a "video_iframe" rendered as it would be bare in the page
+    public function testVideoGridHoldsTwoVideoIframeSlotsCarryingTheDeclaredEmbed(): void
+    {
+        $this->createProvider($this->createPlaceholderMedia(['video_embed' => 'showcase/embed.html']))->getShowcases();
+
+        $slots = $this->renderedOfKind('video_grid')[0]->getSlots();
+
+        $this->assertCount(2, $slots);
+        foreach ($slots as $position => $slot) {
+            $this->assertSame('video_iframe', $slot->getKind());
+            $this->assertSame($position, $slot->getPosition());
+            // Leading "/" so the src is a site-root path whatever page the showcase is rendered on
+            $this->assertSame('/showcase/embed.html', $slot->getData()['src']);
+        }
+    }
+
+    // Nothing declared: each player shows the block's own consent placeholder with nothing behind it, rather than pointing at a file that isn't there
+    public function testVideoGridCarriesNoSourceWhenNoneIsDeclared(): void
+    {
+        $this->createProvider()->getShowcases();
+
+        foreach ($this->renderedOfKind('video_grid')[0]->getSlots() as $slot) {
+            $this->assertSame('', $slot->getData()['src']);
         }
     }
 

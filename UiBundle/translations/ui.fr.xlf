@@ -1862,6 +1862,14 @@
                 <source>label.front_title</source>
                 <target>Titre du recto</target>
             </trans-unit>
+            <trans-unit id="e3kRK6y">
+                <source>label.gallery_showcase_block_group</source>
+                <target>Groupe de blocks</target>
+            </trans-unit>
+            <trans-unit id="KXIiaTC">
+                <source>label.gallery_showcase_block_group_description</source>
+                <target>Une rangée (ou une pile) sans habillage, autour de blocks qui sinon occuperaient chacun leur ligne.</target>
+            </trans-unit>
             <trans-unit id="3NDFv4Q">
                 <source>label.gallery_showcase_collection</source>
                 <target>Collection</target>
@@ -1893,6 +1901,14 @@
             <trans-unit id="ZgxEnHs">
                 <source>label.gallery_showcase_section_cards_description</source>
                 <target>Une rangée de cartes complètes sous un titre de section, avec son ancre.</target>
+            </trans-unit>
+            <trans-unit id="CFFl.iH">
+                <source>label.gallery_showcase_video_grid</source>
+                <target>Grille de vidéos</target>
+            </trans-unit>
+            <trans-unit id="tOZXzoP">
+                <source>label.gallery_showcase_video_grid_description</source>
+                <target>Un titre de section suivi de lecteurs vidéo placés côte à côte, chacun rendu comme s'il était seul dans la page.</target>
             </trans-unit>
             <trans-unit id="b_WLGhv">
                 <source>label.group_direction</source>
