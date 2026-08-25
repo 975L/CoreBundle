@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.17.4
+
+A comparison is framed, and says where it stops
+
+### UiBundle
+
+- `.image-compare-frame` now carries a border (25/08/2026)
+- Added `--image-compare-border`, offered by the scaffolded theme - `none` takes the frame back off (25/08/2026)
+
 ## v1.17.3
 
 The health check hands its run over, and spares the hosts it links to

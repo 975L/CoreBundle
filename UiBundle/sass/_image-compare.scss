@@ -7,6 +7,8 @@
 .image-compare-frame {
     position: relative;
     overflow: hidden;
+    // Outlined, where the other image kinds are not: the two shots are the whole point here, and a screenshot ending on white bleeds into the page with nothing to say where the comparison stops - the rounded corners alone only show on a dark one
+    border: var(--image-compare-border, 1px solid var(--border-color));
     border-radius: 15px;
     cursor: ew-resize;
     touch-action: pan-y;

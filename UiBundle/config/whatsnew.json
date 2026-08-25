@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-08-25",
+        "description": [
+            {
+                "en": "An image comparison is now drawn inside a thin frame, so a screenshot ending on white no longer melts into the page.",
+                "fr": "Une comparaison d'images est désormais dessinée dans un fin cadre, pour qu'une capture se terminant sur du blanc ne se fonde plus dans la page.",
+                "es": "Una comparación de imágenes se dibuja ahora dentro de un fino marco, para que una captura que termina en blanco ya no se funda con la página."
+            }
+        ]
+    },
+    {
         "date": "2026-08-24",
         "description": [
             {
