@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, PlaceholderMediaProviderInterface, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, PlaceholderMediaProviderInterface, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
 ---
 
 # c975L UiBundle — media and uploads
@@ -10,7 +10,7 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Service/UiMediaNamer.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `assets/js/upload-progress.js`
+`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Service/UiMediaNamer.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`
 
 **Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle.
 
@@ -105,6 +105,15 @@ a row names, never a derivative: a thumbnail is rebuilt, a named file gone is no
 `Form\VichImageOptions::default($maxSize, $required)` is the one place the five Vich upload options
 live, for an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` alike.
 
+An entity carrying a share image of its own - SiteBundle's `Page`, ConfigBundle's `UrlMetadata` - embeds
+`Form\OgImageType`, a single `Media` upload and its alternative text. On an EasyAdmin screen it is
+`Field\OgImageField::new('ogImage')` and nothing else: the widget, `required` false and the write
+screens only come with it. **Never carry that form type on a `TextField`** - EasyAdmin's text
+configurator throws "can't be converted into a string" for the `Media` on every page it configures,
+forms included, so the edit screen of a row whose image is set breaks - nor on an untyped field, which
+resolves to an `AssociationField` off the Doctrine mapping and force-injects options the type does not
+declare.
+
 Two contributions worth knowing: `MediaUsageProviderInterface` tells the media library where a media
 is used inside your own entities — without it the library cannot warn before a deletion — and
 `PlaceholderMediaProviderInterface` offers stand-in images.
@@ -184,5 +193,7 @@ template is shipped to sites running either engine.
 - **Do not upload the site logo or favicon as an entity of your own**; they are `Media` roles.
 - **Do not write a file-exists check of your own** for your uploads — extend
   `AbstractDeclaredFilesHealthCheckProvider` and name the rows.
+- **Do not draw a share image with a `TextField` or an untyped field** - `OgImageField::new()` is the
+  whole call, and a `TextField` breaks the edit screen as soon as an image is set.
 - **Do not write a progress bar of your own**, and do not redirect from a controller answering a form
   that carries one — hand the url over.

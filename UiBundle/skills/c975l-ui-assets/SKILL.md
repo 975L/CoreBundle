@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -10,7 +10,7 @@ description: "Use this skill when a stylesheet, a script, a font or a design tok
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Listener/ThemeVariablesCssListener.php`, `sass/_tokens.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`, `templates/layout.html.twig`
+`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Service/Paginator.php`, `src/Model/Pagination.php`, `src/Listener/ThemeVariablesCssListener.php`, `sass/_tokens.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`, `templates/layout.html.twig`
 
 **Related skills:** `c975l-blocks`, `c975l-media`, `c975l-forms-emails` in this same bundle, and `c975l-config` in ConfigBundle beside it.
 
@@ -133,6 +133,37 @@ Stay out of a theme file: colors and fonts, the per-variant section tokens mixed
 Fonts are uploaded in the back office; `FontProviderInterface` feeds the `font` config kind's select,
 and `font_preloads()` returns the files the current theme really uses.
 
+## Listings that grow instead of paging
+
+No listing in the c975L bundles renders page links. A template wraps its items in
+`data-controller="infiniteScroll"`, marks the list `data-infiniteScroll-target="list"` and the link to
+the next page `data-infiniteScroll-target="next"` with `data-action="click->infiniteScroll#load"`; the
+controller fetches that page, appends the items found there and reads that page's own link to know
+where to go next. An optional `data-infiniteScroll-target="count"` is filled with the number loaded.
+Nothing is hidden by it: without javascript, and for a crawler, that link is the ordinary link to the
+next page it looks like, and a failed fetch leaves it clickable.
+
+The pages it walks are cut by **`Service\Paginator`**, this bundle's own. KnpPaginatorBundle is gone,
+and so is the Pagination component that rendered nothing but its links.
+
+```php
+$books = $this->paginator->paginate($repository->findPublished(), $this->paginator->getPage($request->query), 12);
+```
+
+`paginate()` takes the listing **whole**, as an array - every caller reads its rows and sorts them in
+php, there is no query-level pagination here - and returns a `Model\Pagination`, countable and
+iterable, so `|length` and a `for` read it as an array. It answers `getCurrentPageNumber()`,
+`getPageCount()`, `getTotalItemCount()`, `getItemNumberPerPage()`, `getRoute()` and `query()`:
+
+```twig
+<a href="{{ path(books.route, books.query({'p': books.getCurrentPageNumber + 1})) }}"
+   data-infiniteScroll-target="next">{{ 'label.next'|trans }}</a>
+```
+
+`query()` carries the route's own parameters as well as the request's query, so a listing served under
+`/serie/{slug}` keeps its slug and a search or a filter survives the jump. `getPage()` reads the number
+from a query bag, `p` (`Paginator::PAGE_PARAMETER`) being the parameter every listing uses.
+
 ## Helpers a satellite must reuse
 
 | Helper | Role |
@@ -140,6 +171,7 @@ and `font_preloads()` returns the files the current theme really uses.
 | `Service\UniqueSlug::build()` | normalizes a slug and suffixes `-2`, `-3`… until free; the scope stays the caller's |
 | `Service\BlockFocusUrl::build()` | the EasyAdmin edit url of a block's owner, jumping to that block's row |
 | `Service\BlockMoveRowAttrBuilder::build()` | the `row_attr` the sortable reads to drag a saved block into a container |
+| `Service\Paginator::paginate()` | cuts a listing into pages and says what the next page's url is built from - the paginator of the ecosystem, KnpPaginatorBundle being gone |
 | `Service\BuildFileWriter::write()` | the one way to drop a generated stylesheet into `public/bundles/build/` — temp file then `rename()`, so no request ever reads half a sheet |
 | `Form\VichImageOptions::default()` | the five Vich upload options |
 | `Listener\AbstractBlockCacheInvalidationListener` | the Doctrine wiring of a listener reacting to one kind changing |
@@ -165,6 +197,8 @@ every bundle that copies it.
 - **Do not write a generated file straight to its final path** — write and rename.
 - **Do not subscribe a lazily-imported controller to DOMContentLoaded** without reading
   `document.readyState` first.
+- **Do not pull KnpPaginatorBundle back in**, and do not render page links - `Paginator` cuts the pages
+  and `infiniteScroll` walks them.
 - **Do not hand-roll a drag gesture or a move grip** — `pointer-sort.js` and `sort-icon.js` are shared.
 - **Do not restate a `<head>` tag in a child layout** — extend `@c975LUi/layout.html.twig` and set the
   variable it already reads.

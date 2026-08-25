@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+**KnpPaginatorBundle is gone.** No listing in the c975L bundles renders page links any more - they grow as the
+visitor scrolls (see `infiniteScroll` in UiBundle's README) - and the pages they walk are cut by UiBundle's own
+`Paginator`. Once every c975L bundle a site holds has been updated, the package and what registered it go:
+
+```bash
+composer remove knplabs/knp-paginator-bundle
+```
+
+Delete `config/packages/knp_paginator.yaml` and the `Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class` line
+from `config/bundles.php` - Flex leaves both behind. **Check first that nothing of the app's own calls
+`knp_pagination_render()`, `knp_pagination_sortable()` or injects `PaginatorInterface`**: a template calling one
+of them after the package is removed is an error at render time, not a missing paginator.
+
+**`<twig:c975LUi:Pagination:Pagination>` is removed with it.** It rendered nothing but `knp_pagination_render()`.
+A page of an app still calling it either grows its listing on scroll like the bundles' own do, or renders its
+links itself from the `Pagination` the service now returns (`getCurrentPageNumber()`, `getPageCount()`,
+`getRoute()`, `query()`).
+
 **`site_health_check_result` gains an `acknowledged_at` column.** An admin who has just fixed something marks the
 row as dealt with from the Health check table itself, rather than re-running a check that takes minutes and hits
 every external platform again (see `HealthCheckController::acknowledge()`). Nullable, so the table's existing rows

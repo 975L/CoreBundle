@@ -13,7 +13,7 @@ namespace c975L\ConfigBundle\Controller\Management;
 use c975L\ConfigBundle\Entity\UrlMetadata;
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
-use c975L\UiBundle\Form\OgImageType;
+use c975L\UiBundle\Field\OgImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -64,14 +64,10 @@ class UrlMetadataCrudController extends AbstractCrudController
                 ->setHelp(t('label.url_metadata_summary_help', [], 'config'))
                 ->setRequired(false),
 
-            // TextField and not AssociationField: a Media has no __toString(), and an association field would try to print one to label its choices. Same call SiteBundle's PageCrudController makes for a Page's own share image, and for the same reason - the field is the upload widget OgImageType draws, not a picker among existing rows
-            TextField::new('ogImage')
+            // A field of its own (see c975L\UiBundle\Field\OgImageField), which carries the upload widget and the write-screens-only rule with it - the same call SiteBundle's PageCrudController makes for a Page's own share image
+            OgImageField::new('ogImage')
                 ->setLabel(t('label.url_metadata_og_image', [], 'config'))
-                ->setHelp(t('label.url_metadata_og_image_help', [], 'config'))
-                ->setFormType(OgImageType::class)
-                ->setFormTypeOption('required', false)
-                // On the write screens alone: the index lists the paths and what they say, and DETAIL is disabled anyway
-                ->onlyOnForms(),
+                ->setHelp(t('label.url_metadata_og_image_help', [], 'config')),
         ];
     }
 

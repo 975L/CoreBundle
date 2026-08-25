@@ -13,6 +13,8 @@ namespace c975L\ConfigBundle\Tests\Controller\Management;
 use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
 use c975L\ConfigBundle\Entity\UrlMetadata;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Field\OgImageField;
+use c975L\UiBundle\Form\OgImageType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -103,6 +105,15 @@ class UrlMetadataCrudControllerTest extends TestCase
 
         $this->assertSame([Crud::PAGE_NEW, Crud::PAGE_EDIT], array_keys($fields['ogImage']->getAsDto()->getDisplayedOn()->all()));
         $this->assertSame([Crud::PAGE_INDEX], array_keys($fields['id']->getAsDto()->getDisplayedOn()->all()));
+    }
+
+    // A TextField carrying that form type broke the edit screen of any row whose image had been uploaded, its configurator refusing to print the Media
+    public function testTheShareImageIsDrawnByTheDedicatedFieldAndNotByATextField(): void
+    {
+        $field = $this->fieldsByProperty($this->createController())['ogImage'];
+
+        $this->assertInstanceOf(OgImageField::class, $field);
+        $this->assertSame(OgImageType::class, $field->getAsDto()->getFormType());
     }
 
     // Describing an url is an editor's job, deleting a description an admin's

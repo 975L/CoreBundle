@@ -1,5 +1,29 @@
 # ChangeLog
 
+## v1.17.2
+
+A listing grows as it is read, and no bundle pages any more
+
+### UiBundle
+
+- Added `Paginator`, cutting a listing into pages without KnpPaginatorBundle (25/08/2026)
+- Added `Pagination`, the countable and iterable page it returns (25/08/2026)
+- `Pagination` answers the figures a listing prints, and the route and query its next page's link is built from (25/08/2026)
+- `Paginator::getPage()` reads the page number from a query bag, under the `p` parameter (25/08/2026)
+- Removed the `Pagination` component, whose page links no listing renders any more (25/08/2026) [BC-Break]
+- Added `OgImageField`, the EasyAdmin field drawing `OgImageType` for a share image an entity owns alone (25/08/2026)
+- `Field/` leaves the autowired resource glob, an EasyAdmin field having a private constructor (25/08/2026)
+- The README states `Paginator` beside the infinite scroll, and `OgImageField` beside `OgImageType` (25/08/2026)
+- The `c975l-ui-assets` skill states how a listing grows and what cuts its pages (25/08/2026)
+- The `c975l-media` skill states `OgImageField` and why a `TextField` cannot carry that form type (25/08/2026)
+- UPGRADE.md says what removing KnpPaginatorBundle costs a site already running (25/08/2026)
+- Added `PaginatorTest` and `OgImageFieldTest` (25/08/2026)
+
+### ConfigBundle
+
+- Fixed `UrlMetadataCrudController` breaking the edit screen of an url whose share image had been uploaded (25/08/2026)
+- Extended `UrlMetadataCrudControllerTest` (25/08/2026)
+
 ## v1.17.1
 
 A bundle says for itself that its check reads the whole site

@@ -8,9 +8,10 @@ services:
         resource: '../src/'
         # Maker/ excluded: it extends symfony/maker-bundle's AbstractMaker, a dev-only dependency - registered separately in services_maker.yaml, imported only when that class is available (see c975LUiBundle::loadExtension()), so a plain resource-glob scan never autoloads it in prod
         # Model/ excluded: plain value objects (e.g. CollectionItem) built by application code, not services - autowiring one fails on its first scalar constructor argument
+        # Field/ excluded: EasyAdmin fields, built by their own static new() with a private constructor, which the container refuses to instantiate - a CRUD controller calls them directly, nothing asks the container for one
         # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same stylesheet analysis over their own sheets, never instantiated by the application itself
         # Video/ excluded: an enum and the value object it builds, read statically by whoever needs them - autowiring ResolvedVideo fails on the enum the container refuses to instantiate
-        exclude: '../src/{DependencyInjection,Entity,Maker,Model,Testing,Video}'
+        exclude: '../src/{DependencyInjection,Entity,Field,Maker,Model,Testing,Video}'
 
     # Three classes implement PdfGeneratorInterface - the two engines and the service picking between them - so the contract has to say which one a caller gets. It is the picker: which engine draws a document is decided per site from "ui-pdf-engine", and nothing calling for a PDF has to know there are two (see PdfGenerator)
     c975L\UiBundle\Contract\PdfGeneratorInterface: '@c975L\UiBundle\Service\PdfGenerator'
