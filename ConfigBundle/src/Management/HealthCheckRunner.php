@@ -101,6 +101,20 @@ class HealthCheckRunner
             ->setCheckedAt($checkedAt);
     }
 
+    // The kinds whose provider says it checks the site once rather than page by page (see HealthCheckSiteWideInterface) - what a bundle installed beside this one has to declare its own rows site-wide, HealthCheckController's list being written here and closed to them
+    public function getSiteWideKinds(): array
+    {
+        $kinds = [];
+
+        foreach ($this->healthCheckProviders as $provider) {
+            if ($provider instanceof HealthCheckSiteWideInterface) {
+                $kinds[$provider->getKind()] = true;
+            }
+        }
+
+        return array_keys($kinds);
+    }
+
     // Every registered provider's kind, deduplicated and in registration order - lets a caller queue one job per kind (see HealthCheckController::run()) rather than one job running them all, so a bundle declaring thousands of urls doesn't drag the free, fast checks down with it, nor take them with it when it fails
     public function getKinds(): array
     {

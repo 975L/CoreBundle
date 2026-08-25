@@ -44,7 +44,7 @@ class HealthCheckController extends AbstractController
     // Same prefixing, giving management_health_check_acknowledge - the token the table's acknowledge button sends is minted under this very name (see _table.html.twig)
     public const ACKNOWLEDGE_ROUTE = 'management_health_check_acknowledge';
 
-    // Kinds checked once for the whole site (infrastructure-level: TLS cert, security headers, security misconfiguration, robots.txt/sitemap, sitemaps cross-checked against robots.txt, redirect chains, http/https + 404 deployment checks, database load, last backup, uploaded svg files, declared files, ai crawlers list) rather than once per page - shown in their own "Site" section instead of the per-page table, see index()
+    // Kinds checked once for the whole site (infrastructure-level: TLS cert, security headers, security misconfiguration, robots.txt/sitemap, sitemaps cross-checked against robots.txt, redirect chains, http/https + 404 deployment checks, database load, last backup, uploaded svg files, declared files, ai crawlers list) rather than once per page - shown in their own "Site" section instead of the per-page table, see index(). Not the whole answer: a bundle installed beside this one cannot add to a list written here, and says so on its provider instead (see HealthCheckSiteWideInterface), the two being merged by siteWideKinds()
     private const array SITE_WIDE_KINDS = ['security-headers', 'security-misconfig', 'ssl-certificate', 'seo-files', 'redirect-chains', 'deployment', 'svg-fonts', 'files-ui', AiCrawlersHealthCheckProvider::KIND, DatabaseLoadHealthCheckProvider::KIND, BackupResultRecorder::KIND, SitemapRobotsHealthCheckProvider::KIND];
 
     public function __construct(
@@ -77,8 +77,9 @@ class HealthCheckController extends AbstractController
         // Site-wide kinds (see SITE_WIDE_KINDS) are checked once for the whole site, never per-page like the rest - mixed into the same table they'd read as one page among many instead of the site-wide result they actually are, so they're pulled out into their own "Site" section instead
         $siteResults = [];
         $pageResults = [];
+        $siteWideKinds = $this->siteWideKinds();
         foreach ($results as $result) {
-            if (\in_array($result->getKind(), self::SITE_WIDE_KINDS, true)) {
+            if (\in_array($result->getKind(), $siteWideKinds, true)) {
                 $siteResults[] = $result;
                 continue;
             }
@@ -174,6 +175,12 @@ class HealthCheckController extends AbstractController
         return $this->json(
             $this->healthCheckRunProgress->poll() ?? ['done' => 0, 'total' => 0, 'finished' => true, 'timedOut' => false]
         );
+    }
+
+    // The list above plus whatever the installed providers declare for themselves - one answer, so index() reads it once for the whole page
+    private function siteWideKinds(): array
+    {
+        return array_values(array_unique([...self::SITE_WIDE_KINDS, ...$this->healthCheckRunner->getSiteWideKinds()]));
     }
 
     // Dated CSV snapshot of the current results (one row per url/kind, see HealthCheckResultRepository::findLatestPerUrlAndKind()) - the audit-trail artefact for accessibility declarations (RGAA/EAA): each row already carries its own checkedAt, and TableExporter dates the filename itself, so re-exporting weekly/monthly builds a paper trail without any extra bookkeeping here. Unlike index(), site-wide kinds (see SITE_WIDE_KINDS) are deliberately kept in the export rather than split out - completeness matters more than the dashboard's readability concern here, and the 'kind' column already discloses which rows are site-wide

@@ -2001,6 +2001,26 @@ class MyUploadedFilesHealthCheckProvider implements HealthCheckExhaustiveInterfa
 
 Only implement it on a provider that really does list its whole domain every run: an empty run is taken at face value and clears the kind entirely. A provider checking a fixed set of urls (security headers, the certificate, `robots.txt`) has no reason to — its urls never disappear, and its history is the point. A run that throws never purges, a failure telling nothing about what the provider declares.
 
+### A provider that checks the site once, not page by page
+
+The Health check page splits its results in two: a **Site** section for what is checked once for the whole site — the
+certificate, the security headers, a shop's orders against their payments — and a **Pages** table for the rest. A
+site-wide row left in the pages table reads as one page among many.
+
+`HealthCheckController` holds a list of its own site-wide kinds, which no bundle installed beside it can add to. Such
+a bundle says it on its provider instead:
+
+```php
+use c975L\ConfigBundle\Management\HealthCheckSiteWideInterface;
+
+class BasketIntegrityHealthCheckProvider implements HealthCheckSiteWideInterface
+{
+    // getKind() and runChecks() as above - the interface adds no method, it only states that these rows are the site's and not a page's
+}
+```
+
+Both are merged when the page is drawn, so a kind named in either is shown in the **Site** section.
+
 ## Contributing health check advice from other bundles
 
 Any bundle can attach actionable advice under a Health check table row (e.g. "this page is missing an H1" linking to its edit screen) by implementing `HealthCheckAdviceProviderInterface` — no manual service tagging needed, `TaggedInterfacePass` auto-detects any class implementing it, same mechanism as `MenuProviderInterface` above:

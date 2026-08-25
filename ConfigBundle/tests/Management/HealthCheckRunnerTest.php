@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Management\HealthCheckFrequencyAwareInterface;
 use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
+use c975L\ConfigBundle\Management\HealthCheckSiteWideInterface;
 use c975L\ConfigBundle\Repository\HealthCheckResultRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -38,6 +39,39 @@ class HealthCheckRunnerTest extends TestCase
         $provider->method('runChecks')->willReturn($rows);
 
         return $provider;
+    }
+
+    private function createSiteWideProvider(string $kind): HealthCheckSiteWideInterface
+    {
+        $provider = $this->createStub(HealthCheckSiteWideInterface::class);
+        $provider->method('getKind')->willReturn($kind);
+        $provider->method('runChecks')->willReturn([]);
+
+        return $provider;
+    }
+
+    // What a bundle installed beside this one has instead of editing HealthCheckController's own list, which it cannot reach
+    public function testGetSiteWideKindsAnswersOnlyTheProvidersDeclaringThemselvesSiteWide(): void
+    {
+        $runner = new HealthCheckRunner(
+            [$this->createProvider('pages', []), $this->createSiteWideProvider('basket-integrity'), $this->createSiteWideProvider('basket-integrity')],
+            $this->createStub(EntityManagerInterface::class),
+            $this->createStub(HealthCheckResultRepository::class),
+        );
+
+        $this->assertSame(['basket-integrity'], $runner->getSiteWideKinds());
+    }
+
+    // A site whose providers all check page by page has nothing to add to that list, and gets no empty "Site" section
+    public function testGetSiteWideKindsIsEmptyWhenNoProviderDeclaresItself(): void
+    {
+        $runner = new HealthCheckRunner(
+            [$this->createProvider('pages', [])],
+            $this->createStub(EntityManagerInterface::class),
+            $this->createStub(HealthCheckResultRepository::class),
+        );
+
+        $this->assertSame([], $runner->getSiteWideKinds());
     }
 
     public function testRunPersistsOneHealthCheckResultPerRowAndFlushesOnce(): void

@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.17.1
+
+A bundle says for itself that its check reads the whole site
+
+### ConfigBundle
+
+- Added `HealthCheckSiteWideInterface`, the marker a provider carries to have its rows shown in the Health check page's "Site" section (25/08/2026)
+- Added `HealthCheckRunner::getSiteWideKinds()`, the kinds the installed providers declare that way (25/08/2026)
+- `HealthCheckController` merges them with its own `SITE_WIDE_KINDS` (25/08/2026)
+
 ## v1.17.0
 
 Every container kind of the showcase has an example
