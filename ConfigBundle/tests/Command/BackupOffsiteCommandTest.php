@@ -162,12 +162,45 @@ class BackupOffsiteCommandTest extends TestCase
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
         $this->assertContains(
             sprintf(
-                'sync %s/public/medias storagebox:975l.com/files/public/medias --backup-dir storagebox:975l.com/previous/%s/public/medias --max-delete 100',
+                'sync %s/public/medias storagebox:975l.com/files/public/medias --backup-dir storagebox:975l.com/previous/%s/public/medias --max-delete 30',
                 $this->projectDir,
                 new \DateTimeImmutable()->format('Y-m-d'),
             ),
             (array) $calls,
         );
         $this->assertContains('delete --rmdirs --min-age 15d storagebox:975l.com/previous', (array) $calls);
+    }
+
+    // The guard is a share of what the folder holds, not a fixed count: a family of derived images regenerated under new names removes hundreds of files legitimately, and a count that let those through would let an emptied gallery through as well
+    public function testTheDeletionGuardIsAShareOfWhatTheFolderHolds(): void
+    {
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+        for ($i = 0; $i < 200; ++$i) {
+            file_put_contents(sprintf('%s/public/medias/photo-%d.jpg', $this->projectDir, $i), 'photo');
+        }
+
+        $calls = new \ArrayObject();
+        new CommandTester($this->createCommand(
+            'storagebox:975l.com',
+            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
+            $calls
+        ))->execute([]);
+
+        $this->assertStringContainsString('--max-delete 50', implode("\n", (array) $calls));
+    }
+
+    // A folder whose files are gone locally counts zero, so the share is zero and only the floor stands - the sync then stopping instead of reproducing the loss at the destination, which is the whole point of the guard
+    public function testAnEmptiedFolderFallsBackToTheFloor(): void
+    {
+        mkdir($this->projectDir . '/public/medias', 0775, true);
+        $calls = new \ArrayObject();
+
+        new CommandTester($this->createCommand(
+            'storagebox:975l.com',
+            [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
+            $calls
+        ))->execute([]);
+
+        $this->assertStringContainsString('--max-delete 30', implode("\n", (array) $calls));
     }
 }

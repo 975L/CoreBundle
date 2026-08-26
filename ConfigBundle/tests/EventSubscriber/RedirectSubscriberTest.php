@@ -40,6 +40,20 @@ class RedirectSubscriberTest extends TestCase
         return new RedirectSubscriber($repository);
     }
 
+    // The repository hands back the exact row for the very path it is given, plus every prefix one - reproduced here rather than stubbed flat, a stub answering the same rows whatever the path being what makes a trailing-slash test pass on the prefix branch instead of the fallback it means to cover
+    private function createPathAwareSubscriber(Redirect ...$rows): RedirectSubscriber
+    {
+        $repository = $this->createStub(RedirectRepository::class);
+        $repository->method('findCandidatesForPath')->willReturnCallback(
+            static fn (string $path): array => array_values(array_filter(
+                $rows,
+                static fn (Redirect $row): bool => $row->getFromPath() === $path || str_ends_with((string) $row->getFromPath(), '*'),
+            )),
+        );
+
+        return new RedirectSubscriber($repository);
+    }
+
     // Runs before RouterListener (priority 33 > 32) so a redirect can short-circuit routing entirely
     public function testGetSubscribedEventsRunsBeforeRouterListener(): void
     {
@@ -265,5 +279,41 @@ class RedirectSubscriberTest extends TestCase
         $subscriber->onKernelRequest($event);
 
         $this->assertSame('/medias/site/guide-2026.pdf', $event->getResponse()->getTargetUrl());
+    }
+
+    // "/contact/" and "/contact" are the same url to whoever published the link, so the row written without the slash answers both rather than being duplicated for each variant
+    public function testOnKernelRequestFallsBackToThePathWithoutItsTrailingSlash(): void
+    {
+        $subscriber = $this->createPathAwareSubscriber(new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true));
+        $event = $this->createEvent('/contact/');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/pages/contact', $event->getResponse()->getTargetUrl());
+    }
+
+    // The fallback never overrides a row that states its own trailing slash: written that way, it is the answer for that url
+    public function testOnKernelRequestPrefersARowWrittenWithItsTrailingSlash(): void
+    {
+        $subscriber = $this->createPathAwareSubscriber(
+            new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true),
+            new Redirect()->setFromPath('/contact/')->setToUrl('/pages/contact-slash')->setPermanent(true),
+        );
+        $event = $this->createEvent('/contact/');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/pages/contact-slash', $event->getResponse()->getTargetUrl());
+    }
+
+    // A path that matches nothing either way stays a 404, the fallback costing it one more query and no answer
+    public function testOnKernelRequestLeavesATrailingSlashPathAloneWhenNothingMatches(): void
+    {
+        $subscriber = $this->createPathAwareSubscriber(new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true));
+        $event = $this->createEvent('/unknown/');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertNull($event->getResponse());
     }
 }

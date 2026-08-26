@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Management\BackupPathCollector;
 use c975L\ConfigBundle\Management\BackupResultRecorder;
 use c975L\ConfigBundle\Management\BackupRetentionPurger;
 use c975L\ConfigBundle\Management\ByteFormatter;
+use c975L\ConfigBundle\Management\FileCounter;
 use c975L\ConfigBundle\Management\OffsiteState;
 use c975L\ConfigBundle\Management\OffsiteSynchronizer;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -68,6 +69,9 @@ class BackupCommand extends Command
     private const int DEFAULT_RETENTION_DAYS = 15;
     private const int DEFAULT_OFFSITE_MAX_AGE_HOURS = 30;
 
+    // How much of a failed mirror's message the row carries. rclone names every file it couldn't move, which runs to a thousand characters of log for a single cause - enough of it to say which folder and why, the whole of it being one SSH session away in var/backup/.offsite.json
+    private const int OFFSITE_ERROR_LENGTH = 200;
+
     private string $projectDir;
     private string $credentialsFile; // path to the runtime-generated temp file
     private string $database;
@@ -85,7 +89,7 @@ class BackupCommand extends Command
     private int $filesBytes = 0;
     private int $filesCount = 0;
     private array $mirrorPaths = [];
-    private array $offsite = ['status' => 'none', 'hours' => null, 'target' => ''];
+    private array $offsite = ['status' => 'none', 'hours' => null, 'target' => '', 'mirrorError' => null];
     private int $durationSeconds = 0;
     private array $retention = [];
 
@@ -341,7 +345,7 @@ class BackupCommand extends Command
 
         foreach ($paths as $path) {
             $this->report .= sprintf("- %s\n", $path);
-            $this->filesCount += $this->countFiles($this->projectDir . '/' . $path);
+            $this->filesCount += FileCounter::count($this->projectDir . '/' . $path);
         }
 
         // -C changes into the project so archive members are relative ('./.env.local'), which is where a restore has to put them back. Handed absolute paths, tar stores home/…/.env.local and an extraction lands it in a home/ folder of its own instead of overwriting the file it was meant to replace
@@ -427,25 +431,31 @@ class BackupCommand extends Command
             $this->offsite['status'],
             null === $hours ? '' : sprintf(' (%d hours ago)', (int) $hours)
         );
+
+        $this->offsiteMirrorFailure($state);
     }
 
-    private function countFiles(string $path): int
+    // The mirror runs in its own command, on its own night, and until now recorded its failures where nothing read them: a mirror red since January sat under a row saying "offsite ok", the archives push having refreshed the timestamp the status is computed from every six hours.
+    // Only the mirror. The archives push is this command's own, reported above the moment it fails, and reading its failure back here would say the same thing twice
+    private function offsiteMirrorFailure(array $state): void
     {
-        if (is_file($path)) {
-            return 1;
+        if ('failed' !== ($state['status'] ?? null) || 'mirror' !== ($state['failedWhat'] ?? null)) {
+            return;
         }
 
-        $count = 0;
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS)
-        );
-        foreach ($iterator as $file) {
-            if ($file->isFile()) {
-                ++$count;
-            }
-        }
+        $this->offsite['mirrorError'] = $this->shorten((string) ($state['lastError'] ?? ''));
+        $this->warnings[] = sprintf('The last offsite mirror failed: %s', $this->offsite['mirrorError']);
+        $this->report .= sprintf("Offsite mirror FAILED: %s\n", $this->offsite['mirrorError']);
+    }
 
-        return $count;
+    // Newlines folded rather than kept: the warning goes on a dashboard row and in an email, both of which read a paragraph of rclone log as one broken line
+    private function shorten(string $error): string
+    {
+        $error = trim(preg_replace('/\s*\R\s*/', ' | ', $error));
+
+        return mb_strlen($error) > self::OFFSITE_ERROR_LENGTH
+            ? mb_substr($error, 0, self::OFFSITE_ERROR_LENGTH) . '...'
+            : $error;
     }
 
     private function cleanup(): void

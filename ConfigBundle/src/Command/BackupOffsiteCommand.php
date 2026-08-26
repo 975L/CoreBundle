@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Command;
 use c975L\ConfigBundle\Management\BackupPath;
 use c975L\ConfigBundle\Management\BackupPathCollector;
 use c975L\ConfigBundle\Management\ByteFormatter;
+use c975L\ConfigBundle\Management\FileCounter;
 use c975L\ConfigBundle\Management\OffsiteState;
 use c975L\ConfigBundle\Management\OffsiteSynchronizer;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -51,9 +52,14 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 )]
 class BackupOffsiteCommand extends Command
 {
-    // Past this many deletions the sync aborts rather than carrying them over. The failure this guards against is not the exotic one: it's a gallery emptied by mistake, or a hacked site, propagated to the backup within hours.
-    // Aborting is the right answer - it costs a night's mirroring and a look from a human, against a copy that faithfully reproduces the damage
-    private const int MAX_DELETE = 100;
+    // Past this share of a folder's own files the sync aborts rather than carrying the deletions over. The failure this guards against is not the exotic one: it's a gallery emptied by mistake, or a hacked site, propagated to the backup within hours.
+    // Aborting is the right answer - it costs a night's mirroring and a look from a human, against a copy that faithfully reproduces the damage.
+    //
+    // A share rather than a fixed count, because no fixed count fits two folders: 100 deletions is a wipe for a gallery of 80 photos and an ordinary morning's work for 1500 derived images, whose whole family is regenerated under new names the day their format or their size changes. Calibrated on that regeneration - one family of derived files renamed at once has to pass, an emptied folder has to be stopped - and an emptied folder is stopped by the same rule: nothing left locally means a share of nothing, so the floor below is what it runs into
+    private const int MAX_DELETE_PERCENT = 25;
+
+    // Below a few dozen files a share means nothing - a quarter of 8 photos is 2, and any real change to such a folder would abort. What passes here is small enough in absolute terms to be looked at in a minute, and --backup-dir has it either way
+    private const int MIN_DELETE = 30;
 
     private const int DEFAULT_KEEP_DAYS = 15;
 
@@ -113,7 +119,7 @@ class BackupOffsiteCommand extends Command
                 $projectDir . '/' . $path,
                 'files/' . $path,
                 sprintf('%s/%s/%s', self::PREVIOUS_FOLDER, $dated, $path),
-                self::MAX_DELETE
+                $this->maxDelete($projectDir . '/' . $path)
             );
 
             if (!$result['ok']) {
@@ -137,6 +143,12 @@ class BackupOffsiteCommand extends Command
         $io->success('Offsite mirror completed.');
 
         return Command::SUCCESS;
+    }
+
+    // The deletion guard for one folder, sized on what that folder currently holds. Counted locally on purpose: the danger is the local side having lost its files, and a local side that lost them counts near zero - the guard tightening exactly when it matters instead of being loosened by the destination's own count
+    private function maxDelete(string $localPath): int
+    {
+        return max(self::MIN_DELETE, intdiv(FileCounter::count($localPath) * self::MAX_DELETE_PERCENT, 100));
     }
 
     // Read back from the destination rather than counted here: an rclone run exiting 0 says the transfer was accepted, not that the files are there - the same reason this bundle reads its archives back with bzip2 --test instead of trusting tar's exit code

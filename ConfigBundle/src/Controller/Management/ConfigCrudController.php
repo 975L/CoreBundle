@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Form\Type\ReadonlyTextType;
 use c975L\ConfigBundle\Management\AlertBuilder;
 use c975L\ConfigBundle\Management\ConfigAlertProvider;
 use c975L\ConfigBundle\Management\ConfigExportProvider;
+use c975L\ConfigBundle\Management\ConfigGroupLabelResolver;
 use c975L\ConfigBundle\Management\ConfigImportProvider;
 use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
@@ -73,6 +74,7 @@ class ConfigCrudController extends AbstractCrudController
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
+        private readonly ConfigGroupLabelResolver $configGroupLabelResolver,
         private readonly TableExporter $tableExporter,
         private readonly ConfigSqlExporter $configSqlExporter,
         private readonly ContentExporter $contentExporter,
@@ -101,7 +103,7 @@ class ConfigCrudController extends AbstractCrudController
             $showSensitive = $this->requestStack->getCurrentRequest()?->query->getBoolean('showSensitive', false) ?? false;
 
             return $this->render('@c975LConfig/management/config_crud_groups.html.twig', [
-                'counts' => $this->configRepository->countsByGroup($showSensitive, $this->security->isGranted('ROLE_SUPER_ADMIN')),
+                'counts' => $this->configGroupLabelResolver->sortByLabel($this->configRepository->countsByGroup($showSensitive, $this->security->isGranted('ROLE_SUPER_ADMIN'))),
                 'showSensitive' => $showSensitive,
                 // The grid's own toggle is a global action of the index page, which this screen replaces - so it draws its own, under the same permission (see configureActions())
                 'canShowSensitive' => $this->security->isGranted((string) $this->configService->get('site-role-admin')),
@@ -202,18 +204,13 @@ class ConfigCrudController extends AbstractCrudController
         $field = TextField::new('group')
             ->setLabel(t('label.group', [], 'config'))
             ->setFormTypeOption('disabled', true)
-            ->formatValue(fn (?string $group): string => $this->groupLabel($group));
+            ->formatValue(fn (?string $group): string => $this->configGroupLabelResolver->label($group));
 
         if ($isEdit && null !== $config) {
-            $field->setFormTypeOptions(['data' => $this->groupLabel($config->getGroup())]);
+            $field->setFormTypeOptions(['data' => $this->configGroupLabelResolver->label($config->getGroup())]);
         }
 
         return $field;
-    }
-
-    private function groupLabel(?string $group): string
-    {
-        return $group ? $this->translator->trans('label.group_' . $group, [], 'config') : '';
     }
 
     // Description holds a 'site_config' translation key (description.xxx) once a bundle has migrated to it; trans() safely falls back to the raw text unchanged for bundles that haven't yet. formatValue() only runs on index/detail (EasyAdmin skips it for disabled form fields), so the edit page's disabled input needs the translated text injected via form data instead. ReadonlyTextType renders a <p> instead of an <input> - see form_theme.html.twig

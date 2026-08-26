@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -46,6 +46,9 @@ url that changed needs a redirect whether it was a page's or a product's.
 - **`gone`** answers 410 rather than redirecting — search engines drop a 410 far faster than a 404.
 - **`fromPath` accepts a trailing `*`**: `/apidoc/*` covers everything below. An exact row wins over a
   prefix; among prefixes the longest wins.
+- **A trailing slash is not another url**: nothing matching `/contact/`, the row written `/contact`
+  answers it. Tried only once an exact and a prefix lookup both came up empty, so a row stating its
+  own trailing slash still answers for itself.
 - **`toUrl` accepts one too, and that pairing renames a tree**: `/character/*` → `/personnages/*`
   carries the tail over. A destination without the `*` folds the whole tree onto one url — both are
   wanted, and the `*` is what tells them apart.
@@ -179,6 +182,18 @@ need a version history, it needs a copy.
 
 Everything is configured in the `backup` config group, all of it `restricted`.
 
+**The mirror does not carry a deletion over blindly.** `c975l:config:backup:offsite` sizes `--max-delete`
+on what each folder currently holds — a quarter of its files, never fewer than 30 (`FileCounter` counts
+them, locally on purpose: a local side that lost its files counts near zero, so the guard tightens
+exactly when it matters). A fixed count fits no two folders: 100 deletions is a wipe for a gallery of 80
+photos and an ordinary morning for 1500 derived images regenerated under new names.
+
+**A failed mirror reaches the backup row**, `c975l:config:backup` reading `OffsiteState` back and
+raising it as a warning and a line of its report. The mirror runs on its own night, and the archives
+push refreshes the timestamp the offsite status is computed from every six hours — so a mirror red for
+a month sat under a row saying "offsite ok". Only the mirror is read back: the archives push is that
+command's own and is reported the moment it fails.
+
 ## Status report
 
 `/status/report` serves the site's PHP and Symfony versions, its installed bundles and its last health
@@ -220,4 +235,6 @@ check and the smoke test which fetch the live site at `site-url`.
   points at production.
 - **Do not back up code, templates or asset sources.**
 - **Do not tar a mirror path.**
+- **Do not add a `Redirect` row for the trailing-slash variant of a path** — the subscriber falls back
+  to the path without it.
 - **Do not report a figure in the status `extra` section that calls for no action.**

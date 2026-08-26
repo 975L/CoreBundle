@@ -1626,12 +1626,13 @@ A site that never customized anything reports nothing at all — it simply keeps
 
 ## Generic Twig filters and functions
 
-Six general-purpose helpers, none of them tied to blocks or media - they live here rather than in SiteBundle (where they started) so an app running on ConfigBundle + UiBundle alone still has them.
+Seven general-purpose helpers, none of them tied to blocks or media - they live here rather than in SiteBundle (where they started) so an app running on ConfigBundle + UiBundle alone still has them.
 
 | Helper | Role |
 | --- | --- |
 | `\|nl2br` | Overrides Twig's native filter to emit `<br>` rather than its XHTML `<br />`, which the W3C validator flags. Keeps the native `pre_escape`, so `{{ value\|nl2br }}` still escapes its input and only an explicit `{{ value\|raw\|nl2br }}` passes markup through |
 | `\|linkify` | Turns bare `http(s)://` URLs in a plain string into real `<a target="_blank" rel="noopener noreferrer">` links. Splits the raw string first and escapes each part separately, so a quote right after a URL still stops the match; trailing sentence punctuation stays out of the href |
+| `\|absolute_urls(baseUrl)` | Rewrites the root-relative `src` and `href` of a rendered email against the site's own address. A mailbox has no page to resolve `/medias/…` against, so a single-slash path is a broken picture and a dead link the moment the message leaves. Applied to the whole layout rather than template by template - `//host/…` and `data-src` are left alone, and an empty address leaves the html untouched |
 | `route_exists(name)` | Whether a route of that name is declared - what a shared template needs before linking to a route only some installs declare |
 | `template_exists(path)` | Whether `templates/<path>` exists in the app, for an override a bundle offers but doesn't ship |
 | `asset_exists(path)` | Whether `public/<path>` or `assets/<path>` exists, same idea for an optional image/stylesheet |

@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Entity\Config;
 use c975L\ConfigBundle\Management\ConfigAlertProvider;
 use c975L\ConfigBundle\Management\ConfigExportProvider;
+use c975L\ConfigBundle\Management\ConfigGroupLabelResolver;
 use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -126,6 +127,7 @@ class ConfigCrudControllerTest extends TestCase
             $connection,
             $requestStack ?? new RequestStack(),
             $translator,
+            new ConfigGroupLabelResolver($translator),
             $tableExporter ?? $this->createStub(TableExporter::class),
             $configSqlExporter ?? $this->createStub(ConfigSqlExporter::class),
             $contentExporter ?? $this->createStub(ContentExporter::class),
@@ -663,6 +665,7 @@ class ConfigCrudControllerTest extends TestCase
             $connection,
             new RequestStack(),
             $translator,
+            new ConfigGroupLabelResolver($translator),
             $this->createStub(TableExporter::class),
             $this->createStub(ConfigSqlExporter::class),
             $this->createStub(ContentExporter::class),

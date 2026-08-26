@@ -268,6 +268,46 @@ class BackupCommandTest extends TestCase
         $this->assertSame('stale', $this->recorded['offsite']['status']);
     }
 
+    // The mirror fails in its own command, on its own night, and used to record that failure where nothing read it: the archives push refreshes the timestamp the status is computed from every six hours, so a mirror broken for a month sat under a row saying "offsite ok"
+    public function testAFailedMirrorIsCarriedOntoTheRow(): void
+    {
+        new OffsiteState()->recordSuccess($this->projectDir, ['what' => 'archives']);
+        new OffsiteState()->recordFailure($this->projectDir, "public/medias/book: ERROR : strips/page.webp: Got fatal error on delete: --max-delete threshold reached\nCancelling sync due to fatal error", 'mirror');
+
+        $report = $this->runAndCaptureReport();
+
+        $this->assertStringContainsString('Offsite mirror FAILED', $report);
+        $this->assertStringContainsString('--max-delete threshold reached', $this->recorded['offsite']['mirrorError']);
+        // The rclone log is folded onto one line: the row and the email both read a paragraph as one broken line
+        $this->assertStringNotContainsString("\n", $this->recorded['offsite']['mirrorError']);
+        $this->assertNotEmpty(array_filter(
+            $this->recorded['warnings'],
+            static fn (string $warning): bool => str_contains($warning, 'The last offsite mirror failed')
+        ));
+    }
+
+    // rclone names every file it could not move, which runs to a thousand characters of log for a single cause - enough of it to say which folder and why, the whole of it staying in var/backup/.offsite.json
+    public function testAMirrorErrorIsCutToWhatARowCanCarry(): void
+    {
+        new OffsiteState()->recordFailure($this->projectDir, str_repeat('public/medias/book/strips/page.webp: cannot move ', 40), 'mirror');
+
+        $this->runAndCaptureReport();
+
+        $this->assertSame(203, mb_strlen($this->recorded['offsite']['mirrorError']));
+        $this->assertStringEndsWith('...', $this->recorded['offsite']['mirrorError']);
+    }
+
+    // The archives push is this command's own and is reported the moment it fails, so reading its recorded failure back here would put the same thing on the row twice
+    public function testAFailedArchivesPushIsNotReportedASecondTime(): void
+    {
+        new OffsiteState()->recordFailure($this->projectDir, 'the storage box refused the connection', 'archives');
+
+        $report = $this->runAndCaptureReport();
+
+        $this->assertStringNotContainsString('Offsite mirror FAILED', $report);
+        $this->assertNull($this->recorded['offsite']['mirrorError']);
+    }
+
     // Every run leaves a trace now, not only the weekly one carrying --report
     public function testTheRunOutcomeIsHandedOverToTheRecorder(): void
     {

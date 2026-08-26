@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.17.5
+
+The mirror sizes its own guard, and a failed one is seen
+
+### ConfigBundle
+
+- The "pick a group" screen of the config listing is ordered on the label each row shows rather than on the English slug it is stored under (26/08/2026)
+- Added `ConfigGroupLabelResolver`, which names a config group and orders the groups by that name (26/08/2026)
+- `c975l:config:backup:offsite` sizes its deletion guard on what each folder holds, a quarter of its files with a floor of 30, in place of a fixed 100 (26/08/2026)
+- `c975l:config:backup` carries a failed offsite mirror onto its row and into its report (26/08/2026)
+- Added `FileCounter`, the file count the two backup commands each held their own copy of (26/08/2026)
+- A redirect row answers the same url with a trailing slash, `/contact/` landing on the row written `/contact` rather than needing one of its own (26/08/2026)
+
+### UiBundle
+
+- Added the `absolute_urls` Twig filter, which rewrites the root-relative `src` and `href` of a rendered email against the site's address (26/08/2026)
+
 ## v1.17.4
 
 A comparison is framed, and says where it stops

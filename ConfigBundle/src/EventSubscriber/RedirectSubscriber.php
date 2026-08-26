@@ -43,6 +43,12 @@ class RedirectSubscriber implements EventSubscriberInterface
         }
 
         $redirect = $this->resolve($path);
+
+        // A trailing slash does not make another url: "/contact/" and "/contact" are the same page to whoever published the link, and a row per variant would double the table. Tried only once nothing matched, so a row written with its own slash still answers for itself - and only an exact row can be gained this way, a prefix already covering whatever sits below it, slash or no slash
+        if (null === $redirect && '/' !== $path && str_ends_with($path, '/')) {
+            $redirect = $this->resolve(rtrim($path, '/'));
+        }
+
         if (null === $redirect) {
             return;
         }
