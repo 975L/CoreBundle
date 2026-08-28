@@ -54,9 +54,7 @@ class ImageCompareType extends AbstractType
                 if (!isset($data['id']) || '' === $data['id']) {
                     $data['id'] = BlockIdGenerator::generate('image-compare');
                 }
-                if (!isset($data['startPosition'])) {
-                    $data['startPosition'] = 50;
-                }
+                $data['startPosition'] ??= 50;
                 $event->setData($data);
             }
         );

@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.17.7
+
+A missing default is filled in a line, not in a guard
+
+### ConfigBundle
+
+- `c975l:deprecations:check` collects its package and namespace tokens with `??=` (28/08/2026)
+
+### UiBundle
+
+- The block form types fill their absent defaults with `??=` in place of an `isset` guard (28/08/2026)
+
 ## v1.17.6
 
 A throttled vote says so, and a form stops scrolling sideways

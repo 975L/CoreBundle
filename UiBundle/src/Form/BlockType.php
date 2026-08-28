@@ -119,9 +119,7 @@ class BlockType extends AbstractType
                         }
 
                         // Removing the very last media also leaves nothing submitted at all under "medias" (an HTML form can't represent an empty array, only an absent key), which has to be normalized to [] below or Symfony skips add/remove handling for the field.
-                        if (!isset($submitted['medias'])) {
-                            $submitted['medias'] = [];
-                        }
+                        $submitted['medias'] ??= [];
                         $submitted = $this->mergeMultiUpload($submitted, $kind);
                         $this->addMediaSubForm($event->getForm(), $kind);
 

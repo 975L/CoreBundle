@@ -74,15 +74,9 @@ class SliderType extends AbstractType
                 if (!isset($data['id']) || '' === $data['id']) {
                     $data['id'] = BlockIdGenerator::generate('slider');
                 }
-                if (!isset($data['duration'])) {
-                    $data['duration'] = 0;
-                }
-                if (!isset($data['ratio'])) {
-                    $data['ratio'] = 'free';
-                }
-                if (!isset($data['layout'])) {
-                    $data['layout'] = 'default';
-                }
+                $data['duration'] ??= 0;
+                $data['ratio'] ??= 'free';
+                $data['layout'] ??= 'default';
                 $event->setData($data);
             }
         );

@@ -179,9 +179,7 @@ class CheckDeprecationsCommand extends Command
         }
         // Composer package names (e.g. "symfony/maker-bundle") are too generic to count as exact: a bundle mentioning the package name in a comment or composer.json, without actually using the deprecated class, matches just as easily
         foreach ($pkgMatches[1] as $token) {
-            if (!isset($tokens[$token])) {
-                $tokens[$token] = false;
-            }
+            $tokens[$token] ??= false;
         }
 
         foreach ($fqcnMatches[1] as $fqcn) {
@@ -189,9 +187,7 @@ class CheckDeprecationsCommand extends Command
             if (count($parts) > 1) {
                 array_pop($parts);
                 $namespace = implode('\\', $parts);
-                if (!isset($tokens[$namespace])) {
-                    $tokens[$namespace] = false;
-                }
+                $tokens[$namespace] ??= false;
             }
         }
 
