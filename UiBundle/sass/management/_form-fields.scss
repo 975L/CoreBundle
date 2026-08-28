@@ -29,6 +29,13 @@
     opacity: 1;
 }
 
+// The chosen option of such a select, cut with an ellipsis rather than at whatever character the box ends on. The block kind picker holds labels a sentence long ("Groupe de menu (Regroupe plusieurs elements d'un menu...)"), which the control hides the tail of: on a narrow screen that leaves a word and a half, and nothing saying there is more. Single selects only - a multiple one lays its values out as separate chips that wrap on their own
+.ts-wrapper.single .ts-control > .item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 // A group of consecutive fields inside a block's data form, legended with what the group is (see templates/form/block.html.twig). A kind holding several faces of one thing - flip_card's recto and verso - is otherwise one flat run of inputs where only the labels say which is which.
 // A real <fieldset>/<legend>, not a styled <div>: it is what names the group for a screen reader too
 .block-fieldset {

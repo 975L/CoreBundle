@@ -1582,6 +1582,10 @@
                 <source>label.favorite_remove</source>
                 <target>Remove from my list</target>
             </trans-unit>
+            <trans-unit id="..xgNlQ">
+                <source>label.favorite_throttled</source>
+                <target>Too many changes in a row, try again in a few minutes</target>
+            </trans-unit>
             <trans-unit id="EquT.Mz">
                 <source>label.favorites</source>
                 <target>My list</target>
@@ -2705,6 +2709,10 @@
             <trans-unit id="t_cME5S">
                 <source>label.rating_none</source>
                 <target>No rating yet</target>
+            </trans-unit>
+            <trans-unit id="WtXdOA.">
+                <source>label.rating_throttled</source>
+                <target>Too many votes in a row, try again in a few minutes</target>
             </trans-unit>
             <trans-unit id="ngc6xNR">
                 <source>label.rating_votes_many</source>

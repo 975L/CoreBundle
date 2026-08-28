@@ -1037,8 +1037,16 @@ label[for=contact_form_username],
  */
 .favorite {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   line-height: 1;
+}
+
+.favorite-status {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.8em;
+  text-align: end;
 }
 
 .favorite-button {

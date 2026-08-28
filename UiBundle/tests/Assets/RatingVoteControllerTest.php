@@ -92,11 +92,20 @@ class RatingVoteControllerTest extends TestCase
             $this->assertStringContainsString('data-ui-rating-target="' . $target . '"', $component);
         }
 
-        foreach (['url', 'key', 'scale', 'count', 'average', 'noneLabel', 'oneLabel', 'manyLabel', 'errorLabel'] as $value) {
+        foreach (['url', 'key', 'scale', 'count', 'average', 'noneLabel', 'oneLabel', 'manyLabel', 'errorLabel', 'throttledLabel'] as $value) {
             $this->assertMatchesRegularExpression('/^\s+' . $value . ':/m', $controller, sprintf('The controller declares no "%s" value', $value));
             $attribute = strtolower((string) preg_replace('/([A-Z])/', '-$1', $value));
             $this->assertStringContainsString('data-ui-rating-' . $attribute . '-value="', $component);
         }
+    }
+
+    // A vote turned down for coming too fast says so, rather than joining every other failure under one label a visitor can do nothing with
+    public function testAThrottledVoteIsToldApartFromEveryOtherFailure(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('throw new Error(String(response.status));', $controller);
+        $this->assertStringContainsString('"429" === error.message ? this.throttledLabelValue : this.errorLabelValue', $controller);
     }
 
     // Storage a browser refuses (private mode, or a setting) must degrade to voting as a fresh visitor, never to a widget that throws

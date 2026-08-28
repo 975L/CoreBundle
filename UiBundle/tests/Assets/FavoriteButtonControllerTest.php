@@ -83,6 +83,66 @@ class FavoriteButtonControllerTest extends TestCase
         $this->assertStringNotContainsString('favorite-button--on', $component);
     }
 
+    // A change turned down for coming too fast says so, rather than joining every other failure under one label a visitor can do nothing with - same reading as the rating widget's
+    public function testAThrottledChangeIsToldApartFromEveryOtherFailure(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('throw new Error(String(response.status));', $controller);
+        $this->assertStringContainsString('"429" === error.message ? this.throttledLabelValue : this.errorLabelValue', $controller);
+        $this->assertMatchesRegularExpression('/^\s+throttledLabel:/m', $controller);
+        $this->assertStringContainsString('data-ui-favorite-throttled-label-value="', $this->read(self::COMPONENT));
+    }
+
+    // The button is a shape cut out of a color: it carries no visible text and is in no live region, so a message written into its "aria-label" is neither seen nor announced - and it would hold the button's own name until the next successful toggle. It goes into a line of its own, the way the rating widget writes into its tally
+    public function testARefusedChangeIsSaidInALiveRegionAndNotInTheButtonsName(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+        $component = $this->read(self::COMPONENT);
+
+        $this->assertStringContainsString('this.statusTarget.textContent = "429" === error.message', $controller);
+        $this->assertStringContainsString('static targets = ["button", "status"];', $controller);
+        $this->assertStringContainsString('data-ui-favorite-target="status"', $component);
+        $this->assertStringContainsString('role="status"', $component);
+        $this->assertStringContainsString('aria-live="polite"', $component);
+
+        // The catch alone: paint() below it legitimately writes the button's name, and reading to the end of the file would find that one
+        $start = strpos($controller, '} catch (error) {');
+        $catch = substr($controller, $start, strpos($controller, '} finally {') - $start);
+        $this->assertStringNotContainsString('setAttribute("aria-label"', $catch);
+    }
+
+    // A second refusal has to be read out again, which a live region only does on a change: the line is emptied by the click that follows, and by no earlier one - an ignored double click must not wipe a message still worth reading
+    public function testTheLineIsEmptiedByTheClickThatIsTakenAndNotByOneThatIsIgnored(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $guard = strpos($controller, 'if (this.sending) {');
+        $clear = strpos($controller, 'this.statusTarget.textContent = "";');
+
+        $this->assertIsInt($clear);
+        $this->assertGreaterThan($guard, $clear);
+    }
+
+    // One bucket per address covers the toggle and the listing alike (see FavoriteController), so a visitor who has just put a run of things aside opens this page onto a 429: saying the list is broken would be false, it is intact and only has to be waited for
+    public function testTheListingSaysTheSameThingRatherThanAnnouncingABreakdown(): void
+    {
+        $page = $this->read(self::PAGE_JS);
+
+        $this->assertStringContainsString('} catch (error) {', $page);
+        $this->assertStringContainsString('"429" === error.message ? this.throttledLabelValue : this.errorLabelValue', $page);
+        $this->assertMatchesRegularExpression('/^\s+throttledLabel:/m', $page);
+        $this->assertStringContainsString('data-ui-favorites-throttled-label-value="', $this->read(self::PAGE));
+    }
+
+    // The same key in the three locales, and the French one no longer speaking of additions alone: the route serves removals, and the listing above
+    public function testTheThrottledLabelSaysChangesInEveryLocale(): void
+    {
+        $this->assertStringContainsString('Trop de changements', $this->read('translations/ui.fr.xlf'));
+        $this->assertStringContainsString('Too many changes', $this->read('translations/ui.en.xlf'));
+        $this->assertStringContainsString('Demasiados cambios', $this->read('translations/ui.es.xlf'));
+    }
+
     // Its own store, not the rating one: a visitor clearing one of the two features must not lose the other
     public function testTheStoreIsTheFavoritesOwn(): void
     {

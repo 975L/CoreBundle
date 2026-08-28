@@ -11,8 +11,17 @@ $favorite-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/sv
 
 .favorite {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
     line-height: 1;
+}
+
+// The line a refused change is read on, sitting under the heart rather than beside it: the row above wraps, so this takes the whole width and a sentence never pushes a card footer sideways. Empty it has no height at all, which is what it is for the whole of the time nothing went wrong
+.favorite-status {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: 0.8em;
+    text-align: end;
 }
 
 // Sized in em, like the rating row: the heart follows the type size of wherever it is dropped, a card footer or a product sheet alike

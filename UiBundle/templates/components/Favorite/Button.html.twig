@@ -7,7 +7,8 @@
      data-ui-favorite-key-value="{{ ownerType }}:{{ ownerId }}"
      data-ui-favorite-add-label-value="{{ 'label.favorite_add'|trans({}, 'ui') }}"
      data-ui-favorite-remove-label-value="{{ 'label.favorite_remove'|trans({}, 'ui') }}"
-     data-ui-favorite-error-label-value="{{ 'label.favorite_error'|trans({}, 'ui') }}">
+     data-ui-favorite-error-label-value="{{ 'label.favorite_error'|trans({}, 'ui') }}"
+     data-ui-favorite-throttled-label-value="{{ 'label.favorite_throttled'|trans({}, 'ui') }}">
     {# A button and not a checkbox: the change is sent by fetch, there is no form to submit, and the state is the server's answer rather than the box's own #}
     <button type="button"
             class="favorite-button"
@@ -15,4 +16,6 @@
             data-action="ui-favorite#toggle"
             aria-pressed="false"
             aria-label="{{ 'label.favorite_add'|trans({}, 'ui') }}"></button>
+    {# What a refused change is said in, the button itself being a shape cut out of a color: it carries no visible text and is in no live region, so its "aria-label" is neither read by anyone nor announced to anyone. Same element as the rating widget's tally (components/Rating/Rating.html.twig), and empty until assets/js/favorite.js writes into it #}
+    <p class="favorite-status" data-ui-favorite-target="status" role="status" aria-live="polite"></p>
 </div>

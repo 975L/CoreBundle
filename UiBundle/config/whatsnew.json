@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-08-28",
+        "description": [
+            {
+                "en": "A visitor who rates or puts aside several things in a row is now told to come back in a few minutes, instead of being told the vote or the change could not be recorded. The site turns them down for going too fast, nothing is broken, and saying so stops them clicking the same heart or the same star over and over.",
+                "fr": "Un visiteur qui note ou met de côté plusieurs choses d'affilée s'entend désormais dire de revenir dans quelques minutes, au lieu de s'entendre dire que le vote ou le changement n'a pas pu être enregistré. Le site le refuse parce qu'il va trop vite, rien n'est cassé, et le lui dire lui évite de recliquer sans fin sur le même cœur ou la même étoile.",
+                "es": "A un visitante que valora o guarda varias cosas seguidas se le dice ahora que vuelva dentro de unos minutos, en lugar de decirle que el voto o el cambio no se ha podido registrar. El sitio lo rechaza porque va demasiado rápido, nada está roto, y decírselo le evita volver a pulsar una y otra vez el mismo corazón o la misma estrella."
+            },
+            {
+                "en": "A back-office form holding blocks no longer runs off the side of the screen. Editing a menu or a page stays inside the window, with nothing left to scroll sideways to reach.",
+                "fr": "Un formulaire du back-office contenant des blocs ne déborde plus sur le côté de l'écran. Modifier un menu ou une page tient désormais dans la fenêtre, sans plus rien à aller chercher en glissant vers la droite.",
+                "es": "Un formulario del back-office que contiene bloques ya no se sale por el lado de la pantalla. Editar un menú o una página cabe ahora en la ventana, sin nada que haya que ir a buscar deslizando hacia la derecha."
+            },
+            {
+                "en": "On a phone, the fields of a block now sit under their labels rather than beside them, which gives each one the full width to be read and filled in. A long choice in a drop-down list is also cut cleanly with three dots instead of stopping mid-word.",
+                "fr": "Sur un téléphone, les champs d'un bloc se placent désormais sous leur intitulé plutôt qu'à côté, ce qui laisse à chacun toute la largeur pour être lu et rempli. Un choix un peu long dans une liste déroulante est aussi coupé proprement par trois points, au lieu de s'arrêter au milieu d'un mot.",
+                "es": "En un teléfono, los campos de un bloque se colocan ahora debajo de su etiqueta en lugar de al lado, lo que deja a cada uno todo el ancho para leerlo y rellenarlo. Una opción algo larga de una lista desplegable también se corta limpiamente con tres puntos, en vez de detenerse a mitad de palabra."
+            }
+        ]
+    },
+    {
         "date": "2026-08-25",
         "description": [
             {

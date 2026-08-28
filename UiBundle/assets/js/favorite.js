@@ -10,7 +10,7 @@ import { read, write, newToken } from "./favorite-store.js";
 
 // The heart on a product, a book, a photo. The page carrying it is cached and shared between visitors, so nothing about this visitor's own list is printed in its html: it is read from their own browser here, and corrected by the answer to their next click
 export default class extends Controller {
-    static targets = ["button"];
+    static targets = ["button", "status"];
 
     static values = {
         url: String,
@@ -18,6 +18,7 @@ export default class extends Controller {
         addLabel: String,
         removeLabel: String,
         errorLabel: String,
+        throttledLabel: String,
     };
 
     // Reads only - nothing is written to the browser's storage until the visitor actually puts something aside
@@ -31,6 +32,9 @@ export default class extends Controller {
         if (this.sending) {
             return;
         }
+
+        // Cleared once the click is taken, not before: an ignored double click must not wipe a message still worth reading, and a second refusal has to be announced as a change to be read out again
+        this.statusTarget.textContent = "";
 
         const store = read();
         // The token is minted here, on the click, and not before
@@ -52,8 +56,9 @@ export default class extends Controller {
                 throw new Error(String(response.status));
             }
             answer = await response.json();
-        } catch {
-            this.buttonTarget.setAttribute("aria-label", this.errorLabelValue);
+        } catch (error) {
+            // Same reading as the rating widget's, and written to the same kind of element: the button carries no visible text and is in no live region, so an "aria-label" changed on it is neither seen nor announced - and it would take the button's own name until the next successful toggle. The route is rate limited per address (see FavoriteController), and a visitor putting a whole catalog aside reaches that ceiling in the ordinary course of browsing. The status is the message thrown just above, and a network failure throws something else entirely - hence the strict compare
+            this.statusTarget.textContent = "429" === error.message ? this.throttledLabelValue : this.errorLabelValue;
 
             return;
         } finally {

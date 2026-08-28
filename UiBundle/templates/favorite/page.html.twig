@@ -10,7 +10,8 @@
 {% block content %}
     <div data-controller="ui-favorites"
          data-ui-favorites-url-value="{{ path('ui_favorite_list') }}"
-         data-ui-favorites-error-label-value="{{ 'label.favorite_error'|trans }}">
+         data-ui-favorites-error-label-value="{{ 'label.favorite_error'|trans }}"
+         data-ui-favorites-throttled-label-value="{{ 'label.favorite_throttled'|trans }}">
         <p class="text text-center lead" data-ui-favorites-target="loading">{{ 'label.favorites_loading'|trans }}</p>
         <p class="text text-center lead" data-ui-favorites-target="empty" hidden>{{ 'label.favorites_empty'|trans }}</p>
         <div data-ui-favorites-target="list"></div>

@@ -204,6 +204,21 @@
   max-inline-size: 100%;
 }
 
+.form-fieldset-body > .row,
+.form-fieldset-body > .row > * {
+  min-inline-size: 0;
+}
+
+@media (max-width: 767px) {
+  .form-group.field-collection .accordion-item .form-group {
+    display: block;
+  }
+  .form-group.field-collection .accordion-item .form-group legend.col-form-label,
+  .form-group.field-collection .accordion-item .form-group > label {
+    inline-size: auto;
+    margin: 0 0 0.25rem;
+  }
+}
 /* STYLES THAT USED TO BE WRITTEN FROM JS (block-toolbar.js, ea-sortable.js, media-preview.js) */
 .ui-row-header-flex {
   display: flex;
@@ -310,6 +325,12 @@
 
 .ts-wrapper.plugin-clear_button.has-items .clear-button {
   opacity: 1;
+}
+
+.ts-wrapper.single .ts-control > .item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .block-fieldset {

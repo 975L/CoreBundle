@@ -1,5 +1,26 @@
 # ChangeLog
 
+## v1.17.6
+
+A throttled vote says so, and a form stops scrolling sideways
+
+- The README banner is redrawn wide, its wordmark carried as paths (28/08/2026)
+
+### UiBundle
+
+- The rating widget tells a vote refused by the rate limiter apart from any other failure (28/08/2026)
+- The favorite button says the same, in a `role="status"` line of its own under the heart (28/08/2026)
+- The favorites page tells a listing refused by the rate limiter apart from a failure (28/08/2026)
+- Added `label.rating_throttled` and `label.favorite_throttled` to the three locales (28/08/2026)
+- Added `.favorite-status`, the line the favorite button reads its message on (28/08/2026)
+- A back-office form no longer scrolls sideways, its `.row` allowed to shrink below what its nested collections hold (28/08/2026)
+- At a phone's width, a collection entry's fields now stack under their labels instead of facing them across a 20% column (28/08/2026)
+- The chosen option of a searchable select is now cut with an ellipsis (28/08/2026)
+- The README states the message each widget shows on a refusal, and the element the favorite button needs (28/08/2026)
+- The `c975l-blocks` skill states the throttled message and the `status` target the favorite button needs (28/08/2026)
+- UPGRADE.md says what that target costs a site overriding the button's template (28/08/2026)
+- Extended `FavoriteButtonControllerTest` and `RatingVoteControllerTest` (28/08/2026)
+
 ## v1.17.5
 
 The mirror sizes its own guard, and a failed one is seen

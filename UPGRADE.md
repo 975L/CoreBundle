@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+**The favorite button carries a status line.** `components/Favorite/Button.html.twig` now ends on a
+`<p class="favorite-status" data-ui-favorite-target="status" role="status">`, the line a change the rate limiter
+turned down is read on - the heart carries no visible text and is in no live region, so the message its
+`aria-label` used to hold reached nobody. Nothing to do in an application rendering the component as it ships.
+**A site overriding that template** (`templates/bundles/c975LUiBundle/components/Favorite/Button.html.twig`)
+**has to add the element**: the controller empties it on every click, and Stimulus throws on a target it cannot
+find - the heart then does nothing at all.
+
 **`ContentQualityAnalyzer` takes one more argument.** Its last constructor argument is now an
 `ExternalLinkCheckSchedule`, which decides whether a run calls the external links of the pages it analyzes or
 reports back what the last monthly pass found (see ConfigBundle's README). Nothing to do in an application - the

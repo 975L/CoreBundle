@@ -15,6 +15,7 @@ export default class extends Controller {
     static values = {
         url: String,
         errorLabel: String,
+        throttledLabel: String,
     };
 
     async connect() {
@@ -30,8 +31,9 @@ export default class extends Controller {
                 throw new Error(String(response.status));
             }
             answer = await response.json();
-        } catch {
-            this.loadingTarget.textContent = this.errorLabelValue;
+        } catch (error) {
+            // One bucket per address covers the toggle and this list alike (see FavoriteController), so a visitor who has just put a run of things aside lands here on a 429: telling them the list is broken would be false, it is intact and only has to be waited for
+            this.loadingTarget.textContent = "429" === error.message ? this.throttledLabelValue : this.errorLabelValue;
 
             return;
         }

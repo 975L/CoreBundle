@@ -24,6 +24,7 @@ export default class extends Controller {
         oneLabel: String,
         manyLabel: String,
         errorLabel: String,
+        throttledLabel: String,
     };
 
     // Reads only - nothing is written to the browser's storage until the visitor actually clicks, which is what keeps this out of consent territory: no identifier is created for someone who merely reads the page
@@ -63,8 +64,9 @@ export default class extends Controller {
                 throw new Error(String(response.status));
             }
             answer = await response.json();
-        } catch {
-            this.tallyTarget.textContent = this.errorLabelValue;
+        } catch (error) {
+            // Says which of the two happened: the vote route is rate limited per address (see RatingController), and a visitor rating a whole catalog reaches that ceiling in the ordinary course of browsing. Told only that it "could not be recorded", they click the same icon again and again for nothing, where "come back in a few minutes" is the one thing that answers it. The status is the message thrown just above, and a network failure throws something else entirely - hence the strict compare rather than a truthy test
+            this.tallyTarget.textContent = "429" === error.message ? this.throttledLabelValue : this.errorLabelValue;
 
             return;
         } finally {

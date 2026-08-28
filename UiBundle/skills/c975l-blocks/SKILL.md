@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status."
 ---
 
 # c975L UiBundle — blocks
@@ -201,6 +201,10 @@ On a listing, two more props turn the widget into what a catalog card has room f
   `no-store`: a token would open a session whose `Set-Cookie` the shared cache would hand to the next
   visitor. A json body, an `Origin`/`Referer` of this site and the `ui_rating` limiter stand in its
   place.
+- **A vote the limiter turns down is told apart from every other failure** — the widget writes
+  `label.rating_throttled` into its tally, not `label.rating_error`: a visitor rating a whole catalog
+  reaches that ceiling in the ordinary course of browsing, and "come back in a few minutes" is the one
+  thing that answers it. Either key is overridden in the app's own `translations/`.
 - **`RatingSnippetBuilder` publishes the tally to a search engine** — `build($ownerType, $ownerId)`, or
   `buildFromAggregate($aggregate)` off a tally the listing already read. It returns a *fragment*, never
   a graph: schema.org reads an `AggregateRating` as a property of the thing rated, so the bundle owning
@@ -305,6 +309,15 @@ The same terms as the ratings above, for a thing a visitor puts *aside*: `Entity
   (`GET /favorites`, the cacheable shell), `ui_favorite_toggle` and `ui_favorite_list` (both POST,
   `no-store`). A json body, an `Origin`/`Referer` of this site and the `ui_favorite` limiter stand in
   its place. `ui_favorite_list` is a POST because of the token, which must not reach a url.
+- **A refused change is read on a line of its own** — a `role="status"` paragraph under the heart
+  (`.favorite-status`, `data-ui-favorite-target="status"`), carrying `label.favorite_throttled` when the
+  limiter turned the change down and `label.favorite_error` otherwise. The button is a shape cut out of a
+  color: it carries no visible text and is in no live region, so a message written into its `aria-label`
+  is neither seen nor announced. One bucket per address covers `ui_favorite_toggle` and `ui_favorite_list`
+  alike, so `/favorites` opens on that same message rather than announcing a breakdown.
+- **A template overriding `templates/components/Favorite/Button.html.twig` has to keep that element** —
+  the controller empties it on every click, and Stimulus throws on a target it cannot find. A copy taken
+  before this release leaves the heart dead on the first click.
 - **The button dispatches `ui-favorite:changed`** with `{count}`, bubbling — what a navbar counter
   listens to.
 - **Nothing cascades here either**: `FavoriteRepository::deleteForOwner()` / `deleteForOwners()`, on the

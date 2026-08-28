@@ -16,7 +16,8 @@
      data-ui-rating-none-label-value="{{ 'label.rating_none'|trans({}, 'ui') }}"
      data-ui-rating-one-label-value="{{ 'label.rating_votes_one'|trans({}, 'ui') }}"
      data-ui-rating-many-label-value="{{ 'label.rating_votes_many'|trans({}, 'ui') }}"
-     data-ui-rating-error-label-value="{{ 'label.rating_error'|trans({}, 'ui') }}">
+     data-ui-rating-error-label-value="{{ 'label.rating_error'|trans({}, 'ui') }}"
+     data-ui-rating-throttled-label-value="{{ 'label.rating_throttled'|trans({}, 'ui') }}">
     {# Each icon is a button and not a label on a radio: the vote is sent by fetch, there is no form to submit, and a radio already checked could not be clicked again to take the vote back #}
     <p class="rating rating--{{ rating.icon }}" data-ui-rating-target="row">
         {% for i in 1..rating.scale %}

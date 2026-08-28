@@ -32,6 +32,25 @@
     max-inline-size: 100%;
 }
 
+// The same refusal to shrink, one level up and by a grid this time: EasyAdmin animates a fieldset's collapse by making .form-fieldset-body a grid whose rows it interpolates, which turns the .row holding the whole form into a grid item - and a grid item defaults to "min-width: auto" exactly as a flex item does. Its minimum is then the widest thing the deepest nested collection holds, and the form is laid out that wide whatever the screen: measured on a saved menu edit screen, 1022px inside a 365px column on a phone, and inside a 965px one on a desktop. That is what makes the page scroll sideways, so this is not a phone-only fault
+.form-fieldset-body > .row,
+.form-fieldset-body > .row > * {
+    min-inline-size: 0;
+}
+
+// At the finger, a collection entry's fields stop facing their labels: EasyAdmin lays each pair out as a flex row with a 20% label and names no width below which it gives way, and a fifth of a phone screen leaves a select too narrow to read the option it holds (248px of usable widget out of 412px, against the full 323px stacked). The breakpoint is Bootstrap's md, the one EasyAdmin itself stops facing labels at everywhere else
+@media (max-width: 767px) {
+    .form-group.field-collection .accordion-item .form-group {
+        display: block;
+    }
+
+    .form-group.field-collection .accordion-item .form-group legend.col-form-label,
+    .form-group.field-collection .accordion-item .form-group > label {
+        inline-size: auto;
+        margin: 0 0 .25rem;
+    }
+}
+
 /* STYLES THAT USED TO BE WRITTEN FROM JS (block-toolbar.js, ea-sortable.js, media-preview.js) */
 
 // EasyAdmin's layout calls csp_nonce('style'), which makes 'unsafe-inline' a no-op on style-src: no nonce ever covers a style written from JS, and a class is the only form that survives
