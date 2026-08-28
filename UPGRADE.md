@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+**A new table, `site_form_output`.** It holds a `Form`'s computed results, which turn it into a calculator (see
+UiBundle's README). `site_form_field` also gains `min_value`, `max_value`, `step_value`, `default_value` and
+`options`, all nullable, for the new `range` and `choice` field types. **Generate and run the migration**; nothing
+else to do, and a site building no calculator simply leaves the table empty.
+
 **The favorite button carries a status line.** `components/Favorite/Button.html.twig` now ends on a
 `<p class="favorite-status" data-ui-favorite-target="status" role="status">`, the line a change the rate limiter
 turned down is read on - the heart carries no visible text and is in no live region, so the message its

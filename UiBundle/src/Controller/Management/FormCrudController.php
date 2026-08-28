@@ -13,10 +13,13 @@ namespace c975L\UiBundle\Controller\Management;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Form\FormFieldType;
 use c975L\UiBundle\Form\FormLinkType;
+use c975L\UiBundle\Form\FormOutputType;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
 use c975L\UiBundle\Registry\FormActionRegistry;
+use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormFieldNamer;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -37,6 +40,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function Symfony\Component\Translation\t;
@@ -48,6 +52,7 @@ class FormCrudController extends AbstractCrudController
         private readonly ConfigServiceInterface $configService,
         private readonly FormFieldNamer $formFieldNamer,
         private readonly FormActionRegistry $actionRegistry,
+        private readonly ExpressionEvaluator $expressionEvaluator,
         private readonly AdminContextProvider $adminContextProvider,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly TranslatorInterface $translator,
@@ -79,11 +84,34 @@ class FormCrudController extends AbstractCrudController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
+    // Nothing to reconcile on a brand new Form, but its names still have to be derived before validation runs - see addNamingListener()
+    #[\Override]
+    public function createNewFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    {
+        $formBuilder = parent::createNewFormBuilder($entityDto, $formOptions, $context);
+        $this->addNamingListener($formBuilder);
+
+        return $formBuilder;
+    }
+
+    // Names every field and output while the submitted data is being bound, at a priority that runs before Symfony's own validation listener (POST_SUBMIT, priority 0). Doing it in persistEntity/updateEntity, as this screen used to, is too late for ValidExpressionsValidator: it would check the formulas against the names the rows carried BEFORE the save, and so miss exactly the rename that breaks them
+    private function addNamingListener(FormBuilderInterface $formBuilder): void
+    {
+        $formBuilder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
+            $form = $event->getData();
+            if ($form instanceof Form) {
+                $this->formFieldNamer->nameFields($form);
+            }
+        }, 10);
+    }
+
     // Removing the very last field also leaves nothing submitted at all for "fields" (an HTML form can't represent an empty array, only an absent key), which has to be normalized to [] below or Symfony skips add/remove handling entirely for the whole field - same reconciliation as ContactFormCrudController/PageCrudController used for their own collections
     #[\Override]
     public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
     {
         $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
+
+        $this->addNamingListener($formBuilder);
 
         $formBuilder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
             $data = $event->getData();
@@ -105,8 +133,19 @@ class FormCrudController extends AbstractCrudController
                 );
             }
 
+            if ($form instanceof Form) {
+                // An output carries no "restricted" notion: every row an admin added, they can remove
+                CollectionReconciler::pruneRemoved(
+                    $form->getOutputs(),
+                    $data['outputs'] ?? [],
+                    static function (FormOutput $output) use ($form): void {
+                        $form->removeOutput($output);
+                    }
+                );
+            }
+
             // Same for "links", whose last row being removed would otherwise leave Form::setLinks() never called and the old links in place
-            foreach (['fields', 'links'] as $collection) {
+            foreach (['fields', 'outputs', 'links'] as $collection) {
                 if (!isset($data[$collection])) {
                     $data[$collection] = [];
                     $event->setData($data);
@@ -164,6 +203,16 @@ class FormCrudController extends AbstractCrudController
                     'data-form-field-template-picker-placeholder' => $this->translator->trans('label.form_field_template_picker_placeholder', [], 'ui'),
                 ])
                 ->hideOnIndex(),
+            // A Form owning at least one of these is a calculator (see Form::isCalculator()): it computes and displays instead of submitting, so it needs no action above. Declared after "fields", whose variables its expressions read
+            CollectionField::new('outputs')
+                ->setLabel(t('label.outputs', [], 'ui'))
+                ->setEntryType(FormOutputType::class)
+                ->allowAdd()
+                ->allowDelete()
+                ->setFormTypeOption('by_reference', false)
+                // The variable names as they stand right now, spelled out rather than left to be guessed: they are slugs derived from the labels (see FormFieldNamer), so "Prix de l'E85" is neither "prixE85" nor "prix_de_l_e85" but something only the slugger knows. A field added and not yet saved isn't in there, which the help says
+                ->setHelp($this->outputsHelp($entity instanceof Form ? $entity : null))
+                ->hideOnIndex(),
             // Not a Doctrine association but a virtual property backed by Form::$actionConfig (see Form::getLinks()) - declared after "actionConfigJson" so a save writes the raw JSON first and these links on top of it, never the other way round
             CollectionField::new('links')
                 ->setLabel(t('label.form_links', [], 'ui'))
@@ -174,6 +223,16 @@ class FormCrudController extends AbstractCrudController
                 ->setHelp(t('label.form_links_help', [], 'ui'))
                 ->hideOnIndex(),
         ];
+    }
+
+    private function outputsHelp(?Form $form): TranslatableInterface
+    {
+        $variableNames = null === $form ? [] : $this->expressionEvaluator->variableNames($form);
+        if ([] === $variableNames) {
+            return t('label.outputs_help', [], 'ui');
+        }
+
+        return t('label.outputs_help_variables', ['%variables%' => implode(', ', $variableNames)], 'ui');
     }
 
     #[\Override]

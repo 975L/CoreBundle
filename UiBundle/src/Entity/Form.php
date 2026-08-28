@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\FormRepository;
+use c975L\UiBundle\Validator\ValidExpressions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -21,6 +22,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: FormRepository::class)]
 #[ORM\Table(name: 'site_form')]
 #[UniqueEntity('name')]
+#[ValidExpressions]
 class Form implements \Stringable
 {
     #[ORM\Id]
@@ -51,9 +53,15 @@ class Form implements \Stringable
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $fields;
 
+    // Owning at least one turns this Form into a calculator (see isCalculator()) - the order matters, an expression only ever seeing the outputs declared before it
+    #[ORM\OneToMany(mappedBy: 'form', targetEntity: FormOutput::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $outputs;
+
     public function __construct()
     {
         $this->fields = new ArrayCollection();
+        $this->outputs = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -211,5 +219,48 @@ class Form implements \Stringable
         }
 
         return $this;
+    }
+
+    /** @return Collection<int, FormOutput> */
+    public function getOutputs(): Collection
+    {
+        return $this->outputs;
+    }
+
+    public function addOutput(FormOutput $output): self
+    {
+        if (!$this->outputs->contains($output)) {
+            $this->outputs->add($output);
+            $output->setForm($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOutput(FormOutput $output): self
+    {
+        if ($this->outputs->removeElement($output)) {
+            if ($output->getForm() === $this) {
+                $output->setForm(null);
+            }
+        }
+
+        return $this;
+    }
+
+    // A calculator computes and displays, it never submits: no action to run, no rate limiter, no honeypot, no flash - see FormController, which renders it through the very same field types all the same, so it wears the site's form theme like any other
+    public function isCalculator(): bool
+    {
+        return !$this->outputs->isEmpty();
+    }
+
+    // Only the outputs a visitor actually sees, an invisible one being an intermediate other expressions read
+    /** @return list<FormOutput> */
+    public function getVisibleOutputs(): array
+    {
+        return array_values(array_filter(
+            $this->outputs->toArray(),
+            static fn (FormOutput $output): bool => $output->isVisible()
+        ));
     }
 }

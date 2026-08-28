@@ -33,6 +33,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - **Visitors** — [ratings](#visitor-ratings) · [reviews](#visitor-reviews) · [wishlist](#wishlist)
 - **Admin** — [EasyAdmin integration](#easyadmin-integration) · [drag-and-drop sortable for other collections](#drag-and-drop-sortable-for-other-collections) · [confirming a title change that rewrites a slug](#confirming-a-title-change-that-rewrites-a-slug)
 - **For satellite bundles** — [shared building blocks](#shared-building-blocks-for-satellite-bundles) · [deleting an entity in two steps](#deleting-an-entity-in-two-steps) · [exporting and importing blocks](#exporting-and-importing-blocks) · [forcing a download](#forcing-a-download)
+- **Demo sites** — [seeding a demo site](#seeding-a-demo-site)
 - **Quality** — [checking a page's layout](#checking-a-pages-layout)
 - **For coding agents** — [AI agent skills](#ai-agent-skills)
 
@@ -62,6 +63,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Visitor ratings for anything at all - a book, a photo, an article - one widget, one table, no mapping on the rated entity, and a scale of 1 turning the whole thing into a "like"
 - Visitor reviews on those same terms - a written opinion held back until it is read, a score feeding the very average the stars feed, a "verified" badge a bundle has to vouch for, and the reviews a platform exports sitting beside them
 - A wishlist for anything at all, on the same terms: one heart, one table, no mapping on the entity put aside, and a list started anonymously that follows the visitor to their account the moment they sign in
+- Calculators built entirely in the back-office: a form whose named results are arithmetic formulas an admin types, computed server-side and kept in step as the sliders move, placed anywhere with the `form` block
 - Generic Twig helpers (`nl2br`, `linkify`, `route_exists`, `template_exists`, `asset_exists`)
 - Layout invariants checked without a browser (`Testing\StylesheetCascade`, shipped for the bundles depending on this one), plus `c975l:ui:layout-audit` for what only a rendered page shows
 
@@ -1079,11 +1081,44 @@ UiBundle ships one of its own, `Service\GalleryShowcaseProvider`, covering the b
 
 ---
 
+## Seeding a demo site
+
+The showcase above never touches the database: its fixtures are rendered and thrown away. A **demo site** is the other half - a real site, browsable and clickable, whose catalog, galleries and pages are made up. `Contract\DemoFixtureProviderInterface` is what a bundle implements to hand such a site the data it stands behind (auto-discovered the same way as `BlockFixtureProviderInterface`, no tag needed - see `Registry\DemoFixtureRegistry`/`DependencyInjection\Compiler\DemoFixtureProviderPass`):
+
+```php
+use c975L\UiBundle\Contract\DemoFixtureProviderInterface;
+
+class BookingDemoFixtureProvider implements DemoFixtureProviderInterface
+{
+    public function getDemoFixtures(): iterable
+    {
+        $room = new Room();
+        $room->setName('Salle des Alpes');
+        yield $room;
+
+        yield new Booking()->setRoom($room)->setStartsAt(new \DateTimeImmutable('+2 days'));
+    }
+}
+```
+
+A bundle declares only what it owns, so a demo instance is seeded by the bundles it installs and by nothing else - which is what lets a demo be run one bundle at a time. A bundle offering both a showcase and a dataset is expected to build its entities once and hand them to the two.
+
+**This package ships no command to load that dataset, and no table to track it.** Loading it means emptying and rewriting rows in a real database, which is a demo site's business alone - so it lives in the demo application, next to the placeholder media only that site holds. Every other site installing this bundle gets the contract, the registry and nothing that writes.
+
+A demo application reads `Registry\DemoFixtureRegistry` and does the rest its own way. The one thing worth copying from ours: **never empty a table.** A demo site keeps its own content - its pages, its menus, the showcase itself - in the very tables the dataset lands in, so record each row as it is persisted and take back only those.
+
+Two things worth knowing before writing a provider:
+
+- **Hand VichUploader a temporary copy of a media file, never the bundle's own placeholder.** The upload *moves* the file it is given, and the placeholder would be gone after the first load.
+- **Yield only what a demo is meant to be able to take back.** Whatever rides an ORM cascade off an entity leaves with it, its removal listener taking the uploaded files off the disk.
+
+---
+
 ## Forms
 
-A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, tables `site_form`/`site_form_field`) - any bundle can manage its own named row (e.g. ContactFormBundle's `"contact"`) in one place instead of keeping a private fields table, and an editor can also build a form entirely through the admin, with no bundle/code involved at all.
+A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, tables `site_form`/`site_form_field`, plus `Entity\FormOutput`/`site_form_output` for a form that computes rather than submits - see [Calculators](#calculators-a-form-that-computes-instead-of-submitting)) - any bundle can manage its own named row (e.g. ContactFormBundle's `"contact"`) in one place instead of keeping a private fields table, and an editor can also build a form entirely through the admin, with no bundle/code involved at all.
 
-- **`Controller\Management\FormCrudController`** (menu entry under SiteBundle's "Forms", if installed) lists/creates/edits every `Form`. Each row's `fields` collection is a drag-and-drop `CollectionField` of `FormFieldType` entries (`text`/`textarea`/`email`/`checkbox`/`password`/`password_repeated`/`url`/`tel`/`number`/`date`), reordered the same way `slider`/`article` media already are (see `assets/js/ea-sortable.js`). A field's programmatic `name` (the HTML input name, the notification email key) is derived automatically from its `label` by `Service\FormFieldNamer` on save, scoped unique within the owning `Form` - skipped for an already-named `restricted` field, so relabelling it doesn't change the stable key other code looks it up by.
+- **`Controller\Management\FormCrudController`** (menu entry under SiteBundle's "Forms", if installed) lists/creates/edits every `Form`. Each row's `fields` collection is a drag-and-drop `CollectionField` of `FormFieldType` entries (`text`/`textarea`/`email`/`checkbox`/`password`/`password_repeated`/`url`/`tel`/`number`/`date`/`range`/`choice`), reordered the same way `slider`/`article` media already are (see `assets/js/ea-sortable.js`). A field's programmatic `name` (the HTML input name, the notification email key) is derived automatically from its `label` by `Service\FormFieldNamer` on save, scoped unique within the owning `Form` - skipped for an already-named `restricted` field, so relabelling it doesn't change the stable key other code looks it up by.
 - **`FormField::$url`** (any field type, not just `url`-typed ones) attaches an optional link right after the field's label - e.g. a `checkbox` field's "I accept the [Terms of use]" - rendered by `FormSubmissionType::buildLabel()` as a real, escaped `<a target="_blank">`, the surrounding label text itself staying plain so clicking it still toggles the field.
 - **`Entity\FormFieldTemplate`** (table `site_form_field_template`, managed by **`Controller\Management\FormFieldTemplateCrudController`**, linked from `FormCrudController`'s own toolbar) is a reusable catalog of ready-made fields (name, email, phone, subject, message, company, website, cgu, newsletter...) picked from a select right next to a `Form`'s `fields` collection instead of composing every field by hand - seed the defaults with `php bin/console c975l:ui:form-field-template:import-defaults`. Same `$restricted` principle as `FormField` locks a seeded template's name/deletion, every other property stays editable.
 - **`FormField::$restricted`**/**`Form::$restricted`**: a field or a whole form seeded by its owning bundle (e.g. register's `email`/`plainPassword` fields, or ContactFormBundle's `"contact"` form itself) keeps its core identity locked (field type + deletion, or the form's own `name`) while staying reorderable/relabellable - enforced server-side, not just hidden by CSS.
@@ -1097,6 +1132,25 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 - **`Service\FormSeeder`** is how a bundle gets its own `Form`/`EmailTemplate` rows in place out of the box: `ensureForm(name, coreFieldsByLocale, action, actionConfig, linksByLocale)` and `ensureEmailTemplate(name, blocksByLocale)`, both idempotent, both seeding `restricted` rows. A `Form` seeded by an earlier version is backfilled in place rather than left stale, and a field's `url` - like the form's own `links` - is only ever written while it's still unset, so an admin's edit is never overwritten. `ensureEmailTemplate()` backfills the same way and returns how many data blocks it added (see "A declaration that grows after the sites were built"). Neither method flushes - the caller decides when, so a batch of seeds stays one transaction.
 - **`Contract\FormPageUrlProviderInterface`**/**`Registry\FormPageUrlRegistry`** and the **`form_url(name)`** Twig function answer where a named `Form` is actually reachable on the front end. A bundle displaying that form on something richer than this bundle's bare `ui_form_submit` route contributes its URL (SiteBundle answers with the `Page` carrying the matching `form` block, an admin-editable per-locale slug); the first provider with an answer wins, and with none the bare route is used - so a template linking to a form never has to know which bundles are installed.
 - **One ConfigBundle key** drives the shared protections, under the *form* group: `site-form-delay` (seconds a submission must take at minimum, the timing half of `FormBotProtection`). It lives here rather than in SiteBundle, this bundle's form layer being what reads it. The GDPR information line rendered under every form reads `url-privacy-policy` instead, declared by ConfigBundle among the other legal urls.
+
+### Calculators (a form that computes instead of submitting)
+
+A `Form` owning at least one **`Entity\FormOutput`** (table `site_form_output`) is a **calculator**: it computes and displays, it never submits. `Form::isCalculator()` is what every path branches on, and that single fact replaces a mode, an action key and a second block kind - the `form` block embeds it exactly like any other form, and the two admin screens are the ones already there.
+
+The fuel-savings simulators sold with an E85 conversion box are the shape this was built against: a handful of sliders, six or seven named results derived from one another, nothing stored, nothing e-mailed.
+
+- **`Entity\FormOutput`** carries `label`, `expression`, `format` (`number`/`currency`/`percent`), `decimals`, `unit`, `visible`, `highlighted` and `position`, edited as a drag-and-drop `CollectionField` of `Form\FormOutputType` right under the `fields` one. **Order matters**: an expression only ever sees the outputs declared *above* it, which is what stops two formulas from waiting on each other. An **invisible** output is an intermediate step - "litres consumed per year" feeding both budgets - computed like any other and simply never shown, which is why there is no separate table of constants: a business coefficient is a literal inside the formula, an editable price is a field with a default, and a reused sub-total is an invisible output.
+- **The variables an expression names** are the `FormField`s of type `number`, `range` or `choice`, plus the outputs above it. A variable is the row's `name` with its dashes turned into underscores (a dash being a subtraction to any parser) and prefixed with `f_` when the slug starts with a digit - so `Prix de l'essence` is read as `prix_de_l_essence`. Never type them from memory: `FormCrudController` lists the current ones in the `outputs` help text. Fields and outputs share **one** namespace, `Service\FormFieldNamer` naming both in the same pass.
+- **`Service\ExpressionEvaluator`** is the only place a formula becomes a number, and `Service\CalculatorExpressionLanguage` is what it evaluates with: `registerFunctions()` is overridden *without* calling the parent, which drops Symfony's built-in `constant()` and `enum()` - the only two able to reach outside the values handed over - and registers `abs`, `ceil`, `floor`, `max`, `min` and `round` instead. Variables are floats and nothing else, so no admin-typed formula has an object to call a method on. On top of the parser, a character allowlist refuses anything but digits, identifiers, `+ - * /`, parentheses, the decimal point and the argument comma, and a decimal comma (`1,15`, which a French keyboard writes and the parser reads as two arguments) is refused by name.
+- **Every formula is checked on save**, by `Validator\ValidExpressions` on the `Form` itself - and on *every* save, not only when an expression was edited: `FormFieldNamer` re-derives each name from its label, so merely relabelling a field renames the variable the formulas read. That surfaces as an error on the formula that lost its variable rather than as a calculator quietly showing dashes. `FormCrudController` names its rows in a `POST_SUBMIT` listener at priority 10, ahead of Symfony's own validation listener, so the check runs against the names the save is about to write.
+- **The rendering is right before any JavaScript runs.** `FormController::fragment()` renders `components/Form/Calculator.html.twig` with the results the fields' own `defaultValue`s already give, so a browser running no JS reads real numbers - frozen on those defaults. The `ui-calculator` Stimulus controller (`assets/js/calculator.js`) only keeps them in step: it debounces 200 ms, aborts the answer to a value already typed over, and prints what the server formatted. **No expression is ever evaluated in the browser** - one formula, one implementation. A hand-written JS evaluator would be a legitimate optimization later, which is exactly why the grammar is kept this small.
+- **`Controller\CalculatorController`** (route `ui_form_compute`, `GET /form/{name}/compute`) answers the recomputation as JSON. Deliberately apart from `FormController`: this is a read, with no CSRF token, no session and **outside** `limiter.ui_form` - a dragged slider would exhaust that limiter in seconds. It answers `Cache-Control: private, no-store`, the numbers being whoever typed them. An output that cannot be evaluated - a slider at zero making a division by zero, a half-typed formula - degrades to `—` for that output alone, never a 500, and the outputs after it still compute.
+- **None of the three protections apply**: `FormSubmissionType`'s `protections` option is `false` for a calculator, so there is no honeypot trapping a submission that never happens, no captcha scoring a visitor who only moved a slider, and no "receive a copy" box with no e-mail to copy. `fragment()` also skips `startTimer()`, which writes to the session - every visitor of a cached page would otherwise pay a session cookie for nothing.
+- **The two field types it takes**: `range` (a slider) and `choice` (a list whose **value** is what the expression sees, the label only what the visitor reads - `Véhicule léger|1.15`, one option per line in the `optionsText` textarea). Both come with `minValue`/`maxValue`/`stepValue`/`defaultValue` on `FormField`, which are HTML attributes on the input rather than constraints - a slider with no bounds goes nowhere. Those four are useful well beyond a calculator: a bounded `number`, a `select` in a contact form.
+- **Currency**: a `currency`-formatted output prints the currency the request locale names, falling back to the euro - a plain `fr` locale (no region, which is what a c975L site runs on) answers `XXX`, the code for "no currency". A calculator quoting anything else states a plain `number` with its own `unit`.
+- **Where the line is.** A `FormOutput` computes and displays, full stop. Anything needing real business logic - conditions in cascade, a third-party API, a database lookup, the vehicle-eligibility test those same sites also carry - stays a coded `Contract\FormActionInterface` in the app. The expression language does not replace that escape hatch; it saves opening it for three multiplications.
+
+Styling lives in `sass/_calculator.scss` (`.ui-calculator`, its results column and the highlighted row), on the site's own `--surface-alt`/`--border-accent`/`--primary` tokens, so a calculator wears the site's theme with nothing to retune.
 
 ### reCAPTCHA
 

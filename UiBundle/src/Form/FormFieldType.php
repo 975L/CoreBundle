@@ -17,6 +17,8 @@ use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
@@ -45,6 +47,37 @@ class FormFieldType extends AbstractType
             ->add('required', CheckboxType::class, [
                 'label' => 'label.field_required',
                 'required' => false,
+            ])
+            // The four below only ever mean something to a number/range/choice field, and are left blank on every other one rather than shown conditionally: a per-row dynamic sub-form for four optional inputs would cost more than it saves
+            ->add('minValue', NumberType::class, [
+                'label' => 'label.field_min',
+                'required' => false,
+                'html5' => true,
+                'scale' => 4,
+            ])
+            ->add('maxValue', NumberType::class, [
+                'label' => 'label.field_max',
+                'required' => false,
+                'html5' => true,
+                'scale' => 4,
+            ])
+            ->add('stepValue', NumberType::class, [
+                'label' => 'label.field_step',
+                'required' => false,
+                'html5' => true,
+                'scale' => 4,
+            ])
+            ->add('defaultValue', TextType::class, [
+                'label' => 'label.field_default',
+                'required' => false,
+                'help' => 'label.field_default_help',
+            ])
+            // One option per line, "Véhicule léger|1.15" - the value after the pipe is what a FormOutput expression sees, which is what makes a choice field usable in a calculation
+            ->add('optionsText', TextareaType::class, [
+                'label' => 'label.field_options',
+                'required' => false,
+                'help' => 'label.field_options_help',
+                'attr' => ['rows' => 3],
             ])
             ->add('position', HiddenType::class, [
                 'attr' => ['class' => 'ui-sort-position'],
@@ -90,6 +123,8 @@ class FormFieldType extends AbstractType
             'label.field_type_tel' => FormField::TYPE_TEL,
             'label.field_type_number' => FormField::TYPE_NUMBER,
             'label.field_type_date' => FormField::TYPE_DATE,
+            'label.field_type_range' => FormField::TYPE_RANGE,
+            'label.field_type_choice' => FormField::TYPE_CHOICE,
         ];
     }
 

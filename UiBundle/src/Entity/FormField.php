@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Entity;
 
 use c975L\UiBundle\Repository\FormFieldRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -30,6 +31,15 @@ class FormField implements \Stringable
     public const TYPE_TEL = 'tel';
     public const TYPE_NUMBER = 'number';
     public const TYPE_DATE = 'date';
+    public const TYPE_RANGE = 'range';
+    public const TYPE_CHOICE = 'choice';
+
+    // Types carrying a numeric value, hence usable as a variable in a FormOutput expression - see ExpressionEvaluator/CalculatorController
+    public const NUMERIC_TYPES = [
+        self::TYPE_NUMBER,
+        self::TYPE_RANGE,
+        self::TYPE_CHOICE,
+    ];
 
     public const TYPES = [
         self::TYPE_TEXT,
@@ -42,6 +52,8 @@ class FormField implements \Stringable
         self::TYPE_TEL,
         self::TYPE_NUMBER,
         self::TYPE_DATE,
+        self::TYPE_RANGE,
+        self::TYPE_CHOICE,
     ];
 
     #[ORM\Id]
@@ -79,6 +91,24 @@ class FormField implements \Stringable
     // A field seeded by its owning bundle as part of a form's core identity (e.g. register's "email"/"plainPassword") - see FormFieldType, which disables the "type" field and the delete button for such rows: reorderable/relabellable, never removable or reclassifiable
     #[ORM\Column(options: ['default' => false])]
     private bool $restricted = false;
+
+    // Bounds and increment of a number/range field, ignored by every other type - a range with no min/max would render a slider going nowhere, so FormSubmissionType falls back to 0/100 rather than emitting a broken input
+    #[ORM\Column(nullable: true)]
+    private ?float $minValue = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $maxValue = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $stepValue = null;
+
+    // Value the field starts with, so a calculator shows a meaningful result before the visitor touches anything - kept as text, a choice field's default being one of its own option values
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $defaultValue = null;
+
+    // A choice field's options, as [['label' => 'Véhicule léger', 'value' => '1.15'], ...] - the value is what the expression sees, which is why a choice field counts as numeric (see NUMERIC_TYPES)
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $options = null;
 
     public function __toString(): string
     {
@@ -196,5 +226,113 @@ class FormField implements \Stringable
         $this->position = $position ?? 0;
 
         return $this;
+    }
+
+    public function getMinValue(): ?float
+    {
+        return $this->minValue;
+    }
+
+    public function setMinValue(?float $minValue): static
+    {
+        $this->minValue = $minValue;
+
+        return $this;
+    }
+
+    public function getMaxValue(): ?float
+    {
+        return $this->maxValue;
+    }
+
+    public function setMaxValue(?float $maxValue): static
+    {
+        $this->maxValue = $maxValue;
+
+        return $this;
+    }
+
+    public function getStepValue(): ?float
+    {
+        return $this->stepValue;
+    }
+
+    public function setStepValue(?float $stepValue): static
+    {
+        $this->stepValue = $stepValue;
+
+        return $this;
+    }
+
+    public function getDefaultValue(): ?string
+    {
+        return $this->defaultValue;
+    }
+
+    public function setDefaultValue(?string $defaultValue): static
+    {
+        $this->defaultValue = $defaultValue;
+
+        return $this;
+    }
+
+    /** @return array<int, array{label: string, value: string}> */
+    public function getOptions(): array
+    {
+        return $this->options ?? [];
+    }
+
+    /** @param array<int, array{label: string, value: string}>|null $options */
+    public function setOptions(?array $options): static
+    {
+        $this->options = [] === $options ? null : $options;
+
+        return $this;
+    }
+
+    // Virtual, not persisted - the options edited as one line per option, "Véhicule léger|1.15", rather than through a third level of nested collection in an admin screen that already holds two
+    public function getOptionsText(): ?string
+    {
+        if ([] === $this->getOptions()) {
+            return null;
+        }
+
+        return implode("\n", array_map(
+            static fn (array $option): string => $option['label'] . '|' . $option['value'],
+            $this->getOptions()
+        ));
+    }
+
+    public function setOptionsText(?string $optionsText): static
+    {
+        $options = [];
+        foreach (preg_split('/\R/', (string) $optionsText) ?: [] as $line) {
+            if ('' === trim($line)) {
+                continue;
+            }
+            // No separator means the admin typed the value alone, which is a usable option labelled by itself
+            [$label, $value] = array_pad(explode('|', $line, 2), 2, null);
+            $options[] = [
+                'label' => trim($label),
+                'value' => trim($value ?? $label),
+            ];
+        }
+
+        return $this->setOptions($options);
+    }
+
+    // Whether this field's submitted value can feed a FormOutput expression
+    public function isNumeric(): bool
+    {
+        return in_array($this->type, self::NUMERIC_TYPES, true);
+    }
+
+    // The identifier this field is known by inside an expression: its own "name" with dashes turned into underscores, a dash being a subtraction to any expression parser - see FormFieldNamer, which slugs the label and so routinely produces "prix-de-l-essence"
+    public function getVariableName(): string
+    {
+        $variable = str_replace('-', '_', (string) $this->name);
+
+        // An expression variable can't start with a digit, while a label like "95 sans plomb" slugs to exactly that
+        return preg_match('/^[0-9]/', $variable) ? 'f_' . $variable : $variable;
     }
 }

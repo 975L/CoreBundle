@@ -26,6 +26,8 @@ const LAZY_CONTROLLERS = {
     scrollButtons: () => import('./js/scroll-buttons.js'),
     slider: () => import('./js/slider.js'),
     toc: () => import('./js/toc.js'),
+    // Kebab-case identifier, same reason as cookie-consent above: the "data-ui-calculator-url-value" binding is derived from it
+    'ui-calculator': () => import('./js/calculator.js'),
     // Kebab-case identifier, same reason as cookie-consent above: every "data-ui-rating-*-value" binding is derived from it
     'ui-rating': () => import('./js/rating.js'),
     'ui-favorite': () => import('./js/favorite.js'),

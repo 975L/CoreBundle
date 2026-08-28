@@ -14,8 +14,10 @@ use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Contract\RequiresAnonymousInterface;
 use c975L\UiBundle\Controller\FormController;
 use c975L\UiBundle\Entity\Form;
+use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Registry\FormActionRegistry;
 use c975L\UiBundle\Repository\FormRepository;
+use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Service\FormPrefillHelper;
 use c975L\UiBundle\Service\RateLimiterGuard;
@@ -110,6 +112,7 @@ class FormControllerTest extends TestCase
             $botProtection ?? $this->createBotProtection(),
             $rateLimiter,
             $prefillHelper ?? $this->createStub(FormPrefillHelper::class),
+            $this->createStub(ExpressionEvaluator::class),
             $translator,
             $security ?? $this->createSecurity(),
         );
@@ -165,6 +168,82 @@ class FormControllerTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('<form></form>', $response->getContent());
+    }
+
+    private function createCalculatorRepository(): FormRepository
+    {
+        $uiForm = new Form()->setName('economies');
+        $uiForm->addOutput(new FormOutput()->setLabel('Total')->setName('total')->setExpression('1'));
+
+        $repository = $this->createStub(FormRepository::class);
+        $repository->method('findOneBy')->willReturn($uiForm);
+
+        return $repository;
+    }
+
+    // A calculator has no action on purpose: it computes and displays instead of submitting, so the "no action" gate that 404s an unfinished Form must let it through
+    public function testFragmentRendersTheCalculatorTemplateForAFormThatOwnsOutputs(): void
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())
+            ->method('render')
+            ->with('@c975LUi/components/Form/Calculator.html.twig', $this->anything())
+            ->willReturn('<div class="ui-calculator"></div>');
+
+        $response = $this->createController($this->createSubmittedForm(false, false), $this->createCalculatorRepository(), twig: $twig)
+            ->fragment('economies', $this->createRequest());
+
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
+    // Minting a CSRF token starts a session, which is the very cost skipping the timer is there to avoid - and a calculator posts nothing for a token to protect
+    public function testACalculatorIsBuiltWithNeitherProtectionsNorACsrfToken(): void
+    {
+        $captured = [];
+        $factory = $this->createStub(\Symfony\Component\Form\FormFactoryInterface::class);
+        $factory->method('create')->willReturnCallback(
+            function (string $type, mixed $data, array $options) use (&$captured): FormInterface {
+                $captured = $options;
+
+                return $this->createSubmittedForm(false, false);
+            }
+        );
+
+        $controller = $this->createController($this->createSubmittedForm(false, false), $this->createCalculatorRepository());
+        $controller->setContainer($this->createContainer([
+            'twig' => $this->createConfiguredStub(Environment::class, ['render' => '<div></div>']),
+            'form.factory' => $factory,
+        ]));
+
+        $controller->fragment('economies', $this->createRequest());
+
+        $this->assertFalse($captured['protections']);
+        $this->assertFalse($captured['csrf_protection']);
+    }
+
+    // startTimer() writes to the session, and a calculator has no submission to time - every visitor of a cached page would pay a session cookie for nothing
+    public function testFragmentNeverStartsABotTimerForACalculator(): void
+    {
+        $botProtection = $this->createMock(FormBotProtection::class);
+        $botProtection->expects($this->never())->method('startTimer');
+
+        $this->createController($this->createSubmittedForm(false, false), $this->createCalculatorRepository(), botProtection: $botProtection)
+            ->fragment('economies', $this->createRequest());
+    }
+
+    // Landed on directly (a shared link), a calculator is the same thing wrapped in the standalone page shell - and still never submitted
+    public function testSubmitWrapsACalculatorInTheStandalonePageShellWithoutHandlingAnything(): void
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())
+            ->method('render')
+            ->with('@c975LUi/form/page.html.twig', $this->anything())
+            ->willReturn('<html></html>');
+
+        $response = $this->createController($this->createSubmittedForm(false, false), $this->createCalculatorRepository(), twig: $twig)
+            ->submit('economies', $this->createRequest());
+
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     // A disabled Form (see Form::$enabled - lets an admin pause it without unpublishing its Page or clearing "action") shows a notice instead of the form, on both the Block-embedded fragment and the bare submit route

@@ -1,5 +1,33 @@
 # ChangeLog
 
+## v1.18.0
+
+A form computes instead of being sent, and the formula is the admin's
+
+### UiBundle
+
+- New `FormOutput` entity (table `site_form_output`): a named result, its formula, its format and its unit - a `Form` owning one is a calculator (28/08/2026)
+- New `ExpressionEvaluator` and `CalculatorExpressionLanguage`, which drop Symfony's `constant()`/`enum()` and keep six arithmetic functions (28/08/2026)
+- New `ValidExpressions` constraint, checking every formula on every save of a `Form` - a relabelled field renames the variable it read (28/08/2026)
+- New `CalculatorController` (`ui_form_compute`), answering a recomputation as JSON outside the form rate limiter, with no session and no CSRF (28/08/2026)
+- New `ui-calculator` Stimulus controller and `components/Form/Calculator.html.twig`, the results being rendered server-side before any script runs (28/08/2026)
+- New `range` and `choice` field types, plus `minValue`/`maxValue`/`stepValue`/`defaultValue`/`options` on `FormField` (28/08/2026)
+- `FormFieldNamer` now names the outputs in the same pass and the same namespace as the fields (28/08/2026)
+- `FormController` no longer 404s a `Form` with no action when it owns outputs, and skips the honeypot, the captcha and the session timer for it (28/08/2026)
+- New `sass/_calculator.scss`, laying the fields beside their results and lining the digits up (28/08/2026)
+- New dependency on `symfony/expression-language` (28/08/2026)
+- A `number` field is now rendered as a real HTML5 input, its bounds and increment no longer inert and a decimal no longer lost to the locale (28/08/2026)
+- A default value is now only handed to the field types whose transformer accepts it, one set on a `date` no longer breaking the public page (28/08/2026)
+- A calculator's first render now starts a `range` at the middle of its span and a `choice` on its first option, instead of on zero (28/08/2026)
+- An invalid formula now reports on the outputs collection rather than on a row index, which a deleted output shifted (28/08/2026)
+- An output's `label` and `unit` now carry their column's length, refused on the screen rather than at the `INSERT` (28/08/2026)
+- New `DemoFixtureProviderInterface` and `DemoFixtureRegistry`: a bundle declares the dataset a demo site is seeded with, auto-discovered like the block fixtures (28/08/2026)
+- No command and no table ship with it - loading the dataset rewrites a real database, which is a demo site's own business (28/08/2026)
+- The README documents the calculator and the demo dataset (28/08/2026)
+- UPGRADE.md names the new table and the five `site_form_field` columns a site has to migrate (28/08/2026)
+- Added `ExpressionEvaluatorTest`, `CalculatorControllerTest`, `ValidExpressionsValidatorTest`, `FormFieldCalculatorTest`, `CalculatorControllerAssetsTest`, `FormOutputTypeTest`, `DemoFixtureRegistryTest` and `DemoFixtureProviderPassTest` (28/08/2026)
+- `FormCrudControllerTest` covers the outputs collection and the variables its help spells out (28/08/2026)
+
 ## v1.17.7
 
 A missing default is filled in a line, not in a guard

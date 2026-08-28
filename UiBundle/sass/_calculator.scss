@@ -1,0 +1,74 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+/* CALCULATOR */
+// The "form" Block rendering a Form that owns FormOutput rows (components/Form/Calculator.html.twig): the inputs are dressed by _forms.scss like any other form's, everything here is the results column beside them
+.ui-calculator {
+    display: grid;
+    gap: 1.5em;
+}
+
+// Side by side once there is room for two readable columns, the fields being no use without the numbers they move
+@media (min-width: 48em) {
+    .ui-calculator {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+    }
+
+    // Both full width again, they read as one paragraph under the two columns
+    .ui-calculator > p {
+        grid-column: 1 / -1;
+    }
+}
+
+.ui-calculator-results {
+    display: grid;
+    gap: 0.5em;
+    align-content: start;
+}
+
+.ui-calculator-result {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5em;
+    padding: 0.6em 0.8em;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--surface-alt);
+}
+
+.ui-calculator-result-value {
+    font-weight: bold;
+    // Digits of the same width, so a number changing under a slider stops the whole row from jittering
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+// The one result the visitor came for - several highlighted outputs simply all get it, the emphasis being the admin's call and not this stylesheet's
+.ui-calculator-result-highlighted {
+    border-color: var(--border-accent);
+    background-color: var(--surface-accent);
+}
+
+.ui-calculator-result-highlighted .ui-calculator-result-value {
+    font-size: 1.6em;
+    color: var(--primary);
+}
+
+// A range input carries no readout of its own, in any browser: assets/js/calculator.js writes the value being dragged into the <output> beside it
+.ui-calculator input[type="range"] {
+    width: 100%;
+}
+
+.ui-calculator-readout {
+    display: block;
+    text-align: right;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+}

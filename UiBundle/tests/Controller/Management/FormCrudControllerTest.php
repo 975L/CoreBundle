@@ -15,21 +15,30 @@ use c975L\UiBundle\Controller\Management\FormCrudController;
 use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Form\FormLinkType;
+use c975L\UiBundle\Form\FormOutputType;
 use c975L\UiBundle\Registry\FormActionRegistry;
+use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormFieldNamer;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Translation\TranslatableMessage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormCrudControllerTest extends TestCase
 {
-    private function createController(?AdminUrlGeneratorInterface $adminUrlGenerator = null): FormCrudController
+    private function createController(?AdminUrlGeneratorInterface $adminUrlGenerator = null, ?ExpressionEvaluator $expressionEvaluator = null, ?AdminContextProvider $adminContextProvider = null): FormCrudController
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn('ROLE_ADMIN');
@@ -41,7 +50,8 @@ class FormCrudControllerTest extends TestCase
             $configService,
             $this->createStub(FormFieldNamer::class),
             $this->createStub(FormActionRegistry::class),
-            new AdminContextProvider(new RequestStack()),
+            $expressionEvaluator ?? $this->createStub(ExpressionEvaluator::class),
+            $adminContextProvider ?? new AdminContextProvider(new RequestStack()),
             $adminUrlGenerator ?? $this->createStub(AdminUrlGeneratorInterface::class),
             $translator,
         );
@@ -167,5 +177,67 @@ class FormCrudControllerTest extends TestCase
         $this->assertNotNull($linksField);
         $this->assertSame(FormLinkType::class, $linksField->getAsDto()->getCustomOption(CollectionField::OPTION_ENTRY_TYPE));
         $this->assertGreaterThan(array_search('actionConfigJson', $properties, true), array_search('links', $properties, true));
+    }
+
+    // An expression reads the variables the fields above it declare, so the collection editing it is declared after them - the help text below is what spells those variables out
+    public function testConfigureFieldsEditsTheOutputsAsACollectionDeclaredAfterTheFields(): void
+    {
+        $properties = [];
+        $outputsField = null;
+        foreach ($this->createController()->configureFields(Crud::PAGE_EDIT) as $field) {
+            $properties[] = $field->getAsDto()->getProperty();
+            if ($field instanceof CollectionField && 'outputs' === $field->getAsDto()->getProperty()) {
+                $outputsField = $field;
+            }
+        }
+
+        $this->assertNotNull($outputsField);
+        $this->assertSame(FormOutputType::class, $outputsField->getAsDto()->getCustomOption(CollectionField::OPTION_ENTRY_TYPE));
+        $this->assertGreaterThan(array_search('fields', $properties, true), array_search('outputs', $properties, true));
+    }
+
+    // A variable is a slug only FormFieldNamer knows how to spell, so the screen lists the current ones rather than leaving them to be guessed
+    public function testTheOutputsHelpListsTheFormCurrentVariables(): void
+    {
+        $evaluator = $this->createStub(ExpressionEvaluator::class);
+        $evaluator->method('variableNames')->willReturn(['prix_de_l_essence', 'litres']);
+
+        $help = $this->outputsHelpOf($evaluator, new Form());
+
+        $this->assertSame('label.outputs_help_variables', $help->getMessage());
+        $this->assertSame('prix_de_l_essence, litres', $help->getParameters()['%variables%']);
+    }
+
+    // A brand new Form has no field yet, hence no variable to name - the help says so instead of printing an empty list
+    public function testTheOutputsHelpFallsBackWhenTheFormDeclaresNoVariableYet(): void
+    {
+        $evaluator = $this->createStub(ExpressionEvaluator::class);
+        $evaluator->method('variableNames')->willReturn([]);
+
+        $help = $this->outputsHelpOf($evaluator, new Form());
+
+        $this->assertSame('label.outputs_help', $help->getMessage());
+    }
+
+    // configureFields() reads the Form being edited off the admin context, which AdminContextProvider takes from the current request - so a screen exercised outside EasyAdmin's runtime has to be handed one
+    private function outputsHelpOf(ExpressionEvaluator $expressionEvaluator, Form $entity): TranslatableMessage
+    {
+        $context = AdminContext::forTesting(crudContext: CrudContext::forTesting(
+            entityDto: new EntityDto(Form::class, new ClassMetadata(Form::class), null, $entity)
+        ));
+
+        $request = new Request();
+        $request->attributes->set(EA::CONTEXT_REQUEST_ATTRIBUTE, $context);
+        $requestStack = new RequestStack([$request]);
+
+        $controller = $this->createController(null, $expressionEvaluator, new AdminContextProvider($requestStack));
+
+        foreach ($controller->configureFields(Crud::PAGE_EDIT) as $field) {
+            if ($field instanceof CollectionField && 'outputs' === $field->getAsDto()->getProperty()) {
+                return $field->getAsDto()->getHelp();
+            }
+        }
+
+        $this->fail('No "outputs" collection field was configured.');
     }
 }

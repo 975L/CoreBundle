@@ -10,6 +10,10 @@
                 <source>label.block_media_required</source>
                 <target>Une image est nécessaire pour ce type de bloc.</target>
             </trans-unit>
+            <trans-unit id="0ZNGqLy">
+                <source>label.expression_invalid</source>
+                <target>Formule « %output% » : %error%</target>
+            </trans-unit>
             <trans-unit id="ubt8hID">
                 <source>label.fixed_icon_invalid_format</source>
                 <target>Format non supporté pour ce rôle - utilisez une image %formats%</target>

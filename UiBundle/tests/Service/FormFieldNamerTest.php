@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Service;
 
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Service\FormFieldNamer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -84,5 +85,18 @@ class FormFieldNamerTest extends TestCase
         $this->createNamer()->nameFields($form);
 
         $this->assertSame(['email', 'email-2'], $this->names($form));
+    }
+
+    // A field and an output are both plain variables inside an expression, so one name taken by a field is not available to an output
+    public function testNameFieldsNamesTheOutputsInTheSameNamespaceAsTheFields(): void
+    {
+        $form = new Form()
+            ->addField(new FormField()->setLabel('Litres par an'))
+            ->addOutput(new FormOutput()->setLabel('Litres par an')->setExpression('1'));
+
+        $this->createNamer()->nameFields($form);
+
+        $this->assertSame('litres-par-an', $form->getFields()->first()->getName());
+        $this->assertSame('litres-par-an-2', $form->getOutputs()->first()->getName());
     }
 }

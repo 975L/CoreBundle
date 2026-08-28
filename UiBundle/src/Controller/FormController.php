@@ -15,6 +15,7 @@ use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Form\FormSubmissionType;
 use c975L\UiBundle\Registry\FormActionRegistry;
 use c975L\UiBundle\Repository\FormRepository;
+use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Service\FormPrefillHelper;
 use c975L\UiBundle\Service\RateLimiterGuard;
@@ -38,6 +39,7 @@ class FormController extends AbstractController
         private readonly FormBotProtection $botProtection,
         private readonly RateLimiterGuard $rateLimiterGuard,
         private readonly FormPrefillHelper $prefillHelper,
+        private readonly ExpressionEvaluator $expressionEvaluator,
         private readonly TranslatorInterface $translator,
         private readonly Security $security,
         private readonly ?RateLimiterFactoryInterface $formLimiterFactory = null,
@@ -47,8 +49,9 @@ class FormController extends AbstractController
     private function loadForm(string $name): Form
     {
         $form = $this->formRepository->findOneBy(['name' => $name]);
-        if (null === $form || null === $form->getAction()) {
-            throw new NotFoundHttpException(sprintf('No submittable Form named "%s"', $name));
+        // A calculator has no action on purpose (see Form::isCalculator()) - it computes and displays rather than submitting, so "has an action" alone would 404 every one of them
+        if (null === $form || (null === $form->getAction() && !$form->isCalculator())) {
+            throw new NotFoundHttpException(sprintf('No renderable Form named "%s"', $name));
         }
 
         return $form;
@@ -71,7 +74,7 @@ class FormController extends AbstractController
     // A stale/unregistered action key is left to fail at submit time as before (see FormActionRegistry::get()) - only a resolvable RequiresAnonymousInterface provider blocks the GET/POST paths here
     private function isBlockedForCurrentUser(Form $uiForm): bool
     {
-        if (null === $this->security->getUser() || !$this->actionRegistry->has($uiForm->getAction())) {
+        if (null === $this->security->getUser() || null === $uiForm->getAction() || !$this->actionRegistry->has($uiForm->getAction())) {
             return false;
         }
 
@@ -97,6 +100,9 @@ class FormController extends AbstractController
             'fields' => $uiForm->getFields(),
             'offerReceiveCopy' => !empty($config['offerReceiveCopy']),
             'prefill' => $prefill,
+            'protections' => !$uiForm->isCalculator(),
+            // A calculator posts nothing, so the token would protect nothing - and minting one starts a session, which is exactly the cost skipping startTimer() below is there to avoid: every visitor of a cached page carrying a calculator would pay a session cookie for a hidden field never sent back
+            'csrf_protection' => !$uiForm->isCalculator(),
         ]);
     }
 
@@ -111,11 +117,26 @@ class FormController extends AbstractController
             return $this->render('@c975LUi/components/Form/FormAlreadyAuthenticated.html.twig', ['uiForm' => $uiForm]);
         }
 
+        // A calculator never submits, so there is no submission to time - and startTimer() writes to the session, which would cost every visitor of a cached page a session cookie for nothing
+        if ($uiForm->isCalculator()) {
+            return $this->renderCalculator($uiForm);
+        }
+
         $this->botProtection->startTimer($request, $this->sessionKeyFor($uiForm));
 
         return $this->render('@c975LUi/components/Form/Form.html.twig', [
             'uiForm' => $uiForm,
             'form' => $this->buildSymfonyForm($uiForm, $this->prefillHelper->consume($request, $uiForm->getName()))->createView(),
+        ]);
+    }
+
+    // Rendered with the results its own default values already give, so the page is right before a single keystroke - and stays right with no JavaScript at all, only frozen on those defaults
+    private function renderCalculator(Form $uiForm): Response
+    {
+        return $this->render('@c975LUi/components/Form/Calculator.html.twig', [
+            'uiForm' => $uiForm,
+            'form' => $this->buildSymfonyForm($uiForm)->createView(),
+            'results' => $this->expressionEvaluator->compute($uiForm, []),
         ]);
     }
 
@@ -128,6 +149,17 @@ class FormController extends AbstractController
         }
         if ($this->isBlockedForCurrentUser($uiForm)) {
             return $this->renderPage($uiForm, '@c975LUi/components/Form/FormAlreadyAuthenticated.html.twig');
+        }
+
+        // Same page as the Block would embed, just wrapped in a layout - a calculator has no action to run, so there is nothing here to submit, rate-limit or flash
+        if ($uiForm->isCalculator()) {
+            return $this->render('@c975LUi/form/page.html.twig', [
+                'innerTemplate' => '@c975LUi/components/Form/Calculator.html.twig',
+                'uiForm' => $uiForm,
+                'robots' => 'noindex, follow',
+                'form' => $this->buildSymfonyForm($uiForm)->createView(),
+                'results' => $this->expressionEvaluator->compute($uiForm, []),
+            ]);
         }
 
         $this->botProtection->startTimer($request, $this->sessionKeyFor($uiForm));

@@ -1,6 +1,6 @@
 ---
 name: c975l-forms-emails
-description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
+description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
 ---
 
 # c975L UiBundle — forms and emails
@@ -10,7 +10,7 @@ description: "Use this skill when building a form or sending an email in a Symfo
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Form.php`, `src/Entity/FormField.php`, `src/Entity/FormFieldTemplate.php`, `src/Entity/EmailTemplate.php`, `src/Controller/FormController.php`, `src/Controller/Management/FormCrudController.php`, `src/Contract/FormActionInterface.php`, `src/Service/FormSeeder.php`, `src/Service/SendEmailFormAction.php`, `src/Service/EmailService.php`, `src/Service/EmailTemplateRenderer.php`, `src/Service/EmailTemplateFactory.php`, `src/Service/FormEditUrl.php`, `src/Contract/EmailTemplateProviderInterface.php`, `src/Registry/EmailTemplateProviderRegistry.php`, `src/Command/EmailTemplateEnsureCommand.php`, `src/Management/EmailTemplateHealthCheckProvider.php`, `src/Repository/EmailTemplateRepository.php`, `src/Entity/EmailBlock.php`, `src/Model/EmailSendRequest.php`, `src/Model/EmailAttachment.php`, `src/Contract/EmailAttachmentProviderInterface.php`, `src/Registry/EmailAttachmentRegistry.php`, `src/Service/LegalDocumentAttachmentProvider.php`, `src/Controller/Management/EmailDebugShortcutController.php`, `src/Service/FormBotProtection.php`, `src/Form/CaptchaType.php`, `src/Twig/EmailDebugExtension.php`, `templates/components/Form/`, `templates/components/Email/`
+`src/Entity/Form.php`, `src/Entity/FormField.php`, `src/Entity/FormFieldTemplate.php`, `src/Entity/FormOutput.php`, `src/Service/ExpressionEvaluator.php`, `src/Service/CalculatorExpressionLanguage.php`, `src/Controller/CalculatorController.php`, `src/Validator/ValidExpressions.php`, `src/Form/FormOutputType.php`, `src/Entity/EmailTemplate.php`, `src/Controller/FormController.php`, `src/Controller/Management/FormCrudController.php`, `src/Contract/FormActionInterface.php`, `src/Service/FormSeeder.php`, `src/Service/SendEmailFormAction.php`, `src/Service/EmailService.php`, `src/Service/EmailTemplateRenderer.php`, `src/Service/EmailTemplateFactory.php`, `src/Service/FormEditUrl.php`, `src/Contract/EmailTemplateProviderInterface.php`, `src/Registry/EmailTemplateProviderRegistry.php`, `src/Command/EmailTemplateEnsureCommand.php`, `src/Management/EmailTemplateHealthCheckProvider.php`, `src/Repository/EmailTemplateRepository.php`, `src/Entity/EmailBlock.php`, `src/Model/EmailSendRequest.php`, `src/Model/EmailAttachment.php`, `src/Contract/EmailAttachmentProviderInterface.php`, `src/Registry/EmailAttachmentRegistry.php`, `src/Service/LegalDocumentAttachmentProvider.php`, `src/Controller/Management/EmailDebugShortcutController.php`, `src/Service/FormBotProtection.php`, `src/Form/CaptchaType.php`, `src/Twig/EmailDebugExtension.php`, `templates/components/Form/`, `templates/components/Email/`
 
 **Related skills:** `c975l-blocks`, `c975l-media`, `c975l-ui-assets` in this same bundle, and `c975l-users`, `c975l-config` in ConfigBundle beside it.
 
@@ -49,6 +49,31 @@ overwriting an admin's edit**, and neither flushes, so a batch stays one transac
 `form_url(name)` answers where a form is actually reachable: a bundle displaying it on something
 richer than the bare route contributes its url through `FormPageUrlProviderInterface`, and a template
 linking to a form never has to know which bundles are installed.
+
+### A form that computes instead of being sent
+
+A `Form` owning at least one `Entity\FormOutput` (`site_form_output`) is a **calculator**:
+`Form::isCalculator()` is what every path branches on, and it has **no action** — it computes and
+displays, it never submits. The `form` block embeds it like any other form.
+
+- An output is a **formula an admin types** (`km_an / 100 * conso * prix_e85`) plus its format, unit
+  and decimals. Order matters: an expression only sees the outputs **above** it. An invisible output
+  is an intermediate step the others read — which is why there is no table of constants: a
+  coefficient is a literal, an editable price is a field with a default, a sub-total is a hidden output.
+- **Variables** are the `number`/`range`/`choice` fields plus the outputs above, named by the row's
+  own slug with dashes turned into underscores. `FormFieldNamer` names fields and outputs in **one**
+  namespace; `FormCrudController` lists the current variables in the outputs help.
+- `Service\ExpressionEvaluator` is the only place a formula becomes a number.
+  `Service\CalculatorExpressionLanguage` overrides `registerFunctions()` **without calling the
+  parent** — that is what drops `constant()`/`enum()` — and keeps `abs ceil floor max min round`.
+  **Never evaluate an expression in JavaScript**: one formula, one implementation.
+- `Validator\ValidExpressions` checks every formula on **every** save, because relabelling a field
+  renames the variable the formulas read.
+- `Controller\CalculatorController` (`ui_form_compute`) answers a recomputation as JSON: a read, so
+  no CSRF, no session, and **outside** `limiter.ui_form` — a dragged slider would exhaust it.
+- The results are rendered **server-side** before any script runs; `assets/js/calculator.js` only
+  keeps them in step, debounced.
+- A calculator gets **none** of the protections below: nothing is submitted.
 
 ### Protections, already there
 

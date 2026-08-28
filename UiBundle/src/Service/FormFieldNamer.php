@@ -13,7 +13,7 @@ namespace c975L\UiBundle\Service;
 use c975L\UiBundle\Entity\Form;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-// Derives every FormField's "name" (its programmatic key - the HTML input name, the notification email key) from its "label", scoped unique within the owning Form - a slug picked field-by-field can't know about sibling collisions, so this is called once the whole "fields" collection is bound (see FormCrudController::persistEntity/updateEntity for a concrete usage), not from FormFieldType itself
+// Derives every FormField's "name" (its programmatic key - the HTML input name, the notification email key) from its "label", scoped unique within the owning Form - a slug picked field-by-field can't know about sibling collisions, so this is called once the whole "fields" collection is bound (see FormCrudController::persistEntity/updateEntity for a concrete usage), not from FormFieldType itself. FormOutput rows are named in the very same pass and against the very same used-names list: inside an expression a field and an output are both plain variables, so two of them sharing a name would make one unreachable
 class FormFieldNamer
 {
     public function __construct(private readonly SluggerInterface $slugger)
@@ -31,14 +31,25 @@ class FormFieldNamer
                 continue;
             }
 
-            $base = strtolower($this->slugger->slug((string) $field->getLabel())->toString());
-            $name = $base;
-            $suffix = 2;
-            while (in_array($name, $usedNames, true)) {
-                $name = $base . '-' . $suffix++;
-            }
-            $usedNames[] = $name;
-            $field->setName($name);
+            $field->setName($this->uniqueName((string) $field->getLabel(), $usedNames));
         }
+
+        foreach ($form->getOutputs() as $output) {
+            $output->setName($this->uniqueName((string) $output->getLabel(), $usedNames));
+        }
+    }
+
+    /** @param list<string> $usedNames */
+    private function uniqueName(string $label, array &$usedNames): string
+    {
+        $base = strtolower($this->slugger->slug($label)->toString());
+        $name = $base;
+        $suffix = 2;
+        while (in_array($name, $usedNames, true)) {
+            $name = $base . '-' . $suffix++;
+        }
+        $usedNames[] = $name;
+
+        return $name;
     }
 }

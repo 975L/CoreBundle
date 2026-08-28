@@ -1,0 +1,37 @@
+{# Static usage  : render(controller('c975L\\UiBundle\\Controller\\FormController::fragment', {'name': 'economies-e85'})) #}
+{# Dynamic usage : {{ render_block(block) }} — via FormBlock.html.twig, a calculator being a Form like any other #}
+{% trans_default_domain 'ui' %}
+
+{# The results are already right when this renders (computed from the fields' own defaults), so a visitor with no JavaScript reads real numbers rather than empty slots — the controller below only keeps them in step as the inputs move #}
+<div class="ui-calculator"
+     data-controller="ui-calculator"
+     data-ui-calculator-url-value="{{ path('ui_form_compute', {'name': uiForm.name}) }}">
+    {# No form_start/form_end: this posts nowhere, and a form element around it would let Enter submit it to the page's own URL #}
+    <div class="ui-calculator-fields">
+        {{ form_widget(form) }}
+    </div>
+
+    <div class="ui-calculator-results" data-ui-calculator-target="results" aria-live="polite">
+        {% for output in uiForm.visibleOutputs %}
+            <div class="ui-calculator-result{{ output.highlighted ? ' ui-calculator-result-highlighted' }}">
+                <span class="ui-calculator-result-label">{{ output.label }}</span>
+                <span class="ui-calculator-result-value" data-ui-calculator-output="{{ output.name }}">
+                    {{ results[output.name].formatted ?? '—' }}
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Admin-defined, stored on the Form itself — same links a submittable Form shows under its button #}
+    {% if uiForm.links is not empty %}
+        <p class="mt-2">
+            {% for link in uiForm.links %}
+                <a href="{{ link.url }}">{{ link.label }}</a>{{ not loop.last ? ' · ' }}
+            {% endfor %}
+        </p>
+    {% endif %}
+
+    <p class="text-muted small">
+        {{ 'text.calculator_estimate'|trans }}
+    </p>
+</div>

@@ -19,10 +19,12 @@ use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -84,7 +86,7 @@ class FormSubmissionTypeTest extends TestCase
         return new FormSubmissionType(new FormBotProtection($configService), $requestStack, $translator, $captchaVerifier);
     }
 
-    private function buildAddedFields(array $fields, bool $offerReceiveCopy = false, bool $recaptcha = false, array $prefill = []): array
+    private function buildAddedFields(array $fields, bool $offerReceiveCopy = false, bool $recaptcha = false, array $prefill = [], bool $protections = true): array
     {
         $added = [];
         $builder = $this->createStub(FormBuilderInterface::class);
@@ -94,7 +96,7 @@ class FormSubmissionTypeTest extends TestCase
             return $builder;
         });
 
-        $this->createType($recaptcha)->buildForm($builder, ['fields' => $fields, 'offerReceiveCopy' => $offerReceiveCopy, 'prefill' => $prefill]);
+        $this->createType($recaptcha)->buildForm($builder, ['fields' => $fields, 'offerReceiveCopy' => $offerReceiveCopy, 'prefill' => $prefill, 'protections' => $protections]);
 
         return $added;
     }
@@ -122,6 +124,76 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertSame(TelType::class, $added['phone']['type']);
         $this->assertSame(NumberType::class, $added['quantity']['type']);
         $this->assertSame(DateType::class, $added['birthdate']['type']);
+    }
+
+    // The two types a calculator is built with (see Entity\FormOutput)
+    public function testTheCalculatorFieldTypesMapToRangeAndChoice(): void
+    {
+        $added = $this->buildAddedFields([
+            $this->buildField('km-an', FormField::TYPE_RANGE, false),
+            $this->buildField('surconso', FormField::TYPE_CHOICE, false),
+        ]);
+
+        $this->assertSame(RangeType::class, $added['km-an']['type']);
+        $this->assertSame(ChoiceType::class, $added['surconso']['type']);
+    }
+
+    // A slider with no bounds goes nowhere: they belong to the input as HTML attributes, not to the validator
+    public function testBoundsAndStepReachANumberOrRangeFieldAsAttributes(): void
+    {
+        $field = $this->buildField('km-an', FormField::TYPE_RANGE, false);
+        $field->setMinValue(5000)->setMaxValue(40000)->setStepValue(500);
+
+        $attributes = $this->buildAddedFields([$field])['km-an']['options']['attr'];
+
+        $this->assertSame(5000.0, $attributes['min']);
+        $this->assertSame(40000.0, $attributes['max']);
+        $this->assertSame(500.0, $attributes['step']);
+    }
+
+    // A calculator has to show a result before the visitor has touched anything
+    public function testTheFieldDefaultBecomesTheStartingValue(): void
+    {
+        $field = $this->buildField('conso', FormField::TYPE_NUMBER, false);
+        $field->setDefaultValue('7');
+
+        $this->assertSame('7', $this->buildAddedFields([$field])['conso']['options']['data']);
+    }
+
+    // The visitor's own data always wins over a default the admin typed
+    public function testAPrefilledValueIsNeverOverriddenByTheDefault(): void
+    {
+        $field = $this->buildField('conso', FormField::TYPE_NUMBER, false);
+        $field->setDefaultValue('7');
+
+        $added = $this->buildAddedFields([$field], prefill: ['conso' => '9']);
+
+        $this->assertSame('9', $added['conso']['options']['data']);
+    }
+
+    // The value after the pipe is what an expression sees, the label only what the visitor reads
+    public function testAChoiceFieldOffersItsOwnOptionsWithTheirNumericValues(): void
+    {
+        $field = $this->buildField('surconso', FormField::TYPE_CHOICE, false);
+        $field->setOptionsText("Véhicule léger|1.15\nGros véhicule|1.25");
+
+        $options = $this->buildAddedFields([$field])['surconso']['options'];
+
+        $this->assertSame(['Véhicule léger' => '1.15', 'Gros véhicule' => '1.25'], $options['choices']);
+        $this->assertFalse($options['placeholder']);
+    }
+
+    // A calculator submits nothing, so none of the three protections has anything to protect
+    public function testNoHoneypotNoCaptchaAndNoReceiveCopyWhenProtectionsAreOff(): void
+    {
+        $added = $this->buildAddedFields(
+            [$this->buildField('conso', FormField::TYPE_NUMBER, false)],
+            offerReceiveCopy: true,
+            recaptcha: true,
+            protections: false
+        );
+
+        $this->assertSame(['conso'], array_keys($added));
     }
 
     // "single_text" so a date field renders as one HTML5 input, not Symfony's default 3-select widget
@@ -319,6 +391,63 @@ class FormSubmissionTypeTest extends TestCase
 
         $this->assertSame('About listing #42', $added['subject']['options']['data']);
         $this->assertTrue($added['subject']['options']['attr']['readonly']);
+    }
+
+    // NumberType renders a localised text input unless told otherwise, which on a fr site sends "8,2" to the calculator and leaves min/max/step inert
+    public function testNumberFieldIsRenderedAsAnHtml5Input(): void
+    {
+        $added = $this->buildAddedFields([$this->buildField('conso', FormField::TYPE_NUMBER, false)]);
+
+        $this->assertTrue($added['conso']['options']['html5']);
+        $this->assertSame('any', $added['conso']['options']['attr']['step']);
+    }
+
+    // RangeType's parent declares no "html5" option, and would throw on one
+    public function testRangeFieldIsNeverGivenTheHtml5Option(): void
+    {
+        $added = $this->buildAddedFields([$this->buildField('litres', FormField::TYPE_RANGE, false)]);
+
+        $this->assertArrayNotHasKey('html5', $added['litres']['options']);
+    }
+
+    public function testAnAdminSetStepIsKeptOverTheAnyDefault(): void
+    {
+        $field = $this->buildField('conso', FormField::TYPE_NUMBER, false);
+        $field->setStepValue(0.5);
+
+        $added = $this->buildAddedFields([$field]);
+
+        $this->assertSame(0.5, $added['conso']['options']['attr']['step']);
+    }
+
+    // setData() lets a TransformationFailedException through where submit() catches it, so a default value the type's transformer refuses would 500 the public page on every render
+    public function testDefaultValueIsIgnoredOnATypeWhoseTransformerWouldRefuseIt(): void
+    {
+        $date = $this->buildField('birthday', FormField::TYPE_DATE, false);
+        $date->setDefaultValue('1980-01-01');
+        $number = $this->buildField('conso', FormField::TYPE_NUMBER, false);
+        $number->setDefaultValue('beaucoup');
+
+        $added = $this->buildAddedFields([$date, $number]);
+
+        $this->assertArrayNotHasKey('data', $added['birthday']['options']);
+        $this->assertArrayNotHasKey('data', $added['conso']['options']);
+    }
+
+    public function testDefaultValueStillReachesTheTypesThatAcceptIt(): void
+    {
+        $text = $this->buildField('city', FormField::TYPE_TEXT, false);
+        $text->setDefaultValue('Annecy');
+        $number = $this->buildField('conso', FormField::TYPE_NUMBER, false);
+        $number->setDefaultValue('7.5');
+        $checkbox = $this->buildField('optin', FormField::TYPE_CHECKBOX, false);
+        $checkbox->setDefaultValue('1');
+
+        $added = $this->buildAddedFields([$text, $number, $checkbox]);
+
+        $this->assertSame('Annecy', $added['city']['options']['data']);
+        $this->assertSame('7.5', $added['conso']['options']['data']);
+        $this->assertTrue($added['optin']['options']['data']);
     }
 
     public function testNonPrefilledFieldHasNoDataOrReadonlyAttr(): void

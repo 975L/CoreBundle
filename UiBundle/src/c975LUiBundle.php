@@ -18,6 +18,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\BlockOwnerResolverPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CacheInvalidatorPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\DemoFixtureProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailAttachmentProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailLayoutProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailTemplateProviderPass;
@@ -52,6 +53,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new BlockRegistryPass());
         $container->addCompilerPass(new EmailTemplateProviderPass());
         $container->addCompilerPass(new BlockFixtureProviderPass());
+        $container->addCompilerPass(new DemoFixtureProviderPass());
         $container->addCompilerPass(new PlaceholderMediaProviderPass());
         $container->addCompilerPass(new BlockOwnerResolverPass());
         $container->addCompilerPass(new BlockCacheTagProviderPass());

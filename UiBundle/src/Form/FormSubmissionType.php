@@ -16,10 +16,12 @@ use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -36,7 +38,7 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot (always), captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy")
+// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot, captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy") - all three switched off by the "protections" option for a calculator, which submits nothing
 class FormSubmissionType extends AbstractType
 {
     public function __construct(
@@ -49,7 +51,10 @@ class FormSubmissionType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->botProtection->addHoneypotField($builder, $this->requestStack->getCurrentRequest());
+        // A calculator posts nothing and reaches no action (see Form::isCalculator()), so it gets none of the three: a honeypot to trap a submission that never happens, a captcha to score a visitor who only moved a slider, and a "receive a copy" box with no email to copy
+        if ($options['protections']) {
+            $this->botProtection->addHoneypotField($builder, $this->requestStack->getCurrentRequest());
+        }
 
         foreach ($options['fields'] as $field) {
             $required = $field->isRequired();
@@ -85,6 +90,32 @@ class FormSubmissionType extends AbstractType
             if ($prefilled) {
                 $fieldOptions['data'] = $options['prefill'][$field->getName()];
             }
+            // Bounds and increment are HTML attributes rather than constraints: they belong to a number/range input, and a calculator's slider is unusable without them
+            if (in_array($field->getType(), [FormField::TYPE_NUMBER, FormField::TYPE_RANGE], true)) {
+                $fieldOptions['attr'] += array_filter([
+                    'min' => $field->getMinValue(),
+                    'max' => $field->getMaxValue(),
+                    'step' => $field->getStepValue(),
+                ], static fn (?float $bound): bool => null !== $bound);
+            }
+            // A real "type=number", not NumberType's default localised text input: a decimal typed on a fr site reaches the calculator as "8.2" rather than "8,2", and the min/max/step above stop being inert on what was a text input. Never in the block above, shared with TYPE_RANGE, whose parent TextType declares no "html5" option. A "type=number" left without a step takes the browser's default of 1, which refuses a decimal
+            if (FormField::TYPE_NUMBER === $field->getType()) {
+                $fieldOptions['html5'] = true;
+                $fieldOptions['attr']['step'] ??= 'any';
+            }
+            // A calculator shows a result before the visitor touches anything, which takes a starting value on every field - never overriding a prefill, which is the visitor's own data
+            if (!$prefilled && null !== $field->getDefaultValue()) {
+                if (FormField::TYPE_CHECKBOX === $field->getType()) {
+                    $fieldOptions['data'] = filter_var($field->getDefaultValue(), FILTER_VALIDATE_BOOLEAN);
+                } elseif ($this->acceptsDefaultValue($field)) {
+                    $fieldOptions['data'] = $field->getDefaultValue();
+                }
+            }
+            // A choice field's options are pairs the admin typed, the value being what an expression sees (e.g. 1.15 for "+15 %") - "choices" wants them the other way round
+            if (FormField::TYPE_CHOICE === $field->getType()) {
+                $fieldOptions['choices'] = array_column($field->getOptions(), 'value', 'label');
+                $fieldOptions['placeholder'] = false;
+            }
             // A single HTML5 date input, not Symfony's default 3-select widget
             if (FormField::TYPE_DATE === $field->getType()) {
                 $fieldOptions['widget'] = 'single_text';
@@ -110,7 +141,7 @@ class FormSubmissionType extends AbstractType
             $builder->add($field->getName(), $this->resolveFieldType($field->getType()), $fieldOptions);
         }
 
-        if ($options['offerReceiveCopy']) {
+        if ($options['offerReceiveCopy'] && $options['protections']) {
             // Mapped, unlike the captcha box below: this one is the only protection field whose answer an action has to read back, and FormController hands the action nothing but the form's own data - an unmapped child never appears there, so the copy was silently never sent
             $builder->add('receiveCopy', CheckboxType::class, [
                 'label' => 'label.receive_copy',
@@ -119,11 +150,21 @@ class FormSubmissionType extends AbstractType
             ]);
         }
 
-        if ($this->captchaVerifier->isEnabled()) {
+        if ($options['protections'] && $this->captchaVerifier->isEnabled()) {
             $builder->add('captcha', CaptchaType::class, [
                 'action_name' => 'ui_form',
             ]);
         }
+    }
+
+    // A default value is stored as a plain string, which only some types' transformer takes as is: a date wants a \DateTimeInterface and a number a numeric string, and both throw on render rather than on submit - setData() lets a TransformationFailedException through where submit() catches it, so an admin's stray default would 500 the public page
+    private function acceptsDefaultValue(FormField $field): bool
+    {
+        return match ($field->getType()) {
+            FormField::TYPE_NUMBER => is_numeric($field->getDefaultValue()),
+            FormField::TYPE_TEXT, FormField::TYPE_TEXTAREA, FormField::TYPE_EMAIL, FormField::TYPE_URL, FormField::TYPE_TEL, FormField::TYPE_RANGE, FormField::TYPE_CHOICE => true,
+            default => false,
+        };
     }
 
     // Plain admin-typed text by default; with a "url" set, the label text stays exactly as typed but gains a translated, escaped "(label.field_url_link)" <a> - the surrounding label itself never becomes a link so clicking the rest of it still toggles a checkbox field as expected
@@ -152,6 +193,8 @@ class FormSubmissionType extends AbstractType
             FormField::TYPE_TEL => TelType::class,
             FormField::TYPE_NUMBER => NumberType::class,
             FormField::TYPE_DATE => DateType::class,
+            FormField::TYPE_RANGE => RangeType::class,
+            FormField::TYPE_CHOICE => ChoiceType::class,
             default => TextType::class,
         };
     }
@@ -163,10 +206,12 @@ class FormSubmissionType extends AbstractType
             'translation_domain' => 'ui',
             'offerReceiveCopy' => false,
             'prefill' => [],
+            'protections' => true,
         ]);
         $resolver->setRequired('fields');
         $resolver->setAllowedTypes('fields', 'iterable');
         $resolver->setAllowedTypes('offerReceiveCopy', 'bool');
         $resolver->setAllowedTypes('prefill', 'array');
+        $resolver->setAllowedTypes('protections', 'bool');
     }
 }

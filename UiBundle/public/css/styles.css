@@ -672,6 +672,73 @@ button.btn {
   margin: 0 auto;
 }
 
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+/* CALCULATOR */
+.ui-calculator {
+  display: grid;
+  gap: 1.5em;
+}
+
+@media (min-width: 48em) {
+  .ui-calculator {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .ui-calculator > p {
+    grid-column: 1/-1;
+  }
+}
+.ui-calculator-results {
+  display: grid;
+  gap: 0.5em;
+  align-content: start;
+}
+
+.ui-calculator-result {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: 0.6em 0.8em;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--surface-alt);
+}
+
+.ui-calculator-result-value {
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ui-calculator-result-highlighted {
+  border-color: var(--border-accent);
+  background-color: var(--surface-accent);
+}
+
+.ui-calculator-result-highlighted .ui-calculator-result-value {
+  font-size: 1.6em;
+  color: var(--primary);
+}
+
+.ui-calculator input[type=range] {
+  width: 100%;
+}
+
+.ui-calculator-readout {
+  display: block;
+  text-align: right;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+
 /* CARDS */
 .cards {
   display: flex;

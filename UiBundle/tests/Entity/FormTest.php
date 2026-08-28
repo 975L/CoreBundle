@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Entity;
 
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Entity\FormOutput;
 use PHPUnit\Framework\TestCase;
 
 class FormTest extends TestCase
@@ -158,5 +159,25 @@ class FormTest extends TestCase
         $form->setActionConfigJson('');
 
         $this->assertSame([['label' => 'Sign in', 'url' => '/login']], $form->getLinks());
+    }
+
+    public function testAFormIsACalculatorAsSoonAsItOwnsAnOutput(): void
+    {
+        $form = new Form();
+
+        $this->assertFalse($form->isCalculator());
+
+        $form->addOutput(new FormOutput()->setLabel('Total')->setExpression('1'));
+
+        $this->assertTrue($form->isCalculator());
+    }
+
+    public function testVisibleOutputsLeavesTheIntermediateStepsOut(): void
+    {
+        $form = new Form()
+            ->addOutput(new FormOutput()->setLabel('Litres')->setExpression('1')->setVisible(false))
+            ->addOutput(new FormOutput()->setLabel('Budget')->setExpression('2'));
+
+        $this->assertSame(['Budget'], array_map(static fn (FormOutput $output): string => (string) $output->getLabel(), $form->getVisibleOutputs()));
     }
 }

@@ -1602,9 +1602,33 @@
                 <source>label.favorites_summary</source>
                 <target>The items you saved for later</target>
             </trans-unit>
+            <trans-unit id="gMqc.B5">
+                <source>label.field_default</source>
+                <target>Default value</target>
+            </trans-unit>
+            <trans-unit id="BaDFsIh">
+                <source>label.field_default_help</source>
+                <target>Value shown until the visitor types something else.</target>
+            </trans-unit>
             <trans-unit id="aSdYCtp">
                 <source>label.field_label</source>
                 <target>Label</target>
+            </trans-unit>
+            <trans-unit id="eds17yu">
+                <source>label.field_max</source>
+                <target>Maximum value</target>
+            </trans-unit>
+            <trans-unit id="5SHbmeR">
+                <source>label.field_min</source>
+                <target>Minimum value</target>
+            </trans-unit>
+            <trans-unit id="TIhOBpI">
+                <source>label.field_options</source>
+                <target>Options</target>
+            </trans-unit>
+            <trans-unit id="NUvnzLA">
+                <source>label.field_options_help</source>
+                <target>One option per line, as Label|value — the value is what the formulas read.</target>
             </trans-unit>
             <trans-unit id="4E9MVsf">
                 <source>label.field_placeholder</source>
@@ -1622,6 +1646,10 @@
                 <source>label.field_required_default_help</source>
                 <target>Starting value copied into the added field - editable per form afterward, with no retroactive effect on this template.</target>
             </trans-unit>
+            <trans-unit id="1wZ23u_">
+                <source>label.field_step</source>
+                <target>Step</target>
+            </trans-unit>
             <trans-unit id="CeXhLuW">
                 <source>label.field_type</source>
                 <target>Type</target>
@@ -1629,6 +1657,10 @@
             <trans-unit id="M6FCi_L">
                 <source>label.field_type_checkbox</source>
                 <target>Checkbox</target>
+            </trans-unit>
+            <trans-unit id="WMo4l7j">
+                <source>label.field_type_choice</source>
+                <target>Choice list</target>
             </trans-unit>
             <trans-unit id="i_1FF7D">
                 <source>label.field_type_date</source>
@@ -1649,6 +1681,10 @@
             <trans-unit id="W8d8wUD">
                 <source>label.field_type_password_repeated</source>
                 <target>Password (with confirmation)</target>
+            </trans-unit>
+            <trans-unit id="O4z03wd">
+                <source>label.field_type_range</source>
+                <target>Slider</target>
             </trans-unit>
             <trans-unit id="geUIki.">
                 <source>label.field_type_tel</source>
@@ -2606,6 +2642,70 @@
                 <source>label.opens</source>
                 <target>Opening</target>
             </trans-unit>
+            <trans-unit id="bKgx5Rp">
+                <source>label.output_decimals</source>
+                <target>Decimals</target>
+            </trans-unit>
+            <trans-unit id="_cU6ZoH">
+                <source>label.output_expression</source>
+                <target>Formula</target>
+            </trans-unit>
+            <trans-unit id="N9vDPRv">
+                <source>label.output_expression_help</source>
+                <target>The + - * / operations and parentheses, plus the abs, ceil, floor, max, min and round functions. Decimal point, never a comma.</target>
+            </trans-unit>
+            <trans-unit id="aaKKWF9">
+                <source>label.output_format</source>
+                <target>Format</target>
+            </trans-unit>
+            <trans-unit id="C6x4Hlx">
+                <source>label.output_format_currency</source>
+                <target>Amount</target>
+            </trans-unit>
+            <trans-unit id="gv7qBKH">
+                <source>label.output_format_number</source>
+                <target>Number</target>
+            </trans-unit>
+            <trans-unit id="s9SzZHy">
+                <source>label.output_format_percent</source>
+                <target>Percentage</target>
+            </trans-unit>
+            <trans-unit id="370c.KT">
+                <source>label.output_highlighted</source>
+                <target>Highlighted</target>
+            </trans-unit>
+            <trans-unit id="KzoWpft">
+                <source>label.output_label</source>
+                <target>Label</target>
+            </trans-unit>
+            <trans-unit id="Y5oSswq">
+                <source>label.output_unit</source>
+                <target>Unit</target>
+            </trans-unit>
+            <trans-unit id="DbF_A7w">
+                <source>label.output_unit_help</source>
+                <target>Appended after the number, e.g. “L” or “t”.</target>
+            </trans-unit>
+            <trans-unit id="Wo.6fLk">
+                <source>label.output_visible</source>
+                <target>Displayed</target>
+            </trans-unit>
+            <trans-unit id="MsIaCW_">
+                <source>label.output_visible_help</source>
+                <target>Untick to make it an intermediate step, read by the other formulas but never shown to the visitor.</target>
+            </trans-unit>
+            <trans-unit id="1Ti8_3R">
+                <source>label.outputs</source>
+                <target>Computed results</target>
+            </trans-unit>
+            <trans-unit id="AordYSb">
+                <source>label.outputs_help</source>
+                <target>Adding a result turns this form into a calculator: it computes and displays instead of being submitted. The available variables are listed here once the fields have been saved.</target>
+            </trans-unit>
+            <trans-unit id="_dwvS9b">
+                <source>label.outputs_help_variables</source>
+                <target>Available variables: %variables%. A result can only read the results placed above it.</target>
+            </trans-unit>
             <trans-unit id="OmyXHwr">
                 <source>label.page</source>
                 <target>Page</target>
@@ -3386,9 +3486,25 @@
                 <source>review.verified</source>
                 <target>Verified review</target>
             </trans-unit>
+            <trans-unit id="JDNzJh4">
+                <source>text.calculator_estimate</source>
+                <target>An indicative estimate, computed from the values you entered.</target>
+            </trans-unit>
             <trans-unit id="2lWOypu">
                 <source>text.cookies_banner</source>
                 <target>This site uses a session cookie required for it to work, and may embed third-party content (videos, etc.) requiring your consent.</target>
+            </trans-unit>
+            <trans-unit id="rFZrztb">
+                <source>text.expression_decimal_comma</source>
+                <target>Decimal comma: use a point (1.15). To separate two arguments, leave a space after the comma.</target>
+            </trans-unit>
+            <trans-unit id=".Ic6uEv">
+                <source>text.expression_empty</source>
+                <target>The formula is empty.</target>
+            </trans-unit>
+            <trans-unit id="bluaLIG">
+                <source>text.expression_forbidden_characters</source>
+                <target>Forbidden character: only numbers, variables, the + - * / operations and parentheses are accepted.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>
