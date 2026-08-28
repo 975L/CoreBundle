@@ -4,8 +4,19 @@
 
 **A new table, `site_form_output`.** It holds a `Form`'s computed results, which turn it into a calculator (see
 UiBundle's README). `site_form_field` also gains `min_value`, `max_value`, `step_value`, `default_value` and
-`options`, all nullable, for the new `range` and `choice` field types. **Generate and run the migration**; nothing
-else to do, and a site building no calculator simply leaves the table empty.
+`options`, all nullable, for the new `range` and `choice` field types, and `site_form` gains `outputs_first`
+(boolean, default `false`) - the switch saying a calculator is read results-first, above the fields on a phone and
+in the left column on a wide screen. **Generate and run the migration**; nothing else to do, and a site building no
+calculator simply leaves the table empty and the switch off.
+
+Forms now travel between environments like pages and menus already did: `site_form` joins the kinds ConfigBundle's
+**Export sync (everything)** shortcut writes and its **Import content** screen reads, and the Form index gains an
+"Export selection" batch action. Nothing to do - a `Form` is matched by its `name` on the way in, so ids never have
+to line up. Two rules worth knowing before you re-import over a Form that already exists: **its fields and its
+outputs are matched by name too** and updated in place, one the payload no longer carries being dropped, and a
+**restricted field** - one its own bundle seeded and the application reads by name - is kept whatever the payload
+holds. `restricted` itself is only ever set on a row the import creates, so an import can never unmark what a
+seeder maintains.
 
 **The favorite button carries a status line.** `components/Favorite/Button.html.twig` now ends on a
 `<p class="favorite-status" data-ui-favorite-target="status" role="status">`, the line a change the rate limiter

@@ -37,6 +37,7 @@ class ScaffoldThemeTest extends TestCase
     private const array NOT_THEMABLE = [
         '--bottom-bar-height',
         '--bs-border-color',
+        '--bs-font-monospace',
         '--bs-primary',
         '--bs-secondary-bg',
         '--bs-secondary-color',

@@ -73,6 +73,14 @@
         --button-grey-background: lightgrey;
         --button-grey-color: #000;
         --button-status-color: #fff;
+        // The calculator's own decisions (sass/_calculator.scss): the panel its results are read in, and the card carrying the one figure the visitor came for. Their own tokens rather than --surface-accent and --primary read directly, which is what lets a site whose brand colour is its ink - a near-black --primary mixes a highlight indistinguishable from the panel around it - point the card at its secondary and move nothing else on the page
+        --calculator-highlight-background: var(--surface-accent);
+        --calculator-highlight-color: var(--primary);
+        --calculator-highlight-size: 2.6em;
+        --calculator-panel-background: var(--surface-alt);
+        --calculator-panel-radius: var(--radius-panel);
+        // What paints a slider's filled track and its thumb, "accent-color" being the one property that dresses a native range in every browser - a track drawn by hand would have to be filled from a style attribute, which a nonced style-src drops
+        --calculator-slider-color: var(--primary);
         --card-background: #fff;
         // The 19px this bundle's own hierarchy sets for a card title, from the hero's 66px down to here (see sass/_page-sections.scss) - never inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact one steps down once more, to the measure of its 190px
         --card-title-size: calc(19px * var(--font-size-title-scale, 1));

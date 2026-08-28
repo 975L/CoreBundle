@@ -10,6 +10,7 @@ import EmailDataBlockController from './js/email-data-block.js';
 import EaSortableController from './js/ea-sortable.js';
 import FieldFocusController from './js/field-focus.js';
 import FormFieldTemplateController from './js/form-field-template.js';
+import FormulaVariablesController from './js/formula-variables.js';
 import LegalModelController from './js/legal-model.js';
 import TitleConfirmController from './js/title-confirm.js';
 import UploadProgressController from './js/upload-progress.js';
@@ -31,6 +32,7 @@ app.register('emailDataBlock', EmailDataBlockController);
 app.register('eaSortable', EaSortableController);
 app.register('fieldFocus', FieldFocusController);
 app.register('formFieldTemplate', FormFieldTemplateController);
+app.register('formulaVariables', FormulaVariablesController);
 // Kebab-case on purpose: the identifier is what Stimulus derives data-legal-model-target/-value from, and a camelCase one would look for data-legalModel-* instead
 app.register('legal-model', LegalModelController);
 // Same kebab-case reasoning, the message being read from data-title-confirm-message-value
@@ -38,8 +40,8 @@ app.register('title-confirm', TitleConfirmController);
 // Same again, the three messages being read from data-upload-progress-*-message-value - armed by any bundle's form through UploadProgress::formAttr(), never mounted on <body>: it takes over the submit of the form it sits on
 app.register('upload-progress', UploadProgressController);
 
-// Mount eaIndexSort, eaSortable, blockCollection, blockDuplicate, blockFocus, emailDataBlock, fieldFocus and formFieldTemplate on <body> automatically: EasyAdmin's layout never sets data-controller itself, so without this none of the index-row reordering, drag-and-drop, new-block scroll/focus, duplicate-block, used-in-media-library scroll/focus, undeletable-data-block, focus-a-named-field or add-field-from-template behaviors would ever connect.
+// Mount eaIndexSort, eaSortable, blockCollection, blockDuplicate, blockFocus, emailDataBlock, fieldFocus, formFieldTemplate and formulaVariables on <body> automatically: EasyAdmin's layout never sets data-controller itself, so without this none of the index-row reordering, drag-and-drop, new-block scroll/focus, duplicate-block, used-in-media-library scroll/focus, undeletable-data-block, focus-a-named-field, add-field-from-template or insert-a-formula-variable behaviors would ever connect.
 document.body.setAttribute(
     'data-controller',
-    [document.body.dataset.controller, 'eaIndexSort', 'eaSortable', 'blockCollection', 'blockDuplicate', 'blockFocus', 'emailDataBlock', 'fieldFocus', 'formFieldTemplate'].filter(Boolean).join(' ')
+    [document.body.dataset.controller, 'eaIndexSort', 'eaSortable', 'blockCollection', 'blockDuplicate', 'blockFocus', 'emailDataBlock', 'fieldFocus', 'formFieldTemplate', 'formulaVariables'].filter(Boolean).join(' ')
 );

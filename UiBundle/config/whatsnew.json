@@ -21,6 +21,36 @@
                 "en": "On a phone, the fields of a block now sit under their labels rather than beside them, which gives each one the full width to be read and filled in. A long choice in a drop-down list is also cut cleanly with three dots instead of stopping mid-word.",
                 "fr": "Sur un téléphone, les champs d'un bloc se placent désormais sous leur intitulé plutôt qu'à côté, ce qui laisse à chacun toute la largeur pour être lu et rempli. Un choix un peu long dans une liste déroulante est aussi coupé proprement par trois points, au lieu de s'arrêter au milieu d'un mot.",
                 "es": "En un teléfono, los campos de un bloque se colocan ahora debajo de su etiqueta en lugar de al lado, lo que deja a cada uno todo el ancho para leerlo y rellenarlo. Una opción algo larga de una lista desplegable también se corta limpiamente con tres puntos, en vez de detenerse a mitad de palabra."
+            },
+            {
+                "en": "The names a formula can use are now buttons above your computed results: click one and it is inserted where your cursor is. No more typing a field name from memory and getting it wrong.",
+                "fr": "Les noms qu'une formule peut utiliser sont désormais des boutons au-dessus de vos résultats calculés : cliquez sur l'un d'eux et il s'insère là où se trouve votre curseur. Fini de taper de mémoire le nom d'un champ et de se tromper.",
+                "es": "Los nombres que una fórmula puede usar son ahora botones encima de sus resultados calculados: pulse uno y se inserta donde está su cursor. Se acabó escribir de memoria el nombre de un campo y equivocarse."
+            },
+            {
+                "en": "A formula the site refuses is now explained in your own language: it says which bracket is missing, or names the field you mistyped and the closest one that really exists.",
+                "fr": "Une formule refusée par le site est désormais expliquée dans votre langue : elle indique quelle parenthèse manque, ou nomme le champ mal orthographié et celui qui existe réellement et lui ressemble le plus.",
+                "es": "Una fórmula que el sitio rechaza se explica ahora en su propio idioma: indica qué paréntesis falta, o nombra el campo mal escrito y el más parecido que sí existe."
+            },
+            {
+                "en": "A calculator can now be read results first: a new switch on the form puts the numbers above the sliders on a phone, and in the left column on a wide screen.",
+                "fr": "Un calculateur peut désormais se lire résultats en premier : un nouvel interrupteur sur le formulaire place les nombres au-dessus des curseurs sur un téléphone, et dans la colonne de gauche sur un grand écran.",
+                "es": "Una calculadora puede leerse ahora con los resultados primero: un nuevo interruptor en el formulario coloca los números encima de los deslizadores en un teléfono, y en la columna izquierda en una pantalla ancha."
+            },
+            {
+                "en": "A calculator now reads as one panel of results, with the one figure you highlighted set apart as a card of its own. The value of a slider is shown on its own label line, written the way your language writes numbers.",
+                "fr": "Un calculateur se lit désormais comme un seul panneau de résultats, celui que vous avez mis en avant se détachant comme une carte à part. La valeur d'un curseur s'affiche sur la ligne de son intitulé, écrite comme votre langue écrit les nombres.",
+                "es": "Una calculadora se lee ahora como un único panel de resultados, con la cifra que usted destacó separada como una tarjeta propia. El valor de un deslizador se muestra en la línea de su etiqueta, escrito como su idioma escribe los números."
+            },
+            {
+                "en": "A form built on one site can now be sent to another: tick it in the list, use \"Export selection\", and import the file on the other site. Its fields and its formulas travel with it, so a calculator prepared on a test site is not retyped on the real one.",
+                "fr": "Un formulaire construit sur un site peut désormais être envoyé vers un autre : cochez-le dans la liste, utilisez « Exporter la sélection », puis importez le fichier sur l'autre site. Ses champs et ses formules voyagent avec lui, pour ne pas retaper sur le site réel un calculateur préparé sur un site de test.",
+                "es": "Un formulario creado en un sitio puede ahora enviarse a otro: márquelo en la lista, use «Exportar la selección» e importe el archivo en el otro sitio. Sus campos y sus fórmulas viajan con él, para no volver a escribir en el sitio real una calculadora preparada en uno de prueba."
+            },
+            {
+                "en": "A form placed on a page on its own no longer runs to the edges of the screen: it now keeps the same margins as the sections around it.",
+                "fr": "Un formulaire placé seul sur une page ne va plus jusqu'aux bords de l'écran : il conserve désormais les mêmes marges que les sections qui l'entourent.",
+                "es": "Un formulario colocado solo en una página ya no llega hasta los bordes de la pantalla: ahora conserva los mismos márgenes que las secciones que lo rodean."
             }
         ]
     },

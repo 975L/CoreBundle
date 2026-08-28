@@ -26,6 +26,10 @@
                 <source>description.guided_project_ui_ai_assistant</source>
                 <target>Mettre en place la clé de reformulation, puis l'essayer sur la zone de texte de l'écran avant d'appuyer sur ce bouton sous un vrai champ</target>
             </trans-unit>
+            <trans-unit id="zRr_CZb">
+                <source>description.guided_project_ui_calculator</source>
+                <target>Un formulaire qui calcule au lieu d'être envoyé : des curseurs, des formules, un chiffre mis en avant.</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Reprendre le contenu d'un e-mail que le site envoie, comme on reprend une page</target>
@@ -85,6 +89,42 @@
             <trans-unit id="yRkVSz0">
                 <source>description.guided_step_ui_ai_assistant_text</source>
                 <target>Cette zone de texte n'appartient à aucune page du site : ce qu'on y essaie est jeté, ce qui en fait l'endroit pour découvrir ce que donne la reformulation</target>
+            </trans-unit>
+            <trans-unit id="f.IANyC">
+                <source>description.guided_step_ui_calculator_fields</source>
+                <target>Curseur pour un réglage, nombre pour un prix. Remplissez min, max, pas et valeur par défaut : le résultat s'affiche avant qu'on touche à quoi que ce soit.</target>
+            </trans-unit>
+            <trans-unit id="vuN7w0F">
+                <source>description.guided_step_ui_calculator_hidden</source>
+                <target>Décochez « Affiché » : le résultat sert aux formules suivantes sans être montré. Un résultat ne lit que ceux placés au-dessus de lui, alors placez-les en premier.</target>
+            </trans-unit>
+            <trans-unit id="L6fBz95">
+                <source>description.guided_step_ui_calculator_highlighted</source>
+                <target>Cochez « Mis en avant » sur celui-là, et sur lui seul : il devient la grande carte au milieu du panneau.</target>
+            </trans-unit>
+            <trans-unit id="Urf9i7v">
+                <source>description.guided_step_ui_calculator_open</source>
+                <target>Un calculateur est un formulaire comme les autres. Laissez son action vide : il n'envoie rien.</target>
+            </trans-unit>
+            <trans-unit id="SvSDo2P">
+                <source>description.guided_step_ui_calculator_outputs</source>
+                <target>Un libellé, une formule. Copiez les noms de variables listés sous la collection plutôt que de les taper. Une formule fausse est refusée ici, jamais découverte par un visiteur.</target>
+            </trans-unit>
+            <trans-unit id="eyb3DIM">
+                <source>description.guided_step_ui_calculator_outputs_first</source>
+                <target>Activez pour que les résultats se lisent avant les champs : au-dessus d'eux sur un téléphone, à gauche sur un écran large.</target>
+            </trans-unit>
+            <trans-unit id="XNyuHgT">
+                <source>description.guided_step_ui_calculator_place</source>
+                <target>Dans les blocs de la page, ajoutez un bloc « formulaire » et choisissez celui-ci par son nom.</target>
+            </trans-unit>
+            <trans-unit id="r2TCR4M">
+                <source>description.guided_step_ui_calculator_reopen</source>
+                <target>L'enregistrement vous a ramené à la liste. Rouvrez le formulaire : les noms de variables y sont désormais affichés sous la collection des résultats.</target>
+            </trans-unit>
+            <trans-unit id="uartqWQ">
+                <source>description.guided_step_ui_calculator_save_fields</source>
+                <target>Le nom des variables est dérivé des libellés. Il n'apparaît qu'une fois les champs enregistrés.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -1870,6 +1910,14 @@
                 <source>label.form_new_message</source>
                 <target>Nouveau message via %form%</target>
             </trans-unit>
+            <trans-unit id="i14oDay">
+                <source>label.form_outputs_first</source>
+                <target>Résultats en premier</target>
+            </trans-unit>
+            <trans-unit id="R3IREA3">
+                <source>label.form_outputs_first_help</source>
+                <target>Le visiteur lit les résultats avant les champs : au-dessus d'eux sur un téléphone, dans la colonne de gauche sur un écran large.</target>
+            </trans-unit>
             <trans-unit id="PR6XC0B">
                 <source>label.form_picker_disabled_suffix</source>
                 <target> (désactivé)</target>
@@ -1889,6 +1937,10 @@
             <trans-unit id="EptgKcw">
                 <source>label.forms</source>
                 <target>Formulaires</target>
+            </trans-unit>
+            <trans-unit id="Wqd3pJd">
+                <source>label.formula_variables_hint</source>
+                <target>Cliquez dans une formule, puis sur une variable pour l'insérer :</target>
             </trans-unit>
             <trans-unit id="2MWiSL1">
                 <source>label.friday</source>
@@ -1990,6 +2042,10 @@
                 <source>label.guided_project_ui_ai_assistant</source>
                 <target>Faire reformuler un texte par Donovan</target>
             </trans-unit>
+            <trans-unit id="EsOjKAx">
+                <source>label.guided_project_ui_calculator</source>
+                <target>Construire un calculateur</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Personnaliser un e-mail</target>
@@ -2049,6 +2105,46 @@
             <trans-unit id="eMrSX2A">
                 <source>label.guided_step_ui_ai_assistant_text</source>
                 <target>Coller un texte à reformuler</target>
+            </trans-unit>
+            <trans-unit id="xuMz59Y">
+                <source>label.guided_step_ui_calculator_fields</source>
+                <target>Ajoutez ce que le visiteur règle</target>
+            </trans-unit>
+            <trans-unit id="EejW5Kj">
+                <source>label.guided_step_ui_calculator_hidden</source>
+                <target>Les calculs intermédiaires</target>
+            </trans-unit>
+            <trans-unit id="So2G1Ky">
+                <source>label.guided_step_ui_calculator_highlighted</source>
+                <target>Le chiffre qu'on est venu chercher</target>
+            </trans-unit>
+            <trans-unit id="vdCDS8b">
+                <source>label.guided_step_ui_calculator_new</source>
+                <target>Créez le formulaire</target>
+            </trans-unit>
+            <trans-unit id="QzgvZfg">
+                <source>label.guided_step_ui_calculator_open</source>
+                <target>Ouvrez un formulaire</target>
+            </trans-unit>
+            <trans-unit id="T2lkZdZ">
+                <source>label.guided_step_ui_calculator_outputs</source>
+                <target>Écrivez les résultats</target>
+            </trans-unit>
+            <trans-unit id="dZo4LbQ">
+                <source>label.guided_step_ui_calculator_outputs_first</source>
+                <target>L'ordre de lecture</target>
+            </trans-unit>
+            <trans-unit id="c4Z9NTD">
+                <source>label.guided_step_ui_calculator_place</source>
+                <target>Posez-le sur une page</target>
+            </trans-unit>
+            <trans-unit id="pB38cyY">
+                <source>label.guided_step_ui_calculator_reopen</source>
+                <target>Rouvrez-le pour les formules</target>
+            </trans-unit>
+            <trans-unit id="CwkgpFm">
+                <source>label.guided_step_ui_calculator_save_fields</source>
+                <target>Enregistrez avant d'écrire une formule</target>
             </trans-unit>
             <trans-unit id="I.z0lt6">
                 <source>label.guided_step_ui_email_template_attachments</source>
@@ -3505,6 +3601,26 @@
             <trans-unit id="bluaLIG">
                 <source>text.expression_forbidden_characters</source>
                 <target>Caractère non autorisé : seuls les nombres, les variables, les opérations + - * / et les parenthèses sont acceptés.</target>
+            </trans-unit>
+            <trans-unit id="4AMYnyE">
+                <source>text.expression_not_understood</source>
+                <target>La formule n'est pas comprise. Détail : %error%</target>
+            </trans-unit>
+            <trans-unit id="DGYB3ii">
+                <source>text.expression_unclosed_parenthesis</source>
+                <target>Il manque %missing% parenthèse(s) fermante(s).</target>
+            </trans-unit>
+            <trans-unit id="KSIHHWl">
+                <source>text.expression_unknown_variable</source>
+                <target>La variable « %variable% » n'existe pas. Utilisez la liste sous les résultats.</target>
+            </trans-unit>
+            <trans-unit id="L8A2crk">
+                <source>text.expression_unknown_variable_suggestion</source>
+                <target>La variable « %variable% » n'existe pas. Vouliez-vous dire « %suggestion% » ?</target>
+            </trans-unit>
+            <trans-unit id="DLmgP2d">
+                <source>text.expression_unopened_parenthesis</source>
+                <target>Il y a %missing% parenthèse(s) fermante(s) de trop.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>

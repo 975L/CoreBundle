@@ -91,6 +91,17 @@
     /* --favorite-off: color-mix(in srgb, var(--text) 25%, var(--background)); */
     /* --favorite-size: 1.5em; */
 
+    /* The calculator - a "form" block whose Form owns outputs. The panel its results are read in, the card
+       carrying the one figure the visitor came for, and what paints the sliders' filled track. All of them
+       follow the brand color, or a surface mixed out of it, so the calculator is the site's by default -
+       point the three colors at --secondary for a calculator meant to stand apart from the page around it */
+    /* --calculator-panel-background: var(--surface-alt); */
+    /* --calculator-panel-radius: var(--radius-panel); */
+    /* --calculator-highlight-background: var(--surface-accent); */
+    /* --calculator-highlight-color: var(--primary); */
+    /* --calculator-highlight-size: 2.6em; */
+    /* --calculator-slider-color: var(--primary); */
+
     /* Hero block - its own typographic scale, independent from the page's headings */
     /* --hero-title-size: clamp(40px, 6vw, 66px); */
     /* --hero-title-letter-spacing: -0.01em; */

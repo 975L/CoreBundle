@@ -30,6 +30,11 @@ class TaggedInterfacePass implements CompilerPassInterface
                 continue;
             }
 
+            // Symfony builds an abstract child definition per "_instanceof" rule a class matches (autoconfiguration, e.g. ResetInterface), and those carry the very class this pass looks at: tagging one has the container refuse to build, a tag collected by a tagged_iterator not being allowed on an abstract definition - and the real service beside it is tagged by this same loop anyway
+            if ($definition->isAbstract()) {
+                continue;
+            }
+
             try {
                 // Some vendor services (e.g. Symfony's translation extractor visitors) reference classes whose interfaces come from require-dev-only packages (e.g. nikic/php-parser), which aren't installed in prod (--no-dev)
                 if (is_subclass_of($class, $this->interface)) {

@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\Export\ContentExporter;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
@@ -18,16 +19,21 @@ use c975L\UiBundle\Form\FormFieldType;
 use c975L\UiBundle\Form\FormLinkType;
 use c975L\UiBundle\Form\FormOutputType;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
+use c975L\UiBundle\Management\FormExportProvider;
+use c975L\UiBundle\Management\FormImportProvider;
 use c975L\UiBundle\Registry\FormActionRegistry;
+use c975L\UiBundle\Repository\FormRepository;
 use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormFieldNamer;
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -40,6 +46,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -56,6 +64,9 @@ class FormCrudController extends AbstractCrudController
         private readonly AdminContextProvider $adminContextProvider,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly TranslatorInterface $translator,
+        private readonly FormRepository $formRepository,
+        private readonly FormExportProvider $formExportProvider,
+        private readonly ContentExporter $contentExporter,
     ) {
     }
 
@@ -156,6 +167,25 @@ class FormCrudController extends AbstractCrudController
         return $formBuilder;
     }
 
+    // Exports the checked Forms with their fields and their outputs as a downloadable zip, meant to be re-uploaded elsewhere through ConfigBundle's ContentImportController (see FormImportProvider) - the same admin gate the rest of this screen carries
+    #[AdminRoute]
+    public function exportSelection(AdminContext $context, BatchActionDto $batchActionDto): Response
+    {
+        $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
+
+        if (Form::class !== $batchActionDto->getEntityFqcn()) {
+            throw new BadRequestHttpException();
+        }
+
+        if (!$this->isCsrfTokenValid('ea-batch-action-exportSelection-' . $batchActionDto->getEntityFqcn(), $batchActionDto->getCsrfToken())) {
+            return $this->redirect($this->adminUrlGenerator->setController(self::class)->setAction(Action::INDEX)->generateUrl());
+        }
+
+        $data = $this->formExportProvider->serialize($this->formRepository->findBy(['id' => $batchActionDto->getEntityIds()]));
+
+        return $this->contentExporter->export(FormImportProvider::KIND, $data['items'], $data['files']);
+    }
+
     #[\Override]
     public function configureFields(string $pageName): iterable
     {
@@ -187,6 +217,12 @@ class FormCrudController extends AbstractCrudController
                 ->setLabel(t('label.restricted', [], 'ui'))
                 ->setFormTypeOption('disabled', true)
                 ->hideOnIndex(),
+            // Which column a calculator's visitor reads first, which neither collection's own ordering can say - with the two switches above rather than beside the outputs it moves, the three settings of the Form itself reading as one group before its collections. Inert on a Form owning no output
+            BooleanField::new('outputsFirst')
+                ->setLabel(t('label.form_outputs_first', [], 'ui'))
+                ->setHelp(t('label.form_outputs_first_help', [], 'ui'))
+                ->renderAsSwitch(true)
+                ->hideOnIndex(),
             CollectionField::new('fields')
                 ->setLabel(t('label.fields', [], 'ui'))
                 ->setEntryType(FormFieldType::class)
@@ -212,6 +248,12 @@ class FormCrudController extends AbstractCrudController
                 ->setFormTypeOption('by_reference', false)
                 // The variable names as they stand right now, spelled out rather than left to be guessed: they are slugs derived from the labels (see FormFieldNamer), so "Prix de l'E85" is neither "prixE85" nor "prix_de_l_e85" but something only the slugger knows. A field added and not yet saved isn't in there, which the help says
                 ->setHelp($this->outputsHelp($entity instanceof Form ? $entity : null))
+                // Three attributes on the one row, all read from the client: the first is what the "ui-calculator" guided project highlights (EasyAdmin puts no id on a collection's row - see its crud/form_theme.html.twig - so a collection carrying nothing of its own is a step with nothing to point at), the next two are what assets/js/formula-variables.js builds its insert-a-variable bar out of. The names are handed over as json rather than re-derived in JS, being slugs only FormFieldNamer knows how to make
+                ->setFormTypeOption('row_attr', [
+                    'data-form-outputs-collection' => 'true',
+                    'data-form-outputs-variables' => json_encode($entity instanceof Form ? $this->expressionEvaluator->variableNames($entity) : [], \JSON_THROW_ON_ERROR),
+                    'data-form-outputs-variables-hint' => $this->translator->trans('label.formula_variables_hint', [], 'ui'),
+                ])
                 ->hideOnIndex(),
             // Not a Doctrine association but a virtual property backed by Form::$actionConfig (see Form::getLinks()) - declared after "actionConfigJson" so a save writes the raw JSON first and these links on top of it, never the other way round
             CollectionField::new('links')
@@ -250,8 +292,15 @@ class FormCrudController extends AbstractCrudController
             ->linkToCrudAction(Action::INDEX)
             ->addCssClass('btn btn-secondary');
 
+        // Same "export selection" as PageCrudController::exportSelection() - a calculator is built and checked on one environment and read on another, and its formulas are the one kind of content no deployment carries
+        $exportAction = Action::new('exportSelection', t('action.export_selection', [], 'ui'), 'fa fa-file-export')
+            ->createAsBatchAction()
+            ->linkToCrudAction('exportSelection');
+
         return $actions
             ->add(Crud::PAGE_INDEX, $formFieldTemplatesAction)
+            ->add(Crud::PAGE_INDEX, $exportAction)
+            ->setPermission('exportSelection', $role)
             ->add(Crud::PAGE_NEW, $cancelAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
             ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => $action->setLabel(false)->setIcon('fas fa-pencil'))

@@ -52,7 +52,14 @@ export default class extends Controller {
             input.after(readout);
             this.readouts.set(input, readout);
         }
-        readout.textContent = input.value;
+        readout.textContent = this.grouped(input.value);
+    }
+
+    // Grouped the way the page's own language groups a number - "15 000" on a French page, never "15000". The document's language and not the browser's: this sits beside results the server formatted in that same language, and a visitor arriving with an English browser must not read the two differently
+    grouped(value) {
+        const number = Number(value);
+
+        return Number.isFinite(number) ? number.toLocaleString(document.documentElement.lang || undefined) : value;
     }
 
     schedule() {

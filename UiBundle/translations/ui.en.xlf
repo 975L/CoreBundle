@@ -26,6 +26,10 @@
                 <source>description.guided_project_ui_ai_assistant</source>
                 <target>Set up the rephrasing key, then try it out on the screen's own textarea before ever pressing that button under a real field</target>
             </trans-unit>
+            <trans-unit id="zRr_CZb">
+                <source>description.guided_project_ui_calculator</source>
+                <target>A form that computes instead of being sent: sliders, formulas, one figure held up.</target>
+            </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
                 <target>Rework the content of an e-mail the site sends, the same way a page is reworked</target>
@@ -85,6 +89,42 @@
             <trans-unit id="yRkVSz0">
                 <source>description.guided_step_ui_ai_assistant_text</source>
                 <target>This textarea belongs to no page of the site: whatever is tried in it is thrown away, which is what makes it the place to find out what the rephrasing gives</target>
+            </trans-unit>
+            <trans-unit id="f.IANyC">
+                <source>description.guided_step_ui_calculator_fields</source>
+                <target>A range for a setting, a number for a price. Fill in min, max, step and default value: the result shows before anything is touched.</target>
+            </trans-unit>
+            <trans-unit id="vuN7w0F">
+                <source>description.guided_step_ui_calculator_hidden</source>
+                <target>Untick "Shown": the result feeds the formulas below it without being displayed. A result only reads the ones placed above it, so put those first.</target>
+            </trans-unit>
+            <trans-unit id="L6fBz95">
+                <source>description.guided_step_ui_calculator_highlighted</source>
+                <target>Tick "Highlighted" on that one, and on that one only: it becomes the large card in the middle of the panel.</target>
+            </trans-unit>
+            <trans-unit id="Urf9i7v">
+                <source>description.guided_step_ui_calculator_open</source>
+                <target>A calculator is an ordinary form. Leave its action empty: it sends nothing.</target>
+            </trans-unit>
+            <trans-unit id="SvSDo2P">
+                <source>description.guided_step_ui_calculator_outputs</source>
+                <target>A label, a formula. Copy the variable names listed under the collection rather than typing them. A wrong formula is refused here, never found by a visitor.</target>
+            </trans-unit>
+            <trans-unit id="eyb3DIM">
+                <source>description.guided_step_ui_calculator_outputs_first</source>
+                <target>Switch it on for the results to be read before the fields: above them on a phone, on the left on a wide screen.</target>
+            </trans-unit>
+            <trans-unit id="XNyuHgT">
+                <source>description.guided_step_ui_calculator_place</source>
+                <target>In the page's blocks, add a "form" block and pick this one by its name.</target>
+            </trans-unit>
+            <trans-unit id="r2TCR4M">
+                <source>description.guided_step_ui_calculator_reopen</source>
+                <target>Saving brought you back to the list. Reopen the form: the variable names are now listed under the outputs collection.</target>
+            </trans-unit>
+            <trans-unit id="uartqWQ">
+                <source>description.guided_step_ui_calculator_save_fields</source>
+                <target>Variable names are derived from the labels. They only appear once the fields are saved.</target>
             </trans-unit>
             <trans-unit id="Sz9PehJ">
                 <source>description.guided_step_ui_email_template_attachments</source>
@@ -1870,6 +1910,14 @@
                 <source>label.form_new_message</source>
                 <target>New message via %form%</target>
             </trans-unit>
+            <trans-unit id="i14oDay">
+                <source>label.form_outputs_first</source>
+                <target>Results first</target>
+            </trans-unit>
+            <trans-unit id="R3IREA3">
+                <source>label.form_outputs_first_help</source>
+                <target>The visitor reads the results before the fields: above them on a phone, in the left column on a wide screen.</target>
+            </trans-unit>
             <trans-unit id="PR6XC0B">
                 <source>label.form_picker_disabled_suffix</source>
                 <target> (disabled)</target>
@@ -1889,6 +1937,10 @@
             <trans-unit id="EptgKcw">
                 <source>label.forms</source>
                 <target>Forms</target>
+            </trans-unit>
+            <trans-unit id="Wqd3pJd">
+                <source>label.formula_variables_hint</source>
+                <target>Click in a formula, then on a variable to insert it:</target>
             </trans-unit>
             <trans-unit id="2MWiSL1">
                 <source>label.friday</source>
@@ -1990,6 +2042,10 @@
                 <source>label.guided_project_ui_ai_assistant</source>
                 <target>Have Donovan rephrase a text</target>
             </trans-unit>
+            <trans-unit id="EsOjKAx">
+                <source>label.guided_project_ui_calculator</source>
+                <target>Build a calculator</target>
+            </trans-unit>
             <trans-unit id="j0VRPpz">
                 <source>label.guided_project_ui_email_template</source>
                 <target>Tailor an e-mail</target>
@@ -2049,6 +2105,46 @@
             <trans-unit id="eMrSX2A">
                 <source>label.guided_step_ui_ai_assistant_text</source>
                 <target>Paste a text to rephrase</target>
+            </trans-unit>
+            <trans-unit id="xuMz59Y">
+                <source>label.guided_step_ui_calculator_fields</source>
+                <target>Add what the visitor sets</target>
+            </trans-unit>
+            <trans-unit id="EejW5Kj">
+                <source>label.guided_step_ui_calculator_hidden</source>
+                <target>Intermediate results</target>
+            </trans-unit>
+            <trans-unit id="So2G1Ky">
+                <source>label.guided_step_ui_calculator_highlighted</source>
+                <target>The figure they came for</target>
+            </trans-unit>
+            <trans-unit id="vdCDS8b">
+                <source>label.guided_step_ui_calculator_new</source>
+                <target>Create the form</target>
+            </trans-unit>
+            <trans-unit id="QzgvZfg">
+                <source>label.guided_step_ui_calculator_open</source>
+                <target>Open a form</target>
+            </trans-unit>
+            <trans-unit id="T2lkZdZ">
+                <source>label.guided_step_ui_calculator_outputs</source>
+                <target>Write the results</target>
+            </trans-unit>
+            <trans-unit id="dZo4LbQ">
+                <source>label.guided_step_ui_calculator_outputs_first</source>
+                <target>The reading order</target>
+            </trans-unit>
+            <trans-unit id="c4Z9NTD">
+                <source>label.guided_step_ui_calculator_place</source>
+                <target>Put it on a page</target>
+            </trans-unit>
+            <trans-unit id="pB38cyY">
+                <source>label.guided_step_ui_calculator_reopen</source>
+                <target>Reopen it for the formulas</target>
+            </trans-unit>
+            <trans-unit id="CwkgpFm">
+                <source>label.guided_step_ui_calculator_save_fields</source>
+                <target>Save before writing a formula</target>
             </trans-unit>
             <trans-unit id="I.z0lt6">
                 <source>label.guided_step_ui_email_template_attachments</source>
@@ -3505,6 +3601,26 @@
             <trans-unit id="bluaLIG">
                 <source>text.expression_forbidden_characters</source>
                 <target>Forbidden character: only numbers, variables, the + - * / operations and parentheses are accepted.</target>
+            </trans-unit>
+            <trans-unit id="4AMYnyE">
+                <source>text.expression_not_understood</source>
+                <target>The formula can't be read. Detail: %error%</target>
+            </trans-unit>
+            <trans-unit id="DGYB3ii">
+                <source>text.expression_unclosed_parenthesis</source>
+                <target>%missing% closing bracket(s) missing.</target>
+            </trans-unit>
+            <trans-unit id="KSIHHWl">
+                <source>text.expression_unknown_variable</source>
+                <target>There is no variable "%variable%". Use the list under the results.</target>
+            </trans-unit>
+            <trans-unit id="L8A2crk">
+                <source>text.expression_unknown_variable_suggestion</source>
+                <target>There is no variable "%variable%". Did you mean "%suggestion%"?</target>
+            </trans-unit>
+            <trans-unit id="DLmgP2d">
+                <source>text.expression_unopened_parenthesis</source>
+                <target>%missing% closing bracket(s) too many.</target>
             </trans-unit>
             <trans-unit id="UAH_ycC">
                 <source>text.form_required_note</source>

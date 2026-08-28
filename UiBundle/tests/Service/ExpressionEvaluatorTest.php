@@ -23,7 +23,10 @@ class ExpressionEvaluatorTest extends TestCase
     private function createEvaluator(string $locale = 'fr'): ExpressionEvaluator
     {
         $translator = $this->createStub(TranslatorInterface::class);
-        $translator->method('trans')->willReturnArgument(0);
+        // The key, plus whatever was substituted into it: a lint message now carries the name that was mistyped, the one it suggests instead or the parser's own wording, and a stub answering the key alone would hide all three
+        $translator->method('trans')->willReturnCallback(
+            static fn (string $id, array $parameters = []): string => [] === $parameters ? $id : $id . ' ' . implode(' ', $parameters)
+        );
         $translator->method('getLocale')->willReturn($locale);
 
         return new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator);
@@ -196,5 +199,46 @@ class ExpressionEvaluatorTest extends TestCase
         // Symfony registers constant() and enum() by default: both would let an admin-typed formula read outside the values handed to it, and CalculatorExpressionLanguage drops them by never calling the parent. Written without quotes on purpose, so what fails is the missing function and not the character allowlist
         $this->assertStringContainsString('constant', (string) $this->createEvaluator()->lint('constant(a)', ['a']));
         $this->assertStringContainsString('enum', (string) $this->createEvaluator()->lint('enum(a)', ['a']));
+    }
+
+    // A name the Form does not declare is caught before the parser, so what the admin reads is this bundle's own wording and not the component's English - with the name they most likely meant beside it
+    public function testLintNamesTheClosestVariableToTheOneThatWasMistyped(): void
+    {
+        $message = (string) $this->createEvaluator()->lint('litres_de_sp95_par_am * 2', ['litres_de_sp95_par_an', 'budget_e85']);
+
+        $this->assertStringStartsWith('text.expression_unknown_variable_suggestion', $message);
+        $this->assertStringContainsString('litres_de_sp95_par_am', $message);
+        $this->assertStringContainsString('litres_de_sp95_par_an', $message);
+    }
+
+    // Nothing close enough is worse than nothing at all: a suggestion the admin never typed sends them looking for a variable that has no bearing on their mistake
+    public function testLintSuggestsNothingWhenNoDeclaredNameIsClose(): void
+    {
+        $this->assertSame(
+            'text.expression_unknown_variable toto',
+            $this->createEvaluator()->lint('toto * 2', ['litres_de_sp95_par_an'])
+        );
+    }
+
+    // The six functions are called by name and followed by "(", which is what tells them from a variable - a check reading them as one would refuse every formula that rounds
+    public function testLintDoesNotReadAFunctionNameAsAVariable(): void
+    {
+        $this->assertNull($this->createEvaluator()->lint('round(max(a, 2) / 3, 1)', ['a']));
+    }
+
+    // Counted rather than left to the parser, whose own message names a character position instead of saying which way the brackets fail to match
+    public function testLintSaysWhichWayTheBracketsAreUnbalanced(): void
+    {
+        $this->assertSame('text.expression_unclosed_parenthesis 1', $this->createEvaluator()->lint('(a + 2', ['a']));
+        $this->assertSame('text.expression_unopened_parenthesis 1', $this->createEvaluator()->lint('a + 2)', ['a']));
+    }
+
+    // What none of the three checks above catch is still led in the admin's own language, the parser's wording kept behind it rather than dropped
+    public function testLintLeadsInItsOwnWordingAndKeepsTheParsersDetail(): void
+    {
+        $message = (string) $this->createEvaluator()->lint('a * * 2', ['a']);
+
+        $this->assertStringStartsWith('text.expression_not_understood', $message);
+        $this->assertStringContainsString('position', $message);
     }
 }

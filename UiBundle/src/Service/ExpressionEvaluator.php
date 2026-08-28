@@ -68,13 +68,84 @@ class ExpressionEvaluator
             return $this->translator->trans('text.expression_forbidden_characters', [], 'ui');
         }
 
+        // Counted here rather than left to the parser: an unclosed bracket is what a long formula actually gets wrong, and saying which way it is unbalanced beats naming the character position it was noticed at
+        if (null !== $parenthesis = $this->unbalancedParenthesis($expression)) {
+            return $parenthesis;
+        }
+
+        // Checked before the parser, which finds the same mistake and reports it in a language this bundle does not choose: the admin gets the name they mistyped, and the closest one that exists, in the language they are working in
+        if (null !== $variable = $this->unknownVariable($expression, $variableNames)) {
+            return $variable;
+        }
+
         try {
             $this->expressionLanguage->lint($expression, $variableNames);
         } catch (SyntaxError $e) {
-            return $e->getMessage();
+            // Whatever the three checks above did not catch - an operator in the wrong place, a function called with too few arguments. Led in the admin's own language, the parser's own wording kept behind it rather than dropped: it names the position, which nothing here can
+            return $this->translator->trans('text.expression_not_understood', ['%error%' => $e->getMessage()], 'ui');
         }
 
         return null;
+    }
+
+    // Which way the brackets fail to match, or null when they do
+    private function unbalancedParenthesis(string $expression): ?string
+    {
+        $open = substr_count($expression, '(');
+        $close = substr_count($expression, ')');
+
+        if ($open === $close) {
+            return null;
+        }
+
+        return $this->translator->trans(
+            $open > $close ? 'text.expression_unclosed_parenthesis' : 'text.expression_unopened_parenthesis',
+            ['%missing%' => abs($open - $close)],
+            'ui'
+        );
+    }
+
+    /** @param list<string> $variableNames */
+    private function unknownVariable(string $expression, array $variableNames): ?string
+    {
+        // A name followed by "(" is a function call and not a variable - the possessive quantifier is what stops "round(" from matching as the variable "roun", the parser's own six names being its business anyway
+        preg_match_all('/[A-Za-z_][A-Za-z0-9_]*+(?!\s*\()/', $expression, $matches);
+
+        foreach ($matches[0] as $name) {
+            if (in_array($name, $variableNames, true)) {
+                continue;
+            }
+
+            $closest = $this->closestName($name, $variableNames);
+
+            return null === $closest
+                ? $this->translator->trans('text.expression_unknown_variable', ['%variable%' => $name], 'ui')
+                : $this->translator->trans('text.expression_unknown_variable_suggestion', ['%variable%' => $name, '%suggestion%' => $closest], 'ui');
+        }
+
+        return null;
+    }
+
+    /**
+     * The name the admin most likely meant, or null when none is close enough to be worth naming.
+     *
+     * @param list<string> $variableNames
+     */
+    private function closestName(string $name, array $variableNames): ?string
+    {
+        // A third of the name's own length, so a long variable tolerates the handful of characters a short one must not: "budget_e85" suggested for "budget_e58", nothing suggested for "toto"
+        $tolerance = max(2, (int) (mb_strlen($name) / 3));
+        $closest = null;
+
+        foreach ($variableNames as $candidate) {
+            $distance = levenshtein($name, $candidate);
+            if ($distance <= $tolerance) {
+                $tolerance = $distance;
+                $closest = $candidate;
+            }
+        }
+
+        return $closest;
     }
 
     /**

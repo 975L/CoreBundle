@@ -22,6 +22,10 @@ picked up by a compiler pass (`TaggedInterfacePass`). **There is no service tag 
 The single thing to check: your bundle's `services.yaml` must cover `Management/` in its `src/`
 resource. A class outside the scanned resource is never registered, and nothing reports it.
 
+The pass skips **abstract** definitions: Symfony builds one per `_instanceof` rule a class matches, so
+a provider also implementing an autoconfigured interface (`ResetInterface`, say) had one carrying its
+own class name — tagged, it made the container refuse to build.
+
 ```php
 namespace c975L\MyBundle\Management;
 

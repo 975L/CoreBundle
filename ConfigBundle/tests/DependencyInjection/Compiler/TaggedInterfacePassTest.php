@@ -50,4 +50,15 @@ class TaggedInterfacePassTest extends TestCase
 
         $this->assertFalse($container->getDefinition('unresolvable')->hasTag('c975l_config.alert_provider'));
     }
+
+    // Symfony builds one abstract child definition per "_instanceof" rule a class matches - a class implementing both a tagged interface and an autoconfigured one (ResetInterface, say) has one of those carrying its own class name. Tagged, it has the container refuse to build: a tag a tagged_iterator collects may not sit on an abstract definition
+    public function testProcessLeavesAbstractDefinitionsAlone(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register('.abstract.instanceof.provider', TaggedInterfacePassFixtureProvider::class)->setAbstract(true);
+
+        new TaggedInterfacePass(AlertProviderInterface::class, 'c975l_config.alert_provider')->process($container);
+
+        $this->assertFalse($container->getDefinition('.abstract.instanceof.provider')->hasTag('c975l_config.alert_provider'));
+    }
 }

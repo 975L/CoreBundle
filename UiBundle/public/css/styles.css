@@ -62,6 +62,12 @@
     --button-grey-background: lightgrey;
     --button-grey-color: #000;
     --button-status-color: #fff;
+    --calculator-highlight-background: var(--surface-accent);
+    --calculator-highlight-color: var(--primary);
+    --calculator-highlight-size: 2.6em;
+    --calculator-panel-background: var(--surface-alt);
+    --calculator-panel-radius: var(--radius-panel);
+    --calculator-slider-color: var(--primary);
     --card-background: #fff;
     --card-title-size: calc(19px * var(--font-size-title-scale, 1));
     --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1));
@@ -682,22 +688,98 @@ button.btn {
 /* CALCULATOR */
 .ui-calculator {
   display: grid;
-  gap: 1.5em;
+  gap: 2em;
+}
+
+.blocks > .ui-calculator,
+.block-animation > .ui-calculator,
+.block-editable > .ui-calculator {
+  --calculator-gutter: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+  box-sizing: border-box;
+  width: calc(100% - 2 * var(--calculator-gutter));
+  max-width: calc(var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--calculator-gutter));
+  margin-inline: auto;
 }
 
 @media (min-width: 48em) {
   .ui-calculator {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: start;
   }
   .ui-calculator > p {
     grid-column: 1/-1;
   }
 }
+.ui-calculator-outputs-first .ui-calculator-results {
+  order: -1;
+}
+
+.ui-calculator-fields,
+.ui-calculator-fields > div {
+  display: grid;
+  gap: 1.5em;
+}
+
+.ui-calculator-fields div:has(> input, > select, > textarea) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 1em;
+  row-gap: 0.5em;
+}
+
+.ui-calculator-fields div:has(> input, > select, > textarea) > * {
+  grid-column: 1/-1;
+}
+
+.ui-calculator-fields div:has(> input, > select, > textarea) > label {
+  grid-column: 1;
+  grid-row: 1;
+  margin-bottom: 0;
+}
+
+.ui-calculator-fields div:has(> input, > select, > textarea) > .ui-calculator-readout {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.ui-calculator-fields div:has(> input, > select, > textarea) > input,
+.ui-calculator-fields div:has(> input, > select, > textarea) > select {
+  margin-block: 0;
+}
+
+.ui-calculator input[type=range] {
+  width: 100%;
+  height: 1.6em;
+  accent-color: var(--calculator-slider-color);
+  cursor: pointer;
+}
+
+.ui-calculator-readout {
+  padding: 0.1em 0.5em;
+  border-radius: var(--radius-btn);
+  background-color: var(--surface-alt);
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ui-calculator select {
+  width: 100%;
+  padding: 6px 12px;
+  background-color: var(--input-background);
+  border: 1px solid transparent;
+  border-bottom: 2px solid var(--input-border-bottom-color);
+  color: var(--form-input-color);
+}
+
 .ui-calculator-results {
   display: grid;
-  gap: 0.5em;
   align-content: start;
+  padding: 1.25em;
+  border: 1px solid var(--border-color);
+  border-radius: var(--calculator-panel-radius);
+  background-color: var(--calculator-panel-background);
 }
 
 .ui-calculator-result {
@@ -706,10 +788,12 @@ button.btn {
   justify-content: space-between;
   align-items: baseline;
   gap: 0.5em;
-  padding: 0.6em 0.8em;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  background-color: var(--surface-alt);
+  padding-block: 0.7em;
+  border-top: 1px solid var(--border-color);
+}
+
+.ui-calculator-result:first-child {
+  border-top: 0;
 }
 
 .ui-calculator-result-value {
@@ -719,24 +803,27 @@ button.btn {
 }
 
 .ui-calculator-result-highlighted {
-  border-color: var(--border-accent);
-  background-color: var(--surface-accent);
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+  gap: 0.15em;
+  margin-block: 0.6em;
+  padding: 1.1em 1em;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-card);
+  background-color: var(--calculator-highlight-background);
+  text-align: center;
+}
+
+.ui-calculator-result-highlighted + .ui-calculator-result {
+  border-top: 0;
 }
 
 .ui-calculator-result-highlighted .ui-calculator-result-value {
-  font-size: 1.6em;
-  color: var(--primary);
-}
-
-.ui-calculator input[type=range] {
-  width: 100%;
-}
-
-.ui-calculator-readout {
-  display: block;
-  text-align: right;
-  font-weight: bold;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-family-title);
+  font-size: var(--calculator-highlight-size);
+  line-height: 1.1;
+  color: var(--calculator-highlight-color);
 }
 
 /* CARDS */

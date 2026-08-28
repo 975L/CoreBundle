@@ -49,6 +49,10 @@ class Form implements \Stringable
     #[ORM\Column(options: ['default' => true])]
     private bool $enabled = true;
 
+    // Which of the two columns a calculator is read first - the numbers or the controls that move them. Its own setting because the two collections' own ordering cannot express it: dragging an output only moves it among the outputs, and that order is the calculation's anyway, an expression seeing nothing but what sits above it. Read by Calculator.html.twig, which hands it to sass/_calculator.scss as a class
+    #[ORM\Column(options: ['default' => false])]
+    private bool $outputsFirst = false;
+
     #[ORM\OneToMany(mappedBy: 'form', targetEntity: FormField::class, cascade: ['persist'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $fields;
@@ -190,6 +194,18 @@ class Form implements \Stringable
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function isOutputsFirst(): bool
+    {
+        return $this->outputsFirst;
+    }
+
+    public function setOutputsFirst(bool $outputsFirst): self
+    {
+        $this->outputsFirst = $outputsFirst;
 
         return $this;
     }

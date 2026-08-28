@@ -26,7 +26,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the four occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
+// This bundle's guided projects, running the 3000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. They open on the media library first, the one screen of this bundle the sidebar keeps essential, then the three a site puts in place as it opens (its graphics, its legal documents, the key its rephrasing runs on), the five occasional ones last. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see ConfigBundle's assets/js/guided-project.js)
 class UiGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -46,6 +46,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->legalModelProject(),
             $this->aiAssistantProject(),
             $this->formProject(),
+            $this->calculatorProject(),
             $this->formFieldTemplateProject(),
             $this->emailTemplateProject(),
             $this->fontProject(),
@@ -67,8 +68,8 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_review',
             'description' => 'description.guided_project_ui_review',
             'translation_domain' => 'ui',
-            // Last of the nine, the walk-through being appended after the eight above
-            'order' => 3090,
+            // Last of the ten, the walk-through being appended after the nine above
+            'order' => 3100,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [
                 [
@@ -340,6 +341,71 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         ];
     }
 
+    // The same screen as the project above, walked for what turns a form into a calculator - kept apart rather than tacked onto it: a contact form has no formula to write, and the two orders that matter here (save the fields before naming their variables, place an output under the ones it reads) are the whole of what an admin gets wrong on their own
+    private function calculatorProject(): array
+    {
+        return [
+            'slug' => 'ui-calculator',
+            'label' => 'label.guided_project_ui_calculator',
+            'description' => 'description.guided_project_ui_calculator',
+            'translation_domain' => 'ui',
+            // Right after the form it extends, and before the field catalog both of them pick from
+            'order' => 3060,
+            // The screen's own gate, the same FormCrudController sets
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_calculator_open',
+                    'description' => 'description.guided_step_ui_calculator_open',
+                    'url' => $this->indexUrl(FormCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_new',
+                    'highlight' => '.action-new',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_fields',
+                    'description' => 'description.guided_step_ui_calculator_fields',
+                    'highlight' => '[data-form-field-template-catalog-url]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_save_fields',
+                    'description' => 'description.guided_step_ui_calculator_save_fields',
+                    // Not ".action-saveAndContinue": EasyAdmin only offers that one on an edit page, and this parcours walks an admin creating their first calculator
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    // Saving returned to the index, and every step below points at the edit page again - so the parcours has to send the admin back into it rather than highlight nothing
+                    'label' => 'label.guided_step_ui_calculator_reopen',
+                    'description' => 'description.guided_step_ui_calculator_reopen',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_outputs',
+                    'description' => 'description.guided_step_ui_calculator_outputs',
+                    'highlight' => '[data-form-outputs-collection]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_hidden',
+                    'description' => 'description.guided_step_ui_calculator_hidden',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_highlighted',
+                    'description' => 'description.guided_step_ui_calculator_highlighted',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_outputs_first',
+                    'description' => 'description.guided_step_ui_calculator_outputs_first',
+                    'highlight' => '#Form_outputsFirst',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_calculator_place',
+                    'description' => 'description.guided_step_ui_calculator_place',
+                ],
+            ],
+        ];
+    }
+
     // A field set up once is dropped into any form in one click, always worded the same way - the catalog the "fields" collection of the previous project picks from, which no sidebar entry ever names
     private function formFieldTemplateProject(): array
     {
@@ -349,7 +415,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'description' => 'description.guided_project_ui_form_field_template',
             'translation_domain' => 'ui',
             // Slotted between the forms and the e-mail templates, the two screens whose own toolbar opens this catalog, rather than appended after the sequence it belongs in the middle of
-            'order' => 3060,
+            'order' => 3070,
             // The gate FormFieldTemplateCrudController sets on every one of its actions, its own catalog() included
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -403,7 +469,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_email_template',
             'description' => 'description.guided_project_ui_email_template',
             'translation_domain' => 'ui',
-            'order' => 3070,
+            'order' => 3080,
             // Same gate as FormCrudController, and for the same reason: what an e-mail template holds is sent to real people
             'role' => $this->configService->get('site-role-admin'),
             'steps' => [
@@ -447,7 +513,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_font',
             'description' => 'description.guided_project_ui_font',
             'translation_domain' => 'ui',
-            'order' => 3080,
+            'order' => 3090,
             // The screen this walks is the editor's; only its "exportSelection" is stricter, and no step here uses it (see FontCrudController)
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

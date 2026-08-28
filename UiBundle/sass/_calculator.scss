@@ -6,16 +6,32 @@
  * with this source code in the file LICENSE.
  */
 /* CALCULATOR */
-// The "form" Block rendering a Form that owns FormOutput rows (components/Form/Calculator.html.twig): the inputs are dressed by _forms.scss like any other form's, everything here is the results column beside them
+// What a field's row actually is: a div holding a field. Matched that way and not as "> div", because form_widget() on the root form wraps every row in one container div of its own (Symfony's form_div_layout does) - the rows sit a level deeper than the template suggests, and a form theme is free to move that level again
+$row: '.ui-calculator-fields div:has(> input, > select, > textarea)';
+
+// The "form" Block rendering a Form that owns FormOutput rows (components/Form/Calculator.html.twig): the fields a visitor moves on one side, the panel the numbers are read in on the other. The inputs are dressed by _forms.scss like any other form's - only what a slider and a result need on top is written here. The order the two columns and the fields inside them are read in is the admin's, as the form builder ordered them: nothing here reorders anything
 .ui-calculator {
     display: grid;
-    gap: 1.5em;
+    gap: 2em;
+}
+
+// A bare "form" block hangs straight under ".blocks", with no ".section-wrap" to measure it, so it ran the full page width and touched the viewport edges while every section around it stopped at the shared measure - the same treatment sass/_contact-details.scss gives its own panel
+// Mobile first: the calculator takes the room it is given and only stops growing once it reaches that measure
+// Gutters as margins, not padding: the results panel paints a border and a background, which stay inside them, and the calc() takes them off the measure so the fields line up with a neighbouring ".section-wrap"
+.blocks > .ui-calculator,
+.block-animation > .ui-calculator,
+.block-editable > .ui-calculator {
+    --calculator-gutter: var(--section-wrap-gutter, clamp(20px, 5vw, 64px));
+    box-sizing: border-box;
+    width: calc(100% - 2 * var(--calculator-gutter));
+    max-width: calc(var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--calculator-gutter));
+    margin-inline: auto;
 }
 
 // Side by side once there is room for two readable columns, the fields being no use without the numbers they move
 @media (min-width: 48em) {
     .ui-calculator {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         align-items: start;
     }
 
@@ -25,10 +41,87 @@
     }
 }
 
+// The admin's own call, from the "outputs first" switch on the Form (see Calculator.html.twig): the numbers read before the controls that move them - above them on a phone, in the left column once the two sit side by side. Visual order only, and safe to part from the DOM's: the panel holds no focusable element, so nothing is reached in an order it is not read in
+.ui-calculator-outputs-first .ui-calculator-results {
+    order: -1;
+}
+
+// The list itself and the container form_widget() wraps the rows in, so the fields are spaced the same whether the form theme adds that level or not
+.ui-calculator-fields,
+.ui-calculator-fields > div {
+    display: grid;
+    gap: 1.5em;
+}
+
+// The row turned into a two-column grid: the value being dragged then sits on its label's own line rather than under the slider, which is the only place an <output> can be inserted from (see assets/js/calculator.js)
+#{$row} {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: 1em;
+    row-gap: 0.5em;
+}
+
+// Everything else the row carries - the field itself, its help text, its errors - takes the whole width under those two
+#{$row} > * {
+    grid-column: 1 / -1;
+}
+
+#{$row} > label {
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 0;
+}
+
+#{$row} > .ui-calculator-readout {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+// The row gap above is what spaces the fields now, so the margins _forms.scss gives an input on its own no longer apply - the ":has()" already carries the specificity that file's own rules would otherwise win on, this one being compiled first
+#{$row} > input,
+#{$row} > select {
+    margin-block: 0;
+}
+
+// A range input carries no readout of its own, in any browser: assets/js/calculator.js writes the value being dragged into the <output> beside it
+.ui-calculator input[type="range"] {
+    width: 100%;
+    // Wider than the track it draws: the extra room is the hit area a finger has to find on a phone
+    height: 1.6em;
+    accent-color: var(--calculator-slider-color);
+    cursor: pointer;
+}
+
+// The value read at a glance while the slider moves - a chip, so it holds its ground against the label facing it
+.ui-calculator-readout {
+    padding: 0.1em 0.5em;
+    border-radius: var(--radius-btn);
+    background-color: var(--surface-alt);
+    font-weight: bold;
+    // Digits of the same width, so a number changing under a slider stops the whole row from jittering
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+// A <select> gets none of the treatment _forms.scss gives the text inputs, and a calculator puts one straight beside them - it is given the same underline here rather than there, where it would move every form in every c975L bundle at once
+.ui-calculator select {
+    width: 100%;
+    padding: 6px 12px;
+    background-color: var(--input-background);
+    border: 1px solid transparent;
+    border-bottom: 2px solid var(--input-border-bottom-color);
+    color: var(--form-input-color);
+}
+
+// One panel holding the whole answer, rather than a stack of boxes: the rows inside it are told apart by a hairline, which is what lets the highlighted one read as the only object on the column
 .ui-calculator-results {
     display: grid;
-    gap: 0.5em;
     align-content: start;
+    padding: 1.25em;
+    border: 1px solid var(--border-color);
+    border-radius: var(--calculator-panel-radius);
+    background-color: var(--calculator-panel-background);
 }
 
 .ui-calculator-result {
@@ -37,38 +130,44 @@
     justify-content: space-between;
     align-items: baseline;
     gap: 0.5em;
-    padding: 0.6em 0.8em;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    background-color: var(--surface-alt);
+    padding-block: 0.7em;
+    border-top: 1px solid var(--border-color);
+}
+
+// The list opens on the panel's own padding, not on a rule
+.ui-calculator-result:first-child {
+    border-top: 0;
 }
 
 .ui-calculator-result-value {
     font-weight: bold;
-    // Digits of the same width, so a number changing under a slider stops the whole row from jittering
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
 
-// The one result the visitor came for - several highlighted outputs simply all get it, the emphasis being the admin's call and not this stylesheet's
+// The one result the visitor came for - a card of its own inside the panel, label above and figure below, where the rows around it read label-left value-right. It carries an outline as well as a surface: on a site whose brand colour is its own ink, a highlight mixed out of a near-black is the panel's own grey again, and the edge is what still detaches it. Several highlighted outputs simply all get it, the emphasis being the admin's call and not this stylesheet's
 .ui-calculator-result-highlighted {
-    border-color: var(--border-accent);
-    background-color: var(--surface-accent);
+    display: grid;
+    // Both are needed: the first centres the single column the two lines share inside the card, the second centres each of them inside that column - the row this rule overrides lays its label and its value out with "space-between", which would push the column back to the left edge
+    justify-content: center;
+    justify-items: center;
+    gap: 0.15em;
+    margin-block: 0.6em;
+    padding: 1.1em 1em;
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-card);
+    background-color: var(--calculator-highlight-background);
+    text-align: center;
+}
+
+// The rule that would otherwise be drawn tight under the card, reading as part of it
+.ui-calculator-result-highlighted + .ui-calculator-result {
+    border-top: 0;
 }
 
 .ui-calculator-result-highlighted .ui-calculator-result-value {
-    font-size: 1.6em;
-    color: var(--primary);
-}
-
-// A range input carries no readout of its own, in any browser: assets/js/calculator.js writes the value being dragged into the <output> beside it
-.ui-calculator input[type="range"] {
-    width: 100%;
-}
-
-.ui-calculator-readout {
-    display: block;
-    text-align: right;
-    font-weight: bold;
-    font-variant-numeric: tabular-nums;
+    font-family: var(--font-family-title);
+    font-size: var(--calculator-highlight-size);
+    line-height: 1.1;
+    color: var(--calculator-highlight-color);
 }

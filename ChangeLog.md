@@ -1,5 +1,38 @@
 # ChangeLog
 
+## v1.18.1
+
+A calculator travels, and its variables are clicked instead of typed
+
+### ConfigBundle
+
+- `TaggedInterfacePass` leaves abstract definitions alone: Symfony builds one per `_instanceof` rule a class matches, and tagging it has the container refuse to build (28/08/2026)
+- `TaggedInterfacePassTest` covers an abstract definition carrying the tagged class (28/08/2026)
+
+### UiBundle
+
+- New `FormExportProvider`/`FormImportProvider` (kind `site_form`), a Form joining ConfigBundle's export sync and content import (28/08/2026)
+- New "export selection" batch action on the Form screen, gated by `site-role-admin` (28/08/2026)
+- A Form, its fields and its outputs are matched by name on import and updated in place - a re-inserted output had `form_output_unique` refuse the import (28/08/2026)
+- A restricted field survives an import that no longer carries it, and `restricted` is only ever set on a row the import creates (28/08/2026)
+- New `formulaVariables` back-office controller: the variable names a calculator's formulas may read are buttons inserting them at the cursor (28/08/2026)
+- `ExpressionEvaluator::lint()` now answers in the site's own language, naming the mistyped variable and the closest declared one (28/08/2026)
+- `ExpressionEvaluator::lint()` now says which way the brackets fail to match (28/08/2026)
+- New `Form::$outputsFirst` (column `site_form.outputs_first`, a switch on the Form screen): which of the two columns a calculator is read first (28/08/2026)
+- Added the `ui-calculator` guided project, walking a form into a calculator (28/08/2026)
+- `sass/_calculator.scss` reads the results in one panel, the highlighted output being a card of its own inside it (28/08/2026)
+- A slider's value now sits on its own label line rather than under the track (28/08/2026)
+- New `--calculator-panel-*`, `--calculator-highlight-*` and `--calculator-slider-color` tokens, listed in the scaffold's `themes/ui.css` (28/08/2026)
+- A bare `form` block now gets a gutter and the page measure of its own, as `contact_details` already did (28/08/2026)
+- The `ui-calculator` controller now writes a slider's value grouped in the document's language, "15 000" rather than "15000" (28/08/2026)
+- `AbortController` and `HTMLInputElement` added to the eslint globals (28/08/2026)
+- The README documents the outputs-first switch, the variable buttons and the Form export/import (28/08/2026)
+- UPGRADE.md names the `site_form.outputs_first` column and the Form export/import (28/08/2026)
+- The `c975l-forms-emails` and `c975l-management` skills follow (28/08/2026)
+- Added `FormExportImportTest` and `CalculatorOutputsFirstTest` (28/08/2026)
+- `FormCrudControllerTest` covers the export selection and the attributes the outputs collection hands to the client (28/08/2026)
+- `ExpressionEvaluatorTest` covers the translated lint messages, `UiGuidedProjectProviderTest` the tenth project (28/08/2026)
+
 ## v1.18.0
 
 A form computes instead of being sent, and the formula is the admin's

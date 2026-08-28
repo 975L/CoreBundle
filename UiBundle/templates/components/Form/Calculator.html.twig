@@ -3,7 +3,7 @@
 {% trans_default_domain 'ui' %}
 
 {# The results are already right when this renders (computed from the fields' own defaults), so a visitor with no JavaScript reads real numbers rather than empty slots — the controller below only keeps them in step as the inputs move #}
-<div class="ui-calculator"
+<div class="ui-calculator{{ uiForm.outputsFirst ? ' ui-calculator-outputs-first' }}"
      data-controller="ui-calculator"
      data-ui-calculator-url-value="{{ path('ui_form_compute', {'name': uiForm.name}) }}">
     {# No form_start/form_end: this posts nowhere, and a form element around it would let Enter submit it to the page's own URL #}
