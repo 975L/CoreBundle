@@ -119,6 +119,27 @@ class BlockExtensionTest extends TestCase
         $this->assertSame('', $extension->renderBlock($block));
     }
 
+    // A block set aside by its editor stays on the page with everything it holds, and simply renders nothing at all - the cache is never even reached, so the toggle takes effect with no entry to invalidate
+    public function testRenderBlockReturnsEmptyStringWhenBlockIsHidden(): void
+    {
+        $block = $this->createBlock('text');
+        $block->setHidden(true);
+
+        $registry = $this->createMock(BlockRegistry::class);
+        $registry->expects($this->never())->method('has');
+        $registry->expects($this->never())->method('getTemplate');
+
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->never())->method('render');
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('get');
+
+        $extension = new BlockExtension($registry, $twig, $cache, new RequestStack([Request::create('/')]), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext());
+
+        $this->assertSame('', $extension->renderBlock($block));
+    }
+
     // A row outlives its own kind (a satellite bundle removed, a kind dropped): every registry lookup would throw "Unknown block" and 500 the whole page, so the block is skipped exactly like a kindless one
     public function testRenderBlockReturnsEmptyStringWhenKindIsNoLongerRegistered(): void
     {

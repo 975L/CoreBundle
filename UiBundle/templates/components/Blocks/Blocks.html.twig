@@ -1,5 +1,7 @@
 {# Consecutive card blocks are wrapped in a ".cards" flex row, else they stack instead of lining up. "flip_card" counts as one: it is an object of its own (see sass/_flip-card.scss) but laid out on the very same measure, so the two mix in one row #}
 {% set cardKinds = ['card', 'flip_card'] %}
+{# A block its editor set aside (see Block::$hidden) is dropped before the grouping below ever counts it: left in, it would open a ".cards" row that render_block then fills with nothing. Merged back into a plain array on purpose - "filter" yields a generator, and loop.last is only offered over a countable sequence #}
+{% set blocks = []|merge(blocks|filter(b => not b.hidden)) %}
 {% set kinds = blocks|map(b => b.kind) %}
 {# Editor-only: resolving edit URLs runs a query nobody else would see the result of #}
 {% set canEditBlocks = is_granted(config('site-role-editor')) %}

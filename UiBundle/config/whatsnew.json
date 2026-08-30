@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-08-30",
+        "description": [
+            {
+                "en": "A block can now be set aside instead of deleted. The eye button in a block's title bar hides it from the site while keeping it whole in the back office - its text, its images, everything - so you can see what the page looks like without it and bring it back with the same click.",
+                "fr": "Un bloc peut désormais être mis de côté au lieu d'être supprimé. Le bouton en forme d'œil, dans la barre de titre du bloc, le retire du site tout en le gardant intact dans le back-office - son texte, ses images, tout - pour voir ce que donne la page sans lui, et le remettre d'un même clic.",
+                "es": "Un bloque puede ahora apartarse en lugar de eliminarse. El botón con forma de ojo, en la barra de título del bloque, lo retira del sitio conservándolo intacto en el back-office - su texto, sus imágenes, todo - para ver cómo queda la página sin él y devolverlo con el mismo clic."
+            }
+        ]
+    },
+    {
         "date": "2026-08-28",
         "description": [
             {

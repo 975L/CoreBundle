@@ -21,6 +21,7 @@ use c975L\UiBundle\Service\VideoPosterImporter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -58,6 +59,14 @@ class BlockType extends AbstractType
 
         $builder->add('position', HiddenType::class, [
             'attr' => ['class' => 'ui-sort-position'],
+        ]);
+
+        // A checkbox rather than a HiddenType, for the mapping alone: unchecked, a checkbox is simply not submitted and maps to false, where a hidden input would post the string "1"/"" onto a bool property. Its row is never shown - the state is toggled by the eye button of the row's own toolbar (see block-hide.js), not by a checkbox sitting among the kind's fields
+        $builder->add('hidden', CheckboxType::class, [
+            'required' => false,
+            'label' => false,
+            'attr' => ['class' => 'ui-block-hidden'],
+            'row_attr' => ['class' => 'd-none'],
         ]);
 
         // Load the sub-form `data` dynamically according to the block kind

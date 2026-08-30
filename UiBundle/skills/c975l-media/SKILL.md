@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, PlaceholderMediaProviderInterface, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
 ---
 
 # c975L UiBundle — media and uploads
@@ -117,6 +117,15 @@ declare.
 Two contributions worth knowing: `MediaUsageProviderInterface` tells the media library where a media
 is used inside your own entities — without it the library cannot warn before a deletion — and
 `PlaceholderMediaProviderInterface` offers stand-in images.
+
+That provider returns `images` — a pool a showcase draws from when anything will do — plus
+`keyed_images`, an array of slug ⇒ paths holding the pictures of one **named** row, in the order they
+are to be attached: `'shop/table-basse-chene'` being that product's own photographs, which no rotation
+through a generic pool can stand in for. Slugs are namespaced by the bundle they belong to, two bundles
+being free to name a row alike, and `Registry\PlaceholderMediaRegistry::getImagesFor($slug)` reads them
+back — empty for anything the site has none of, which is what every site starts as. `keyed_images` is
+merged one slug at a time, so declaring a single product's pictures never takes away another provider's,
+and a slug declared empty overrides nothing.
 
 ## Showing the progress of an upload
 

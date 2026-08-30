@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status."
 ---
 
 # c975L UiBundle — blocks
@@ -131,6 +131,22 @@ dragged from one collection to another.
 button on the rendered page — call `Service\LegalModelEditUrl::build()` first in your implementation,
 a `legal_model` block being edited on its own screen. `BlockLocationProviderInterface` tells the
 screens listing one kind site-wide where each block actually lives.
+
+## Setting a block aside
+
+`Block::$hidden` keeps a block on the page and renders it nowhere: its fields, its medias, its slots and
+its place in the order are untouched, which is what lets a page be seen without a block instead of the
+block being deleted and built back afterwards. The eye button of each row's toolbar toggles it, driving
+the row's own hidden checkbox (`Form\BlockType`, never shown) so the state is stored by the same save as
+every other field.
+
+`BlockExtension::renderBlock()` is the single gate — a hidden block returns an empty string, wrappers
+included, whether it is a page's own block or a slot of a container — and the check sits **before** the
+render cache, so toggling the flag changes the page with no entry to invalidate. A template laying its
+blocks out in cells of its own has to drop them earlier still: `Blocks.html.twig` filters them before its
+card grouping counts kinds, and `Section/FlexColumns`, `Section/Cards` and `Video/Grid` before they count
+their slots, a hidden one otherwise holding an empty cell — or a whole row — open. The flag travels
+through `BlockDataExporter`/`BlockDataImporter`, an archive with no `hidden` key landing visible.
 
 ## The contact graph
 
@@ -339,6 +355,8 @@ them** rather than writing a walk of your own. A content export never carries th
   each caller instead of in the repository.
 - **Do not write a page template per entity** when blocks would compose it.
 - **Do not cache a kind that embeds a form or reads outside data.**
+- **Do not test `hidden` at each caller** — `render_block()` already answers with an empty string. Filter
+  it only where a template counts blocks or opens a cell of its own before rendering them.
 - **Do not re-implement the block export walk.**
 - **Do not write legal text in a template** or duplicate the legal models.
 - **Do not add a field for outside profile urls** to the contact block — contribute them through

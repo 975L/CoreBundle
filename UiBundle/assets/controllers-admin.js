@@ -5,6 +5,7 @@ import BlockController from './js/block.js';
 import BlockCollectionController from './js/block-collection.js';
 import BlockDuplicateController from './js/block-duplicate.js';
 import BlockFocusController from './js/block-focus.js';
+import BlockHideController from './js/block-hide.js';
 import EaIndexSortController from './js/ea-index-sort.js';
 import EmailDataBlockController from './js/email-data-block.js';
 import EaSortableController from './js/ea-sortable.js';
@@ -27,6 +28,7 @@ app.register('block', BlockController);
 app.register('blockCollection', BlockCollectionController);
 app.register('blockDuplicate', BlockDuplicateController);
 app.register('blockFocus', BlockFocusController);
+app.register('blockHide', BlockHideController);
 app.register('eaIndexSort', EaIndexSortController);
 app.register('emailDataBlock', EmailDataBlockController);
 app.register('eaSortable', EaSortableController);
@@ -40,8 +42,8 @@ app.register('title-confirm', TitleConfirmController);
 // Same again, the three messages being read from data-upload-progress-*-message-value - armed by any bundle's form through UploadProgress::formAttr(), never mounted on <body>: it takes over the submit of the form it sits on
 app.register('upload-progress', UploadProgressController);
 
-// Mount eaIndexSort, eaSortable, blockCollection, blockDuplicate, blockFocus, emailDataBlock, fieldFocus, formFieldTemplate and formulaVariables on <body> automatically: EasyAdmin's layout never sets data-controller itself, so without this none of the index-row reordering, drag-and-drop, new-block scroll/focus, duplicate-block, used-in-media-library scroll/focus, undeletable-data-block, focus-a-named-field, add-field-from-template or insert-a-formula-variable behaviors would ever connect.
+// Mount eaIndexSort, eaSortable, blockCollection, blockDuplicate, blockFocus, blockHide, emailDataBlock, fieldFocus, formFieldTemplate and formulaVariables on <body> automatically: EasyAdmin's layout never sets data-controller itself, so without this none of the index-row reordering, drag-and-drop, new-block scroll/focus, duplicate-block, used-in-media-library scroll/focus, hide-block, undeletable-data-block, focus-a-named-field, add-field-from-template or insert-a-formula-variable behaviors would ever connect.
 document.body.setAttribute(
     'data-controller',
-    [document.body.dataset.controller, 'eaIndexSort', 'eaSortable', 'blockCollection', 'blockDuplicate', 'blockFocus', 'emailDataBlock', 'fieldFocus', 'formFieldTemplate', 'formulaVariables'].filter(Boolean).join(' ')
+    [document.body.dataset.controller, 'eaIndexSort', 'eaSortable', 'blockCollection', 'blockDuplicate', 'blockFocus', 'blockHide', 'emailDataBlock', 'fieldFocus', 'formFieldTemplate', 'formulaVariables'].filter(Boolean).join(' ')
 );

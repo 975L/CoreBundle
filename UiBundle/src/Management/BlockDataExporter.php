@@ -57,6 +57,7 @@ class BlockDataExporter
             'position' => $block->getPosition(),
             'data' => $block->getData(),
             'animation' => $block->getAnimation(),
+            'hidden' => $block->isHidden(),
             'medias' => $medias,
             'slots' => $slots,
         ];

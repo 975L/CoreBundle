@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, ROLE_SUPER_ADMIN, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, ROLE_SUPER_ADMIN, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, delete a user, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -121,6 +121,15 @@ production log. Nothing that could ever authenticate is turned away.
 sets both on confirmation; `isVerified` is readonly in the back office — only that confirmation may
 set it — while `isEnabled` stays editable, which is how an account is locked out without being
 deleted.
+
+**Deleting an account never fails on the rows it merely touched.** `Config::$user`, `Block::$user` and
+`Media::$user` — the user columns of `site_config`, `site_block` and `site_media` — are joined
+`ON DELETE SET NULL`: none of the three records an author, only who last changed the entry, edited the
+block or uploaded the file, and all three outlive whoever did. `VichMediaTrait`, which the satellite bundles
+build their own media entities on, joins the same way. Left restricting, one config entry ever
+saved was enough to make an account undeletable — which a demo site, whose visitors signing in and
+changing things is the whole point, meets on its first reset. Sites installed before this have to
+migrate; the statements are in the package's `UPGRADE.md`.
 
 Every account created through `UserRegistrar` also notifies the site's own `email-to` address, in
 `kernel.default_locale`. Uncheck `user-creation-notification` to stop it. It never gets in the way of

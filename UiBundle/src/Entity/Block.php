@@ -41,7 +41,13 @@ class Block implements \Stringable
     #[ORM\Column(length: 30, nullable: true)]
     private ?string $animation = null;
 
+    // Kept on the page, rendered nowhere: a block set aside to see the page without it, instead of being deleted and rebuilt (see block-hide.js and BlockExtension::renderBlock)
+    #[ORM\Column(options: ['default' => false])]
+    private bool $hidden = false;
+
+    // "SET NULL" and not the default: this only records who last changed the block, and a page outlives whoever edited it - left restricting, an account that ever touched one block could no longer be deleted at all
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?UserInterface $user = null;
 
     #[ORM\OneToMany(mappedBy: 'block', targetEntity: Media::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -139,6 +145,18 @@ class Block implements \Stringable
     public function setAnimation(?string $animation): self
     {
         $this->animation = $animation;
+
+        return $this;
+    }
+
+    public function isHidden(): bool
+    {
+        return $this->hidden;
+    }
+
+    public function setHidden(?bool $hidden): self
+    {
+        $this->hidden = $hidden ?? false;
 
         return $this;
     }

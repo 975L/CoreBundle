@@ -2,6 +2,33 @@
 
 ## Unreleased
 
+**Three `user_id` foreign keys become `ON DELETE SET NULL`**, on `site_config`, `site_block` and `site_media`. None
+of the three records an author: they only hold who last changed the entry, edited the block or uploaded the file,
+and all three outlive whoever did. Left restricting, an account that had ever touched a single config entry, block
+or media could no longer be deleted at all - which is what a demo site's reset runs into first, its visitors signing
+in and changing things being the whole point. **Run the three alterations**, dropping each key then adding it back:
+
+```sql
+ALTER TABLE site_config DROP FOREIGN KEY FK_A4248123A76ED395;
+ALTER TABLE site_config ADD CONSTRAINT FK_A4248123A76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE SET NULL;
+ALTER TABLE site_block DROP FOREIGN KEY FK_47414727A76ED395;
+ALTER TABLE site_block ADD CONSTRAINT FK_47414727A76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE SET NULL;
+ALTER TABLE site_media DROP FOREIGN KEY FK_AE767109A76ED395;
+ALTER TABLE site_media ADD CONSTRAINT FK_AE767109A76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE SET NULL;
+```
+
+Replace `user` with your own user table if it is named otherwise - generating the migration gets the same result,
+those being the statements it writes.
+
+`VichMediaTrait` changes the same way, so **every media table of a satellite bundle using it** - ShopBundle's,
+CrowdfundingBundle's - drops and re-adds its own `user_id` key too. Their names depend on each table, so generate
+the migration rather than copying the statements above.
+
+**A new column, `site_block.hidden`** (boolean, default `false`). It carries a block its editor set aside: kept
+whole - fields, medias, slots, place in the order - and rendered nowhere on the front, so a page can be seen without
+a block instead of it being deleted and built back afterwards. The eye button in each block row's toolbar is what
+toggles it. **Generate and run the migration**; nothing else to do, every existing block landing visible.
+
 **A new table, `site_form_output`.** It holds a `Form`'s computed results, which turn it into a calculator (see
 UiBundle's README). `site_form_field` also gains `min_value`, `max_value`, `step_value`, `default_value` and
 `options`, all nullable, for the new `range` and `choice` field types, and `site_form` gains `outputs_first`

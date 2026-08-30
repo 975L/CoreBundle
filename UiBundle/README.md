@@ -25,7 +25,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 
 ## Contents
 
-- **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
+- **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [setting a block aside](#setting-a-block-aside) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
 - **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails) · [upload progress](#showing-the-progress-of-a-form-that-posts-files)
 - **Page shell** — [the page layout](#the-page-layout)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [no inline styles](#no-inline-styles) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
@@ -44,6 +44,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Multi-file upload for kinds that opt in (`slider`, `article` out of the box) - select several files at once instead of adding them one by one
 - Drag-and-drop position ordering for blocks and media, at the mouse and at the finger
 - One-click duplication of a block or a media row in EasyAdmin, including its files
+- A block set aside in one click: kept whole in the database, rendered nowhere, brought back the same way
 - Live preview of a newly picked image in EasyAdmin, before saving
 - Site-wide media roles (favicon, apple-touch-icon, og-image, logo, the two watermark signatures, error-image pool) with their own admin screen, retrievable anywhere via `site_media()`
 - Watermarking on upload for entities that opt in, the dark or light signature picked on the luminance of the very corner it lands in
@@ -303,6 +304,16 @@ class PageCrudController extends AbstractCrudController
     }
 }
 ```
+
+### Setting a block aside
+
+Each block row of that collection carries a toolbar in its header: **move** (the drag handle), **duplicate**, **hide**, **delete**. The third one is what lets a page be seen without a block instead of deleting it to find out: it stays in the database with its fields, its medias and its slots, keeps its place in the order, and simply renders nowhere on the front. Clicking it again brings it back exactly as it was.
+
+Nothing is written on click. The toggle drives the row's own `hidden` checkbox (`BlockType`, never shown - the toolbar button is its only control), so the state is stored by the same save as every other field and a form that is abandoned changes nothing. The row is faded in the meantime so a hidden block reads as inactive without being opened.
+
+`BlockExtension::renderBlock()` is the single gate: a hidden block renders as an empty string, wrappers included, whether it is a page's own block, a slot of a container, or rendered by a `render_block()` call of your own. The check sits before the render cache, so toggling it changes the page with no entry to invalidate - and `Blocks.html.twig` drops hidden blocks before its card grouping counts them, a hidden `card` otherwise opening a `.cards` row with nothing to put in it. A hidden block travels through `BlockDataExporter`/`BlockDataImporter` as hidden, so an archive taken mid-redesign restores the page in the state it was exported from.
+
+Upgrading to a UiBundle version that introduces it adds a new `hidden` column to `site_block` - re-run "Run migrations" above after `composer update`.
 
 ### Which choice fields get a search box
 
@@ -1009,6 +1020,7 @@ class ShowcasePlaceholderMediaProvider implements PlaceholderMediaProviderInterf
     {
         return [
             'images' => ['medias/showcase/photo-1.webp', 'medias/showcase/photo-2.webp'],
+            'keyed_images' => ['shop/table-basse-chene' => ['medias/showcase/table-1.webp', 'medias/showcase/table-2.webp']],
             'video' => 'medias/showcase/clip.mp4',
             'video_embed' => 'medias/showcase/clip-embed.html',
             'audio' => 'medias/showcase/loop.mp3',
@@ -1019,6 +1031,8 @@ class ShowcasePlaceholderMediaProvider implements PlaceholderMediaProviderInterf
 ```
 
 Paths are web paths from the site root, no leading `/` - the same shape `Media::$filename` holds. Each media's mimetype follows its own extension, so a `.webm` video or an `.ogg` clip is fine. Every key is optional: leave one out, or empty, and that media is simply never attached, so a provider may cover only what it actually carries. With no provider registered at all, `attach()` adds nothing and `nextPlaceholderImage()` returns `null` - a block rendered without media rather than one pointing at files that aren't there.
+
+`keyed_images` is the other half of `images`: where the latter is a pool a showcase draws from when anything will do, the former holds the photographs of one **named** thing, in the order they are to be attached - "shop/table-basse-chene" being that product's own pictures, which no rotation through a generic pool can stand in for. `PlaceholderMediaRegistry::getImagesFor('shop/table-basse-chene')` reads them back, empty for anything the site has none of. Keys are namespaced by the bundle the slug belongs to, two bundles being free to name a row alike, and the key is merged one named thing at a time so a provider declaring a single product's pictures doesn't take away every other provider's.
 
 ### Providing sample data for your own kinds
 

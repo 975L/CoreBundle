@@ -16,7 +16,9 @@ interface PlaceholderMediaProviderInterface
     /**
      * Web paths from the site root, no leading "/" - the same shape Media::$filename holds. A key left out, or left empty, simply means that media is never attached and the showcase renders the kind without one, so a provider may declare only the kinds of media it actually carries.
      *
-     * @return array{images?: list<string>, video?: string, video_embed?: string, audio?: string, document?: string}
+     * "images" is the pool a showcase draws from when anything will do. "keyed_images" is the other half: the pictures of one named thing, in the order they are to be attached - "shop/table-basse-chene" being that product's own photographs, which no rotation through a generic pool can stand in for. Keys are namespaced by the bundle the slug belongs to, two bundles being free to name a row alike.
+     *
+     * @return array{images?: list<string>, keyed_images?: array<string, list<string>>, video?: string, video_embed?: string, audio?: string, document?: string}
      */
     public function getPlaceholderMedia(): array;
 }

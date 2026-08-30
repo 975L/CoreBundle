@@ -137,7 +137,9 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    // "SET NULL" and not the default: this only records who last uploaded the file, and a media outlives whoever put it there - left restricting, an account that ever dropped one file could no longer be deleted at all
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?UserInterface $user = null;
 
     // Transient, never persisted - set by SiteBundle's BlockDataImporter when a Sync import's archive already carries a pre-generated PDF thumbnail, so VichPdfThumbnailListener can copy it as-is instead of re-running Ghostscript, unavailable on some hosts

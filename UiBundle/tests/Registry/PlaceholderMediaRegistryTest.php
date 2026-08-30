@@ -86,4 +86,47 @@ class PlaceholderMediaRegistryTest extends TestCase
 
         $this->assertSame('medias/demo/other.webm', $registry->getVideo());
     }
+
+    // The pictures of one named row, which no rotation through the generic pool can stand in for
+    public function testTheImagesOfOneNamedThingAreReadBackInOrder(): void
+    {
+        $registry = new PlaceholderMediaRegistry();
+        $registry->addProvider($this->createProvider(['keyed_images' => [
+            'shop/table-basse-chene' => ['showcase/shop/table-1.webp', 'showcase/shop/table-2.webp'],
+        ]]));
+
+        $this->assertSame(['showcase/shop/table-1.webp', 'showcase/shop/table-2.webp'], $registry->getImagesFor('shop/table-basse-chene'));
+        $this->assertSame([], $registry->getImagesFor('shop/chaise-bistrot'));
+    }
+
+    // Merged one named thing at a time: a provider declaring the pictures of a single product would otherwise take away every other provider's
+    public function testAProviderDeclaringOneKeyLeavesTheOthersAlone(): void
+    {
+        $registry = new PlaceholderMediaRegistry();
+        $registry->addProvider($this->createProvider(['keyed_images' => ['shop/table-basse-chene' => ['showcase/shop/table-1.webp']]]));
+        $registry->addProvider($this->createProvider(['keyed_images' => ['book/le-fil-rouge-1' => ['showcase/book/cover-1.webp']]]));
+
+        $this->assertSame(['showcase/shop/table-1.webp'], $registry->getImagesFor('shop/table-basse-chene'));
+        $this->assertSame(['showcase/book/cover-1.webp'], $registry->getImagesFor('book/le-fil-rouge-1'));
+    }
+
+    // A named thing left empty is a row the provider simply doesn't carry, not an instruction to blank out the pictures another one declared
+    public function testAnEmptyNamedThingNeverOverridesAnAlreadyDeclaredOne(): void
+    {
+        $registry = new PlaceholderMediaRegistry();
+        $registry->addProvider($this->createProvider(['keyed_images' => ['shop/table-basse-chene' => ['showcase/shop/table-1.webp']]]));
+        $registry->addProvider($this->createProvider(['keyed_images' => ['shop/table-basse-chene' => []]]));
+
+        $this->assertSame(['showcase/shop/table-1.webp'], $registry->getImagesFor('shop/table-basse-chene'));
+    }
+
+    // Two providers naming the same row: the last one registered wins, as everywhere else here
+    public function testALaterProviderOverridesTheImagesOfTheSameThing(): void
+    {
+        $registry = new PlaceholderMediaRegistry();
+        $registry->addProvider($this->createProvider(['keyed_images' => ['shop/table-basse-chene' => ['showcase/shop/table-1.webp']]]));
+        $registry->addProvider($this->createProvider(['keyed_images' => ['shop/table-basse-chene' => ['showcase/shop/other.webp']]]));
+
+        $this->assertSame(['showcase/shop/other.webp'], $registry->getImagesFor('shop/table-basse-chene'));
+    }
 }

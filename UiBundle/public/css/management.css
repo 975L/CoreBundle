@@ -234,7 +234,7 @@
 }
 
 .ui-row-toolbar .field-collection-delete-button {
-  order: 3;
+  order: 4;
   margin: 0;
   position: static;
   padding: 0 0.25rem;
@@ -256,6 +256,14 @@
 
 .ui-toolbar-btn--order-3 {
   order: 3;
+}
+
+.ui-row-hidden > .accordion-header {
+  opacity: 0.55;
+}
+
+.ui-row-hidden > .accordion-header .ui-row-toolbar {
+  opacity: 1;
 }
 
 .ui-sort-handle,

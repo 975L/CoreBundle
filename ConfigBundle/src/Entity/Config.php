@@ -146,7 +146,9 @@ class Config
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modification = null;
 
+    // "SET NULL" and not the default: this only records who last changed the entry, and a setting outlives whoever set it - left restricting, an account that ever touched one config entry could no longer be deleted at all
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?UserInterface $user = null;
 
     public function getId(): ?int

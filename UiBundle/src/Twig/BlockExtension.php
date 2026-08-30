@@ -54,6 +54,11 @@ class BlockExtension
     #[AsTwigFunction('render_block', isSafe: ['html'])]
     public function renderBlock(Block $block, ?string $cacheKey = null, array $cacheTags = []): string
     {
+        // A block its editor set aside (see Block::$hidden) renders as nothing at all, wrappers included - the gate is here rather than in the callers, so a slot of a container and a page's own run are covered by the one check. Before the cache below and outside it, the same as the two wrappers: toggling the flag then changes the page with no entry to invalidate
+        if ($block->isHidden()) {
+            return '';
+        }
+
         ++$this->renderDepth;
 
         try {

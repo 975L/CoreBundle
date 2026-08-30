@@ -38,9 +38,21 @@ class BlockDataExporterTest extends TestCase
             'position' => 2,
             'data' => ['content' => 'hello'],
             'animation' => 'fade-in',
+            'hidden' => false,
             'medias' => [],
             'slots' => [],
         ]], $data);
+    }
+
+    // A block set aside travels with the archive as it was left: an export taken mid-redesign restores the page in the very state it was exported from, hidden blocks included
+    public function testABlockSetAsideIsExportedAsHidden(): void
+    {
+        $block = new Block()->setKind('text')->setPosition(0)->setHidden(true);
+
+        $files = [];
+        $data = new BlockDataExporter(sys_get_temp_dir())->exportBlocks([$block], $files);
+
+        $this->assertTrue($data[0]['hidden']);
     }
 
     public function testExportBlocksRecursesIntoNestedContainerSlotsTwoLevelsDeep(): void

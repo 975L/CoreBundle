@@ -67,9 +67,9 @@
     flex-shrink: 0;
 }
 
-// EasyAdmin's own delete button, moved into the toolbar: put back in the flow so order and gap place it
+// EasyAdmin's own delete button, moved into the toolbar: put back in the flow so order and gap place it. Last of the four, hence 4 and not the 3 it carried before the hide toggle took that place
 .ui-row-toolbar .field-collection-delete-button {
-    order: 3;
+    order: 4;
     margin: 0;
     position: static;
     padding: 0 .25rem;
@@ -82,10 +82,19 @@
     order: 2;
 }
 
-// order: 1 on the left (the handle), 2 in the middle (duplicate), 3 the delete (see block-toolbar.js)
+// order: 1 on the left (the handle), 2 the duplicate, 3 the hide toggle, 4 the delete (see block-toolbar.js)
 .ui-toolbar-btn--order-1 { order: 1; }
 .ui-toolbar-btn--order-2 { order: 2; }
 .ui-toolbar-btn--order-3 { order: 3; }
+
+// A block set aside (block-hide.js): its header is faded so the row reads as inactive at a glance, its toolbar excepted - the button bringing the block back has to stay as legible as the others
+.ui-row-hidden > .accordion-header {
+    opacity: .55;
+}
+
+.ui-row-hidden > .accordion-header .ui-row-toolbar {
+    opacity: 1;
+}
 
 .ui-sort-handle,
 .ui-sort-grabbable {

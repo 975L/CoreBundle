@@ -23,7 +23,18 @@ class PlaceholderMediaRegistry
     // Called once per provider by PlaceholderMediaProviderPass - a later provider overrides an earlier one key by key, an empty value never overriding anything (see the interface: a partial declaration is legitimate)
     public function addProvider(PlaceholderMediaProviderInterface $provider): void
     {
-        $this->media = array_merge($this->media, array_filter($provider->getPlaceholderMedia()));
+        $declared = array_filter($provider->getPlaceholderMedia());
+
+        // "keyed_images" is merged one named thing at a time rather than wholesale: a provider declaring a single product's photographs would otherwise take away every other provider's - filtered again inside, a named thing left empty being no more an instruction to blank one out than a top-level key left empty is
+        $declaredKeyed = array_filter($declared['keyed_images'] ?? []);
+        $keyed = array_merge($this->media['keyed_images'] ?? [], $declaredKeyed);
+        unset($declared['keyed_images']);
+
+        $this->media = array_merge($this->media, $declared);
+
+        if ([] !== $keyed) {
+            $this->media['keyed_images'] = $keyed;
+        }
     }
 
     /**
@@ -32,6 +43,17 @@ class PlaceholderMediaRegistry
     public function getImages(): array
     {
         return $this->media['images'] ?? [];
+    }
+
+    /**
+     * The pictures of one named thing, in the order they were declared - empty for anything the site has none of,
+     * which is what every site starts as and what each caller falls back from on its own.
+     *
+     * @return list<string>
+     */
+    public function getImagesFor(string $key): array
+    {
+        return $this->media['keyed_images'][$key] ?? [];
     }
 
     public function getVideo(): ?string

@@ -1,6 +1,8 @@
 {# Dynamic usage only: "slots" holds real Block entities, wrapped in ".cards" so a slot renders the same here as bare in the page #}
 {# A headingless <section> is invalid HTML, hence the <div> fallback #}
 {% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+{# A slot its editor set aside renders nothing at all (see Block::$hidden), so it is dropped here rather than left to open a cell with nothing in it - and the row below then counts what is actually shown, a container whose every slot is hidden rendering no row at all. Merged back into a plain array, "filter" yielding a generator that the length test below would consume before the loop ever ran #}
+{% set slots = []|merge(slots|filter(s => not s.hidden)) %}
 <{{ tag }} class="section-cards-section"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         {{ include('@c975LUi/components/Section/_head.html.twig') }}

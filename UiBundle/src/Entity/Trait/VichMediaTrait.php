@@ -36,7 +36,9 @@ trait VichMediaTrait
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    // "SET NULL" and not the default: this only records who last uploaded the file, and a media outlives whoever put it there - left restricting, an account that ever dropped one file could no longer be deleted at all
     #[ORM\ManyToOne()]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?UserInterface $user = null;
 
     public function __toString(): string

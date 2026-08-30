@@ -1,5 +1,37 @@
 # ChangeLog
 
+## v1.19.0
+
+A block is set aside instead of deleted, and comes back whole
+
+### ConfigBundle
+
+- `Config::$user` is joined `ON DELETE SET NULL`: it only records who last changed the entry, and a setting outlives whoever set it (28/08/2026)
+- The `c975l-users` skill names the three `user_id` keys an account deletion no longer trips on (30/08/2026)
+
+### UiBundle
+
+- `PlaceholderMediaProviderInterface` takes a `keyed_images` key: the pictures of one named row, in the order they are to be attached (28/08/2026)
+- New `PlaceholderMediaRegistry::getImagesFor()`, reading a named row's pictures back (28/08/2026)
+- `addProvider()` merges `keyed_images` one named row at a time - a provider declaring one product's pictures would otherwise take away every other provider's (28/08/2026)
+- A `keyed_images` row declared empty no longer blanks out the pictures an earlier provider put under it (30/08/2026)
+- `Block::$user` and `Media::$user` are joined `ON DELETE SET NULL` too: neither records an author, only who last edited the block or uploaded the file (30/08/2026)
+- `VichMediaTrait` is joined `ON DELETE SET NULL` as well, for the media tables the satellite bundles build on it (30/08/2026)
+- The README documents `keyed_images` and `getImagesFor()` alongside the other provider keys (30/08/2026)
+- The `c975l-media` skill follows (30/08/2026)
+- UPGRADE.md names the foreign keys a site has to add back `ON DELETE SET NULL`, the satellite bundles' media tables included (30/08/2026)
+- `PlaceholderMediaRegistryTest` covers the named rows, the per-row merge and the empty declaration (30/08/2026)
+- New `Block::$hidden`: a block set aside is kept whole in the database and renders nowhere, instead of being deleted and built back to see the page without it (30/08/2026)
+- New `blockHide` back-office controller: an eye button in each block row's toolbar, between the duplicate and the delete (30/08/2026)
+- `BlockExtension::renderBlock()` returns an empty string for a hidden block, before the render cache and whatever the block is a slot of (30/08/2026)
+- `Blocks.html.twig` drops the hidden blocks before its card grouping counts them - a hidden card opened a `.cards` row with nothing to put in it (30/08/2026)
+- `Section/FlexColumns`, `Section/Cards` and `Video/Grid` drop their hidden slots too: a slot renders nothing, but the cell around it was still written, and a container whose every slot is set aside opened an empty row (30/08/2026)
+- The delete button of a row's toolbar moves to `order: 4`, the hide toggle taking the 3 it held (30/08/2026)
+- A hidden block travels through `BlockDataExporter`/`BlockDataImporter` as hidden (30/08/2026)
+- The README documents setting a block aside, and UPGRADE.md the `hidden` column a site has to add (30/08/2026)
+- The `c975l-blocks` skill follows (30/08/2026)
+- `BlockExtensionTest`, `BlockToolbarOrderTest`, `BlockDataExporterTest`, `BlockDataImporterTest` and the new `HiddenBlockMarkupTest` cover the flag, the toolbar order and the page's own run (30/08/2026)
+
 ## v1.18.1
 
 A calculator travels, and its variables are clicked instead of typed

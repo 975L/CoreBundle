@@ -50,6 +50,28 @@ class BlockDataImporterTest extends TestCase
         $this->assertSame([$blocks[0]], $persisted);
     }
 
+    // A block set aside comes back set aside, an archive taken mid-redesign restoring the page in the very state it was exported from
+    public function testBuildBlocksRestoresABlockAsHidden(): void
+    {
+        $em = $this->createStub(EntityManagerInterface::class);
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([
+            ['kind' => 'text', 'position' => 0, 'hidden' => true],
+        ], null);
+
+        $this->assertTrue($blocks[0]->isHidden());
+    }
+
+    // Every archive written before the flag existed carries no "hidden" key at all, and its blocks land visible - what the column's own default says too
+    public function testBuildBlocksLandsAnArchiveWithoutTheFlagVisible(): void
+    {
+        $em = $this->createStub(EntityManagerInterface::class);
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([
+            ['kind' => 'text', 'position' => 0],
+        ], null);
+
+        $this->assertFalse($blocks[0]->isHidden());
+    }
+
     public function testBuildBlocksRecursesIntoNestedContainerSlotsTwoLevelsDeep(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);

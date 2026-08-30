@@ -62,7 +62,9 @@ class BlockDataImporter
             ->setKind($blockData['kind'])
             ->setPosition($blockData['position'])
             ->setData($blockData['data'] ?? [])
-            ->setAnimation($blockData['animation'] ?? null);
+            ->setAnimation($blockData['animation'] ?? null)
+            // Absent from every archive written before the flag existed, and read as "visible" there - the same thing the column's own default says
+            ->setHidden($blockData['hidden'] ?? null);
 
         $this->addMedias($block, $blockData['medias'] ?? [], $filesDir);
 

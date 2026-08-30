@@ -48,6 +48,18 @@ class BlockToolbarOrderTest extends TestCase
         }
     }
 
+    // EasyAdmin's own delete button carries no ".ui-toolbar-btn" class of its own, so its place is written on it directly - and it has to stay behind the hide toggle that took the 3 it used to hold
+    public function testTheDeleteButtonIsOrderedLast(): void
+    {
+        foreach (self::CSS as $file) {
+            $this->assertMatchesRegularExpression(
+                '/\.ui-row-toolbar \.field-collection-delete-button\{(?:[^{}]*;)?order:4[;}]/',
+                $this->css($file),
+                $file . ' no longer places the delete button after the hide toggle, so the two swap places in the toolbar.'
+            );
+        }
+    }
+
     // What ties the two together: the class name the toolbar composes has to be one of those three
     public function testTheToolbarPlacesItsButtonsByClass(): void
     {

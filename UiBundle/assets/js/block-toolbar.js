@@ -6,7 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-// Shared by ea-sortable.js (drag handle) and block-duplicate.js (duplicate button) so both, plus EasyAdmin's own native delete button, always end up grouped in one visual toolbar at the top-right of a row's header - instead of three separate scripts each inserting into the header independently, at the mercy of whichever happens to run first and of the header's own ambient CSS.
+// Shared by ea-sortable.js (drag handle), block-duplicate.js (duplicate button) and block-hide.js (hide toggle) so all three, plus EasyAdmin's own native delete button, always end up grouped in one visual toolbar at the top-right of a row's header - instead of four separate scripts each inserting into the header independently, at the mercy of whichever happens to run first and of the header's own ambient CSS.
 const TOOLBAR_CLASS = 'ui-row-toolbar';
 
 // Finds (or creates, on first call for a given row) the toolbar row inside its accordion header. The header's own layout is forced to flex here rather than assumed, so this doesn't depend on EasyAdmin's CSS actually making it one already.
@@ -32,7 +32,7 @@ export function getToolbar(item) {
     return toolbar;
 }
 
-// order: 1 = leftmost (e.g. move handle), 2 = middle (e.g. duplicate), 3 = delete (see getToolbar).
+// order: 1 = leftmost (e.g. move handle), 2 = duplicate, 3 = hide toggle, 4 = delete (see getToolbar, the delete button carrying its own order from the stylesheet).
 export function addToolbarButton(item, { title, icon, order, onClick }) {
     const toolbar = getToolbar(item);
     if (!toolbar) return null;
@@ -43,7 +43,7 @@ export function addToolbarButton(item, { title, icon, order, onClick }) {
     btn.className = 'btn btn-link ui-toolbar-btn';
     btn.title = title || '';
     // EasyAdmin wraps its own icons (delete, collapse chevron) in <span class="icon">, which its global CSS uses to size/align them consistently - without it, a bare <svg> renders at browser default size/baseline and looks visually out of place next to those.
-    // Assigned raw on purpose: "icon" is a literal SVG constant declared by the calling controller (see ea-sortable.js, block-duplicate.js), never a runtime value
+    // Assigned raw on purpose: "icon" is a literal SVG constant declared by the calling controller (see ea-sortable.js, block-duplicate.js, block-hide.js), never a runtime value
     btn.innerHTML = `<span class="icon">${icon || ''}</span>`;
     btn.classList.add(`ui-toolbar-btn--order-${order}`);
     btn.addEventListener('click', onClick);
