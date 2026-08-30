@@ -32,24 +32,31 @@ class UrlMetadataImportProvider implements ImportProviderInterface
         return self::KIND === $kind;
     }
 
+    // The path is the row's whole identity: without one there is nothing to match, nothing to look up at render time, and the unique constraint would reject it anyway
+    private function pathOf(array $item): ?string
+    {
+        $path = $item['path'] ?? null;
+
+        return null !== $path && '' !== trim((string) $path) ? (string) $path : null;
+    }
+
     public function import(array $items, ?string $filesDir = null): array
     {
         $created = 0;
         $updated = 0;
 
         foreach ($items as $item) {
-            // The path is the row's whole identity: without one there is nothing to match, nothing to look up at render time, and the unique constraint would reject it anyway
-            $path = $item['path'] ?? null;
-            if (null === $path || '' === trim((string) $path)) {
+            $path = $this->pathOf($item);
+            if (null === $path) {
                 continue;
             }
 
-            $urlMetadata = $this->urlMetadataRepository->findOneByPath('/' . trim((string) $path, '/'));
+            $urlMetadata = $this->urlMetadataRepository->findOneByPath('/' . trim($path, '/'));
             $isNew = null === $urlMetadata;
             $urlMetadata ??= new UrlMetadata();
 
             $urlMetadata
-                ->setPath((string) $path)
+                ->setPath($path)
                 ->setTitle($item['title'] ?? null)
                 ->setSummarySocialNetwork($item['summarySocialNetwork'] ?? null);
 

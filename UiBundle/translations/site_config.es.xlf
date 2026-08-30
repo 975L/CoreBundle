@@ -150,6 +150,10 @@
                 <source>description.ui_rating_scale</source>
                 <target>Número de iconos ofrecidos. 1 convierte la valoración en un simple «me gusta» y muestra el número de votos en lugar de la media</target>
             </trans-unit>
+            <trans-unit id="tZ6fd2l">
+                <source>description.ui_showcase_demo_url</source>
+                <target>URL del sitio de demostración al que llevan los ejemplos de la vitrina de bloques - sus categorías y sus fichas solo existen allí, vacío los ejemplos no son clicables en vez de llevar a una página inexistente</target>
+            </trans-unit>
             <trans-unit id="vnYPhlr">
                 <source>description.url_cookies_policy</source>
                 <target>URL de la política de cookies, ej. https://example.com/pages/cookies</target>
@@ -313,6 +317,10 @@
             <trans-unit id="p3KMSht">
                 <source>label.ui_rating_scale</source>
                 <target>Escala de las valoraciones</target>
+            </trans-unit>
+            <trans-unit id="hxT5gOS">
+                <source>label.ui_showcase_demo_url</source>
+                <target>Vitrina de bloques - URL de la demostración</target>
             </trans-unit>
             <trans-unit id="R1c.duO">
                 <source>label.ui_watermark_margin</source>

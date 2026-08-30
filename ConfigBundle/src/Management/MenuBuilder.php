@@ -37,6 +37,15 @@ class MenuBuilder
     ) {
     }
 
+    // One screen's entry in the bar, its action set explicitly rather than left to EasyAdmin: it only defaults to "index" on its own for a CRUD controller, and a section is also where a plain #[AdminRoute] screen belongs (a read-only overview of what the CRUD below it lists, say). Naming it here makes the url resolvable for both, and matches the action OnboardingStepBuilder already generates its own urls with - the tour highlights a step by its href, so the two have to spell it the same way
+    private function buildMenuItem(array $menu): MenuItemInterface
+    {
+        return MenuItem::linkTo($menu['controller'], new TranslatableMessage($menu['label'], [], $menu['translation_domain']), $menu['icon'])
+            ->setAction($menu['action'] ?? Action::INDEX)
+            // Optional per-menu role (see MenuProviderInterface::getMenus()), falling back on the admin bar every entry used to be given: a screen open to an editor says so itself, and nothing else here can read a CRUD's own setPermission()
+            ->setPermission($menu['role'] ?? $this->configService->get('site-role-admin'));
+    }
+
     // Items opting into the 'advanced' tier are collected into one collapsed submenu, rendered last
     // Tier is resolved per item first, several providers commonly sharing one section
     public function getMenuItems(): iterable
@@ -46,11 +55,7 @@ class MenuBuilder
         foreach ($this->getGroupedMenus() as $section) {
             $essentialItems = [];
             foreach ($section['items'] as $menu) {
-                // Action set explicitly rather than left to EasyAdmin: it only defaults to "index" on its own for a CRUD controller, and a section is also where a plain #[AdminRoute] screen belongs (a read-only overview of what the CRUD below it lists, say). Naming it here makes the url resolvable for both, and matches the action OnboardingStepBuilder already generates its own urls with - the tour highlights a step by its href, so the two have to spell it the same way
-                $item = MenuItem::linkTo($menu['controller'], new TranslatableMessage($menu['label'], [], $menu['translation_domain']), $menu['icon'])
-                    ->setAction($menu['action'] ?? Action::INDEX)
-                    // Optional per-menu role (see MenuProviderInterface::getMenus()), falling back on the admin bar every entry used to be given: a screen open to an editor says so itself, and nothing else here can read a CRUD's own setPermission()
-                    ->setPermission($menu['role'] ?? $this->configService->get('site-role-admin'));
+                $item = $this->buildMenuItem($menu);
 
                 if ('advanced' === self::tier($menu, $section)) {
                     $advancedItems[] = $item;

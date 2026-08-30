@@ -125,7 +125,9 @@ through a generic pool can stand in for. Slugs are namespaced by the bundle they
 being free to name a row alike, and `Registry\PlaceholderMediaRegistry::getImagesFor($slug)` reads them
 back — empty for anything the site has none of, which is what every site starts as. `keyed_images` is
 merged one slug at a time, so declaring a single product's pictures never takes away another provider's,
-and a slug declared empty overrides nothing.
+and a slug declared empty overrides nothing. Where a showcase's stand-ins **lead** is the `ui-showcase-demo-url`
+config entry: their rows exist in a demonstration site and never in the one rendering the showcase, so a
+link built on that site's own routes answers a 404 - left empty, the examples are not clickable at all.
 
 ## Showing the progress of an upload
 

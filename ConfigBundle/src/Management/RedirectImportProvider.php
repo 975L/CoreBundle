@@ -30,16 +30,25 @@ class RedirectImportProvider implements ImportProviderInterface
         return self::KIND === $kind;
     }
 
+    // Nothing validates what is persisted here, and a non-gone row without a destination is unusable: RedirectSubscriber would have to skip it on every request anyway (see its own guard), so it is not imported in the first place
+    private function isUsable(array $item): bool
+    {
+        if ($item['gone'] ?? false) {
+            return true;
+        }
+
+        $toUrl = $item['toUrl'] ?? null;
+
+        return null !== $toUrl && '' !== trim($toUrl);
+    }
+
     public function import(array $items, ?string $filesDir = null): array
     {
         $created = 0;
         $updated = 0;
 
         foreach ($items as $item) {
-            // Nothing validates what is persisted here, and a non-gone row without a destination is unusable: RedirectSubscriber would have to skip it on every request anyway (see its own guard), so it is not imported in the first place
-            $gone = $item['gone'] ?? false;
-            $toUrl = $item['toUrl'] ?? null;
-            if (!$gone && (null === $toUrl || '' === trim($toUrl))) {
+            if (!$this->isUsable($item)) {
                 continue;
             }
 
@@ -50,9 +59,9 @@ class RedirectImportProvider implements ImportProviderInterface
             $redirect
                 ->setFromPath($item['fromPath'])
                 // Defaults to false, so an export predating this field keeps importing as the plain redirect it was
-                ->setToUrl($toUrl)
+                ->setToUrl($item['toUrl'] ?? null)
                 ->setPermanent($item['permanent'] ?? true)
-                ->setGone($gone);
+                ->setGone($item['gone'] ?? false);
 
             $this->em->persist($redirect);
             $isNew ? $created++ : $updated++;

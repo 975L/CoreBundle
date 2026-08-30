@@ -198,20 +198,43 @@ class FormSeeder
     // A Form seeded by an earlier version brought up to date in place - only ever on a still-restricted Form/field, so nothing an admin has taken over is touched
     private function backfillForm(Form $form, array $fields, ?string $action, ?array $actionConfig): void
     {
-        if ($form->isRestricted() && $form->getAction() !== $action) {
-            $form->setAction($action);
-            // The rest of the config belongs to the action that just changed, so replacing it is the point - "links" doesn't: they are the Form's own, edited through their own collection editor, and follow the same never-overwrite rule as below rather than being reverted by a renamed action
-            $links = $form->getActionConfig()['links'] ?? null;
-            $form->setActionConfig(null === $links ? $actionConfig : array_merge($actionConfig ?? [], ['links' => $links]));
-            $this->entityManager->persist($form);
+        if ($form->isRestricted()) {
+            $this->backfillAction($form, $action, $actionConfig);
+            $this->backfillLinks($form, $actionConfig);
         }
 
-        // Backfilled on its own, same rule as a field's "url" below: a Form seeded before it declared any link gets them, one whose links an admin has already edited (emptied or otherwise) keeps that version
-        if ($form->isRestricted() && isset($actionConfig['links']) && !array_key_exists('links', $form->getActionConfig() ?? [])) {
-            $form->setLinks($actionConfig['links']);
-            $this->entityManager->persist($form);
+        $this->backfillFieldUrls($form, $fields);
+    }
+
+    // A renamed action takes its own config with it
+    private function backfillAction(Form $form, ?string $action, ?array $actionConfig): void
+    {
+        if ($form->getAction() === $action) {
+            return;
         }
 
+        $form->setAction($action);
+
+        // The rest of the config belongs to the action that just changed, so replacing it is the point - "links" doesn't: they are the Form's own, edited through their own collection editor, and follow the same never-overwrite rule as backfillLinks() rather than being reverted by a renamed action
+        $links = $form->getActionConfig()['links'] ?? null;
+        $form->setActionConfig(null === $links ? $actionConfig : array_merge($actionConfig ?? [], ['links' => $links]));
+        $this->entityManager->persist($form);
+    }
+
+    // Backfilled on its own, same rule as a field's "url": a Form seeded before it declared any link gets them, one whose links an admin has already edited (emptied or otherwise) keeps that version
+    private function backfillLinks(Form $form, ?array $actionConfig): void
+    {
+        if (!isset($actionConfig['links']) || array_key_exists('links', $form->getActionConfig() ?? [])) {
+            return;
+        }
+
+        $form->setLinks($actionConfig['links']);
+        $this->entityManager->persist($form);
+    }
+
+    // A restricted field seeded before its bundle declared an address gets it, one that already carries one keeps it
+    private function backfillFieldUrls(Form $form, array $fields): void
+    {
         foreach ($form->getFields() as $field) {
             $url = $fields[$field->getName()][2] ?? null;
             if ($field->isRestricted() && null === $field->getUrl() && null !== $url) {

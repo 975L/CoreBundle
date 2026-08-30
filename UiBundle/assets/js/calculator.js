@@ -26,13 +26,13 @@ export default class extends Controller {
         };
         this.element.addEventListener("input", this.onInput);
         this.element.addEventListener("change", this.onInput);
-        this.element.querySelectorAll('input[type="range"]').forEach((slider) => this.readout(slider));
+        this.element.querySelectorAll('input[type="range"]').forEach((slider) => { this.readout(slider); });
     }
 
     disconnect() {
         this.element.removeEventListener("input", this.onInput);
         this.element.removeEventListener("change", this.onInput);
-        this.readouts.forEach((readout) => readout.remove());
+        this.readouts.forEach((readout) => { readout.remove(); });
         this.readouts.clear();
         clearTimeout(this.timer);
         this.controller?.abort();

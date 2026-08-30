@@ -34,6 +34,33 @@ class BlockFixtureMediaAttacher
     }
 
     // $variant lets a specific fixture variant (e.g. slider's "freeflow") ask for a different image count than its kind's own default, see imageCount()
+    // As many placeholder images as the kind's own layout shows, the run stopping short when the app declares no more
+    private function attachImages(Block $block, int $count): void
+    {
+        for ($i = 0; $i < $count; ++$i) {
+            $image = $this->nextPlaceholderImage();
+            if (null === $image) {
+                return;
+            }
+
+            $block->addMedia($image);
+        }
+    }
+
+    // Whether this kind and variant is one a placeholder video belongs to
+    private function wantsVideo(string $kind, string $variant): bool
+    {
+        return 'freeflow' !== $variant && ('hero' !== $kind || 'video' === $variant);
+    }
+
+    // Every placeholder is null as long as the app declares none, the block then simply rendering without that media rather than with a broken one
+    private function attachOne(Block $block, ?Media $media): void
+    {
+        if (null !== $media) {
+            $block->addMedia($media);
+        }
+    }
+
     public function attach(Block $block, string $kind, string $variant = ''): void
     {
         if ('portfolio_grid' === $kind) {
@@ -50,31 +77,18 @@ class BlockFixtureMediaAttacher
         // Every placeholder below is null as long as the app declares none, the block then simply rendering without that media rather than with a broken one
         foreach ($this->registry->getMediaTypes($kind) as $mediaType) {
             if (str_starts_with($mediaType, 'image/')) {
-                $count = $this->imageCount($kind, $variant);
-                for ($i = 0; $i < $count; ++$i) {
-                    $image = $this->nextPlaceholderImage();
-                    if (null === $image) {
-                        break;
-                    }
-                    $block->addMedia($image);
-                }
+                $this->attachImages($block, $this->imageCount($kind, $variant));
             }
 
             // Skipped for "freeflow", already busy demonstrating its own layout with more images, see imageCount().
             // For "hero" a video is not one more media but a whole other look - it fills the section by itself and drops everything laid out beside the text - so it belongs to that kind's own "video" variant alone, the default one going on showing the ordinary hero (see BlockFixtureProvider)
-            if ('freeflow' !== $variant && ('hero' !== $kind || 'video' === $variant) && !$videoAttached && str_starts_with($mediaType, 'video/')) {
-                $video = $this->placeholderVideo();
-                if (null !== $video) {
-                    $block->addMedia($video);
-                }
+            if (!$videoAttached && str_starts_with($mediaType, 'video/') && $this->wantsVideo($kind, $variant)) {
+                $this->attachOne($block, $this->placeholderVideo());
                 $videoAttached = true;
             }
 
             if (str_starts_with($mediaType, 'audio/')) {
-                $audio = $this->placeholderAudio();
-                if (null !== $audio) {
-                    $block->addMedia($audio);
-                }
+                $this->attachOne($block, $this->placeholderAudio());
 
                 break;
             }

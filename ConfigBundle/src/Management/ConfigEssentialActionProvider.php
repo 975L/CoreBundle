@@ -57,21 +57,25 @@ class ConfigEssentialActionProvider implements EssentialActionProviderInterface
             ->generateUrl();
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedPrivateMethod) Named as a callable above, which PHPMD does not resolve */
     private static function identityDone(ConfigServiceInterface $configService): bool
     {
         return (bool) $configService->get('site-name');
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedPrivateMethod) Named as a callable above, which PHPMD does not resolve */
     private static function legalDone(ConfigServiceInterface $configService): bool
     {
         return (bool) $configService->get('site-contact-email') && (bool) $configService->get('site-director');
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedPrivateMethod) Named as a callable above, which PHPMD does not resolve */
     private static function emailDone(ConfigServiceInterface $configService): bool
     {
         return (bool) $configService->get('email-from') && (bool) $configService->get('email-to');
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedPrivateMethod) Named as a callable above, which PHPMD does not resolve */
     private static function rolesDone(ConfigServiceInterface $configService): bool
     {
         return (bool) $configService->get('user-roles-available');

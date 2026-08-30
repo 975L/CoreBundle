@@ -33,12 +33,7 @@ class OffsiteState
     {
         $previous = $this->read($projectDir) ?? [];
         $failedWhat = $previous['failedWhat'] ?? null;
-
-        // A stream only clears the failure it raised itself: the archives push succeeding says nothing about the mirror that failed last night, and clearing it there is how a month of broken mirrors read as "ok"
-        // A failure no stream is named for - an older file, or one recorded without a stream - clears on any success
-        $keepFailure = 'failed' === ($previous['status'] ?? null)
-            && null !== $failedWhat
-            && $failedWhat !== ($details['what'] ?? null);
+        $keepFailure = $this->keepsFailure($previous, $details);
 
         $this->write($projectDir, array_merge($previous, $details, [
             'at' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
@@ -46,6 +41,17 @@ class OffsiteState
             'lastError' => $keepFailure ? ($previous['lastError'] ?? null) : null,
             'failedWhat' => $keepFailure ? $failedWhat : null,
         ]));
+    }
+
+    // A stream only clears the failure it raised itself: the archives push succeeding says nothing about the mirror that failed last night, and clearing it there is how a month of broken mirrors read as "ok"
+    // A failure no stream is named for - an older file, or one recorded without a stream - clears on any success
+    private function keepsFailure(array $previous, array $details): bool
+    {
+        $failedWhat = $previous['failedWhat'] ?? null;
+
+        return 'failed' === ($previous['status'] ?? null)
+            && null !== $failedWhat
+            && $failedWhat !== ($details['what'] ?? null);
     }
 
     // Keeps the previous success's timestamp untouched, so the staleness the dashboard reads keeps growing while the failure is named alongside it

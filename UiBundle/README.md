@@ -315,6 +315,20 @@ Nothing is written on click. The toggle drives the row's own `hidden` checkbox (
 
 Upgrading to a UiBundle version that introduces it adds a new `hidden` column to `site_block` - re-run "Run migrations" above after `composer update`.
 
+### Choosing a block's kind
+
+`assets/js/block-picker.js` puts a visual palette in front of each row's kind `<select>`: a grid of silhouettes and labels, grouped by the categories the select already carries, with a search box over the label, the description and the kind's own slug. It opens as a full-height sheet on a phone and as a centred dialog from a tablet up, so a page can be composed from the device it will mostly be read on. Adding a row opens it straight away (`block-collection.js`), the palette being what a new row has to answer.
+
+The `<select>` is never removed, only hidden by CSS once the trigger is in place (`.ui-block-picker-on`): every kind-change rule of `BlockType` still reads a posted `kind`, and with no JavaScript the select is simply still there. It is not a Stimulus controller, for the same reason `icon-picker.js` isn't one - block rows are cloned into the page long after load, and delegated listeners cover those without anything having to mount them again.
+
+Nothing to wire: `BlockType` writes `data-kind-row` on the row and `data-label`/`data-description` on each `<option>` (`choice_attr`, read off the registry), which is all the palette needs. Styling lives in `sass/management/_block-picker.scss` and `sass/_block-thumbs.scss`.
+
+### Drawing a block kind outside the back-office
+
+The silhouettes are markup plus CSS, no image: five `<b>` parts always written the same way, which `sass/_block-thumbs.scss` shows, hides and arranges per kind. A page listing kinds outside `/management` - a site's own public block showcase - draws them with the **`<twig:c975LUi:Blocks:Thumb kind="banner_title"/>`** component, the very markup the picker builds, and loads `bundles/c975lui/css/block-thumbs.min.css` from its own `BundleStylesheetProviderInterface`. That sheet is deliberately not in `StylesheetProvider`'s own list - a site with no showcase page has no use for it - while the back-office gets the same rules through `sass/management.scss`.
+
+A kind the stylesheet declares no rule for still draws the generic silhouette, so a bundle adding a kind never ships a blank tile.
+
 ### Which choice fields get a search box
 
 `Form\Extension\ChoiceAutocompleteExtension` decides, for **every choice field of every bundle**, whether it renders as a plain `<select>` or as EasyAdmin's searchable TomSelect widget — the rule being the length of the list, never which bundle declared the field. Below `AUTOCOMPLETE_THRESHOLD` (10 options) a native select is faster to use and keeps its empty "none" option selectable; at or above it, the search box. A `multiple` field always gets the widget however short, the native multi-select asking for ctrl+click.
@@ -1004,6 +1018,8 @@ That server-side check is what allows `assets/js/mobile-file-accept.js` (loaded 
 There is no EasyAdmin block gallery anymore - it was removed entirely, not just unlinked. Its preview variants needed inline scripts for interactivity (`slider`, `image_compare`...), and a hash/nonce-based CSP (e.g. `nelmio_security`'s `csp.hash` config) can never authorize a script trapped inside an `<iframe srcdoc="...">` attribute string - that class of CSP tooling scans a response's literal `<script>`/`<style>` elements, and content inside a `srcdoc` string is invisible to that scan. Not a bug in the gallery's own templates, a structural incompatibility.
 
 The sidebar's "Links" section (see `c975L\UiBundle\Management\MenuProvider::getLinks()`) instead links out to <https://bundles.975l.com/pages/blocks>, the c975L ecosystem's own canonical showcase of every bundle's block kinds - rendered inline in a normal page, no iframe, no CSP conflict. That url is the `ui-block-showcase-url` config entry, pre-filled with the ecosystem showcase: an app hosting its own showcase page just changes the value, and one whose `configs.json` hasn't been reloaded yet (empty or missing key) falls back on `MenuProvider::BLOCK_SHOWCASE_URL`, the same address.
+
+Its companion `ui-showcase-demo-url` says where the showcase's **examples** lead: the rows a `GalleryShowcaseProviderInterface` stands in for (a gallery's categories, a shop's products...) exist in a demonstration site and never in the one rendering the showcase, so a link built on that site's own routes answers a 404. Pre-filled with <https://bundles.975l.com/demo>, and left empty the examples render as plain images rather than as links going nowhere - see GalleryBundle's `GalleryShowcaseProvider`, the first to read it.
 
 The fixture/showcase machinery the old gallery used (`BlockFixtureProviderInterface`, `GalleryShowcaseProviderInterface`, `BlockFixtureMediaAttacher`...) wasn't removed - it's what powers that `/blocks` page, and is available to any consuming app wanting to build its own equivalent showcase page (a plain controller/template, not an EasyAdmin/iframe one).
 
@@ -1722,6 +1738,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Audio:Audio>` | HTML5 audio player, `sticky="true"` making it a bar resting against the bottom of the screen |
 | `<twig:c975LUi:Blocks:Block>` | Renders one `Block` entity via its registered kind template |
 | `<twig:c975LUi:Blocks:Blocks>` | Loops `Block` over a collection, auto-wraps consecutive `card` blocks in a `.cards` flex row |
+| `<twig:c975LUi:Blocks:Thumb>` | The silhouette of a block kind, drawn in CSS - what the back-office picker shows, for a page listing kinds outside it |
 | `<twig:c975LUi:Button:Button>` | Styled button/link |
 | `<twig:c975LUi:Card:Card>` | Bootstrap card |
 | `<twig:c975LUi:Card:Cards>` | Loops `Card` over an externally-supplied collection (no `Block` involved) |

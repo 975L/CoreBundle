@@ -150,6 +150,10 @@
                 <source>description.ui_rating_scale</source>
                 <target>Nombre d'icônes proposées. 1 transforme la note en simple « j'aime » et affiche le nombre de votes au lieu de la moyenne</target>
             </trans-unit>
+            <trans-unit id="tZ6fd2l">
+                <source>description.ui_showcase_demo_url</source>
+                <target>Adresse du site de démonstration vers lequel mènent les exemples de la vitrine des blocks - leurs catégories et leurs fiches n'existent que là, vide les exemples ne sont pas cliquables plutôt que de mener à une page inexistante</target>
+            </trans-unit>
             <trans-unit id="vnYPhlr">
                 <source>description.url_cookies_policy</source>
                 <target>URL de la politique de cookies, ex. https://example.com/pages/cookies</target>
@@ -313,6 +317,10 @@
             <trans-unit id="p3KMSht">
                 <source>label.ui_rating_scale</source>
                 <target>Échelle des notes</target>
+            </trans-unit>
+            <trans-unit id="hxT5gOS">
+                <source>label.ui_showcase_demo_url</source>
+                <target>Vitrine des blocks - URL de la démonstration</target>
             </trans-unit>
             <trans-unit id="R1c.duO">
                 <source>label.ui_watermark_margin</source>

@@ -317,47 +317,35 @@ final class StylesheetCascade
             return false;
         }
 
-        foreach (self::splitCompound($compound) as $part) {
-            if (preg_match('/^:(is|where|matches)\((.*)\)$/i', $part, $matches)) {
-                if (!$this->canMatch(self::splitSelectorList($matches[2]), $class, $tags)) {
-                    return false;
-                }
+        return array_all(self::splitCompound($compound), fn (string $part): bool => $this->partMatches($part, $class, $tags));
+    }
 
-                continue;
-            }
-
-            // The exclusion a fixed collision leaves behind, and the whole point of checking: ":not(.slider)" is what makes the reset safe
-            if (preg_match('/^:not\((.*)\)$/i', $part, $matches)) {
-                if ($this->canMatch(self::splitSelectorList($matches[1]), $class, $tags)) {
-                    return false;
-                }
-
-                continue;
-            }
-
-            // Any other pseudo-class is a state or a position we can't resolve, so it doesn't rule the match out
-            if (str_starts_with($part, ':') || str_starts_with($part, '[')) {
-                continue;
-            }
-
-            if (str_starts_with($part, '#')) {
-                return false;
-            }
-
-            if (str_starts_with($part, '.')) {
-                if (!in_array(substr($part, 1), (array) $class, true)) {
-                    return false;
-                }
-
-                continue;
-            }
-
-            if ('*' !== $part && !in_array('*', $tags, true) && !in_array(strtolower($part), $tags, true)) {
-                return false;
-            }
+    // One piece of a compound weighed on its own: a functional pseudo-class resolves against what it wraps, a class or a tag against what the component carries, and anything unresolvable rules nothing out
+    private function partMatches(string $part, string | array $class, array $tags): bool
+    {
+        if (preg_match('/^:(is|where|matches)\((.*)\)$/i', $part, $matches)) {
+            return $this->canMatch(self::splitSelectorList($matches[2]), $class, $tags);
         }
 
-        return true;
+        // The exclusion a fixed collision leaves behind, and the whole point of checking: ":not(.slider)" is what makes the reset safe
+        if (preg_match('/^:not\((.*)\)$/i', $part, $matches)) {
+            return !$this->canMatch(self::splitSelectorList($matches[1]), $class, $tags);
+        }
+
+        // Any other pseudo-class is a state or a position we can't resolve, so it doesn't rule the match out
+        if (str_starts_with($part, ':') || str_starts_with($part, '[')) {
+            return true;
+        }
+
+        if (str_starts_with($part, '#')) {
+            return false;
+        }
+
+        if (str_starts_with($part, '.')) {
+            return in_array(substr($part, 1), (array) $class, true);
+        }
+
+        return '*' === $part || in_array('*', $tags, true) || in_array(strtolower($part), $tags, true);
     }
 
     // Every rule of the unnested cascade, in source order, with its selectors, declarations and specificity
@@ -373,35 +361,15 @@ final class StylesheetCascade
         foreach (str_split($css) as $character) {
             if ('{' === $character) {
                 ++$depth;
-
-                $prelude = trim($buffer);
+                self::openBlock(trim($buffer), $depth, $rules, $skipUntilDepth);
                 $buffer = '';
-
-                if (1 === $depth && str_starts_with($prelude, '@')) {
-                    preg_match('/^@([a-z-]+)/i', $prelude, $matches);
-
-                    if (in_array(strtolower($matches[1] ?? ''), self::SKIPPED_AT_RULES, true)) {
-                        $skipUntilDepth = $depth;
-                    }
-
-                    continue;
-                }
-
-                if (null === $skipUntilDepth && 1 === $depth) {
-                    $rules[] = ['prelude' => $prelude];
-                }
 
                 continue;
             }
 
             if ('}' === $character) {
                 if (null === $skipUntilDepth && 1 === $depth && [] !== $rules && !isset($rules[count($rules) - 1]['declarations'])) {
-                    $last = count($rules) - 1;
-                    // Whitespace collapsed first: sass writes a long selector list across several lines, and a newline inside an ":is()" hides it from every reading below
-                    $prelude = (string) preg_replace('/\s+/', ' ', $rules[$last]['prelude']);
-                    $rules[$last]['selectors'] = self::splitSelectorList($prelude);
-                    $rules[$last]['declarations'] = self::parseDeclarations($buffer);
-                    $rules[$last]['specificity'] = max(array_map(self::specificity(...), $rules[$last]['selectors']));
+                    self::closeRule($rules[count($rules) - 1], $buffer);
                 }
 
                 if (null !== $skipUntilDepth && $depth === $skipUntilDepth) {
@@ -422,6 +390,39 @@ final class StylesheetCascade
     }
 
     // Last one wins, as the browser does when a rule declares the same property twice
+    // An opening brace: a top-level rule opens its own entry, an at-rule this reading skips arms the skipping, and anything nested is passed over
+    private static function openBlock(string $prelude, int $depth, array &$rules, ?int &$skipUntilDepth): void
+    {
+        if (1 === $depth && str_starts_with($prelude, '@')) {
+            $skipUntilDepth = self::isSkippedAtRule($prelude) ? $depth : $skipUntilDepth;
+
+            return;
+        }
+
+        if (null === $skipUntilDepth && 1 === $depth) {
+            $rules[] = ['prelude' => $prelude];
+        }
+    }
+
+    // An at-rule this reading has nothing to say about, whose whole block is stepped over
+    private static function isSkippedAtRule(string $prelude): bool
+    {
+        preg_match('/^@([a-z-]+)/i', $prelude, $matches);
+
+        return in_array(strtolower($matches[1] ?? ''), self::SKIPPED_AT_RULES, true);
+    }
+
+    // The rule read out once its closing brace is reached: what it selects, what it declares, and how strongly
+    private static function closeRule(array &$rule, string $declarations): void
+    {
+        // Whitespace collapsed first: sass writes a long selector list across several lines, and a newline inside an ":is()" hides it from every reading below
+        $prelude = (string) preg_replace('/\s+/', ' ', $rule['prelude']);
+
+        $rule['selectors'] = self::splitSelectorList($prelude);
+        $rule['declarations'] = self::parseDeclarations($declarations);
+        $rule['specificity'] = max(array_map(self::specificity(...), $rule['selectors']));
+    }
+
     private static function parseDeclarations(string $body): array
     {
         $declarations = [];

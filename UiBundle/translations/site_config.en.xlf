@@ -150,6 +150,10 @@
                 <source>description.ui_rating_scale</source>
                 <target>How many icons are offered. 1 turns the rating into a plain "like", showing how many voted instead of the average</target>
             </trans-unit>
+            <trans-unit id="tZ6fd2l">
+                <source>description.ui_showcase_demo_url</source>
+                <target>Url of the demonstration site the block showcase's examples lead to - their categories and sheets only exist there, left empty the examples are not clickable rather than leading to a page that does not exist</target>
+            </trans-unit>
             <trans-unit id="vnYPhlr">
                 <source>description.url_cookies_policy</source>
                 <target>Cookies policy page URL, e.g. https://example.com/pages/cookies</target>
@@ -313,6 +317,10 @@
             <trans-unit id="p3KMSht">
                 <source>label.ui_rating_scale</source>
                 <target>Rating scale</target>
+            </trans-unit>
+            <trans-unit id="hxT5gOS">
+                <source>label.ui_showcase_demo_url</source>
+                <target>Block showcase - Demo url</target>
             </trans-unit>
             <trans-unit id="R1c.duO">
                 <source>label.ui_watermark_margin</source>

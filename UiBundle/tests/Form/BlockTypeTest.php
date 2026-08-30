@@ -78,6 +78,23 @@ class BlockTypeTest extends TestCase
         $this->assertSame(['Navigation' => ['Menu link' => 'menu_link']], $added['kind']['choices']);
     }
 
+    // The choice label a bare <select> shows is the label and the description run together; the visual picker gives them a line each and reads them from these attributes, or it would print the description twice over (see block-picker.js)
+    public function testEachOptionCarriesItsLabelAndDescriptionApart(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('groupedByCategory')->willReturn(['Media' => ['Image (Image seule)' => 'image']]);
+        $registry->method('getLabel')->willReturn('Image');
+        $registry->method('getDescription')->willReturn('Image seule');
+
+        $type = new BlockType($registry, $this->createRouter());
+        $added = $this->buildAddedOptions($type, ['context' => null]);
+
+        $this->assertSame(
+            ['data-label' => 'Image', 'data-description' => 'Image seule'],
+            $added['kind']['choice_attr']('image')
+        );
+    }
+
     // A CollectionField that never sets "context" (existing usages, before this option existed) must keep seeing every pickable kind - groupedByCategory(null) applies no context filter
     public function testBuildFormWithNoContextPassesNullToGroupedByCategory(): void
     {

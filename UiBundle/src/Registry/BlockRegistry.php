@@ -55,6 +55,8 @@ class BlockRegistry
     {
     }
 
+    // 18 scalars, past the sixteen phpmd.xml.dist calls the limit: what a "ui.block" tag declares, owed a value object of its own
+    /** @SuppressWarnings(PHPMD.ExcessiveParameterList) */
     public function register(
         string $kind,
         string $label,
@@ -303,19 +305,8 @@ class BlockRegistry
             }
         }
 
-        if (null !== $orderKeyFn) {
-            // Ranks each optgroup by its position in CATEGORY_ORDER, alphabetical tie-break for anything not listed there
-            uksort($grouped, function (string $a, string $b) use ($orderKeys) {
-                $posA = array_search($orderKeys[$a], self::CATEGORY_ORDER, true);
-                $posB = array_search($orderKeys[$b], self::CATEGORY_ORDER, true);
-                $posA = false === $posA ? count(self::CATEGORY_ORDER) : $posA;
-                $posB = false === $posB ? count(self::CATEGORY_ORDER) : $posB;
+        $this->sortGroups($grouped, $orderKeys, null !== $orderKeyFn);
 
-                return $posA <=> $posB ?: strcasecmp($a, $b);
-            });
-        } else {
-            ksort($grouped, SORT_FLAG_CASE | SORT_STRING);
-        }
         // Highest priority first; alphabetical as tie-breaker so unranked (priority 0) blocks stay predictable
         foreach ($grouped as $key => $entries) {
             usort($entries, fn (array $a, array $b) => $b['priority'] <=> $a['priority'] ?: strcasecmp($a['label'], $b['label']));
@@ -323,6 +314,26 @@ class BlockRegistry
         }
 
         return $cache[$cacheKey] = $grouped;
+    }
+
+    // Ranks each optgroup by its position in CATEGORY_ORDER, alphabetical tie-break for anything not listed there - plain alphabetical when the caller declares no order of its own
+    private function sortGroups(array &$grouped, array $orderKeys, bool $ranked): void
+    {
+        if (!$ranked) {
+            ksort($grouped, SORT_FLAG_CASE | SORT_STRING);
+
+            return;
+        }
+
+        uksort($grouped, fn (string $a, string $b): int => $this->categoryRank($orderKeys[$a]) <=> $this->categoryRank($orderKeys[$b]) ?: strcasecmp($a, $b));
+    }
+
+    // Where a category stands in the declared order, anything unlisted ranking last
+    private function categoryRank(string $category): int
+    {
+        $position = array_search($category, self::CATEGORY_ORDER, true);
+
+        return false === $position ? count(self::CATEGORY_ORDER) : $position;
     }
 
     // Builds the "kind" choice label: name, plus a short description in parentheses when declared. Kept as plain text (no markup) so the "kind" field's <optgroup> categories stay intact - EasyAdmin's ea-autocomplete widget only preserves grouping on a plain native <select>.

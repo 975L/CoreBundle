@@ -49,16 +49,7 @@ class FormImportProvider implements ImportProviderInterface
             $isNew = null === $form;
             $form ??= new Form()->setName($item['name']);
 
-            $form
-                ->setAction($item['action'] ?? null)
-                ->setActionConfig($item['actionConfig'] ?? null)
-                ->setEnabled((bool) ($item['enabled'] ?? true))
-                ->setOutputsFirst((bool) ($item['outputsFirst'] ?? false));
-
-            if ($isNew) {
-                $form->setRestricted((bool) ($item['restricted'] ?? false));
-            }
-
+            $this->fillForm($form, $item, $isNew);
             $this->mergeFields($form, $item['fields'] ?? []);
             $this->mergeOutputs($form, $item['outputs'] ?? []);
 
@@ -69,6 +60,20 @@ class FormImportProvider implements ImportProviderInterface
         $this->em->flush();
 
         return ['created' => $created, 'updated' => $updated];
+    }
+
+    // The form's own settings - "restricted" only on the way in, an environment having its own say on whether the form may be edited there
+    private function fillForm(Form $form, array $item, bool $isNew): void
+    {
+        $form
+            ->setAction($item['action'] ?? null)
+            ->setActionConfig($item['actionConfig'] ?? null)
+            ->setEnabled((bool) ($item['enabled'] ?? true))
+            ->setOutputsFirst((bool) ($item['outputsFirst'] ?? false));
+
+        if ($isNew) {
+            $form->setRestricted((bool) ($item['restricted'] ?? false));
+        }
     }
 
     /** @param list<array<string, mixed>> $fields */
@@ -87,26 +92,7 @@ class FormImportProvider implements ImportProviderInterface
 
             $name = (string) $data['name'];
             $carried[] = $name;
-            // Updated in place when it is already there, so a relabelled or reordered field travels without the row it belongs to being rebuilt - and so a restricted field keeps the flag its own environment set on it while its editable side follows the export
-            $field = $existing[$name] ?? new FormField()->setName($name);
-
-            $field
-                ->setLabel($data['label'])
-                ->setType($data['type'])
-                ->setPlaceholder($data['placeholder'] ?? null)
-                ->setUrl($data['url'] ?? null)
-                ->setRequired((bool) ($data['required'] ?? false))
-                ->setPosition($data['position'] ?? null)
-                ->setMinValue($data['minValue'] ?? null)
-                ->setMaxValue($data['maxValue'] ?? null)
-                ->setStepValue($data['stepValue'] ?? null)
-                ->setDefaultValue($data['defaultValue'] ?? null)
-                ->setOptions($data['options'] ?? null);
-
-            if (!isset($existing[$name])) {
-                $field->setRestricted((bool) ($data['restricted'] ?? false));
-                $form->addField($field);
-            }
+            $this->writeField($form, $existing[$name] ?? null, $name, $data);
         }
 
         // What the export does not carry any more, dropped - except a restricted field, which the application itself reads by name
@@ -133,22 +119,7 @@ class FormImportProvider implements ImportProviderInterface
 
             $name = (string) $data['name'];
             $carried[] = $name;
-            // Updated in place when it is already there, so the row a formula names keeps its identity instead of being dropped and re-inserted under the same name in the same flush
-            $output = $existing[$name] ?? new FormOutput()->setName($name);
-
-            $output
-                ->setLabel($data['label'])
-                ->setExpression($data['expression'])
-                ->setFormat($data['format'] ?? FormOutput::FORMAT_NUMBER)
-                ->setDecimals((int) ($data['decimals'] ?? 0))
-                ->setUnit($data['unit'] ?? null)
-                ->setVisible((bool) ($data['visible'] ?? true))
-                ->setHighlighted((bool) ($data['highlighted'] ?? false))
-                ->setPosition($data['position'] ?? null);
-
-            if (!isset($existing[$name])) {
-                $form->addOutput($output);
-            }
+            $this->writeOutput($form, $existing[$name] ?? null, $name, $data);
         }
 
         // What the export does not carry any more, dropped - an output being written by the admin alone, nothing seeds one to protect
@@ -157,5 +128,72 @@ class FormImportProvider implements ImportProviderInterface
                 $form->removeOutput($output);
             }
         }
+    }
+
+    // Updated in place when it is already there, so a relabelled or reordered field travels without the row it belongs to being rebuilt - and so a restricted field keeps the flag its own environment set on it while its editable side follows the export
+    private function writeField(Form $form, ?FormField $existing, string $name, array $data): void
+    {
+        $field = $existing ?? new FormField()->setName($name);
+
+        $field
+            ->setLabel($data['label'])
+            ->setType($data['type'])
+            ->setPlaceholder($data['placeholder'] ?? null)
+            ->setUrl($data['url'] ?? null);
+
+        $this->writeFieldConstraints($field, $data);
+        $this->writeFieldRange($field, $data);
+
+        if (null === $existing) {
+            $field->setRestricted((bool) ($data['restricted'] ?? false));
+            $form->addField($field);
+        }
+    }
+
+    // Whether the visitor may leave it blank, and where it stands among the others
+    private function writeFieldConstraints(FormField $field, array $data): void
+    {
+        $field
+            ->setRequired((bool) ($data['required'] ?? false))
+            ->setPosition($data['position'] ?? null);
+    }
+
+    // What a numeric or a choice field is bounded by, all four optional: a plain text field carries none of them
+    private function writeFieldRange(FormField $field, array $data): void
+    {
+        $field
+            ->setMinValue($data['minValue'] ?? null)
+            ->setMaxValue($data['maxValue'] ?? null)
+            ->setStepValue($data['stepValue'] ?? null)
+            ->setDefaultValue($data['defaultValue'] ?? null)
+            ->setOptions($data['options'] ?? null);
+    }
+
+    // Updated in place when it is already there, so the row a formula names keeps its identity instead of being dropped and re-inserted under the same name in the same flush
+    private function writeOutput(Form $form, ?FormOutput $existing, string $name, array $data): void
+    {
+        $output = $existing ?? new FormOutput()->setName($name);
+
+        $output
+            ->setLabel($data['label'])
+            ->setExpression($data['expression'])
+            ->setPosition($data['position'] ?? null);
+
+        $this->writeOutputPresentation($output, $data);
+
+        if (null === $existing) {
+            $form->addOutput($output);
+        }
+    }
+
+    // How the computed value is read out: the shape of the number, and whether it is shown at all
+    private function writeOutputPresentation(FormOutput $output, array $data): void
+    {
+        $output
+            ->setFormat($data['format'] ?? FormOutput::FORMAT_NUMBER)
+            ->setDecimals((int) ($data['decimals'] ?? 0))
+            ->setUnit($data['unit'] ?? null)
+            ->setVisible((bool) ($data['visible'] ?? true))
+            ->setHighlighted((bool) ($data['highlighted'] ?? false));
     }
 }

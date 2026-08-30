@@ -18,6 +18,7 @@ import UploadProgressController from './js/upload-progress.js';
 import './js/trix-editor.js';
 import './js/media-preview.js';
 import './js/icon-picker.js';
+import './js/block-picker.js';
 import './js/mobile-file-accept.js';
 
 // Back-office controllers, used only in EasyAdmin Loaded as its own <script type="module"> tag (see importmap.php), starts its own Stimulus app

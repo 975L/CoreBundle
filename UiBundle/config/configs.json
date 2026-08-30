@@ -104,6 +104,17 @@
         "description": "description.block_showcase_url"
     },
     {
+        "label": "label.ui_showcase_demo_url",
+        "slug": "ui-showcase-demo-url",
+        "sensitive": false,
+        "restricted": true,
+        "value": "https://bundles.975l.com/demo",
+        "kind": "text",
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_showcase_demo_url"
+    },
+    {
         "label": "label.recaptcha3_site_key",
         "slug": "recaptcha3-site-key",
         "sensitive": true,

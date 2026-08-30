@@ -205,6 +205,13 @@ A bundle adds to its `extra` section with `StatusProviderInterface`. **The crite
 figure calling for no action is not reported.** The report is read across a dozen sites at once; a
 "number of blocks" decides nothing and buries what matters.
 
+ConfigBundle fills three `extra` keys itself: `capabilities` (SAPI, `exec()`, the ini limits),
+`registration` (whether a stranger can still create an account) and `messenger` — one count per
+countable transport plus the name of the failure transport. **A stopped worker shows zero failures**:
+what has failed for good sits in the failure transport, what was never tried piles up in the ordinary
+ones, so a console reading only the failure count reads a dead worker as healthy. Transports that
+cannot count themselves (the scheduler's) are left out rather than reported as zero.
+
 ## Scheduler and dev profile
 
 `c975l:config:sessions-cleanup` deletes the expired rows of `PdoSessionHandler`'s `sessions` table —

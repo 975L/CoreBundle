@@ -31,21 +31,7 @@ class ChoiceAutocompleteExtension extends AbstractTypeExtension
     // Applied on the view rather than on the options: a choice list loaded lazily (EntityType, any choice_loader) only knows how long it is once built
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
-        $attr = $view->vars['attr'] ?? [];
-
-        // Radios and checkboxes are a layout of their own, with no select to turn into anything
-        if (true === ($view->vars['expanded'] ?? false)) {
-            return;
-        }
-
-        // A remote-fed autocomplete keeps the widget whatever this view holds: its list is an endpoint, and the only options rendered are the value already selected - counting those would turn every one of them into a native select of a single line. Keyed on the attribute being *present* rather than on its value, EasyAdmin writing it as null when the target CRUD has no reachable route (see AssociationConfigurator): the field is a CrudAutocompleteType either way
-        if (\array_key_exists('data-ea-autocomplete-endpoint-url', $attr)) {
-            return;
-        }
-
-        // A widget of another name is a deliberate ask, and is left alone. "ea-autocomplete" is not one of those: EasyAdmin's ChoiceConfigurator writes exactly that on every non-expanded ChoiceField and AssociationField, as a form option, before this ever runs - so reading it as an ask is what kept the rule below from being applied on a single admin screen, and a three-value config select rendered as a search box
-        $widget = $attr['data-ea-widget'] ?? null;
-        if (null !== $widget && 'ea-autocomplete' !== $widget) {
+        if (!$this->isOurs($view)) {
             return;
         }
 
@@ -58,6 +44,27 @@ class ChoiceAutocompleteExtension extends AbstractTypeExtension
         }
 
         $view->vars['attr']['data-ea-widget'] = 'ea-autocomplete';
+    }
+
+    // Whether this view is one this rule has any say over
+    private function isOurs(FormView $view): bool
+    {
+        // Radios and checkboxes are a layout of their own, with no select to turn into anything
+        if (true === ($view->vars['expanded'] ?? false)) {
+            return false;
+        }
+
+        $attr = $view->vars['attr'] ?? [];
+
+        // A remote-fed autocomplete keeps the widget whatever this view holds: its list is an endpoint, and the only options rendered are the value already selected - counting those would turn every one of them into a native select of a single line. Keyed on the attribute being *present* rather than on its value, EasyAdmin writing it as null when the target CRUD has no reachable route (see AssociationConfigurator): the field is a CrudAutocompleteType either way
+        if (\array_key_exists('data-ea-autocomplete-endpoint-url', $attr)) {
+            return false;
+        }
+
+        // A widget of another name is a deliberate ask, and is left alone. "ea-autocomplete" is not one of those: EasyAdmin's ChoiceConfigurator writes exactly that on every non-expanded ChoiceField and AssociationField, as a form option, before this ever runs - so reading it as an ask is what kept the rule from being applied on a single admin screen, and a three-value config select rendered as a search box
+        $widget = $attr['data-ea-widget'] ?? null;
+
+        return null === $widget || 'ea-autocomplete' === $widget;
     }
 
     // Counts the options a list holds, a grouped one (<optgroup>) counting its own rather than itself

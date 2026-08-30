@@ -1,0 +1,10 @@
+{# <twig:c975LUi:Blocks:Thumb kind="banner_title"/> #}
+{# The silhouette of a block kind, at thumbnail size: five parts always written the same way, which sass/_block-thumbs.scss shows, hides and arranges per kind. Same markup as the one assets/js/block-picker.js builds for the back-office palette (see its THUMB_PARTS), so a page listing kinds - a site's public block showcase - draws them exactly as the picker does instead of writing the parts out by hand #}
+{# Decorative: the label a caller puts next to it is what names the kind, and a silhouette read aloud says nothing #}
+<span class="ui-block-thumb ui-block-thumb--{{ kind }}" aria-hidden="true">
+    <b class="ui-block-thumb__media"></b>
+    <b class="ui-block-thumb__title"></b>
+    <b class="ui-block-thumb__line"></b>
+    <b class="ui-block-thumb__line"></b>
+    <b class="ui-block-thumb__action"></b>
+</span>

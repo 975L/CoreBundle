@@ -42,6 +42,47 @@ class ReviewController extends AbstractController
     ) {
     }
 
+    // What the token says the review is about, or a 404 for anything this site cannot answer for
+    // @return array{ownerType: string, ownerId: mixed, resolved: array}
+    private function subjectOf(string $token): array
+    {
+        if (!$this->reviewService->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        // A token this site did not sign names nothing, and is answered exactly like an id nobody claims
+        $owner = $this->tokenSigner->unsign($token);
+        if (null === $owner) {
+            throw $this->createNotFoundException();
+        }
+
+        // What the review is about, resolved by whoever owns that vocabulary - the same providers a wishlist reads its entries through, rather than a contract of its own. Nothing to resolve means nothing to review: an id nobody claims, or one whose owner is not published
+        $resolved = $this->favoriteItemRegistry->resolve([$owner['ownerType'] => [$owner['ownerId']]])[0] ?? null;
+        if (null === $resolved) {
+            throw $this->createNotFoundException();
+        }
+
+        return [...$owner, 'resolved' => $resolved];
+    }
+
+    // The review taken in, unless the caller has already had their share of attempts - answering whether it was
+    private function acceptReview(Review $review, Request $request): bool
+    {
+        // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any ceiling could count - see RateLimiterGuard::isAcceptedForIp()
+        $clientIp = $request->getClientIp();
+
+        if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->reviewLimiterFactory, $clientIp)) {
+            $this->addFlash('warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
+
+            return false;
+        }
+
+        $this->reviewService->submit($review);
+        $this->addFlash('success', $this->translator->trans('text.review_submitted', [], 'ui'));
+
+        return true;
+    }
+
     // Private and never stored: the page carries a session-bound honeypot and a csrf token, both of which would be served to the next visitor by any cache that kept them
     #[Cache(maxage: 0, public: false, mustRevalidate: true)]
     #[Route(
@@ -54,23 +95,7 @@ class ReviewController extends AbstractController
     )]
     public function new(string $token, Request $request): Response
     {
-        if (!$this->reviewService->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
-        // A token this site did not sign names nothing, and is answered exactly like an id nobody claims
-        $owner = $this->tokenSigner->unsign($token);
-        if (null === $owner) {
-            throw $this->createNotFoundException();
-        }
-
-        ['ownerType' => $ownerType, 'ownerId' => $ownerId] = $owner;
-
-        // What the review is about, resolved by whoever owns that vocabulary - the same providers a wishlist reads its entries through, rather than a contract of its own. Nothing to resolve means nothing to review: an id nobody claims, or one whose owner is not published
-        $resolved = $this->favoriteItemRegistry->resolve([$ownerType => [$ownerId]])[0] ?? null;
-        if (null === $resolved) {
-            throw $this->createNotFoundException();
-        }
+        ['ownerType' => $ownerType, 'ownerId' => $ownerId, 'resolved' => $resolved] = $this->subjectOf($token);
 
         $this->botProtection->startTimer($request, self::SESSION_KEY);
 
@@ -91,18 +116,8 @@ class ReviewController extends AbstractController
             $form->handleRequest($request);
         }
 
-        if (!$suspicious && $form->isSubmitted() && $form->isValid()) {
-            // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any ceiling could count - see RateLimiterGuard::isAcceptedForIp()
-            $clientIp = $request->getClientIp();
-
-            if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->reviewLimiterFactory, $clientIp)) {
-                $this->addFlash('warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
-            } else {
-                $this->reviewService->submit($review);
-                $this->addFlash('success', $this->translator->trans('text.review_submitted', [], 'ui'));
-
-                return $this->redirect($resolved['item']->url ?? $this->generateUrl('ui_review_new', ['token' => $token]));
-            }
+        if (!$suspicious && $form->isSubmitted() && $form->isValid() && $this->acceptReview($review, $request)) {
+            return $this->redirect($resolved['item']->url ?? $this->generateUrl('ui_review_new', ['token' => $token]));
         }
 
         $parameters = [

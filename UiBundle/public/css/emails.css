@@ -62,6 +62,12 @@
     --button-grey-background: lightgrey;
     --button-grey-color: #000;
     --button-status-color: #fff;
+    --calculator-highlight-background: var(--surface-accent);
+    --calculator-highlight-color: var(--primary);
+    --calculator-highlight-size: 2.6em;
+    --calculator-panel-background: var(--surface-alt);
+    --calculator-panel-radius: var(--radius-panel);
+    --calculator-slider-color: var(--primary);
     --card-background: #fff;
     --card-title-size: calc(19px * var(--font-size-title-scale, 1));
     --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1));

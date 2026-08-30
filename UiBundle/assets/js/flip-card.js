@@ -12,7 +12,7 @@ export default class extends Controller {
 
     connect() {
         // The fold itself is the stylesheet's, so the card is painted in shape instead of collapsing into it here - what this adds is the toggles, which turn nothing until this controller is running (see sass/_flip-card.scss and the <noscript> in templates/components/FlipCard/FlipCard.html.twig, which undoes the fold for a browser that never reaches this line)
-        this.element.querySelectorAll(".flip-card-toggle").forEach((button) => button.removeAttribute("hidden"));
+        this.element.querySelectorAll(".flip-card-toggle").forEach((button) => { button.removeAttribute("hidden"); });
         this.flipped = false;
         this.apply();
     }
@@ -20,8 +20,8 @@ export default class extends Controller {
     // Turbo caches the page as it stands, so the enhancement is undone here rather than left frozen in a snapshot restored before this controller connects again
     disconnect() {
         this.element.classList.remove("is-flipped");
-        this.faceTargets.forEach((face) => face.removeAttribute("inert"));
-        this.element.querySelectorAll(".flip-card-toggle").forEach((button) => button.setAttribute("hidden", ""));
+        this.faceTargets.forEach((face) => { face.removeAttribute("inert"); });
+        this.element.querySelectorAll(".flip-card-toggle").forEach((button) => { button.setAttribute("hidden", ""); });
     }
 
     toggle() {

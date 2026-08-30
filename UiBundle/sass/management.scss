@@ -10,6 +10,8 @@
 @use 'management/_trix-editor.scss';
 @use 'management/_ai-assistant.scss';
 @use 'management/_block-collection.scss';
+@use '_block-thumbs.scss';
+@use 'management/_block-picker.scss';
 @use 'management/_legal-model.scss';
 @use 'management/_form-fields.scss';
 @use 'management/_upload-progress.scss';

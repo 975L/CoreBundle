@@ -1,0 +1,948 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+/* THE SILHOUETTES OF THIS BUNDLE'S BLOCK KINDS, and the frame and five parts every bundle draws its own with.
+   Kept apart from the picker's own chrome (sass/management/_block-picker.scss, back-office only) because two
+   very different pages need them: the kind picker of the back-office, and the public block showcase of a site
+   listing what a bundle offers. Compiled on its own to public/css/block-thumbs.min.css for the second, and
+   pulled into the management sheet for the first. */
+
+/* THE SILHOUETTE - five parts, always the same markup, arranged per kind by the rules below. Drawn rather than photographed on purpose: a capture of the real block goes stale the day a template or the theme moves, and weighs its megabytes in the bundle */
+.ui-block-thumb {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: .1875rem;
+    aspect-ratio: 16 / 10;
+    padding: .375rem;
+    overflow: hidden;
+    background: var(--bs-body-bg, var(--background, #fff));
+    border: 1px solid var(--bs-border-color, var(--border-color, #dee2e6));
+    border-radius: .25rem;
+
+}
+
+/* Every part is drawn in the tile's own text colour rather than in a grey of its own: at this size a silhouette only reads if it carries real contrast, and currentcolor is the one value that holds it on the light back-office and on the dark one alike.
+   Written on the four classes and never on the "b" element they happen to be: an element selector inside the frame would score higher than the single class of every rule below it, and would then win the display, the flex and the opacity those rules exist to set - which is how the media part stayed visible on kinds that hide it, and stayed a thin strip on the grids that grow it. */
+.ui-block-thumb__media,
+.ui-block-thumb__title,
+.ui-block-thumb__line,
+.ui-block-thumb__action {
+    display: block;
+    flex: 0 0 auto;
+    border-radius: 1px;
+    background: currentcolor;
+    opacity: .3;
+}
+
+.ui-block-thumb__media {
+    flex: 1 1 auto;
+    min-height: .875rem;
+    border-radius: 2px;
+    opacity: .22;
+}
+
+.ui-block-thumb__title {
+    height: .3125rem;
+    width: 70%;
+    opacity: .65;
+}
+
+.ui-block-thumb__line {
+    height: .1875rem;
+    width: 100%;
+
+    & + .ui-block-thumb__line {
+        width: 60%;
+    }
+}
+
+.ui-block-thumb__action {
+    height: .3125rem;
+    width: 35%;
+    border-radius: 2px;
+    background: var(--bs-primary, var(--primary, #0d6efd));
+    opacity: 1;
+}
+/* By default a kind reads as text: a title and two lines. Every kind below draws its own shape from there - one rule each, read off what the block actually renders, so two blocks that lay out differently never share a silhouette. A kind with no rule at all - one shipped by a bundle that has not drawn its own yet - keeps this default rather than an empty frame. */
+.ui-block-thumb__media,
+.ui-block-thumb__action {
+    display: none;
+}
+
+/* Where a block writes its text over its own picture, the media is taken out of the flow (position: absolute) and the parts that follow are lifted back above it with position: relative - the frame itself is the positioning context (see .ui-block-thumb above) */
+
+/* SECTIONS DE PAGE */
+
+/* Hero: a full-bleed picture with the badge, the title, the subtitle and the buttons written over it */
+.ui-block-thumb--hero {
+    align-items: flex-start;
+    justify-content: center;
+    padding-left: .625rem;
+
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        inset: 0;
+        border-radius: 0;
+    }
+
+    .ui-block-thumb__title {
+        position: relative;
+        width: 55%;
+        height: .375rem;
+    }
+
+    .ui-block-thumb__line {
+        position: relative;
+        width: 65%;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+
+    .ui-block-thumb__action {
+        position: relative;
+        display: block;
+        width: 32%;
+        margin-top: .125rem;
+    }
+}
+
+/* Bande de réassurance: one row of short arguments, each a heading over its caption */
+.ui-block-thumb--feature_bar {
+    justify-content: center;
+
+    .ui-block-thumb__title {
+        width: 100%;
+        height: .375rem;
+        background-image: linear-gradient(to right, currentcolor 0 76%, transparent 76%);
+        background-size: 26% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line {
+        width: 100%;
+        background-image: linear-gradient(to right, currentcolor 0 56%, transparent 56%);
+        background-size: 26% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Grille d'atouts: a section heading, then three columns each led by its icon */
+.ui-block-thumb--section_features {
+    .ui-block-thumb__title {
+        width: 45%;
+        align-self: center;
+    }
+
+    .ui-block-thumb__media {
+        display: block;
+        max-height: .625rem;
+        background-image: radial-gradient(circle at center, currentcolor 0 40%, transparent 42%);
+        background-size: 33.33% 100%;
+        background-color: transparent;
+        opacity: .5;
+    }
+
+    .ui-block-thumb__line {
+        background-image: linear-gradient(to right, currentcolor 0 70%, transparent 70%);
+        background-size: 33.33% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        background-image: linear-gradient(to right, currentcolor 0 50%, transparent 50%);
+        width: 100%;
+    }
+}
+
+/* Grille de cartes: a section heading over a row of whole Card blocks */
+.ui-block-thumb--section_cards {
+    .ui-block-thumb__title {
+        width: 45%;
+        align-self: center;
+    }
+
+    .ui-block-thumb__media {
+        display: block;
+        background-image: linear-gradient(to right, currentcolor 0 74%, transparent 74%);
+        background-size: 33.33% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line {
+        background-image: linear-gradient(to right, currentcolor 0 74%, transparent 74%);
+        background-size: 33.33% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        background-image: linear-gradient(to right, currentcolor 0 40%, transparent 40%);
+    }
+}
+
+/* Étapes de méthode: numbered markers on the rule that runs through them */
+.ui-block-thumb--process_steps {
+    .ui-block-thumb__title {
+        width: 45%;
+        align-self: center;
+    }
+
+    .ui-block-thumb__media {
+        display: block;
+        max-height: .625rem;
+        background-image: radial-gradient(circle at center, currentcolor 0 40%, transparent 42%), linear-gradient(to bottom, transparent 45%, currentcolor 45% 55%, transparent 55%);
+        background-size: 25% 100%, 100% 100%;
+        background-color: transparent;
+        opacity: .5;
+    }
+
+    .ui-block-thumb__line {
+        background-image: linear-gradient(to right, currentcolor 0 60%, transparent 60%);
+        background-size: 25% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Grille de réalisations: illustrated projects, three across and two down */
+.ui-block-thumb--portfolio_grid {
+    .ui-block-thumb__media {
+        display: block;
+        background-image:
+            linear-gradient(to right, currentcolor 0 74%, transparent 74%),
+            linear-gradient(to right, currentcolor 0 74%, transparent 74%);
+        background-size: 33.33% 44%;
+        background-position: 0 0, 0 100%;
+        background-repeat: repeat-x;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__title,
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Grille de vidéos: a section heading over four players */
+.ui-block-thumb--video_grid {
+    .ui-block-thumb__title {
+        width: 45%;
+        align-self: center;
+    }
+
+    .ui-block-thumb__media {
+        display: block;
+        background-image:
+            linear-gradient(to right, currentcolor 0 84%, transparent 84%),
+            linear-gradient(to right, currentcolor 0 84%, transparent 84%);
+        background-size: 50% 44%;
+        background-position: 0 0, 0 100%;
+        background-repeat: repeat-x;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Collection: items pulled from elsewhere - books, products - shown as a row of covers */
+.ui-block-thumb--collection {
+    .ui-block-thumb__media {
+        display: block;
+        background-image: linear-gradient(to right, currentcolor 0 72%, transparent 72%);
+        background-size: 26% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__title {
+        display: none;
+    }
+
+    .ui-block-thumb__line {
+        background-image: linear-gradient(to right, currentcolor 0 72%, transparent 72%);
+        background-size: 26% 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Entrée de collection: one of those items, pulled out and given its own panel */
+.ui-block-thumb--collection_entry {
+    justify-content: center;
+    padding-left: calc(32% + .5rem);
+
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 28%;
+        border-radius: 0;
+    }
+
+    .ui-block-thumb__title {
+        width: 75%;
+    }
+
+    .ui-block-thumb__line {
+        width: 100%;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        width: 60%;
+    }
+
+    .ui-block-thumb__action {
+        display: block;
+        width: 50%;
+        margin-top: .125rem;
+    }
+}
+
+/* Bandeau d'expertise: a dark panel, its title and text in reverse, and the tags along the bottom */
+.ui-block-thumb--expertise_banner {
+    align-items: flex-start;
+    justify-content: center;
+    padding-left: .625rem;
+
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        inset: 0;
+        border-radius: 0;
+        opacity: .72;
+    }
+
+    .ui-block-thumb__title {
+        position: relative;
+        width: 55%;
+        opacity: .9;
+        background: var(--bs-body-bg, var(--background, #fff));
+    }
+
+    .ui-block-thumb__line {
+        position: relative;
+        width: 70%;
+        opacity: .55;
+        background: var(--bs-body-bg, var(--background, #fff));
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+
+    .ui-block-thumb__action {
+        position: relative;
+        display: block;
+        width: 60%;
+        margin-top: .1875rem;
+        background-image: linear-gradient(to right, var(--bs-primary, var(--primary, #0d6efd)) 0 70%, transparent 70%);
+        background-size: 34% 100%;
+        background-color: transparent;
+    }
+}
+
+/* Bandeau d'appel à l'action: everything centred inside its own panel, ending on the button */
+.ui-block-thumb--cta_band {
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-secondary-bg, var(--surface-alt, #e9ecef));
+
+    .ui-block-thumb__title {
+        width: 55%;
+    }
+
+    .ui-block-thumb__line {
+        width: 70%;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+
+    .ui-block-thumb__action {
+        display: block;
+        margin-top: .125rem;
+    }
+}
+
+/* Colonnes flexibles: the columns themselves, each waiting for a block of its own */
+.ui-block-thumb--flex_columns {
+    flex-direction: row;
+    align-items: stretch;
+    gap: .375rem;
+
+    .ui-block-thumb__title,
+    .ui-block-thumb__action {
+        display: none;
+    }
+
+    .ui-block-thumb__line {
+        flex: 1 1 0;
+        width: auto;
+        height: auto;
+        background: none;
+        border: 1px dashed currentcolor;
+        border-radius: 2px;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        width: auto;
+    }
+}
+
+/* Une colonne, celle qu'une section en tient plusieurs */
+.ui-block-thumb--flex_column {
+    align-items: center;
+    justify-content: center;
+
+    .ui-block-thumb__title,
+    .ui-block-thumb__action {
+        display: none;
+    }
+
+    .ui-block-thumb__line {
+        width: 45%;
+        height: 70%;
+        background: none;
+        border: 1px dashed currentcolor;
+        border-radius: 2px;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Groupe de blocks: several blocks brought onto one line, with no panel of their own around them */
+.ui-block-thumb--block_group {
+    flex-direction: row;
+    align-items: stretch;
+    gap: .3125rem;
+
+    .ui-block-thumb__title,
+    .ui-block-thumb__action {
+        display: none;
+    }
+
+    .ui-block-thumb__line {
+        flex: 1 1 0;
+        width: auto;
+        height: auto;
+        border-radius: 2px;
+        opacity: .2;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        width: auto;
+    }
+}
+
+/* ÉLÉMENTS */
+
+/* Carte: its picture on top, then the title, the text and the button */
+.ui-block-thumb--card {
+    .ui-block-thumb__media {
+        display: block;
+        flex: 0 0 45%;
+    }
+
+    .ui-block-thumb__title {
+        width: 60%;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+
+    .ui-block-thumb__action {
+        display: block;
+    }
+}
+
+/* Carte recto/verso: the same card, told apart by the second face showing along its edge */
+.ui-block-thumb--flip_card {
+    border-right: .25rem double currentcolor;
+
+    .ui-block-thumb__media {
+        display: block;
+        flex: 0 0 45%;
+    }
+
+    .ui-block-thumb__title {
+        width: 60%;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+
+    .ui-block-thumb__action {
+        display: block;
+        width: 28%;
+    }
+}
+
+/* Article: rich text run beside its illustration */
+.ui-block-thumb--article {
+    justify-content: center;
+    padding-left: calc(38% + .5rem);
+
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 34%;
+        border-radius: 0;
+    }
+
+    .ui-block-thumb__title {
+        width: 80%;
+    }
+
+    .ui-block-thumb__line {
+        width: 100%;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        width: 65%;
+    }
+}
+
+/* Alerte: a coloured strip, and nothing else */
+.ui-block-thumb--alert {
+    align-items: center;
+    justify-content: center;
+
+    .ui-block-thumb__title {
+        width: 80%;
+        height: 1.75rem;
+        border-radius: 2px;
+        border-left: 3px solid var(--bs-primary, var(--primary, #0d6efd));
+        background: var(--bs-secondary-bg, var(--surface-alt, #e9ecef));
+        opacity: 1;
+    }
+
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Bouton: the block is its button */
+.ui-block-thumb--button {
+    align-items: center;
+    justify-content: center;
+
+    .ui-block-thumb__action {
+        display: block;
+        width: 55%;
+        height: .625rem;
+        border-radius: 3px;
+    }
+
+    .ui-block-thumb__title,
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Coordonnées: each line led by the marker that says what it is */
+.ui-block-thumb--contact_details {
+    justify-content: center;
+    gap: .3125rem;
+
+    .ui-block-thumb__title,
+    .ui-block-thumb__line {
+        width: 78%;
+        height: .3125rem;
+        align-self: center;
+        opacity: .45;
+        background: linear-gradient(to right, var(--bs-primary, var(--primary, #0d6efd)) 0 .3125rem, currentcolor .3125rem);
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        width: 78%;
+    }
+}
+
+/* Document à télécharger: the file's own thumbnail, its name, and the button that fetches it */
+.ui-block-thumb--document_download {
+    justify-content: center;
+    padding-left: calc(28% + .5rem);
+
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        top: .25rem;
+        bottom: .25rem;
+        left: .25rem;
+        width: 22%;
+        border-radius: 1px;
+    }
+
+    .ui-block-thumb__title {
+        width: 80%;
+    }
+
+    .ui-block-thumb__line {
+        width: 55%;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+
+    .ui-block-thumb__action {
+        display: block;
+        width: 60%;
+        margin-top: .125rem;
+    }
+}
+
+/* Barre de progression: what is done, filled in over its track */
+.ui-block-thumb--progress_bar {
+    justify-content: center;
+
+    .ui-block-thumb__title {
+        width: 40%;
+        height: .1875rem;
+    }
+
+    .ui-block-thumb__line {
+        height: .5rem;
+        border-radius: 4px;
+        opacity: .18;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        width: 62%;
+        height: .5rem;
+        margin-top: -.5rem;
+        border-radius: 4px;
+        opacity: 1;
+        background: var(--bs-primary, var(--primary, #0d6efd));
+    }
+}
+
+/* Compteur segmenté: a count on a known total, segment by segment */
+.ui-block-thumb--progress_tracker {
+    justify-content: center;
+
+    .ui-block-thumb__title {
+        width: 100%;
+        height: .5rem;
+        background-image: linear-gradient(to right, var(--bs-primary, var(--primary, #0d6efd)) 0 82%, transparent 82%);
+        background-size: 12.5% 100%;
+        background-color: transparent;
+        opacity: 1;
+    }
+
+    .ui-block-thumb__line {
+        width: 45%;
+        margin-top: .1875rem;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Lien vers la liste de favoris: the heart, and how many are set aside behind it */
+.ui-block-thumb--favorite_link {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: .3125rem;
+
+    .ui-block-thumb__title {
+        width: .5rem;
+        height: .5rem;
+        border-radius: 50%;
+        opacity: 1;
+        background: var(--bs-primary, var(--primary, #0d6efd));
+    }
+
+    .ui-block-thumb__line {
+        width: 35%;
+        height: .3125rem;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* TEXTE */
+
+/* Section texte: the default, named here so it reads as a decision rather than an omission */
+.ui-block-thumb--text_section {
+    justify-content: center;
+}
+
+/* Phrase d'accroche: two lines set larger than the text they introduce */
+.ui-block-thumb--text_hook {
+    justify-content: center;
+
+    .ui-block-thumb__title {
+        width: 85%;
+        height: .4375rem;
+    }
+
+    .ui-block-thumb__line {
+        width: 60%;
+        height: .4375rem;
+        opacity: .5;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Texte avec Lire plus: a long text cut short, and the link that unfolds it */
+.ui-block-thumb--text_readmore {
+    justify-content: center;
+    gap: .25rem;
+
+    .ui-block-thumb__title {
+        width: 100%;
+        height: .125rem;
+        box-shadow: 0 .25rem 0 currentcolor, 0 .5rem 0 currentcolor;
+    }
+
+    .ui-block-thumb__line {
+        width: 55%;
+        margin-top: .5rem;
+        opacity: .18;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+
+    .ui-block-thumb__action {
+        display: block;
+        width: 30%;
+        height: .1875rem;
+    }
+}
+
+/* Modèle légal: the dense run of paragraphs of a legal text */
+.ui-block-thumb--legal_model {
+    justify-content: center;
+    gap: .25rem;
+
+    .ui-block-thumb__title {
+        width: 100%;
+        height: .125rem;
+        box-shadow: 0 .25rem 0 currentcolor, 0 .5rem 0 currentcolor, 0 .75rem 0 currentcolor;
+    }
+
+    .ui-block-thumb__line {
+        width: 45%;
+        margin-top: .875rem;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* MÉDIA */
+
+/* Image seule, with the caption and the credits under it */
+.ui-block-thumb--image {
+    .ui-block-thumb__media {
+        display: block;
+    }
+
+    .ui-block-thumb__title {
+        display: none;
+    }
+
+    .ui-block-thumb__line {
+        width: 45%;
+        margin-top: .125rem;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Bannière titre: a title written across a full-screen picture */
+.ui-block-thumb--banner_title {
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        inset: 0;
+        border-radius: 0;
+    }
+
+    .ui-block-thumb__title {
+        position: relative;
+        align-self: center;
+        width: 55%;
+        opacity: .9;
+        background: var(--bs-body-bg, var(--background, #fff));
+    }
+
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Comparateur avant/après: two pictures meeting at the handle that wipes between them */
+.ui-block-thumb--image_compare {
+    flex-direction: row;
+    gap: 2px;
+
+    .ui-block-thumb__media {
+        display: block;
+        flex: 1 1 0;
+    }
+
+    .ui-block-thumb__title {
+        width: 2px;
+        height: auto;
+        align-self: stretch;
+        opacity: 1;
+        background: var(--bs-primary, var(--primary, #0d6efd));
+    }
+
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Slider: one picture at a time, and the markers saying how many follow */
+.ui-block-thumb--slider {
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        inset: 0;
+        border-radius: 0;
+    }
+
+    .ui-block-thumb__title {
+        position: relative;
+        align-self: center;
+        margin-top: auto;
+        width: 40%;
+        height: .1875rem;
+        opacity: .9;
+        background-image: linear-gradient(to right, var(--bs-body-bg, var(--background, #fff)) 0 50%, transparent 50%);
+        background-size: .375rem 100%;
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Vidéo: the player, and the button that starts it */
+.ui-block-thumb--video,
+.ui-block-thumb--video_iframe {
+    .ui-block-thumb__media {
+        display: block;
+        position: absolute;
+        inset: 0;
+        border-radius: 0;
+    }
+
+    .ui-block-thumb__title {
+        position: relative;
+        align-self: center;
+        margin: auto;
+        width: 0;
+        height: 0;
+        opacity: .85;
+        background: none;
+        border-left: .625rem solid currentcolor;
+        border-top: .4375rem solid transparent;
+        border-bottom: .4375rem solid transparent;
+    }
+
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* Vidéo externe: the same player, inside the frame of the site it is embedded from */
+.ui-block-thumb--video_iframe .ui-block-thumb__media {
+    inset: .25rem;
+    border: 2px dashed currentcolor;
+    border-radius: 2px;
+}
+
+/* Audio: a sound file has no picture to show, only its waveform */
+.ui-block-thumb--audio {
+    justify-content: center;
+
+    .ui-block-thumb__title {
+        width: 100%;
+        height: 1.25rem;
+        opacity: .5;
+        background-image: repeating-linear-gradient(to right, currentcolor 0 2px, transparent 2px 5px);
+        background-color: transparent;
+    }
+
+    .ui-block-thumb__line {
+        display: none;
+    }
+}
+
+/* FORMULAIRES */
+
+/* Formulaire: labelled fields, and the button that sends them */
+.ui-block-thumb--form {
+    justify-content: center;
+    gap: .1875rem;
+
+    .ui-block-thumb__title {
+        width: 35%;
+        height: .1875rem;
+    }
+
+    .ui-block-thumb__line {
+        height: .375rem;
+        border: 1px solid currentcolor;
+        border-radius: 2px;
+        background: none;
+    }
+
+    .ui-block-thumb__line + .ui-block-thumb__line {
+        width: 100%;
+        margin-top: .125rem;
+    }
+
+    .ui-block-thumb__action {
+        display: block;
+        width: 30%;
+        margin-top: .1875rem;
+    }
+}

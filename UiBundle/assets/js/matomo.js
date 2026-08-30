@@ -10,7 +10,8 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
     // https://matomo.org/
     connect() {
-        var _paq = window._paq = window._paq || [];
+        window._paq = window._paq || [];
+        var _paq = window._paq;
         _paq.push(["trackPageView"]);
         _paq.push(["enableLinkTracking"]);
         (function() {

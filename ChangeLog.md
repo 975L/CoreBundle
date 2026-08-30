@@ -1,5 +1,64 @@
 # ChangeLog
 
+## v1.19.1
+
+A palette for a block's kind, and Codacy's checks before the push
+
+### The package
+
+- New `phpmd.xml.dist`: the PHP Mess Detector rules, kept to what the code chooses rather than what the framework imposes (30/08/2026)
+- The rules counting a contract are excluded: a CRUD's `configure*` methods, a controller's routes, an entity's accessors (30/08/2026)
+- `CyclomaticComplexity` reports at 15, the tier Lizard already uses here, `ExcessiveParameterList` at 16 (30/08/2026)
+- `.codacy.yaml` excludes each directory in both glob forms, `**/` never matching the repository root (30/08/2026)
+- Both PHPStan configurations ignore `phpDoc.parseError`, PHPMD's `@SuppressWarnings` marker not being a typed tag (30/08/2026)
+- `.gitattributes` keeps `phpmd.xml.dist` out of the dist archive (30/08/2026)
+- `composer qa` runs PHP Mess Detector and Lizard too: both were Codacy checks nothing replayed before a push, and a green `qa` said nothing about either (30/08/2026)
+- `mess` reads `phpmd.xml.dist`, `lizard-ccn` and `lizard-nloc` the thresholds `GitPush.sh` already applied (30/08/2026)
+- `NPathComplexity` is excluded from the ruleset: it multiplies where `CyclomaticComplexity` adds, so the `??` and `?:` PHP 8 makes concise cost it a factor each (30/08/2026)
+- PHPMD writes its report to a gitignored `.phpmd-report.log`, its own parse traces landing in it too - only the lines opening on a path are findings (30/08/2026)
+- PHPMD 2.15's parser stops on PHP 8.4's `new Foo()->method()`, leaving 41 of 657 source files unread - here and on Codacy alike, no newer release existing (30/08/2026)
+
+### ConfigBundle
+
+- New `MessengerStatusProvider`: the report carries one count per countable transport plus the name of the failure transport, under the `messenger` key of `extra` (30/08/2026)
+- A stopped worker is the one state of a site nothing else reports - it raises no error, turns no health check red and answers every page normally, while mails and scheduled commands stop coming out (30/08/2026)
+- Both counts travel because they fail in opposite ways: a message in the failure transport has exhausted its retries and waits to be replayed by hand, one piling up in an ordinary transport has never been tried at all - a dead worker shows zero failures (30/08/2026)
+- Transports that cannot count themselves (the scheduler's) are left out rather than reported as zero, and a transport whose broker is down costs its own line and not the section (30/08/2026)
+- Wired with `@?` on both arguments: a site without Messenger, or one without a `failure_transport`, reports an empty section instead of failing to compile (30/08/2026)
+- New `MessengerStatusProviderTest`, covering the id/alias pair counted once, the naming of the failure transport, and the two ways a transport drops out (30/08/2026)
+- The README's status report section documents the third `extra` key, its payload and what a zero failure count does not mean (30/08/2026)
+- The `c975l-operations` skill names the three `extra` keys the bundle fills, and why a zero failure count is not a healthy worker (30/08/2026)
+- Methods too long to read are split into named private ones in `ScaffoldInstallCommand`, `ScaffoldInstaller`, `HealthCheckRunner`, `MenuBuilder`, `OffsiteState`, `ExternalLinkCheckSchedule` and the two import providers (30/08/2026)
+- A private method reached only as a callable carries `@SuppressWarnings(PHPMD.UnusedPrivateMethod)`, PHPMD resolving none of them (30/08/2026)
+- A method that is one long declaration - a shortcut list, a maker's file map, a fixture set - carries `@SuppressWarnings(PHPMD.ExcessiveMethodLength)` rather than being cut in two (30/08/2026)
+- `DashboardController::__construct` carries `@SuppressWarnings(PHPMD.ExcessiveParameterList)`, its 19 services owed a grouping of their own rather than a silence (30/08/2026)
+
+### UiBundle
+
+- New `assets/js/block-picker.js`: a block row's kind is chosen from a grid of silhouettes, a full-height sheet on a phone and a centred dialog above it (30/08/2026)
+- The palette is grouped by the categories the select already carries, and searched over a kind's label, its description and its slug (30/08/2026)
+- The `<select>` is hidden by CSS rather than removed, so `BlockType` still reads a posted `kind` and a browser without JavaScript keeps the plain field (30/08/2026)
+- `BlockType` writes `data-label` and `data-description` on every option, the two lines a tile shows apart (30/08/2026)
+- Adding a block row opens the palette instead of focusing a select the stylesheet has just hidden (30/08/2026)
+- New `sass/_block-thumbs.scss`: each kind's silhouette drawn in CSS, a capture of the real block going stale the day a template or the theme moves (30/08/2026)
+- New `block-thumbs.min.css`, compiled on its own for a site's public showcase and deliberately left out of `StylesheetProvider` (30/08/2026)
+- New `c975LUi:Blocks:Thumb` component: the very markup the picker builds, for a page listing kinds outside the back office (30/08/2026)
+- Three `block.picker.*` strings in `translations.js`, the palette's wording being built in the browser (30/08/2026)
+- New `BlockPickerTest`, covering the select left in the form, the single change event a chosen kind fires, the mobile-first sheet and the silhouette of a kind declaring no rule of its own (30/08/2026)
+- New `ui-showcase-demo-url` configuration entry: the address a showcase's examples lead to, the rows they stand in for existing in a demonstration site and never in the one rendering the showcase (30/08/2026)
+- Pre-filled with the ecosystem's own demonstration, and left empty the examples render as plain images rather than as links going nowhere (30/08/2026)
+- New `RoutingTest`: every route of `FormController` and `ReviewController` must resolve to a public method, a helper extracted between an attribute and its action otherwise stealing the route in silence (30/08/2026)
+- New `FormImportProviderTest`, covering the match by name, the fields and outputs dropped with the sheet, and the `restricted` flag only ever written on creation (30/08/2026)
+- Methods too long to read are split into named private ones across the controllers, the form types, the registries and the services (30/08/2026)
+- The arrow callbacks of four controllers get a body, an expression returning a value nobody reads (30/08/2026)
+- `BlockRegistry::register` carries `@SuppressWarnings(PHPMD.ExcessiveParameterList)` too, its 18 scalars owed a value object (30/08/2026)
+- `BlockType::dropForeignEntryKeys` and `VichPdfThumbnailListener::generateThumbnail` carry `@SuppressWarnings(PHPMD.UnusedLocalVariable)`: a key-only foreach, and `exec()` taking $output before $returnVar (30/08/2026)
+- `BlockFixtureProvider::getFixtures`, `MakeDonovanQaCommand::generate` and `LayoutAuditor::script` are marked `#lizard forgives`, three declaration lists a cut would say nothing more about (30/08/2026)
+- `VideoPlatform::embedUrl` and `VichMediaTrait::__toString` are marked the same way for another reason: Lizard parses neither a PHP enum nor a trait, and reports the whole construct's length and complexity on its first method (30/08/2026)
+- `matomo.js` no longer assigns `window._paq` and its local in the same statement (30/08/2026)
+- The README documents the picker and the standalone silhouette sheet, lists `Blocks:Thumb` among the components, and the `c975l-blocks` and `c975l-ui-assets` skills say the same (30/08/2026)
+- The README documents `ui-showcase-demo-url` beside `ui-block-showcase-url`, the `c975l-media` skill beside `keyed_images` (30/08/2026)
+
 ## v1.19.0
 
 A block is set aside instead of deleted, and comes back whole

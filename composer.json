@@ -109,6 +109,13 @@
         "stan": "phpstan analyse --no-progress",
         "stan-scaffold": "phpstan analyse -c phpstan-scaffold.dist.neon --no-progress",
         "rector": "rector process --dry-run",
+        "mess": "phpmd ConfigBundle/src,UiBundle/src text phpmd.xml.dist --ignore-errors-on-exit --report-file .phpmd-report.log; s=$?; grep \"^/\" .phpmd-report.log; exit $s",
+        "lizard-ccn": "lizard -l php -C 14 -w ConfigBundle/src UiBundle/src",
+        "lizard-nloc": "find ConfigBundle/src UiBundle/src -name '*.php' ! -name '*CrudController.php' ! -name '*Type.php' | xargs lizard -l php -T nloc=99 -C 999 -a 999 -w",
+        "lizard": [
+            "@lizard-ccn",
+            "@lizard-nloc"
+        ],
         "test": "phpunit",
         "qa": [
             "@audit-deps",
@@ -117,6 +124,8 @@
             "@stan",
             "@stan-scaffold",
             "@rector",
+            "@mess",
+            "@lizard",
             "@test"
         ]
     },

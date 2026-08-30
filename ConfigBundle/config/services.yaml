@@ -52,6 +52,12 @@ services:
         arguments:
             $statusProviders: !tagged_iterator c975l.status_provider
 
+    c975L\ConfigBundle\Management\MessengerStatusProvider:
+        arguments:
+            # Both optional: a site can run without Messenger, and one running it without a failure_transport has no such alias - a report is worth more with one section missing than a container that refuses to compile
+            $receiverLocator: '@?messenger.receiver_locator'
+            $failureReceiver: '@?messenger.failure_transports.default'
+
     c975L\ConfigBundle\Scheduler\MaintenanceScheduleBuilder:
         arguments:
             $maintenanceTaskProviders: !tagged_iterator c975l.maintenance_task_provider

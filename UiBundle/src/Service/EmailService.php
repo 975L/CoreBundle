@@ -59,6 +59,38 @@ class EmailService
     }
 
     // Builds the TemplatedEmail(s) for a request - the main one, plus a copy to $request->copyToEmail if set (its own Reply-To stripped, to avoid exposing the main recipient's address to the copy holder, and its Bcc too, the archive needing a single exemplary)
+    // The one body the request carries, whichever of the three it names
+    // A request carrying two would silently go out as whichever a chain tests first, so it fails as plainly as one carrying none
+    private function applyBody(TemplatedEmail $email, EmailSendRequest $request): void
+    {
+        if (1 !== count(array_filter([$request->template, $request->html, $request->text], static fn (?string $body): bool => null !== $body))) {
+            throw new \Exception('EmailSendRequest needs exactly one of "template", "html" or "text"');
+        }
+
+        if (null !== $request->html) {
+            $email->html($request->html);
+
+            return;
+        }
+
+        if (null !== $request->text) {
+            // Sent as plain text, deliberately: an operational digest reads the same in every client and survives one that renders no HTML at all
+            $email->text($request->text);
+
+            return;
+        }
+
+        if (!$request->wrapLayout) {
+            $email->htmlTemplate($request->template);
+
+            return;
+        }
+
+        // Rendered here rather than left to the mailer, so the registry's layout can be wrapped around it - a bundle then ships the body of its email alone, and the branding stays wherever EmailLayoutProviderInterface is implemented (SiteBundle's when installed, none otherwise)
+        $body = $this->twig->render($request->template, $request->context);
+        $email->html($this->emailLayoutRegistry->wrap($body) ?? $body);
+    }
+
     private function buildEmails(EmailSendRequest $request): array
     {
         $from = $this->resolveAddress($request->from, $request->fromName, 'email-from');
@@ -78,25 +110,7 @@ class EmailService
             $email->replyTo($replyTo);
         }
 
-        // A request carrying two bodies would silently go out as whichever this chain tests first, so it fails as plainly as one carrying none
-        if (count(array_filter([$request->template, $request->html, $request->text], static fn (?string $body): bool => null !== $body)) > 1) {
-            throw new \Exception('EmailSendRequest needs exactly one of "template", "html" or "text"');
-        }
-
-        if (null !== $request->html) {
-            $email->html($request->html);
-        } elseif (null !== $request->text) {
-            // Sent as plain text, deliberately: an operational digest reads the same in every client and survives one that renders no HTML at all
-            $email->text($request->text);
-        } elseif (null !== $request->template && $request->wrapLayout) {
-            // Rendered here rather than left to the mailer, so the registry's layout can be wrapped around it - a bundle then ships the body of its email alone, and the branding stays wherever EmailLayoutProviderInterface is implemented (SiteBundle's when installed, none otherwise)
-            $body = $this->twig->render($request->template, $request->context);
-            $email->html($this->emailLayoutRegistry->wrap($body) ?? $body);
-        } elseif (null !== $request->template) {
-            $email->htmlTemplate($request->template);
-        } else {
-            throw new \Exception('EmailSendRequest needs exactly one of "template", "html" or "text"');
-        }
+        $this->applyBody($email, $request);
         $email->context($request->context);
 
         // Attached after the body, and to the message rather than to the request: a copy sent elsewhere is a clone of this one, so it carries the same files - it is the same message, sent to a second address

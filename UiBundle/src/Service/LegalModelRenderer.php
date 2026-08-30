@@ -126,13 +126,28 @@ class LegalModelRenderer
         $positions = (array) ($customization['positions'] ?? []);
         $extra = (array) ($customization['extra'] ?? []);
 
-        // Hidden top-level units go first: no point customizing the inside of a section about to be removed
+        $this->removeHidden($root, $hidden);
+        $this->customizeUnits($root, $hidden, $overrides, $positions, $extra);
+
+        $this->addExtra($root, '', $extra);
+        $this->reorder($root, $this->asUnits($this->taggedChildren($root)), $positions);
+
+        return $this->serialize($root);
+    }
+
+    // Hidden top-level units go first: no point customizing the inside of a section about to be removed
+    private function removeHidden(\Dom\Element $root, array $hidden): void
+    {
         foreach ($this->taggedChildren($root) as $element) {
             if (isset($hidden[$this->identifier($element)])) {
                 $element->remove();
             }
         }
+    }
 
+    // Each unit still standing, rewritten with what the client typed in its place
+    private function customizeUnits(\Dom\Element $root, array $hidden, array $overrides, array $positions, array $extra): void
+    {
         foreach ($this->taggedChildren($root) as $element) {
             $id = $this->identifier($element);
 
@@ -144,11 +159,6 @@ class LegalModelRenderer
             // A tagged <div>/<p> ships with no heading of its own, so it gets the one the client typed
             $this->overrideNodes($this->bodyNodes($element), $overrides[$id] ?? null, $this->openHeading($element, $overrides[$id] ?? null));
         }
-
-        $this->addExtra($root, '', $extra);
-        $this->reorder($root, $this->asUnits($this->taggedChildren($root)), $positions);
-
-        return $this->serialize($root);
     }
 
     // Dom\Element::$outerHTML only exists since PHP 8.5, and the bundle runs on 8.4: the owning document serializes the node instead, which answers exactly the same HTML

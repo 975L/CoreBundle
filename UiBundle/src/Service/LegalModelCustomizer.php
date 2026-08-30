@@ -37,26 +37,35 @@ class LegalModelCustomizer
 
         $rows = [];
         foreach ($this->ordered($units, $positions) as $rank => $unit) {
-            $rows[] = [
-                'id' => $unit['id'],
-                'hidden' => isset($hidden[$unit['id']]),
-                'position' => $rank,
-                'title' => (string) ($overrides[$unit['id']]['title'] ?? $unit['title']),
-                'content' => (string) ($overrides[$unit['id']]['content'] ?? $unit['html']),
-            ];
+            $rows[] = $this->formRow($unit, $rank, isset($hidden[$unit['id']]), $overrides[$unit['id']] ?? []);
         }
 
         return [
             'units' => $rows,
-            'extra' => array_values(array_map(
-                static fn (array $section): array => [
-                    'id' => (string) ($section['id'] ?? ''),
-                    'parent' => (string) ($section['parent'] ?? ''),
-                    'title' => (string) ($section['title'] ?? ''),
-                    'content' => (string) ($section['content'] ?? ''),
-                ],
-                (array) ($customization['extra'] ?? []),
-            )),
+            'extra' => array_values(array_map($this->extraRow(...), (array) ($customization['extra'] ?? []))),
+        ];
+    }
+
+    // One unit as the screen shows it: the client's own wording where they wrote one, the bundle's otherwise
+    private function formRow(array $unit, int $rank, bool $hidden, array $override): array
+    {
+        return [
+            'id' => $unit['id'],
+            'hidden' => $hidden,
+            'position' => $rank,
+            'title' => (string) ($override['title'] ?? $unit['title']),
+            'content' => (string) ($override['content'] ?? $unit['html']),
+        ];
+    }
+
+    // One added section as the screen shows it, every key read back as text
+    private function extraRow(array $section): array
+    {
+        return [
+            'id' => (string) ($section['id'] ?? ''),
+            'parent' => (string) ($section['parent'] ?? ''),
+            'title' => (string) ($section['title'] ?? ''),
+            'content' => (string) ($section['content'] ?? ''),
         ];
     }
 
@@ -65,6 +74,20 @@ class LegalModelCustomizer
     {
         $byId = array_combine(array_column($units, 'id'), $units);
 
+        [$hidden, $overrides, $submitted] = $this->submittedUnits($formData, $byId, $locale);
+
+        return array_filter([
+            'hidden' => $hidden,
+            'positions' => $this->reorderedScopes($units, $submitted),
+            'overrides' => $overrides,
+            'extra' => $this->submittedExtra($formData),
+        ]);
+    }
+
+    // The model's own units as the screen sends them back: what was hidden, what was rewritten, and where each was ranked
+    // @return array{0: list<string>, 1: array<string, array>, 2: array<string, int>}
+    private function submittedUnits(array $formData, array $byId, string $locale): array
+    {
         $hidden = [];
         $overrides = [];
         $submitted = [];
@@ -82,24 +105,39 @@ class LegalModelCustomizer
                 $hidden[] = $id;
             }
 
-            $title = trim((string) ($row['title'] ?? ''));
-            $content = trim((string) ($row['content'] ?? ''));
-            $unit = $byId[$id];
-
-            if ($this->matchesBundle($title, $content, $unit)) {
-                continue;
+            $override = $this->overrideOf($row, $byId[$id], $locale);
+            if (null !== $override) {
+                $overrides[$id] = $override;
             }
-
-            $overrides[$id] = [
-                'title' => $title,
-                'content' => $content,
-                // Fingerprint of the bundle text this override replaces, and the locale it was taken from - the drift check compares against exactly that, see LegalModelRenderer::hash()
-                'baseHash' => (string) $unit['hash'],
-                'baseLocale' => $locale,
-            ];
         }
 
+        return [$hidden, $overrides, $submitted];
+    }
+
+    // What one row keeps of the bundle's own wording, or null when it says exactly what the bundle already said
+    private function overrideOf(array $row, array $unit, string $locale): ?array
+    {
+        $title = trim((string) ($row['title'] ?? ''));
+        $content = trim((string) ($row['content'] ?? ''));
+
+        if ($this->matchesBundle($title, $content, $unit)) {
+            return null;
+        }
+
+        return [
+            'title' => $title,
+            'content' => $content,
+            // Fingerprint of the bundle text this override replaces, and the locale it was taken from - the drift check compares against exactly that, see LegalModelRenderer::hash()
+            'baseHash' => (string) $unit['hash'],
+            'baseLocale' => $locale,
+        ];
+    }
+
+    // The sections the client added of their own, a row left blank on both counts adding nothing
+    private function submittedExtra(array $formData): array
+    {
         $extra = [];
+
         foreach ((array) ($formData['extra'] ?? []) as $section) {
             $title = trim((string) ($section['title'] ?? ''));
             $content = trim((string) ($section['content'] ?? ''));
@@ -108,19 +146,22 @@ class LegalModelCustomizer
             }
 
             $extra[] = [
-                'id' => '' !== (string) ($section['id'] ?? '') ? (string) $section['id'] : uniqid('extra-'),
+                'id' => $this->extraId($section),
                 'parent' => (string) ($section['parent'] ?? ''),
                 'title' => $title,
                 'content' => $content,
             ];
         }
 
-        return array_filter([
-            'hidden' => $hidden,
-            'positions' => $this->reorderedScopes($units, $submitted),
-            'overrides' => $overrides,
-            'extra' => $extra,
-        ]);
+        return $extra;
+    }
+
+    // The identifier an added section keeps across saves, minted on the first one - the screen posts none for a row that has just been typed
+    private function extraId(array $section): string
+    {
+        $id = (string) ($section['id'] ?? '');
+
+        return '' !== $id ? $id : uniqid('extra-');
     }
 
     // The block's data with a freshly computed delta merged in. An empty delta drops the key entirely rather than storing "customization": [] - saving the screen without changing anything has to leave the block byte-for-byte as it was, or "untouched" would not be a no-op

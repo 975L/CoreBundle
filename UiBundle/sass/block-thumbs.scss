@@ -1,0 +1,10 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+/* The silhouettes on their own, for a page that draws block kinds outside the back-office - a site's public block showcase listing what each bundle offers. The back-office gets the same rules through sass/management.scss, which pulls the partial in rather than loading a second sheet. */
+@use '_block-thumbs.scss';

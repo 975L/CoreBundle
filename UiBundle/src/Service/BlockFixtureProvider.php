@@ -21,6 +21,9 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
     {
     }
 
+    // The demonstration content itself, one entry per block kind: its length is that of the catalogue it declares
+    // #lizard forgives
+    /** @SuppressWarnings(PHPMD.ExcessiveMethodLength) */
     public function getFixtures(): array
     {
         return [

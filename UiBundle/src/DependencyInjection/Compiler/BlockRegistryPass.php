@@ -28,39 +28,59 @@ class BlockRegistryPass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds('ui.block') as $id => $tags) {
             foreach ($tags as $tag) {
                 $this->validateTag($tag, $id);
-
-                $mediaTypes = [];
-                if (!empty($tag['media_types'])) {
-                    $mediaTypes = array_map(trim(...), explode(',', (string) $tag['media_types']));
-                }
-
-                $contexts = [];
-                if (!empty($tag['contexts'])) {
-                    $contexts = array_map(trim(...), explode(',', (string) $tag['contexts']));
-                }
-
-                $registry->addMethodCall('register', [
-                    $tag['kind'],
-                    $tag['label'],
-                    $tag['form'],
-                    $tag['template'],
-                    $tag['category'] ?? 'label.category_general',
-                    $mediaTypes,
-                    $tag['translation_domain'] ?? 'ui',
-                    $tag['description'] ?? '',
-                    !isset($tag['pickable']) || filter_var($tag['pickable'], FILTER_VALIDATE_BOOLEAN),
-                    (int) ($tag['priority'] ?? 0),
-                    !isset($tag['cacheable']) || filter_var($tag['cacheable'], FILTER_VALIDATE_BOOLEAN),
-                    $contexts,
-                    isset($tag['media_required']) && filter_var($tag['media_required'], FILTER_VALIDATE_BOOLEAN),
-                    isset($tag['media_multi_upload']) && filter_var($tag['media_multi_upload'], FILTER_VALIDATE_BOOLEAN),
-                    $this->bundleFromTemplate($tag['template']),
-                    isset($tag['container']) && filter_var($tag['container'], FILTER_VALIDATE_BOOLEAN),
-                    $tag['slot_context'] ?? BlockRegistry::SLOT_CONTEXT,
-                    $tag['media_help'] ?? '',
-                ]);
+                $registry->addMethodCall('register', $this->registrationArguments($tag));
             }
         }
+    }
+
+    // The tag read out into the arguments BlockRegistry::register() expects, in that very order - what the kind is, then how it behaves
+    private function registrationArguments(array $tag): array
+    {
+        return [...$this->declaredKind($tag), ...$this->declaredBehaviour($tag)];
+    }
+
+    // What the kind is and how it is presented in the picker, each optional attribute falling back on what a bundle declaring nothing means
+    private function declaredKind(array $tag): array
+    {
+        return [
+            $tag['kind'],
+            $tag['label'],
+            $tag['form'],
+            $tag['template'],
+            $tag['category'] ?? 'label.category_general',
+            $this->list($tag['media_types'] ?? null),
+            $tag['translation_domain'] ?? 'ui',
+            $tag['description'] ?? '',
+        ];
+    }
+
+    // Where the kind may be picked, what it does with medias, and whether it holds other blocks
+    private function declaredBehaviour(array $tag): array
+    {
+        return [
+            $this->flag($tag, 'pickable', true),
+            (int) ($tag['priority'] ?? 0),
+            $this->flag($tag, 'cacheable', true),
+            $this->list($tag['contexts'] ?? null),
+            $this->flag($tag, 'media_required', false),
+            $this->flag($tag, 'media_multi_upload', false),
+            $this->bundleFromTemplate($tag['template']),
+            $this->flag($tag, 'container', false),
+            $tag['slot_context'] ?? BlockRegistry::SLOT_CONTEXT,
+            $tag['media_help'] ?? '',
+        ];
+    }
+
+    // A comma-separated attribute read as the list it stands for, an absent one standing for none
+    private function list(?string $value): array
+    {
+        return empty($value) ? [] : array_map(trim(...), explode(',', $value));
+    }
+
+    // A boolean attribute, an absent one taking the value a bundle declaring nothing means
+    private function flag(array $tag, string $name, bool $default): bool
+    {
+        return isset($tag[$name]) ? filter_var($tag[$name], FILTER_VALIDATE_BOOLEAN) : $default;
     }
 
     // Every c975L bundle registers its block templates under its own "@c975LXxx/..." Twig namespace (see each bundle's src/c975LXxxBundle.php) - reused here instead of adding a new tag attribute every bundle would have to fill in, so a bundle gaining its first block kind needs zero extra wiring beyond the existing "ui.block" tag it already had to declare

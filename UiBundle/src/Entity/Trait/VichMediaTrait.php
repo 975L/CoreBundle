@@ -41,6 +41,7 @@ trait VichMediaTrait
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?UserInterface $user = null;
 
+    // #lizard forgives - Lizard parses no PHP trait either: it reads every method below as part of this one
     public function __toString(): string
     {
         return (string) $this->getName();

@@ -32,6 +32,13 @@ export default class extends Controller {
 
         newElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+        // The visual picker stands in front of the select and hides it (see block-picker.js), so on a new row it is the palette that has to open - focusing a hidden select would do nothing at all.
+        const trigger = kindRow.querySelector('.ui-block-picker-trigger');
+        if (trigger) {
+            setTimeout(() => trigger.click(), 0);
+            return;
+        }
+
         // TomSelect wraps the <select> on this same event (EasyAdmin's own listener), so it isn't ready to be focused/opened yet - defer to the next tick.
         const select = kindRow.querySelector('select');
         if (select) {

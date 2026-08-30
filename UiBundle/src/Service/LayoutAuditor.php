@@ -121,6 +121,7 @@ class LayoutAuditor
     }
 
     // Returned as findings rather than judged in JS, so the rules stay readable and the severities stay in PHP
+    // #lizard forgives - the length is a heredoc's, one JavaScript program held as a string
     private function script(): string
     {
         $tolerance = self::CENTERING_TOLERANCE;

@@ -140,6 +140,45 @@ class FormController extends AbstractController
         ]);
     }
 
+    // What an accepted submission is worth: the action behind the form, unless the caller has already had their share of attempts
+    private function runAction(Form $uiForm, mixed $data, Request $request): void
+    {
+        // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket.
+        // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any ceiling could count - see RateLimiterGuard::isAcceptedForIp()
+        $clientIp = $request->getClientIp();
+        if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->formLimiterFactory, $clientIp)) {
+            $this->addFlashTo($request, 'warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
+
+            return;
+        }
+
+        $action = $this->actionRegistry->get($uiForm->getAction());
+        $success = $action->handle($uiForm, $data);
+
+        // Only clear on an actual success - a failed action leaves the prefill in place, same resilience a "?s=..." query string would naturally have on a retry
+        if ($success) {
+            $this->prefillHelper->clear($request, $uiForm->getName());
+        }
+
+        // A form that emails its submission (contact and the like) says so - "your message has been sent"; every other action keeps the generic wording, a registration or a password reset request being no message sent by the visitor
+        $successKey = 'send_email' === $action->getKey() ? 'label.form_message_sent' : 'label.form_submitted';
+
+        // Translated here, not in the template: the redirect-to-referer path lands on the site layout, which renders flashes as-is
+        $this->addFlashTo(
+            $request,
+            $success ? 'success' : 'danger',
+            $this->translator->trans($success ? $successKey : 'label.form_submission_failed', [], 'ui')
+        );
+    }
+
+    // Where the visitor came from, when that is this very site - Referer is client-supplied, and an unchecked redirect there is an open redirect
+    private function sameOriginReferer(Request $request): ?string
+    {
+        $referer = $request->headers->get('referer');
+
+        return null !== $referer && parse_url($referer, PHP_URL_HOST) === $request->getHost() ? $referer : null;
+    }
+
     #[Route('/form/{name}', name: 'ui_form_submit', methods: ['GET', 'POST'])]
     public function submit(string $name, Request $request): Response
     {
@@ -174,37 +213,15 @@ class FormController extends AbstractController
             $symfonyForm->handleRequest($request);
         }
 
-        if (!$suspicious && $symfonyForm->isSubmitted() && $symfonyForm->isValid()) {
-            // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket.
-            // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any ceiling could count - see RateLimiterGuard::isAcceptedForIp()
-            $clientIp = $request->getClientIp();
-            if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->formLimiterFactory, $clientIp)) {
-                $this->addFlashTo($request, 'warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
-            } else {
-                $action = $this->actionRegistry->get($uiForm->getAction());
-                $success = $action->handle($uiForm, $symfonyForm->getData());
+        $accepted = $symfonyForm->isSubmitted() && $symfonyForm->isValid();
 
-                // Only clear on an actual success - a failed action leaves the prefill in place, same resilience a "?s=..." query string would naturally have on a retry
-                if ($success) {
-                    $this->prefillHelper->clear($request, $uiForm->getName());
-                }
-
-                // A form that emails its submission (contact and the like) says so - "your message has been sent"; every other action keeps the generic wording, a registration or a password reset request being no message sent by the visitor
-                $successKey = 'send_email' === $action->getKey() ? 'label.form_message_sent' : 'label.form_submitted';
-
-                // Translated here, not in the template: the redirect-to-referer path lands on the site layout, which renders flashes as-is
-                $this->addFlashTo(
-                    $request,
-                    $success ? 'success' : 'danger',
-                    $this->translator->trans($success ? $successKey : 'label.form_submission_failed', [], 'ui')
-                );
-            }
+        if (!$suspicious && $accepted) {
+            $this->runAction($uiForm, $symfonyForm->getData(), $request);
         }
 
-        if ($suspicious || ($symfonyForm->isSubmitted() && $symfonyForm->isValid())) {
-            // Same-origin check: Referer is client-supplied, an unchecked redirect there is an open redirect
-            $referer = $request->headers->get('referer');
-            if (null !== $referer && parse_url($referer, PHP_URL_HOST) === $request->getHost()) {
+        if ($suspicious || $accepted) {
+            $referer = $this->sameOriginReferer($request);
+            if (null !== $referer) {
                 return $this->redirect($referer);
             }
         }

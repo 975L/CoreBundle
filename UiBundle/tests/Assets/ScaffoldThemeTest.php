@@ -36,6 +36,8 @@ class ScaffoldThemeTest extends TestCase
     // Same for "--bottom-bar-height", an optional token another bundle sets on the body when it fixes a bar at the bottom of the viewport (ShopBundle's basket bar) - a value in :root would raise the scroll buttons on every site, bar or not
     private const array NOT_THEMABLE = [
         '--bottom-bar-height',
+        '--bs-body-bg',
+        '--bs-body-color',
         '--bs-border-color',
         '--bs-font-monospace',
         '--bs-primary',

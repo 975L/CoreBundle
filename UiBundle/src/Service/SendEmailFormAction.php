@@ -41,12 +41,9 @@ class SendEmailFormAction implements FormActionInterface
         $senderEmail = isset($config['senderEmailField']) ? ($submittedData[$config['senderEmailField']] ?? null) : null;
         $labelledFields = $this->labelledFields($form, $submittedData);
 
-        $emailTemplate = isset($config['emailTemplate'])
-            ? $this->emailTemplateRepository->findOneBy(['name' => $config['emailTemplate']])
-            : null;
-        $html = null !== $emailTemplate
-            ? $this->emailTemplateRenderer->render($emailTemplate, ['form_name' => (string) $form->getName(), 'fields' => $labelledFields])
-            : null;
+        $html = $this->renderedHtml($config, $form, $labelledFields);
+
+        $addressing = $this->addressing($config, $senderEmail);
 
         $request = new EmailSendRequest(
             // Same sentence as the heading the seeded EmailTemplate opens with ("Nouveau message via contact"), and translated like it: an admin reading their inbox got an English subject over a French email
@@ -54,17 +51,45 @@ class SendEmailFormAction implements FormActionInterface
             context: ['form' => $form, 'fields' => $labelledFields],
             template: null === $html ? ($config['template'] ?? self::DEFAULT_TEMPLATE) : null,
             html: $html,
-            from: $config['from'] ?? null,
-            fromName: $config['fromName'] ?? null,
-            to: $config['to'] ?? null,
-            toName: $config['toName'] ?? null,
-            replyTo: $config['replyTo'] ?? $senderEmail,
-            replyToName: $config['replyToName'] ?? null,
+            from: $addressing['from'],
+            fromName: $addressing['fromName'],
+            to: $addressing['to'],
+            toName: $addressing['toName'],
+            replyTo: $addressing['replyTo'],
+            replyToName: $addressing['replyToName'],
             // The visitor's own checkbox answer (see FormSubmissionType's "receiveCopy" field, only rendered when actionConfig's "offerReceiveCopy" is set) - not a fixed admin choice
             copyToEmail: (!empty($submittedData['receiveCopy']) && null !== $senderEmail) ? $senderEmail : null,
         );
 
         return $this->emailService->send($request);
+    }
+
+    // The body a named EmailTemplate composes, or null for a form that names none - which falls the request back on its Twig template
+    private function renderedHtml(array $config, Form $form, array $labelledFields): ?string
+    {
+        $emailTemplate = isset($config['emailTemplate'])
+            ? $this->emailTemplateRepository->findOneBy(['name' => $config['emailTemplate']])
+            : null;
+
+        if (null === $emailTemplate) {
+            return null;
+        }
+
+        return $this->emailTemplateRenderer->render($emailTemplate, ['form_name' => (string) $form->getName(), 'fields' => $labelledFields]);
+    }
+
+    // Who the message is written to and from, each left to the mailer's own defaults when the form says nothing - the visitor's address answering for the reply-to
+    // @return array{from: ?string, fromName: ?string, to: ?string, toName: ?string, replyTo: ?string, replyToName: ?string}
+    private function addressing(array $config, ?string $senderEmail): array
+    {
+        return [
+            'from' => $config['from'] ?? null,
+            'fromName' => $config['fromName'] ?? null,
+            'to' => $config['to'] ?? null,
+            'toName' => $config['toName'] ?? null,
+            'replyTo' => $config['replyTo'] ?? $senderEmail,
+            'replyToName' => $config['replyToName'] ?? null,
+        ];
     }
 
     // A repeated label is disambiguated here, only "name" being unique, else one value would be lost

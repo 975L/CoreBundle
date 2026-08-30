@@ -3,6 +3,11 @@
         "date": "2026-08-30",
         "description": [
             {
+                "en": "Choosing what a block is has become visual. Adding a block now opens a gallery of small drawings showing the shape of each one - a title, a picture beside a text, a slideshow, a form - with a search field above them, instead of a drop-down list of names. It opens on its own as soon as you add a block, and on a phone it fills the screen.",
+                "fr": "Choisir ce qu'est un bloc est désormais visuel. Ajouter un bloc ouvre maintenant une galerie de petits dessins montrant la forme de chacun - un titre, une image à côté d'un texte, un diaporama, un formulaire - avec un champ de recherche au-dessus, au lieu d'une liste déroulante de noms. Elle s'ouvre d'elle-même dès que vous ajoutez un bloc, et sur un téléphone elle occupe tout l'écran.",
+                "es": "Elegir qué es un bloque es ahora visual. Añadir un bloque abre ahora una galería de pequeños dibujos que muestran la forma de cada uno - un título, una imagen junto a un texto, un pase de diapositivas, un formulario - con un campo de búsqueda encima, en lugar de una lista desplegable de nombres. Se abre sola en cuanto añade un bloque, y en un teléfono ocupa toda la pantalla."
+            },
+            {
                 "en": "A block can now be set aside instead of deleted. The eye button in a block's title bar hides it from the site while keeping it whole in the back office - its text, its images, everything - so you can see what the page looks like without it and bring it back with the same click.",
                 "fr": "Un bloc peut désormais être mis de côté au lieu d'être supprimé. Le bouton en forme d'œil, dans la barre de titre du bloc, le retire du site tout en le gardant intact dans le back-office - son texte, ses images, tout - pour voir ce que donne la page sans lui, et le remettre d'un même clic.",
                 "es": "Un bloque puede ahora apartarse en lugar de eliminarse. El botón con forma de ojo, en la barra de título del bloque, lo retira del sitio conservándolo intacto en el back-office - su texto, sus imágenes, todo - para ver cómo queda la página sin él y devolverlo con el mismo clic."

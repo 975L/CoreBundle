@@ -52,6 +52,9 @@ class MakeDonovanQaCommand extends AbstractMaker
         );
     }
 
+    // The generated files' own text, written out as they will be read: its length is that of what it writes
+    // #lizard forgives
+    /** @SuppressWarnings(PHPMD.ExcessiveMethodLength) */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
         $llmClientClass = $generator->createClassNameDetails('DonovanQaLlm', 'Service\\', 'Client');

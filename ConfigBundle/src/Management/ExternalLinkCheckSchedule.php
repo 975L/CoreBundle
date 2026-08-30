@@ -28,6 +28,21 @@ class ExternalLinkCheckSchedule
     ) {
     }
 
+    // The addresses one row reports as unreachable, keyed by url so a link named by several pages is counted once
+    // @return array<string, true>
+    private function brokenLinksOf(array $details): array
+    {
+        $broken = [];
+
+        foreach ($details['brokenExternalLinks'] ?? [] as $link) {
+            if (isset($link['url'])) {
+                $broken[$link['url']] = true;
+            }
+        }
+
+        return $broken;
+    }
+
     // What the run has to do with the external links of the given page urls: 'due' says whether to call them, 'checkedAt' is the date its rows must carry (now when they are called, the previous run's date when they are not - dropping it would have the next run call them again, and monthly would quietly become weekly), and 'broken' carries back what the last real pass found, keyed by link url, so a dead external link stays reported in between two passes
     // @return array{due: bool, checkedAt: string, broken: array<string, bool>}
     public function decide(array $urls): array
@@ -45,12 +60,7 @@ class ExternalLinkCheckSchedule
 
             // The most recent date of the batch decides for the whole batch: the pages of one run are checked together and their dates only ever drift apart by the runs that failed halfway
             $checkedAt = null === $checkedAt ? $rowCheckedAt : max($checkedAt, $rowCheckedAt);
-
-            foreach ($details['brokenExternalLinks'] ?? [] as $link) {
-                if (isset($link['url'])) {
-                    $broken[$link['url']] = true;
-                }
-            }
+            $broken += $this->brokenLinksOf($details);
         }
 
         $now = $this->clock->now();

@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs."
 ---
 
 # c975L UiBundle — blocks
@@ -10,7 +10,7 @@ description: "Use this skill when working with page blocks in a Symfony applicat
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `src/Service/ReviewTokenSigner.php`, `src/Service/ReviewNotifier.php`, `src/Management/ReviewAlertProvider.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `config/services.yaml`
+`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `src/Service/ReviewTokenSigner.php`, `src/Service/ReviewNotifier.php`, `src/Management/ReviewAlertProvider.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `assets/js/block-picker.js`, `sass/_block-thumbs.scss`, `config/services.yaml`
 
 **Related skills:** `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-config`, `c975l-management` in ConfigBundle beside it.
 
@@ -103,6 +103,25 @@ app. The block's own data is JSON in `Block::$data` — **no column, no migratio
 **Un-registering a kind is safe**: a `Block` row outlives its tag, and `render_block()` skips an
 unknown kind rather than throwing, so uninstalling a bundle blanks its blocks out of the pages instead
 of taking them down.
+
+## Choosing a kind in the back office
+
+`assets/js/block-picker.js` puts a visual palette in front of each row's kind `<select>`: silhouettes
+and labels grouped by the categories the select already carries, searched over the label, the
+description and the slug, opened as a full-height sheet on a phone and as a centred dialog above it.
+The select is never removed, only hidden by CSS (`.ui-block-picker-on`), so every kind-change rule of
+`Form\BlockType` still reads a posted `kind` and a browser without JavaScript keeps the plain field.
+
+**A registered kind needs nothing to appear there.** `BlockType` writes `data-kind-row` on the row and
+`data-label`/`data-description` on each `<option>` (`choice_attr`, read off `BlockRegistry`), which is
+all the palette reads — so a kind's `label` and `description` are what an editor sees on its tile.
+
+The silhouette is markup plus CSS, no image: five `<b>` parts arranged per kind in
+`sass/_block-thumbs.scss`, a kind with no rule of its own still drawing the generic one. A page
+listing kinds **outside** `/management` — a site's public showcase — draws the same tile with
+`<twig:c975LUi:Blocks:Thumb kind="banner_title"/>` and loads
+`bundles/c975lui/css/block-thumbs.min.css` from its own `BundleStylesheetProviderInterface`; the
+back-office gets the rules through `sass/management.scss` instead.
 
 ## The render cache
 
@@ -375,5 +394,9 @@ them** rather than writing a walk of your own. A content export never carries th
   permanent delete.
 - **Do not build the review url with `path('ui_review_new', ...)`** — the route takes a signed token,
   which only `ui_review_url()` (or `ReviewTokenSigner::sign()`) mints.
+- **Do not screenshot a block to illustrate it** — the silhouette is drawn in
+  `sass/_block-thumbs.scss`, and a capture goes stale the day a template or the theme moves.
+- **Do not write the thumb's five parts out by hand** — render `c975LUi:Blocks:Thumb`, the very markup
+  the picker builds.
 - **Do not add a built-in kind to this bundle from an app** — `c975l:ui:block:create` generates into
   the app's own namespace, which is where a one-off kind belongs.

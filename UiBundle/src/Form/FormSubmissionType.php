@@ -57,88 +57,7 @@ class FormSubmissionType extends AbstractType
         }
 
         foreach ($options['fields'] as $field) {
-            $required = $field->isRequired();
-            $prefilled = array_key_exists($field->getName(), $options['prefill']);
-
-            // A required checkbox needs IsTrue, not NotBlank - an unchecked box submits "false", which NotBlank does not consider blank and would let through unenforced
-            $constraints = [];
-            if ($required) {
-                $constraints[] = FormField::TYPE_CHECKBOX === $field->getType() ? new IsTrue(message: 'text.checkbox_required') : new NotBlank();
-            }
-            // Format first (cheap, EmailType's own HTML5 "type=email" attribute is client-side only), then the DNS/MX lookup on top
-            if (FormField::TYPE_EMAIL === $field->getType()) {
-                $constraints[] = new Email();
-                $constraints[] = new DnsEmail();
-            }
-
-            // "translation_domain" false: a field's label is text the admin typed directly (see FormFieldType), not a translation key. When the field carries a "url" (e.g. a CGU checkbox pointing at the real terms-of-use page), the label is built as escaped HTML instead so a real <a> can be appended - see buildLabel()
-            $fieldOptions = [
-                'label' => $this->buildLabel($field),
-                'label_html' => null !== $field->getUrl(),
-                'translation_domain' => false,
-                'required' => $required,
-                'constraints' => $constraints,
-                // "readonly", not "disabled", so a prefilled field is still submitted
-                // "new-password" stops a password manager autofilling this as a login form
-                'attr' => array_filter([
-                    'placeholder' => $field->getPlaceholder(),
-                    'readonly' => $prefilled ?: null,
-                    'autocomplete' => FormField::TYPE_PASSWORD === $field->getType() ? 'new-password' : null,
-                    'rows' => FormField::TYPE_TEXTAREA === $field->getType() ? 10 : null,
-                ]),
-            ];
-            if ($prefilled) {
-                $fieldOptions['data'] = $options['prefill'][$field->getName()];
-            }
-            // Bounds and increment are HTML attributes rather than constraints: they belong to a number/range input, and a calculator's slider is unusable without them
-            if (in_array($field->getType(), [FormField::TYPE_NUMBER, FormField::TYPE_RANGE], true)) {
-                $fieldOptions['attr'] += array_filter([
-                    'min' => $field->getMinValue(),
-                    'max' => $field->getMaxValue(),
-                    'step' => $field->getStepValue(),
-                ], static fn (?float $bound): bool => null !== $bound);
-            }
-            // A real "type=number", not NumberType's default localised text input: a decimal typed on a fr site reaches the calculator as "8.2" rather than "8,2", and the min/max/step above stop being inert on what was a text input. Never in the block above, shared with TYPE_RANGE, whose parent TextType declares no "html5" option. A "type=number" left without a step takes the browser's default of 1, which refuses a decimal
-            if (FormField::TYPE_NUMBER === $field->getType()) {
-                $fieldOptions['html5'] = true;
-                $fieldOptions['attr']['step'] ??= 'any';
-            }
-            // A calculator shows a result before the visitor touches anything, which takes a starting value on every field - never overriding a prefill, which is the visitor's own data
-            if (!$prefilled && null !== $field->getDefaultValue()) {
-                if (FormField::TYPE_CHECKBOX === $field->getType()) {
-                    $fieldOptions['data'] = filter_var($field->getDefaultValue(), FILTER_VALIDATE_BOOLEAN);
-                } elseif ($this->acceptsDefaultValue($field)) {
-                    $fieldOptions['data'] = $field->getDefaultValue();
-                }
-            }
-            // A choice field's options are pairs the admin typed, the value being what an expression sees (e.g. 1.15 for "+15 %") - "choices" wants them the other way round
-            if (FormField::TYPE_CHOICE === $field->getType()) {
-                $fieldOptions['choices'] = array_column($field->getOptions(), 'value', 'label');
-                $fieldOptions['placeholder'] = false;
-            }
-            // A single HTML5 date input, not Symfony's default 3-select widget
-            if (FormField::TYPE_DATE === $field->getType()) {
-                $fieldOptions['widget'] = 'single_text';
-            }
-
-            // RepeatedType wraps two sub-fields (its own "first_options"/"second_options"), it doesn't take the same flat options as every other field type. A repeated password field always means "set a new password" (unlike a plain TYPE_PASSWORD field, which could be re-entering an existing one) - Length/PasswordStrength/NotCompromisedPassword enforce the same minimum policy ChangePasswordFormType already does
-            if (FormField::TYPE_PASSWORD_REPEATED === $field->getType()) {
-                $builder->add($field->getName(), RepeatedType::class, [
-                    'type' => PasswordType::class,
-                    'required' => $required,
-                    'first_options' => [
-                        'label' => $field->getLabel(),
-                        'translation_domain' => false,
-                        'constraints' => [...$constraints, new Length(min: 8, max: 25), new PasswordStrength(), new NotCompromisedPassword()],
-                        'attr' => array_merge($fieldOptions['attr'], ['autocomplete' => 'new-password']),
-                    ],
-                    'second_options' => ['label' => 'label.password_confirm', 'attr' => array_filter(['placeholder' => $field->getPlaceholder(), 'autocomplete' => 'new-password'])],
-                    'invalid_message' => 'text.password_mismatch',
-                ]);
-                continue;
-            }
-
-            $builder->add($field->getName(), $this->resolveFieldType($field->getType()), $fieldOptions);
+            $this->addField($builder, $field, $options['prefill']);
         }
 
         if ($options['offerReceiveCopy'] && $options['protections']) {
@@ -154,6 +73,127 @@ class FormSubmissionType extends AbstractType
             $builder->add('captcha', CaptchaType::class, [
                 'action_name' => 'ui_form',
             ]);
+        }
+    }
+
+    // One declared field turned into its form child, the type deciding what it is given beside its label
+    private function addField(FormBuilderInterface $builder, FormField $field, array $prefill): void
+    {
+        $required = $field->isRequired();
+        $prefilled = array_key_exists($field->getName(), $prefill);
+        $constraints = $this->fieldConstraints($field, $required);
+        $fieldOptions = $this->fieldOptions($field, $required, $prefilled, $constraints);
+
+        if ($prefilled) {
+            $fieldOptions['data'] = $prefill[$field->getName()];
+        }
+
+        $this->applyTypeOptions($fieldOptions, $field, $prefilled);
+
+        // RepeatedType wraps two sub-fields (its own "first_options"/"second_options"), it doesn't take the same flat options as every other field type. A repeated password field always means "set a new password" (unlike a plain TYPE_PASSWORD field, which could be re-entering an existing one) - Length/PasswordStrength/NotCompromisedPassword enforce the same minimum policy ChangePasswordFormType already does
+        if (FormField::TYPE_PASSWORD_REPEATED === $field->getType()) {
+            $builder->add($field->getName(), RepeatedType::class, [
+                'type' => PasswordType::class,
+                'required' => $required,
+                'first_options' => [
+                    'label' => $field->getLabel(),
+                    'translation_domain' => false,
+                    'constraints' => [...$constraints, new Length(min: 8, max: 25), new PasswordStrength(), new NotCompromisedPassword()],
+                    'attr' => array_merge($fieldOptions['attr'], ['autocomplete' => 'new-password']),
+                ],
+                'second_options' => ['label' => 'label.password_confirm', 'attr' => array_filter(['placeholder' => $field->getPlaceholder(), 'autocomplete' => 'new-password'])],
+                'invalid_message' => 'text.password_mismatch',
+            ]);
+
+            return;
+        }
+
+        $builder->add($field->getName(), $this->resolveFieldType($field->getType()), $fieldOptions);
+    }
+
+    // What the submitted value is weighed against
+    private function fieldConstraints(FormField $field, bool $required): array
+    {
+        $constraints = [];
+
+        // A required checkbox needs IsTrue, not NotBlank - an unchecked box submits "false", which NotBlank does not consider blank and would let through unenforced
+        if ($required) {
+            $constraints[] = FormField::TYPE_CHECKBOX === $field->getType() ? new IsTrue(message: 'text.checkbox_required') : new NotBlank();
+        }
+
+        // Format first (cheap, EmailType's own HTML5 "type=email" attribute is client-side only), then the DNS/MX lookup on top
+        if (FormField::TYPE_EMAIL === $field->getType()) {
+            $constraints[] = new Email();
+            $constraints[] = new DnsEmail();
+        }
+
+        return $constraints;
+    }
+
+    // What every field is given whatever its type: its label, whether it must be answered, and the attributes of its input
+    // "translation_domain" false: a field's label is text the admin typed directly (see FormFieldType), not a translation key. When the field carries a "url" (e.g. a CGU checkbox pointing at the real terms-of-use page), the label is built as escaped HTML instead so a real <a> can be appended - see buildLabel()
+    private function fieldOptions(FormField $field, bool $required, bool $prefilled, array $constraints): array
+    {
+        return [
+            'label' => $this->buildLabel($field),
+            'label_html' => null !== $field->getUrl(),
+            'translation_domain' => false,
+            'required' => $required,
+            'constraints' => $constraints,
+            // "readonly", not "disabled", so a prefilled field is still submitted
+            // "new-password" stops a password manager autofilling this as a login form
+            'attr' => array_filter([
+                'placeholder' => $field->getPlaceholder(),
+                'readonly' => $prefilled ?: null,
+                'autocomplete' => FormField::TYPE_PASSWORD === $field->getType() ? 'new-password' : null,
+                'rows' => FormField::TYPE_TEXTAREA === $field->getType() ? 10 : null,
+            ]),
+        ];
+    }
+
+    // What only some types are given: the bounds of a number, the pairs of a choice, the widget of a date, the value a calculator opens on
+    private function applyTypeOptions(array &$fieldOptions, FormField $field, bool $prefilled): void
+    {
+        $this->applyNumericOptions($fieldOptions, $field);
+
+        // A calculator shows a result before the visitor touches anything, which takes a starting value on every field - never overriding a prefill, which is the visitor's own data
+        if (!$prefilled && null !== $field->getDefaultValue()) {
+            if (FormField::TYPE_CHECKBOX === $field->getType()) {
+                $fieldOptions['data'] = filter_var($field->getDefaultValue(), FILTER_VALIDATE_BOOLEAN);
+            } elseif ($this->acceptsDefaultValue($field)) {
+                $fieldOptions['data'] = $field->getDefaultValue();
+            }
+        }
+
+        // A choice field's options are pairs the admin typed, the value being what an expression sees (e.g. 1.15 for "+15 %") - "choices" wants them the other way round
+        if (FormField::TYPE_CHOICE === $field->getType()) {
+            $fieldOptions['choices'] = array_column($field->getOptions(), 'value', 'label');
+            $fieldOptions['placeholder'] = false;
+        }
+
+        // A single HTML5 date input, not Symfony's default 3-select widget
+        if (FormField::TYPE_DATE === $field->getType()) {
+            $fieldOptions['widget'] = 'single_text';
+        }
+    }
+
+    // Bounds and increment are HTML attributes rather than constraints: they belong to a number/range input, and a calculator's slider is unusable without them
+    private function applyNumericOptions(array &$fieldOptions, FormField $field): void
+    {
+        if (!in_array($field->getType(), [FormField::TYPE_NUMBER, FormField::TYPE_RANGE], true)) {
+            return;
+        }
+
+        $fieldOptions['attr'] += array_filter([
+            'min' => $field->getMinValue(),
+            'max' => $field->getMaxValue(),
+            'step' => $field->getStepValue(),
+        ], static fn (?float $bound): bool => null !== $bound);
+
+        // A real "type=number", not NumberType's default localised text input: a decimal typed on a fr site reaches the calculator as "8.2" rather than "8,2", and the min/max/step above stop being inert on what was a text input. Never for TYPE_RANGE, whose parent TextType declares no "html5" option. A "type=number" left without a step takes the browser's default of 1, which refuses a decimal
+        if (FormField::TYPE_NUMBER === $field->getType()) {
+            $fieldOptions['html5'] = true;
+            $fieldOptions['attr']['step'] ??= 'any';
         }
     }
 

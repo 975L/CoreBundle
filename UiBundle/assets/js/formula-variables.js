@@ -26,7 +26,7 @@ export default class extends Controller {
         };
         this.element.addEventListener("focusin", this.onFocus);
 
-        this.element.querySelectorAll("[data-form-outputs-variables]").forEach((field) => this.build(field));
+        this.element.querySelectorAll("[data-form-outputs-variables]").forEach((field) => { this.build(field); });
     }
 
     disconnect() {
@@ -64,7 +64,7 @@ export default class extends Controller {
         hint.textContent = field.dataset.formOutputsVariablesHint || "";
         bar.appendChild(hint);
 
-        names.forEach((name) => bar.appendChild(this.chip(name)));
+        names.forEach((name) => { bar.appendChild(this.chip(name)); });
 
         // Above the rows rather than under them: the bar has to stay in sight of the formula being written
         field.querySelector(".ea-form-collection-items")?.before(bar);

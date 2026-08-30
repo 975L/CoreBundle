@@ -22,6 +22,7 @@ enum VideoPlatform: string
 
     // The url a player is actually loaded from, built from the id alone - so a platform changing its url scheme is one line here rather than a column to migrate everywhere it was stored
     // Privacy-first where the platform offers it: YouTube plays on youtube-nocookie.com, Vimeo carries "dnt=1" (do not track). Neither is a substitute for consent, both players being third-party frames all the same (see the video-iframe Stimulus controller)
+    // #lizard forgives - Lizard parses no PHP enum: it reads every method below as part of this one, and reports the whole enum's length and complexity here
     public function embedUrl(string $id, array $carriedParams = []): string
     {
         $url = sprintf(match ($this) {

@@ -33,7 +33,7 @@ export default class extends Controller {
     disconnect() {
         this.observer?.disconnect();
         document.removeEventListener("anchor:scroll", this.pause);
-        this.constructor.RESUME_EVENTS.forEach((type) => document.removeEventListener(type, this.resume));
+        this.constructor.RESUME_EVENTS.forEach((type) => { document.removeEventListener(type, this.resume); });
     }
 
     // A scroll heading for an anchor - the button pulling to the bottom of the page - reaches a place that appending items would push away from it, and the visitor asking for the footer is not asking for more of the listing
@@ -43,12 +43,12 @@ export default class extends Controller {
         }
 
         this.observer?.disconnect();
-        this.constructor.RESUME_EVENTS.forEach((type) => document.addEventListener(type, this.resume, { once: true, passive: true }));
+        this.constructor.RESUME_EVENTS.forEach((type) => { document.addEventListener(type, this.resume, { once: true, passive: true }); });
     }
 
     // Scrolling again is the visitor coming back to the listing: only one of the gestures fires, so the others are taken off here
     resume() {
-        this.constructor.RESUME_EVENTS.forEach((type) => document.removeEventListener(type, this.resume));
+        this.constructor.RESUME_EVENTS.forEach((type) => { document.removeEventListener(type, this.resume); });
 
         if (this.hasNextTarget) {
             this.watch();
@@ -122,7 +122,7 @@ export default class extends Controller {
     // Nothing left to load: the link goes, and with it the element the observer watches
     end() {
         this.observer?.disconnect();
-        this.constructor.RESUME_EVENTS.forEach((type) => document.removeEventListener(type, this.resume));
+        this.constructor.RESUME_EVENTS.forEach((type) => { document.removeEventListener(type, this.resume); });
         if (this.hasNextTarget) {
             this.nextTarget.remove();
         }

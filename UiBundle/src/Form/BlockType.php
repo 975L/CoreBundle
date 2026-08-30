@@ -70,114 +70,151 @@ class BlockType extends AbstractType
         ]);
 
         // Load the sub-form `data` dynamically according to the block kind
-        $builder->addEventListener(
-            FormEvents::PRE_SET_DATA,
-            function (PreSetDataEvent $event) use ($options): void {
-                $block = $event->getData();
-
-                CollectionReconciler::addIdField($event->getForm(), $block instanceof Block ? $block->getId() : null);
-
-                $kind = null;
-                if (null !== $block) {
-                    $kind = is_object($block) ? $block->getKind() : ($block['kind'] ?? null);
-                    if ($kind && $this->registry->has($kind)) {
-                        $this->addKindField($event->getForm(), $options['context'], $kind);
-                        $this->addDataSubForm($event->getForm(), $kind);
-                        if ($this->registry->hasMediaTypes($kind)) {
-                            $this->addMediaSubForm($event->getForm(), $kind);
-                        }
-                        if ($this->registry->isContainer($kind)) {
-                            $this->addSlotsSubForm($event->getForm(), $kind, $block instanceof Block ? $block : null);
-                        }
-                    }
-                }
-
-                // Added last (after "data", not statically at the top of buildForm) so it always renders below the kind-specific fields (e.g. MenuLinkType's "target") instead of between "kind" and "data"
-                $this->addAnimationField($event->getForm());
-            }
-        );
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, fn (PreSetDataEvent $event) => $this->onPreSetData($event, $options['context']));
 
         // Re-add the sub-form `data` BEFORE Symfony maps submitted values (PRE_SUBMIT), so the correct FormType is in place when the mapping happens.
-        $builder->addEventListener(
-            FormEvents::PRE_SUBMIT,
-            function (FormEvent $event): void {
-                $submitted = $event->getData();
-                $kind = $submitted['kind'] ?? null;
-                if ($kind && $this->registry->has($kind)) {
-                    $this->addDataSubForm($event->getForm(), $kind);
-
-                    $block = $event->getForm()->getData();
-                    // Picking another kind swaps the "data" sub-form client-side (see block.js) and nothing else: whatever the previous kind rendered around it - the per-image metadata of its medias, its slots - is still in the DOM and still posted. A key no field claims fails the whole form with "This form should not contain extra fields", which is why switching a kind used to take two saves, the browser having re-rendered the form for the new kind on the failed one, losing whatever was typed in between. What the new kind cannot receive is dropped from the submission below, here rather than client-side so a submission that never went through the picker is covered too
-                    $previousKind = $block instanceof Block ? $block->getKind() : null;
-                    $kindChanged = null !== $previousKind && $previousKind !== $kind;
-
-                    if ($this->registry->hasMediaTypes($kind)) {
-                        if ($block instanceof Block) {
-                            CollectionReconciler::pruneRemoved(
-                                $block->getMedias(),
-                                $submitted['medias'] ?? [],
-                                static fn (Media $media) => $block->removeMedia($media)
-                            );
-
-                            // A deleted media can leave a malformed remnant behind in the submission (its "delete"/css-class checkboxes resubmitted under the old array key, with no id and no actual file) - left as-is, CollectionType treats it as a genuine new entry and binds it to null data, which breaks Vich's own conditional "delete" checkbox (VichFileType only adds it when the bound object is non-null) and fails validation with "This form should not contain extra fields".
-                            $submitted['medias'] = CollectionReconciler::dropOrphaned(
-                                $submitted['medias'] ?? [],
-                                $block->getMedias(),
-                                static fn (array $entry): bool => !empty($entry['file']['file'] ?? null)
-                            );
-                        }
-
-                        // Removing the very last media also leaves nothing submitted at all under "medias" (an HTML form can't represent an empty array, only an absent key), which has to be normalized to [] below or Symfony skips add/remove handling for the field.
-                        $submitted['medias'] ??= [];
-                        $submitted = $this->mergeMultiUpload($submitted, $kind);
-                        $this->addMediaSubForm($event->getForm(), $kind);
-
-                        // Each kind builds its media rows with its own set of fields (a card's teaser image has no caption, no dimensions, no credits - see MediaUploadType), so the rows left behind by the previous one carry keys the new one never declares
-                        if ($kindChanged) {
-                            $submitted['medias'] = $this->dropForeignEntryKeys($submitted['medias'], $event->getForm()->get('medias'));
-                        }
-
-                        $event->setData($submitted);
-                    } elseif ($kindChanged) {
-                        // The medias themselves are deliberately left on the block rather than removed: the new kind simply doesn't render them, and switching back brings them - their files included - straight back. Which takes both the submitted keys AND the fields PRE_SET_DATA declared for the previous kind: an absent key does not make Symfony skip a declared child, it submits it with null, and CollectionType's resize listener reads that as "every row removed" - cascade-removed and orphan-removed at flush
-                        unset($submitted['medias'], $submitted['mediaUpload']);
-                        $event->setData($submitted);
-                        $event->getForm()->remove('medias');
-                        $event->getForm()->remove('mediaUpload');
-                    }
-
-                    if ($this->registry->isContainer($kind)) {
-                        $this->applySubmittedSlots($event, $kind);
-                    } elseif ($kindChanged || isset($submitted[self::SLOTS_RENDERED]) || isset($submitted['slots'])) {
-                        // Switched away from a container: its slots collection and the marker beside it are still posted, with no field left to claim either. Taken off the form as well as out of the submission, and the slots kept on the block, for the very same reasons as its medias just above
-                        unset($submitted['slots']);
-                        $event->setData($submitted);
-                        $event->getForm()->remove('slots');
-
-                        // Added back for a kind switched away from a container, which still carries the marker: a key no field claims fails the whole form as an extra one
-                        if (isset($submitted[self::SLOTS_RENDERED])) {
-                            $this->addSlotsMarker($event->getForm());
-                        }
-                    }
-
-                    // "data" (and "medias"/"slots") were just (re)added above - move "animation" back below them, in case this is a brand new collection entry whose PRE_SET_DATA fired with no kind yet (so "animation" was added there before "data" ever existed)
-                    $event->getForm()->remove('animation');
-                    $this->addAnimationField($event->getForm());
-                }
-            }
-        );
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, $this->onPreSubmit(...));
 
         // Here rather than in a Doctrine listener (unlike the nocookie rewrite, see BlockVideoNoCookieListener): the import sets a Vich file field, which has to be in place before Vich's own prePersist/preUpdate listener runs, not alongside it
         // Runs whatever the submission turns out to be worth - this form is always a CollectionType entry, so its POST_SUBMIT precedes the root form's validation. Nothing is flushed here, and a rejected submission's downloaded still is swept on kernel.terminate (see VideoPosterImporter::removeTemporaryFiles)
-        $builder->addEventListener(
-            FormEvents::POST_SUBMIT,
-            function (PostSubmitEvent $event): void {
-                $block = $event->getData();
-                if ($block instanceof Block) {
-                    $this->videoPosterImporter?->importIfRequested($block);
-                }
+        $builder->addEventListener(FormEvents::POST_SUBMIT, $this->onPostSubmit(...));
+    }
+
+    // Load the sub-form `data` dynamically according to the block kind
+    private function onPreSetData(PreSetDataEvent $event, mixed $context): void
+    {
+        $block = $event->getData();
+
+        CollectionReconciler::addIdField($event->getForm(), $block instanceof Block ? $block->getId() : null);
+
+        $kind = null === $block ? null : (is_object($block) ? $block->getKind() : ($block['kind'] ?? null));
+        if ($kind && $this->registry->has($kind)) {
+            $this->addKindField($event->getForm(), $context, $kind);
+            $this->addDataSubForm($event->getForm(), $kind);
+
+            if ($this->registry->hasMediaTypes($kind)) {
+                $this->addMediaSubForm($event->getForm(), $kind);
             }
+
+            if ($this->registry->isContainer($kind)) {
+                $this->addSlotsSubForm($event->getForm(), $kind, $block instanceof Block ? $block : null);
+            }
+        }
+
+        // Added last (after "data", not statically at the top of buildForm) so it always renders below the kind-specific fields (e.g. MenuLinkType's "target") instead of between "kind" and "data"
+        $this->addAnimationField($event->getForm());
+    }
+
+    // Re-adds the sub-form `data` before Symfony maps submitted values, so the correct FormType is in place when the mapping happens
+    private function onPreSubmit(FormEvent $event): void
+    {
+        $submitted = $event->getData();
+        $kind = $submitted['kind'] ?? null;
+        if (!$kind || !$this->registry->has($kind)) {
+            return;
+        }
+
+        $this->addDataSubForm($event->getForm(), $kind);
+
+        $block = $event->getForm()->getData();
+        // Picking another kind swaps the "data" sub-form client-side (see block.js) and nothing else: whatever the previous kind rendered around it - the per-image metadata of its medias, its slots - is still in the DOM and still posted. A key no field claims fails the whole form with "This form should not contain extra fields", which is why switching a kind used to take two saves, the browser having re-rendered the form for the new kind on the failed one, losing whatever was typed in between. What the new kind cannot receive is dropped from the submission below, here rather than client-side so a submission that never went through the picker is covered too
+        $previousKind = $block instanceof Block ? $block->getKind() : null;
+        $kindChanged = null !== $previousKind && $previousKind !== $kind;
+
+        $this->applySubmittedMedias($event, $kind, $kindChanged);
+        $this->applySubmittedContainer($event, $kind, $kindChanged);
+
+        // "data" (and "medias"/"slots") were just (re)added above - move "animation" back below them, in case this is a brand new collection entry whose PRE_SET_DATA fired with no kind yet (so "animation" was added there before "data" ever existed)
+        $event->getForm()->remove('animation');
+        $this->addAnimationField($event->getForm());
+    }
+
+    // The medias the new kind can receive, the ones it cannot being taken off the submission and off the form
+    private function applySubmittedMedias(FormEvent $event, string $kind, bool $kindChanged): void
+    {
+        $submitted = $event->getData();
+
+        if (!$this->registry->hasMediaTypes($kind)) {
+            if ($kindChanged) {
+                // The medias themselves are deliberately left on the block rather than removed: the new kind simply doesn't render them, and switching back brings them - their files included - straight back. Which takes both the submitted keys AND the fields PRE_SET_DATA declared for the previous kind: an absent key does not make Symfony skip a declared child, it submits it with null, and CollectionType's resize listener reads that as "every row removed" - cascade-removed and orphan-removed at flush
+                unset($submitted['medias'], $submitted['mediaUpload']);
+                $event->setData($submitted);
+                $event->getForm()->remove('medias');
+                $event->getForm()->remove('mediaUpload');
+            }
+
+            return;
+        }
+
+        $block = $event->getForm()->getData();
+        if ($block instanceof Block) {
+            $submitted = $this->reconcileSubmittedMedias($submitted, $block);
+        }
+
+        // Removing the very last media also leaves nothing submitted at all under "medias" (an HTML form can't represent an empty array, only an absent key), which has to be normalized to [] below or Symfony skips add/remove handling for the field.
+        $submitted['medias'] ??= [];
+        $submitted = $this->mergeMultiUpload($submitted, $kind);
+        $this->addMediaSubForm($event->getForm(), $kind);
+
+        // Each kind builds its media rows with its own set of fields (a card's teaser image has no caption, no dimensions, no credits - see MediaUploadType), so the rows left behind by the previous one carry keys the new one never declares
+        if ($kindChanged) {
+            $submitted['medias'] = $this->dropForeignEntryKeys($submitted['medias'], $event->getForm()->get('medias'));
+        }
+
+        $event->setData($submitted);
+    }
+
+    // What the block still holds against what came back, the rows the editor deleted taken off both sides
+    private function reconcileSubmittedMedias(array $submitted, Block $block): array
+    {
+        CollectionReconciler::pruneRemoved(
+            $block->getMedias(),
+            $submitted['medias'] ?? [],
+            static fn (Media $media) => $block->removeMedia($media)
         );
+
+        // A deleted media can leave a malformed remnant behind in the submission (its "delete"/css-class checkboxes resubmitted under the old array key, with no id and no actual file) - left as-is, CollectionType treats it as a genuine new entry and binds it to null data, which breaks Vich's own conditional "delete" checkbox (VichFileType only adds it when the bound object is non-null) and fails validation with "This form should not contain extra fields".
+        $submitted['medias'] = CollectionReconciler::dropOrphaned(
+            $submitted['medias'] ?? [],
+            $block->getMedias(),
+            static fn (array $entry): bool => !empty($entry['file']['file'] ?? null)
+        );
+
+        return $submitted;
+    }
+
+    // The slots of a container, or what a kind switched away from one leaves behind
+    private function applySubmittedContainer(FormEvent $event, string $kind, bool $kindChanged): void
+    {
+        if ($this->registry->isContainer($kind)) {
+            $this->applySubmittedSlots($event, $kind);
+
+            return;
+        }
+
+        $submitted = $event->getData();
+        if (!$kindChanged && !isset($submitted[self::SLOTS_RENDERED]) && !isset($submitted['slots'])) {
+            return;
+        }
+
+        // Switched away from a container: its slots collection and the marker beside it are still posted, with no field left to claim either. Taken off the form as well as out of the submission, and the slots kept on the block, for the very same reasons as its medias
+        unset($submitted['slots']);
+        $event->setData($submitted);
+        $event->getForm()->remove('slots');
+
+        // Added back for a kind switched away from a container, which still carries the marker: a key no field claims fails the whole form as an extra one
+        if (isset($submitted[self::SLOTS_RENDERED])) {
+            $this->addSlotsMarker($event->getForm());
+        }
+    }
+
+    // Here rather than in a Doctrine listener (unlike the nocookie rewrite, see BlockVideoNoCookieListener): the import sets a Vich file field, which has to be in place before Vich's own prePersist/preUpdate listener runs, not alongside it
+    private function onPostSubmit(PostSubmitEvent $event): void
+    {
+        $block = $event->getData();
+        if ($block instanceof Block) {
+            $this->videoPosterImporter?->importIfRequested($block);
+        }
     }
 
     // "slots" absent from the submission means one of two very different things: the editor removed the last slot - an HTML form cannot represent an empty array, only an absent key, same as "medias" - or this form never carried the collection at all. A kind just switched to a container client-side, a body PHP truncated at max_input_vars, a DOM something rewrote: all three arrive as that same absent key. Read as the first, the second deletes every slot, cascaded and orphan-removed, with nothing left to say it ever happened - which is how a live page lost the cards of a section_cards block. The marker is what tells the two apart. The submitted collection itself counts as its own proof: an edit page opened before the marker existed still carries its slots, and must go on saving rather than fail as an extra field. "Neither", and a body PHP cut short, both mean nothing submitted says what the editor removed.
@@ -218,6 +255,7 @@ class BlockType extends AbstractType
     }
 
     // Drops from each submitted row whatever key the collection's entry form does not declare - see the kind-change note in PRE_SUBMIT. Read off the collection's own prototype, built from the very entry type (and options) every row is built from, so no list of field names has to be kept in sync here
+    /** @SuppressWarnings(PHPMD.UnusedLocalVariable) The foreach below wants the key alone, and PHP has no key-only form */
     private function dropForeignEntryKeys(array $entries, FormInterface $collection): array
     {
         $prototype = $collection->getConfig()->getAttribute('prototype', null);
@@ -257,6 +295,11 @@ class BlockType extends AbstractType
             'help_html' => true,
             'choices' => $choices,
             'choice_translation_domain' => false,
+            // Carried onto each <option> for the visual picker built over this select (see block-picker.js), which gives the label and the description a line each - the choice label itself is the two run together ("Label (description)"), the only way a bare <select> can say what a kind does, and printing that in the palette would repeat the description twice over. Nothing but the picker reads these.
+            'choice_attr' => fn (string $kind): array => [
+                'data-label' => $this->registry->getLabel($kind),
+                'data-description' => $this->registry->getDescription($kind),
+            ],
             'placeholder' => 'label.choose_block_kind',
             'attr' => [
                 'data-controller' => 'block',

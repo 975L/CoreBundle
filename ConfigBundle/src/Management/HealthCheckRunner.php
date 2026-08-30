@@ -33,30 +33,16 @@ class HealthCheckRunner
         $exhaustiveUrls = [];
 
         foreach ($this->healthCheckProviders as $provider) {
+            if (!$this->answersThisRun($provider, $onlyKinds, $frequency)) {
+                continue;
+            }
+
+            $rows = $this->runProvider($provider);
+            if (null === $rows) {
+                continue;
+            }
+
             $kind = $provider->getKind();
-            if ($onlyKinds && !\in_array($kind, $onlyKinds, true)) {
-                continue;
-            }
-
-            if ($frequency && $this->frequencyOf($provider) !== $frequency) {
-                continue;
-            }
-
-            $checkedAt = new \DateTime();
-
-            // Before the provider rather than only before the flush: the one before it may have spent minutes on http requests, and a provider reading the database as it opens (see ContentQualityAnalyzer) would throw on a dropped connection - straight into the catch below, which would skip it without a trace
-            $this->reconnectIfLost();
-
-            // One provider throwing must not take the run down with it: rows are only flushed once every provider has run, so an exception here would discard what the providers before it already produced, and the ones after it would never run at all
-            try {
-                $rows = $provider->runChecks();
-            } catch (\Throwable) {
-                continue;
-            }
-
-            foreach ($rows as $row) {
-                $this->entityManager->persist($this->buildResult($kind, $row, $checkedAt));
-            }
 
             // Collected per kind rather than purged here, because one class can be registered several times over under the same kind, one instance per source (see DeclaredUrlsHealthCheckProvider) - purging inside the loop would have each instance delete what the ones before it just produced
             if ($provider instanceof HealthCheckExhaustiveInterface) {
@@ -82,6 +68,38 @@ class HealthCheckRunner
         }
 
         return $counts;
+    }
+
+    // Whether this provider is one the run was narrowed to
+    private function answersThisRun(object $provider, array $onlyKinds, ?string $frequency): bool
+    {
+        if ($onlyKinds && !\in_array($provider->getKind(), $onlyKinds, true)) {
+            return false;
+        }
+
+        return !$frequency || $this->frequencyOf($provider) === $frequency;
+    }
+
+    // What one provider has to say, or null when it threw
+    // One provider throwing must not take the run down with it: rows are only flushed once every provider has run, so an exception here would discard what the providers before it already produced, and the ones after it would never run at all
+    private function runProvider(object $provider): ?array
+    {
+        $checkedAt = new \DateTime();
+
+        // Before the provider rather than only before the flush: the one before it may have spent minutes on http requests, and a provider reading the database as it opens (see ContentQualityAnalyzer) would throw on a dropped connection - straight into the catch below, which would skip it without a trace
+        $this->reconnectIfLost();
+
+        try {
+            $rows = $provider->runChecks();
+        } catch (\Throwable) {
+            return null;
+        }
+
+        foreach ($rows as $row) {
+            $this->entityManager->persist($this->buildResult($provider->getKind(), $row, $checkedAt));
+        }
+
+        return $rows;
     }
 
     // Closes a connection the server has already dropped, so the next query opens a fresh one - a health check run spends minutes on http requests without touching the database, which is long enough for the server to have dropped it meanwhile, and Messenger's own ping happens before the message is handled, so it is of no help here - DBAL reconnects lazily, and the pending persists live in the UnitOfWork, not in the connection, so nothing is lost. Same shape as Symfony's DoctrinePingConnectionMiddleware: a connection never opened is left alone, a live one is only paid a "SELECT 1" for

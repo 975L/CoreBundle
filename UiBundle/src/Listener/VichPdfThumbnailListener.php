@@ -80,6 +80,7 @@ class VichPdfThumbnailListener
         $this->generateThumbnail($pdfPath, $width);
     }
 
+    /** @SuppressWarnings(PHPMD.UnusedLocalVariable) exec() takes $output before $returnVar, so the one that is read costs the one that is not */
     private function generateThumbnail(string $pdfPath, int $width): void
     {
         // exec() is disabled on some hosts: no thumbnail rather than a crash
@@ -97,6 +98,7 @@ class VichPdfThumbnailListener
                 escapeshellarg($tmpPng),
                 escapeshellarg($pdfPath)
             );
+            // $output is only there to reach $returnVar, exec() taking the two by reference in that order
             exec($cmd, $output, $returnVar);
 
             if (0 !== $returnVar || !file_exists($tmpPng)) {

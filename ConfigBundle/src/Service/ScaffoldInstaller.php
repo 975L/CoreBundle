@@ -40,14 +40,33 @@ class ScaffoldInstaller
     // Copies scaffold/{src,templates,tests,translations,assets} from every installed c975L bundle into the project - a target already identical to the scaffold source is left untouched (no backup, no copy), so re-running this on an unmodified project is a no-op. A target that differs is decided by MANIFEST_FILE rather than overwritten on sight: still bit-for-bit what was last delivered here means the site never touched it and the scaffold moved on, so it is refreshed silently; anything else is the site's own work, is left exactly as it is, and comes back under 'diverged' for the caller to report. $force takes the old behaviour back for those - overwrite, after backing the file up into existingFiles/<same relative path>.old - which is what a site adopting a new scaffold wholesale wants, ideally narrowed by $paths. 'assets' stays outside all of it: once a target exists there it is the app's own editable file, whatever its content (see themeImportReminder()). The withdrawn files each bundle declares in REMOVED_FILE are deleted under the same rule, see remove(). $paths restricts the run to the relative paths given ('src/Scheduler', or a single file), $dryRun reports what would happen without writing anything. The returned 'unmatched' lists the given paths no scaffold file answered to, a run restricted to nothing at all being indistinguishable from an up-to-date site otherwise
     public function install(array $paths = [], bool $dryRun = false, bool $force = false): array
     {
-        $copied = 0;
-        $backedUp = 0;
-        $skipped = 0;
-        $files = [];
-        $diverged = [];
-        $delivered = [];
-        $matchedPaths = [];
         $manifest = $this->readManifest();
+
+        $delivery = $this->deliverScaffold($paths, $dryRun, $force, $manifest);
+        $withdrawal = $this->removeWithdrawn($paths, $dryRun, $force, $manifest, $delivery['delivered']);
+
+        if (!$dryRun) {
+            $this->writeManifest($manifest);
+            $this->ensureGitignored();
+        }
+
+        return [
+            'copied' => $delivery['copied'],
+            'backedUp' => $delivery['backedUp'] + $withdrawal['backedUp'],
+            'skipped' => $delivery['skipped'],
+            'files' => $delivery['files'],
+            'diverged' => $delivery['diverged'],
+            'deleted' => $withdrawal['deleted'],
+            'obsolete' => $withdrawal['obsolete'],
+            'unmatched' => array_values(array_diff($paths, [...$delivery['matchedPaths'], ...$withdrawal['matchedPaths']])),
+        ];
+    }
+
+    // Every file the installed bundles ship under scaffold/, laid down in the app or left alone
+    // @return array{copied: int, backedUp: int, skipped: int, files: list<string>, diverged: array<string, string>, delivered: array<string, true>, matchedPaths: list<string>}
+    private function deliverScaffold(array $paths, bool $dryRun, bool $force, array &$manifest): array
+    {
+        $result = ['copied' => 0, 'backedUp' => 0, 'skipped' => 0, 'files' => [], 'diverged' => [], 'delivered' => [], 'matchedPaths' => []];
 
         foreach ($this->bundleLocator->directories() as $bundleDir) {
             foreach (self::SCAFFOLD_DIRS as $dir) {
@@ -56,72 +75,98 @@ class ScaffoldInstaller
                     continue;
                 }
 
-                $finder = new Finder()->files()->in($scaffoldDir);
-                foreach ($finder as $file) {
+                foreach (new Finder()->files()->in($scaffoldDir) as $file) {
                     $relativePath = $dir . '/' . $file->getRelativePathname();
-                    $target = $this->projectDir . '/' . $relativePath;
 
                     // Recorded before the $paths filter and whatever this file's fate is: what remove() must not delete is what some bundle still ships, which a run narrowed to another path doesn't stop being true of
-                    $delivered[$relativePath] = true;
+                    $result['delivered'][$relativePath] = true;
 
-                    if ($paths) {
-                        $matched = array_filter($paths, static fn (string $path): bool => self::matches($relativePath, $path));
-                        if (!$matched) {
-                            continue;
-                        }
-
-                        // Kept whatever the file's fate is (copied, backed up, or already identical): the path did name something, which is all the caller needs to tell a real no-op from a typo
-                        $matchedPaths = array_merge($matchedPaths, $matched);
+                    // Kept whatever the file's fate is (copied, backed up, or already identical): the path did name something, which is all the caller needs to tell a real no-op from a typo
+                    $matched = $this->matchedBy($paths, $relativePath);
+                    if (null === $matched) {
+                        continue;
                     }
+                    $result['matchedPaths'] = array_merge($result['matchedPaths'], $matched);
 
-                    $sourceHash = hash_file('sha256', $file->getPathname());
-
-                    if (is_file($target)) {
-                        // 'assets' is the app's own editable copy from the first install onward (see themeImportReminder()) - unlike src/templates/tests/translations, it's never backed up/overwritten again once it exists, whether its content differs or not
-                        if ('assets' === $dir) {
-                            ++$skipped;
-                            continue;
-                        }
-
-                        $targetHash = hash_file('sha256', $target);
-                        if ($targetHash === $sourceHash) {
-                            // Records the hash on the way past, so a site predating the manifest stops being seen as having customized every file it never touched
-                            $manifest[$relativePath] = $sourceHash;
-                            ++$skipped;
-                            continue;
-                        }
-
-                        $customized = $targetHash !== ($manifest[$relativePath] ?? null);
-
-                        if ($customized && !$force) {
-                            $diverged[$relativePath] = $this->relativeToProject($file->getPathname());
-                            continue;
-                        }
-
-                        // Only what the site wrote is worth keeping: a file still identical to what was delivered is reproducible from the bundle it came from, so refreshing it needs no backup
-                        if ($customized) {
-                            if (!$dryRun) {
-                                $this->backup($relativePath, $target);
-                            }
-                            ++$backedUp;
-                        }
-                    }
-
-                    if (!$dryRun) {
-                        if (!is_dir(\dirname($target))) {
-                            mkdir(\dirname($target), 0775, true);
-                        }
-                        copy($file->getPathname(), $target);
-                    }
-                    $manifest[$relativePath] = $sourceHash;
-                    ++$copied;
-                    $files[] = $relativePath;
+                    $this->deliverFile($file, $relativePath, $dir, $dryRun, $force, $manifest, $result);
                 }
             }
         }
 
-        $deleted = [];
-        $obsolete = [];
+        return $result;
+    }
+
+    // One scaffolded file weighed against what the app already holds there
+    private function deliverFile(\SplFileInfo $file, string $relativePath, string $dir, bool $dryRun, bool $force, array &$manifest, array &$result): void
+    {
+        $target = $this->projectDir . '/' . $relativePath;
+        $sourceHash = hash_file('sha256', $file->getPathname());
+
+        if (is_file($target)) {
+            $verdict = $this->weighExisting($target, $relativePath, $dir, $sourceHash, $force, $manifest);
+
+            if ('skip' === $verdict) {
+                ++$result['skipped'];
+
+                return;
+            }
+
+            if ('diverged' === $verdict) {
+                $result['diverged'][$relativePath] = $this->relativeToProject($file->getPathname());
+
+                return;
+            }
+
+            // Only what the site wrote is worth keeping: a file still identical to what was delivered is reproducible from the bundle it came from, so refreshing it needs no backup
+            if ('backup' === $verdict) {
+                if (!$dryRun) {
+                    $this->backup($relativePath, $target);
+                }
+                ++$result['backedUp'];
+            }
+        }
+
+        if (!$dryRun) {
+            if (!is_dir(\dirname($target))) {
+                mkdir(\dirname($target), 0775, true);
+            }
+            copy($file->getPathname(), $target);
+        }
+
+        $manifest[$relativePath] = $sourceHash;
+        ++$result['copied'];
+        $result['files'][] = $relativePath;
+    }
+
+    // What to do with a file the app already holds: leave it alone, refuse to touch it, back it up first, or simply overwrite it
+    private function weighExisting(string $target, string $relativePath, string $dir, string $sourceHash, bool $force, array &$manifest): string
+    {
+        // 'assets' is the app's own editable copy from the first install onward (see themeImportReminder()) - unlike src/templates/tests/translations, it's never backed up/overwritten again once it exists, whether its content differs or not
+        if ('assets' === $dir) {
+            return 'skip';
+        }
+
+        $targetHash = hash_file('sha256', $target);
+        if ($targetHash === $sourceHash) {
+            // Records the hash on the way past, so a site predating the manifest stops being seen as having customized every file it never touched
+            $manifest[$relativePath] = $sourceHash;
+
+            return 'skip';
+        }
+
+        $customized = $targetHash !== ($manifest[$relativePath] ?? null);
+        if (!$customized) {
+            return 'overwrite';
+        }
+
+        return $force ? 'backup' : 'diverged';
+    }
+
+    // The files the bundles declare as withdrawn, taken off the app unless it has made them its own
+    // @return array{deleted: list<string>, obsolete: array<string, string>, backedUp: int, matchedPaths: list<string>}
+    private function removeWithdrawn(array $paths, bool $dryRun, bool $force, array &$manifest, array $delivered): array
+    {
+        $result = ['deleted' => [], 'obsolete' => [], 'backedUp' => 0, 'matchedPaths' => []];
 
         foreach ($this->bundleLocator->directories() as $bundle => $bundleDir) {
             foreach ($this->readRemoved($bundleDir) as $relativePath => $hashes) {
@@ -130,59 +175,62 @@ class ScaffoldInstaller
                     continue;
                 }
 
-                if ($paths) {
-                    $matched = array_filter($paths, static fn (string $path): bool => self::matches($relativePath, $path));
-                    if (!$matched) {
-                        continue;
-                    }
-
-                    $matchedPaths = array_merge($matchedPaths, $matched);
-                }
-
-                $target = $this->projectDir . '/' . $relativePath;
-                if (!is_file($target)) {
-                    unset($manifest[$relativePath]);
+                $matched = $this->matchedBy($paths, $relativePath);
+                if (null === $matched) {
                     continue;
                 }
+                $result['matchedPaths'] = array_merge($result['matchedPaths'], $matched);
 
-                // Either witness will do: the manifest says what was last delivered here, the declared hashes say what was ever delivered anywhere - and only the second one reaches a file withdrawn before the manifest existed, which the site would otherwise carry forever
-                $targetHash = hash_file('sha256', $target);
-                $pristine = \in_array($targetHash, (array) $hashes, true) || $targetHash === ($manifest[$relativePath] ?? null);
-
-                if (!$pristine && !$force) {
-                    $obsolete[$relativePath] = $bundle;
-                    continue;
-                }
-
-                if (!$dryRun) {
-                    // Same rule as an overwrite: what the site wrote is moved to existingFiles/ rather than lost, what it never touched is simply gone
-                    $pristine ? unlink($target) : $this->backup($relativePath, $target);
-                }
-
-                if (!$pristine) {
-                    ++$backedUp;
-                }
-
-                unset($manifest[$relativePath]);
-                $deleted[] = $relativePath;
+                $this->withdrawFile($relativePath, $hashes, $bundle, $dryRun, $force, $manifest, $result);
             }
         }
 
-        if (!$dryRun) {
-            $this->writeManifest($manifest);
-            $this->ensureGitignored();
+        return $result;
+    }
+
+    // One withdrawn file: gone if the app never touched it, kept and reported otherwise
+    private function withdrawFile(string $relativePath, mixed $hashes, string $bundle, bool $dryRun, bool $force, array &$manifest, array &$result): void
+    {
+        $target = $this->projectDir . '/' . $relativePath;
+        if (!is_file($target)) {
+            unset($manifest[$relativePath]);
+
+            return;
         }
 
-        return [
-            'copied' => $copied,
-            'backedUp' => $backedUp,
-            'skipped' => $skipped,
-            'files' => $files,
-            'diverged' => $diverged,
-            'deleted' => $deleted,
-            'obsolete' => $obsolete,
-            'unmatched' => array_values(array_diff($paths, $matchedPaths)),
-        ];
+        // Either witness will do: the manifest says what was last delivered here, the declared hashes say what was ever delivered anywhere - and only the second one reaches a file withdrawn before the manifest existed, which the site would otherwise carry forever
+        $targetHash = hash_file('sha256', $target);
+        $pristine = \in_array($targetHash, (array) $hashes, true) || $targetHash === ($manifest[$relativePath] ?? null);
+
+        if (!$pristine && !$force) {
+            $result['obsolete'][$relativePath] = $bundle;
+
+            return;
+        }
+
+        if (!$dryRun) {
+            // Same rule as an overwrite: what the site wrote is moved to existingFiles/ rather than lost, what it never touched is simply gone
+            $pristine ? unlink($target) : $this->backup($relativePath, $target);
+        }
+
+        if (!$pristine) {
+            ++$result['backedUp'];
+        }
+
+        unset($manifest[$relativePath]);
+        $result['deleted'][] = $relativePath;
+    }
+
+    // The paths of a narrowed run this file answers to, or null when the run names paths and this is not one of them - an empty list meaning the run covers everything
+    private function matchedBy(array $paths, string $relativePath): ?array
+    {
+        if (!$paths) {
+            return [];
+        }
+
+        $matched = array_filter($paths, static fn (string $path): bool => self::matches($relativePath, $path));
+
+        return $matched ?: null;
     }
 
     // The paths one bundle declares as withdrawn, each mapped to the hashes of the versions it delivered - a bundle shipping no such file simply withdraws nothing
