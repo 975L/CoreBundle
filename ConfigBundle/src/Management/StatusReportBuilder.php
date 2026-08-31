@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Kernel;
 class StatusReportBuilder
 {
     // Bumped whenever the payload's shape changes in a way a receiver has to care about, so a console can keep reading older sites while they are being updated
-    public const VERSION = 1;
+    public const VERSION = 2;
 
     // Caps the error rows carried by one report. A site with hundreds of broken pages would otherwise send a payload sized by its content rather than by its state - the counts stay exact, only the list is cut, and issuesTruncated says so rather than letting a receiver read a short list as "that's all of them"
     private const int MAX_ISSUES = 20;
@@ -46,6 +46,7 @@ class StatusReportBuilder
             'php' => \PHP_VERSION,
             'symfony' => Kernel::VERSION,
             'packages' => $this->getPackages(),
+            'dependencies' => $this->getDependencies(),
             'checks' => $this->getChecks(),
             'extra' => $this->getExtra(),
         ];
@@ -68,6 +69,31 @@ class StatusReportBuilder
         ksort($packages);
 
         return $packages;
+    }
+
+    // Everything installed, name and version, for a receiver to look up against a vulnerability database - which is the one question "packages" above cannot answer: a CVE lands just as often on dompdf, Doctrine or Twig as on a bundle, and none of those is a symfony-bundle. Sent rather than checked here on purpose, and the report stays as side-effect free as its comment promises: a console holding thirty sites' lists resolves them all in a single call to the advisory API, where thirty sites checking themselves would mean thirty sites making a network call on a schedule to learn what one lookup already knows. It also stays true to what the checks are for (see SecurityMisconfigurationHealthCheckProvider: a vulnerable dependency is answered from the code, not from a run against a deployed site) - the difference being that a console asks every day, and "composer audit" in the CI only answers on the days someone pushes.
+    //
+    // Platform entries (php, ext-*, composer-*) are left out, having no slash and no advisory to match, and PHP's own version is already its own field. So are the replaced and provided packages, which carry no version to compare
+    private function getDependencies(): array
+    {
+        $dependencies = [];
+
+        foreach (InstalledVersions::getInstalledPackages() as $name) {
+            if (!str_contains($name, '/')) {
+                continue;
+            }
+
+            $version = InstalledVersions::getPrettyVersion($name);
+            if (null === $version) {
+                continue;
+            }
+
+            $dependencies[$name] = $version;
+        }
+
+        ksort($dependencies);
+
+        return $dependencies;
     }
 
     // What the last health check run found, as counts plus the rows in error. HealthCheckResult::$details is left out on purpose: it holds the checkers' raw payloads, which is what makes a row actionable but also what makes it big and occasionally revealing - the receiver gets to know where it hurts, the site keeps why

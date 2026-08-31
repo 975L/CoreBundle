@@ -57,7 +57,9 @@ A `Form` owning at least one `Entity\FormOutput` (`site_form_output`) is a **cal
 displays, it never submits. The `form` block embeds it like any other form.
 
 - An output is a **formula an admin types** (`km_an / 100 * conso * prix_e85`) plus its format, unit
-  and decimals. Order matters: an expression only sees the outputs **above** it. An invisible output
+  and decimals. The unit is trimmed and set off from the figure by a **non-breaking space**, as the
+  percent sign is — an admin types `t`, never ` t`, and never the space itself. Order matters: an
+  expression only sees the outputs **above** it. An invisible output
   is an intermediate step the others read — which is why there is no table of constants: a
   coefficient is a literal, an editable price is a field with a default, a sub-total is a hidden output.
 - **Variables** are the `number`/`range`/`choice` fields plus the outputs above, named by the row's

@@ -1,5 +1,53 @@
 # ChangeLog
 
+## v1.19.2
+
+The RGAA is read off the markup, and a fleet's CVEs off one report
+
+### The package
+
+- `c975l/social-bundle` enters the `suggest`, leaving SiteBundle's (31/08/2026)
+- The `mess` script prints the files PDepend failed to parse, the previous `grep` keeping violation lines only and silencing them (31/08/2026)
+- The script now fails on those files rather than reporting them: 41 of them are skipped whole, PDepend parsing no `new X()->y()` in any released or nightly build, and a gate green over an unanalysed file says nothing (31/08/2026)
+- Refreshed `.github/images/UiBlocks.png` (31/08/2026)
+
+### ConfigBundle
+
+- The status report gains a `dependencies` section: every installed package with its version, platform entries aside, so a console can look a site up against a vulnerability database - `packages` lists the bundles alone, and a CVE lands on Doctrine, Dompdf or Twig as readily as on one of those (31/08/2026)
+- The lookup stays the receiver's to make: one call to the advisory API covers a whole fleet, where each site checking itself would call out on a schedule to learn what that one lookup already knows (31/08/2026)
+- `StatusReportBuilder::VERSION` moves to `2`, a receiver having to tell a site that omits the section from one that has nothing in it (31/08/2026)
+- Updated the readme's status report section, and its sample payload (31/08/2026)
+- The `c975l-operations` skill's status report section names the two lists and the version bump, an agent reading it on a deployed site otherwise describing the payload as it stood before (31/08/2026)
+- `StatusReportBuilderTest` covers the new section, and that it holds what `packages` leaves out (31/08/2026)
+- New `AccessibilityHealthCheckProvider` and its `accessibility` kind: the eight RGAA 4.1 criteria a page's rendered markup can settle on its own (2.1, 5.6, 6.2, 8.3, 8.4, 9.1, 11.1, 12.6), one row per url, over the list the sitemap providers already declare - a bundle declaring a sitemap is checked without a line of its own (31/08/2026)
+- Each row's `details` carries the whole verdict table, conforming criteria included, with up to ten named offences apiece: an accessibility statement is written from what was found conforming as much as from what was not (31/08/2026)
+- 1.1, 8.5 and the `<h1>` count stay with `content-quality`, which already traces the offending image back to the block holding it - a dashboard stating one fix twice teaches its reader to skim it (31/08/2026)
+- Monthly, and capped at fifty urls per sitemap: a gallery declaring two thousand photos would turn the check into a crawl, for pages built by one template that fail in the same place (31/08/2026)
+- New `AccessibilityClient`, reading the markup for those criteria, and reading nothing a DOM cannot settle without a false positive - contrast, focus, tab order and relevance are left unanswered rather than guessed at (31/08/2026)
+- New `HtmlDocument`, the libxml precautions `ContentQualityClient` opened its own documents with, now shared with the checker beside it rather than written twice (31/08/2026)
+- Added the `label.health_check_accessibility_conform`, `label.health_check_accessibility_offences` and `label.health_check_accessibility_call_failed` translations, in the three catalogues (31/08/2026)
+- Added the readme's own section on the check, its eight criteria and what it does not claim, and the row in the providers table (31/08/2026)
+- The readme's OWASP paragraph now points a fleet console at the report's `dependencies` rather than leaving CVEs to the CI alone (31/08/2026)
+- Added the whatsnew entry announcing the section, in the three languages (31/08/2026)
+- Added the `AccessibilityClientTest` and `AccessibilityHealthCheckProviderTest` cases (31/08/2026)
+- Added the `HtmlDocumentTest` case, over the UTF-8 forcing, the restored libxml setting and the element filtering (31/08/2026)
+- The `c975l-operations` skill gains the `accessibility` kind, its own paragraph and the two rules it comes with - claiming conformity from eight criteria, and opening a bare `DOMDocument` (31/08/2026)
+
+### UiBundle
+
+- New `BlockFixtureMediaAttacher::placeholderImagesFor()`: the `Media` of the images a site keyed under one name, in the declared order — the sibling of `nextPlaceholderImage()` for a showcase previewing a single named thing rather than the rotating pool (31/08/2026)
+- Empty for an undeclared key, each caller falling back on its own (31/08/2026)
+- A calculator output's unit is set off from the number by a non-breaking space: it was concatenated raw, printing "1,52t", and the admin could not type the space themselves - the field carrying the unit trims it away (31/08/2026)
+- The unit is trimmed before being appended, one typed with a space of its own no longer printing two (31/08/2026)
+- The help under the field says the space is added, in the three catalogues (31/08/2026)
+- The percent sign is set off the same way, `' %'` having stayed a breaking space when the unit stopped being one (31/08/2026)
+- `ExpressionEvaluatorTest` covers the single space, the unit left empty and the percent format (31/08/2026)
+- The `ui-review` guided project gains a step on the two decision buttons, `.action-publishReview` and its neighbour, on the edit screen as on the list (31/08/2026)
+- The status step follows them as the manual fallback, relabelled accordingly in the three catalogues (31/08/2026)
+- The review-pick step's description says the pencil only shows on a review this site can answer (31/08/2026)
+- The readme and the `c975l-media` skill name `placeholderImagesFor()` beside the registry method it wraps (31/08/2026)
+- The `c975l-forms-emails` skill states the unit's non-breaking space, an agent otherwise writing the space into the field (31/08/2026)
+
 ## v1.19.1
 
 A palette for a block's kind, and Codacy's checks before the push

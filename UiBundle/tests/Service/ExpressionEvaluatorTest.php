@@ -150,7 +150,31 @@ class ExpressionEvaluatorTest extends TestCase
         $this->assertStringNotContainsString('.5', $formatted);
     }
 
+    // Held to the number the same way a unit is, so a result never breaks between the figure and its sign
+    public function testPercentIsSeparatedByANonBreakingSpace(): void
+    {
+        $form = new Form();
+        $form->addField($this->createField('part', FormField::TYPE_NUMBER, '12'));
+        $output = $this->createOutput('total', 'part');
+        $output->setFormat(FormOutput::FORMAT_PERCENT);
+        $form->addOutput($output);
+
+        $this->assertStringEndsWith("\u{00A0}%", (string) $this->createEvaluator()->compute($form, [])['total']['formatted']);
+    }
+
     public function testUnitIsAppendedAfterTheFormattedNumber(): void
+    {
+        $form = new Form();
+        $form->addField($this->createField('litres', FormField::TYPE_NUMBER, '42'));
+        $output = $this->createOutput('total', 'litres');
+        $output->setUnit('L');
+        $form->addOutput($output);
+
+        $this->assertStringEndsWith("\u{00A0}L", (string) $this->createEvaluator()->compute($form, [])['total']['formatted']);
+    }
+
+    // The space is the formatter's business, not the admin's: a unit typed with one of its own is not printed with two
+    public function testUnitIsSeparatedByASingleSpace(): void
     {
         $form = new Form();
         $form->addField($this->createField('litres', FormField::TYPE_NUMBER, '42'));
@@ -158,7 +182,18 @@ class ExpressionEvaluatorTest extends TestCase
         $output->setUnit(' L');
         $form->addOutput($output);
 
-        $this->assertStringEndsWith(' L', (string) $this->createEvaluator()->compute($form, [])['total']['formatted']);
+        $this->assertStringEndsWith("42\u{00A0}L", (string) $this->createEvaluator()->compute($form, [])['total']['formatted']);
+    }
+
+    public function testAnEmptyUnitAppendsNothing(): void
+    {
+        $form = new Form();
+        $form->addField($this->createField('litres', FormField::TYPE_NUMBER, '42'));
+        $output = $this->createOutput('total', 'litres');
+        $output->setUnit('  ');
+        $form->addOutput($output);
+
+        $this->assertSame('42', (string) $this->createEvaluator()->compute($form, [])['total']['formatted']);
     }
 
     public function testLintRefusesAnEmptyExpression(): void

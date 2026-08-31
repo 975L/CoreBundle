@@ -894,6 +894,18 @@
                 <source>label.health_check</source>
                 <target>Bilan de santé</target>
             </trans-unit>
+            <trans-unit id="nF5PkgZ">
+                <source>label.health_check_accessibility_call_failed</source>
+                <target>Échec de la vérification d'accessibilité : %message%</target>
+            </trans-unit>
+            <trans-unit id="Zu6HEi8">
+                <source>label.health_check_accessibility_conform</source>
+                <target>RGAA %version% : les %count% critères lus dans le code sont respectés</target>
+            </trans-unit>
+            <trans-unit id="09mQRs.">
+                <source>label.health_check_accessibility_offences</source>
+                <target>RGAA %version% : %count% critères non respectés (%criteria%)</target>
+            </trans-unit>
             <trans-unit id="gDxHDIU">
                 <source>label.health_check_acknowledge</source>
                 <target>Marquer comme corrigé</target>

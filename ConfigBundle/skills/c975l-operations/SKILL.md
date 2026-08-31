@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -108,12 +108,24 @@ appears is reported, never deleted.
 `/management/health-check` runs entirely server-side over plain HTTP calls — no Node, no headless
 browser. This bundle's own kinds: `ssl-certificate`, `security-headers`, `security-misconfig`,
 `seo-files`, `ai-crawlers`, `redirect-chains`, `sitemap-robots`, `deployment`, `database-load`,
-`intrusion`, and `urls-<bundle>`.
+`intrusion`, `accessibility`, and `urls-<bundle>`.
 
 **`DeclaredUrlsHealthCheckProvider` is the one to know from a satellite bundle**: it runs the
 content-quality analysis over the urls a bundle already declares for its sitemap, one kind per bundle.
 **Nothing to implement bundle-side** — declaring the sitemap is enough. Do not write a per-bundle
 content check, and do not remount in an `extra` status section what it already reports.
+
+**`accessibility` reads the same sitemap list, for the RGAA**: `AccessibilityHealthCheckProvider`
+answers the eight RGAA 4.1 criteria a page's rendered markup can settle (2.1, 5.6, 6.2, 8.3, 8.4,
+9.1, 11.1, 12.6), one row per url, monthly, capped at `MAX_URLS_PER_SOURCE` (50) urls per sitemap.
+Nothing to implement bundle-side either. Each row's `details` carries the whole verdict table,
+**conforming criteria included** — that half is what an accessibility statement is written from.
+Contrast, focus, tab order and any judgement of relevance are **not attempted**, a browser engine
+being what measures them. Criteria 1.1, 8.5 and the `<h1>` count stay with `content-quality`, which
+traces the offending image back to its block: do not restate them here. `Service\AccessibilityClient`
+reports what the markup holds, the provider decides which finding is a non-conformity — and both open
+their documents through `Service\HtmlDocument`, the shared libxml precautions, never a bare
+`DOMDocument`.
 
 **Internal and external links are not checked on the same cadence.** The links inside the site are
 checked every run, in batches of ten. The links leaving it are called **once a month**
@@ -201,6 +213,12 @@ check as JSON, to whoever presents `site-status-key` in an `X-Status-Key` header
 nobody until a key is set** — an empty key, or one under 32 characters, gets every caller a 404, the
 same answer a wrong key gets.
 
+Two lists travel, not one: `packages` holds the installed **bundles**, `dependencies` holds
+**everything** installed with its version, platform entries aside, so a receiver can look the site up
+against a vulnerability database — the lookup is the receiver's, never the site's. `VERSION` is `2`
+since that second list appeared: a receiver reads it to tell a site that omits the section from one
+that has nothing in it.
+
 A bundle adds to its `extra` section with `StatusProviderInterface`. **The criterion is strict: a
 figure calling for no action is not reported.** The report is read across a dozen sites at once; a
 "number of blocks" decides nothing and buries what matters.
@@ -238,6 +256,9 @@ check and the smoke test which fetch the live site at `site-url`.
 - **Do not store what an url says in code**, nor declare a url's sentences from a provider.
 - **Do not run a health check from a controller.**
 - **Do not call external links on every run**, and do not retry a `403`/`429`/`999` in `GET`.
+- **Do not claim a page conforms to the RGAA from the `accessibility` rows alone** — they answer
+  eight criteria of 106, and never the ones a browser engine measures.
+- **Do not open a bare `DOMDocument`** to read a page's markup. Go through `HtmlDocument`.
 - **Do not run the checks, the sitemap or the backup against a staging database** while `site-url`
   points at production.
 - **Do not back up code, templates or asset sources.**

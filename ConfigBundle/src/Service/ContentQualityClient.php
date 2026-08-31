@@ -53,7 +53,7 @@ class ContentQualityClient
     // Blocks until the given in-flight response completes and parses it - $url is the same one passed to request(), needed again here to resolve links against its own host. Returns ['title' => string, 'description' => string, 'hasDescription' => bool, 'hasH1' => bool, 'imagesWithoutAlt' => string[] (each offending img's src), 'socialTags' => array<string, string>, 'canonical' => string ('' when the page declares none), 'robots' => string[] (the indexing directives it carries), 'internalLinks' => string[] (deduped, absolute, same-host only), 'externalLinks' => string[] (same, other hosts), 'linkTexts' => array<string, string> (each link's anchor text)]
     public function read(ResponseInterface $response, string $url): array
     {
-        $xpath = $this->buildXPath($response->getContent());
+        $xpath = HtmlDocument::xpath($response->getContent());
         $host = parse_url($url, \PHP_URL_HOST);
 
         $description = trim((string) $xpath->query('//meta[@name="description"]/@content')->item(0)?->nodeValue);
@@ -140,35 +140,12 @@ class ContentQualityClient
         }
     }
 
-    private function buildXPath(string $html): \DOMXPath
-    {
-        // Restored right after: the setting is process-wide, and left on it silences the parse errors every other libxml reader of the process relies on - ImageMagick's own SVG parser included, which then renders a malformed SVG instead of refusing it
-        $useInternalErrors = libxml_use_internal_errors(true);
-        $dom = new \DOMDocument();
-        // Forces UTF-8 interpretation regardless of the page's own <meta charset> (or lack thereof) - DOMDocument defaults to ISO-8859-1 otherwise, mangling accented characters
-        $dom->loadHTML('<?xml encoding="utf-8">' . $html, \LIBXML_NOERROR | \LIBXML_NOWARNING);
-        libxml_clear_errors();
-        libxml_use_internal_errors($useInternalErrors);
-
-        return new \DOMXPath($dom);
-    }
-
-    // DOMXPath::query answers a list of plain nodes, while every expression read here selects elements - and only an element carries the attributes the callers below read off it
-    private function elements(\DOMXPath $xpath, string $expression): \Generator
-    {
-        foreach ($xpath->query($expression) as $node) {
-            if ($node instanceof \DOMElement) {
-                yield $node;
-            }
-        }
-    }
-
     // Each offending image's own src rather than just how many there are, so the Health check panel can list them one by one (and SiteBundle's PageBlockLocator trace each one back to the block holding it). Deduped: the same image used twice on a page is a single alt text to write, not two
     private function extractImagesWithoutAlt(\DOMXPath $xpath): array
     {
         $sources = [];
 
-        foreach ($this->elements($xpath, '//img[not(@alt) or (@alt="" and not(' . self::DECORATIVE_IMAGE . '))]') as $image) {
+        foreach (HtmlDocument::elements($xpath, '//img[not(@alt) or (@alt="" and not(' . self::DECORATIVE_IMAGE . '))]') as $image) {
             $src = trim($image->getAttribute('src'));
             if ('' !== $src) {
                 $sources[$src] = true;
@@ -183,7 +160,7 @@ class ContentQualityClient
     {
         $tags = [];
 
-        foreach ($this->elements($xpath, '//meta[@content][@property or @name]') as $meta) {
+        foreach (HtmlDocument::elements($xpath, '//meta[@content][@property or @name]') as $meta) {
             $name = strtolower(trim($meta->getAttribute('property') ?: $meta->getAttribute('name')));
             $content = trim($meta->getAttribute('content'));
             if ('' !== $content && str_starts_with($name, 'og:')) {
@@ -197,7 +174,7 @@ class ContentQualityClient
     // The url the page declares as its own canonical, '' when it declares none. Resolved to an absolute url through the same absoluteLink() the links go through, since a canonical may legitimately be written relative ("/pages/home") and names the very same page as its absolute form. The rel attribute is matched case-insensitively and token by token, as HTML defines it - a link carrying "canonical alternate" is still the canonical one
     private function extractCanonical(\DOMXPath $xpath, string $pageUrl, ?string $host): string
     {
-        foreach ($this->elements($xpath, '//link[@rel][@href]') as $link) {
+        foreach (HtmlDocument::elements($xpath, '//link[@rel][@href]') as $link) {
             $tokens = preg_split('/\s+/', strtolower(trim($link->getAttribute('rel'))));
             if (\in_array('canonical', $tokens, true)) {
                 return $this->absoluteLink(trim($link->getAttribute('href')), $pageUrl, $host) ?? '';
@@ -212,7 +189,7 @@ class ContentQualityClient
     {
         $directives = [];
 
-        foreach ($this->elements($xpath, '//meta[@name][@content]') as $meta) {
+        foreach (HtmlDocument::elements($xpath, '//meta[@name][@content]') as $meta) {
             if (!\in_array(strtolower(trim($meta->getAttribute('name'))), self::ROBOTS_META_NAMES, true)) {
                 continue;
             }
@@ -235,7 +212,7 @@ class ContentQualityClient
         $external = [];
         $texts = [];
 
-        foreach ($this->elements($xpath, '//a[@href]') as $anchor) {
+        foreach (HtmlDocument::elements($xpath, '//a[@href]') as $anchor) {
             $link = $this->absoluteLink(trim($anchor->getAttribute('href')), $pageUrl, $host);
             if (null === $link) {
                 continue;

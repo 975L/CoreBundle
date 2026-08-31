@@ -894,6 +894,18 @@
                 <source>label.health_check</source>
                 <target>Estado de salud</target>
             </trans-unit>
+            <trans-unit id="nF5PkgZ">
+                <source>label.health_check_accessibility_call_failed</source>
+                <target>Error en la verificación de accesibilidad: %message%</target>
+            </trans-unit>
+            <trans-unit id="Zu6HEi8">
+                <source>label.health_check_accessibility_conform</source>
+                <target>RGAA %version%: se cumplen los %count% criterios leídos en el código</target>
+            </trans-unit>
+            <trans-unit id="09mQRs.">
+                <source>label.health_check_accessibility_offences</source>
+                <target>RGAA %version%: %count% criterios incumplidos (%criteria%)</target>
+            </trans-unit>
             <trans-unit id="gDxHDIU">
                 <source>label.health_check_acknowledge</source>
                 <target>Marcar como corregido</target>

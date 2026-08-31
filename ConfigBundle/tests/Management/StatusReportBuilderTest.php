@@ -71,6 +71,21 @@ class StatusReportBuilderTest extends TestCase
         }
     }
 
+    // The whole tree this time, bundle or not - a receiver looking a site up against an advisory database needs the packages "packages" leaves out, Doctrine and Twig being where a CVE lands just as often
+    public function testDependenciesListEveryInstalledPackageWithoutThePlatformOnes(): void
+    {
+        $report = $this->createBuilder()->build();
+        $dependencies = $report['dependencies'];
+
+        $this->assertArrayHasKey('doctrine/orm', $dependencies);
+        $this->assertArrayHasKey('twig/twig', $dependencies);
+        $this->assertArrayNotHasKey('doctrine/orm', $report['packages']);
+
+        foreach (array_keys($dependencies) as $name) {
+            $this->assertStringContainsString('/', $name);
+        }
+    }
+
     public function testChecksCountEveryStatusAndKeepTheLatestRunDate(): void
     {
         $checks = $this->createBuilder([

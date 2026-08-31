@@ -258,6 +258,10 @@
                 <source>description.guided_step_ui_media_pick</source>
                 <target>The thumbnail opens its own form. A site-wide graphic (favicon, logo…) opens the "Site graphics" screen instead, which is where those are edited.</target>
             </trans-unit>
+            <trans-unit id="aCD7FM2">
+                <source>description.guided_step_ui_review_decide</source>
+                <target>The two buttons this screen exists for: one click publishes the review or turns it down, from the list as well as from the review itself.</target>
+            </trans-unit>
             <trans-unit id="RbaTJVU">
                 <source>description.guided_step_ui_review_done</source>
                 <target>The published review shows on the page of the book or product it is about, with its date.</target>
@@ -268,7 +272,7 @@
             </trans-unit>
             <trans-unit id="HmXaT6b">
                 <source>description.guided_step_ui_review_pick</source>
-                <target>The text, the score and the name are its author's: this screen does not rewrite them.</target>
+                <target>The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer - one from a platform it does not publish back to is read here and moderated over there.</target>
             </trans-unit>
             <trans-unit id="dGJXfNy">
                 <source>description.guided_step_ui_review_reply</source>
@@ -2306,6 +2310,10 @@
                 <source>label.guided_step_ui_media_save</source>
                 <target>Save the media</target>
             </trans-unit>
+            <trans-unit id="s83P7sF">
+                <source>label.guided_step_ui_review_decide</source>
+                <target>Publish it, or turn it down</target>
+            </trans-unit>
             <trans-unit id="DocjKzx">
                 <source>label.guided_step_ui_review_done</source>
                 <target>Done</target>
@@ -2328,7 +2336,7 @@
             </trans-unit>
             <trans-unit id="3LYBAk0">
                 <source>label.guided_step_ui_review_status</source>
-                <target>Decide what becomes of it</target>
+                <target>Or set the status by hand</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>
@@ -2780,7 +2788,7 @@
             </trans-unit>
             <trans-unit id="DbF_A7w">
                 <source>label.output_unit_help</source>
-                <target>Appended after the number, e.g. “L” or “t”.</target>
+                <target>Appended after the number, set off from it by a non-breaking space, e.g. “L” or “t”.</target>
             </trans-unit>
             <trans-unit id="Wo.6fLk">
                 <source>label.output_visible</source>

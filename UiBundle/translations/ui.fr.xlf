@@ -258,6 +258,10 @@
                 <source>description.guided_step_ui_media_pick</source>
                 <target>La vignette ouvre sa propre fiche. Un graphique global du site (favicon, logo…) ouvre plutôt l'écran « Graphiques du site », où ceux-là se modifient.</target>
             </trans-unit>
+            <trans-unit id="aCD7FM2">
+                <source>description.guided_step_ui_review_decide</source>
+                <target>Les deux boutons qui font cet écran : un clic publie l'avis ou le refuse, depuis la liste comme depuis l'avis lui-même.</target>
+            </trans-unit>
             <trans-unit id="RbaTJVU">
                 <source>description.guided_step_ui_review_done</source>
                 <target>L'avis publié apparaît sur la page du livre ou du produit concerné, avec sa date.</target>
@@ -268,7 +272,7 @@
             </trans-unit>
             <trans-unit id="HmXaT6b">
                 <source>description.guided_step_ui_review_pick</source>
-                <target>Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas.</target>
+                <target>Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît que sur un avis auquel ce site peut répondre - un avis venu d'une plateforme où il ne republie pas se lit ici et se modère là-bas.</target>
             </trans-unit>
             <trans-unit id="dGJXfNy">
                 <source>description.guided_step_ui_review_reply</source>
@@ -2306,6 +2310,10 @@
                 <source>label.guided_step_ui_media_save</source>
                 <target>Enregistrer le média</target>
             </trans-unit>
+            <trans-unit id="s83P7sF">
+                <source>label.guided_step_ui_review_decide</source>
+                <target>La publier, ou la refuser</target>
+            </trans-unit>
             <trans-unit id="DocjKzx">
                 <source>label.guided_step_ui_review_done</source>
                 <target>Terminé</target>
@@ -2328,7 +2336,7 @@
             </trans-unit>
             <trans-unit id="3LYBAk0">
                 <source>label.guided_step_ui_review_status</source>
-                <target>Décider de son sort</target>
+                <target>Ou poser le statut à la main</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>
@@ -2780,7 +2788,7 @@
             </trans-unit>
             <trans-unit id="DbF_A7w">
                 <source>label.output_unit_help</source>
-                <target>Ajoutée après le nombre, par exemple « L » ou « t ».</target>
+                <target>Ajoutée après le nombre, dont elle est séparée par une espace insécable, par exemple « L » ou « t ».</target>
             </trans-unit>
             <trans-unit id="Wo.6fLk">
                 <source>label.output_visible</source>

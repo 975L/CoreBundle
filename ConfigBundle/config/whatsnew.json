@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-31",
+        "description": [
+            {
+                "en": "The Health check page gains an “accessibility” section: the eight RGAA 4.1 criteria a page's own code can settle — frame titles, link names, form field labels, the page language, heading levels, table headers, the main landmark. Each page's report keeps what was found conforming as much as what was not, which is what an accessibility statement is written from. Contrast, keyboard focus and tab order still need a human eye, and are not claimed here.",
+                "fr": "La page Vérification de santé gagne une section « accessibilité » : les huit critères RGAA 4.1 que le code d'une page suffit à trancher — titre des cadres, intitulé des liens, étiquette des champs, langue de la page, niveaux de titres, en-têtes de tableau, repère de contenu principal. Le rapport de chaque page conserve ce qui est conforme autant que ce qui ne l'est pas, et c'est de là que se rédige une déclaration d'accessibilité. Les contrastes, le focus clavier et l'ordre de tabulation demandent toujours un œil humain : ils ne sont pas revendiqués ici.",
+                "es": "La página Verificación de estado gana una sección «accesibilidad»: los ocho criterios RGAA 4.1 que el propio código de una página basta para resolver — título de los marcos, texto de los enlaces, etiqueta de los campos, idioma de la página, niveles de títulos, encabezados de tabla, región de contenido principal. El informe de cada página conserva lo que cumple tanto como lo que no, y de ahí se redacta una declaración de accesibilidad. Los contrastes, el foco del teclado y el orden de tabulación siguen necesitando un ojo humano: no se reivindican aquí."
+            },
+            {
+                "en": "A calculator's result no longer sticks its unit to the figure: it now prints “1,52 t” rather than “1,52t”, with a space that never breaks onto the next line. There is nothing to change on your side — the unit is typed as “t” or “L”, the space is added for you.",
+                "fr": "Le résultat d'un calculateur ne colle plus son unité au nombre : il affiche désormais « 1,52 t » plutôt que « 1,52t », avec une espace qui ne passe jamais à la ligne. Rien à changer de votre côté — l'unité se saisit « t » ou « L », l'espace est ajoutée pour vous.",
+                "es": "El resultado de una calculadora ya no pega su unidad a la cifra: ahora muestra «1,52 t» en lugar de «1,52t», con un espacio que nunca salta de línea. No hay nada que cambiar por su parte: la unidad se escribe «t» o «L», el espacio se añade solo."
+            }
+        ]
+    },
+    {
         "date": "2026-08-30",
         "description": [
             {

@@ -258,6 +258,10 @@
                 <source>description.guided_step_ui_media_pick</source>
                 <target>La miniatura abre su propia ficha. Un gráfico global del sitio (favicon, logotipo…) abre en cambio la pantalla «Gráficos del sitio», donde se editan esos.</target>
             </trans-unit>
+            <trans-unit id="aCD7FM2">
+                <source>description.guided_step_ui_review_decide</source>
+                <target>Los dos botones que justifican esta pantalla: un clic publica la opinión o la rechaza, tanto desde la lista como desde la propia opinión.</target>
+            </trans-unit>
             <trans-unit id="RbaTJVU">
                 <source>description.guided_step_ui_review_done</source>
                 <target>La opinión publicada aparece en la página del libro o del producto correspondiente, con su fecha.</target>
@@ -268,7 +272,7 @@
             </trans-unit>
             <trans-unit id="HmXaT6b">
                 <source>description.guided_step_ui_review_pick</source>
-                <target>El texto, la nota y el nombre son de su autor: esta pantalla no los reescribe.</target>
+                <target>El texto, la nota y el nombre son de su autor: esta pantalla no los reescribe. El lápiz solo aparece en una opinión a la que este sitio puede responder - una venida de una plataforma donde no republica se lee aquí y se modera allí.</target>
             </trans-unit>
             <trans-unit id="dGJXfNy">
                 <source>description.guided_step_ui_review_reply</source>
@@ -2306,6 +2310,10 @@
                 <source>label.guided_step_ui_media_save</source>
                 <target>Guardar el medio</target>
             </trans-unit>
+            <trans-unit id="s83P7sF">
+                <source>label.guided_step_ui_review_decide</source>
+                <target>Publicarla o rechazarla</target>
+            </trans-unit>
             <trans-unit id="DocjKzx">
                 <source>label.guided_step_ui_review_done</source>
                 <target>Terminado</target>
@@ -2328,7 +2336,7 @@
             </trans-unit>
             <trans-unit id="3LYBAk0">
                 <source>label.guided_step_ui_review_status</source>
-                <target>Decidir su suerte</target>
+                <target>O fijar el estado a mano</target>
             </trans-unit>
             <trans-unit id="9vn1gPZ">
                 <source>label.guided_step_ui_site_graphic_done</source>
@@ -2780,7 +2788,7 @@
             </trans-unit>
             <trans-unit id="DbF_A7w">
                 <source>label.output_unit_help</source>
-                <target>Añadida después del número, por ejemplo «L» o «t».</target>
+                <target>Añadida después del número, separada de él por un espacio duro, por ejemplo «L» o «t».</target>
             </trans-unit>
             <trans-unit id="Wo.6fLk">
                 <source>label.output_visible</source>

@@ -57,7 +57,7 @@ class FormOutput implements \Stringable
     #[ORM\Column(options: ['default' => 0])]
     private int $decimals = 0;
 
-    // Appended after the formatted number, e.g. " L" or " t de CO₂" - a currency output needs none, the format carries it
+    // Appended after the formatted number, separated from it by a non-breaking space, e.g. "L" or "t de CO₂" - a currency output needs none, the format carries it
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $unit = null;
 

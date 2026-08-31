@@ -74,6 +74,7 @@
         "c975l/ui-bundle": "1.18.0"
     },
     "suggest": {
+        "c975l/social-bundle": "Adds the share buttons band to layout.html.twig, which includes @c975LSocial/shareButtons/default.html.twig with ignore_missing, plus the social links blocks.",
         "chrome-php/chrome": "To run \"c975l:ui:layout-audit\", which measures a rendered page against the layout invariants the sass tests cannot check. Install it in the consuming site, not here: the command runs from that site's console.",
         "ext-exif": "To straighten an uploaded photo on its own EXIF orientation tag: without it GD stores the pixels as they were shot, so a photo taken upright is served on its side (see VichImageResizeListener).",
         "ext-imagick": "To upload an SVG as favicon or apple-touch-icon: GD has no SVG decoder, so without it those two roles only accept raster images (see SvgRasterizer)."
@@ -109,7 +110,7 @@
         "stan": "phpstan analyse --no-progress",
         "stan-scaffold": "phpstan analyse -c phpstan-scaffold.dist.neon --no-progress",
         "rector": "rector process --dry-run",
-        "mess": "phpmd ConfigBundle/src,UiBundle/src text phpmd.xml.dist --ignore-errors-on-exit --report-file .phpmd-report.log; s=$?; grep \"^/\" .phpmd-report.log; exit $s",
+        "mess": "phpmd ConfigBundle/src,UiBundle/src text phpmd.xml.dist --ignore-errors-on-exit --report-file .phpmd-report.log; s=$?; grep -E \"^(/|[[:space:]]*-)\" .phpmd-report.log; n=$(grep -c \"Unexpected token\" .phpmd-report.log); if [ \"$n\" -gt 0 ]; then echo \"phpmd analysed nothing in $n file(s): PDepend cannot parse them\"; exit 1; fi; exit $s",
         "lizard-ccn": "lizard -l php -C 14 -w ConfigBundle/src UiBundle/src",
         "lizard-nloc": "find ConfigBundle/src UiBundle/src -name '*.php' ! -name '*CrudController.php' ! -name '*Type.php' | xargs lizard -l php -T nloc=99 -C 999 -a 999 -w",
         "lizard": [

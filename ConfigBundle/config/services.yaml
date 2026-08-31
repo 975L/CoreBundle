@@ -48,6 +48,11 @@ services:
         arguments:
             $sitemapProviders: !tagged_iterator c975l.sitemap_provider
 
+    # Every url the site declares, whichever bundle declares it - a sitemap is what a page has to be reachable by anyway, so an accessibility check reading the same list needs nothing else of a bundle
+    c975L\ConfigBundle\Management\AccessibilityHealthCheckProvider:
+        arguments:
+            $sitemapProviders: !tagged_iterator c975l.sitemap_provider
+
     c975L\ConfigBundle\Management\StatusReportBuilder:
         arguments:
             $statusProviders: !tagged_iterator c975l.status_provider

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Service;
 
 use c975L\UiBundle\Contract\PlaceholderMediaProviderInterface;
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Registry\PlaceholderMediaRegistry;
 use c975L\UiBundle\Service\BlockFixtureMediaAttacher;
@@ -177,6 +178,32 @@ class BlockFixtureMediaAttacherTest extends TestCase
         $attacher = $this->createAttacher(['image/*']);
 
         $this->assertSame('image/webp', $attacher->nextPlaceholderImage()->getMimeType());
+    }
+
+    // The pictures of one named thing, in the order the site declared them - a showcase leafing through a single product asks for its slug, not for the rotating pool
+    public function testPlaceholderImagesForServesOneNamedThingInOrder(): void
+    {
+        $attacher = $this->createAttacher(
+            ['image/*'],
+            media: ['keyed_images' => ['shop/table-basse-chene' => ['showcase/shop/table-basse-chene-1.webp', 'showcase/shop/table-basse-chene-2.webp']]],
+        );
+
+        $medias = $attacher->placeholderImagesFor('shop/table-basse-chene', 'Table basse');
+
+        $this->assertSame(
+            ['showcase/shop/table-basse-chene-1.webp', 'showcase/shop/table-basse-chene-2.webp'],
+            array_map(static fn (Media $media): ?string => $media->getFilename(), $medias),
+        );
+        $this->assertSame('Table basse', $medias[0]->getAlt());
+        $this->assertSame('image/webp', $medias[0]->getMimeType());
+    }
+
+    // Empty for a key nobody declared, which is what every site starts as - the caller falls back on its own rather than being handed the generic pool it did not ask for
+    public function testPlaceholderImagesForIsEmptyForAnUndeclaredKey(): void
+    {
+        $attacher = $this->createAttacher(['image/*']);
+
+        $this->assertSame([], $attacher->placeholderImagesFor('shop/nothing-here', 'Rien'));
     }
 
     // A wrong mimetype would have templates sorting a block's medias into the wrong slot, so it follows the declared file's own extension - an app is free to serve a .jpg or a .webm

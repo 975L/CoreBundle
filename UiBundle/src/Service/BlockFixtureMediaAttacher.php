@@ -173,6 +173,27 @@ class BlockFixtureMediaAttacher
         return $this->placeholder($filename, 'image/webp', 'Photo d\'exemple');
     }
 
+    /**
+     * The pictures a site keyed under one name, in the order it declared them - the sibling of
+     * nextPlaceholderImage() for a showcase leafing through one named thing rather than rotating the generic pool.
+     * Empty for a key the site declares nothing for, which is what every site starts as: each caller falls back on
+     * its own, the generic pool being a poor stand-in for some and none at all for others.
+     *
+     * @return list<Media>
+     */
+    public function placeholderImagesFor(string $key, string $alt): array
+    {
+        $medias = [];
+        foreach ($this->placeholderMedia?->getImagesFor($key) ?? [] as $filename) {
+            $media = $this->placeholder($filename, 'image/webp', $alt);
+            if (null !== $media) {
+                $medias[] = $media;
+            }
+        }
+
+        return $medias;
+    }
+
     private function placeholderVideo(): ?Media
     {
         return $this->placeholder($this->placeholderMedia?->getVideo(), 'video/mp4', 'Vidéo d\'exemple');

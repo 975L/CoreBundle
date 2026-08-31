@@ -83,6 +83,13 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '.action-edit',
                 ],
                 [
+                    // The two custom actions ReviewCrudController builds the screen around, added to the edit page as well as to the list - EasyAdmin names their buttons after the actions themselves, same as ".action-bulkImport"
+                    'label' => 'label.guided_step_ui_review_decide',
+                    'description' => 'description.guided_step_ui_review_decide',
+                    'highlight' => '.action-publishReview',
+                ],
+                [
+                    // The status field is still there and still editable on a local review, for a decision the two buttons above don't cover - kept after them rather than before, the buttons being what the screen exists for
                     'label' => 'label.guided_step_ui_review_status',
                     'description' => 'description.guided_step_ui_review_status',
                     'highlight' => '#Review_status',

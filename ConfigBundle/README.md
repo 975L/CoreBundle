@@ -62,7 +62,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - The site-wide half of the health check: TLS certificate, security headers, `robots.txt`/sitemaps and the two cross-checked, redirect chains, deployment, and the content quality of every url any bundle declares
 - A weekly intrusion check looking for the traces rather than for the doors: an executable file where only uploads are written, a working tree no longer matching what was deployed, and a privileged account more than the run before
 - A Turbo-safe CSP nonce generator, holding the nonce in a signed cookie rather than in the session, and the `site_copyright()` Twig function
-- `/status/report`, serving what a site runs (versions, installed bundles, health check summary) to whoever presents its key — answers nobody unless configured, extensible via `StatusProviderInterface`, dumped locally by `c975l:status:dump`
+- `/status/report`, serving what a site runs (versions, installed bundles, the whole dependency list for an advisory lookup, health check summary) to whoever presents its key — answers nobody unless configured, extensible via `StatusProviderInterface`, dumped locally by `c975l:status:dump`
 - Scheduled maintenance tasks declared by each bundle (`MaintenanceTaskProviderInterface`) rather than listed by the app, and spread over each install's own minutes (`ScheduleSpreader`) so sites sharing a server don't all run them at once
 - `c975l:dev-profile:run`, a dev-only command listing what the Symfony dev toolbar would flag on every page (n+1 queries, deprecations, missing translations...), extensible via `DevProfilePathProviderInterface`
 - The ecosystem's account layer: `User` CRUD, registration, email confirmation and password reset, on forms and emails seeded once and editable from the back-office afterwards
@@ -1480,6 +1480,7 @@ This bundle's own providers:
 | `SitemapRobotsHealthCheckProvider` | `sitemap-robots` | Every url the sitemap providers declare, tested against the `robots.txt` actually deployed — the contradiction of declaring an url to search engines and forbidding it to them in the same breath |
 | `DeploymentHealthCheckProvider` | `deployment` | http→https redirect, that an unknown url actually answers 404, and that the other spelling of the host (`www` vs apex) either serves nothing or redirects here — including the case where it resolves and refuses the connection, its certificate not covering it |
 | `DeclaredUrlsHealthCheckProvider` | `urls-<bundle>` | The content-quality checks over the urls each bundle declares for its sitemap — one kind per bundle, each schedulable at its own cadence |
+| `AccessibilityHealthCheckProvider` | `accessibility` | Monthly: the RGAA 4.1 criteria a page's markup can settle on its own, over every url the sitemap providers declare — see [below](#the-accessibility-check-and-what-it-does-not-claim) for the eight criteria and the honest limits |
 | `DatabaseLoadHealthCheckProvider` | `database-load` | Table sizes and row counts against the host's own limits |
 | `IntrusionHealthCheckProvider` | `intrusion` | Weekly, three rows: an executable file (`.php`, `.phtml`, `.sh`, `.htaccess`… in the name, not only at its end) under any directory a bundle declared for the backup, the working tree against the repository it was deployed from, and the number of accounts holding `site-role-admin` against the count the previous run recorded |
 | `BackupHealthCheckAdviceProvider` | — | Advice lines for the backup alerts |
@@ -1492,6 +1493,8 @@ composer audit --locked --abandoned=report
 
 `--locked` is what makes it answer for the versions actually deployed, and `--abandoned=report` keeps a transitive package someone stopped maintaining from failing a deployment over something no CVE covers. This bundle runs the same check on itself, as the first entry of its `composer qa`.
 
+A console watching several sites answers the same question without any of them making a call: `/status/report` carries a `dependencies` section listing everything installed with its version (see [Status report](#status-report)), so one lookup against an advisory database covers a whole fleet — and it covers it every day, where `composer audit` in the CI only answers on the days someone pushes.
+
 **What `intrusion` looks at, and what it deliberately doesn't**: every other security check here answers "is this closed", which says nothing about whether someone already walked in. This one looks for traces instead, chosen for having no innocent explanation on a deployed site. The upload directories it walks are the ones bundles already declare for the backup (`BackupPathProviderInterface`) — the same list read for the opposite reason, those being everywhere the site writes what visitors and editors send it — so a bundle added later is covered without this provider knowing it exists. The working-tree row runs `git status --porcelain --untracked-files=no` and only ever reads: a site deployed by rsync or by hand, or one whose host disabled `exec()`, gets a `skipped` row saying so rather than a green one. Files the site generates must be gitignored for that row to stay quiet, which is what `c975l:scaffold:install` writes (`public/sitemap*`, the SEO files, the media directories). The accounts row keeps a **count**, never a list, and compares it to what the previous run recorded: a count that dropped is somebody doing their job, a count that rose without you creating an account is the row worth reading tonight. None of the three proves an intrusion on its own, and none is meant to — what they have in common is that a site nobody touched produces none of them.
 
 `ContentQualityAnalyzer` is what does the content work behind `urls-<bundle>` **and** behind SiteBundle's own `content-quality`. It reports each offence with a link to the screen that fixes it whenever a `ContentOffenceLocatorInterface` recognizes the entry's source — SiteBundle registers one tracing a page's image or link back to the block holding it. Without any locator the offence is still reported, just unlinked.
@@ -1499,6 +1502,33 @@ composer audit --locked --abandoned=report
 Two of its checks answer for whether the url is in the results at all, before any of the others answer for how it reads there. **The canonical url** the page declares for itself is compared to the url that was checked: naming another one hands the whole page over to it, which is what a `site-url` spelled `www` where the sitemap declares the apex does to every page at once. **A `noindex`** (in `robots` or `googlebot`, `none` included) is only ever reported on an entry the caller marks `'indexable' => true` — the urls a bundle hands to search engines through its own sitemap, as `DeclaredUrlsHealthCheckProvider` does. A caller listing every page it holds leaves the key out, a page meant to stay out of the results carrying those directives on purpose.
 
 **Its link checks are deliberately unequal**, internal links being this site's own server and external ones somebody else's. The links inside your site are checked on every run, ten at a time. The links leaving it are called **once a month** (`ExternalLinkCheckSchedule`, `INTERVAL_DAYS`), the runs in between reporting back what that pass found — so a dead external link stays on the dashboard without its host being called every week. When they are called, they are spread over their hosts, at most one url per host in flight at a time: a site linking mostly to two or three merchants would otherwise fire ten requests at one of them at once, from a single server address, which is what gets that address rate limited and then blocked. And a host answering `403`, `429` or `999` is not retried in `GET` (`ContentQualityClient::FILTERED_STATUSES`): that answer describes a filtered client, not a url, where the `405`/`501` a retry does resolve describes a method a server refuses. The date of the last real pass travels in each row's `details`, under `externalLinksCheckedAt`.
+
+#### The accessibility check, and what it does not claim
+
+`accessibility` answers the **RGAA 4.1** criteria a page's rendered markup can settle on its own, one row per url, over the very list the sitemap providers already declare — the site's pages, and whatever books, products, photos or campaigns the installed bundles add. Nothing to implement in a bundle: declaring a sitemap is what gets its urls checked, exactly as for `urls-<bundle>`.
+
+Eight criteria, out of the reference's 106:
+
+| Criterion | What is read off the markup | Verdict |
+| --- | --- | --- |
+| **2.1** | Every `<iframe>`/`<frame>` carries a non-empty `title` | error |
+| **5.6** | A `<table>` holding rows declares headers, as `<th>` or as `role="columnheader"`/`"rowheader"` | warning |
+| **6.2** | Every link has an accessible name — its own text, an `<img alt>` inside it, `aria-label`, `aria-labelledby`, `title`, or an inline `<svg><title>` | error |
+| **8.3** | `<html>` carries a `lang` | error |
+| **8.4** | That `lang` is a well-formed language subtag, not a language name spelled out | error |
+| **9.1** | The heading levels never skip one on the way down (`<h2>` followed by `<h4>`) | error |
+| **11.1** | Every form field is labelled, by any of the ways criterion 11.1 lists — `<label for>`, an enclosing `<label>`, `aria-label`, `aria-labelledby`, `title` | error |
+| **12.6** | The page declares a main landmark (`<main>` or `role="main"`) | warning |
+
+**The share usually quoted as automatable is measured with a browser engine driving the page.** Read from the markup alone, contrast, focus visibility, tab order, keyboard traps and every judgement of *relevance* are out of reach — and they are left unanswered here rather than guessed at, a conformity report being worth what its weakest line is worth. What this check does answer, it answers with no false positive, and it answers it at every deployment rather than once a year. The two warnings are warnings for a reason: a layout table legitimately has no headers, and a landmark is one of five ways criterion 12.6 accepts a zone to be reached.
+
+Criteria **1.1** (image alternatives), **8.5** (page title) and the `<h1>` count are deliberately **not** here: `content-quality` and `urls-<bundle>` already report them, and trace the offending image back to the very block that holds it. A dashboard stating one fix twice teaches its reader to skim it — read the two kinds together for a page's whole picture.
+
+Each row's `details` carries the full verdict table, **conforming criteria included** (`{"rgaa": "4.1", "criteria": {"2.1": {"status": "ok", "count": 0, "offences": []}, …}}`), with up to ten named offences per criterion. "Checked and found conforming" is exactly the half a list of offences cannot prove, and it is what an accessibility statement is written from — the JSON diagnosis beside the table is therefore the file to keep, dated, run after run.
+
+**No advice provider is plugged in behind it**, deliberately: an advice line exists to say what a summary cannot, and here the summary already names the failing criteria while `details` names the very elements at fault. A line repeating them would only push the table down.
+
+Two limits worth knowing. Each sitemap is capped at `MAX_URLS_PER_SOURCE` (50) urls: a gallery declaring two thousand photos would otherwise turn a monthly check into a crawl, for pages built by one template that all fail in the same place. And the cadence is **monthly** — markup changes when a template changes, not between two Tuesdays.
 
 **The two ways a site keeps crawlers out without meaning to** are what `sitemap-robots` and the host-variant half of `deployment` answer for, and neither shows anywhere on the site itself. The first is a `robots.txt` forbidding a path the sitemaps declare: `seo-files` only ever reports the blanket `Disallow: /`, since a scoped rule is a normal thing for a file to carry — it is only a defect *against the urls the site hands out*, which is why the two have to be read together. The second is subtler: the other spelling of the host resolving, and refusing the connection. A certificate issued for the apex alone doesn't cover its own `www` alias — adding the alias to a hosting panel doesn't reissue it — so `https://www.example.com/robots.txt` answers nothing, and an unreachable `robots.txt` is not read as "allowed": crawlers treat it as a blanket refusal and leave that whole host alone. Search Console, whose `sc-domain:` properties cover every spelling of the host, then reports "Blocked by robots.txt" on urls the site blocks nowhere. The row names what the certificate does cover, the fix being to reissue it for both spellings.
 
@@ -1552,7 +1582,7 @@ If it isn't routed, Messenger handles the message synchronously — the button t
 
 **History, not just a snapshot**: every run appends new `HealthCheckResult` rows rather than overwriting — the page itself only shows the latest one per (url, kind), but the full history feeds a trend chart (ok/warning/error counts over time, via `symfony/ux-chartjs` — a regular Composer dependency, Flex wires it up automatically) and an **Export (CSV)** button producing a dated snapshot, useful as an audit-trail artefact (e.g. accessibility declarations).
 
-**Handing the run over** — the **Rapport de diagnostic (JSON)** button beside the CSV downloads what the CSV cannot carry: every row needing action (error and warning, acknowledged ones included) with the checkers' own `details` payload — the W3C validator's message list, the JSON-LD blocks that failed to parse, the headers a probe read back — under the site's identity, its environment and the version of every bundle it runs (`HealthCheckReportBuilder`, which is `StatusReportBuilder`'s report plus those details). It is the file to attach to a ticket or hand to an assistant: a screenshot of the table says *what* is wrong, this says enough to fix it without asking for anything else. `ok` and `skipped` rows are left out — they would bury the rest under a site's whole page count — but `checks.counts` still says how many there were, so the list never reads as the whole run. Nothing is capped, unlike `/status/report`'s own issue list: that one travels over the network, this one is a file an admin downloaded.
+**Handing the run over** — the **Rapport de diagnostic (JSON)** button beside the CSV downloads what the CSV cannot carry: every row needing action (error and warning, acknowledged ones included) with the checkers' own `details` payload — the W3C validator's message list, the JSON-LD blocks that failed to parse, the headers a probe read back — under the site's identity, its environment and the version of every bundle and dependency it runs (`HealthCheckReportBuilder`, which is `StatusReportBuilder`'s report plus those details). It is the file to attach to a ticket or hand to an assistant: a screenshot of the table says *what* is wrong, this says enough to fix it without asking for anything else. `ok` and `skipped` rows are left out — they would bury the rest under a site's whole page count — but `checks.counts` still says how many there were, so the list never reads as the whole run. Nothing is capped, unlike `/status/report`'s own issue list: that one travels over the network, this one is a file an admin downloaded.
 
 Both buttons read the same run — the latest row per (url, kind). The CSV is the dated audit trace, the JSON the diagnosis.
 
@@ -2121,13 +2151,14 @@ What the report holds:
 
 ```json
 {
-    "version": 1,
+    "version": 2,
     "site": "https://example.com",
     "generatedAt": "2026-08-01T14:22:03+02:00",
     "environment": "prod",
     "php": "8.4.3",
     "symfony": "8.0.4",
     "packages": {"c975l/config-bundle": "1.2.3", "easycorp/easyadmin-bundle": "5.1.0"},
+    "dependencies": {"doctrine/orm": "3.6.1", "dompdf/dompdf": "3.1.0", "twig/twig": "3.21.1"},
     "checks": {
         "counts": {"ok": 42, "warning": 3, "error": 1, "skipped": 0},
         "lastRunAt": "2026-08-01T03:00:00+02:00",
@@ -2146,7 +2177,9 @@ What the report holds:
 }
 ```
 
-Three deliberate limits. `packages` lists the installed **bundles** rather than the whole dependency tree, Symfony's own excluded since the `symfony` field already carries their version — whether a bundle is a direct requirement or came along with another one doesn't change what runs. `issues` carries the rows **in error** only, without their `HealthCheckResult::$details`: the receiver learns *where* it hurts and links back to the site to learn *why*, so the payload stays small and holds nothing revealing — a site merely in warning is a site to improve, and its `counts` still say so. And it is capped at 20 rows, `issuesTruncated` saying so — the counts stay exact either way, so a short list is never mistaken for a complete one.
+The report's deliberate limits. `packages` lists the installed **bundles** rather than the whole dependency tree, Symfony's own excluded since the `symfony` field already carries their version — whether a bundle is a direct requirement or came along with another one doesn't change what runs. `issues` carries the rows **in error** only, without their `HealthCheckResult::$details`: the receiver learns *where* it hurts and links back to the site to learn *why*, so the payload stays small and holds nothing revealing — a site merely in warning is a site to improve, and its `counts` still say so. And it is capped at 20 rows, `issuesTruncated` saying so — the counts stay exact either way, so a short list is never mistaken for a complete one.
+
+**The two package lists answer two different questions**, which is why the second one is not the first one made longer. `packages` is the human list — which bundles run where, compared across sites by whoever maintains them. `dependencies` is the machine list: **everything** installed with a version, platform entries aside, so a receiver can look the site up against a vulnerability database — a CVE lands on Doctrine, Dompdf or Twig as readily as on a bundle, and none of those is a `symfony-bundle`. That lookup stays the receiver's to make: a console holding thirty sites' lists resolves them all in a single call to the advisory API, where thirty sites checking themselves would each call out on a schedule to learn what one lookup already knows — and `composer audit` in the CI, which answers the same question from the code, only answers it on the days someone pushes.
 
 `checks` is `null`, rather than absent or empty, on a site whose migrations haven't run yet: no health check data available is not the same thing as no issue found.
 

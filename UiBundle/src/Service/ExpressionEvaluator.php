@@ -229,10 +229,13 @@ class ExpressionEvaluator
         } else {
             $formatted = $formatter->format($value);
             if (FormOutput::FORMAT_PERCENT === $output->getFormat()) {
-                $formatted .= ' %';
+                $formatted .= "\u{00A0}%";
             }
         }
 
-        return ($formatted ?: (string) $value) . ($output->getUnit() ?? '');
+        // Set off by a non-breaking space, as the percent above is and as the currency formatter is before its own symbol: an admin types "t", never " t", the field carrying it being trimmed on the way in
+        $unit = trim((string) $output->getUnit());
+
+        return ($formatted ?: (string) $value) . ('' === $unit ? '' : "\u{00A0}" . $unit);
     }
 }

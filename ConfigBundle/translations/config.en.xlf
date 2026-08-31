@@ -894,6 +894,18 @@
                 <source>label.health_check</source>
                 <target>Health check</target>
             </trans-unit>
+            <trans-unit id="nF5PkgZ">
+                <source>label.health_check_accessibility_call_failed</source>
+                <target>Accessibility check failed: %message%</target>
+            </trans-unit>
+            <trans-unit id="Zu6HEi8">
+                <source>label.health_check_accessibility_conform</source>
+                <target>RGAA %version%: the %count% criteria read from the markup are met</target>
+            </trans-unit>
+            <trans-unit id="09mQRs.">
+                <source>label.health_check_accessibility_offences</source>
+                <target>RGAA %version%: %count% criteria not met (%criteria%)</target>
+            </trans-unit>
             <trans-unit id="gDxHDIU">
                 <source>label.health_check_acknowledge</source>
                 <target>Mark as fixed</target>
