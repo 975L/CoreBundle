@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.19.4
+
+A site with no user entity yet still boots its console
+
+### ConfigBundle
+
+- `ConfigService::loadAll()` now leaves the configuration empty on an unresolvable mapping, as it already did on an unreadable schema (31/08/2026)
+- A fresh install has yet to write the `App\Entity\User` that `Config::$user` maps to, and `make:user` - the very command that writes it - could no longer boot (31/08/2026)
+- `ConfigServiceTest` covers the configuration left empty when the mapping cannot be resolved (31/08/2026)
+
 ## v1.19.3
 
 The sitemap index dates what it declares, and sign-in stays unindexed

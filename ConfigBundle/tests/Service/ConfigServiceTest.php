@@ -16,6 +16,7 @@ use c975L\ConfigBundle\Service\ConfigService;
 use c975L\ConfigBundle\Service\VaultEncryptor;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\MappingException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -242,6 +243,19 @@ class ConfigServiceTest extends TestCase
             ->with('Configuration left empty, the database could not be read', $this->anything());
 
         $service = $this->createService($repository, logger: $logger);
+
+        $this->assertSame(['site-role-admin' => 'ROLE_ADMIN'], $service->loadAll());
+    }
+
+    // A site that has yet to be created has no App\Entity\User for Config::$user to resolve to, so its metadata cannot be read at all - and "make:user", the very command that would write that class, boots through TimezoneListener like any other
+    public function testLoadAllLeavesTheConfigurationEmptyWhenTheMappingCannotBeResolved(): void
+    {
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findAll')->willThrowException(
+            MappingException::invalidTargetEntityClass(\App\Entity\User::class, Config::class, 'user')
+        );
+
+        $service = $this->createService($repository);
 
         $this->assertSame(['site-role-admin' => 'ROLE_ADMIN'], $service->loadAll());
     }

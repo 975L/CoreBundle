@@ -38,7 +38,9 @@ decide which roles exist, so a plain `ROLE_ADMIN` must never reach them.
 
 `site-role-admin` is the one entry read before it can exist — `ConfigService::loadAll()` falls back on
 its declared default, `ROLE_ADMIN`, while the row is absent, or a fresh install would lock everyone
-out including whoever would fix it.
+out including whoever would fix it. The same fallback answers when the database cannot be read at
+all: an outdated schema, or a mapping still pointing at the `App\Entity\User` that `make:user` has
+yet to write.
 
 ### The back-office floor
 
