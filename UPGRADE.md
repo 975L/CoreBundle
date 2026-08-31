@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+**The sitemap index template gets a different `sitemaps` variable.** It used to be a list of urls, rendered as
+`{{ sitemap }}`; it is now a list of `{loc, lastmod}`, so that the index can date each sub-sitemap from the most
+recent url it holds. Nothing to do unless you override
+`@c975LConfig/sitemaps/sitemap-index.xml.twig` - in which case replace `{{ sitemap }}` with `{{ sitemap.loc }}`,
+and add the date the crawler comes for:
+
+```twig
+    <sitemap>
+        <loc>{{ sitemap.loc }}</loc>
+{% if sitemap.lastmod %}
+        <lastmod>{{ sitemap.lastmod }}</lastmod>
+{% endif %}
+    </sitemap>
+```
+
+`SitemapWriter::writeIndex()` takes the dates as a second, optional argument keyed by sitemap name, so a call
+written against the previous signature still compiles and simply writes an index without dates.
+
 **Three `user_id` foreign keys become `ON DELETE SET NULL`**, on `site_config`, `site_block` and `site_media`. None
 of the three records an author: they only hold who last changed the entry, edited the block or uploaded the file,
 and all three outlive whoever did. Left restricting, an account that had ever touched a single config entry, block

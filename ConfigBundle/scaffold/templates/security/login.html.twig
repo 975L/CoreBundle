@@ -2,6 +2,9 @@
 
 {% set title = 'label.please_sign_in'|trans({}, 'config') %}
 
+{# A sign-in form has nothing to offer a search result, and Search Console reports it as a crawled url of its own #}
+{% set robots = 'noindex, follow' %}
+
 {% block content %}
     {% if app.user %}
         <div class="alert alert-info text text-center">

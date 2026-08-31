@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.19.3
+
+The sitemap index dates what it declares, and sign-in stays unindexed
+
+### ConfigBundle
+
+- The scaffold's sign-in and password reset templates set `robots` to `noindex, follow`: neither has anything to offer a search result, and Search Console was reporting the sign-in url as one it had crawled (31/08/2026)
+- `sitemap-index.xml` dates each sub-sitemap it declares, from the most recent `lastmod` of the urls that sitemap holds: a crawler reads it to decide which files are worth downloading again, and an undated index has it fetch all of them on every pass (31/08/2026)
+- The dates are compared as moments rather than as text, a provider being free to declare a full W3C datetime where another gives a plain date (31/08/2026)
+- `@c975LConfig/sitemaps/sitemap-index.xml.twig` now gets `sitemaps` as a list of `{loc, lastmod}` instead of a list of urls - a breaking change for an overridden template only, see UPGRADE.md (31/08/2026)
+- `SitemapWriterTest` covers the dated index, the time comparison, the defaulted date and the index written without any (31/08/2026)
+
 ## v1.19.2
 
 The RGAA is read off the markup, and a fleet's CVEs off one report

@@ -81,6 +81,14 @@ class SitemapWriterTest extends TestCase
         return $provider;
     }
 
+    // The context the stubbed Environment was given for the index, decoded back from the file
+    private function renderedSitemaps(): array
+    {
+        $content = file_get_contents($this->projectDir . '/public/sitemap-index.xml');
+
+        return json_decode(explode(':', $content, 2)[1], true)['sitemaps'];
+    }
+
     // The context the stubbed Environment was given for a written sitemap, decoded back from the file
     private function renderedUrls(string $name): array
     {
@@ -229,5 +237,51 @@ class SitemapWriterTest extends TestCase
 
         $this->assertSame(1.0, (float) $urls[0]['priority']);
         $this->assertSame(0.0, (float) $urls[1]['priority']);
+    }
+
+    // A crawler reads the index to decide which sub-sitemaps changed, so each one carries the most recent date of the urls it holds - anything older would have it skip a file that did change
+    public function testWriteIndexDatesEachSitemapFromItsMostRecentUrl(): void
+    {
+        $this->createWriter([
+            $this->createRawProvider('site', [
+                ['loc' => 'https://example.com/a', 'lastmod' => '2026-01-15'],
+                ['loc' => 'https://example.com/b', 'lastmod' => '2026-03-02'],
+                ['loc' => 'https://example.com/c', 'lastmod' => '2025-11-30'],
+            ]),
+            $this->createRawProvider('book', [['loc' => 'https://example.com/livre/tome-1', 'lastmod' => '2024-06-01']]),
+        ])->write();
+
+        $sitemaps = $this->renderedSitemaps();
+
+        $this->assertSame('https://example.com/sitemap-site.xml', $sitemaps[0]['loc']);
+        $this->assertSame('2026-03-02', $sitemaps[0]['lastmod']);
+        $this->assertSame('2024-06-01', $sitemaps[1]['lastmod']);
+    }
+
+    // The dates are compared as moments and not as strings: a provider is free to declare a full W3C datetime where another gives a plain date, and the two orders only agree by chance
+    public function testWriteIndexComparesLastmodAsTimeAndNotAsText(): void
+    {
+        $this->createWriter([$this->createRawProvider('site', [
+            ['loc' => 'https://example.com/a', 'lastmod' => '2026-01-15'],
+            ['loc' => 'https://example.com/b', 'lastmod' => '2026-01-14T23:30:00+01:00'],
+        ])])->write();
+
+        $this->assertSame('2026-01-15', $this->renderedSitemaps()[0]['lastmod']);
+    }
+
+    // The index is dated from the urls as they were written, defaults included, so a provider declaring no date still gets a usable one rather than a sitemap the crawler cannot date at all
+    public function testWriteIndexUsesTheDefaultedLastmodOfAProviderThatDeclaredNone(): void
+    {
+        $this->createWriter([$this->createRawProvider('site', [['loc' => 'https://example.com/a']])])->write();
+
+        $this->assertSame(date('Y-m-d'), $this->renderedSitemaps()[0]['lastmod']);
+    }
+
+    // Called on its own, with no date to hand over, it still has an index to write - the element is simply left out
+    public function testWriteIndexLeavesLastmodOutWhenItIsNotGivenAny(): void
+    {
+        $this->createWriter([])->writeIndex(['site']);
+
+        $this->assertNull($this->renderedSitemaps()[0]['lastmod']);
     }
 }

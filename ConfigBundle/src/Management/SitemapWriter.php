@@ -44,6 +44,7 @@ class SitemapWriter
     public function write(): array
     {
         $names = [];
+        $lastmods = [];
         $declaredNames = [];
         foreach ($this->sitemapProviders as $provider) {
             /** @var SitemapProviderInterface $provider */
@@ -65,18 +66,22 @@ class SitemapWriter
                 continue;
             }
 
-            $sitemapContent = $this->environment->render('@c975LConfig/sitemaps/sitemap.xml.twig', ['urls' => $this->normalizeUrls($urls)]);
+            $normalizedUrls = $this->normalizeUrls($urls);
+            $sitemapContent = $this->environment->render('@c975LConfig/sitemaps/sitemap.xml.twig', ['urls' => $normalizedUrls]);
             $this->filesystem->dumpFile($sitemapFile, $sitemapContent);
             $names[] = $name;
+
+            // Read off the urls just written rather than asked of the provider: the index has to date each file from what it actually contains, defaults included
+            $lastmods[$name] = $this->latestLastmod($normalizedUrls);
         }
 
-        $this->writeIndex($names);
+        $this->writeIndex($names, $lastmods);
 
         return $names;
     }
 
-    // Creates the index declaring the sub-sitemaps just written
-    public function writeIndex(array $names): void
+    // Creates the index declaring the sub-sitemaps just written, each dated by the most recent url it holds. $lastmods is keyed by sitemap name and stays optional, an index without dates being valid on its own - it only costs the crawler the download it could have skipped
+    public function writeIndex(array $names, array $lastmods = []): void
     {
         // Nothing was written (a brand new site), so there's nothing to declare. A sitemap index only accepts absolute urls too, so there's nothing to write before "site-url" is configured either
         $urlRoot = rtrim((string) $this->configService->get('site-url'), '/');
@@ -84,9 +89,30 @@ class SitemapWriter
             return;
         }
 
-        $sitemaps = array_map(fn (string $name): string => $urlRoot . '/sitemap-' . $name . '.xml', $names);
+        $sitemaps = array_map(fn (string $name): array => [
+            'loc' => $urlRoot . '/sitemap-' . $name . '.xml',
+            'lastmod' => $lastmods[$name] ?? null,
+        ], $names);
         $sitemapIndexContent = $this->environment->render('@c975LConfig/sitemaps/sitemap-index.xml.twig', ['sitemaps' => $sitemaps]);
         $this->filesystem->dumpFile($this->sitemapFolder . '/sitemap-index.xml', $sitemapIndexContent);
+    }
+
+    // The most recent "lastmod" among the urls a sitemap declares, which is that sitemap's own date: a crawler reads it off the index to decide whether the file is worth downloading again, and one older than an url inside would have it skip a page that did change
+    private function latestLastmod(array $urls): ?string
+    {
+        $latest = null;
+        $latestTime = -1;
+
+        // Compared as timestamps and not as strings: a provider is free to declare a full W3C datetime where another gives a plain date, and the two orders only agree by chance
+        foreach ($urls as $url) {
+            $time = strtotime((string) $url['lastmod']);
+            if (false !== $time && $time > $latestTime) {
+                $latest = $url['lastmod'];
+                $latestTime = $time;
+            }
+        }
+
+        return $latest;
     }
 
     // Fills in the keys a provider left out, and converts its 0-10 "priority" to the 0.0-1.0 the protocol accepts, bounded - so an incomplete or out of range url still produces a valid sitemap, and every provider keeps declaring priorities on the same admin-facing scale as Page::$priority

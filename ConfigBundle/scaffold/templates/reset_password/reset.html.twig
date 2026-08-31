@@ -2,6 +2,9 @@
 
 {% set title = 'label.reset_password'|trans({}, 'config') %}
 
+{# The url carries a single-use token, so there is nothing here for a search engine to keep #}
+{% set robots = 'noindex, follow' %}
+
 {% block content %}
     <h1>{{ 'label.reset_password'|trans({}, 'config') }}</h1>
 
