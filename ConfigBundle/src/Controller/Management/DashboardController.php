@@ -21,6 +21,7 @@ use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Twig\CreditsExtension;
 use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
@@ -41,7 +42,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[AdminDashboard(routePath: '/management', routeName: 'management')]
 class DashboardController extends AbstractDashboardController
 {
-    // 19 services injected, past the sixteen phpmd.xml.dist calls the limit: owed a grouping of its own, not silenced for good
+    // 20 services injected, past the sixteen phpmd.xml.dist calls the limit: owed a grouping of its own, not silenced for good
     /** @SuppressWarnings(PHPMD.ExcessiveParameterList) */
     public function __construct(
         private readonly MenuBuilder $menuBuilder,
@@ -65,6 +66,7 @@ class DashboardController extends AbstractDashboardController
         private readonly bool $debug,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        private readonly SiteLocales $siteLocales,
     ) {
     }
 
@@ -97,12 +99,15 @@ class DashboardController extends AbstractDashboardController
     #[\Override]
     public function configureDashboard(): Dashboard
     {
-        return Dashboard::new()
+        $dashboard = Dashboard::new()
             // Fixed path: c975L\SiteBundle's SiteGraphicCrudController always saves the favicon there (see UiMediaNamer)
             ->setTitle('<img src="/favicon.ico">' . $this->configService->get('site-name'))
             ->setFaviconPath('/favicon.ico')
             ->setTranslationDomain('config')
         ;
+
+        // EasyAdmin's own language selector, which names each language in its own, and nothing at all below two declared locales - it only appends "?_locale=xx" and reads it back nowhere, so LocaleListener is what keeps the choice
+        return $this->siteLocales->isMultilingual() ? $dashboard->setLocales($this->siteLocales->all()) : $dashboard;
     }
 
     // EasyAdmin renders every CRUD form with "{% form_theme form with ea.crud.formThemes only %}" (see vendor/easycorp/.../crud/edit.html.twig) - the "only" keyword means the app-wide twig.form_themes config is never consulted there, so bundle-contributed form themes (Trix editor, icon picker, "used in"...) have to be injected into the Crud config itself instead, here, the single place every CRUD controller's own configureCrud() inherits its default from (see FormThemeProviderInterface for the extension point bundles implement to reach this).

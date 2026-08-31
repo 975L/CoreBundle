@@ -70,6 +70,7 @@ services:
               label: "label.block_article"
               description: "label.block_article_description"
               form: c975L\UiBundle\Form\Block\ArticleType
+              translatable: 'title, hook, content'
               template: '@c975LUi/blocks/Article.html.twig'
               category: 'label.category_elements'
               media_types: 'image/*'
@@ -86,6 +87,7 @@ services:
               label: "label.block_alert"
               description: "label.block_alert_description"
               form: c975L\UiBundle\Form\Block\AlertType
+              translatable: 'content'
               template: '@c975LUi/blocks/Alert.html.twig'
               category: 'label.category_elements'
               priority: 70
@@ -100,6 +102,7 @@ services:
               label: "label.block_audio"
               description: "label.block_audio_description"
               form: c975L\UiBundle\Form\Block\AudioType
+              translatable: 'title, description'
               template: '@c975LUi/blocks/Audio.html.twig'
               category: 'label.category_media'
               # Explicit list rather than "audio/*", same reasoning as the "video" kind below: these are the formats every browser's <audio> can play, and the block's own form no longer asks for the format, it's read back from the uploaded file's mimeType
@@ -117,6 +120,7 @@ services:
               label: "label.block_banner_title"
               description: "label.block_banner_title_description"
               form: c975L\UiBundle\Form\Block\BannerTitleType
+              translatable: 'title'
               template: '@c975LUi/blocks/BannerTitle.html.twig'
               category: 'label.category_media'
               media_types: 'image/*'
@@ -133,6 +137,7 @@ services:
               label: "label.block_button"
               description: "label.block_button_description"
               form: c975L\UiBundle\Form\Block\ButtonType
+              translatable: 'label'
               template: '@c975LUi/blocks/Button.html.twig'
               category: 'label.category_elements'
               priority: 80
@@ -147,6 +152,7 @@ services:
               label: "label.block_card"
               description: "label.block_card_description"
               form: c975L\UiBundle\Form\Block\CardType
+              translatable: 'title, content, buttonLabel'
               template: '@c975LUi/blocks/Card.html.twig'
               category: 'label.category_elements'
               media_types: 'image/*'
@@ -163,6 +169,7 @@ services:
               kind: collection_item
               label: "label.block_card"
               form: c975L\UiBundle\Form\Block\CollectionItemType
+              translatable: 'title, content, buttonLabel'
               template: '@c975LUi/blocks/CollectionItem.html.twig'
               category: 'label.category_elements'
               pickable: false
@@ -176,6 +183,7 @@ services:
               label: "label.block_contact_details"
               description: "label.block_contact_details_description"
               form: c975L\UiBundle\Form\Block\ContactDetailsType
+              translatable: 'description'
               template: '@c975LUi/blocks/ContactDetails.html.twig'
               category: 'label.category_elements'
               # Optional logo, shown next to the name and published as the snippet's "image"
@@ -192,6 +200,7 @@ services:
               label: "label.block_document_download"
               description: "label.block_document_download_description"
               form: c975L\UiBundle\Form\Block\DocumentDownloadType
+              translatable: 'label, buttonLabel'
               template: '@c975LUi/blocks/DocumentDownload.html.twig'
               category: 'label.category_elements'
               media_types: 'application/pdf'
@@ -210,6 +219,7 @@ services:
               label: "label.block_flip_card"
               description: "label.block_flip_card_description"
               form: c975L\UiBundle\Form\Block\FlipCardType
+              translatable: 'title, content, backTitle, backContent'
               template: '@c975LUi/blocks/FlipCard.html.twig'
               category: 'label.category_elements'
               media_types: 'image/*'
@@ -243,6 +253,7 @@ services:
               label: "label.block_image_compare"
               description: "label.block_image_compare_description"
               form: c975L\UiBundle\Form\Block\ImageCompareType
+              translatable: 'beforeLabel, afterLabel'
               template: '@c975LUi/blocks/ImageCompare.html.twig'
               category: 'label.category_media'
               media_types: 'image/*'
@@ -259,6 +270,7 @@ services:
               label: "label.block_progress_bar"
               description: "label.block_progress_bar_description"
               form: c975L\UiBundle\Form\Block\ProgressBarType
+              translatable: 'label'
               template: '@c975LUi/blocks/ProgressBar.html.twig'
               category: 'label.category_elements'
               priority: 60
@@ -273,6 +285,7 @@ services:
               label: "label.block_progress_tracker"
               description: "label.block_progress_tracker_description"
               form: c975L\UiBundle\Form\Block\ProgressTrackerType
+              translatable: 'eyebrow, title, note'
               template: '@c975LUi/blocks/ProgressTracker.html.twig'
               category: 'label.category_elements'
               priority: 59
@@ -303,6 +316,7 @@ services:
               label: "label.block_text_hook"
               description: "label.block_text_hook_description"
               form: c975L\UiBundle\Form\Block\TextHookType
+              translatable: 'text'
               template: '@c975LUi/blocks/TextHook.html.twig'
               category: 'label.category_text'
               priority: 95
@@ -317,6 +331,7 @@ services:
               label: "label.block_text_readmore"
               description: "label.block_text_readmore_description"
               form: c975L\UiBundle\Form\Block\ReadmoreType
+              translatable: 'text'
               template: '@c975LUi/blocks/TextReadmore.html.twig'
               category: 'label.category_text'
               priority: 90
@@ -331,6 +346,7 @@ services:
               label: "label.block_text_section"
               description: "label.block_text_section_description"
               form: c975L\UiBundle\Form\Block\TextSectionType
+              translatable: 'eyebrow, title, content'
               template: '@c975LUi/blocks/TextSection.html.twig'
               category: 'label.category_text'
               media_types: 'image/*'
@@ -346,6 +362,7 @@ services:
               label: "label.block_video"
               description: "label.block_video_description"
               form: c975L\UiBundle\Form\Block\VideoType
+              translatable: 'title, description'
               template: '@c975LUi/blocks/Video.html.twig'
               category: 'label.category_media'
               # Explicit list rather than "video/*": these three are the formats every browser's <video> can actually play, and it's this list that fills the upload's "accept" - the block's own form no longer asks for the format, it's read back from the uploaded file's mimeType. "image/*" is the optional cover image (poster), see blocks/Video.html.twig
@@ -363,6 +380,7 @@ services:
               label: "label.block_video_iframe"
               description: "label.block_video_iframe_description"
               form: c975L\UiBundle\Form\Block\VideoIframeType
+              translatable: 'title, description'
               template: '@c975LUi/blocks/VideoIframe.html.twig'
               category: 'label.category_media'
               # The single media is the player's poster - either imported from the platform by ticking the block's own "importPoster" (see VideoPosterImporter) or uploaded here by hand. Its presence is also what turns the player into click-to-play (see assets/js/video-iframe.js)
@@ -381,6 +399,7 @@ services:
               label: "label.block_hero"
               description: "label.block_hero_description"
               form: c975L\UiBundle\Form\Block\HeroType
+              translatable: 'badge, title, subtitle, primaryLabel, secondaryLabel, statValue, statLabel'
               template: '@c975LUi/blocks/Hero.html.twig'
               category: 'label.category_sections'
               # Same three video formats as the "video" kind - the ones every browser's <video> can play - beside the images. A video is always painted behind the section, an image beside the text or behind it, told apart by mimetype in blocks/Hero.html.twig
@@ -399,6 +418,7 @@ services:
               label: "label.block_feature_bar"
               description: "label.block_feature_bar_description"
               form: c975L\UiBundle\Form\Block\FeatureBarType
+              translatable: 'eyebrow, title'
               template: '@c975LUi/blocks/FeatureBar.html.twig'
               category: 'label.category_sections'
               priority: 90
@@ -413,6 +433,7 @@ services:
               label: "label.block_section_features"
               description: "label.block_section_features_description"
               form: c975L\UiBundle\Form\Block\SectionFeaturesType
+              translatable: 'eyebrow, title'
               template: '@c975LUi/blocks/SectionFeatures.html.twig'
               category: 'label.category_sections'
               priority: 80
@@ -466,6 +487,7 @@ services:
               label: "label.block_favorite_link"
               description: "label.block_favorite_link_description"
               form: c975L\UiBundle\Form\Block\FavoriteLinkType
+              translatable: 'label'
               template: '@c975LUi/blocks/FavoriteLink.html.twig'
               category: 'label.category_navigation'
               pickable: true
@@ -514,6 +536,7 @@ services:
               label: "label.block_expertise_banner"
               description: "label.block_expertise_banner_description"
               form: c975L\UiBundle\Form\Block\ExpertiseBannerType
+              translatable: 'eyebrow, title, text'
               template: '@c975LUi/blocks/ExpertiseBanner.html.twig'
               category: 'label.category_sections'
               priority: 70
@@ -528,6 +551,7 @@ services:
               label: "label.block_process_steps"
               description: "label.block_process_steps_description"
               form: c975L\UiBundle\Form\Block\ProcessStepsType
+              translatable: 'eyebrow, title'
               template: '@c975LUi/blocks/ProcessSteps.html.twig'
               category: 'label.category_sections'
               priority: 60
@@ -542,6 +566,7 @@ services:
               label: "label.block_portfolio_grid"
               description: "label.block_portfolio_grid_description"
               form: c975L\UiBundle\Form\Block\PortfolioGridType
+              translatable: 'eyebrow, title, linkLabel'
               template: '@c975LUi/blocks/PortfolioGrid.html.twig'
               category: 'label.category_sections'
               media_types: 'image/*'
@@ -559,6 +584,7 @@ services:
               label: "label.block_video_grid"
               description: "label.block_video_grid_description"
               form: c975L\UiBundle\Form\Block\VideoGridType
+              translatable: 'linkLabel'
               template: '@c975LUi/blocks/VideoGrid.html.twig'
               category: 'label.category_sections'
               priority: 56
@@ -576,6 +602,7 @@ services:
               label: "label.block_collection"
               description: "label.block_collection_description"
               form: c975L\UiBundle\Form\Block\CollectionType
+              translatable: 'eyebrow, title, linkLabel'
               template: '@c975LUi/blocks/Collection.html.twig'
               category: 'label.category_sections'
               priority: 54
@@ -591,6 +618,7 @@ services:
               label: "label.block_collection_entry"
               description: "label.block_collection_entry_description"
               form: c975L\UiBundle\Form\Block\CollectionEntryType
+              translatable: 'eyebrow, title'
               template: '@c975LUi/blocks/CollectionEntry.html.twig'
               category: 'label.category_sections'
               priority: 53
@@ -605,6 +633,7 @@ services:
               label: "label.block_cta_band"
               description: "label.block_cta_band_description"
               form: c975L\UiBundle\Form\Block\CtaBandType
+              translatable: 'title, text, ctaLabel'
               template: '@c975LUi/blocks/CtaBand.html.twig'
               category: 'label.category_sections'
               priority: 50

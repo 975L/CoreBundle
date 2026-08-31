@@ -514,6 +514,14 @@
                 <source>label.ai_assistant_subtitle</source>
                 <target>Haga sus preguntas sobre el sistema de bloques</target>
             </trans-unit>
+            <trans-unit id="wI5jL3X">
+                <source>label.ai_rephrase_action_rephrase</source>
+                <target>Reformular</target>
+            </trans-unit>
+            <trans-unit id="SibpyuZ">
+                <source>label.ai_rephrase_action_translate</source>
+                <target>Traducir al %language%</target>
+            </trans-unit>
             <trans-unit id="nSvy0he">
                 <source>label.ai_rephrase_button</source>
                 <target>Reformular con %name%</target>
@@ -637,6 +645,18 @@
             <trans-unit id="SfCl424">
                 <source>label.ai_rephrase_usage_this_month</source>
                 <target>Reformulación IA este mes: %input% tokens entrada, %output% salida.</target>
+            </trans-unit>
+            <trans-unit id="m_BJ5A2">
+                <source>label.ai_translate_button</source>
+                <target>Traducir con %name%</target>
+            </trans-unit>
+            <trans-unit id="ECyVV33">
+                <source>label.ai_translate_error</source>
+                <target>La traducción falló - compruebe la clave IA configurada</target>
+            </trans-unit>
+            <trans-unit id="DkJOupB">
+                <source>label.ai_translate_into_button</source>
+                <target>Traducir al %language% con %name%</target>
             </trans-unit>
             <trans-unit id="DnqwII7">
                 <source>label.alert_kind</source>

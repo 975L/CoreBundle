@@ -26,13 +26,31 @@ class AlertBuilder
     public function getAlerts(): array
     {
         $alerts = ProviderMerger::merge($this->alertProviders, fn (AlertProviderInterface $provider) => $provider->getAlerts());
-        $alerts = array_filter($alerts, fn (array $alert) => !isset($alert['role']) || $this->security->isGranted($alert['role']));
 
-        return self::groupBySeverity($alerts);
+        return self::groupBySeverity($this->keepReadable($alerts));
     }
 
-    // Groups a single provider's flat alert list by severity - for a CRUD's own index page, which only wants its own alerts (see ConfigCrudController/SiteGraphicCrudController)
-    public static function groupBySeverity(array $alerts): array
+    // The same, for a screen wanting only its own provider's alerts: the role filter belongs here too, an alert naming an entry its reader may not open being a link to a 403 (see ConfigCrudController, and the restricted entries it hides below ROLE_SUPER_ADMIN)
+    public function groupOwnBySeverity(array $alerts): array
+    {
+        return self::groupBySeverity($this->keepReadable($alerts));
+    }
+
+    /**
+     * @param list<array{severity: string, role?: string}> $alerts
+     *
+     * @return list<array{severity: string, role?: string}>
+     */
+    private function keepReadable(array $alerts): array
+    {
+        return array_values(array_filter(
+            $alerts,
+            fn (array $alert) => !isset($alert['role']) || $this->security->isGranted($alert['role']),
+        ));
+    }
+
+    // Groups a flat alert list by severity; the role filter is the caller's above, both of them running it first - an alert naming an entry its reader may not open being a link to a 403
+    private static function groupBySeverity(array $alerts): array
     {
         $grouped = [
             Config::SEVERITY_DANGER => [],

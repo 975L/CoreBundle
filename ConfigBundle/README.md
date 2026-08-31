@@ -53,6 +53,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `c975l:config:backup`, dumping the database table by table and archiving `public/`+`private/`, with archive integrity verification, a retention window on the server, a dashboard alert when a backup stops running, and a weekly digest email for the sites whose dashboard you don't open daily
 - `c975l:config:messenger-cleanup`, purging failed Messenger messages past their retention and emailing a digest of the ones worth an admin's attention, with a dashboard screen to read, replay or delete them
 - `c975l:config:sessions-cleanup`, deleting the expired rows of the `sessions` table nightly, PHP's own garbage collection being a dice roll a managed host can simply never throw
+- The languages a site offers, declared once in `framework.enabled_locales`: a language selector in the back office, the front office following the one a visitor picks, and the block content translated per language (see `c975l/ui-bundle`)
 - Maintenance mode closing the site to its visitors, answering the search-engine-friendly 503 they expect from a temporary outage, with a dashboard alert turning to danger once it has lasted long enough to cost indexing
 - Sitemap generation (one sub-sitemap per bundle plus the sitemap index), extensible via `SitemapProviderInterface`
 - `c975l:seo:files:create`, writing `robots.txt`, `humans.txt` and `llms.txt` from the `seo` configs and from the urls those same providers declare, with a monthly check reporting the AI crawlers that appeared in the community list
@@ -996,6 +997,23 @@ Entries contributed this way aren't written to `importmap.php` on their own — 
 
 It also covers the **third-party packages the c975L bundles' own JS imports by bare specifier** — `@symfony/ux-chartjs`, imported by this bundle's `controllers-admin.js` for the health check trend chart, being the one that actually bites. That entry is normally written by the package's own Flex recipe, which doesn't always run; when it's missing, the browser can't resolve the specifier, the **whole module fails**, and every Stimulus controller it was going to register is silently lost — back-office block drag-and-drop and duplication included, with nothing but a console error to show for it. The command scans each installed c975L bundle's `assets/**/*.js`, and for any bare specifier with no entry it resolves the path from the package's own `assets/package.json` (`name` + `main`, the Symfony UX convention) and adds it as a non-entrypoint. A specifier it can't find under `vendor/` is reported instead of guessed at — install the package, or add the entry by hand.
 
+## The languages a site offers
+
+A site declares them in `config/packages/translation.yaml`, next to the language it's written in — the one application setting that isn't a `configs.json` entry, because Symfony itself reads this list to restrict a route's `_locale` and to compile catalogues, and a value it can't see would leave both beside the point:
+
+```yaml
+framework:
+    default_locale: en
+    enabled_locales: ['en', 'fr', 'es']
+```
+
+That one line turns on the whole set: the language selector in the back office (EasyAdmin's own, which names each language in its own), the front office following the language a visitor picks, and the translation of block content (see `c975l/ui-bundle`). **A site declaring nothing offers its default language alone and behaves exactly as it always did**, which is every existing site.
+
+`Service\SiteLocales` is the one place anything asks what a site offers — `all()` and `isMultilingual()`. It always holds the default locale whether or not the list names it, and drops any code the Intl catalogue doesn't know, a typo otherwise taking down every back-office page through EasyAdmin's `Locale::new()`. `Listener\LocaleListener` (priority 20) then sets each request's language from the `_locale` query parameter, then the session, then what the browser asks for — a route carrying its own `_locale` attribute winning over all three.
+
+> [!NOTE]
+> `enabled_locales` **restricts**: on a site already serving several languages, list every one of them, not just the ones you're adding. It's unrelated to the interface translations (`messages.fr.xlf`), which keep working through Symfony's translator whether or not this list exists.
+
 ## Contributing a sitemap from other bundles
 
 If your bundle has public urls of its own (a book catalogue, a shop, a gallery…), implement `SitemapProviderInterface` — no manual service tagging needed, same `TaggedInterfacePass` mechanism as `MenuProviderInterface` above.
@@ -1035,6 +1053,8 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 `priority` is an integer on the admin's own `0`-`10` scale (the same one as a page's priority), converted by `SitemapWriter` to the `0.0`-`1.0` the sitemap protocol accepts — so a provider never does that conversion itself. A value outside the scale is bounded, and a missing `lastmod`/`changefreq`/`priority` is defaulted (today, `weekly`, `5`), so an incomplete url degrades instead of producing an invalid sitemap. `getSitemapName()` has to be unique across every installed bundle: two providers sharing it would overwrite each other's file, so it throws a `LogicException` instead.
 
 Return `[]` when there's nothing to declare (a bundle installed but with nothing published yet): no file is written and nothing is added to the index — an indexed empty `urlset` is just a crawl error, and any file left by a previous run is removed so nothing stale keeps being served. Same when `site-url` isn't configured, since a sitemap only accepts absolute urls: no provider can build one, so no index is written either.
+
+A site offering several languages may add an **`alternates`** key, a `hreflang => absolute url` map for the same page in its other languages, written out as `<xhtml:link rel="alternate">`. Include the url's own language in the map: a group is read as a whole, so a page naming only its neighbours declares a group no engine keeps. A provider declaring nothing gets nothing written, which is every single-language site.
 
 Two more keys are accepted and ignored by the sitemap itself, `title` and `description`: they are what the site's `llms.txt` is built from, one section per provider — see [robots.txt, humans.txt and llms.txt](#robotstxt-humanstxt-and-llmstxt) below.
 

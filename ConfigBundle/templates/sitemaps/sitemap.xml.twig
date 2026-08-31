@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{# The xhtml namespace is only there for the "alternate" links: a sitemap with no translated page carries it unused, which stays valid and spares the writer a second header form #}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 {% for url in urls %}
     <url>
         <loc>{{ url.loc }}</loc>
         <lastmod>{{ url.lastmod }}</lastmod>
         <changefreq>{{ url.changefreq }}</changefreq>
         <priority>{{ url.priority }}</priority>
+{# The other languages of this same page, itself included: a group is read whole, and a page naming only its neighbours would declare a group no engine keeps #}
+{% for hreflang, alternate in url.alternates|default({}) %}
+        <xhtml:link rel="alternate" hreflang="{{ hreflang }}" href="{{ alternate }}"/>
+{% endfor %}
     </url>
 {% endfor %}
 </urlset>

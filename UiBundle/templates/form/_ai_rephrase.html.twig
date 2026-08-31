@@ -1,31 +1,63 @@
 {# Expects "field_id", the DOM id of the textarea it targets #}
 {# Plain data-* attributes, not Stimulus targets/values: ai-rephrase.js reads them via querySelector #}
+{% set translatableLocales = ai_translatable_locales() %}
+{# A translation screen writes one language: the choice below collapses into a single button saying which #}
+{% set target = ai_translation_target() %}
 <div class="ai-rephrase"
      data-controller="aiRephrase"
      data-ai-rephrase-url-value="{{ path('management_ui_ai_assistant_rephrase') }}"
      data-ai-rephrase-csrf-token-value="{{ csrf_token('management_ui_ai_assistant_rephrase') }}"
      data-ai-rephrase-textarea-id-value="{{ field_id }}"
      data-ai-rephrase-suggestion-label-value="{{ 'label.ai_rephrase_suggestion_label'|trans({}, 'ui') }}"
+     {% if target %}data-ai-rephrase-locale-value="{{ target }}"{% endif %}
 >
-    <select class="form-select form-select-sm ai-rephrase__style" data-ai-rephrase-target="style">
-        {% for style in ai_rephrase_styles() %}
-            <option value="{{ style }}">{{ ('label.ai_rephrase_style_' ~ style)|trans({}, 'ui') }}</option>
-        {% endfor %}
-    </select>
-    <select class="form-select form-select-sm ai-rephrase__length" data-ai-rephrase-target="length">
-        {% for length in ai_rephrase_lengths() %}
-            <option value="{{ length }}">{{ ('label.ai_rephrase_length_' ~ length)|trans({}, 'ui') }}</option>
-        {% endfor %}
-    </select>
-    <button type="button"
-            class="btn btn-sm btn-outline-secondary ai-rephrase__button"
-            data-action="aiRephrase#run"
-            data-ai-rephrase-target="button"
-    >
-        {{ 'label.ai_rephrase_button'|trans({'%name%': ai_assistant_name()}, 'ui') }}
-    </button>
-    <span class="ai-rephrase__error text-danger small d-none"
-          data-ai-rephrase-target="error"
-          data-message="{{ 'label.ai_rephrase_error'|trans({}, 'ui') }}"
-    ></span>
+    {% if target %}
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary ai-rephrase__button"
+                data-action="aiRephrase#run"
+                data-ai-rephrase-target="button"
+        >
+            {{ 'label.ai_translate_into_button'|trans({'%name%': ai_assistant_name(), '%language%': target|locale_name(target)}, 'ui') }}
+        </button>
+        <span class="ai-rephrase__error text-danger small d-none"
+              data-ai-rephrase-target="error"
+              data-message="{{ 'label.ai_translate_error'|trans({}, 'ui') }}"
+        ></span>
+    {% else %}
+        {# Nothing at all on a site declaring a single language, which is every c975L site until it says otherwise: the button then means what it always meant #}
+        {% if translatableLocales is not empty %}
+            <select class="form-select form-select-sm ai-rephrase__action" data-ai-rephrase-target="action" data-action="aiRephrase#switchAction">
+                <option value="">{{ 'label.ai_rephrase_action_rephrase'|trans({}, 'ui') }}</option>
+                {% for locale in translatableLocales %}
+                    {# Each language named in its own, the way the back office's own language menu names them #}
+                    <option value="{{ locale }}">{{ 'label.ai_rephrase_action_translate'|trans({'%language%': locale|locale_name(locale)}, 'ui') }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        <select class="form-select form-select-sm ai-rephrase__style" data-ai-rephrase-target="style">
+            {% for style in ai_rephrase_styles() %}
+                <option value="{{ style }}">{{ ('label.ai_rephrase_style_' ~ style)|trans({}, 'ui') }}</option>
+            {% endfor %}
+        </select>
+        <select class="form-select form-select-sm ai-rephrase__length" data-ai-rephrase-target="length">
+            {% for length in ai_rephrase_lengths() %}
+                <option value="{{ length }}">{{ ('label.ai_rephrase_length_' ~ length)|trans({}, 'ui') }}</option>
+            {% endfor %}
+        </select>
+        {# Both labels shipped with the button: what it does is picked in the select above, and swapping the text client-side beats a second request just to relabel it #}
+        <button type="button"
+                class="btn btn-sm btn-outline-secondary ai-rephrase__button"
+                data-action="aiRephrase#run"
+                data-ai-rephrase-target="button"
+                data-rephrase-label="{{ 'label.ai_rephrase_button'|trans({'%name%': ai_assistant_name()}, 'ui') }}"
+                data-translate-label="{{ 'label.ai_translate_button'|trans({'%name%': ai_assistant_name()}, 'ui') }}"
+        >
+            {{ 'label.ai_rephrase_button'|trans({'%name%': ai_assistant_name()}, 'ui') }}
+        </button>
+        <span class="ai-rephrase__error text-danger small d-none"
+              data-ai-rephrase-target="error"
+              data-message="{{ 'label.ai_rephrase_error'|trans({}, 'ui') }}"
+              data-translate-message="{{ 'label.ai_translate_error'|trans({}, 'ui') }}"
+        ></span>
+    {% endif %}
 </div>

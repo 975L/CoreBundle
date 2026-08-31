@@ -54,7 +54,7 @@ class BlockRegistryPass implements CompilerPassInterface
         ];
     }
 
-    // Where the kind may be picked, what it does with medias, and whether it holds other blocks
+    // Where the kind may be picked, what it does with medias, whether it holds other blocks, and which of its own fields another language may cover
     private function declaredBehaviour(array $tag): array
     {
         return [
@@ -68,6 +68,7 @@ class BlockRegistryPass implements CompilerPassInterface
             $this->flag($tag, 'container', false),
             $tag['slot_context'] ?? BlockRegistry::SLOT_CONTEXT,
             $tag['media_help'] ?? '',
+            $this->list($tag['translatable'] ?? null),
         ];
     }
 

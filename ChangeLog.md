@@ -1,5 +1,58 @@
 # ChangeLog
 
+## v1.20.0
+
+A site speaks several languages, and a block says the same thing in each
+
+### ConfigBundle
+
+- Added `SiteLocales`, the one place answering what languages a site offers, read from `framework.enabled_locales` (31/08/2026)
+- `SiteLocales` always holds the default locale and drops a code the Intl catalogue does not know (31/08/2026)
+- A site declares its languages in `config/packages/translation.yaml`, next to its default one (31/08/2026)
+- Added `LocaleListener`, setting a request's language from the `_locale` query parameter, then the session, then the browser (31/08/2026)
+- `LocaleListener` runs at priority 20, above Symfony's `LocaleAwareListener` (31/08/2026)
+- The back office's language menu is now EasyAdmin's own selector (`Dashboard::setLocales()`); `LocaleController` and the hand-built menu are gone (31/08/2026)
+- `configureDashboard()` declares no locale below two, leaving a single-language back office unchanged (31/08/2026)
+- A sitemap url accepts an `alternates` map, written out as `xhtml:link rel="alternate"` (31/08/2026)
+- `AlertBuilder::groupBySeverity()` is now `private`; call `groupOwnBySeverity()` instead (31/08/2026) [BC-Break]
+- A restricted config addresses its alert to `ROLE_SUPER_ADMIN` rather than to the site's admin role (31/08/2026)
+- Removed the `label.language` translation, which the hand-built menu was the only user of (31/08/2026)
+- Added `symfony/intl` to the `require` (31/08/2026)
+- `SiteLocalesTest`, `LocaleListenerTest` and `DashboardControllerTest` cover the languages offered, kept and refused (31/08/2026)
+- `AlertBuilderTest` and `ConfigAlertProviderTest` cover the alerts dropped for their reader (31/08/2026)
+- `SitemapWriterTest` covers the alternates declared, defaulted and refused (31/08/2026)
+
+### UiBundle
+
+- Added `Translation` (`site_translation`), holding one field of one thing in one other language (31/08/2026) [DB-Migration]
+- The default language is never stored, staying in `Block::$data` and playing the part of the msgid (31/08/2026)
+- Added `ContentTranslator`, the one service reading and writing them for a page's fields as much as a block's (31/08/2026)
+- `BlockExtension` lays a translation over the stored data, a field nobody translated keeping its own text (31/08/2026)
+- A `ui.block` tag declares a `translatable` list, read back with `BlockRegistry::getTranslatable()` (31/08/2026)
+- `BlockType` takes a `translation_locale`, rendering the same fields unmapped and narrowed to that list (31/08/2026)
+- A language screen fills an untranslated field with the source text between brackets (31/08/2026)
+- A language screen locks the block's kind and leaves out its entrance animation (31/08/2026)
+- A container's slots inherit that language, are neither added nor removed, and its medias are not rendered (31/08/2026)
+- `ContentTranslator::stage()` holds what a form wrote until `TranslationWriteListener` writes it on the owner's own flush (31/08/2026)
+- A field handed back still holding the bracketed source is stored as nothing, compared on its words (31/08/2026)
+- A language screen reads its whole tree ahead in `PRE_SET_DATA`, a container of twenty slots costing one query instead of forty-two (31/08/2026)
+- Added `TranslationPurgeListener`, deleting a block's translations on its removal (31/08/2026)
+- `BlockCacheInvalidationListener` watches `Translation`, a row of another table otherwise touching no block (31/08/2026)
+- Added `TranslationFormContext`, carrying the language being written to the fields a form option cannot reach (31/08/2026)
+- Added `AiRephraseClient::translate()` and the `ai_translatable_locales` Twig function (31/08/2026)
+- Donovan's toolbar offers each declared language beside the rephrasing styles, on the same key and budget (31/08/2026)
+- Donovan's toolbar becomes a single "Translate into <language>" button on a language screen (31/08/2026)
+- Donovan's suggestion replaces the field on a language screen, and the bracketed source is unbracketed before being sent (31/08/2026)
+- Added the `label.ai_rephrase_action_*` and `label.ai_translate_*` translations (31/08/2026)
+- Block translations are read inside the render cache's miss callback, a fully cached page costing no query (31/08/2026)
+- Removed the `preload_block_translations` Twig function (31/08/2026)
+- The legal document PDF is revalidated rather than stored, being drawn in the visitor's own language (31/08/2026)
+- `ContentTranslatorTest`, `BlockTypeTest`, `TranslationWriteListenerTest` and `TranslationPurgeListenerTest` cover the translation mode and its deferred write (31/08/2026)
+- `TranslationRepositoryTest` covers the values read for a whole page and grouped by language (31/08/2026)
+- `BlockExtensionTest` covers the translations left unread on a cache hit and read once on a miss (31/08/2026)
+- `AiRephraseClientTest` and `AiAssistantControllerTest` cover the translation, its prompt and the languages refused (31/08/2026)
+- `BlockRegistryTest` covers the translatable fields a kind declares, `BlockCacheInvalidationListenerTest` the block a translation dresses (31/08/2026)
+
 ## v1.19.4
 
 A site with no user entity yet still boots its console

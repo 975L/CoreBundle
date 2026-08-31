@@ -46,8 +46,13 @@ class LegalDocumentController extends AbstractController
 
         // Kept by the browser only as long as the document has not moved: the fingerprint is in the tag, so a clause rewritten in the back-office invalidates it on its own
         $response->setEtag($this->legalDocument->fingerprint($model, $locale));
-        $response->setPublic();
 
-        return $response->isNotModified($request) ? $response : $response->setMaxAge(3600);
+        // Revalidated rather than stored: the document is rendered in the visitor's own language (see LocaleListener), so a shared cache would serve the first language asked for to everyone that hour. The tag already holds the locale, so a revalidation costs an empty 304 and never answers in the wrong language
+        $response->setPrivate();
+        $response->setMaxAge(0);
+        $response->headers->addCacheControlDirective('must-revalidate');
+        $response->isNotModified($request);
+
+        return $response;
     }
 }

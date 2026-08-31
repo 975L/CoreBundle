@@ -80,6 +80,7 @@ class ConfigCrudController extends AbstractCrudController
         private readonly ContentExporter $contentExporter,
         private readonly ConfigExportProvider $configExportProvider,
         private readonly ConfigAlertProvider $configAlertProvider,
+        private readonly AlertBuilder $alertBuilder,
         private readonly ConfigLabelResolver $configLabelResolver,
         private readonly ConfigRepository $configRepository,
         private readonly AdminUrlGenerator $adminUrlGenerator,
@@ -108,7 +109,7 @@ class ConfigCrudController extends AbstractCrudController
                 // The grid's own toggle is a global action of the index page, which this screen replaces - so it draws its own, under the same permission (see configureActions())
                 'canShowSensitive' => $this->security->isGranted((string) $this->configService->get('site-role-admin')),
                 'sensitiveToggleUrl' => $this->sensitiveToggleUrl($showSensitive),
-                'alerts' => AlertBuilder::groupBySeverity($this->configAlertProvider->getAlerts()),
+                'alerts' => $this->alertBuilder->groupOwnBySeverity($this->configAlertProvider->getAlerts()),
                 'alertsTitle' => $this->translator->trans(
                     'label.items_not_filled_for',
                     ['%entity%' => $this->translator->trans('label.config', [], 'config')],
@@ -436,7 +437,7 @@ class ConfigCrudController extends AbstractCrudController
     public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
     {
         if (Crud::PAGE_INDEX === $responseParameters->get('pageName')) {
-            $responseParameters->set('alerts', AlertBuilder::groupBySeverity($this->configAlertProvider->getAlerts()));
+            $responseParameters->set('alerts', $this->alertBuilder->groupOwnBySeverity($this->configAlertProvider->getAlerts()));
             $responseParameters->set('alertsTitle', $this->translator->trans(
                 'label.items_not_filled_for',
                 ['%entity%' => $this->translator->trans('label.config', [], 'config')],

@@ -62,9 +62,30 @@ class BlockRegistryPassTest extends TestCase
                 false,
                 BlockRegistry::SLOT_CONTEXT,
                 '',
+                [],
             ],
             $calls[0][1]
         );
+    }
+
+    // What another language may cover is declared kind by kind: nothing declared, nothing translatable
+    public function testProcessReadsTheTranslatableFieldsOfAKind(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register(BlockRegistry::class);
+        $container->register('block.text_section')->addTag('ui.block', [
+            'kind' => 'text_section',
+            'label' => 'label.text_section',
+            'form' => 'App\\Form\\TextSectionType',
+            'template' => 'text.html.twig',
+            'translatable' => 'title, content, eyebrow',
+        ]);
+
+        new BlockRegistryPass()->process($container);
+
+        $arguments = $container->getDefinition(BlockRegistry::class)->getMethodCalls()[0][1];
+
+        $this->assertSame(['title', 'content', 'eyebrow'], end($arguments));
     }
 
     // The originating bundle is derived from the template's "@c975LXxx/..." Twig namespace, not a dedicated tag attribute - every bundle already declares this namespace for its own templates

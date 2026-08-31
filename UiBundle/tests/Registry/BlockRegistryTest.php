@@ -52,6 +52,32 @@ class BlockRegistryTest extends TestCase
         $this->assertSame('label.article[custom]', $registry->getLabel('article'));
     }
 
+    // Declared one by one in the kind's own "ui.block" tag: there is no discovery from the form type, a text field holding a css class having no business being offered for translation
+    public function testGetTranslatableReturnsTheFieldsTheKindDeclares(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register('article', 'label.article', ArticleFormStub::class, 'article.html.twig', translatable: ['title', 'content']);
+
+        $this->assertSame(['title', 'content'], $registry->getTranslatable('article'));
+    }
+
+    // Nothing declared means nothing translatable, which is what every kind means until it says otherwise
+    public function testGetTranslatableIsEmptyForAKindDeclaringNone(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register('article', 'label.article', ArticleFormStub::class, 'article.html.twig');
+
+        $this->assertSame([], $registry->getTranslatable('article'));
+    }
+
+    // Asked of a kind the registry never heard of, it answers nothing rather than throwing: BlockType reads it for whatever kind a block happens to carry
+    public function testGetTranslatableIsEmptyForAnUnknownKind(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+
+        $this->assertSame([], $registry->getTranslatable('unknown'));
+    }
+
     public function testGetDescriptionReturnsEmptyStringWhenNoneDeclared(): void
     {
         $registry = new BlockRegistry($this->createTranslator());

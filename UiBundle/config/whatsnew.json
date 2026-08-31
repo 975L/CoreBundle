@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-08-31",
+        "description": [
+            {
+                "en": "On a site offered in several languages, a block's text can now be written in each of them. A screen per language shows the same fields, filled with the original text between brackets where nothing has been written yet, so you always see what is left to translate. A field you leave alone keeps showing the original — nothing ever disappears from a page because a translation is missing.",
+                "fr": "Sur un site proposé en plusieurs langues, le texte d'un bloc peut désormais s'écrire dans chacune d'elles. Un écran par langue présente les mêmes champs, remplis du texte d'origine entre crochets là où rien n'a encore été écrit : vous voyez toujours ce qu'il reste à traduire. Un champ que vous laissez tel quel continue d'afficher l'original — rien ne disparaît jamais d'une page faute de traduction.",
+                "es": "En un sitio ofrecido en varios idiomas, el texto de un bloque puede ahora escribirse en cada uno de ellos. Una pantalla por idioma muestra los mismos campos, rellenos con el texto original entre corchetes allí donde aún no se ha escrito nada: siempre ve lo que queda por traducir. Un campo que deja tal cual sigue mostrando el original — nunca desaparece nada de una página por falta de traducción."
+            },
+            {
+                "en": "Donovan now translates as well as rewrites. The button above a text field offers each of the site's languages beside the rewriting styles, and on a translation screen it becomes a single “Translate” button for the language you are writing. It is the same key and the same budget as rewriting.",
+                "fr": "Donovan traduit désormais autant qu'il reformule. Le bouton au-dessus d'un champ de texte propose chacune des langues du site à côté des styles de reformulation, et sur un écran de traduction il devient un simple bouton « Traduire » vers la langue que vous écrivez. C'est la même clé et le même budget que la reformulation.",
+                "es": "Donovan ahora traduce además de reformular. El botón situado encima de un campo de texto ofrece cada uno de los idiomas del sitio junto a los estilos de reformulación, y en una pantalla de traducción se convierte en un simple botón «Traducir» hacia el idioma que está escribiendo. Es la misma clave y el mismo presupuesto que la reformulación."
+            }
+        ]
+    },
+    {
         "date": "2026-08-30",
         "description": [
             {

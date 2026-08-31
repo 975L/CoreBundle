@@ -16,6 +16,7 @@ use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiUsageTracker;
 use c975L\UiBundle\Service\ConfigEditUrlResolver;
+use c975L\UiBundle\Service\ContentTranslator;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -48,6 +49,7 @@ class AiAssistantController extends AbstractController
         private readonly ConfigServiceInterface $configService,
         private readonly ConfigRepository $configRepository,
         private readonly ConfigEditUrlResolver $configEditUrlResolver,
+        private readonly ContentTranslator $contentTranslator,
     ) {
     }
 
@@ -141,6 +143,20 @@ class AiAssistantController extends AbstractController
         $text = trim((string) $request->request->get('text', ''));
         if ('' === $text) {
             return new JsonResponse(['error' => 'empty_text'], 400);
+        }
+
+        // A target language turns the same request into a translation - same key, same budget, only the prompt differs - and is checked against what the site declares, a request parameter being written by whoever wants
+        $locale = (string) $request->request->get('locale', '');
+        if ('' !== $locale) {
+            if (!\in_array($locale, $this->contentTranslator->getTranslatableLocales(), true)) {
+                return new JsonResponse(['error' => 'unknown_locale'], 400);
+            }
+
+            $translated = $this->aiRephraseClient->translate($text, $locale);
+
+            return null === $translated
+                ? new JsonResponse(['error' => 'unavailable'], 503)
+                : new JsonResponse(['text' => $translated]);
         }
 
         // Not validated here: rephrase() falls back to "neutral"/"same" for anything outside its closed lists

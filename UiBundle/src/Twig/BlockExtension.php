@@ -10,11 +10,13 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\BlockCacheTagResolver;
 use c975L\UiBundle\Service\BlockRenderContext;
+use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Service\CspNonceProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -39,6 +41,7 @@ class BlockExtension
         private readonly BlockEditUrlRegistry $blockEditUrlRegistry,
         private readonly CspNonceProvider $cspNonceProvider,
         private readonly BlockRenderContext $renderContext,
+        private readonly ContentTranslator $contentTranslator,
     ) {
     }
 
@@ -152,6 +155,10 @@ class BlockExtension
             function (ItemInterface $item, bool &$save) use ($block, $cacheTags): string {
                 // The kind's own "cacheable", plus whatever its instance has to say about it and the tags that go with it - a container's slots included, its html holding theirs (see BlockCacheTagResolver). Null is the veto, and $save is how the contract says "render this one, store nothing"
                 $extraTags = $this->cacheTagResolver->resolve($block);
+
+                // Here rather than before the get(), for the very reason above: reading the translations of a container walks the same slot subtree resolve() just hydrated, and a page whose blocks are all cached would otherwise pay a query per container for a language it already holds rendered
+                $this->contentTranslator->preloadBlocks([$block]);
+
                 if (null === $extraTags) {
                     $save = false;
 
@@ -192,7 +199,13 @@ class BlockExtension
 
     private function doRender(Block $block): string
     {
-        $data = $block->getData();
+        // Laid over the values stored in the database, never in their place: a field nobody translated keeps the text it was written in, and the block templates never hear about any of this
+        $data = $this->contentTranslator->translate(
+            Translation::OWNER_BLOCK,
+            $block->getId(),
+            $block->getData(),
+            $this->registry->getTranslatable((string) $block->getKind()),
+        );
 
         return $this->twig->render(
             $this->registry->getTemplate($block->getKind()),

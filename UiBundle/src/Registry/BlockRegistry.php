@@ -55,7 +55,7 @@ class BlockRegistry
     {
     }
 
-    // 18 scalars, past the sixteen phpmd.xml.dist calls the limit: what a "ui.block" tag declares, owed a value object of its own
+    // 19 scalars, past the sixteen phpmd.xml.dist calls the limit: what a "ui.block" tag declares, owed a value object of its own
     /** @SuppressWarnings(PHPMD.ExcessiveParameterList) */
     public function register(
         string $kind,
@@ -76,6 +76,7 @@ class BlockRegistry
         bool $container = false,
         string $slotContext = self::SLOT_CONTEXT,
         string $mediaHelp = '',
+        array $translatable = [],
     ): void {
         $this->blocks[$kind] = [
             'label' => $label,
@@ -95,7 +96,22 @@ class BlockRegistry
             'container' => $container,
             'slotContext' => $slotContext,
             'mediaHelp' => $mediaHelp,
+            'translatable' => $translatable,
         ];
+    }
+
+    /**
+     * The keys of this kind's own data a translation may cover, declared one by one in its "ui.block" tag.
+     *
+     * Nothing declared means nothing translatable, which is what every kind means until it says otherwise: there is
+     * no discovery from the form type, a text field holding a css class or an icon name having no business being
+     * offered for translation.
+     *
+     * @return list<string>
+     */
+    public function getTranslatable(string $kind): array
+    {
+        return $this->has($kind) ? $this->get($kind)['translatable'] ?? [] : [];
     }
 
     // Gets the translated label of a block kind (falls back to the raw label if untranslated)

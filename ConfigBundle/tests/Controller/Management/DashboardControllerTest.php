@@ -22,6 +22,7 @@ use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Twig\CreditsExtension;
 use c975L\UiBundle\Management\PaginatorPageSize;
 use c975L\UiBundle\Registry\FormThemeRegistry;
@@ -49,7 +50,7 @@ class DashboardControllerTest extends TestCase
         }
     }
 
-    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = '', ?PaginatorPageSize $paginatorPageSize = null, ?EssentialActionBuilder $essentialActionBuilder = null): DashboardController
+    private function createController(bool $debug, array $managementStylesheets, array $configs = [], string $guidedProjectMount = '', ?PaginatorPageSize $paginatorPageSize = null, ?EssentialActionBuilder $essentialActionBuilder = null, array $enabledLocales = ['fr']): DashboardController
     {
         $guidedProjectMountBuilder = $this->createStub(GuidedProjectMountBuilder::class);
         $guidedProjectMountBuilder->method('getHtml')->willReturn($guidedProjectMount);
@@ -92,6 +93,7 @@ class DashboardControllerTest extends TestCase
             $packages,
             $debug,
             $this->projectDir ?? sys_get_temp_dir(),
+            new SiteLocales($enabledLocales, $enabledLocales[0] ?? 'fr'),
         );
     }
 
@@ -135,6 +137,31 @@ class DashboardControllerTest extends TestCase
         }
 
         return null;
+    }
+
+    // The labels EasyAdmin's own language selector is given, empty when the dashboard declares none
+    private function getLocaleLabels(DashboardController $controller): array
+    {
+        return array_map(
+            static fn ($localeDto) => $localeDto->getName(),
+            $controller->configureDashboard()->getAsDto()->getLocales(),
+        );
+    }
+
+    // The no-regression contract: a site that has not declared several languages keeps the back office it always had
+    public function testASiteWithOneLocaleShowsNoLanguageMenu(): void
+    {
+        $controller = $this->createController(false, [], enabledLocales: ['fr']);
+
+        $this->assertSame([], $this->getLocaleLabels($controller));
+    }
+
+    // Each language named in its own: that is how a reader finds theirs in a list written in a language they don't read
+    public function testEachDeclaredLanguageIsOfferedUnderItsOwnName(): void
+    {
+        $controller = $this->createController(false, [], enabledLocales: ['fr', 'en']);
+
+        $this->assertSame(['français', 'English'], $this->getLocaleLabels($controller));
     }
 
     private function getMadeByLogoSrc(DashboardController $controller): ?string

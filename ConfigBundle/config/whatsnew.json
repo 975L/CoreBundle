@@ -11,6 +11,16 @@
                 "en": "A calculator's result no longer sticks its unit to the figure: it now prints “1,52 t” rather than “1,52t”, with a space that never breaks onto the next line. There is nothing to change on your side — the unit is typed as “t” or “L”, the space is added for you.",
                 "fr": "Le résultat d'un calculateur ne colle plus son unité au nombre : il affiche désormais « 1,52 t » plutôt que « 1,52t », avec une espace qui ne passe jamais à la ligne. Rien à changer de votre côté — l'unité se saisit « t » ou « L », l'espace est ajoutée pour vous.",
                 "es": "El resultado de una calculadora ya no pega su unidad a la cifra: ahora muestra «1,52 t» en lugar de «1,52t», con un espacio que nunca salta de línea. No hay nada que cambiar por su parte: la unidad se escribe «t» o «L», el espacio se añade solo."
+            },
+            {
+                "en": "A site can now be offered in several languages. Once the languages are declared, a selector appears at the top of the back office, and the site follows the one a visitor picks — the pages as much as the back office. A site that declares nothing carries on in its own language exactly as before, with nothing to change.",
+                "fr": "Un site peut désormais être proposé en plusieurs langues. Une fois les langues déclarées, un sélecteur apparaît en haut du back-office, et le site suit celle que choisit un visiteur — les pages autant que le back-office. Un site qui n'en déclare aucune continue dans sa langue exactement comme avant, sans rien à changer.",
+                "es": "Un sitio puede ahora ofrecerse en varios idiomas. Una vez declarados los idiomas, aparece un selector en la parte superior del back-office, y el sitio sigue el que elige un visitante — tanto las páginas como el back-office. Un sitio que no declara ninguno continúa en su idioma exactamente como antes, sin nada que cambiar."
+            },
+            {
+                "en": "An alert about a setting reserved to the site's owner is no longer shown to an administrator who cannot open it. Those alerts used to fill the configuration screen with entries whose link answered “access denied”.",
+                "fr": "Une alerte portant sur un réglage réservé au propriétaire du site n'est plus montrée à un administrateur qui ne peut pas l'ouvrir. Ces alertes remplissaient l'écran de configuration d'entrées dont le lien répondait « accès refusé ».",
+                "es": "Una alerta sobre un ajuste reservado al propietario del sitio ya no se muestra a un administrador que no puede abrirlo. Esas alertas llenaban la pantalla de configuración con entradas cuyo enlace respondía «acceso denegado»."
             }
         ]
     },

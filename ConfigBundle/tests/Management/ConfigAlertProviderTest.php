@@ -162,6 +162,39 @@ class ConfigAlertProviderTest extends TestCase
         $this->assertSame('ROLE_ADMIN', $alerts[1]['role']);
     }
 
+    // A restricted entry stays out of the list below ROLE_SUPER_ADMIN, so an alert offered to a plain admin points at a setting whose link answers 403
+    public function testARestrictedConfigAddressesItsAlertToTheSuperAdmin(): void
+    {
+        $restricted = $this->createConfig(9, 'stripe-secret', Config::SEVERITY_DANGER);
+        $restricted->setIsRestricted(true);
+
+        $repository = $this->createStub(ConfigRepository::class);
+        $repository->method('findRequiringAttention')->willReturn([
+            $restricted,
+            $this->createConfig(10, 'site-name', Config::SEVERITY_WARNING),
+        ]);
+
+        $adminUrlGenerator = $this->createStub(AdminUrlGeneratorInterface::class);
+        $adminUrlGenerator->method('unsetAll')->willReturnSelf();
+        $adminUrlGenerator->method('setController')->willReturnSelf();
+        $adminUrlGenerator->method('setAction')->willReturnSelf();
+        $adminUrlGenerator->method('setEntityId')->willReturnSelf();
+        $adminUrlGenerator->method('generateUrl')->willReturn('/management/config/9/edit');
+
+        $provider = new ConfigAlertProvider(
+            $repository,
+            $adminUrlGenerator,
+            $this->createResolver(),
+            $this->createConfigService(['site-role-admin' => 'ROLE_ADMIN']),
+            $this->createTranslator(),
+        );
+
+        $alerts = $provider->getAlerts();
+
+        $this->assertSame('ROLE_SUPER_ADMIN', $alerts[0]['role']);
+        $this->assertSame('ROLE_ADMIN', $alerts[1]['role']);
+    }
+
     // The configuration as the site reads it: a sensitive value it could not decrypt is empty here while the row still holds its ciphertext
     private function createConfigService(array $values): ConfigServiceInterface
     {

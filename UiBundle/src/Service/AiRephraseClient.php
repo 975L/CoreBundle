@@ -16,7 +16,7 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// Rephrases free text using the client's own key ("ui-ai-assistant-rephrase-*" config, distinct from the dashboard assistant's key) - stateless, nothing is ever persisted or logged beyond the request itself. Supports Anthropic and any OpenAI-compatible API (OpenAI itself, or Infomaniak's Euria, whose only difference from OpenAI is its base URI). No interface here (unlike AiAssistantClient): there's nothing to override, a consuming app not wanting this feature simply leaves the api-key config empty. Token counts from each response are handed to AiUsageTracker - a numeric count alone reveals nothing about the rephrased content, so this doesn't compromise the "nothing is persisted" promise above
+// Rephrases - or translates - free text using the client's own key ("ui-ai-assistant-rephrase-*" config, distinct from the dashboard assistant's key) - stateless, nothing is ever persisted or logged beyond the request itself. Supports Anthropic and any OpenAI-compatible API (OpenAI itself, or Infomaniak's Euria, whose only difference from OpenAI is its base URI). No interface here (unlike AiAssistantClient): there's nothing to override, a consuming app not wanting this feature simply leaves the api-key config empty. Token counts from each response are handed to AiUsageTracker - a numeric count alone reveals nothing about the rephrased content, so this doesn't compromise the "nothing is persisted" promise above
 class AiRephraseClient
 {
     private const string ANTHROPIC_URI = 'https://api.anthropic.com/v1/messages';
@@ -90,19 +90,46 @@ class AiRephraseClient
 
     public function rephrase(string $text, string $style = 'neutral', string $length = 'same'): ?string
     {
+        $styleInstruction = self::STYLES[$style] ?? self::STYLES['neutral'];
+        $lengthInstruction = self::LENGTHS[$length] ?? self::LENGTHS['same'];
+
+        return $this->send(
+            'Rephrase the following text, keeping its original language and meaning.'
+            . $lengthInstruction
+            . $styleInstruction
+            . " Return only the rephrased text, nothing else:\n\n" . $text
+        );
+    }
+
+    // The same key and budget as a rephrase, asked for by the same button, so an editor never reaches for a translator of their own
+    // The locale's shape is checked rather than trusted, anything else writing the caller's own sentence into the prompt
+    public function translate(string $text, string $locale): ?string
+    {
+        if (1 !== preg_match('/^[a-z]{2,3}(?:[_-][A-Za-z]{2,4})?$/', $locale)) {
+            return null;
+        }
+
+        return $this->send(
+            sprintf('Translate the following text into the language whose IETF code is "%s".', $locale)
+            . ' Keep its meaning, its tone and its formatting.'
+            . " Return only the translated text, nothing else:\n\n" . $text
+        );
+    }
+
+    // The one place a provider is called: a rephrase and a translation differ by their prompt alone, and both are paid for by the site's own key
+    private function send(string $prompt): ?string
+    {
         if (!$this->isEnabled()) {
             return null;
         }
 
         $provider = (string) $this->configService->get('ui-ai-assistant-rephrase-provider');
         $apiKey = (string) $this->configService->get('ui-ai-assistant-rephrase-api-key');
-        $styleInstruction = self::STYLES[$style] ?? self::STYLES['neutral'];
-        $lengthInstruction = self::LENGTHS[$length] ?? self::LENGTHS['same'];
 
         try {
             return match ($provider) {
-                'anthropic' => $this->callAnthropic($text, $apiKey, $styleInstruction, $lengthInstruction),
-                'openai', 'euria' => $this->callOpenAiCompatible($text, $apiKey, $provider, $styleInstruction, $lengthInstruction),
+                'anthropic' => $this->callAnthropic($prompt, $apiKey),
+                'openai', 'euria' => $this->callOpenAiCompatible($prompt, $apiKey, $provider),
                 default => null,
             };
         } catch (ExceptionInterface $e) {
@@ -119,7 +146,7 @@ class AiRephraseClient
         }
     }
 
-    private function callAnthropic(string $text, string $apiKey, string $styleInstruction, string $lengthInstruction): string
+    private function callAnthropic(string $prompt, string $apiKey): string
     {
         $model = $this->configService->get('ui-ai-assistant-rephrase-model') ?: self::ANTHROPIC_DEFAULT_MODEL;
 
@@ -133,7 +160,7 @@ class AiRephraseClient
                 // Required by Anthropic; roomy enough that the longest LENGTHS entry isn't cut off
                 'max_tokens' => 2048,
                 'messages' => [
-                    ['role' => 'user', 'content' => $this->prompt($text, $styleInstruction, $lengthInstruction)],
+                    ['role' => 'user', 'content' => $prompt],
                 ],
             ],
             'timeout' => 20,
@@ -149,7 +176,7 @@ class AiRephraseClient
     }
 
     // Covers both OpenAI and Euria (Infomaniak AI Tools): Euria exposes an OpenAI-compatible API, only the base URI differs, read from "ui-ai-assistant-rephrase-base-uri"
-    private function callOpenAiCompatible(string $text, string $apiKey, string $provider, string $styleInstruction, string $lengthInstruction): string
+    private function callOpenAiCompatible(string $prompt, string $apiKey, string $provider): string
     {
         $isOpenAi = 'openai' === $provider;
         $uri = $isOpenAi
@@ -165,7 +192,7 @@ class AiRephraseClient
             'json' => [
                 'model' => $model,
                 'messages' => [
-                    ['role' => 'user', 'content' => $this->prompt($text, $styleInstruction, $lengthInstruction)],
+                    ['role' => 'user', 'content' => $prompt],
                 ],
             ],
             'timeout' => 20,
@@ -178,13 +205,5 @@ class AiRephraseClient
         );
 
         return (string) ($data['choices'][0]['message']['content'] ?? '');
-    }
-
-    private function prompt(string $text, string $styleInstruction, string $lengthInstruction): string
-    {
-        return 'Rephrase the following text, keeping its original language and meaning.'
-            . $lengthInstruction
-            . $styleInstruction
-            . " Return only the rephrased text, nothing else:\n\n" . $text;
     }
 }

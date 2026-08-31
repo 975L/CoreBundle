@@ -45,6 +45,22 @@ class AlertBuilderTest extends TestCase
         return new AlertBuilder($providers, $security);
     }
 
+    // A provider's screen handed its alerts to the grouping unfiltered, showing a plain admin restricted entries they cannot open (see ConfigCrudController)
+    public function testGroupOwnBySeverityDropsAnAlertItsReaderMayNotOpen(): void
+    {
+        $builder = $this->createBuilder([], ['ROLE_ADMIN']);
+
+        $grouped = $builder->groupOwnBySeverity([
+            $this->createAlert('lisible', Config::SEVERITY_WARNING, 'ROLE_ADMIN'),
+            $this->createAlert('restreinte', Config::SEVERITY_DANGER, 'ROLE_SUPER_ADMIN'),
+            $this->createAlert('sans rôle', Config::SEVERITY_INFO),
+        ]);
+
+        $this->assertSame([], array_column($grouped[Config::SEVERITY_DANGER], 'label'));
+        $this->assertSame(['lisible'], array_column($grouped[Config::SEVERITY_WARNING], 'label'));
+        $this->assertSame(['sans rôle'], array_column($grouped[Config::SEVERITY_INFO], 'label'));
+    }
+
     public function testGetAlertsMergesProvidersAndGroupsBySeverity(): void
     {
         $providerA = $this->createProvider([$this->createAlert('a', Config::SEVERITY_DANGER)]);
@@ -96,14 +112,14 @@ class AlertBuilderTest extends TestCase
         $this->assertSame(['super-only'], array_column($grouped[Config::SEVERITY_DANGER], 'label'));
     }
 
-    public function testGroupBySeverityGroupsAFlatAlertList(): void
+    public function testGroupOwnBySeverityGroupsAFlatAlertList(): void
     {
         $alerts = [
             $this->createAlert('warn-one', Config::SEVERITY_WARNING),
             $this->createAlert('danger-one', Config::SEVERITY_DANGER),
         ];
 
-        $grouped = AlertBuilder::groupBySeverity($alerts);
+        $grouped = $this->createBuilder([])->groupOwnBySeverity($alerts);
 
         $this->assertSame(['danger-one'], array_column($grouped[Config::SEVERITY_DANGER], 'label'));
         $this->assertSame(['warn-one'], array_column($grouped[Config::SEVERITY_WARNING], 'label'));

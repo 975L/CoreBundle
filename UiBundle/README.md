@@ -65,6 +65,8 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Visitor reviews on those same terms - a written opinion held back until it is read, a score feeding the very average the stars feed, a "verified" badge a bundle has to vouch for, and the reviews a platform exports sitting beside them
 - A wishlist for anything at all, on the same terms: one heart, one table, no mapping on the entity put aside, and a list started anonymously that follows the visitor to their account the moment they sign in
 - Calculators built entirely in the back-office: a form whose named results are arithmetic formulas an admin types, computed server-side and kept in step as the sliders move, placed anywhere with the `form` block
+- Block content translated per language on a site declaring several (`site_translation` table, one screen per language, no column and no migration on the blocks themselves), the default language staying where it was written
+- Donovan translating as well as rephrasing: the rich-text toolbar offers each declared language beside the rephrasing styles, on the same key and the same budget
 - Generic Twig helpers (`nl2br`, `linkify`, `route_exists`, `template_exists`, `asset_exists`)
 - Layout invariants checked without a browser (`Testing\StylesheetCascade`, shipped for the bundles depending on this one), plus `c975l:ui:layout-audit` for what only a rendered page shows
 
@@ -960,6 +962,7 @@ services:
               priority: 80  # optional, defaults to 0 - see below
               cacheable: true  # required - see below
               contexts: booking  # optional, comma-separated, defaults to none - see below
+              translatable: 'title, content'  # optional, comma-separated, defaults to none - see below
 ```
 
 Create the form type to define the `data` sub-fields, and the Twig template to render the block on the front end. The form data is stored as JSON in the `Block::$data` column.
@@ -1008,6 +1011,8 @@ A few contexts are **exclusive** (`BlockRegistry::EXCLUSIVE_CONTEXTS`, currently
 `media_types` is enforced on **both** sides: it fills the upload input's `accept` attribute (a hint to the file dialog, nothing more) *and* a `File` constraint on the media's own file field (`MediaUploadType`), which is what actually turns a wrong-typed upload down — the multi-file input goes through the same constraint, its files being spliced into the media collection before mapping. The declared wildcards (`image/*`) are passed through as written; Symfony's `File` constraint matches them the same way the browser does.
 
 That server-side check is what allows `assets/js/mobile-file-accept.js` (loaded by the admin controllers barrel) to **drop the `accept` attribute on touch devices**. Chrome on Android hands an input accepting nothing but image/video types to the system photo picker, which shows the phone's gallery and nothing else — no "Files", no Drive, no third-party storage provider (kDrive, Nextcloud…), so an editor on a phone simply cannot reach a file stored anywhere but their photos. Without the attribute, the same tap opens the document picker, where every provider installed on the phone appears. A mouse pointer is left alone, so a desktop admin keeps their images-only file dialog, and a list mixing in any other type (`application/pdf`, fonts…) is left alone too — those already open the document picker.
+
+`translatable` lists the keys of the kind's own `data` another language may cover, read back with `BlockRegistry::getTranslatable()`. Nothing declared means nothing translatable, which is what every kind means until it says otherwise: there's **no discovery from the form type**, a text field holding a css class or an icon name having no business being offered for translation. It only ever does anything on a site declaring several languages (see "Translating a block's content" below).
 
 **Un-registering a kind** is safe: a `Block` row outlives the tag that declared it, and `render_block()` skips a kind that is no longer registered rather than letting the registry throw. Dropping the tag - or uninstalling the bundle that declared it - blanks those blocks out of the pages holding them instead of taking the pages down with them. The rows themselves are left alone, so re-adding the tag brings them back.
 
@@ -1442,7 +1447,7 @@ Each project states the `role` its own screen is gated by — `site-role-editor`
 
 A "rephrase" action calling the editor's own AI provider directly - no intermediary, and **the rephrased content itself is never persisted or logged**, the request/response round-trip is otherwise stateless (`AiAssistantController::rephrase()` / `AiRephraseClient`). **`"site-role-admin"`** (`ROLE_ADMIN` by default) - lower than the dashboard assistant's `ROLE_SUPER_ADMIN` since this spends the site's own key/budget, not a shared one, but still above a plain editor. The only thing that outlives the request is an aggregate token count (see below) - a number reveals nothing about what was rephrased. The button only appears when the feature `isEnabled()` - no permanently-visible-but-disabled state, matching the dashboard assistant's own page. Works on plain text: rich formatting (bold, links, lists...) is not preserved across a rephrase, a deliberate scope limit rather than an oversight.
 
-The result is never a straight replacement - `ai-rephrase.js` appends it after the original, separated by `\n\n---\n\n`, so both stay directly editable in the same field. An editor keeps, deletes or merges either side by hand, rather than losing the original the moment a rephrase comes back or needing a separate "apply" step.
+The result is never a straight replacement - `ai-rephrase.js` appends it after the original, separated by `\n\n---\n\n`, so both stay directly editable in the same field. An editor keeps, deletes or merges either side by hand, rather than losing the original the moment a rephrase comes back or needing a separate "apply" step. The one exception is a **language screen** (see "Translating a block's content"), where the field holds the prompt that screen offered rather than an editor's own text: there the suggestion replaces it, anything kept beside it being stored as part of the translation.
 
 Two independent selects are sent with the request: a style (`AiRephraseClient::getStyles()` - `neutral`/`professional`/`friendly`/`concise`/`persuasive`/`simple`/`enthusiastic`/`expanded`) and a length (`AiRephraseClient::getLengths()` - `same`/`shorter`/`longer`, defaulting to `same`). Both index a closed `const` map on the server side - an unexpected/tampered value falls back to its default rather than being forwarded to the LLM, so neither can be used to inject arbitrary prompt instructions.
 
@@ -1468,6 +1473,8 @@ A third, field-independent spot: once enabled, the AI Assistant page itself show
 
 A style selector (`neutral`/`professional`/`friendly`/`concise`) sits next to the button, backed by `AiRephraseClient::rephrase(string $text, string $style = 'neutral')` - each style maps to a fixed prompt fragment server-side (`AiRephraseClient::STYLES`), a closed list the request's raw `style` value is only ever used to *index*, never interpolated into the prompt itself, so a tampered value can't inject arbitrary instructions. `getStyles(): array` is the whole surface a custom UI needs to build its own selector.
 
+**Donovan translates as well as rephrasing.** On a site declaring several languages, the toolbar offers each of them beside the rephrasing styles, and `AiRephraseClient::translate(string $text, string $locale)` answers on the same endpoint, the same key and the same budget - only the prompt differs. The `ai_translatable_locales` Twig function is what the toolbar builds its list from, and the locale is checked against what the site declares rather than passed through, a request parameter being written by whoever wants. On a language screen the toolbar becomes a single "Translate into <language>" button, pinned to the language being written. Style and length say nothing about a translation and are hidden while one is selected.
+
 ### Rephrase spend tracking
 
 Every provider response already includes its own token usage - `AiRephraseClient` reads it and hands it to `AiUsageTracker`, which rolls it up into one `AiUsage` row per calendar month (`inputTokens`/`outputTokens`/`requestCount`), not one row per request: a per-request log would tie a token count to a timestamp close enough to correlate with a specific edit, which the "nothing is persisted" promise above is precisely there to avoid. `AiUsageTracker::getCurrentMonth()` is the read side - shown on the AI Assistant page when the rephrase feature is enabled.
@@ -1481,6 +1488,22 @@ Every one of these three alerts links to the AI Assistant page itself (`manageme
 ### On cost and abuse
 
 Both keys are the consuming app's own, entered as `sensitive` config (encrypted at rest by ConfigBundle's `VaultEncryptor`) - this bundle has no billing relationship with any provider. An app centralizing the dashboard endpoint across several of its own sites (one shared backend, one shared token) is responsible for its own rate limiting on that backend - a leaked token can otherwise be called from anywhere, same as any bearer-token API.
+
+---
+
+## Translating a block's content
+
+Only on a site declaring several languages (`framework.enabled_locales`, see `c975l/config-bundle`) - everywhere else none of this runs, no row is written and nothing changes.
+
+`Entity\Translation` (`site_translation`) holds **one field of one thing said in one other language**, keyed by `ownerType`/`ownerId`/`field`/`locale`. It names its owner (`ui_block`) rather than pointing at it, like `Favorite` and `Rating` before it - so there's no foreign key and no mapping on `Block`, and `TranslationPurgeListener` is what takes a block's rows away with the block. The **default language is never stored**: it stays in `Block::$data` and plays the part of the msgid, so a single-language site holds not one row here and a block gains a language without gaining a column.
+
+`Service\ContentTranslator` is the one service reading and writing them, for a page's own fields as much as a block's. `BlockExtension` lays what it returns *over* the stored data rather than in its place, so a field nobody translated keeps the text it was written in and the block templates never hear about any of this. A block's whole tree is read ahead in one query.
+
+**The language screen** is `BlockType` given a `translation_locale`: the same fields, rendered unmapped, filled with what that language says - or the source text between brackets where it says nothing yet - and narrowed to the kind's own `translatable` list. The kind is locked on the one the block holds and the entrance animation left out, neither saying anything a language could change and both applying to every language at once. A container's slots inherit the language; its medias aren't rendered at all.
+
+What such a form writes is **staged rather than stored**: a form's POST_SUBMIT fires before the root form is validated, so `ContentTranslator::stage()` keeps it until `TranslationWriteListener` writes it on the flush that saves the block - a refused submission never reaching one. A field handed back still holding the bracketed source is stored as nothing, compared on its words so a rich text editor's re-serialisation doesn't slip it through.
+
+The render cache is already keyed by locale, and `BlockCacheInvalidationListener` watches `Translation` too - a row of another table otherwise touching no block, whose render in that language would go on being served as it stands.
 
 ---
 

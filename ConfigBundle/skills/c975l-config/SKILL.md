@@ -1,6 +1,6 @@
 ---
 name: c975l-config
-description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, the closed group list, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_."
+description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, the closed group list, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector."
 ---
 
 # c975L ConfigBundle — configuration
@@ -10,7 +10,7 @@ description: "Use this skill for any configuration question in a Symfony applica
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\` · **Twig namespace:** `@c975LConfig` · **Translation domains:** `config`, `site_config`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Config.php`, `src/Service/ConfigService.php`, `src/Service/ConfigServiceInterface.php`, `src/Command/ConfigLoadAllCommand.php`, `src/Command/ConfigSetCommand.php`, `src/Command/ConfigPruneCommand.php`, `src/Command/EncryptSensitiveCommand.php`, `src/Controller/Management/`, `config/configs.json`
+`src/Entity/Config.php`, `src/Service/ConfigService.php`, `src/Service/ConfigServiceInterface.php`, `src/Command/ConfigLoadAllCommand.php`, `src/Command/ConfigSetCommand.php`, `src/Command/ConfigPruneCommand.php`, `src/Command/EncryptSensitiveCommand.php`, `src/Controller/Management/`, `src/Service/SiteLocales.php`, `src/Listener/LocaleListener.php`, `config/configs.json`
 
 **Related skills:** `c975l-management`, `c975l-users`, `c975l-operations` in this same bundle, and `c975l-blocks`, `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets` in UiBundle beside it.
 
@@ -25,6 +25,9 @@ the `site_config` table and edited in the back office. Never:
 
 **The one legitimate `.env` value is `C975L_VAULT_KEY`** in `.env.local` — the AES-256-CBC key
 encrypting `sensitive` values. That is infrastructure, not an application setting.
+
+**The one setting declared in a Symfony config file is the list of languages** — see below. Symfony
+itself reads that list, which is what puts it outside this rule rather than beside it.
 
 ## Declaring an entry
 
@@ -112,6 +115,40 @@ php bin/console c975l:config:get site-name
 php bin/console c975l:config:set user-creation-notification false
 ```
 
+## The languages a site offers
+
+**A site declares them in `config/packages/translation.yaml`, next to the language it is written in** —
+the one application setting that is not a `configs.json` entry:
+
+```yaml
+framework:
+    default_locale: en
+    enabled_locales: ['en', 'fr', 'es']
+```
+
+Symfony is itself a consumer of this list: it restricts a route's `_locale` to it and compiles only the
+catalogues it names, so a value it cannot see would leave both beside the point.
+
+`Service\SiteLocales` is the one place anything asks what a site offers. It always holds the default
+locale whether or not the list names it, and drops any code the Intl catalogue does not know — a typo
+would otherwise take down every back-office page through EasyAdmin's `Locale::new()`.
+
+- **`all()`** — every language offered, the default one first.
+- **`isMultilingual()`** — whether more than one is offered. **A site declaring nothing offers its
+  default language alone and behaves exactly as it always did**, which is every site until it says
+  otherwise: guard anything language-related on this.
+
+`Listener\LocaleListener` (priority 20) sets the language of a request from the `_locale` query
+parameter, then the session, then what the browser asks for — a route carrying its own `_locale`
+attribute wins over all three. The back-office selector is EasyAdmin's own
+(`Dashboard::setLocales()`), which only appends `?_locale=xx` and reads it back nowhere, so this
+listener is what keeps the choice — for the front office too.
+
+`enabled_locales` **restricts**: on a site already serving several languages, list every one of them,
+not just the new ones. It is unrelated to the interface translations (`messages.fr.xlf`), which keep
+working through Symfony's translator whether or not the list exists. Translating *content* is
+UiBundle's — see `c975l-blocks`.
+
 ## Maintenance mode
 
 `site-maintenance` set to `true` answers every public request with a **503 and a `Retry-After`** —
@@ -127,7 +164,11 @@ temporary.
 ## Do not
 
 - **Do not add a `.env` variable, a container parameter or a Configuration/TreeBuilder class** for
-  an application setting. The only `.env` value that belongs here is `C975L_VAULT_KEY`.
+  an application setting. The only `.env` value that belongs here is `C975L_VAULT_KEY`, and the only
+  setting declared in a Symfony config file is `framework.enabled_locales`.
+- **Do not add a config entry for the languages a site offers**, and do not read them from anywhere
+  but `SiteLocales` — not from `framework.enabled_locales` directly, which skips the default locale
+  and the Intl check.
 - **Do not inject `ConfigService`** — inject `ConfigServiceInterface`.
 - **Do not cache a config value yourself.** The service already does, and invalidates on save.
 - **Do not invent a `group`.** Omit it instead.

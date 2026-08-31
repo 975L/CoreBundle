@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales."
 ---
 
 # c975L UiBundle — blocks
@@ -10,7 +10,7 @@ description: "Use this skill when working with page blocks in a Symfony applicat
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `src/Service/ReviewTokenSigner.php`, `src/Service/ReviewNotifier.php`, `src/Management/ReviewAlertProvider.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `assets/js/block-picker.js`, `sass/_block-thumbs.scss`, `config/services.yaml`
+`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Entity/Translation.php`, `src/Service/ContentTranslator.php`, `src/Repository/TranslationRepository.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `src/Service/ReviewTokenSigner.php`, `src/Service/ReviewNotifier.php`, `src/Management/ReviewAlertProvider.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `assets/js/block-picker.js`, `sass/_block-thumbs.scss`, `config/services.yaml`
 
 **Related skills:** `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-config`, `c975l-management` in ConfigBundle beside it.
 
@@ -84,6 +84,7 @@ ui.block.booking:
           template: '@App/blocks/booking.html.twig'
           pickable: true
           cacheable: true
+          translatable: 'title, content'
 ```
 
 `bin/console c975l:ui:block:create` scaffolds the form type, the template and the test in a consuming
@@ -98,6 +99,10 @@ app. The block's own data is JSON in `Block::$data` — **no column, no migratio
   inside a parent from one offered everywhere.
 - `media_types`, `media_required`, `media_multi_upload` drive the media collection, `media_types`
   being enforced on both the input's `accept` and a server-side `File` constraint.
+- **`translatable`** lists the keys of the kind's own data another language may cover, read back with
+  `BlockRegistry::getTranslatable()` — see below. Nothing declared means nothing translatable, which
+  is what every kind means until it says otherwise: **there is no discovery from the form type**, a
+  text field holding a css class or an icon name having no business being offered for translation.
 - The owning bundle is derived from the template's Twig namespace — no attribute to fill.
 
 **Un-registering a kind is safe**: a `Block` row outlives its tag, and `render_block()` skips an
@@ -126,8 +131,8 @@ back-office gets the rules through `sass/management.scss` instead.
 ## The render cache
 
 Each block's rendered HTML is cached with an infinite TTL, keyed by block id and locale, and
-invalidated by a Doctrine listener watching `Block` **and** `Media` — a swapped image does not touch
-the parent block's own fields. `bin/console cache:clear` invalidates everything, which is how a
+invalidated by a Doctrine listener watching `Block`, `Media` **and** `Translation` — a swapped image
+or a translated title does not touch the parent block's own fields. `bin/console cache:clear` invalidates everything, which is how a
 template-only release is picked up.
 
 **Set `cacheable: false` whenever the output is not a pure function of (block id, data, locale)**:
@@ -139,6 +144,35 @@ template-only release is picked up.
 **When in doubt, `cacheable: false`** — the cost is one avoidable render, not a correctness bug. To
 keep a kind cacheable while reading outside data, implement `BlockCacheTagProviderInterface` and
 invalidate your own tag where that data changes.
+
+## Translating a block's content
+
+**Only on a site offering several languages** (`SiteLocales::isMultilingual()`, see `c975l-config`) —
+everywhere else none of this runs and nothing changes.
+
+`Entity\Translation` (`site_translation`) holds **one field of one thing said in one other language**,
+keyed by `ownerType` / `ownerId` / `field` / `locale`. It names its owner (`ui_block`) rather than
+pointing at it, like `Favorite` and `Rating`: **no foreign key**, which is why
+`TranslationPurgeListener` deletes a block's rows on its `postRemove`.
+
+**The default language is never stored.** It stays in `Block::$data` and plays the part of the msgid,
+so a single-language site holds not one row here.
+
+- **`Service\ContentTranslator`** is the one service reading and writing them, for a page's own fields
+  as much as a block's. `BlockExtension` lays what it returns *over* the stored data — a field nobody
+  translated keeps the text it was written in, and the block templates never hear about any of this.
+- **The language screen** is `BlockType` given a `translation_locale`: the same fields, rendered
+  unmapped, filled with what that language says or the source text between brackets where it says
+  nothing yet, and narrowed to the kind's `translatable` list. The kind is locked and the entrance
+  animation left out — neither says anything a language could change.
+- **What that form writes is staged, not stored**: a form's POST_SUBMIT fires before the root form is
+  validated, so `ContentTranslator::stage()` holds it until `TranslationWriteListener` writes it on the
+  flush that saves the block. A field handed back still holding the bracketed source is stored as
+  nothing.
+- **`Service\TranslationFormContext`** carries the language being written for what cannot be handed
+  the form's options — the AI toolbar of a field several levels below the sub-form.
+- The render cache is already keyed by locale, and `BlockCacheInvalidationListener` watches
+  `Translation` too, a row of another table otherwise touching no block.
 
 ## Anchors, containers, edit overlay
 
@@ -381,6 +415,11 @@ them** rather than writing a walk of your own. A content export never carries th
 - **Do not add a field for outside profile urls** to the contact block — contribute them through
   `SameAsProviderInterface`.
 - **Do not make a singleton kind pickable.**
+- **Do not store a block's default language in `site_translation`** — it stays in `Block::$data`.
+- **Do not offer a field for translation because it is a text field**: declare `translatable`
+  key by key, or a css class and an icon name end up on a language screen.
+- **Do not write a translation from a form's POST_SUBMIT** — stage it, and let
+  `TranslationWriteListener` write it on the flush that saves the owner.
 - **Do not map a relation to `Rating`**, and do not read a rating's scale off the request.
 - **Do not map a relation to `Favorite`** either, and do not resolve a wishlist one row at a time —
   `getItems()` is handed the whole page's ids.

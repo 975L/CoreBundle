@@ -123,6 +123,8 @@ class SitemapWriter
             'lastmod' => $url['lastmod'] ?? date('Y-m-d'),
             'changefreq' => $url['changefreq'] ?? self::DEFAULT_CHANGEFREQ,
             'priority' => min(1.0, max(0.0, (float) ($url['priority'] ?? self::DEFAULT_PRIORITY) / self::PRIORITY_SCALE)),
+            // The other languages of the same page when the provider declares any, the key not even existing on a single-language site (see SitePageSitemapProvider)
+            'alternates' => \is_array($url['alternates'] ?? null) ? $url['alternates'] : [],
         ], $urls);
     }
 }

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Listener;
 
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Twig\MediaExtension;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,6 +57,8 @@ class BlockCacheInvalidationListener
         $block = match (true) {
             $entity instanceof Block => $entity,
             $entity instanceof Media => $this->resolveMediaBlock($entity, $em),
+            // A block's translation is a row of another table, so nothing touches the block itself and its render in that language would go on being served as it stands
+            $entity instanceof Translation => $this->resolveTranslatedBlock($entity, $em),
             default => null,
         };
 
@@ -67,6 +70,14 @@ class BlockCacheInvalidationListener
         if ([] !== $tags) {
             $this->cache->invalidateTags($tags);
         }
+    }
+
+    // The block this translation dresses, when there is one: the translations of the other bundles - a page's own - do not go through the blocks cache
+    private function resolveTranslatedBlock(Translation $translation, EntityManagerInterface $em): ?Block
+    {
+        return Translation::OWNER_BLOCK === $translation->getOwnerType()
+            ? $em->getRepository(Block::class)->find($translation->getOwnerId())
+            : null;
     }
 
     /**

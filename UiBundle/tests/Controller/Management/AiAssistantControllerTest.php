@@ -18,6 +18,7 @@ use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiUsageTracker;
 use c975L\UiBundle\Service\ConfigEditUrlResolver;
+use c975L\UiBundle\Service\ContentTranslator;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,9 +33,13 @@ class AiAssistantControllerTest extends TestCase
         ?AiRephraseClient $aiRephraseClient = null,
         bool $granted = true,
         bool $csrfValid = true,
+        array $translatableLocales = [],
     ): AiAssistantController {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn('ROLE_ADMIN');
+
+        $contentTranslator = $this->createStub(ContentTranslator::class);
+        $contentTranslator->method('getTranslatableLocales')->willReturn($translatableLocales);
 
         $controller = new AiAssistantController(
             $aiAssistantClient ?? $this->createStub(AiAssistantClientInterface::class),
@@ -43,6 +48,7 @@ class AiAssistantControllerTest extends TestCase
             $configService,
             $this->createStub(ConfigRepository::class),
             $this->createStub(ConfigEditUrlResolver::class),
+            $contentTranslator,
         );
         $controller->setContainer($this->createContainer([
             'security.authorization_checker' => $this->createAuthorizationChecker($granted),
@@ -131,6 +137,33 @@ class AiAssistantControllerTest extends TestCase
         $this->assertSame(['error' => 'unavailable'], json_decode((string) $response->getContent(), true));
     }
 
+    // A target language turns the same endpoint into a translation, which is how the Trix editor's own select reaches it
+    public function testRephraseTranslatesWhenATargetLanguageIsAsked(): void
+    {
+        $client = $this->createMock(AiRephraseClient::class);
+        $client->expects($this->once())->method('translate')->with('Hello there', 'es')->willReturn('Hola');
+        $client->expects($this->never())->method('rephrase');
+
+        $response = $this->createController(null, $client, translatableLocales: ['es'])
+            ->rephrase(new Request([], ['text' => 'Hello there', 'locale' => 'es']));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(['text' => 'Hola'], json_decode((string) $response->getContent(), true));
+    }
+
+    // The locale comes from a form the browser posts: a language the site does not declare is refused rather than paid for
+    public function testRephraseRefusesALanguageTheSiteDoesNotDeclare(): void
+    {
+        $client = $this->createMock(AiRephraseClient::class);
+        $client->expects($this->never())->method('translate');
+
+        $response = $this->createController(null, $client, translatableLocales: ['es'])
+            ->rephrase(new Request([], ['text' => 'Hello there', 'locale' => 'de']));
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame(['error' => 'unknown_locale'], json_decode((string) $response->getContent(), true));
+    }
+
     public function testRephraseReturnsRephrasedText(): void
     {
         $client = $this->createStub(AiRephraseClient::class);
@@ -186,6 +219,7 @@ class AiAssistantControllerTest extends TestCase
             $this->createStub(ConfigServiceInterface::class),
             $configRepository,
             new ConfigEditUrlResolver($urlGenerator),
+            $this->createStub(ContentTranslator::class),
         );
 
         $links = $this->invokeConfigLinks($controller);
@@ -213,6 +247,7 @@ class AiAssistantControllerTest extends TestCase
             $configService,
             $this->createStub(ConfigRepository::class),
             $this->createStub(ConfigEditUrlResolver::class),
+            $this->createStub(ContentTranslator::class),
         );
 
         // "anthropic" doesn't need base-uri/model, and every other slug is filled in above
@@ -238,6 +273,7 @@ class AiAssistantControllerTest extends TestCase
             $configService,
             $this->createStub(ConfigRepository::class),
             $this->createStub(ConfigEditUrlResolver::class),
+            $this->createStub(ContentTranslator::class),
         );
 
         $this->assertSame(

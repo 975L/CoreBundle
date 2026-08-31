@@ -41,6 +41,7 @@
         "symfony/finder": "^8.0",
         "symfony/form": "^8.0",
         "symfony/http-client": "^8.0",
+        "symfony/intl": "^8.0",
         "symfony/mailer": "^8.0",
         "symfony/messenger": "^8.0",
         "symfony/password-hasher": "^8.0",

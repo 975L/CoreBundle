@@ -50,8 +50,17 @@ class LegalDocumentControllerTest extends TestCase
         $response = $this->controller()->pdf('sales/terms', new Request());
 
         $this->assertSame('"abc123"', $response->getEtag());
-        $this->assertTrue($response->headers->hasCacheControlDirective('public'));
-        $this->assertSame(3600, $response->getMaxAge());
+    }
+
+    // The document is drawn in the language of whoever asked for it, and nothing in the headers said so: a shared cache would have served the first language asked for to every visitor of that hour. Revalidated instead - the tag holds the locale, so a browser holding the right version still pays an empty 304
+    public function testTheDocumentIsRevalidatedRatherThanStoredByASharedCache(): void
+    {
+        $response = $this->controller()->pdf('sales/terms', new Request());
+
+        $this->assertTrue($response->headers->hasCacheControlDirective('private'));
+        $this->assertFalse($response->headers->hasCacheControlDirective('public'));
+        $this->assertTrue($response->headers->hasCacheControlDirective('must-revalidate'));
+        $this->assertSame(0, $response->getMaxAge());
     }
 
     // A browser holding the very same version is told so rather than sent the file again

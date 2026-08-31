@@ -211,6 +211,36 @@ class SitemapWriterTest extends TestCase
         $this->assertSame(0.5, $url['priority']);
     }
 
+    // A single-language provider declares no "alternates" at all, and the template then iterates over nothing
+    public function testWriteDefaultsAlternatesToNoneWhenTheProviderDeclaresAny(): void
+    {
+        $this->createWriter([$this->createRawProvider('site', [['loc' => 'https://example.com/pages/about']])])->write();
+
+        $this->assertSame([], $this->renderedUrls('site')[0]['alternates']);
+    }
+
+    // The other languages of the same page, passed through as the provider declared them (see SitePageSitemapProvider)
+    public function testWriteKeepsTheAlternatesAProviderDeclares(): void
+    {
+        $alternates = ['en' => 'https://example.com/en/about', 'fr' => 'https://example.com/fr/about'];
+
+        $this->createWriter([$this->createRawProvider('site', [
+            ['loc' => 'https://example.com/en/about', 'alternates' => $alternates],
+        ])])->write();
+
+        $this->assertSame($alternates, $this->renderedUrls('site')[0]['alternates']);
+    }
+
+    // Anything but a list of urls is dropped rather than reaching the template, which would iterate over a scalar
+    public function testWriteDropsAlternatesThatAreNotAList(): void
+    {
+        $this->createWriter([$this->createRawProvider('site', [
+            ['loc' => 'https://example.com/a', 'alternates' => 'en'],
+        ])])->write();
+
+        $this->assertSame([], $this->renderedUrls('site')[0]['alternates']);
+    }
+
     // Providers declare a priority on the admin's 0-10 scale, the protocol only accepts 0.0-1.0 - converted here, once, rather than by every provider
     public function testWriteConvertsPriorityToTheProtocolScale(): void
     {

@@ -40,8 +40,7 @@ class ConfigAlertProvider implements AlertProviderInterface
                 'label' => $this->configLabelResolver->resolve($config),
                 'description' => $config->getDescription(),
                 'severity' => $config->getSeverity(),
-                // Its screen is the admin's own (see ConfigCrudController) - the dashboard now renders for an editor, who would read an alert about a setting they cannot open
-                'role' => $this->configService->get('site-role-admin'),
+                'role' => $this->role($config),
                 'url' => $this->editUrl($config),
             ];
         }
@@ -56,12 +55,20 @@ class ConfigAlertProvider implements AlertProviderInterface
                 'label' => $this->configLabelResolver->resolve($config),
                 'description' => $this->translator->trans('description.config_unreadable', [], 'config'),
                 'severity' => Config::SEVERITY_DANGER,
-                'role' => $this->configService->get('site-role-admin'),
+                'role' => $this->role($config),
                 'url' => $this->editUrl($config),
             ];
         }
 
         return $alerts;
+    }
+
+    // Who the alert is addressed to: the admin whose screen this is, and the super-admin for a restricted entry, which stays out of the list below that role and whose link would otherwise answer 403
+    private function role(Config $config): string
+    {
+        return true === $config->getIsRestricted()
+            ? 'ROLE_SUPER_ADMIN'
+            : (string) $this->configService->get('site-role-admin');
     }
 
     private function editUrl(Config $config): string

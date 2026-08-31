@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Controller\Management;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Entity\Config;
+use c975L\ConfigBundle\Management\AlertBuilder;
 use c975L\ConfigBundle\Management\ConfigAlertProvider;
 use c975L\ConfigBundle\Management\ConfigExportProvider;
 use c975L\ConfigBundle\Management\ConfigGroupLabelResolver;
@@ -100,6 +101,8 @@ class ConfigCrudControllerTest extends TestCase
         return $requestStack;
     }
 
+    // Every collaborator the controller takes, each one optional so a test only names the ones it cares about
+    // #lizard forgives - no branch here: Lizard counts each nullable "?" and each "??" twice, reading twelve optional parameters as CCN 37
     private function createController(
         ?Security $security = null,
         ?ConfigServiceInterface $configService = null,
@@ -133,6 +136,7 @@ class ConfigCrudControllerTest extends TestCase
             $contentExporter ?? $this->createStub(ContentExporter::class),
             $configExportProvider ?? new ConfigExportProvider($connection, $security),
             $this->createStub(ConfigAlertProvider::class),
+            new AlertBuilder([], $security),
             new ConfigLabelResolver($translator),
             $configRepository ?? $this->createStub(ConfigRepository::class),
             $adminUrlGenerator ?? $this->createAdminUrlGenerator(),
@@ -671,6 +675,7 @@ class ConfigCrudControllerTest extends TestCase
             $this->createStub(ContentExporter::class),
             new ConfigExportProvider($connection, $security),
             $this->createStub(ConfigAlertProvider::class),
+            new AlertBuilder([], $security),
             new ConfigLabelResolver($translator),
             $this->createStub(ConfigRepository::class),
             $this->createAdminUrlGenerator(),

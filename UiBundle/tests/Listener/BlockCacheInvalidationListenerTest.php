@@ -12,8 +12,10 @@ namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Listener\BlockCacheInvalidationListener;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
@@ -45,6 +47,38 @@ class BlockCacheInvalidationListenerTest extends TestCase
 
         new BlockCacheInvalidationListener($cache)
             ->postPersist(new PostPersistEventArgs($media, $this->createEntityManager()));
+    }
+
+    // A translation is a row of another table: nothing touches the block, whose render in that language would go on being served as it stands
+    public function testPostUpdateInvalidatesTheBlockATranslationDresses(): void
+    {
+        $block = $this->createConfiguredStub(Block::class, ['getId' => 9]);
+        $translation = new Translation(Translation::OWNER_BLOCK, 9, 'title', 'es');
+
+        $repository = $this->createStub(EntityRepository::class);
+        $repository->method('find')->willReturn($block);
+
+        $em = $this->createStub(EntityManagerInterface::class);
+        $em->method('getRepository')->willReturn($repository);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_9']);
+
+        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
+    }
+
+    // The translations of the other bundles - a page's own title - do not go through the blocks cache
+    public function testATranslationOfAnythingButABlockInvalidatesNothing(): void
+    {
+        $translation = new Translation('site_page', 9, 'title', 'es');
+
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->expects($this->never())->method('getRepository');
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('invalidateTags');
+
+        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
     }
 
     public function testPostUpdateInvalidatesTheBlockOwnTag(): void

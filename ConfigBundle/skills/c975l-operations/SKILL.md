@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -33,6 +33,13 @@ php bin/console c975l:dev-profile:run        # dev only: what the toolbar would 
 server, they keep answering 200 during a maintenance, where a controller-rendered `robots.txt` would
 503 and stop the crawl of the whole site. `robots.txt` only declares the sitemap index once that file
 really exists, so the order of those two commands matters.
+
+A `SitemapProviderInterface` url is `loc` plus the optional `lastmod`, `changefreq` and `priority`
+(declared on the admin's 0-10 scale, converted to the protocol's 0.0-1.0 by `SitemapWriter`). A site
+offering several languages may add **`alternates`**, a `hreflang => url` map written out as
+`xhtml:link rel="alternate"`. **Include the url's own language in that map**: a group is read whole,
+and a page naming only its neighbours declares a group no engine keeps. A single-language provider
+declares no such key and nothing is written.
 
 The eight `seo-*` settings driving them are `restricted`. `seo-robots-block-ai` is **on by default**;
 `seo-robots-private` is off.

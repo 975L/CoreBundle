@@ -7,7 +7,7 @@
  */
 import { Controller } from "@hotwired/stimulus";
 
-// Works on plain text, rich formatting not being preserved across a rephrase
+// Works on plain text, rich formatting not being preserved across a rephrase or a translation
 // Plain dataset/querySelector rather than Stimulus targets/values, whose camelCase identifier would want the non-dasherized "data-airephrase-*"
 export default class extends Controller {
     get textareaId() {
@@ -26,6 +26,20 @@ export default class extends Controller {
         return this.element.dataset.aiRephraseSuggestionLabelValue || '';
     }
 
+    get actionEl() {
+        return this.element.querySelector('[data-ai-rephrase-target="action"]');
+    }
+
+    // The language a translation screen pins, empty on every other screen. Told apart from the one below, which also holds whatever the select offers on an ordinary edit screen
+    get pinnedLocale() {
+        return this.element.dataset.aiRephraseLocaleValue || '';
+    }
+
+    // The language to translate into, empty when the button rephrases. Pinned by a translation screen, which writes one language and offers no choice; picked from the select everywhere else
+    get locale() {
+        return this.pinnedLocale || (this.actionEl ? this.actionEl.value : '');
+    }
+
     get styleEl() {
         return this.element.querySelector('[data-ai-rephrase-target="style"]');
     }
@@ -42,6 +56,24 @@ export default class extends Controller {
         return this.element.querySelector('[data-ai-rephrase-target="error"]');
     }
 
+    // Style and length say nothing about a translation, and the button no longer does what it says: both follow the choice made in the select
+    switchAction() {
+        const translating = '' !== this.locale;
+
+        [this.styleEl, this.lengthEl].forEach(el => {
+            if (el) el.classList.toggle('d-none', translating);
+        });
+
+        const button = this.buttonEl;
+        if (button) {
+            button.textContent = translating
+                ? (button.dataset.translateLabel || button.textContent)
+                : (button.dataset.rephraseLabel || button.textContent);
+        }
+
+        this.hideError();
+    }
+
     run(event) {
         event.preventDefault();
 
@@ -52,7 +84,8 @@ export default class extends Controller {
             return;
         }
 
-        const text = field.read().trim();
+        const pinned = '' !== this.pinnedLocale;
+        const text = this.sourceText(field.read().trim(), pinned);
         if (!text) return;
 
         const button = this.buttonEl;
@@ -68,6 +101,7 @@ export default class extends Controller {
             },
             body: new URLSearchParams({
                 text,
+                locale: this.locale,
                 style: this.styleEl ? this.styleEl.value : 'neutral',
                 length: this.lengthEl ? this.lengthEl.value : 'same',
             }),
@@ -75,8 +109,8 @@ export default class extends Controller {
             .then(r => r.json())
             .then(data => {
                 if (data.text) {
-                    // Appended, never replacing: the editor keeps the original to pick from
-                    field.write(`${text}\n--- ${this.suggestionLabel}\n${data.text}`);
+                    // Replaced on a translation screen, where the field holds the prompt this screen offered and anything kept beside the suggestion would be stored as part of the translation; appended everywhere else, the editor keeping the original to pick from
+                    field.write(pinned ? data.text : `${text}\n--- ${this.suggestionLabel}\n${data.text}`);
                 } else {
                     this.showError();
                 }
@@ -85,6 +119,11 @@ export default class extends Controller {
             .finally(() => {
                 if (button) button.disabled = false;
             });
+    }
+
+    // What is actually sent. A translation screen fills the field with the source text between brackets (see ContentTranslator::prompt): the brackets mark a field nobody has written yet, and sent along they would come back translated with it
+    sourceText(text, pinned) {
+        return pinned && /^\[[\s\S]*\]$/.test(text) ? text.slice(1, -1).trim() : text;
     }
 
     // A Trix field must go through its editor API, direct DOM changes not syncing back to it; null when neither element is found
@@ -111,7 +150,7 @@ export default class extends Controller {
     showError() {
         const error = this.errorEl;
         if (!error) return;
-        error.textContent = error.dataset.message || '';
+        error.textContent = ('' !== this.locale ? (error.dataset.translateMessage || error.dataset.message) : error.dataset.message) || '';
         error.classList.remove('d-none');
     }
 

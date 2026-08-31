@@ -11,6 +11,8 @@
 namespace c975L\UiBundle\Twig;
 
 use c975L\UiBundle\Service\AiRephraseClient;
+use c975L\UiBundle\Service\ContentTranslator;
+use c975L\UiBundle\Service\TranslationFormContext;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -19,6 +21,8 @@ class AiRephraseExtension extends AbstractExtension
 {
     public function __construct(
         private readonly AiRephraseClient $aiRephraseClient,
+        private readonly ContentTranslator $contentTranslator,
+        private readonly TranslationFormContext $translationFormContext,
     ) {
     }
 
@@ -30,6 +34,10 @@ class AiRephraseExtension extends AbstractExtension
             new TwigFunction('ai_rephrase_styles', $this->aiRephraseClient->getStyles(...)),
             new TwigFunction('ai_rephrase_lengths', $this->aiRephraseClient->getLengths(...)),
             new TwigFunction('ai_assistant_name', $this->assistantName(...)),
+            // The languages the same button may translate into, empty on a site declaring a single one - which is what hides the whole choice
+            new TwigFunction('ai_translatable_locales', $this->contentTranslator->getTranslatableLocales(...)),
+            // The one language a translation screen writes, which turns the choice above into a single button
+            new TwigFunction('ai_translation_target', $this->translationFormContext->get(...)),
         ];
     }
 

@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+**`AlertBuilder::groupBySeverity()` is now `private`.** It grouped a flat alert list without filtering anything, so a
+screen calling it showed its reader alerts naming entries they may not open - a link to a 403. Call
+`groupOwnBySeverity()` instead, which is the same grouping with the role filter the dashboard's own alerts already go
+through; no other change is needed at the call site.
+
+**A site declares the languages it offers in `config/packages/translation.yaml`**, next to the language it is written
+in - nothing else to fill in anywhere:
+
+```yaml
+framework:
+    default_locale: en
+    enabled_locales: ['en', 'fr', 'es']
+```
+
+That one line turns on the whole set: the language selector in the back office, the front office following the
+language a visitor picks, and the translation of block content. A site that declares nothing offers its default
+language alone and behaves exactly as it always did - which is every existing site, none of them affected.
+
+Two things to know when adding it to a site already serving several languages. `enabled_locales` **restricts**:
+Symfony compiles only the catalogues it names, so list every language the site already serves, not just the new
+ones. And it is unrelated to the interface translations (`messages.fr.xlf` and the like), which keep working through
+Symfony's translator whether or not this list exists.
+
 **The sitemap index template gets a different `sitemaps` variable.** It used to be a list of urls, rendered as
 `{{ sitemap }}`; it is now a list of `{loc, lastmod}`, so that the index can date each sub-sitemap from the most
 recent url it holds. Nothing to do unless you override

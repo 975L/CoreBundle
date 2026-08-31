@@ -514,6 +514,14 @@
                 <source>label.ai_assistant_subtitle</source>
                 <target>Ask about the block system</target>
             </trans-unit>
+            <trans-unit id="wI5jL3X">
+                <source>label.ai_rephrase_action_rephrase</source>
+                <target>Rephrase</target>
+            </trans-unit>
+            <trans-unit id="SibpyuZ">
+                <source>label.ai_rephrase_action_translate</source>
+                <target>Translate into %language%</target>
+            </trans-unit>
             <trans-unit id="nSvy0he">
                 <source>label.ai_rephrase_button</source>
                 <target>Rephrase with %name%</target>
@@ -637,6 +645,18 @@
             <trans-unit id="SfCl424">
                 <source>label.ai_rephrase_usage_this_month</source>
                 <target>AI rephrase this month: %input% input tokens, %output% output.</target>
+            </trans-unit>
+            <trans-unit id="m_BJ5A2">
+                <source>label.ai_translate_button</source>
+                <target>Translate with %name%</target>
+            </trans-unit>
+            <trans-unit id="ECyVV33">
+                <source>label.ai_translate_error</source>
+                <target>Translation failed - check the configured AI key</target>
+            </trans-unit>
+            <trans-unit id="DkJOupB">
+                <source>label.ai_translate_into_button</source>
+                <target>Translate into %language% with %name%</target>
             </trans-unit>
             <trans-unit id="DnqwII7">
                 <source>label.alert_kind</source>
