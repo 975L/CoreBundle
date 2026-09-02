@@ -3,6 +3,11 @@
         "date": "2026-09-02",
         "description": [
             {
+                "en": "A new HTML section for your emails keeps what you wrote as you wrote it: a link, a bold word or a line break now survives the send",
+                "fr": "Une nouvelle section HTML pour vos e-mails garde ce que vous avez écrit tel quel : un lien, un mot en gras ou un retour à la ligne survivent maintenant à l'envoi",
+                "es": "Una nueva sección HTML para sus correos conserva lo que escribió tal cual: un enlace, una palabra en negrita o un salto de línea sobreviven ahora al envío"
+            },
+            {
                 "en": "A new “Map” block places the addresses you list on a map. Each one is set either by its postal address, resolved for you when you save, or by its GPS coordinates — the only way to pin a spot no address names. The places stay listed under the map, each with a link opening it elsewhere, so a visitor whose browser draws no map still gets them.",
                 "fr": "Un nouveau block « Carte » place sur une carte les adresses que vous listez. Chacune se saisit soit par son adresse postale, convertie pour vous à l'enregistrement, soit par ses coordonnées GPS — le seul moyen de pointer un lieu qu'aucune adresse ne nomme. Les lieux restent listés sous la carte, chacun avec un lien qui l'ouvre ailleurs, si bien qu'un visiteur dont le navigateur n'affiche aucune carte les obtient quand même.",
                 "es": "Un nuevo bloque «Mapa» sitúa en un mapa las direcciones que enumera. Cada una se introduce por su dirección postal, convertida por usted al guardar, o por sus coordenadas GPS: la única forma de marcar un lugar que ninguna dirección nombra. Los lugares siguen listados bajo el mapa, cada uno con un enlace que lo abre en otro sitio, de modo que un visitante cuyo navegador no dibuje ningún mapa los obtiene igualmente."

@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
-                <target>Mêmes blocks que dans une page ; l'habillage, lui, vient de la charte du site.</target>
+                <target>Mêmes blocks que dans une page, plus un block HTML pour la formulation qui a besoin d'un lien ou d'un mot en gras ; l'habillage, lui, vient de la charte du site.</target>
             </trans-unit>
             <trans-unit id="y1jNFHF">
                 <source>description.guided_step_ui_email_template_check</source>
@@ -1560,7 +1560,7 @@
             </trans-unit>
             <trans-unit id="kx2920k">
                 <source>label.email_block_content_help</source>
-                <target>Bloc "Texte" : texte brut, un paragraphe par ligne vide</target>
+                <target>Bloc "Texte" : texte brut, un paragraphe par ligne vide. Bloc "HTML" : balises conservées telles quelles</target>
             </trans-unit>
             <trans-unit id="6Qeq_j5">
                 <source>label.email_block_heading</source>
@@ -1609,6 +1609,10 @@
             <trans-unit id="MiC7rY2">
                 <source>label.email_block_type_heading</source>
                 <target>Titre</target>
+            </trans-unit>
+            <trans-unit id="3jTCSTM">
+                <source>label.email_block_type_html</source>
+                <target>HTML</target>
             </trans-unit>
             <trans-unit id="xwVOhi1">
                 <source>label.email_block_type_image</source>

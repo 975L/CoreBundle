@@ -34,6 +34,18 @@ class EmailLayoutRegistryTest extends TestCase
         $this->assertSame('<html><body><p>hello</p></body></html>', $registry->wrap('<p>hello</p>'));
     }
 
+    // The language the body was rendered in travels to the layout, whose own wording follows the recipient
+    public function testWrapHandsTheLocaleToTheProvider(): void
+    {
+        $provider = $this->createMock(EmailLayoutProviderInterface::class);
+        $provider->expects($this->once())->method('wrap')->with('<p>hello</p>', 'en')->willReturn('wrapped');
+
+        $registry = new EmailLayoutRegistry();
+        $registry->addProvider($provider);
+
+        $this->assertSame('wrapped', $registry->wrap('<p>hello</p>', 'en'));
+    }
+
     // Only one app-wide branded layout is expected - the first registered provider wins
     public function testWrapKeepsFirstProviderResultWhenSeveralAreRegistered(): void
     {

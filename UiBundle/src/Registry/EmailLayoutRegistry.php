@@ -23,8 +23,8 @@ class EmailLayoutRegistry
     }
 
     // The first registered provider wins; null means none is installed, so the caller falls back
-    public function wrap(string $bodyHtml): ?string
+    public function wrap(string $bodyHtml, ?string $locale = null): ?string
     {
-        return [] === $this->providers ? null : $this->providers[0]->wrap($bodyHtml);
+        return [] === $this->providers ? null : $this->providers[0]->wrap($bodyHtml, $locale);
     }
 }

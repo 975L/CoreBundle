@@ -35,6 +35,7 @@ class EmailBlockType extends AbstractType
                 'choices' => [
                     'label.email_block_type_heading' => EmailBlock::TYPE_HEADING,
                     'label.email_block_type_text' => EmailBlock::TYPE_TEXT,
+                    'label.email_block_type_html' => EmailBlock::TYPE_HTML,
                     'label.email_block_type_button' => EmailBlock::TYPE_BUTTON,
                     'label.email_block_type_image' => EmailBlock::TYPE_IMAGE,
                     'label.email_block_type_divider' => EmailBlock::TYPE_DIVIDER,

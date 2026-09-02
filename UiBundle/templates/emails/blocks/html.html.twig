@@ -1,0 +1,6 @@
+{# Written out raw: "content" is markup the admin wrote and meant to keep, its placeholder values already escaped by EmailTemplateRenderer::contentFor(); nl2br comes after raw, so a bare newline becomes a <br> without the markup being escaped first #}
+<tr>
+    <td class="text-left" style="padding:0 24px 16px;font-size:15px;line-height:22px;">
+        {{ content|raw|nl2br }}
+    </td>
+</tr>

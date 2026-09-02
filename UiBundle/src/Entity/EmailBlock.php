@@ -26,12 +26,16 @@ class EmailBlock
     public const TYPE_SPACER = 'spacer';
     public const TYPE_FIELDS_TABLE = 'fields_table';
 
+    // Markup an admin wrote, rendered as-is rather than escaped like a text block: the only kind where a link, a bold word or a list survives the send. Placeholder values are still escaped on the way in (see EmailTemplateRenderer::contentFor())
+    public const TYPE_HTML = 'html';
+
     // A fragment the sending code computes and hands over, not something an admin writes: an order's lines, its delivery address, its download links. The block says where it goes and under which name, the code says what it holds (see EmailTemplateRenderer and the "slots" variable)
     public const TYPE_SLOT = 'slot';
 
     public const TYPES = [
         self::TYPE_HEADING,
         self::TYPE_TEXT,
+        self::TYPE_HTML,
         self::TYPE_BUTTON,
         self::TYPE_IMAGE,
         self::TYPE_DIVIDER,

@@ -59,7 +59,7 @@ class EmailLayoutProviderPassTest extends TestCase
 
 class DummyEmailLayoutProvider implements EmailLayoutProviderInterface
 {
-    public function wrap(string $bodyHtml): string
+    public function wrap(string $bodyHtml, ?string $locale = null): string
     {
         return $bodyHtml;
     }

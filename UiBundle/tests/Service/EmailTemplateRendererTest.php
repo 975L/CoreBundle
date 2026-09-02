@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Contract\EmailAttachmentProviderInterface;
+use c975L\UiBundle\Contract\EmailLayoutProviderInterface;
 use c975L\UiBundle\Contract\EmailTemplateProviderInterface;
 use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
@@ -94,6 +95,62 @@ class EmailTemplateRendererTest extends TestCase
 
         $html = $this->createRenderer()->render($emailTemplate);
 
+        $this->assertStringNotContainsString('<script>', $html);
+        $this->assertStringContainsString('&lt;script&gt;', $html);
+    }
+
+    // The layout is wrapped around a body already resolved in one language, and is told which - see EmailLayoutProviderInterface
+    public function testRenderHandsTheTemplateLocaleToTheLayout(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $emailTemplate->setLocale('es');
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_TEXT)->setContent('Hola');
+
+        $provider = $this->createMock(EmailLayoutProviderInterface::class);
+        $provider->expects($this->once())->method('wrap')->with($this->anything(), 'es')->willReturn('wrapped');
+
+        $loader = new FilesystemLoader();
+        $loader->addPath(__DIR__ . '/../../templates', 'c975LUi');
+        $emailLayoutRegistry = new EmailLayoutRegistry();
+        $emailLayoutRegistry->addProvider($provider);
+
+        $renderer = new EmailTemplateRenderer(new Environment($loader), $this->createStub(ConfigServiceInterface::class), $emailLayoutRegistry, new EmailAttachmentRegistry(), $this->createStub(EmailTemplateRepository::class), new EmailTemplateProviderRegistry(), new EmailTemplateFactory());
+
+        $this->assertSame('wrapped', $renderer->render($emailTemplate));
+    }
+
+    public function testRenderKeepsMarkupOfHtmlBlockContent(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_HTML)->setContent('Hello,<br><strong>welcome</strong>');
+
+        $html = $this->createRenderer()->render($emailTemplate);
+
+        $this->assertStringContainsString('Hello,<br><strong>welcome</strong>', $html);
+        $this->assertStringNotContainsString('&lt;strong&gt;', $html);
+    }
+
+    // nl2br runs after raw, so the newline becomes a <br> and the markup around it is not escaped on the way
+    public function testRenderTurnsNewlineOfHtmlBlockContentIntoLineBreak(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_HTML)->setContent("<strong>a</strong>\nb");
+
+        $html = $this->createRenderer()->render($emailTemplate);
+
+        $this->assertStringContainsString('<strong>a</strong><br />', $html);
+        $this->assertStringNotContainsString('&lt;strong&gt;', $html);
+    }
+
+    // The markup is the admin's, the placeholder value is whoever's - so the second is escaped even here
+    public function testRenderEscapesSubstitutedVariableValueInHtmlBlockContent(): void
+    {
+        $emailTemplate = new EmailTemplate();
+        $this->addBlock($emailTemplate, EmailBlock::TYPE_HTML)->setContent('<strong>{{ site }}</strong>');
+
+        $html = $this->createRenderer()->render($emailTemplate, ['site' => '<script>alert(1)</script>']);
+
+        $this->assertStringContainsString('<strong>', $html);
         $this->assertStringNotContainsString('<script>', $html);
         $this->assertStringContainsString('&lt;script&gt;', $html);
     }
@@ -231,8 +288,8 @@ class EmailTemplateRendererTest extends TestCase
         $configService = $this->createConfiguredStub(ConfigServiceInterface::class, ['get' => 'https://example.test']);
 
         $registry = new EmailLayoutRegistry();
-        $registry->addProvider(new class implements \c975L\UiBundle\Contract\EmailLayoutProviderInterface {
-            public function wrap(string $bodyHtml): string
+        $registry->addProvider(new class implements EmailLayoutProviderInterface {
+            public function wrap(string $bodyHtml, ?string $locale = null): string
             {
                 return '<div id="branded-layout">' . $bodyHtml . '</div>';
             }

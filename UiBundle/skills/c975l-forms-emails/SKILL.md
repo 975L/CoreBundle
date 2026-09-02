@@ -1,6 +1,6 @@
 ---
 name: c975l-forms-emails
-description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: FormTranslator, ui_form_label, translation_locale, FormTranslationBuilder, SeededTranslationWriteListener, translate a form, EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
+description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: FormTranslator, ui_form_label, translation_locale, FormTranslationBuilder, SeededTranslationWriteListener, translate a form, EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, TYPE_HTML, html block, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
 ---
 
 # c975L UiBundle — forms and emails
@@ -136,7 +136,9 @@ Two natures of content, two paths — **do not confuse them**:
 - **Editorial content** (account confirmation, forgotten password, a contact notification): an
   `EmailTemplate` seeded by `FormSeeder::ensureEmailTemplate()`, editable in the back office.
   Substitution of `{{ variables }}` is **literal**, the block vocabulary is closed (`heading`, `text`,
-  `button`, `image`, `divider`, `spacer`, `fields_table`, `slot`), and **there is no loop**.
+  `html`, `button`, `image`, `divider`, `spacer`, `fields_table`, `slot`), and **there is no loop**. `html`
+  is the one kind rendered as written rather than escaped - what a link or a bold word needs; a bare
+  newline in it becomes a `<br>`, and placeholder values are still escaped on the way in.
 - **Structured content** (an order recap, a list of tickets, download links): a Twig template of
   **body only**, living in your bundle, rendering its own components. It cannot be expressed in blocks
   — and there is no point: a client does not edit a table of order lines.
@@ -153,7 +155,10 @@ $this->emailService->send(new EmailSendRequest(
 ```
 
 **`wrapLayout: true` is what dresses it**: `EmailLayoutProviderInterface` answers with SiteBundle's
-branded layout when that bundle is installed, and with this bundle's bare one otherwise. A request
+branded layout when that bundle is installed, and with this bundle's bare one otherwise. Its
+`wrap(string $bodyHtml, ?string $locale = null)` receives the language the body was resolved in, so the
+layout's own wording follows the recipient rather than whichever row the database returns first;
+`EmailService` passes none, `findForRendering()` then falling back on the site's default locale. A request
 carries **exactly one** body — `template`, `html` or `text` — anything else is refused rather than
 sent as whichever the chain tested first.
 

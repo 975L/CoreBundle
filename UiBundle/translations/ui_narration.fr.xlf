@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="MTcJxYs">
                 <source>narration.guided_step_ui_email_template_blocks</source>
-                <target>Modifiez son contenu : ce sont les mêmes blocks que dans une page. L'habillage, lui, vient de la charte du site.</target>
+                <target>Modifiez son contenu : ce sont les mêmes blocks que dans une page, plus un block HTML pour la formulation qui a besoin d'un lien ou d'un mot en gras. L'habillage, lui, vient de la charte du site.</target>
             </trans-unit>
             <trans-unit id="9Ix_744">
                 <source>narration.guided_step_ui_email_template_check</source>

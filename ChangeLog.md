@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.21.1
+
+An e-mail keeps the words it was written with, in the language it is read in
+
+### UiBundle
+
+- **New `EmailBlock::TYPE_HTML`**: markup an admin wrote, rendered as written where a text block escapes everything it is given - the wording that needs a link, a bold word or a line break. Placeholder values are escaped on the way in, so a site name holding a `<` cannot open a tag nobody typed (02/09/2026)
+- **`EmailLayoutProviderInterface::wrap()` takes the locale the body was rendered in**, handed down by `EmailTemplateRenderer::render()` from the template's own row: a layout's own wording followed whichever version the database returned first, so an English body went out wrapped in French sentences - see UPGRADE.md (02/09/2026) [BC-Break]
+- A placeholder value carrying a broken encoding no longer escapes to an empty string, dropping itself out of the e-mail (02/09/2026)
+
 ## v1.21.0
 
 A form speaks every language, and a new block puts places on a map
@@ -119,6 +129,7 @@ A site speaks several languages, and a block says the same thing in each
 - `SiteLocalesTest`, `LocaleListenerTest` and `DashboardControllerTest` cover the languages offered, kept and refused (31/08/2026)
 - `AlertBuilderTest` and `ConfigAlertProviderTest` cover the alerts dropped for their reader (31/08/2026)
 - `SitemapWriterTest` covers the alternates declared, defaulted and refused (31/08/2026)
+
 ### UiBundle
 
 - Added `Translation` (`site_translation`), holding one field of one thing in one other language (31/08/2026) [DB-Migration]

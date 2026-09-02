@@ -144,7 +144,7 @@
             </trans-unit>
             <trans-unit id="zxZzGhU">
                 <source>description.guided_step_ui_email_template_blocks</source>
-                <target>Los mismos bloques que en una página; el estilo viene de la línea gráfica del sitio.</target>
+                <target>Los mismos bloques que en una página, más un bloque HTML para el texto que necesita un enlace o una palabra en negrita; el estilo viene de la línea gráfica del sitio.</target>
             </trans-unit>
             <trans-unit id="y1jNFHF">
                 <source>description.guided_step_ui_email_template_check</source>
@@ -1560,7 +1560,7 @@
             </trans-unit>
             <trans-unit id="kx2920k">
                 <source>label.email_block_content_help</source>
-                <target>Bloque "Texto": texto plano, un párrafo por línea en blanco</target>
+                <target>Bloque "Texto": texto plano, un párrafo por línea en blanco. Bloque "HTML": etiquetas conservadas tal cual</target>
             </trans-unit>
             <trans-unit id="6Qeq_j5">
                 <source>label.email_block_heading</source>
@@ -1609,6 +1609,10 @@
             <trans-unit id="MiC7rY2">
                 <source>label.email_block_type_heading</source>
                 <target>Título</target>
+            </trans-unit>
+            <trans-unit id="3jTCSTM">
+                <source>label.email_block_type_html</source>
+                <target>HTML</target>
             </trans-unit>
             <trans-unit id="xwVOhi1">
                 <source>label.email_block_type_image</source>

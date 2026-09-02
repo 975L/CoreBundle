@@ -100,7 +100,7 @@
             </trans-unit>
             <trans-unit id="MTcJxYs">
                 <source>narration.guided_step_ui_email_template_blocks</source>
-                <target>Change its content: these are the same blocks as in a page. The styling itself comes from the site's own charter.</target>
+                <target>Change its content: these are the same blocks as in a page, plus an HTML block for the wording that needs a link or a bold word. The styling itself comes from the site's own charter.</target>
             </trans-unit>
             <trans-unit id="9Ix_744">
                 <source>narration.guided_step_ui_email_template_check</source>

@@ -132,7 +132,7 @@ class EmailTemplateRenderer
     {
         $blocksHtml = $this->renderBlocks($emailTemplate, $variables);
 
-        return $this->emailLayoutRegistry->wrap($this->wrapBlocksInTable($blocksHtml))
+        return $this->emailLayoutRegistry->wrap($this->wrapBlocksInTable($blocksHtml), $emailTemplate->getLocale())
             ?? $this->twig->render('@c975LUi/emails/blocks/_wrapper.html.twig', ['blocksHtml' => $blocksHtml]);
     }
 
@@ -182,6 +182,7 @@ class EmailTemplateRenderer
         return match ($type) {
             EmailBlock::TYPE_HEADING => '@c975LUi/emails/blocks/heading.html.twig',
             EmailBlock::TYPE_TEXT => '@c975LUi/emails/blocks/text.html.twig',
+            EmailBlock::TYPE_HTML => '@c975LUi/emails/blocks/html.html.twig',
             EmailBlock::TYPE_BUTTON => '@c975LUi/emails/blocks/button.html.twig',
             EmailBlock::TYPE_IMAGE => '@c975LUi/emails/blocks/image.html.twig',
             EmailBlock::TYPE_DIVIDER => '@c975LUi/emails/blocks/divider.html.twig',
@@ -199,7 +200,7 @@ class EmailTemplateRenderer
         return [
             'heading' => $this->substitute($block->getHeading(), $variables),
             'level' => $block->getLevel() ?? EmailBlock::LEVEL_H2,
-            'content' => $this->contentToHtml($this->substitute($block->getContent(), $variables)),
+            'content' => $this->contentFor($block, $variables),
             'label' => $this->substitute($block->getLabel(), $variables),
             'url' => EmailBlock::TYPE_IMAGE === $block->getType() ? $this->resolveImageUrl($url) : $url,
             'alt' => $this->substitute($block->getAlt(), $variables),
@@ -208,6 +209,20 @@ class EmailTemplateRenderer
             // Straight from the caller, past substitute() and past contentToHtml(): a slot is markup a bundle rendered, and escaping it or running admin-authored placeholders through it would either break it or make it the injection hole the rest of this class avoids
             'slot' => EmailBlock::TYPE_SLOT === $block->getType() ? ($variables['slots'][$block->getLabel()] ?? '') : '',
         ];
+    }
+
+    // A text block's content is prose turned into paragraphs and escaped; an html block's is markup written to be kept
+    // Placeholder values are escaped either way, so a site name holding a "<" cannot open a tag the admin never wrote
+    private function contentFor(EmailBlock $block, array $variables): string
+    {
+        if (EmailBlock::TYPE_HTML !== $block->getType()) {
+            return $this->contentToHtml($this->substitute($block->getContent(), $variables));
+        }
+
+        return (string) $this->substitute($block->getContent(), array_map(
+            static fn (mixed $value): mixed => is_scalar($value) ? htmlspecialchars((string) $value) : $value,
+            $variables
+        ));
     }
 
     // A stored path is prefixed with "site-url", so the domain lives in one place; an absolute url is left as-is
@@ -252,7 +267,7 @@ class EmailTemplateRenderer
         return implode('', array_map(
             static fn (string $paragraph): string => sprintf(
                 '<p style="margin:0 0 12px;">%s</p>',
-                nl2br(htmlspecialchars($paragraph, ENT_QUOTES), false)
+                nl2br(htmlspecialchars($paragraph), false)
             ),
             $paragraphs
         ));

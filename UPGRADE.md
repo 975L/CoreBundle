@@ -1,6 +1,14 @@
 # UPGRADE
 
-## Unreleased
+## v1.21.1
+
+**Every `EmailLayoutProviderInterface` implementation has to be resignatured**: `wrap(string $bodyHtml)` becomes
+`wrap(string $bodyHtml, ?string $locale = null)`. The parameter is optional, but PHP refuses an implementation
+declaring fewer parameters than its interface, so one left alone is a fatal error rather than a silent lag. Pass the
+locale on to whatever renders the layout's own wording - SiteBundle's provider hands it to its Twig template, which
+gives it to each `email_template_body()` call.
+
+## v1.21.0
 
 **A self-hosted Donovan (Q&A) backend generated before this version keeps answering without ever citing a guided
 project.** The consuming side ships in this bundle and needs nothing: `AiAssistantClient` already resolves a source
@@ -50,6 +58,8 @@ Two smaller entries stop being repeated in the code the same way. `ui-block-show
 left empty leaves `FormBotProtection` to the honeypot alone rather than enforcing a hidden 7 seconds. Both entries
 ship with their value, and `ConfigService::loadDefaultConfig()` seeds an empty row on the next
 `c975l:config:load-all`, so a deployed site is unaffected.
+
+## Unreleased
 
 **`AlertBuilder::groupBySeverity()` is now `private`.** It grouped a flat alert list without filtering anything, so a
 screen calling it showed its reader alerts naming entries they may not open - a link to a 403. Call

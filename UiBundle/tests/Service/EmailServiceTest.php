@@ -467,7 +467,7 @@ class EmailServiceTest extends TestCase
     {
         $registry = new EmailLayoutRegistry();
         $registry->addProvider(new class implements \c975L\UiBundle\Contract\EmailLayoutProviderInterface {
-            public function wrap(string $bodyHtml): string
+            public function wrap(string $bodyHtml, ?string $locale = null): string
             {
                 return '<div id="branded">' . $bodyHtml . '</div>';
             }
