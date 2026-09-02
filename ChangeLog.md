@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.21.2
+
+The one-off legal-sections migration command retires
+
+### UiBundle
+
+- **`c975l:ui:legal-models:adopt-config-sections` is gone**, the whole fleet having run it: it moved the `site-other-cookies`/`site-other-copyright` entries into the legal models as added sections, and a site already through it had nothing left to move - see UPGRADE.md (02/09/2026) [BC-Break]
+- `composer qa` runs `@mess` last: PDepend cannot parse PHP 8.4's parentheses-free `new`, so a link nothing can fix short of a dev branch was stopping the chain before `@lizard` and `@test` ever ran (02/09/2026)
+
 ## v1.21.1
 
 An e-mail keeps the words it was written with, in the language it is read in
@@ -149,7 +158,7 @@ A site speaks several languages, and a block says the same thing in each
 - Added `TranslationFormContext`, carrying the language being written to the fields a form option cannot reach (31/08/2026)
 - Added `AiRephraseClient::translate()` and the `ai_translatable_locales` Twig function (31/08/2026)
 - Donovan's toolbar offers each declared language beside the rephrasing styles, on the same key and budget (31/08/2026)
-- Donovan's toolbar becomes a single "Translate into <language>" button on a language screen (31/08/2026)
+- Donovan's toolbar becomes a single "Translate into `language`" button on a language screen (31/08/2026)
 - Donovan's suggestion replaces the field on a language screen, and the bracketed source is unbracketed before being sent (31/08/2026)
 - Added the `label.ai_rephrase_action_*` and `label.ai_translate_*` translations (31/08/2026)
 - Block translations are read inside the render cache's miss callback, a fully cached page costing no query (31/08/2026)

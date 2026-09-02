@@ -126,9 +126,9 @@
             "@stan",
             "@stan-scaffold",
             "@rector",
-            "@mess",
             "@lizard",
-            "@test"
+            "@test",
+            "@mess"
         ]
     },
     "scripts-descriptions": {

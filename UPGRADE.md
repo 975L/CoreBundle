@@ -1,5 +1,14 @@
 # UPGRADE
 
+## v1.21.2
+
+**`c975l:ui:legal-models:adopt-config-sections` no longer ships**, the fleet having run it. A deployment script still
+calling it fails on a command the archive does not hold any more - take that line out. A site that never went
+through it, and still holds a `site-other-cookies` or `site-other-copyright` entry, has to pass through a 1.21.x
+release and run it there **before** any `c975l:config:prune`, or move the two texts into the cookies and copyright
+models by hand on the legal models screen: pruning a row no `configs.json` declares any more takes the text away for
+good.
+
 ## v1.21.1
 
 **Every `EmailLayoutProviderInterface` implementation has to be resignatured**: `wrap(string $bodyHtml)` becomes
