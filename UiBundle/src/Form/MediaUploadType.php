@@ -19,7 +19,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -181,7 +180,8 @@ class MediaUploadType extends AbstractType
                         'label' => 'label.description',
                         'required' => false,
                     ])
-                    ->add('url', UrlType::class, [
+                    // TextType and not UrlType, same as the block's own "linkUrl" (see PortfolioGridType): UrlType renders an <input type="url">, which the browser refuses to submit for anything but an absolute url - and a project card links to this very site as often as elsewhere ("/demo/", "/pages/blocks/Site"). The whole page form was then blocked client-side, with no message anywhere and the tab's error badge as the only sign
+                    ->add('url', TextType::class, [
                         'label' => 'label.url',
                         'required' => false,
                     ]);

@@ -632,7 +632,7 @@
             </trans-unit>
             <trans-unit id="GnuqUyG">
                 <source>label.from_path_help</source>
-                <target>URL path with leading / (e.g. /la-guilde-des-seigneurs). A trailing * covers a whole folder (e.g. /personnage/*)</target>
+                <target>URL path with leading / (e.g. /my-folder). A trailing * covers a whole folder (e.g. /personnage/*)</target>
             </trans-unit>
             <trans-unit id="qrvRsVy">
                 <source>label.gone</source>
@@ -665,6 +665,10 @@
             <trans-unit id="XRPo6XS">
                 <source>label.group_email</source>
                 <target>Email</target>
+            </trans-unit>
+            <trans-unit id="9Zy4_0i">
+                <source>label.group_empty</source>
+                <target>To fill in</target>
             </trans-unit>
             <trans-unit id="0lC5dLu">
                 <source>label.group_form</source>
@@ -945,10 +949,6 @@
             <trans-unit id="qINjVhb">
                 <source>label.health_check_advice_database_load_slow</source>
                 <target>%count% slow query(ies) recorded over %days% day(s)</target>
-            </trans-unit>
-            <trans-unit id="kUWeqbk">
-                <source>label.health_check_advice_details</source>
-                <target>See the detail (%count%)</target>
             </trans-unit>
             <trans-unit id="0NB_2s2">
                 <source>label.health_check_advice_fix_link</source>

@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Registry;
 
 use c975L\UiBundle\Contract\MediaUsageProviderInterface;
+use c975L\UiBundle\Entity\Media;
 
 class MediaUsageRegistry
 {
@@ -33,5 +34,28 @@ class MediaUsageRegistry
         }
 
         return $usages;
+    }
+
+    /**
+     * The ids of those medias every owner of which is in the bin - drawn by nothing the site serves, yet used, so neither deletable nor worth showing.
+     *
+     * Only the usages carrying the "binned" key are read: a provider omitting it has no verdict to give (see MediaUsageProviderInterface), and counting its usage as live would hide the answer of the one provider that does know. So the rule is: at least one owner in the bin, and no owner outside it. A media used nowhere at all is never one of them - it has no owner to be in the bin, and hiding it would be hiding the very rows the library exists to let an admin find again.
+     *
+     * @param Media[] $medias
+     *
+     * @return list<int>
+     */
+    public function getBinnedOnlyMediaIds(array $medias): array
+    {
+        $binnedOnly = [];
+        foreach ($this->getUsages($medias) as $mediaId => $links) {
+            $verdicts = array_column($links, 'binned');
+
+            if ([] !== $verdicts && array_all($verdicts, static fn (bool $binned): bool => $binned)) {
+                $binnedOnly[] = $mediaId;
+            }
+        }
+
+        return $binnedOnly;
     }
 }

@@ -4,6 +4,19 @@
 {% block main %}
     <p>{{ ('label.info_media'|trans({}, 'ui')) }}</p>
 
+    {# Says what the gallery is leaving out, and offers it back - shown only when there is something to show, so a site with no binned page never reads about a bin at all #}
+    {% if binned_only_count > 0 %}
+        <p>
+            {% if binned_only_shown %}
+                {{ 'label.media_binned_shown'|trans({'%count%': binned_only_count}, 'ui') }}
+                <a href="{{ ea_url().setAll({'binned': null}) }}">{{ 'action.media_binned_hide'|trans({}, 'ui') }}</a>
+            {% else %}
+                {{ 'label.media_binned_hidden'|trans({'%count%': binned_only_count}, 'ui') }}
+                <a href="{{ ea_url().setAll({'binned': 1}) }}">{{ 'action.media_binned_show'|trans({}, 'ui') }}</a>
+            {% endif %}
+        </p>
+    {% endif %}
+
     <div class="management-media-grid">
         {% for entity in entities %}
             {% if entity.isAccessible %}

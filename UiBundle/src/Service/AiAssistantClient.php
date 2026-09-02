@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Service;
 
+use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use Psr\Log\LoggerInterface;
@@ -22,6 +23,7 @@ class AiAssistantClient implements AiAssistantClientInterface
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly ConfigServiceInterface $configService,
+        private readonly GuidedProjectBuilder $guidedProjectBuilder,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -53,12 +55,37 @@ class AiAssistantClient implements AiAssistantClientInterface
 
             return [
                 'answer' => (string) ($data['answer'] ?? ''),
-                'sources' => is_array($data['sources'] ?? null) ? $data['sources'] : [],
+                'sources' => $this->resolveSources(is_array($data['sources'] ?? null) ? $data['sources'] : []),
             ];
         } catch (ExceptionInterface $e) {
             $this->logger->error('AI assistant request failed: {message}', ['message' => $e->getMessage()]);
 
             return null;
         }
+    }
+
+    // A source citing a guided project is resolved against this very site rather than trusted as sent: the backend answers every site it serves at once, so the parcours it names may belong to a bundle this one doesn't install, or to a role this user doesn't hold - GuidedProjectBuilder::getProject() answers null in both cases and the source is simply dropped. Its label comes back from here too, translated in the reader's own locale rather than the backend's
+    private function resolveSources(array $sources): array
+    {
+        $resolved = [];
+        foreach ($sources as $source) {
+            if (!is_array($source)) {
+                continue;
+            }
+
+            $slug = (string) ($source['project'] ?? '');
+            if ('' === $slug) {
+                $resolved[] = ['label' => (string) ($source['label'] ?? ''), 'url' => (string) ($source['url'] ?? '')];
+
+                continue;
+            }
+
+            $project = $this->guidedProjectBuilder->getProject($slug);
+            if (null !== $project) {
+                $resolved[] = ['label' => $project['label'], 'url' => '', 'project' => $slug];
+            }
+        }
+
+        return $resolved;
     }
 }

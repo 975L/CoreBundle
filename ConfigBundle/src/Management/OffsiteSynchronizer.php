@@ -17,7 +17,7 @@ use Symfony\Component\Process\Process;
 
 // Sends what the backup produced to wherever the install keeps its offsite copy, through rclone.
 //
-// What this class deliberately does not hold: credentials. site-backup-offsite-target names a remote ("storagebox:975l.com"), nothing more - the secrets stay in rclone's own configuration, outside the application and outside the database. Nor is the binary's location configurable: a free-form path read from a back-office entry is an arbitrary code execution offered to any admin account that gets compromised, which is not something a public bundle does.
+// What this class deliberately does not hold: credentials. site-backup-offsite-target names a remote ("storagebox:example.com"), nothing more - the secrets stay in rclone's own configuration, outside the application and outside the database. Nor is the binary's location configurable: a free-form path read from a back-office entry is an arbitrary code execution offered to any admin account that gets compromised, which is not something a public bundle does.
 //
 // An install that would rather have an outside machine pull its backups leaves the entry empty: nothing is sent, and c975l:config:backup:offsite --ack is what that machine calls to say the files did leave.
 class OffsiteSynchronizer

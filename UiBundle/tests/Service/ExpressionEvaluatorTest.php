@@ -15,6 +15,7 @@ use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Service\CalculatorExpressionLanguage;
 use c975L\UiBundle\Service\ExpressionEvaluator;
+use c975L\UiBundle\Service\FormTranslator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -29,7 +30,7 @@ class ExpressionEvaluatorTest extends TestCase
         );
         $translator->method('getLocale')->willReturn($locale);
 
-        return new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator);
+        return new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator, new FormTranslator());
     }
 
     private function createField(string $name, string $type, ?string $default = null): FormField

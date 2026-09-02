@@ -201,7 +201,7 @@ class BackupCommand extends Command
 
     private function createTempCredentialsFile(): string
     {
-        $host = (string) ($this->configService->get('site-backup-db-host') ?: 'localhost');
+        $host = (string) $this->configService->get('site-backup-db-host');
         $user = (string) $this->configService->get('site-backup-db-user');
         $password = (string) $this->configService->get('site-backup-db-password');
 

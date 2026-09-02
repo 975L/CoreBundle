@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
+use c975L\UiBundle\Form\Util\FormTranslationBuilder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -27,8 +28,23 @@ use Symfony\Component\Validator\Constraints\Length;
 // Entry type for the "outputs" CollectionField of a Form (see FormCrudController), sortable by the admin-wide ea-sortable.js like the fields above it - and sortable for a reason the fields don't have: an expression only sees the outputs placed before it, so moving a row changes what it can read
 class FormOutputType extends AbstractType
 {
+    public function __construct(
+        private readonly FormTranslationBuilder $translationBuilder,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // A language screen changes the words around the number, never the formula that produces it nor the order the outputs are computed in
+        if (null !== $options['translation_locale']) {
+            $this->translationBuilder->build($builder, $options['translation_locale'], [
+                'label' => 'label.output_label',
+                'unit' => 'label.output_unit',
+            ]);
+
+            return;
+        }
+
         $builder
             ->add('label', TextType::class, [
                 'label' => 'label.output_label',
@@ -96,6 +112,9 @@ class FormOutputType extends AbstractType
             'data_class' => FormOutput::class,
             'label' => false,
             'translation_domain' => 'ui',
+            // The language being written, when it is not the one the form was written in (see FormTranslationBuilder)
+            'translation_locale' => null,
         ]);
+        $resolver->setAllowedTypes('translation_locale', ['null', 'string']);
     }
 }

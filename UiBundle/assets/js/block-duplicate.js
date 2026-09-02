@@ -158,7 +158,7 @@ export default class extends Controller {
     // Matched by position rather than by field name: both rows come from the exact same entry form type, so they always carry the same fields in the same order - no name-parsing needed here (unlike copyMediaValues, which has to line up two rows that can legitimately differ, e.g. an existing media's Vich "delete" checkbox that a fresh row doesn't have yet).
     copyItemValues(sourceItem, targetItem) {
         // Trix's own toolbar carries a named input of its own (the link dialog's "href"), which belongs to the editor, not to the form: counting it would shift every field after it as soon as one row has an editor and the other doesn't yet.
-        const copyable = el => el.name && !el.disabled && el.type !== 'file' && !el.closest('trix-toolbar');
+        const copyable = el => el.name && !el.disabled && el.type !== 'file' && !this.isPosition(el) && !el.closest('trix-toolbar');
 
         const sourceFields = [...sourceItem.querySelectorAll('input, select, textarea')].filter(copyable);
         const targetFields = [...targetItem.querySelectorAll('input, select, textarea')].filter(copyable);
@@ -227,7 +227,7 @@ export default class extends Controller {
         });
 
         targetItem.querySelectorAll('input, select, textarea').forEach(el => {
-            if (!el.name || el.type === 'file') return;
+            if (!el.name || el.type === 'file' || this.isPosition(el)) return;
             const key = keyOf(el);
             const source = key && sourceByKey.get(key);
             if (!source || source.type === 'file') return;
@@ -309,6 +309,11 @@ export default class extends Controller {
         files.forEach(file => { dataTransfer.items.add(file); });
         input.files = dataTransfer.files;
         input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    // A row's position is its place in the collection, not one of its values: renumberPositions has just written the right one, and copying the source's over it leaves two rows claiming the same place - which is an order nothing can resolve on save.
+    isPosition(el) {
+        return el.name.endsWith('[position]');
     }
 
     collectionItems(field) {

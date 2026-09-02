@@ -12,6 +12,8 @@ namespace c975L\UiBundle\Tests\Templates;
 
 use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
+use c975L\UiBundle\Service\GoogleMapsLinkBuilder;
+use c975L\UiBundle\Twig\BoolExtension;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
@@ -69,7 +71,7 @@ class ContactDetailsMarkupTest extends TestCase
     {
         $html = $this->render([
             'schemaType' => 'AutoRepair',
-            'name' => 'Autotech',
+            'name' => 'Garage Central',
             'addressPostalCode' => '74930',
             'addressLocality' => 'Scientrier',
         ]);
@@ -103,6 +105,43 @@ class ContactDetailsMarkupTest extends TestCase
         $this->assertStringNotContainsString('label.opening_hours', $html);
     }
 
+    // The box an editor ticks instead of going to Google, searching for their own business and pasting the url back
+    public function testTheDirectionsButtonIsBuiltFromTheAddressWhenAsked(): void
+    {
+        $html = $this->render([
+            'name' => 'Mon Entreprise',
+            'googleMapsLink' => 'true',
+            'addressStreetAddress' => '1 rue de l\'Exemple',
+            'addressLocality' => 'Annecy',
+        ]);
+
+        $this->assertStringContainsString('https://www.google.com/maps/search/?api=1&amp;query=', $html);
+        // The graph says a map of the place exists, and says it at the same address as the button
+        $this->assertStringContainsString('https://www.google.com/maps/search/?api=1&query=', $this->graph($html)['hasMap']);
+    }
+
+    // A business with a Google listing of its own has an address worth more than a search built from its street
+    public function testATypedLinkWinsOverTheBuiltOne(): void
+    {
+        $html = $this->render([
+            'name' => 'Mon Entreprise',
+            'mapUrl' => 'https://maps.app.goo.gl/example',
+            'googleMapsLink' => 'true',
+            'addressLocality' => 'Annecy',
+        ]);
+
+        $this->assertStringContainsString('https://maps.app.goo.gl/example', $html);
+        $this->assertStringNotContainsString('/maps/search/', $html);
+    }
+
+    // Unticked, nothing is built: a block holding an address is not a block asking for a button to Google
+    public function testNoButtonIsBuiltWhenTheBoxIsNotTicked(): void
+    {
+        $html = $this->render(['name' => 'Mon Entreprise', 'addressLocality' => 'Annecy']);
+
+        $this->assertStringNotContainsString('contact-details__map', $html);
+    }
+
     private function graph(string $html): array
     {
         preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $matches);
@@ -117,8 +156,11 @@ class ContactDetailsMarkupTest extends TestCase
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
         // What TwigBundle assembles from the #[AsTwigFunction] attributes: the extension reads them, the runtime loader hands over the instance the callables are called on
         $twig->addExtension(new AttributeExtension(ContactExtension::class));
+        // The "Directions" button reads a checkbox through it (see the component), and a missing filter is a syntax error on the whole template
+        $twig->addExtension(new AttributeExtension(BoolExtension::class));
         $twig->addRuntimeLoader(new FactoryRuntimeLoader([
-            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry())),
+            ContactExtension::class => static fn (): ContactExtension => new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry()), new GoogleMapsLinkBuilder()),
+            BoolExtension::class => static fn (): BoolExtension => new BoolExtension(),
         ]));
 
         return $twig->render('components/Contact/Details.html.twig', $context);

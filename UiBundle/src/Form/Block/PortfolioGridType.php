@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -37,6 +38,20 @@ class PortfolioGridType extends AbstractType
             ->add('title', TextType::class, [
                 'label' => 'label.title',
                 'required' => false,
+            ])
+            // Same field, same reading and same automatic default as CollectionType's: the block's head is the <h2> of the section it opens, and each project's title hangs under it - <h3> when there is a head, <h2> when the grid stands on its projects alone, straight under the page's <h1>
+            ->add('level', ChoiceType::class, [
+                'label' => 'label.collection_item_level',
+                'help' => 'label.collection_item_level_help',
+                'required' => false,
+                'choices' => [
+                    'label.collection_item_level_auto' => '',
+                    'h2' => 'h2',
+                    'h3' => 'h3',
+                    'h4' => 'h4',
+                ],
+                // No placeholder: the stored empty value is the automatic choice itself, not the absence of one
+                'placeholder' => false,
             ])
             ->add('linkLabel', TextType::class, [
                 'label' => 'label.link_label',

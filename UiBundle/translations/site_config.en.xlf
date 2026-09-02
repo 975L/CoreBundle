@@ -24,11 +24,11 @@
             </trans-unit>
             <trans-unit id="_bGjWVc">
                 <source>description.ai_assistant_rephrase_base_uri</source>
-                <target>Base URI of the OpenAI-compatible API, required only for euria</target>
+                <target>Base URI of the API, required whatever the provider: the full messages endpoint for Anthropic, the product base for an OpenAI-compatible API (OpenAI, Euria)</target>
             </trans-unit>
             <trans-unit id="bWfhcXt">
                 <source>description.ai_assistant_rephrase_model</source>
-                <target>Rephrase model id - optional for Anthropic/OpenAI (sensible default), required for Euria (unstable catalog, no safe default)</target>
+                <target>Rephrase model id, required whatever the provider: no model is hardcoded as a fallback, an empty entry leaves the feature off</target>
             </trans-unit>
             <trans-unit id="ArNa8qa">
                 <source>description.ai_assistant_rephrase_provider</source>
@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="sQ9y3iP">
                 <source>description.block_showcase_url</source>
-                <target>Url of the block showcase the sidebar link opens - leave empty to fall back on the c975L ecosystem's own showcase</target>
+                <target>Url of the block showcase the sidebar link opens - leave it empty and the link drops out of the menu</target>
             </trans-unit>
             <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
@@ -81,14 +81,6 @@
             <trans-unit id="X8T2_9z">
                 <source>description.site_matomo_url</source>
                 <target>URL of the Matomo instance i.e. https://matomo.example.com</target>
-            </trans-unit>
-            <trans-unit id="Q4suaeP">
-                <source>description.site_other_cookies</source>
-                <target>Other cookies info for the legal notice (HTML allowed, not translated)</target>
-            </trans-unit>
-            <trans-unit id="vvM5TVl">
-                <source>description.site_other_copyright</source>
-                <target>Other copyright info for the legal notice (HTML allowed, not translated)</target>
             </trans-unit>
             <trans-unit id="ooJKbLK">
                 <source>description.theme_color_background</source>
@@ -133,6 +125,14 @@
             <trans-unit id="5gWmNrB">
                 <source>description.ui_enable_reviews</source>
                 <target>Lets visitors submit a review, displays the published ones and the menu moderating them. Leave to false until reviews are expected.</target>
+            </trans-unit>
+            <trans-unit id="HIIlbc1">
+                <source>description.ui_map_google_api_key</source>
+                <target>Only read when the provider above is Google. A browser key is necessarily published in the page a visitor loads: what protects it is the HTTP referrer restriction you set on it in the Google Cloud console, not this field hiding it here.</target>
+            </trans-unit>
+            <trans-unit id="ND.iLqC">
+                <source>description.ui_map_provider</source>
+                <target>Which service draws the maps a "Map" block places on a page. OpenStreetMap needs no key, no account and writes no cookie. Google needs an API key, a billing account, the visitor's consent before the map is drawn, and a Content-Security-Policy naming its hosts: without them the map stays a list of places and nothing says why.</target>
             </trans-unit>
             <trans-unit id="z8AyzGD">
                 <source>description.ui_pdf_engine</source>
@@ -218,14 +218,6 @@
                 <source>label.site_matomo_url</source>
                 <target>Matomo URL</target>
             </trans-unit>
-            <trans-unit id="cF7QFBj">
-                <source>label.site_other_cookies</source>
-                <target>Site Other Cookies</target>
-            </trans-unit>
-            <trans-unit id="SRPjCF3">
-                <source>label.site_other_copyright</source>
-                <target>Site Other Copyright</target>
-            </trans-unit>
             <trans-unit id="copCVwP">
                 <source>label.theme_color_background</source>
                 <target>Background color</target>
@@ -301,6 +293,14 @@
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>
                 <target>Enable reviews</target>
+            </trans-unit>
+            <trans-unit id="BSROuu3">
+                <source>label.ui_map_google_api_key</source>
+                <target>Google Maps API key</target>
+            </trans-unit>
+            <trans-unit id="olcXuaW">
+                <source>label.ui_map_provider</source>
+                <target>Map provider</target>
             </trans-unit>
             <trans-unit id="JOHdv5C">
                 <source>label.ui_pdf_engine</source>

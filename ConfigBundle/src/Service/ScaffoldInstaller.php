@@ -131,9 +131,11 @@ class ScaffoldInstaller
                 mkdir(\dirname($target), 0775, true);
             }
             copy($file->getPathname(), $target);
+
+            // Inside the guard: a dry run writes nothing, so recording the new hash would tell the next install that a file still holding the old version is the site's own work, and it would never be refreshed again
+            $manifest[$relativePath] = $sourceHash;
         }
 
-        $manifest[$relativePath] = $sourceHash;
         ++$result['copied'];
         $result['files'][] = $relativePath;
     }
@@ -246,6 +248,38 @@ class ScaffoldInstaller
         return is_array($removed) ? $removed : [];
     }
 
+    /**
+     * Takes note that this site has seen what the scaffold gained and keeps its own version anyway - the current
+     * source becomes the recorded base, so the same report stops coming back and only what the bundle changes from
+     * now on is raised again. Nothing is copied and no file is touched: a decision is being recorded, not applied.
+     * The manifest is committed like symfony.lock, so an acknowledgement made too fast comes back with git checkout.
+     *
+     * @return array{files: list<string>, unmatched: list<string>} the files whose base was moved forward, and the given paths no scaffold file answered to
+     */
+    public function acknowledge(array $paths = []): array
+    {
+        $manifest = $this->readManifest();
+        $delivery = $this->deliverScaffold($paths, true, false, $manifest);
+        $diverged = $delivery['diverged'];
+
+        foreach ($diverged as $relativePath => $source) {
+            $manifest[$relativePath] = (string) hash_file('sha256', $this->absolutePath($source));
+        }
+
+        $this->writeManifest($manifest);
+
+        return [
+            'files' => array_keys($diverged),
+            'unmatched' => array_values(array_diff($paths, $delivery['matchedPaths'])),
+        ];
+    }
+
+    // What was last delivered here for each scaffold file, which a caller comparing a customized file against the version it came from has no other witness of - a divergence leaves the recorded hash untouched, so it still names the version this site accepted (see ScaffoldDiffer)
+    public function manifest(): array
+    {
+        return $this->readManifest();
+    }
+
     private function readManifest(): array
     {
         $file = $this->projectDir . '/' . self::MANIFEST_FILE;
@@ -267,6 +301,12 @@ class ScaffoldInstaller
             $this->projectDir . '/' . self::MANIFEST_FILE,
             json_encode($manifest, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES) . "\n"
         );
+    }
+
+    // The way back from what relativeToProject() gave: a source outside the project (a Composer "path" repository, symlinked, whose real name ReflectionClass resolves) was returned absolute and must not be prefixed a second time
+    private function absolutePath(string $source): string
+    {
+        return str_starts_with($source, '/') ? $source : $this->projectDir . '/' . $source;
     }
 
     // The scaffold source sits under vendor/, where an absolute path is noise in a message the developer has to read

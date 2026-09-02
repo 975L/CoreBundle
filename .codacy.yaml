@@ -8,6 +8,8 @@ exclude_paths:
   - "vendor/**"
   - "**/vendor/**"
   - ".phpunit.cache/**"
+  # The Stimulus vendored for Testing/JsCase: third-party, and in src/ so the bundles depending on this one get it - not this repository's own code to grade
+  - "**/src/Testing/stimulus.js"
   - "**.min.js"
   - "**.min.css"
   - "**.map"

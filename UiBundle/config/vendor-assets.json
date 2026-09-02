@@ -1,0 +1,81 @@
+[
+    {
+        "name": "leaflet",
+        "version": "1.9.4",
+        "scope": "runtime",
+        "license": "BSD-2-Clause",
+        "home": "https://leafletjs.com",
+        "marker": "Leaflet %version%",
+        "api": [
+            "tileLayer",
+            "divIcon",
+            "featureGroup",
+            "bindPopup",
+            "fitBounds",
+            "setView"
+        ],
+        "files": {
+            "public/js/leaflet.js": "https://unpkg.com/leaflet@%version%/dist/leaflet.js",
+            "public/css/leaflet.css": "https://unpkg.com/leaflet@%version%/dist/leaflet.css",
+            "public/css/images/layers.png": "https://unpkg.com/leaflet@%version%/dist/images/layers.png",
+            "public/css/images/layers-2x.png": "https://unpkg.com/leaflet@%version%/dist/images/layers-2x.png",
+            "public/css/images/marker-icon.png": "https://unpkg.com/leaflet@%version%/dist/images/marker-icon.png"
+        },
+        "sha256": null
+    },
+    {
+        "name": "vanilla-cookieconsent",
+        "version": "3.1.0",
+        "scope": "runtime",
+        "license": "MIT",
+        "home": "https://cookieconsent.orestbida.com",
+        "marker": "CookieConsent %version%",
+        "api": [
+            "acceptedCategory",
+            "acceptCategory",
+            "acceptAllBtn",
+            "cc:onConsent",
+            "cc:onChange"
+        ],
+        "files": {
+            "public/js/cookieconsent.umd.js": "https://unpkg.com/vanilla-cookieconsent@%version%/dist/cookieconsent.umd.js",
+            "public/css/cookieconsent.css": "https://unpkg.com/vanilla-cookieconsent@%version%/dist/cookieconsent.css"
+        },
+        "sha256": null
+    },
+    {
+        "name": "canvas-confetti",
+        "version": "1.9.4",
+        "scope": "runtime",
+        "license": "ISC",
+        "home": "https://github.com/catdad/canvas-confetti",
+        "marker": "canvas-confetti@%version%",
+        "api": [
+            "particleCount",
+            "disableForReducedMotion"
+        ],
+        "files": {
+            "public/js/confetti.browser.min.js": "https://cdn.jsdelivr.net/npm/canvas-confetti@%version%/dist/confetti.browser.min.js"
+        },
+        "sha256": null
+    },
+    {
+        "name": "@hotwired/stimulus",
+        "version": "3.2.2",
+        "scope": "tests",
+        "license": "MIT",
+        "home": "https://stimulus.hotwired.dev",
+        "marker": null,
+        "sha256": "23deecdac6f36c08e8f39fbed6b27f60c850cacad3a34eb71194462b7b1647f3",
+        "api": [
+            "Application",
+            "Controller",
+            "register",
+            "targets",
+            "values"
+        ],
+        "files": {
+            "src/Testing/stimulus.js": "https://unpkg.com/@hotwired/stimulus@%version%/dist/stimulus.js"
+        }
+    }
+]

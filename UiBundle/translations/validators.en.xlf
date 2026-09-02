@@ -38,6 +38,18 @@
                 <source>text.hero_media_max</source>
                 <target>A hero section can carry at most {{ limit }} images.</target>
             </trans-unit>
+            <trans-unit id="_ma7JPd">
+                <source>text.map_point_address_not_found</source>
+                <target>This address was not found. Check it, or place this point by its GPS coordinates.</target>
+            </trans-unit>
+            <trans-unit id="Av4AwYl">
+                <source>text.map_point_address_required</source>
+                <target>Enter an address, or place this point by its GPS coordinates.</target>
+            </trans-unit>
+            <trans-unit id=".T3tyLp">
+                <source>text.map_point_coordinates_required</source>
+                <target>Enter both a latitude and a longitude.</target>
+            </trans-unit>
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>
                 <target>Passwords do not match</target>

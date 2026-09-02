@@ -1,4 +1,5 @@
 {% trans_default_domain 'ui' %}
-<div class="alert alert-info text text-center">
+{# Same wrapper class as the form it stands in for, see FormDisabled.html.twig #}
+<div class="ui-form-block alert alert-info text text-center">
     {{ 'text.logged_in_as'|trans({'%user%': app.user.userIdentifier}) }} <a href="{{ logout_path() }}">{{ 'label.signout'|trans }}</a>
 </div>

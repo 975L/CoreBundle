@@ -14,6 +14,7 @@ use c975L\UiBundle\Form\TrixEditorType;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\FormView;
 
 class TrixEditorTypeTest extends TestCase
@@ -26,6 +27,19 @@ class TrixEditorTypeTest extends TestCase
         $type->buildView($view, $this->createStub(FormInterface::class), []);
 
         $this->assertSame('1', $view->vars['attr']['data-trix']);
+    }
+
+    // Both directions, the editor having to be handed content it can display as much as the database has to be spared what it cannot - see StripInlineStyleTransformer
+    public function testInlineStylesAreStrippedOnTheWayInAndOut(): void
+    {
+        $factory = Forms::createFormFactory();
+        $form = $factory->create(TrixEditorType::class, '<div style="color: red">stored</div>');
+
+        $this->assertSame('<div>stored</div>', $form->createView()->vars['value']);
+
+        $form->submit('<div style="text-align: center">typed</div>');
+
+        $this->assertSame('<div>typed</div>', $form->getData());
     }
 
     public function testGetParentIsTextareaType(): void

@@ -35,7 +35,7 @@ class MaintenanceScheduleBuilderTest extends TestCase
         };
     }
 
-    private function createBuilder(array $providers, string $siteUrl = 'https://papa-calin.com'): MaintenanceScheduleBuilder
+    private function createBuilder(array $providers, string $siteUrl = 'https://example.com'): MaintenanceScheduleBuilder
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService
@@ -99,7 +99,7 @@ class MaintenanceScheduleBuilderTest extends TestCase
         $tasks = [$this->createProvider(new MaintenanceTask('# */6 * * *', 'c975l:config:backup'))];
 
         $this->assertNotSame(
-            $this->expressions($this->createBuilder($tasks, 'https://papa-calin.com')->addTasks(new Schedule())),
+            $this->expressions($this->createBuilder($tasks, 'https://example.com')->addTasks(new Schedule())),
             $this->expressions($this->createBuilder($tasks, 'https://run.as')->addTasks(new Schedule())),
         );
     }

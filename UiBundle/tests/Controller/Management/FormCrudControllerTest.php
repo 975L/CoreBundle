@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ContentExporter;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Controller\Management\FormCrudController;
 use c975L\UiBundle\Controller\Management\FormFieldTemplateCrudController;
 use c975L\UiBundle\Entity\Form;
@@ -25,6 +26,7 @@ use c975L\UiBundle\Registry\FormActionRegistry;
 use c975L\UiBundle\Repository\FormRepository;
 use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormFieldNamer;
+use c975L\UiBundle\Service\FormTranslator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -52,7 +54,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormCrudControllerTest extends TestCase
 {
-    private function createController(?AdminUrlGeneratorInterface $adminUrlGenerator = null, ?ExpressionEvaluator $expressionEvaluator = null, ?AdminContextProvider $adminContextProvider = null, ?FormRepository $formRepository = null, ?ContentExporter $contentExporter = null): FormCrudController
+    // The collaborators a test has no opinion on are defaulted rather than passed as null and coalesced here: one "??" apiece reads as a branch apiece, which is what the complexity gate counts
+    private function createController(?AdminUrlGeneratorInterface $adminUrlGenerator = null, ?ExpressionEvaluator $expressionEvaluator = null, AdminContextProvider $adminContextProvider = new AdminContextProvider(new RequestStack()), ?FormRepository $formRepository = null, ?ContentExporter $contentExporter = null, FormTranslator $formTranslator = new FormTranslator(), RequestStack $requestStack = new RequestStack()): FormCrudController
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn('ROLE_ADMIN');
@@ -60,18 +63,38 @@ class FormCrudControllerTest extends TestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturn('Add from a template…');
 
+        $formRepository = $this->orStub($formRepository, FormRepository::class);
+
         return new FormCrudController(
             $configService,
             $this->createStub(FormFieldNamer::class),
             $this->createStub(FormActionRegistry::class),
-            $expressionEvaluator ?? $this->createStub(ExpressionEvaluator::class),
-            $adminContextProvider ?? new AdminContextProvider(new RequestStack()),
-            $adminUrlGenerator ?? $this->createStub(AdminUrlGeneratorInterface::class),
+            $this->orStub($expressionEvaluator, ExpressionEvaluator::class),
+            $adminContextProvider,
+            $this->orStub($adminUrlGenerator, AdminUrlGeneratorInterface::class),
             $translator,
-            $formRepository ??= $this->createStub(FormRepository::class),
+            $formRepository,
             new FormExportProvider($formRepository),
-            $contentExporter ?? $this->createStub(ContentExporter::class),
+            $this->orStub($contentExporter, ContentExporter::class),
+            $formTranslator,
+            $this->createStub(SiteLocales::class),
+            $requestStack,
         );
+    }
+
+    /**
+     * The collaborator a test handed over, or a stub of it.
+     *
+     * @template T of object
+     *
+     * @param T|null          $given
+     * @param class-string<T> $class
+     *
+     * @return T
+     */
+    private function orStub(?object $given, string $class): object
+    {
+        return $given ?? $this->createStub($class);
     }
 
     // The two container services AbstractController reads for denyAccessUnlessGranted() and isCsrfTokenValid()
@@ -347,6 +370,31 @@ class FormCrudControllerTest extends TestCase
         $this->assertSame('true', $rowAttr['data-form-outputs-collection']);
         $this->assertSame('["kilometres_par_an","litres"]', $rowAttr['data-form-outputs-variables']);
         $this->assertArrayHasKey('data-form-outputs-variables-hint', $rowAttr);
+    }
+
+    // A form is composed once, in the language it was written in: a language screen writes the words of the rows already there, and taking one away there would take it away from every language at once
+    public function testTheLanguageScreenNeitherAddsNorDeletesRows(): void
+    {
+        $properties = [];
+        foreach ($this->createLanguageScreenController()->configureFields(Crud::PAGE_EDIT) as $field) {
+            $dto = $field->getAsDto();
+            $properties[] = $dto->getProperty();
+            if ($field instanceof CollectionField) {
+                $this->assertFalse($dto->getCustomOption(CollectionField::OPTION_ALLOW_ADD), $dto->getProperty() . ' must not be addable from a language screen.');
+                $this->assertFalse($dto->getCustomOption(CollectionField::OPTION_ALLOW_DELETE), $dto->getProperty() . ' must not be deletable from a language screen.');
+            }
+        }
+
+        $this->assertSame(['fields', 'outputs'], $properties);
+    }
+
+    // The screen is the edit one asked for in a declared language (see FormCrudController::CONTENT_LOCALE_PARAM), which is the only way configureFields() yields the translation fields
+    private function createLanguageScreenController(): FormCrudController
+    {
+        $formTranslator = $this->createStub(FormTranslator::class);
+        $formTranslator->method('getTranslatableLocales')->willReturn(['en']);
+
+        return $this->createController(formTranslator: $formTranslator, requestStack: new RequestStack([new Request([FormCrudController::CONTENT_LOCALE_PARAM => 'en'])]));
     }
 
     private function outputsHelpOf(ExpressionEvaluator $expressionEvaluator, Form $entity): TranslatableMessage

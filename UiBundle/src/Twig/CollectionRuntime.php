@@ -31,12 +31,13 @@ class CollectionRuntime implements RuntimeExtensionInterface
     }
 
     // Renders each item as a never-persisted "collection_item" Block - literally the same render_block() pipeline as a real, editor-placed block, just fed with data built from the source's own CollectionItem instead of a stored Block::$data; @return string[] one rendered HTML fragment per item
-    public function renderItems(string $source, ?int $limit, ?string $detailPage, ?string $variant = null, ?string $order = null): array
+    // "$level" is the heading each item's title is drawn with, resolved by the calling block (see blocks/Collection.html.twig): the item knows what it says, only the page holding it knows how deep it sits
+    public function renderItems(string $source, ?int $limit, ?string $detailPage, ?string $variant = null, ?string $order = null, ?string $level = null): array
     {
         $rendered = [];
 
         foreach ($this->pick($source, $limit, $order) as $item) {
-            $rendered[] = $this->renderItem($source, $item, $detailPage, $variant);
+            $rendered[] = $this->renderItem($source, $item, $detailPage, $variant, $level);
         }
 
         return $rendered;
@@ -74,7 +75,7 @@ class CollectionRuntime implements RuntimeExtensionInterface
     }
 
     // Either the source's own template - a card of its own that this bundle's never draws, see CollectionSourceProviderInterface - or the "collection_item" Block every source has always been rendered by
-    private function renderItem(string $source, CollectionItem $item, ?string $detailPage, ?string $variant): string
+    private function renderItem(string $source, CollectionItem $item, ?string $detailPage, ?string $variant, ?string $level = null): string
     {
         $detailUrl = $this->buildDetailUrl($detailPage, $item->slug);
 
@@ -91,6 +92,11 @@ class CollectionRuntime implements RuntimeExtensionInterface
             'variant' => $variant,
         ];
 
+        // Added and not defaulted: a source handing back a "level" of its own in $item->data keeps it where the block asked for none
+        if (null !== $level && '' !== $level) {
+            $data['level'] = $level;
+        }
+
         $template = $this->sourceRegistry->itemTemplate($source);
         if (null !== $template) {
             // Rendered live, the caching being the named template's own business: it draws an entity this bundle knows nothing of, and is the only side that can say what invalidates it
@@ -101,21 +107,21 @@ class CollectionRuntime implements RuntimeExtensionInterface
 
         return $this->blockExtension->renderBlock(
             new Block()->setKind('collection_item')->setData($data),
-            $this->itemCacheKey($source, $item->slug, $variant, $detailUrl, $cacheTags),
+            $this->itemCacheKey($source, $item->slug, $variant, $detailUrl, $level, $cacheTags),
             $cacheTags
         );
     }
 
-    // The item's own identity rather than the block's, which is the whole point: one character's card is a single entry, hit by the "collection" block listing them on one page and by the one listing them on another. What the key holds is everything the html varies with - the source and the item's slug (the item's own data, invalidated by $cacheTags when it changes), the variant that picks its markup, and the detail url, the one thing in it that the page holding the block decides.
+    // The item's own identity rather than the block's, which is the whole point: one character's card is a single entry, hit by the "collection" block listing them on one page and by the one listing them on another. What the key holds is everything the html varies with - the source and the item's slug (the item's own data, invalidated by $cacheTags when it changes), the variant that picks its markup, and the two things the page holding the block decides: the detail url and the heading its titles are drawn with.
     // Null - i.e. render live, no entry - when the source declared no tag to invalidate on, or when the item has no slug to be named by; @param string[] $cacheTags
-    private function itemCacheKey(string $source, ?string $slug, ?string $variant, ?string $detailUrl, array $cacheTags): ?string
+    private function itemCacheKey(string $source, ?string $slug, ?string $variant, ?string $detailUrl, ?string $level, array $cacheTags): ?string
     {
         if ([] === $cacheTags || null === $slug) {
             return null;
         }
 
         // Hashed rather than assembled: a source key, a slug or a detail url all hold characters a cache key reserves ("/", ":", "@"), and the pool refuses the whole entry over one of them
-        return 'collection_item_' . hash('xxh128', implode("\0", [$source, $slug, (string) $variant, (string) $detailUrl]));
+        return 'collection_item_' . hash('xxh128', implode("\0", [$source, $slug, (string) $variant, (string) $detailUrl, (string) $level]));
     }
 
     // Only when the "collection" block author configured a detailPage AND this item's source hands back a slug: the item's title then links to /pages/{currentPage}/{itemSlug}, resolved back to the source's own "detail" callable by PageController::resolveCollectionDetail(). Tolerant on purpose, like the rest of this feature (see CollectionSourceRegistry::detail()) - anything missing (no detailPage, no slug, no current "page" route parameter) just yields no link, same as a source with no detail page at all. Reuses "page_preview" instead of "page_display" when the parent page itself is being previewed, so an editor can follow a detail link before the parent (or its detailPage) is published, without landing on a 404.

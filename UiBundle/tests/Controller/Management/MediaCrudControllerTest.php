@@ -15,6 +15,7 @@ use c975L\UiBundle\Contract\MediaUsageProviderInterface;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Registry\MediaUsageRegistry;
+use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\ImageDimensionsReader;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,6 +58,7 @@ class MediaCrudControllerTest extends TestCase
             $configService,
             $security,
             $mediaUsageRegistry ?? new MediaUsageRegistry(),
+            $this->createStub(MediaRepository::class),
             $projectDir
         );
     }

@@ -12,7 +12,8 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// The controller reads the page it fetches through the very attributes the listing writes, so the identifier, the barrel and those attributes are one contract - and a consuming bundle's template is the other end of it, with no browser here to catch a drift
+// The barrel entry, and the one arming a listing that stopped growing cannot be seen from: an observer reports changes of state, and says nothing at all about a link that never left the viewport
+// What the controller does with a fetched page - what it appends, what it resolves the next url against, when it pauses and when it gives up - is InfiniteScrollBehaviourTest's, run in a browser. It used to be asserted here as lines of source
 class InfiniteScrollControllerTest extends TestCase
 {
     private const string CONTROLLER_JS = 'assets/js/infinite-scroll.js';
@@ -28,21 +29,6 @@ class InfiniteScrollControllerTest extends TestCase
         );
     }
 
-    // The fetched page is a detached document, where Stimulus has connected nothing: the items and the next link are found by the attributes themselves, which have to spell the registered identifier
-    public function testTheFetchedPageIsReadThroughTheIdentifiersOwnAttributes(): void
-    {
-        $controller = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringContainsString(sprintf('[data-%s-target="list"]', self::IDENTIFIER), $controller);
-        $this->assertStringContainsString(sprintf('[data-%s-target="next"]', self::IDENTIFIER), $controller);
-    }
-
-    // The link is the fallback the whole thing rests on - without javascript, and for a crawler, it is an ordinary link to the next page
-    public function testAClickLoadsInPlaceInsteadOfLeavingThePage(): void
-    {
-        $this->assertStringContainsString('event?.preventDefault();', $this->read(self::CONTROLLER_JS));
-    }
-
     // An observer reports changes of state and stays silent on a link that never left the viewport, which is what a short page of items leaves it in
     public function testTheLinkIsObservedAgainAfterEachPage(): void
     {
@@ -52,22 +38,13 @@ class InfiniteScrollControllerTest extends TestCase
         $this->assertStringContainsString('this.observer?.observe(this.nextTarget);', $controller);
     }
 
-    // SiteBundle's basic.js announces the scroll it starts towards an anchor: growing during it would push the bottom of the page away from the visitor heading for it
-    public function testTheListingStopsGrowingDuringAnAnchorScroll(): void
-    {
-        $controller = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringContainsString('document.addEventListener("anchor:scroll", this.pause);', $controller);
-        $this->assertStringContainsString('this.observer?.disconnect();', $controller);
-    }
-
     // The pause lasts until the visitor scrolls by themselves, which is them reading the listing again rather than the footer they asked for - "pointerdown" among them because dragging the scrollbar fires none of the other three
     public function testTheListingGrowsAgainOnTheVisitorsOwnScroll(): void
     {
         $controller = $this->read(self::CONTROLLER_JS);
 
+        // The four gestures are a declaration rather than a behaviour: a scenario can only ever fire one of them, and "pointerdown" is there because dragging the scrollbar fires none of the other three
         $this->assertStringContainsString('static RESUME_EVENTS = ["wheel", "touchstart", "keydown", "pointerdown"];', $controller);
-        $this->assertStringContainsString('document.addEventListener(type, this.resume, { once: true, passive: true })', $controller);
     }
 
     private function read(string $relativePath): string

@@ -249,12 +249,12 @@ class VichImageResizeListenerTest extends TestCase
     // This listener fires once per Vich field, and its branches answer for the entity as a whole - so a second file next to the image (a gallery media and its self-hosted video) used to be copied aside as an "original", measured, and handed to a resizer that cannot read it
     public function testOnPostUploadLeavesAFileThatIsNotAnImageAlone(): void
     {
-        $storedPath = $this->projectDir . '/public/medias/gallery/kalaan/skate-a1b2c3.mp4';
+        $storedPath = $this->projectDir . '/public/medias/gallery/demo/skate-a1b2c3.mp4';
         mkdir(\dirname($storedPath), 0777, true);
         // An ftyp box is what a video container starts with, and what fileinfo reads it as a video by
         file_put_contents($storedPath, "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom" . str_repeat("\x00", 64));
 
-        $media = new OriginalKeepableImageStub($storedPath, 'medias/gallery/kalaan/skate-a1b2c3.mp4', 'private');
+        $media = new OriginalKeepableImageStub($storedPath, 'medias/gallery/demo/skate-a1b2c3.mp4', 'private');
         $sizeBefore = filesize($storedPath);
 
         $this->createListener()->onPostUpload(new Event($media, $this->createMapping()));

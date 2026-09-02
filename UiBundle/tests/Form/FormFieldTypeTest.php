@@ -12,6 +12,8 @@ namespace c975L\UiBundle\Tests\Form;
 
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Form\FormFieldType;
+use c975L\UiBundle\Form\Util\FormTranslationBuilder;
+use c975L\UiBundle\Service\FormTranslator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -31,7 +33,7 @@ class FormFieldTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        new FormFieldType()->buildForm($builder, []);
+        new FormFieldType(new FormTranslationBuilder(new FormTranslator()))->buildForm($builder, ['translation_locale' => null]);
 
         return $added;
     }
@@ -50,7 +52,7 @@ class FormFieldTypeTest extends TestCase
             }
         );
 
-        new FormFieldType()->buildForm($builder, []);
+        new FormFieldType(new FormTranslationBuilder(new FormTranslator()))->buildForm($builder, ['translation_locale' => null]);
 
         $added = [];
         $innerForm = $this->createStub(FormInterface::class);

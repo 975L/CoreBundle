@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-09-01",
+        "description": [
+            {
+                "en": "A working share button is no longer listed as a broken link. A url routed by the browser rather than by the server — a “share on Bluesky” link is the usual one — answers “not found” to the quick check the health check starts with, while serving the page perfectly well. Such a link is now called a second time, in full, before anything is reported: only a link that fails both times ends up on the dashboard.",
+                "fr": "Un bouton de partage qui fonctionne n'est plus listé comme lien cassé. Une adresse gérée par le navigateur plutôt que par le serveur — un lien « partager sur Bluesky » en est le cas courant — répond « introuvable » à la vérification rapide par laquelle commence le bilan de santé, alors qu'elle sert très bien la page. Un tel lien est désormais rappelé une seconde fois, complètement, avant d'être signalé : seul un lien qui échoue aux deux passages arrive sur le tableau de bord.",
+                "es": "Un botón para compartir que funciona ya no aparece como enlace roto. Una dirección gestionada por el navegador y no por el servidor — un enlace «compartir en Bluesky» es el caso habitual — responde «no encontrado» a la comprobación rápida con la que empieza la verificación de estado, aunque sirve la página perfectamente. Ese enlace se vuelve a llamar una segunda vez, completa, antes de señalarlo: solo un enlace que falla en ambas pasadas llega al panel."
+            },
+            {
+                "en": "The offending images or links behind a health check line are listed straight away, instead of behind a “See the detail” to click on.",
+                "fr": "Les images ou les liens en cause derrière une ligne du bilan de santé sont listés directement, au lieu d'être repliés derrière un « Voir le détail » à cliquer.",
+                "es": "Las imágenes o los enlaces implicados detrás de una línea de la verificación de estado se listan directamente, en lugar de quedar plegados tras un «Ver el detalle» que hay que pulsar."
+            },
+            {
+                "en": "The “intrusion” check no longer reports config/reference.php as code changed since deployment: that file is written by Symfony itself for code editors, and nothing on the site ever loads it.",
+                "fr": "Le contrôle « intrusion » ne signale plus config/reference.php comme code modifié depuis le déploiement : ce fichier est écrit par Symfony lui-même à l'intention des éditeurs de code, et rien sur le site ne le charge.",
+                "es": "El control «intrusión» ya no señala config/reference.php como código modificado desde el despliegue: ese archivo lo escribe el propio Symfony para los editores de código, y nada en el sitio lo carga."
+            },
+            {
+                "en": "The edit links in a health check report now open the right page. A check launched outside the back office used to build them against a local address, which led nowhere from another machine.",
+                "fr": "Les liens de modification d'un bilan de santé ouvrent désormais la bonne page. Un contrôle lancé hors du back-office les construisait sur une adresse locale, qui ne menait nulle part depuis une autre machine.",
+                "es": "Los enlaces de edición de una verificación de estado abren ahora la página correcta. Un control lanzado fuera del back-office los construía sobre una dirección local, que no llevaba a ninguna parte desde otra máquina."
+            }
+        ]
+    },
+    {
         "date": "2026-08-31",
         "description": [
             {

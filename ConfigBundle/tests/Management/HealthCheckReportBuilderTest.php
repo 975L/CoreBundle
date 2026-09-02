@@ -24,7 +24,7 @@ class HealthCheckReportBuilderTest extends TestCase
     {
         return new HealthCheckResult()
             ->setKind('w3c-css')
-            ->setUrl('https://papa-calin.com/shop')
+            ->setUrl('https://example.com/shop')
             ->setLabel('Boutique')
             ->setStatus($status)
             ->setSummary('2 errors')
@@ -38,7 +38,7 @@ class HealthCheckReportBuilderTest extends TestCase
     private function createBuilder(array $rows = []): HealthCheckReportBuilder
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('https://papa-calin.com');
+        $configService->method('get')->willReturn('https://example.com');
 
         $repository = $this->createStub(HealthCheckResultRepository::class);
         $repository->method('findLatestPerUrlAndKind')->willReturn($rows);
@@ -56,7 +56,7 @@ class HealthCheckReportBuilderTest extends TestCase
 
         $this->assertSame(HealthCheckReportBuilder::VERSION, $report['reportVersion']);
         $this->assertSame(StatusReportBuilder::VERSION, $report['version']);
-        $this->assertSame('https://papa-calin.com', $report['site']);
+        $this->assertSame('https://example.com', $report['site']);
         $this->assertArrayHasKey('packages', $report);
         $this->assertArrayHasKey('checks', $report);
     }

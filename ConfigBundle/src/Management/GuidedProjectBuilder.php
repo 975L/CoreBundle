@@ -16,6 +16,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Merges the guided projects contributed by every GuidedProjectProvider, sorted by "order" - a deliberate sequence (create a page, then add a block to it, then put it in a menu), not the alphabetical merge MenuBuilder/AlertBuilder use, same as EssentialActionBuilder. Labels and descriptions are resolved here rather than left to the template: the panel walking a project through is JavaScript (see assets/js/guided-project.js), fed by GuidedProjectController's JSON, and there is no translator on that side
 class GuidedProjectBuilder
 {
+    // Narrations live in a domain of their own, beside the project's: they are only ever spoken, they are written in French and English alone where the rest of a bundle also speaks Spanish, and a catalogue holding a key one locale lacks is what XlfRebuild refuses. Same suffix in OnboardingStepBuilder, the tour's narrations being written the same way
+    public const string NARRATION_DOMAIN_SUFFIX = '_narration';
+
     public function __construct(
         private readonly iterable $guidedProjectProviders,
         private readonly Security $security,
@@ -26,12 +29,24 @@ class GuidedProjectBuilder
     // Every project, across every provider, sorted by "order" - one needing a role the current user lacks is dropped, the screens it walks through being out of their reach anyway (same treatment as a sidebar link, see MenuProviderInterface::getLinks())
     public function getProjects(): array
     {
-        $projects = ProviderMerger::merge($this->guidedProjectProviders, fn (GuidedProjectProviderInterface $provider) => $provider->getGuidedProjects());
+        $projects = array_filter($this->declaredProjects(), fn (array $project) => !isset($project['role']) || $this->security->isGranted($project['role']));
 
-        $projects = array_filter($projects, fn (array $project) => !isset($project['role']) || $this->security->isGranted($project['role']));
+        return array_map($this->buildProject(...), array_values($projects));
+    }
+
+    // Every project whatever role it asks for, which is what a documentation of the whole back office reads - where getProjects() answers one reader and drops what they could not open anyway. Nothing is exposed by listing them: a parcours is a sequence of captions, and following it still runs into the screen's own security
+    public function getAllProjects(): array
+    {
+        return array_map($this->buildProject(...), $this->declaredProjects());
+    }
+
+    // Merged across every provider and sorted by "order" - a deliberate sequence, not the alphabetical merge MenuBuilder/AlertBuilder use
+    private function declaredProjects(): array
+    {
+        $projects = ProviderMerger::merge($this->guidedProjectProviders, fn (GuidedProjectProviderInterface $provider) => $provider->getGuidedProjects());
         usort($projects, fn (array $a, array $b) => $a['order'] <=> $b['order']);
 
-        return array_map($this->buildProject(...), $projects);
+        return $projects;
     }
 
     // One project by its slug, or null when no provider declares it anymore (a bundle uninstalled since the browser stored it) or when the current user lacks its role - a slug being theirs to forge, that second check is the only thing standing between them and another role's parcours
@@ -64,8 +79,19 @@ class GuidedProjectBuilder
         return [
             'label' => $this->translator->trans($step['label'], [], $domain),
             'description' => empty($step['description']) ? '' : $this->translator->trans($step['description'], [], $domain),
+            // What the step sounds like spoken: read by the films of the back office, and by nothing on screen. A step without one falls back to its caption, which is better said badly than not said at all
+            'narration' => empty($step['narration']) ? $this->spokenFallback($step, $domain) : $this->translator->trans($step['narration'], [], $domain . self::NARRATION_DOMAIN_SUFFIX),
             'url' => $step['url'] ?? null,
             'highlight' => $step['highlight'] ?? null,
         ];
+    }
+
+    // The caption and its explanation as one spoken passage, for a step nobody has written a sentence for yet
+    private function spokenFallback(array $step, string $domain): string
+    {
+        $label = rtrim($this->translator->trans($step['label'], [], $domain), " \t.");
+        $description = empty($step['description']) ? '' : $this->translator->trans($step['description'], [], $domain);
+
+        return trim($label . '. ' . $description);
     }
 }

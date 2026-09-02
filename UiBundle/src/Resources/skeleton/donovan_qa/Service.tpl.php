@@ -37,7 +37,8 @@ class <?= $class_name ?>
         $normalized = $this->normalize($question);
         $hash = hash('sha256', $normalized);
         // TODO: fixed for now, so a cached answer is never invalidated on its own merit; add a version() to the context builder
-        $version = 'v1';
+        // Bumped to v2 when guided tours joined the context: a v1 answer was written without any parcours to cite
+        $version = 'v2';
 
         $existing = $this->repository->findOneByQuestionHash($hash);
 
@@ -49,10 +50,11 @@ class <?= $class_name ?>
         }
 
         $questionEmbedding = $this->embeddingClient->embed($normalized);
+        $threshold = $this->semanticThreshold();
 
         // Persisted under this question's own hash, so a literal repeat takes the exact-hash path
-        if (null !== $questionEmbedding) {
-            $semanticMatch = $this->repository->findBestSemanticMatch($questionEmbedding, $version, $this->semanticThreshold());
+        if (null !== $questionEmbedding && null !== $threshold) {
+            $semanticMatch = $this->repository->findBestSemanticMatch($questionEmbedding, $version, $threshold);
 
             if (null !== $semanticMatch) {
                 $answer = ($existing ?? new <?= $entity_short_name ?>())->recordFreshAnswer(
@@ -102,8 +104,11 @@ class <?= $class_name ?>
         return trim((string) preg_replace('/\s+/', ' ', mb_strtolower($question)));
     }
 
-    private function semanticThreshold(): float
+    // Null when the entry holds nothing: no threshold means no similarity search, where a defaulted 0.0 would match every question against every other one
+    private function semanticThreshold(): ?float
     {
-        return (float) ($this->configService->get('donovan-qa-semantic-cache-threshold') ?? 0.90);
+        $threshold = $this->configService->get('donovan-qa-semantic-cache-threshold');
+
+        return null === $threshold || '' === $threshold ? null : (float) $threshold;
     }
 }

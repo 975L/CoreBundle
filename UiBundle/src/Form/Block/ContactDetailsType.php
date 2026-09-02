@@ -14,6 +14,7 @@ use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -110,6 +111,12 @@ class ContactDetailsType extends AbstractType
                 'required' => false,
             ])
             ->add('mapUrl', UrlType::class, array_merge($this->urlOptions(), ['label' => 'label.map_url', 'help' => 'label.map_url_help']))
+            // Ticked, the block builds the link itself out of the coordinates or the postal address above (see GoogleMapsLinkBuilder), so nobody has to go to Google, search for their own business and paste the url back. The field above still wins when both are filled: a business with a Google listing of its own has an address worth more than a search
+            ->add('googleMapsLink', CheckboxType::class, [
+                'label' => 'label.google_maps_link',
+                'help' => 'label.google_maps_link_help',
+                'required' => false,
+            ])
             ->add('latitude', TextType::class, [
                 'label' => 'label.latitude',
                 'required' => false,

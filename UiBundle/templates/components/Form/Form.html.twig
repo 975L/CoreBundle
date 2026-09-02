@@ -3,7 +3,8 @@
 {% trans_default_domain 'ui' %}
 
 {# A <div>: this block never carries a heading, and a headingless <section> is invalid HTML #}
-<div>
+{# The class is what puts the kind in the page's vertical rhythm, sass/_forms.scss reading it: laid out as a page-level block it owns the step above itself, as every other kind does #}
+<div class="ui-form-block">
     {# Only a visitor who can hold a flash reads the bag, reading app.flashes being enough to start a session #}
     {% if ui_can_hold_flash() %}
         {% for label, messages in app.flashes(['success', 'danger', 'warning']) %}

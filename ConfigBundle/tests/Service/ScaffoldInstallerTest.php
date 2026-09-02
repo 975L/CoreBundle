@@ -215,6 +215,33 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertSame(hash('sha256', 'delivered-now'), $manifest['src/Kernel.php']);
     }
 
+    // acknowledge() walks the whole scaffold in dry run to find the divergences: a file simply behind, which that walk would have copied, must keep the base it really holds - recorded as up to date without being written, it would read as the site's own work forever after
+    public function testAcknowledgeLeavesTheBaseOfAFileItDidNotWriteAlone(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'new-scaffold', 'src/Foo.php' => 'upstream']);
+        mkdir($this->projectDir . '/src', 0775, true);
+        file_put_contents($this->projectDir . '/src/Kernel.php', 'as-delivered');
+        file_put_contents($this->projectDir . '/src/Foo.php', 'mine');
+        $this->recordAsDelivered('src/Kernel.php', 'as-delivered');
+
+        new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->acknowledge();
+
+        $manifest = json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true);
+        $this->assertSame(hash('sha256', 'as-delivered'), $manifest['src/Kernel.php']);
+        $this->assertSame('as-delivered', file_get_contents($this->projectDir . '/src/Kernel.php'));
+    }
+
+    // A --path naming nothing wrote nothing, which the caller has no other way of telling from a site with nothing customized
+    public function testAcknowledgeReportsAPathMatchingNoScaffoldFile(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Kernel.php' => 'scaffold']);
+
+        $result = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir)->acknowledge(['scaffold/src']);
+
+        $this->assertSame([], $result['files']);
+        $this->assertSame(['scaffold/src'], $result['unmatched']);
+    }
+
     // Scaffold files from several installed bundles are all merged into the project
     public function testInstallMergesScaffoldFilesFromEveryInstalledBundle(): void
     {

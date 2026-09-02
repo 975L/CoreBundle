@@ -1522,6 +1522,12 @@ label[for=contact_form_username],
   }
 }
 /* FORMS */
+.blocks > .ui-form-block,
+.block-animation > .ui-form-block,
+.block-editable > .ui-form-block {
+  padding-top: var(--section-space-tight, clamp(24px, 4vw, 48px));
+}
+
 form {
   width: var(--form-width);
   margin: 0 auto 1em auto;
@@ -2084,6 +2090,94 @@ img.white {
 .legal-boxed p {
   margin-block: 1em;
   text-align: justify;
+}
+
+.ui-map {
+  max-width: var(--reading-max-width, min(75ch, 90vw));
+  margin: var(--ui-map-margin-block, 3em) auto;
+}
+
+.ui-map__title {
+  margin-bottom: 0.5em;
+}
+
+.ui-map--small .ui-map__canvas {
+  height: var(--ui-map-height-small, 15rem);
+}
+
+.ui-map--medium .ui-map__canvas {
+  height: var(--ui-map-height-medium, 25rem);
+}
+
+.ui-map--large .ui-map__canvas {
+  height: var(--ui-map-height-large, 35rem);
+}
+
+.ui-map__canvas {
+  width: 100%;
+  border: var(--ui-map-border, 1px solid var(--border-color));
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.ui-map__prompt {
+  padding: 1.5em;
+  border: var(--ui-map-border, 1px solid var(--border-color));
+  border-radius: 15px;
+  text-align: center;
+}
+
+.ui-map__diagnostic {
+  margin: 0 0 1em;
+  padding: 0.75em 1em;
+  border-left: 4px solid var(--alert-danger-color);
+  background: var(--alert-danger-background);
+  color: var(--alert-danger-color);
+  font-size: 0.9em;
+}
+
+.ui-map__list {
+  margin: 1em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-map__place {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25em 0.75em;
+  align-items: baseline;
+  padding: 0.5em 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ui-map__place-label {
+  font-weight: bold;
+}
+
+.ui-map__place-text {
+  flex: 1 1 100%;
+  font-size: 0.9em;
+}
+
+.ui-map__place-link {
+  margin-left: auto;
+  font-size: 0.9em;
+}
+
+.ui-map__pin {
+  width: 24px;
+  height: 24px;
+  background-color: var(--ui-map-pin-color, var(--primary));
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transform: rotate(-45deg);
+}
+
+.ui-map__popup p {
+  margin: 0.25em 0 0;
+  font-size: 0.9em;
 }
 
 /* PAGE SECTIONS */

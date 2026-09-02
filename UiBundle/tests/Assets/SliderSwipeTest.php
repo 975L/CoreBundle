@@ -72,15 +72,6 @@ class SliderSwipeTest extends TestCase
         $this->assertStringContainsString('startIndex + step', $js, 'A swipe must move exactly one slide from where it started.');
     }
 
-    // A tap advances a slide; the click a swipe leaves behind must not advance a second one
-    public function testSwipeDoesNotAlsoTriggerTheClickOnSlide(): void
-    {
-        $js = (string) file_get_contents(dirname(__DIR__, 2) . '/assets/js/slider.js');
-
-        $this->assertStringContainsString('this.swipedAt = Date.now()', $js, 'A swipe no longer records when it ended.');
-        $this->assertStringContainsString('Date.now() - (this.swipedAt || 0)', $js, 'The click listener no longer ignores the compatibility click following a swipe.');
-    }
-
     // Same shape whichever of the two stylesheets it comes from - only the space around the punctuation differs
     private function css(string $file): string
     {

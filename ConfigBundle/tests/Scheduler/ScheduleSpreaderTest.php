@@ -35,7 +35,7 @@ class ScheduleSpreaderTest extends TestCase
     // The whole point: the same command, scheduled from the same scaffold, must not land on the same minute on two installs
     public function testTwoInstallsGetDifferentExpressions(): void
     {
-        $first = $this->resolve($this->createSpreader('https://papa-calin.com'), '# */6 * * *');
+        $first = $this->resolve($this->createSpreader('https://example.com'), '# */6 * * *');
         $second = $this->resolve($this->createSpreader('https://run.as'), '# */6 * * *');
 
         $this->assertNotSame($first, $second);
@@ -44,15 +44,15 @@ class ScheduleSpreaderTest extends TestCase
     // Deterministic: a worker restart, or a redeploy, must not move the schedule around
     public function testSameInstallAlwaysGetsTheSameExpression(): void
     {
-        $expected = $this->resolve($this->createSpreader('https://papa-calin.com'), '# #(0-2) * * *');
+        $expected = $this->resolve($this->createSpreader('https://example.com'), '# #(0-2) * * *');
 
-        $this->assertSame($expected, $this->resolve($this->createSpreader('https://papa-calin.com'), '# #(0-2) * * *'));
+        $this->assertSame($expected, $this->resolve($this->createSpreader('https://example.com'), '# #(0-2) * * *'));
     }
 
     // Only the placeholders are drawn, the rest of the expression is what the app asked for
     public function testOnlyPlaceholdersAreReplaced(): void
     {
-        $resolved = $this->resolve($this->createSpreader('https://papa-calin.com'), '# #(0-2) * * *');
+        $resolved = $this->resolve($this->createSpreader('https://example.com'), '# #(0-2) * * *');
 
         $this->assertMatchesRegularExpression('/^\d{1,2} [0-2] \* \* \*$/', $resolved);
     }
@@ -60,13 +60,13 @@ class ScheduleSpreaderTest extends TestCase
     // An install that wants a fixed hour keeps writing a plain expression, and nothing is spread
     public function testExpressionWithoutPlaceholderIsUntouched(): void
     {
-        $this->assertSame('0 3 * * *', $this->resolve($this->createSpreader('https://papa-calin.com'), '0 3 * * *'));
+        $this->assertSame('0 3 * * *', $this->resolve($this->createSpreader('https://example.com'), '0 3 * * *'));
     }
 
     // Two commands sharing one expression are spread apart too, which matters even to an install that is alone on its server
     public function testTwoCommandsOfTheSameInstallAreSpread(): void
     {
-        $spreader = $this->createSpreader('https://papa-calin.com');
+        $spreader = $this->createSpreader('https://example.com');
 
         $this->assertNotSame(
             $this->resolve($spreader, '# #(0-2) * * *', 'c975l:config:backup'),
@@ -77,7 +77,7 @@ class ScheduleSpreaderTest extends TestCase
     // The signature takes any object, and an app scheduling a message of its own must not bring the worker down on start-up
     public function testMessageThatIsNotStringableIsSpreadOnItsClass(): void
     {
-        $spreader = $this->createSpreader('https://papa-calin.com');
+        $spreader = $this->createSpreader('https://example.com');
 
         $resolved = (string) $spreader->spread('# #(0-2) * * *', new \stdClass())->getTrigger();
 

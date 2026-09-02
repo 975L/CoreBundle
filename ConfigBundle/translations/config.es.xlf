@@ -632,7 +632,7 @@
             </trans-unit>
             <trans-unit id="GnuqUyG">
                 <source>label.from_path_help</source>
-                <target>Ruta URL con la / inicial (ej: /la-guilde-des-seigneurs). Un * final cubre toda una carpeta (ej: /personnage/*)</target>
+                <target>Ruta URL con la / inicial (ej: /mi-carpeta). Un * final cubre toda una carpeta (ej: /personnage/*)</target>
             </trans-unit>
             <trans-unit id="qrvRsVy">
                 <source>label.gone</source>
@@ -665,6 +665,10 @@
             <trans-unit id="XRPo6XS">
                 <source>label.group_email</source>
                 <target>Correo</target>
+            </trans-unit>
+            <trans-unit id="9Zy4_0i">
+                <source>label.group_empty</source>
+                <target>Por rellenar</target>
             </trans-unit>
             <trans-unit id="0lC5dLu">
                 <source>label.group_form</source>
@@ -945,10 +949,6 @@
             <trans-unit id="qINjVhb">
                 <source>label.health_check_advice_database_load_slow</source>
                 <target>%count% consulta(s) lenta(s) registrada(s) en %days% día(s)</target>
-            </trans-unit>
-            <trans-unit id="kUWeqbk">
-                <source>label.health_check_advice_details</source>
-                <target>Ver el detalle (%count%)</target>
             </trans-unit>
             <trans-unit id="0NB_2s2">
                 <source>label.health_check_advice_fix_link</source>

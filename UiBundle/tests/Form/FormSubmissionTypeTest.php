@@ -15,7 +15,9 @@ use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Form\CaptchaType;
 use c975L\UiBundle\Form\FormSubmissionType;
 use c975L\UiBundle\Service\CaptchaVerifier;
+use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Service\FormBotProtection;
+use c975L\UiBundle\Service\FormTranslator;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -61,7 +63,7 @@ class FormSubmissionTypeTest extends TestCase
         return $field;
     }
 
-    private function createType(bool $recaptcha = false): FormSubmissionType
+    private function createType(bool $recaptcha = false, ?FormTranslator $formTranslator = null): FormSubmissionType
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('hasParameter')->willReturnMap([
@@ -83,7 +85,7 @@ class FormSubmissionTypeTest extends TestCase
 
         $captchaVerifier = new CaptchaVerifier($this->createStub(HttpClientInterface::class), $configService, $requestStack);
 
-        return new FormSubmissionType(new FormBotProtection($configService), $requestStack, $translator, $captchaVerifier);
+        return new FormSubmissionType(new FormBotProtection($configService), $requestStack, $translator, $captchaVerifier, $formTranslator ?? new FormTranslator());
     }
 
     private function buildAddedFields(array $fields, bool $offerReceiveCopy = false, bool $recaptcha = false, array $prefill = [], bool $protections = true): array
@@ -99,6 +101,37 @@ class FormSubmissionTypeTest extends TestCase
         $this->createType($recaptcha)->buildForm($builder, ['fields' => $fields, 'offerReceiveCopy' => $offerReceiveCopy, 'prefill' => $prefill, 'protections' => $protections]);
 
         return $added;
+    }
+
+    // What an admin typed is text a visitor reads, so an English visitor gets the English label and placeholder rather than the French ones the form was built with
+    public function testAFieldIsRenderedInTheLanguageBeingRead(): void
+    {
+        $field = $this->buildField('name', FormField::TYPE_TEXT, false);
+        $field->setLabel('Nom')->setPlaceholder('Votre nom');
+        new \ReflectionProperty(FormField::class, 'id')->setValue($field, 3);
+
+        $contentTranslator = $this->createStub(ContentTranslator::class);
+        $contentTranslator->method('isActive')->willReturn(true);
+        $contentTranslator->method('translate')->willReturnCallback(
+            static fn (string $ownerType, ?int $ownerId, array $values, array $fields): array => array_merge(
+                $values,
+                array_intersect_key(['label' => 'Name', 'placeholder' => 'Your name'], array_flip($fields))
+            )
+        );
+
+        $added = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnCallback(function (string $name, ?string $type = null, array $options = []) use (&$added, $builder) {
+            $added[$name] = ['type' => $type, 'options' => $options];
+
+            return $builder;
+        });
+
+        $this->createType(false, new FormTranslator($contentTranslator))
+            ->buildForm($builder, ['fields' => [$field], 'offerReceiveCopy' => false, 'prefill' => [], 'protections' => false]);
+
+        $this->assertSame('Name', $added['name']['options']['label']);
+        $this->assertSame('Your name', $added['name']['options']['attr']['placeholder']);
     }
 
     public function testEachFieldTypeMapsToItsSymfonyFormType(): void

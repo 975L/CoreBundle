@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="fr" datatype="plaintext" original="config_narration.fr.xlf">
+        <body>
+            <trans-unit id="R7d7CYz">
+                <source>narration.config</source>
+                <target>« Configuration » ouvre tous les réglages du site, groupés par sujet. Chacun se modifie depuis sa propre page ; les valeurs sensibles restent chiffrées en base, même quand l'écran vous les montre en clair.</target>
+            </trans-unit>
+            <trans-unit id="CjZepAN">
+                <source>narration.content_import</source>
+                <target>« Importer du contenu » reprend une archive exportée depuis un autre site, par exemple des pages emportées avec leurs blocks et leurs images.</target>
+            </trans-unit>
+            <trans-unit id="wxnPT.p">
+                <source>narration.guided_step_config_health_check_again</source>
+                <target>Une fois vos corrections faites, relancez le bilan : la courbe de tendance, en haut de la page, montre si le site s'améliore.</target>
+            </trans-unit>
+            <trans-unit id="mjJnyUV">
+                <source>narration.guided_step_config_health_check_fix</source>
+                <target>Traitez une erreur à la fois. Chaque ligne en erreur porte le conseil du bundle qui l'a produite : c'est par là qu'il faut commencer, pas par la liste entière.</target>
+            </trans-unit>
+            <trans-unit id="8_kAglj">
+                <source>narration.guided_step_config_health_check_open</source>
+                <target>Le panneau vous emmène sur le bilan de santé. Pages introuvables, redirections, en-têtes de sécurité, certificat, sitemaps, validation W3C : votre site est passé au crible, vu de l'extérieur.</target>
+            </trans-unit>
+            <trans-unit id="YOwl5TZ">
+                <source>narration.guided_step_config_health_check_read</source>
+                <target>Lisez le tableau des résultats : une ligne par url et par famille. Filtrez par statut pour ne garder que ce qui cloche.</target>
+            </trans-unit>
+            <trans-unit id="fYsT8a0">
+                <source>narration.guided_step_config_health_check_run</source>
+                <target>Lancez le bilan avec le bouton en haut de la page. Une tâche part en file d'attente par famille de vérifications : la page n'attend rien, les résultats arrivent au fur et à mesure.</target>
+            </trans-unit>
+            <trans-unit id="CibE15s">
+                <source>narration.guided_step_config_maintenance_check</source>
+                <target>Vérifiez ce que voient vos visiteurs : ouvrez le site dans une fenêtre de navigation privée, c'est exactement ce qu'ils ont sous les yeux.</target>
+            </trans-unit>
+            <trans-unit id="bGWMIU3">
+                <source>narration.guided_step_config_maintenance_disable</source>
+                <target>Cliquez sur le même raccourci, dont le libellé a changé : il remet le site en ligne.</target>
+            </trans-unit>
+            <trans-unit id="Cu_DaBS">
+                <source>narration.guided_step_config_maintenance_done</source>
+                <target>Maintenant vous savez : la bascule tient dans un clic. Rien ne vous oblige à prévenir à l'avance pour une intervention de quelques minutes.</target>
+            </trans-unit>
+            <trans-unit id="Vbk0ouS">
+                <source>narration.guided_step_config_maintenance_enable</source>
+                <target>Cliquez sur le raccourci de maintenance : vos visiteurs reçoivent aussitôt la page de maintenance, tandis que vous, connecté, continuez de voir le site.</target>
+            </trans-unit>
+            <trans-unit id="nYZwnfu">
+                <source>narration.guided_step_config_maintenance_open</source>
+                <target>Le panneau vous ramène au tableau de bord. Ses raccourcis sont des actions immédiates, sans écran intermédiaire.</target>
+            </trans-unit>
+            <trans-unit id="59LPu8b">
+                <source>narration.guided_step_config_not_found_create</source>
+                <target>Sur cette ligne, cliquez sur le bouton qui crée la redirection : il ouvre un formulaire avec le chemin mort déjà rempli.</target>
+            </trans-unit>
+            <trans-unit id="75YQjtn">
+                <source>narration.guided_step_config_not_found_done</source>
+                <target>Le lien répond de nouveau : ce chemin mène à la page choisie, pour un visiteur comme pour un moteur de recherche. La ligne reste dans la liste tant que quelque chose la touche encore.</target>
+            </trans-unit>
+            <trans-unit id="nD1m.i7">
+                <source>narration.guided_step_config_not_found_from</source>
+                <target>Le premier champ est déjà rempli. Rien à taper : c'est le chemin que la liste vous a montré, recopié tel quel.</target>
+            </trans-unit>
+            <trans-unit id="_1uk958">
+                <source>narration.guided_step_config_not_found_open</source>
+                <target>Commençons par les pages introuvables. Dans la colonne de gauche, sous « Avancé », le panneau vous emmène sur leur liste. Ces lignes sont écrites par les requêtes elles-mêmes, jamais à la main.</target>
+            </trans-unit>
+            <trans-unit id="oomn1I3">
+                <source>narration.guided_step_config_not_found_row</source>
+                <target>Lisez la première ligne : le chemin touché le plus récemment vient en tête. Son nombre de visites dit combien de trafic se perd, et la colonne interne dit si le lien cassé est sur vos propres pages. Celui-là se corrige en éditant la page, pas par une redirection.</target>
+            </trans-unit>
+            <trans-unit id=".QoEjor">
+                <source>narration.guided_step_config_not_found_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="7l4ApyP">
+                <source>narration.guided_step_config_not_found_to</source>
+                <target>Dans le champ suivant, dites où ce chemin doit mener désormais. C'est la seule décision qui vous reste.</target>
+            </trans-unit>
+            <trans-unit id="TnV5eu0">
+                <source>narration.guided_step_config_settings_alerts</source>
+                <target>Voyez ce que le tableau de bord en fait : les entrées essentielles restées vides y remontent en alertes, jusqu'à ce qu'elles soient remplies.</target>
+            </trans-unit>
+            <trans-unit id="eDf_oz0">
+                <source>narration.guided_step_config_settings_entry</source>
+                <target>Ouvrez une entrée avec le bouton de modification, au bout de sa ligne. Chaque entrée est déclarée par le bundle qui s'en sert, qui en fixe le libellé, le type et le groupe.</target>
+            </trans-unit>
+            <trans-unit id="tYy0SvG">
+                <source>narration.guided_step_config_settings_group</source>
+                <target>Choisissez un groupe dans la liste. Identité, e-mails, mentions légales, sécurité : chacun rassemble les entrées d'un même sujet.</target>
+            </trans-unit>
+            <trans-unit id="9_lFHaB">
+                <source>narration.guided_step_config_settings_open</source>
+                <target>Le panneau vous emmène sur la configuration du site. Tous les réglages vivent ici, groupés par sujet : aucun n'est à écrire dans un fichier.</target>
+            </trans-unit>
+            <trans-unit id="Nmyq_ZH">
+                <source>narration.guided_step_config_settings_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="5y4RUl6">
+                <source>narration.guided_step_config_settings_value</source>
+                <target>Saisissez la valeur dans le champ du formulaire. Une entrée marquée sensible est chiffrée en base et n'est jamais réaffichée en clair.</target>
+            </trans-unit>
+            <trans-unit id="UguEqcj">
+                <source>narration.guided_step_config_url_metadata_done</source>
+                <target>Voyez ce que cela change : le contrôle de qualité des contenus cesse de signaler cette url, et un lien vers elle porte désormais un titre plutôt qu'une adresse nue.</target>
+            </trans-unit>
+            <trans-unit id="KlRi7ZC">
+                <source>narration.guided_step_config_url_metadata_edit</source>
+                <target>Choisissez une url à décrire et ouvrez-la avec le bouton de modification. Les lignes sont déclarées par les bundles qui servent ces adresses : aucune ne s'ajoute à la main, seul ce qu'elles disent vous revient.</target>
+            </trans-unit>
+            <trans-unit id="oRtK0u1">
+                <source>narration.guided_step_config_url_metadata_image</source>
+                <target>Ajoutez l'image de partage. Sans elle, un réseau social se rabat sur l'image par défaut du site, qui décrit le site et jamais cette adresse en particulier.</target>
+            </trans-unit>
+            <trans-unit id="9Tq6Ji4">
+                <source>narration.guided_step_config_url_metadata_open</source>
+                <target>Le panneau vous emmène sur les descriptions d'urls : une ligne par adresse servie par une liste plutôt que par un contenu propre, comme un index de blog, une galerie ou une page de recherche.</target>
+            </trans-unit>
+            <trans-unit id="6cZyyM8">
+                <source>narration.guided_step_config_url_metadata_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="BYohRCV">
+                <source>narration.guided_step_config_url_metadata_summary</source>
+                <target>Écrivez ensuite le résumé, deux phrases au plus : c'est ce qui apparaît sous le titre dans un résultat de recherche, et à côté du lien lorsque la page est partagée.</target>
+            </trans-unit>
+            <trans-unit id="OlELs4x">
+                <source>narration.guided_step_config_url_metadata_title</source>
+                <target>Écrivez le titre dans le premier champ. C'est la ligne qu'un moteur de recherche affiche au-dessus de l'adresse, et celle que porte l'onglet du navigateur.</target>
+            </trans-unit>
+            <trans-unit id="2nHgm8X">
+                <source>narration.health_check</source>
+                <target>« Bilan de santé » passe le site au crible vu de l'extérieur : performances, accessibilité, erreurs de console, page par page, à la demande ou périodiquement.</target>
+            </trans-unit>
+            <trans-unit id="Dgj9o_a">
+                <source>narration.not_founds</source>
+                <target>« Liens cassés » recense les adresses qui n'existent plus et sur lesquelles quelqu'un est arrivé en suivant un lien. Seules les demandes venant d'un lien y sont enregistrées, jamais les tentatives d'intrusion.</target>
+            </trans-unit>
+            <trans-unit id="S3k1pWH">
+                <source>narration.redirects</source>
+                <target>« Redirections » tient les renvois d'une adresse vers une autre. Vérifiez toujours les deux adresses : une erreur casse un lien, ou fait tourner le visiteur en rond.</target>
+            </trans-unit>
+            <trans-unit id="7UEVTAj">
+                <source>narration.site_link</source>
+                <target>Le dernier lien ouvre le site lui-même dans un nouvel onglet, tel que le voient vos visiteurs.</target>
+            </trans-unit>
+            <trans-unit id="lRnR3Ht">
+                <source>narration.url_metadata</source>
+                <target>« Descriptions d'urls » porte le titre et le résumé des pages qu'aucune fiche ne décrit : les listes, les listes filtrées, les pages outil. Une page adossée à une fiche, un produit ou une photo dit déjà ce qu'elle est et n'a rien à faire ici.</target>
+            </trans-unit>
+            <trans-unit id="ryA9n4C">
+                <source>narration.users</source>
+                <target>« Utilisateurs » liste les comptes du site. Vous pouvez y changer les rôles d'une personne : le changement prend effet aussitôt sur ses droits d'accès au back-office.</target>
+            </trans-unit>
+            <trans-unit id="JVTtJoh">
+                <source>narration.whatsnew</source>
+                <target>« Quoi de neuf » raconte ce qui a changé récemment sur ce tableau de bord et dans tous les bundles installés.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

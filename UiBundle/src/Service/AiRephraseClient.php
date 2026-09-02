@@ -19,11 +19,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Rephrases - or translates - free text using the client's own key ("ui-ai-assistant-rephrase-*" config, distinct from the dashboard assistant's key) - stateless, nothing is ever persisted or logged beyond the request itself. Supports Anthropic and any OpenAI-compatible API (OpenAI itself, or Infomaniak's Euria, whose only difference from OpenAI is its base URI). No interface here (unlike AiAssistantClient): there's nothing to override, a consuming app not wanting this feature simply leaves the api-key config empty. Token counts from each response are handed to AiUsageTracker - a numeric count alone reveals nothing about the rephrased content, so this doesn't compromise the "nothing is persisted" promise above
 class AiRephraseClient
 {
-    private const string ANTHROPIC_URI = 'https://api.anthropic.com/v1/messages';
-    private const string ANTHROPIC_DEFAULT_MODEL = 'claude-haiku-4-5';
-    private const string OPENAI_URI = 'https://api.openai.com/v1/chat/completions';
-    private const string OPENAI_DEFAULT_MODEL = 'gpt-4o-mini';
-    // No euria default: its catalog isn't static enough, so the model config is required by isEnabled()
+    // Config entries the call cannot be built without - see isEnabled()
+    private const array REQUIRED_SLUGS = [
+        'ui-ai-assistant-rephrase-provider',
+        'ui-ai-assistant-rephrase-api-key',
+        'ui-ai-assistant-rephrase-base-uri',
+        'ui-ai-assistant-rephrase-model',
+    ];
 
     // Closed list: $style indexes this map, so a request parameter can never inject its own instructions
     private const array STYLES = [
@@ -57,23 +59,11 @@ class AiRephraseClient
 
     public function isEnabled(): bool
     {
-        $provider = $this->configService->get('ui-ai-assistant-rephrase-provider');
-
-        if (null === $provider || null === $this->configService->get('ui-ai-assistant-rephrase-api-key')) {
-            return false;
-        }
-
-        // Only euria needs its own base URI and model, the others calling a fixed URI with a safe default
-        if (
-            'euria' === $provider && (
-                !$this->configService->get('ui-ai-assistant-rephrase-base-uri')
-                || !$this->configService->get('ui-ai-assistant-rephrase-model')
-            )
-        ) {
-            return false;
-        }
-
-        return true;
+        // Endpoint and model come from their own entries whatever the provider, none defaulted in code: an empty one keeps the feature off rather than calling an address the admin never chose
+        return array_all(
+            self::REQUIRED_SLUGS,
+            fn (string $slug): bool => (bool) $this->configService->get($slug),
+        );
     }
 
     // @return string[] Style keys accepted by rephrase(), for a caller building a selector
@@ -148,9 +138,10 @@ class AiRephraseClient
 
     private function callAnthropic(string $prompt, string $apiKey): string
     {
-        $model = $this->configService->get('ui-ai-assistant-rephrase-model') ?: self::ANTHROPIC_DEFAULT_MODEL;
+        $model = (string) $this->configService->get('ui-ai-assistant-rephrase-model');
+        $uri = (string) $this->configService->get('ui-ai-assistant-rephrase-base-uri');
 
-        $response = $this->httpClient->request('POST', self::ANTHROPIC_URI, [
+        $response = $this->httpClient->request('POST', $uri, [
             'headers' => [
                 'x-api-key' => $apiKey,
                 'anthropic-version' => '2023-06-01',
@@ -175,17 +166,11 @@ class AiRephraseClient
         return (string) ($data['content'][0]['text'] ?? '');
     }
 
-    // Covers both OpenAI and Euria (Infomaniak AI Tools): Euria exposes an OpenAI-compatible API, only the base URI differs, read from "ui-ai-assistant-rephrase-base-uri"
+    // Covers both OpenAI and Euria (Infomaniak AI Tools): Euria exposes an OpenAI-compatible API, both are called on the base URI their own entry carries
     private function callOpenAiCompatible(string $prompt, string $apiKey, string $provider): string
     {
-        $isOpenAi = 'openai' === $provider;
-        $uri = $isOpenAi
-            ? self::OPENAI_URI
-            : rtrim((string) $this->configService->get('ui-ai-assistant-rephrase-base-uri'), '/') . '/chat/completions';
-        // Euria always has a model set by now, enforced by isEnabled(); openai has a stable default
-        $model = $isOpenAi
-            ? ($this->configService->get('ui-ai-assistant-rephrase-model') ?: self::OPENAI_DEFAULT_MODEL)
-            : (string) $this->configService->get('ui-ai-assistant-rephrase-model');
+        $uri = rtrim((string) $this->configService->get('ui-ai-assistant-rephrase-base-uri'), '/') . '/chat/completions';
+        $model = (string) $this->configService->get('ui-ai-assistant-rephrase-model');
 
         $response = $this->httpClient->request('POST', $uri, [
             'auth_bearer' => $apiKey,

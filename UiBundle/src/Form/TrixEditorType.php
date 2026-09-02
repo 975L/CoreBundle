@@ -12,11 +12,18 @@ namespace c975L\UiBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
 class TrixEditorType extends AbstractType
 {
+    // Every rich field of every c975L bundle goes through this type, which is why the CSP-breaking attributes are dropped here rather than in each form declaring one
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->addModelTransformer(new StripInlineStyleTransformer());
+    }
+
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['attr']['data-trix'] = '1';

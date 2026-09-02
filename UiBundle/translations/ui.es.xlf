@@ -18,6 +18,14 @@
                 <source>action.font_bulk_import</source>
                 <target>Importación masiva</target>
             </trans-unit>
+            <trans-unit id="yPaAhaL">
+                <source>action.media_binned_hide</source>
+                <target>Ocultarlos</target>
+            </trans-unit>
+            <trans-unit id="hacdCj0">
+                <source>action.media_binned_show</source>
+                <target>Mostrarlos</target>
+            </trans-unit>
             <trans-unit id="6AhEKNM">
                 <source>description.email_attachments</source>
                 <target>Documentos que acompañan a este correo. Un documento legal se adjunta tal como lo publica el sitio, y el PDF se regenera en cuanto cambia su texto.</target>
@@ -101,6 +109,10 @@
             <trans-unit id="L6fBz95">
                 <source>description.guided_step_ui_calculator_highlighted</source>
                 <target>Marque «Destacado» en esa, y solo en esa: se convierte en la tarjeta grande en medio del panel.</target>
+            </trans-unit>
+            <trans-unit id="Y7jE2a.">
+                <source>description.guided_step_ui_calculator_name</source>
+                <target>Un nombre corto, aquel con el que la encontrará en la lista y el que le propondrá el bloque «Formulario». Es obligatorio: sin él, no se puede guardar.</target>
             </trans-unit>
             <trans-unit id="Urf9i7v">
                 <source>description.guided_step_ui_calculator_open</source>
@@ -210,6 +222,10 @@
                 <source>description.guided_step_ui_form_place</source>
                 <target>Añada un bloque de formulario a una página y elija el que acaba de crear.</target>
             </trans-unit>
+            <trans-unit id="9zih8su">
+                <source>description.guided_step_ui_form_translate</source>
+                <target>Vuelva a abrir el formulario: en un sitio que ofrece varios idiomas, hay un selector justo encima. Elija uno y escriba en él las etiquetas y los textos de ayuda; los campos se componen una sola vez, en el idioma en que se escribió el formulario.</target>
+            </trans-unit>
             <trans-unit id="UUhHZlk">
                 <source>description.guided_step_ui_legal_model_apply</source>
                 <target>La página publicada se reconstruye de inmediato, ya que el documento está en caché hasta entonces</target>
@@ -248,7 +264,7 @@
             </trans-unit>
             <trans-unit id="tDo_284">
                 <source>description.guided_step_ui_media_done</source>
-                <target>Una imagen, una sola ficha: lo que acaba de escribir la acompaña en todas las páginas y todos los blocks que ya la utilizan. La ficha también indica dónde se usa, para saberlo antes de eliminar alguna.</target>
+                <target>Una imagen, una sola ficha: lo que acaba de escribir la acompaña en todas las páginas y todos los blocks que ya la utilizan. La ficha también indica dónde se usa, para saberlo antes de eliminar alguna. Una imagen que parece desaparecida casi siempre solo está adjunta a una página en la papelera: la galería tiene un enlace para mostrar también esas.</target>
             </trans-unit>
             <trans-unit id=".imAjIX">
                 <source>description.guided_step_ui_media_open</source>
@@ -482,6 +498,18 @@
                 <source>label.ai_assistant_dashboard_section_title</source>
                 <target>Asistente del panel</target>
             </trans-unit>
+            <trans-unit id="JnfU73d">
+                <source>label.ai_assistant_error</source>
+                <target>%name% no ha podido responder: el servicio que consulta no está disponible.</target>
+            </trans-unit>
+            <trans-unit id="b1Tqn.g">
+                <source>label.ai_assistant_error_check_endpoint</source>
+                <target>Comprobar el endpoint consultado</target>
+            </trans-unit>
+            <trans-unit id="Z0g14ox">
+                <source>label.ai_assistant_error_open_page</source>
+                <target>Ver la configuración de %name%</target>
+            </trans-unit>
             <trans-unit id="yJ_8hXS">
                 <source>label.ai_assistant_menu_suffix</source>
                 <target>Agente IA</target>
@@ -588,7 +616,7 @@
             </trans-unit>
             <trans-unit id="lnnGqK7">
                 <source>label.ai_rephrase_setup_step_base_uri</source>
-                <target>Configure la URI base (requerida para euria)</target>
+                <target>Configure la URI base (obligatoria: el endpoint messages para Anthropic, la base del producto para OpenAI/Euria)</target>
             </trans-unit>
             <trans-unit id="_eIfjEL">
                 <source>label.ai_rephrase_setup_step_key</source>
@@ -600,7 +628,7 @@
             </trans-unit>
             <trans-unit id="xBoqLs1">
                 <source>label.ai_rephrase_setup_step_model_required</source>
-                <target>definir el modelo (obligatorio para Euria - recomendado: mistralai/Mistral-Small-4-119B-2603)</target>
+                <target>definir el modelo (obligatorio - recomendado para Euria: mistralai/Mistral-Small-4-119B-2603)</target>
             </trans-unit>
             <trans-unit id="g1CSOaz">
                 <source>label.ai_rephrase_setup_step_provider</source>
@@ -978,6 +1006,14 @@
                 <source>label.block_legal_model_description</source>
                 <target>Inserta una plantilla de texto legal existente (CGU, aviso legal...)</target>
             </trans-unit>
+            <trans-unit id="RnqHnBy">
+                <source>label.block_map</source>
+                <target>Mapa</target>
+            </trans-unit>
+            <trans-unit id="Ju.U9cR">
+                <source>label.block_map_description</source>
+                <target>Un mapa de los lugares que enumera, cada uno con su marcador</target>
+            </trans-unit>
             <trans-unit id="zClb.Hs">
                 <source>label.block_portfolio_grid</source>
                 <target>Cuadrícula de proyectos</target>
@@ -1225,6 +1261,18 @@
             <trans-unit id="8pHG3oe">
                 <source>label.collection_entry_slug_help</source>
                 <target>Solo si el elemento se designa por su identificador</target>
+            </trans-unit>
+            <trans-unit id="NpUVzYV">
+                <source>label.collection_item_level</source>
+                <target>Nivel de título de los elementos</target>
+            </trans-unit>
+            <trans-unit id="x5HqaOD">
+                <source>label.collection_item_level_auto</source>
+                <target>Automático (según el título del bloque)</target>
+            </trans-unit>
+            <trans-unit id="ZEJYlus">
+                <source>label.collection_item_level_help</source>
+                <target>Automático da h3 bajo el título del bloque, h2 si no tiene - elíjalo si el bloque está bajo un título de nivel más profundo</target>
             </trans-unit>
             <trans-unit id="Z2OPJRi">
                 <source>label.collection_limit_help</source>
@@ -1958,6 +2006,10 @@
                 <source>label.form_submitted</source>
                 <target>Gracias, tu envío ha sido recibido.</target>
             </trans-unit>
+            <trans-unit id="9KeSRak">
+                <source>label.form_translation_help</source>
+                <target>Los mismos campos, en el idioma elegido. El texto original entre corchetes marca lo que queda por traducir: si se deja tal cual, no se guarda. El formulario en sí se compone en el idioma original.</target>
+            </trans-unit>
             <trans-unit id="EptgKcw">
                 <source>label.forms</source>
                 <target>Formularios</target>
@@ -2025,6 +2077,14 @@
             <trans-unit id="tOZXzoP">
                 <source>label.gallery_showcase_video_grid_description</source>
                 <target>Un título de sección seguido de reproductores de vídeo colocados uno al lado del otro, cada uno representado como si estuviera solo en la página.</target>
+            </trans-unit>
+            <trans-unit id="O9EXaKf">
+                <source>label.google_maps_link</source>
+                <target>Construir el enlace de Google Maps</target>
+            </trans-unit>
+            <trans-unit id="Bv3aYIl">
+                <source>label.google_maps_link_help</source>
+                <target>Construye el botón "Cómo llegar" a partir de las coordenadas o, en su defecto, de la dirección postal anterior. Un simple enlace, gratuito y sin script cargado: el campo anterior prevalece si lo rellena.</target>
             </trans-unit>
             <trans-unit id="b_WLGhv">
                 <source>label.group_direction</source>
@@ -2141,6 +2201,10 @@
             <trans-unit id="So2G1Ky">
                 <source>label.guided_step_ui_calculator_highlighted</source>
                 <target>La cifra que vienen a buscar</target>
+            </trans-unit>
+            <trans-unit id="DzNj04C">
+                <source>label.guided_step_ui_calculator_name</source>
+                <target>Nombre la calculadora</target>
             </trans-unit>
             <trans-unit id="vdCDS8b">
                 <source>label.guided_step_ui_calculator_new</source>
@@ -2277,6 +2341,10 @@
             <trans-unit id="GAmp352">
                 <source>label.guided_step_ui_form_save</source>
                 <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="eHQUaD.">
+                <source>label.guided_step_ui_form_translate</source>
+                <target>Escribirlo en otro idioma</target>
             </trans-unit>
             <trans-unit id="XrsXRca">
                 <source>label.guided_step_ui_legal_model_apply</source>
@@ -2682,6 +2750,106 @@
                 <source>label.loop</source>
                 <target>Bucle</target>
             </trans-unit>
+            <trans-unit id="HtJU.RN">
+                <source>label.map_accept</source>
+                <target>Mostrar el mapa</target>
+            </trans-unit>
+            <trans-unit id="s.r9DKV">
+                <source>label.map_consent_required</source>
+                <target>Este mapa lo dibuja Google, que escribe cookies en su dispositivo.</target>
+            </trans-unit>
+            <trans-unit id="XlVvGfd">
+                <source>label.map_csp_allowed</source>
+                <target>El mapa de Google se dibuja: la política de seguridad del sitio nombra los servidores que necesita.</target>
+            </trans-unit>
+            <trans-unit id="ZpEpegw">
+                <source>label.map_csp_call_failed</source>
+                <target>No se han podido leer las cabeceras del sitio para comprobar qué puede cargar el mapa de Google.</target>
+            </trans-unit>
+            <trans-unit id="ONP8rA8">
+                <source>label.map_csp_no_policy</source>
+                <target>El mapa de Google se dibuja: el sitio no sirve ninguna política de seguridad, así que nada rechaza sus servidores.</target>
+            </trans-unit>
+            <trans-unit id="_qHZoUh">
+                <source>label.map_csp_refused</source>
+                <target>El mapa de Google no se dibujará: la política de seguridad del sitio no nombra sus servidores (%directives%). El navegador rechaza la petición sin decir nada y solo queda en pantalla la lista de lugares.</target>
+            </trans-unit>
+            <trans-unit id="PZ3TL80">
+                <source>label.map_diagnostic_csp</source>
+                <target>Este mapa no se ha podido cargar: la política de seguridad del sitio (%directive%) rechaza los servidores de Google. Este mensaje solo lo ve usted.</target>
+            </trans-unit>
+            <trans-unit id="Vl7HFGd">
+                <source>label.map_diagnostic_no_key</source>
+                <target>Este mapa no se dibuja: Google es el proveedor elegido y no hay ninguna clave de API. Este mensaje solo lo ve usted.</target>
+            </trans-unit>
+            <trans-unit id="bekQHGg">
+                <source>label.map_diagnostic_refused</source>
+                <target>Este mapa no se ha podido cargar: el proveedor no ha respondido o la clave de API ha sido rechazada. Este mensaje solo lo ve usted.</target>
+            </trans-unit>
+            <trans-unit id="5e7rQfb">
+                <source>label.map_height</source>
+                <target>Altura</target>
+            </trans-unit>
+            <trans-unit id="9l6fH_p">
+                <source>label.map_height_large</source>
+                <target>Grande</target>
+            </trans-unit>
+            <trans-unit id="Z2PRUZj">
+                <source>label.map_height_medium</source>
+                <target>Mediana</target>
+            </trans-unit>
+            <trans-unit id="AlQR0jc">
+                <source>label.map_height_small</source>
+                <target>Pequeña</target>
+            </trans-unit>
+            <trans-unit id="5bI93CU">
+                <source>label.map_point_address</source>
+                <target>Dirección</target>
+            </trans-unit>
+            <trans-unit id="5D2xOYo">
+                <source>label.map_point_address_help</source>
+                <target>Convertida en coordenadas al guardar, mediante el geocodificador de OpenStreetMap.</target>
+            </trans-unit>
+            <trans-unit id="zjqOcvm">
+                <source>label.map_point_label</source>
+                <target>Nombre</target>
+            </trans-unit>
+            <trans-unit id="VMhNxrE">
+                <source>label.map_point_latitude</source>
+                <target>Latitud</target>
+            </trans-unit>
+            <trans-unit id="P7Jqevj">
+                <source>label.map_point_longitude</source>
+                <target>Longitud</target>
+            </trans-unit>
+            <trans-unit id="Y_pfL2R">
+                <source>label.map_point_mode</source>
+                <target>Localizado por</target>
+            </trans-unit>
+            <trans-unit id="QdDDIRj">
+                <source>label.map_point_mode_address</source>
+                <target>Una dirección</target>
+            </trans-unit>
+            <trans-unit id="cufsf15">
+                <source>label.map_point_mode_coordinates</source>
+                <target>Coordenadas GPS</target>
+            </trans-unit>
+            <trans-unit id="5Gvd2b6">
+                <source>label.map_point_text</source>
+                <target>Texto</target>
+            </trans-unit>
+            <trans-unit id="8F9wssn">
+                <source>label.map_point_text_help</source>
+                <target>Se muestra en la burbuja del marcador, bajo el nombre.</target>
+            </trans-unit>
+            <trans-unit id="fccw7xZ">
+                <source>label.map_points</source>
+                <target>Lugares</target>
+            </trans-unit>
+            <trans-unit id="0_j1dH6">
+                <source>label.map_see_on_map</source>
+                <target>Ver en un mapa</target>
+            </trans-unit>
             <trans-unit id="TGYsC6q">
                 <source>label.map_url</source>
                 <target>Enlace al mapa</target>
@@ -2690,9 +2858,25 @@
                 <source>label.map_url_help</source>
                 <target>URL de la ficha de Google Maps u OpenStreetMap</target>
             </trans-unit>
+            <trans-unit id="HpNqTUo">
+                <source>label.map_zoom</source>
+                <target>Zoom</target>
+            </trans-unit>
+            <trans-unit id="GP82z2B">
+                <source>label.map_zoom_help</source>
+                <target>De 1, el mundo entero, a 19, una casa. Solo se usa cuando el mapa lleva un único lugar: con varios, el mapa se encuadra sobre ellos.</target>
+            </trans-unit>
             <trans-unit id="hC0xs1.">
                 <source>label.media</source>
                 <target>Media</target>
+            </trans-unit>
+            <trans-unit id="1KeI6eo">
+                <source>label.media_binned_hidden</source>
+                <target>%count% medio(s) solo se usan en páginas de la papelera y no se muestran aquí.</target>
+            </trans-unit>
+            <trans-unit id="KC7qdVJ">
+                <source>label.media_binned_shown</source>
+                <target>Se muestran los medios que solo se usan en páginas de la papelera.</target>
             </trans-unit>
             <trans-unit id="5JB.rhD">
                 <source>label.media_help</source>
@@ -3441,6 +3625,34 @@
             <trans-unit id="CooV25J">
                 <source>label.tuesday</source>
                 <target>Martes</target>
+            </trans-unit>
+            <trans-unit id="2eZSVqt">
+                <source>label.ui_sample_review_pending_author</source>
+                <target>Elena Vasseur</target>
+            </trans-unit>
+            <trans-unit id="fDnXn5o">
+                <source>label.ui_sample_review_pending_comment</source>
+                <target>El pedido llegó en dos días, bien embalado, y la nota dentro del paquete es un detalle. Volveré.</target>
+            </trans-unit>
+            <trans-unit id="HF8Jb8c">
+                <source>label.ui_sample_review_published_author</source>
+                <target>Marc Dutilleul</target>
+            </trans-unit>
+            <trans-unit id="R1Yecmn">
+                <source>label.ui_sample_review_published_comment</source>
+                <target>Buena acogida por teléfono y consejos útiles. Un punto menos por el plazo anunciado, cumplido con un día de diferencia.</target>
+            </trans-unit>
+            <trans-unit id="8wRj7Lh">
+                <source>label.ui_sample_review_published_reply</source>
+                <target>Gracias por su comentario, y disculpe ese día de más: desde entonces hemos revisado la forma en que anunciamos nuestros plazos.</target>
+            </trans-unit>
+            <trans-unit id="KBq0Xde">
+                <source>label.ui_sample_review_rejected_author</source>
+                <target>Visitante anónimo</target>
+            </trans-unit>
+            <trans-unit id="MRS_5_x">
+                <source>label.ui_sample_review_rejected_comment</source>
+                <target>Mensaje fuera de tema, publicado en esta página por error.</target>
             </trans-unit>
             <trans-unit id="YKASrao">
                 <source>label.upload_progress_failed</source>

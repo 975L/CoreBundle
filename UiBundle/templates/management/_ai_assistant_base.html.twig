@@ -79,7 +79,11 @@
             </ul>
             <p class="text-muted small">{{ 'label.ai_assistant_setup_credentials_help'|trans({}, 'ui') }}</p>
         {% else %}
-            {{ include('@c975LUi/management/_ai_assistant_widget.html.twig') }}
+            {# Already on that page: what is left to check is the endpoint it is pointed at, the setup list above being hidden once everything is filled in #}
+            {{ include('@c975LUi/management/_ai_assistant_widget.html.twig', {
+                help_url: configLinks['ui-ai-assistant-dashboard-endpoint'],
+                help_label: 'label.ai_assistant_error_check_endpoint'|trans({}, 'ui'),
+            }) }}
         {% endif %}
     {% endif %}
 

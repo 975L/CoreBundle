@@ -20,6 +20,7 @@ use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Repository\FormRepository;
 use c975L\UiBundle\Service\EmailTemplateFactory;
 use c975L\UiBundle\Service\FormSeeder;
+use c975L\UiBundle\Service\FormTranslator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Translation\Loader\XliffFileLoader;
@@ -55,7 +56,7 @@ class UserFormSeederTest extends TestCase
         );
 
         return new UserFormSeeder(
-            new FormSeeder($entityManager, $formRepository, $emailTemplateRepository, new EmailTemplateFactory(), $defaultLocale),
+            new FormSeeder($entityManager, $formRepository, $emailTemplateRepository, new EmailTemplateFactory(), new FormTranslator(), $defaultLocale),
             $entityManager,
             self::translator()
         );

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Form;
 
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Form\Util\CollectionReconciler;
+use c975L\UiBundle\Form\Util\FormTranslationBuilder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -29,8 +30,24 @@ use function Symfony\Component\Translation\t;
 // Entry type for the "fields" CollectionField of a Form (see ContactFormBundle's ContactFormCrudController for a concrete usage), sortable via the admin-wide ea-sortable.js (targets any ".field-collection-item" row with a "position" input, nothing block-specific needed here) - unlike UiBundle's BlockType, every field type (text/textarea/email/checkbox) shares the exact same shape, so there is no per-kind dynamic sub-form to load
 class FormFieldType extends AbstractType
 {
+    public function __construct(
+        private readonly FormTranslationBuilder $translationBuilder,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // A language screen offers what a language may change and nothing else: a field is typed, bounded and made required once, in the language the form was written in
+        if (null !== $options['translation_locale']) {
+            $this->translationBuilder->build($builder, $options['translation_locale'], [
+                'label' => 'label.field_label',
+                'placeholder' => 'label.field_placeholder',
+                'defaultValue' => 'label.field_default',
+            ]);
+
+            return;
+        }
+
         $builder
             ->add('label', TextType::class, [
                 'label' => 'label.field_label',
@@ -143,6 +160,9 @@ class FormFieldType extends AbstractType
             'data_class' => FormField::class,
             'label' => false,
             'translation_domain' => 'ui',
+            // The language being written, when it is not the one the form was written in (see FormTranslationBuilder)
+            'translation_locale' => null,
         ]);
+        $resolver->setAllowedTypes('translation_locale', ['null', 'string']);
     }
 }

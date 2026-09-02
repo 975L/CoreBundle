@@ -126,7 +126,7 @@ class BackupOffsiteCommandTest extends TestCase
     // Nothing declared for mirroring is a normal state - an install may keep every irreplaceable file in "archive" mode - and must not be dressed up as an error
     public function testNoDeclaredFolderWarnsRatherThanFails(): void
     {
-        $tester = new CommandTester($this->createCommand('storagebox:975l.com'));
+        $tester = new CommandTester($this->createCommand('storagebox:example.com'));
         $tester->execute([]);
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
@@ -153,7 +153,7 @@ class BackupOffsiteCommandTest extends TestCase
         $calls = new \ArrayObject();
 
         $tester = new CommandTester($this->createCommand(
-            'storagebox:975l.com',
+            'storagebox:example.com',
             [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
             $calls
         ));
@@ -162,13 +162,13 @@ class BackupOffsiteCommandTest extends TestCase
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
         $this->assertContains(
             sprintf(
-                'sync %s/public/medias storagebox:975l.com/files/public/medias --backup-dir storagebox:975l.com/previous/%s/public/medias --max-delete 30',
+                'sync %s/public/medias storagebox:example.com/files/public/medias --backup-dir storagebox:example.com/previous/%s/public/medias --max-delete 30',
                 $this->projectDir,
                 new \DateTimeImmutable()->format('Y-m-d'),
             ),
             (array) $calls,
         );
-        $this->assertContains('delete --rmdirs --min-age 15d storagebox:975l.com/previous', (array) $calls);
+        $this->assertContains('delete --rmdirs --min-age 15d storagebox:example.com/previous', (array) $calls);
     }
 
     // The guard is a share of what the folder holds, not a fixed count: a family of derived images regenerated under new names removes hundreds of files legitimately, and a count that let those through would let an emptied gallery through as well
@@ -181,7 +181,7 @@ class BackupOffsiteCommandTest extends TestCase
 
         $calls = new \ArrayObject();
         new CommandTester($this->createCommand(
-            'storagebox:975l.com',
+            'storagebox:example.com',
             [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
             $calls
         ))->execute([]);
@@ -196,7 +196,7 @@ class BackupOffsiteCommandTest extends TestCase
         $calls = new \ArrayObject();
 
         new CommandTester($this->createCommand(
-            'storagebox:975l.com',
+            'storagebox:example.com',
             [new BackupPath('public/medias', BackupPath::MODE_MIRROR)],
             $calls
         ))->execute([]);

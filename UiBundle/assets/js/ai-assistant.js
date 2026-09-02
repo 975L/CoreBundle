@@ -29,6 +29,10 @@ export default class extends Controller {
         return this.element.querySelector('[data-ai-assistant-target="submit"]');
     }
 
+    get errorEl() {
+        return this.element.querySelector('[data-ai-assistant-target="error"]');
+    }
+
     ask(event) {
         event.preventDefault();
 
@@ -37,6 +41,7 @@ export default class extends Controller {
         const question = input ? input.value.trim() : '';
         if (!question) return;
 
+        this.hideError();
         this.appendEntry('question', question);
         if (input) {
             input.value = '';
@@ -52,9 +57,12 @@ export default class extends Controller {
             },
             body: new URLSearchParams({ question }),
         })
-            .then(r => r.json())
-            .then(data => this.appendEntry('answer', data.answer ?? data.error ?? '', data.sources))
-            .catch(() => this.appendEntry('answer', ''))
+            .then(r => r.json().then(data => ({ ok: r.ok, data })))
+            // An error key ("unavailable", "invalid_csrf") is a diagnostic, not an answer: the reader gets the message the template carries, with its link, rather than that word
+            .then(({ ok, data }) => ok && 'string' === typeof data.answer
+                ? this.appendEntry('answer', data.answer, data.sources)
+                : this.showError())
+            .catch(() => this.showError())
             .finally(() => {
                 if (input) {
                     input.disabled = false;
@@ -79,16 +87,43 @@ export default class extends Controller {
             list.className = 'ai-assistant__sources';
             sources.forEach((source, index) => {
                 if (index > 0) list.appendChild(document.createTextNode(' · '));
-                const link = document.createElement('a');
-                link.href = source.url;
-                link.target = '_blank';
-                link.rel = 'noopener';
-                link.textContent = source.label;
-                list.appendChild(link);
+                list.appendChild(source.project ? this.buildTourButton(source) : this.buildLink(source));
             });
             log.appendChild(list);
         }
 
         log.scrollTop = log.scrollHeight;
+    }
+
+    // Server-rendered, message and link included: nothing here comes from the response
+    showError() {
+        const error = this.errorEl;
+        if (error) error.classList.remove('d-none');
+    }
+
+    hideError() {
+        const error = this.errorEl;
+        if (error) error.classList.add('d-none');
+    }
+
+    buildLink(source) {
+        const link = document.createElement('a');
+        link.href = source.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = source.label;
+
+        return link;
+    }
+
+    // The guided-project controller is mounted on every admin page and listens for this attribute, so the parcours starts right here instead of sending the reader off to the dashboard
+    buildTourButton(source) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-sm btn-link p-0 align-baseline';
+        button.dataset.guidedProjectSlug = source.project;
+        button.textContent = source.label;
+
+        return button;
     }
 }

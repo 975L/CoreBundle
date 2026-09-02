@@ -67,10 +67,17 @@ class OnboardingStepBuilder
     // Same label/description resolution as MenuBuilder::getMenuItems() for a link (see its 'label_parameters' handling) - kept in sync by hand since both operate on the same MenuProviderInterface item shape
     private function buildStep(string $url, array $item): array
     {
+        $label = $this->translator->trans($item['label'], $item['label_parameters'] ?? [], $item['translation_domain']);
+        $description = empty($item['description']) ? '' : $this->translator->trans($item['description'], [], $item['translation_domain']);
+
         return [
             'url' => $url,
-            'label' => $this->translator->trans($item['label'], $item['label_parameters'] ?? [], $item['translation_domain']),
-            'description' => empty($item['description']) ? '' : $this->translator->trans($item['description'], [], $item['translation_domain']),
+            'label' => $label,
+            'description' => $description,
+            // What the step sounds like spoken, read by the films of the back office and drawn nowhere. An entry nobody has written a sentence for falls back to its caption, better said badly than not said at all
+            'narration' => empty($item['narration'])
+                ? trim(rtrim($label, " \t.") . '. ' . $description)
+                : $this->translator->trans($item['narration'], [], $item['translation_domain'] . GuidedProjectBuilder::NARRATION_DOMAIN_SUFFIX),
         ];
     }
 }

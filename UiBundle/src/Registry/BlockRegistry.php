@@ -290,7 +290,7 @@ class BlockRegistry
         );
     }
 
-    // Same grouping/filtering as groupedByCategory(), but by originating bundle instead of functional category - used to build a showcase page per bundle (e.g. 975l.com's public block demo) instead of the kind-picker's functional grouping. Kinds with no derivable bundle group under ''.
+    // Same grouping/filtering as groupedByCategory(), but by originating bundle instead of functional category - used to build a showcase page per bundle (e.g. the ecosystem's own public block demo) instead of the kind-picker's functional grouping. Kinds with no derivable bundle group under ''.
     public function groupedByBundle(?string $context = null): array
     {
         return $this->groupBy(fn (string $kind, array $config) => $config['bundle'], $context, $this->groupedByBundleCache);

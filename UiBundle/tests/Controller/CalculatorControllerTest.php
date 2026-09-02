@@ -17,6 +17,7 @@ use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Repository\FormRepository;
 use c975L\UiBundle\Service\CalculatorExpressionLanguage;
 use c975L\UiBundle\Service\ExpressionEvaluator;
+use c975L\UiBundle\Service\FormTranslator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -49,7 +50,7 @@ class CalculatorControllerTest extends TestCase
         $translator->method('trans')->willReturnArgument(0);
         $translator->method('getLocale')->willReturn('fr');
 
-        return new CalculatorController($repository, new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator));
+        return new CalculatorController($repository, new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator, new FormTranslator()));
     }
 
     public function testComputeAnswersEveryOutputAsJson(): void

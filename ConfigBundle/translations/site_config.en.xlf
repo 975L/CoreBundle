@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="l7P49Wf">
                 <source>description.site_backup_offsite_target</source>
-                <target>rclone destination of the offsite copy, as "remote:path" (eg. storagebox:975l.com). Credentials stay in rclone's own configuration, never here. Left empty, nothing is sent: that's the mode where an outside machine comes and pulls the backups</target>
+                <target>rclone destination of the offsite copy, as "remote:path" (eg. storagebox:example.com). Credentials stay in rclone's own configuration, never here. Left empty, nothing is sent: that's the mode where an outside machine comes and pulls the backups</target>
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>

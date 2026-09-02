@@ -123,8 +123,8 @@ class FormBotProtection
         $session->remove(self::SESSION_HONEYPOT_FIELD);
         $session->remove(self::SESSION_HONEYPOT_LABEL);
 
-        // Falls back to 7s if "site-form-delay" isn't seeded, matching ContactFormBundle
-        $formDelay = $this->configService->get('site-form-delay') ?? 7;
+        // Whatever "site-form-delay" holds, and nothing else: the entry ships with its own value, an empty one leaves the honeypot alone to answer
+        $formDelay = (int) $this->configService->get('site-form-delay');
 
         return !empty($honeypotValue)
             || (time() - $startedAt) < $formDelay;

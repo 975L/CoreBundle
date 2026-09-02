@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 // Shared, generic "form definition" owning a sortable collection of FormField rows, so several bundles (ContactFormBundle today, a future form-builder tomorrow) can each manage their own named row (e.g. name="contact") in one table instead of each keeping a private fields table - see UiBundle Readme
 #[ORM\Entity(repositoryClass: FormRepository::class)]
@@ -55,6 +56,8 @@ class Form implements \Stringable
 
     #[ORM\OneToMany(mappedBy: 'form', targetEntity: FormField::class, cascade: ['persist'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
+    // The rows added in the screen are checked one by one, an empty one coming back as a form error rather than reaching the database
+    #[Assert\Valid]
     private Collection $fields;
 
     // Owning at least one turns this Form into a calculator (see isCalculator()) - the order matters, an expression only ever seeing the outputs declared before it

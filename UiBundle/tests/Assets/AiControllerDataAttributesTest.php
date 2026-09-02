@@ -40,9 +40,10 @@ class AiControllerDataAttributesTest extends TestCase
     }
 
     // "this.element.dataset.aiAssistantAskUrlValue" -> "data-ai-assistant-ask-url-value"
+    // An assignment is skipped: a controller also writes data-* on elements it builds itself, and those are read by another controller (see ConfigBundle's guided-project.js) rather than written by this template
     private function datasetAttributes(string $script): array
     {
-        preg_match_all('/dataset\.([A-Za-z0-9]+)/', $script, $matches);
+        preg_match_all('/dataset\.([A-Za-z0-9]+)\b(?!\s*=[^=])/', $script, $matches);
 
         return array_map(
             static fn (string $property): string => 'data-' . strtolower((string) preg_replace('/([a-z0-9])([A-Z])/', '$1-$2', $property)),

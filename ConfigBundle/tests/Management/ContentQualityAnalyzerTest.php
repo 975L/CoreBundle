@@ -351,6 +351,38 @@ class ContentQualityAnalyzerTest extends TestCase
         $this->assertSame(HealthCheckResult::STATUS_OK, $rows[0]['status']);
     }
 
+    // A HEAD answering 404 is retried too, and the GET decides: a share intent, a single-page app's route (bsky.app/intent/compose) answers 404 to a HEAD it serves in 200, which had a working share button reported as a dead link
+    public function testAnalyzeRetriesALinkTheHeadCalledBrokenBeforeReportingIt(): void
+    {
+        $client = $this->createMock(ContentQualityClient::class);
+        $client->method('request')->willReturn($this->createResponse());
+        $client->method('read')->willReturnCallback($this->readsCleanly(['externalLinks' => ['https://bsky.app/intent/compose?text=x']] + self::GOOD_ANALYSIS));
+        $client->method('requestLinkCheck')->willReturn($this->createResponse(404));
+        $client->expects($this->once())->method('requestLinkCheckFallback')->with('https://bsky.app/intent/compose?text=x')->willReturn($this->createResponse());
+        $client->method('readLinkCheck')->willReturnOnConsecutiveCalls(ContentQualityClient::LINK_BROKEN, ContentQualityClient::LINK_OK);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one')]);
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $rows[0]['status']);
+        $this->assertSame([], $rows[0]['details']['brokenExternalLinks']);
+    }
+
+    // The GET confirming the HEAD's verdict is what makes a link broken - the retry only ever removes a false positive, never a real one
+    public function testAnalyzeReportsALinkBrokenWhenTheGetRetryConfirmsIt(): void
+    {
+        $client = $this->createMock(ContentQualityClient::class);
+        $client->method('request')->willReturn($this->createResponse());
+        $client->method('read')->willReturnCallback($this->readsCleanly(['internalLinks' => ['https://example.com/gone']] + self::GOOD_ANALYSIS));
+        $client->method('requestLinkCheck')->willReturn($this->createResponse(404));
+        $client->expects($this->once())->method('requestLinkCheckFallback')->willReturn($this->createResponse(404));
+        $client->method('readLinkCheck')->willReturn(ContentQualityClient::LINK_BROKEN);
+
+        $rows = $this->createAnalyzer($client)->analyze([$this->entry('https://example.com/one')]);
+
+        $this->assertSame(HealthCheckResult::STATUS_ERROR, $rows[0]['status']);
+        $this->assertSame('https://example.com/gone', $rows[0]['details']['brokenLinks'][0]['url']);
+    }
+
     // A link still unknown after both passes stays out of the broken list: a timeout of the run's own making says nothing about the link
     public function testAnalyzeLeavesAStillUnknownLinkOutOfTheBrokenList(): void
     {

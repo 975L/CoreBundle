@@ -150,6 +150,34 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     'class' => [],
                 ],
             ],
+            // Hardcoded coordinates, and no address to resolve: the showcase is seeded offline, and a fixture geocoding two places against Nominatim would make "c975l:ui:blocks:showcase" depend on a network it has no reason to need
+            'map' => [
+                '' => [
+                    'title' => 'Nos adresses',
+                    'height' => 'medium',
+                    'zoom' => 13,
+                    'points' => [
+                        [
+                            'label' => 'Annecy',
+                            'mode' => 'coordinates',
+                            'address' => '',
+                            'latitude' => '45.8992',
+                            'longitude' => '6.1294',
+                            'text' => 'Au bord du lac.',
+                            'url' => '',
+                        ],
+                        [
+                            'label' => 'Chamonix',
+                            'mode' => 'coordinates',
+                            'address' => '',
+                            'latitude' => '45.9237',
+                            'longitude' => '6.8694',
+                            'text' => 'Au pied du mont Blanc.',
+                            'url' => '',
+                        ],
+                    ],
+                ],
+            ],
             'progress_bar' => [
                 '' => [
                     'label' => 'Symfony',
@@ -189,7 +217,9 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                         ['days' => ['Saturday'], 'opens' => '09:00', 'closes' => '12:00'],
                     ],
                     'priceRange' => '€€',
-                    'mapUrl' => 'https://www.openstreetmap.org/',
+                    'mapUrl' => '',
+                    // The showcase shows the button as an editor gets it without going to Google at all - built from the coordinates below (see GoogleMapsLinkBuilder)
+                    'googleMapsLink' => true,
                     'latitude' => '48.8566',
                     'longitude' => '2.3522',
                 ],

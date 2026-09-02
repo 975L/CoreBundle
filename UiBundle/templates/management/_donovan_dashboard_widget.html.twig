@@ -1,3 +1,7 @@
 {# Donovan's dashboard card; DonovanWidgetProvider already gated it, so there is no "not ready" state to branch on #}
 <h2>{{ ai_assistant_name() }}</h2>
-{{ include('@c975LUi/management/_ai_assistant_widget.html.twig') }}
+{# From the dashboard, a silent backend is looked into on the assistant's own page, which lists what it is configured with #}
+{{ include('@c975LUi/management/_ai_assistant_widget.html.twig', {
+    help_url: path('management_ui_ai_assistant_index'),
+    help_label: 'label.ai_assistant_error_open_page'|trans({'%name%': ai_assistant_name()}, 'ui'),
+}) }}

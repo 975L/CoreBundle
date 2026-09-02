@@ -23,6 +23,15 @@ $valid-state: ':is(.success, :is(#{$constraints}):is(:user-valid, :is(:autofill,
     @return $selector;
 }
 
+// The wrapper every rendering of the "form" Block carries - the form itself, the calculator, and the two notices standing in for it - and the page's one vertical step on its top edge. The kind used to carry no class at all, which made it the one page-level block outside the rhythm: it sat flush against whatever stood above it, plainly under a "banner_title", that one declaring no gap below itself for the next block to lean on
+// Contextualized like the calculator's own measure rule further down _calculator.scss: the same templates are rendered standalone by "ui_form_submit" and by a site's own render(controller(...)), where the surrounding template owns the spacing - and inside a container block, where the container lays its slots out
+// The tight step, as .text-section: what stands here is body-sized content, not a flat painting its own ground. Read through the same token, so a site retuning its rhythm from theme.css moves the form along with everything else
+.blocks > .ui-form-block,
+.block-animation > .ui-form-block,
+.block-editable > .ui-form-block {
+    padding-top: var(--section-space-tight, clamp(24px, 4vw, 48px));
+}
+
 form {
     width: var(--form-width);
     margin: 0 auto 1em auto;

@@ -84,7 +84,7 @@ class OnboardingStepBuilderTest extends TestCase
         );
 
         $this->assertSame(
-            [['url' => '/management/my-entity', 'label' => 'label.my_entity', 'description' => '']],
+            [['url' => '/management/my-entity', 'label' => 'label.my_entity', 'description' => '', 'narration' => 'label.my_entity.']],
             $builder->getSteps(),
         );
     }
@@ -119,7 +119,7 @@ class OnboardingStepBuilderTest extends TestCase
         );
 
         $this->assertSame(
-            [['url' => '/management/overview', 'label' => 'label.overview', 'description' => '']],
+            [['url' => '/management/overview', 'label' => 'label.overview', 'description' => '', 'narration' => 'label.overview.']],
             $builder->getSteps(),
         );
     }
@@ -153,7 +153,7 @@ class OnboardingStepBuilderTest extends TestCase
         );
 
         $this->assertSame(
-            [['url' => '/management/my-entity', 'label' => 'label.my_entity', 'description' => 'description.my_entity']],
+            [['url' => '/management/my-entity', 'label' => 'label.my_entity', 'description' => 'description.my_entity', 'narration' => 'label.my_entity. description.my_entity']],
             $builder->getSteps(),
         );
     }
@@ -178,7 +178,7 @@ class OnboardingStepBuilderTest extends TestCase
         );
 
         $this->assertSame(
-            [['url' => '/management/whatsnew', 'label' => 'label.whatsnew', 'description' => '']],
+            [['url' => '/management/whatsnew', 'label' => 'label.whatsnew', 'description' => '', 'narration' => 'label.whatsnew.']],
             $builder->getSteps(),
         );
     }
@@ -209,7 +209,7 @@ class OnboardingStepBuilderTest extends TestCase
         );
 
         $this->assertSame(
-            [['url' => '/management/whatsnew', 'label' => 'label.whatsnew', 'description' => 'description.whatsnew']],
+            [['url' => '/management/whatsnew', 'label' => 'label.whatsnew', 'description' => 'description.whatsnew', 'narration' => 'label.whatsnew. description.whatsnew']],
             $builder->getSteps(),
         );
     }
@@ -240,7 +240,7 @@ class OnboardingStepBuilderTest extends TestCase
         );
 
         $this->assertSame(
-            [['url' => 'https://example.com/showcase', 'label' => 'label.showcase', 'description' => 'description.showcase']],
+            [['url' => 'https://example.com/showcase', 'label' => 'label.showcase', 'description' => 'description.showcase', 'narration' => 'label.showcase. description.showcase']],
             $builder->getSteps(),
         );
     }

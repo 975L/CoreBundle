@@ -40,6 +40,7 @@ class MenuProvider implements MenuProviderInterface
             'config' => [
                 'controller' => ConfigCrudController::class,
                 'label' => 'label.config',
+                'narration' => 'narration.config',
                 'translation_domain' => 'config',
                 'icon' => 'fa fa-cog',
                 'description' => 'description.config',
@@ -48,6 +49,7 @@ class MenuProvider implements MenuProviderInterface
             'user' => [
                 'controller' => UserCrudController::class,
                 'label' => 'label.users',
+                'narration' => 'narration.users',
                 'translation_domain' => 'config',
                 'icon' => 'fas fa-users',
                 // Same key as user_crud_index.html.twig/user_crud_edit.html.twig's own explanatory text - one text, reused, not a separate onboarding-only string (see MenuProviderInterface::getMenus())
@@ -57,6 +59,7 @@ class MenuProvider implements MenuProviderInterface
             'not_found' => [
                 'controller' => NotFoundCrudController::class,
                 'label' => 'label.not_founds',
+                'narration' => 'narration.not_founds',
                 'translation_domain' => 'config',
                 'icon' => 'fas fa-link-slash',
                 'tier' => 'advanced',
@@ -67,6 +70,7 @@ class MenuProvider implements MenuProviderInterface
             'redirect' => [
                 'controller' => RedirectCrudController::class,
                 'label' => 'label.redirects',
+                'narration' => 'narration.redirects',
                 'translation_domain' => 'config',
                 'icon' => 'fas fa-arrow-right',
                 'tier' => 'advanced',
@@ -82,6 +86,7 @@ class MenuProvider implements MenuProviderInterface
         $links = [
             'whatsnew' => [
                 'label' => 'label.whatsnew',
+                'narration' => 'narration.whatsnew',
                 'name' => 'management_whatsnew_index',
                 'translation_domain' => 'config',
                 'icon' => 'fa fa-bullhorn',
@@ -91,6 +96,7 @@ class MenuProvider implements MenuProviderInterface
             ],
             'health_check' => [
                 'label' => 'label.health_check',
+                'narration' => 'narration.health_check',
                 'name' => 'management_health_check_index',
                 'translation_domain' => 'config',
                 'icon' => 'fa fa-heart-pulse',
@@ -100,6 +106,7 @@ class MenuProvider implements MenuProviderInterface
             ],
             'content_import' => [
                 'label' => 'label.content_import',
+                'narration' => 'narration.content_import',
                 'name' => 'management_content_import_index',
                 'translation_domain' => 'config',
                 'icon' => 'fa fa-file-import',
@@ -114,6 +121,7 @@ class MenuProvider implements MenuProviderInterface
         if ($siteUrl) {
             $links['site'] = [
                 'label' => 'label.site_link',
+                'narration' => 'narration.site_link',
                 'label_parameters' => ['%name%' => $this->configService->get('site-name') ?: $siteUrl],
                 'url' => $siteUrl,
                 'translation_domain' => 'config',

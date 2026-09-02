@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="l7P49Wf">
                 <source>description.site_backup_offsite_target</source>
-                <target>Destino rclone de la copia externa, con el formato «remote:ruta» (p. ej. storagebox:975l.com). Las credenciales permanecen en la configuración de rclone, nunca aquí. Vacío, no se envía nada: es el modo en que una máquina externa viene a recoger las copias</target>
+                <target>Destino rclone de la copia externa, con el formato «remote:ruta» (p. ej. storagebox:example.com). Las credenciales permanecen en la configuración de rclone, nunca aquí. Vacío, no se envía nada: es el modo en que una máquina externa viene a recoger las copias</target>
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>

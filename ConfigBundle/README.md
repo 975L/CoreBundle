@@ -68,7 +68,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `c975l:dev-profile:run`, a dev-only command listing what the Symfony dev toolbar would flag on every page (n+1 queries, deprecations, missing translations...), extensible via `DevProfilePathProviderInterface`
 - The ecosystem's account layer: `User` CRUD, registration, email confirmation and password reset, on forms and emails seeded once and editable from the back-office afterwards
 - "Sign in with Google" on the login page, enabled by filling two config keys and nothing else — no new dependency, no migration, and extensible to other providers via `OAuthLoginProviderInterface`
-- `c975l:scaffold:install`, installing every installed c975L bundle's scaffold files into the app and backing up whatever it would replace, and `c975l:config:user-create` to bootstrap the first admin on an app with no site foundation
+- `c975l:scaffold:install`, installing every installed c975L bundle's scaffold files into the app and backing up whatever it would replace, `c975l:scaffold:diff` telling the files this app customized on purpose from the ones whose scaffold has moved on since, and `c975l:config:user-create` to bootstrap the first admin on an app with no site foundation
 
 ## Installation
 
@@ -134,6 +134,25 @@ Among the tests it installs, `tests/Deploy/DeployWorkflowTest.php` is the one lo
 So upgrading a bundle brings the boilerplate along and hands you the short list of files whose upgrade only you can do — typically `templates/security/login.html.twig` once a site has given it a design. `--force` takes the new version anyway, backing yours up to `existingFiles/<same path>.old`; narrow it with `--path` rather than adopting a whole scaffold blind.
 
 A site predating the manifest has nothing to do: every file still identical to its source is recorded on the way past, and only what already differs is reported the first time.
+
+**Which of those files still matter: `c975l:scaffold:diff`.** That warning says a file differs, never whether the scaffold has changed since — a template you rewrote on purpose and one whose upstream moved on without you read exactly alike, and a few months later nobody remembers which is which:
+
+```bash
+php bin/console c975l:scaffold:diff
+php bin/console c975l:scaffold:diff --bundle-sources=/path/to/your/bundle/clones
+```
+
+It writes nothing, so it belongs at the tail of an update script, and it answers file by file: *nothing to carry over* when the scaffold has not moved since the version this site started from, or the diff of exactly what the bundle gained since — the part this site is still missing. What you wrote yourself is never shown: you know it, and `git log` on the file says it better. A hunk you have carried over by hand drops out of the report from then on, looked for wherever it landed rather than where the scaffold has it — a customized file rarely has room for it at the same place, and a warning that survives its own answer is noise again.
+
+**Turning an offer down for good.** A site can have read what the scaffold gained and want none of it — a login console with a single seat, offered the OAuth buttons. Say so once, and it stops being raised:
+
+```bash
+php bin/console c975l:scaffold:diff --path=templates/security/login.html.twig --acknowledge
+```
+
+No file is touched: the current source becomes the recorded base in `.c975l-scaffold.json`, so only what the bundle changes *after* this comes back. Commit the manifest — and an acknowledgement made too fast comes back with a `git checkout` on it. A `--path` no scaffold file answers to fails rather than reporting nothing to acknowledge: a typo, or a path given as it stands in the bundle (`scaffold/src/…`), otherwise reads exactly like a site with nothing customized.
+
+That answer rests on the version this site was delivered, and `.c975l-scaffold.json` holds its hash rather than its content, so it is looked for in two histories: the site's own, where the file was committed as it landed, then the bundle clones `--bundle-sources` points at (a clone, or a directory holding several). The second is the rule rather than the exception — an update script committing the delivery and the customization in one go leaves no commit holding the delivered version alone. Neither history answering, the command falls back on the plain local-vs-scaffold diff and says so, which is all any of this could tell before the manifest existed.
 
 **A file a bundle stopped shipping is deleted under the same rule.** A bundle declares what it withdrew in `scaffold/removed.json`, mapping each path to the hashes of the versions it ever delivered:
 
@@ -1315,7 +1334,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 - **`url`** sends the user to another screen. The panel stores the next step before leaving, and picks the parcours back up there once the page has loaded — that store-then-navigate is the whole cross-page mechanism, there is no arrival to detect.
 - **`highlight`** is a CSS selector pointing at what to look at on the screen already open. A selector matching nothing — EasyAdmin renamed a class on an upgrade, the user reached the step from elsewhere — costs the highlight and nothing else: the step still reads and the parcours still runs.
 
-**Rendering:** the list lives in `templates/management/_guided_projects.html.twig`, but the panel driving a project is `assets/js/guided-project.js`, mounted on *every* admin page through EasyAdmin's own `Assets::addHtmlContentToBody()` (see `GuidedProjectMountBuilder`) — a project spans several screens, so the panel has to survive each page load, and this reaches all of them without overriding EasyAdmin's layout. It fetches the steps from `management_guided_project_steps` only while a parcours is running, so the mount element costs no request in normal use.
+**Rendering:** the list lives in `templates/management/_guided_projects.html.twig`, but the panel driving a project is `assets/js/guided-project.js`, mounted on *every* admin page through EasyAdmin's own `Assets::addHtmlContentToBody()` (see `GuidedProjectMountBuilder`) — a project spans several screens, so the panel has to survive each page load, and this reaches all of them without overriding EasyAdmin's layout. It fetches the steps from `management_guided_project_steps` only while a parcours is running, so the mount element costs no request in normal use. Any `[data-guided-project-slug]` button on the page starts the parcours it names — the click is delegated on the document rather than bound at mount time, so a button appended afterwards works just as well: that is how UiBundle's Donovan starts a parcours straight from the answer citing it, without sending the reader back to the dashboard. Only the buttons inside the dashboard list are relabelled "Start"/"Resume"/"Replay"; one standing elsewhere keeps the label it was given.
 
 **Progress is stored in the browser**, in `localStorage`, never in the database — a replayable exercise isn't a record worth a table. It is scoped per user (see `GuidedProjectKeyGenerator`) so two admins sharing one browser profile don't share one parcours, through an HMAC of the user identifier rather than the identifier itself: a `localStorage` key outlives the session, and that identifier is usually an email. The dashboard says as much to the user — progress won't follow them to another computer.
 
@@ -1421,7 +1440,7 @@ Monolog's production handler excludes `404` on purpose: the mail it would otherw
 - **A row carries an action to the answer**: *Create the redirect* opens a new `Redirect` with `fromPath` already filled in, deleting the row being the other way to close it.
 - **Nothing here can turn a 404 into a 500.** The row is written in plain SQL on the connection rather than through the entity manager, which a failed flush would close - taking down the error page rendering right after it, menus and blocks and all - and any failure at all is swallowed, including the missing table of a site that has not migrated yet.
 - **`c975l:config:not-found-cleanup`** deletes what nothing has followed for `site-not-found-retention-days` (90 by default, `0` keeping everything), weekly. A link that stopped being followed is a link nobody publishes any more.
-- **A referer is a `http`/`https` url or nothing**: the header is whatever its sender wrote, and `javascript://papa-calin.com/…` carries this very host - it would be filed as one of our own broken links and listed as a link to click on.
+- **A referer is a `http`/`https` url or nothing**: the header is whatever its sender wrote, and `javascript://example.com/…` carries this very host - it would be filed as one of our own broken links and listed as a link to click on.
 - **410 rows are never recorded**: a `Redirect` marked `gone` is an answer someone decided on, not a link that broke.
 
 ## Url metadata — what a listing says of itself
@@ -1502,7 +1521,7 @@ This bundle's own providers:
 | `DeclaredUrlsHealthCheckProvider` | `urls-<bundle>` | The content-quality checks over the urls each bundle declares for its sitemap — one kind per bundle, each schedulable at its own cadence |
 | `AccessibilityHealthCheckProvider` | `accessibility` | Monthly: the RGAA 4.1 criteria a page's markup can settle on its own, over every url the sitemap providers declare — see [below](#the-accessibility-check-and-what-it-does-not-claim) for the eight criteria and the honest limits |
 | `DatabaseLoadHealthCheckProvider` | `database-load` | Table sizes and row counts against the host's own limits |
-| `IntrusionHealthCheckProvider` | `intrusion` | Weekly, three rows: an executable file (`.php`, `.phtml`, `.sh`, `.htaccess`… in the name, not only at its end) under any directory a bundle declared for the backup, the working tree against the repository it was deployed from, and the number of accounts holding `site-role-admin` against the count the previous run recorded |
+| `IntrusionHealthCheckProvider` | `intrusion` | Weekly, three rows: an executable file (`.php`, `.phtml`, `.sh`, `.htaccess`… in the name, not only at its end) under any directory a bundle declared for the backup, the working tree against the repository it was deployed from (minus the files the framework itself rewrites, `config/reference.php` being dumped on every debug-mode container compile), and the number of accounts holding `site-role-admin` against the count the previous run recorded |
 | `BackupHealthCheckAdviceProvider` | — | Advice lines for the backup alerts |
 
 **Where the OWASP checks stop**: `security-headers` and `security-misconfig` cover what only the deployed site can answer for — misconfiguration, exposed debug tooling, missing cookie flags. A vulnerable dependency (OWASP A06) is *not* among them, on purpose: it is written in `composer.lock`, which the CI reads long before a deployment. Add it to your site's workflow rather than waiting for a health check run to say a site already in production ships a known CVE:
@@ -1715,7 +1734,7 @@ Every path is relative to the project directory, as everything else here is. `si
 
 A backup that never leaves the machine it protects is not a backup. Until now nothing here said whether anything had left, and "backup ok" read exactly the same either way. Two models are supported, and the bundle is deliberately agnostic between them.
 
-**Push** — the site sends, through [rclone](https://rclone.org). Set `site-backup-offsite-target` to a remote as rclone spells it, `storagebox:975l.com`. Archives go to `<target>/backup` on every run; the mirrored folders go to `<target>/files/<path>` on the nightly `c975l:config:backup:offsite`.
+**Push** — the site sends, through [rclone](https://rclone.org). Set `site-backup-offsite-target` to a remote as rclone spells it, `storagebox:example.com`. Archives go to `<target>/backup` on every run; the mirrored folders go to `<target>/files/<path>` on the nightly `c975l:config:backup:offsite`.
 
 **Pull** — an outside machine fetches the backups over SSH/SFTP and calls `c975l:config:backup:offsite --ack` afterwards. Leave `site-backup-offsite-target` empty: nothing is sent, no task fails, and the dashboard still knows the files left. This is the safer of the two — a server holding no credentials to its own backup is a server that can't destroy it — at the cost of a machine to keep. What that machine runs, nothing of it living on the site:
 
@@ -1821,7 +1840,7 @@ cat example_-_*.sql | mysql example
 tar -xjf FILES_-_example.com_-_2026-08-07_-_12-58.tar.bz2 -C /path/to/example.com
 
 # 4. The uploads, from wherever they were mirrored
-rclone copy storagebox:975l.com/files/public/medias public/medias
+rclone copy storagebox:example.com/files/public/medias public/medias
 ```
 
 Three things about step 2. The archive holds **one `.sql` file per table**, not a single dump, which is what lets a run report each table's size and lets a single table be restored on its own. Each file disables foreign key checks around itself, so `cat *.sql` in alphabetical order is safe and no dependency ordering has to be worked out. And the dumps carry `CREATE TABLE` without `DROP TABLE` — restoring over a schema that still has its tables fails rather than half-overwriting them, hence the empty database.

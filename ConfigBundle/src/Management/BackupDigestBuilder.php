@@ -91,7 +91,7 @@ class BackupDigestBuilder
         return match (true) {
             empty($runs) => self::STATUS_NONE,
             $counts[HealthCheckResult::STATUS_ERROR] > 0 => HealthCheckResult::STATUS_ERROR,
-            $gapHours > $this->maxAgeHours() => HealthCheckResult::STATUS_ERROR,
+            null !== $this->maxAgeHours() && $gapHours > $this->maxAgeHours() => HealthCheckResult::STATUS_ERROR,
             $counts[HealthCheckResult::STATUS_WARNING] > 0 => HealthCheckResult::STATUS_WARNING,
             default => HealthCheckResult::STATUS_OK,
         };
@@ -167,11 +167,13 @@ class BackupDigestBuilder
     // Only worth a line once it exceeds what the schedule allows: six hours between two six-hourly runs is the normal state of things, not news
     private function gapLines(?int $gapHours): array
     {
-        if (null === $gapHours || $gapHours <= $this->maxAgeHours()) {
+        $maxAgeHours = $this->maxAgeHours();
+
+        if (null === $gapHours || null === $maxAgeHours || $gapHours <= $maxAgeHours) {
             return [];
         }
 
-        return [$this->trans('label.backup_digest_gap', ['%hours%' => $gapHours, '%max%' => $this->maxAgeHours()])];
+        return [$this->trans('label.backup_digest_gap', ['%hours%' => $gapHours, '%max%' => $maxAgeHours])];
     }
 
     // What the server still holds, straight from the last run's own purge: the digest says a backup happened, this says it's still there to restore from
@@ -217,12 +219,12 @@ class BackupDigestBuilder
         return ($run->getDetails() ?? [])[$key] ?? $default;
     }
 
-    // The same threshold BackupAlertProvider raises its staleness alert on, so the dashboard and the email never disagree on what "late" means
-    private function maxAgeHours(): int
+    // The same threshold BackupAlertProvider raises its staleness alert on, read from the same entry so the dashboard and the email never disagree on what "late" means - and silent alike when it holds nothing
+    private function maxAgeHours(): ?int
     {
         $configured = (int) $this->configService->get('site-backup-max-age-hours');
 
-        return $configured > 0 ? $configured : BackupAlertProvider::DEFAULT_MAX_AGE_HOURS;
+        return $configured > 0 ? $configured : null;
     }
 
     private function siteDomain(): string

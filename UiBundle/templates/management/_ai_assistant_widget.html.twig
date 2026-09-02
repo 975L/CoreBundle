@@ -1,4 +1,5 @@
 {# The question/answer box; the caller owns the isEnabled()/ROLE_SUPER_ADMIN gating #}
+{# "help_url"/"help_label" are optional and belong to the caller: where a reader goes from here differs on the dashboard and on the assistant's own page #}
 {# Plain data-* attributes, not Stimulus targets/values: ai-assistant.js reads them via querySelector #}
 <div class="ai-assistant"
      data-controller="aiAssistant"
@@ -6,6 +7,14 @@
      data-ai-assistant-csrf-token-value="{{ csrf_token('management_ui_ai_assistant_ask') }}"
 >
     <div class="ai-assistant__log" data-ai-assistant-target="log"></div>
+
+    {# Everything the backend can answer but an answer - unreachable, unconfigured on its side, expired token - reads as one thing here: it did not answer. The reason is its operator's to read, not this reader's, and the raw error key was what used to be shown in its place #}
+    <p class="text-danger small d-none" data-ai-assistant-target="error">
+        {{ 'label.ai_assistant_error'|trans({'%name%': ai_assistant_name()}, 'ui') }}
+        {% if help_url|default('') and help_label|default('') %}
+            <a href="{{ help_url }}">{{ help_label }}</a>
+        {% endif %}
+    </p>
 
     <form data-action="aiAssistant#ask">
         <div class="input-group">

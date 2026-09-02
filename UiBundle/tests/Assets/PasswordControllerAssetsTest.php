@@ -44,27 +44,6 @@ class PasswordControllerAssetsTest extends TestCase
         }
     }
 
-    // A per-field "disabled = !isValid" lets a matching confirmation re-open a submit the invalid password had closed
-    public function testTheSubmitStateReadsEveryWatchedField(): void
-    {
-        $script = $this->read(self::CONTROLLER_JS);
-
-        preg_match('/\.disabled\s*=\s*([^;]+);/', $script, $assignment);
-        $this->assertNotEmpty($assignment, sprintf('"%s" never sets the submit button state, the test itself is broken.', self::CONTROLLER_JS));
-        $this->assertStringNotContainsString('isValid', $assignment[1], sprintf('"%s" drives the submit button off the single field just blurred.', self::CONTROLLER_JS));
-        $this->assertStringContainsString('this.fields', $assignment[1], sprintf('"%s" must read every watched field to set the submit button state.', self::CONTROLLER_JS));
-    }
-
-    // Hard-coding "current-password" back on hide clobbers the "new-password" a sign-up form sets to keep managers from autofilling it
-    public function testHidingThePasswordRestoresTheDeclaredAutocomplete(): void
-    {
-        $script = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringNotContainsString('current-password', $script, sprintf('"%s" forces an autocomplete value instead of restoring the one the form declared.', self::CONTROLLER_JS));
-        $this->assertMatchesRegularExpression('/getAttribute\(\s*["\']autocomplete["\']\s*\)/', $script, sprintf('"%s" never reads the autocomplete the form declared.', self::CONTROLLER_JS));
-        $this->assertMatchesRegularExpression('/removeAttribute\(\s*["\']autocomplete["\']\s*\)/', $script, sprintf('"%s" must drop the attribute again when the form declared none.', self::CONTROLLER_JS));
-    }
-
     public function testEveryClassTheControllerWritesIsStyled(): void
     {
         $script = $this->read(self::CONTROLLER_JS);

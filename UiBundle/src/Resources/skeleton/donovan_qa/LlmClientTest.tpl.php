@@ -47,6 +47,8 @@ class <?= $class_name ?> extends TestCase
                 'donovan-qa-llm-enabled' => false,
                 'donovan-qa-llm-provider' => 'anthropic',
                 'donovan-qa-llm-api-key' => 'anthropic-key',
+                'donovan-qa-llm-model' => 'claude-haiku-4-5',
+                'donovan-qa-llm-base-uri' => 'https://api.anthropic.com/v1',
             ]),
             $this->createStub(LoggerInterface::class),
         );
@@ -99,6 +101,8 @@ class <?= $class_name ?> extends TestCase
                 'donovan-qa-llm-enabled' => true,
                 'donovan-qa-llm-provider' => 'anthropic',
                 'donovan-qa-llm-api-key' => 'anthropic-key',
+                'donovan-qa-llm-model' => 'claude-haiku-4-5',
+                'donovan-qa-llm-base-uri' => 'https://api.anthropic.com/v1',
             ]),
             $this->createStub(LoggerInterface::class),
         );
@@ -107,5 +111,33 @@ class <?= $class_name ?> extends TestCase
 
         $this->assertSame('Use the collection block.', $result['answer']);
         $this->assertSame(['collection'], $result['sourceKinds']);
+    }
+
+    public function testAskKeepsGuidedTourIdentifiersAlongsideBlockKinds(): void
+    {
+        $httpClient = new MockHttpClient(
+            fn (string $method, string $url, array $options) => new MockResponse(
+                json_encode([
+                    'content' => [['text' => "Follow the media library tour.\nSOURCES: collection, tour:media-library"]],
+                ]),
+                ['http_code' => 200]
+            )
+        );
+
+        $client = new <?= $llm_client_short_name ?>(
+            $httpClient,
+            $this->createConfigService([
+                'donovan-qa-llm-enabled' => true,
+                'donovan-qa-llm-provider' => 'anthropic',
+                'donovan-qa-llm-api-key' => 'anthropic-key',
+                'donovan-qa-llm-model' => 'claude-haiku-4-5',
+                'donovan-qa-llm-base-uri' => 'https://api.anthropic.com/v1',
+            ]),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $result = $client->ask('How do I add an image?', 'context');
+
+        $this->assertSame(['collection', 'tour:media-library'], $result['sourceKinds']);
     }
 }

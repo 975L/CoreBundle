@@ -285,28 +285,6 @@
         "description": "description.url_cookies_policy"
     },
     {
-        "label": "label.site_other_copyright",
-        "slug": "site-other-copyright",
-        "sensitive": false,
-        "restricted": false,
-        "value": null,
-        "kind": "html",
-        "group": "legal",
-        "severity": null,
-        "description": "description.site_other_copyright"
-    },
-    {
-        "label": "label.site_other_cookies",
-        "slug": "site-other-cookies",
-        "sensitive": false,
-        "restricted": false,
-        "value": null,
-        "kind": "html",
-        "group": "legal",
-        "severity": null,
-        "description": "description.site_other_cookies"
-    },
-    {
         "label": "label.site_enable_cookie_consent",
         "slug": "site-enable-cookie-consent",
         "sensitive": false,
@@ -466,5 +444,31 @@
         "group": "general",
         "severity": null,
         "description": "description.ui_pdf_weasyprint_path"
+    },
+    {
+        "label": "label.ui_map_provider",
+        "slug": "ui-map-provider",
+        "sensitive": false,
+        "restricted": false,
+        "value": "leaflet",
+        "kind": "choice",
+        "choices": [
+            "leaflet",
+            "google"
+        ],
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_map_provider"
+    },
+    {
+        "label": "label.ui_map_google_api_key",
+        "slug": "ui-map-google-api-key",
+        "sensitive": true,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "general",
+        "severity": null,
+        "description": "description.ui_map_google_api_key"
     }
 ]

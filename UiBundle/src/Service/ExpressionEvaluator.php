@@ -25,6 +25,7 @@ class ExpressionEvaluator
     public function __construct(
         private readonly CalculatorExpressionLanguage $expressionLanguage,
         private readonly TranslatorInterface $translator,
+        private readonly FormTranslator $formTranslator,
     ) {
     }
 
@@ -157,6 +158,9 @@ class ExpressionEvaluator
      */
     public function compute(Form $form, array $inputs): array
     {
+        // One query for every result's words rather than one apiece, format() below reading each unit from the cache it fills
+        $this->formTranslator->preloadOutputs($form->getOutputs());
+
         $variables = [];
         foreach ($form->getFields() as $field) {
             if ($field->isNumeric()) {
@@ -234,7 +238,8 @@ class ExpressionEvaluator
         }
 
         // Set off by a non-breaking space, as the percent above is and as the currency formatter is before its own symbol: an admin types "t", never " t", the field carrying it being trimmed on the way in
-        $unit = trim((string) $output->getUnit());
+        // Translated like the label beside it: a unit is a word ("nights", "people"), not always a symbol
+        $unit = trim((string) $this->formTranslator->getUnit($output));
 
         return ($formatted ?: (string) $value) . ('' === $unit ? '' : "\u{00A0}" . $unit);
     }

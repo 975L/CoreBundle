@@ -19,8 +19,8 @@ class ContentQualityClient
     // The meta names carrying indexing directives. "googlebot" is read alongside the generic "robots" and merged into the same list: it overrides it for Google specifically, and a page is just as absent from the results either way
     private const array ROBOTS_META_NAMES = ['robots', 'googlebot'];
 
-    // A missing alt attribute is always an error, but an explicitly empty one (alt="") is the *correct* way to mark a decorative image - it only counts when nothing marks it as such: no aria-hidden, no role="presentation"/"none", and no enclosing link/button already carrying its own accessible name (a share button's icon, a logo inside a labelled link). Flagging those would leave a page in warning forever, since there is nothing to fix
-    private const string DECORATIVE_IMAGE = '@aria-hidden="true" or @role="presentation" or @role="none" or ancestor::*[self::a or self::button][@aria-label or @aria-labelledby]';
+    // A missing alt attribute is always an error, but an explicitly empty one (alt="") is the *correct* way to mark a decorative image - it only counts when nothing marks it as such: no aria-hidden, no role="presentation"/"none", and no enclosing link/button already carrying its own accessible name. That name is read the way WCAG defines it (see AccessibilityClient::LINK_WITHOUT_NAME): an aria-label as much as the link's own text, a logo sitting next to the site name inside the same link being the very case an alt would have announced twice. An image alone in a link with nothing else in it stays reported, which is the real failure. Flagging the rest would leave a page in warning forever, since there is nothing to fix
+    private const string DECORATIVE_IMAGE = '@aria-hidden="true" or @role="presentation" or @role="none" or ancestor::*[self::a or self::button][@aria-label or @aria-labelledby or normalize-space() != ""]';
 
     // Verdicts returned by readLinkCheck()/checkLink(). LINK_UNKNOWN is deliberately not LINK_BROKEN: a timeout, a refused connection or a server that won't answer HEAD says something about the run, not about the link, and a health check reporting a live page as dead is worse than reporting nothing at all
     public const LINK_OK = 'ok';
@@ -33,7 +33,10 @@ class ContentQualityClient
     // Statuses that describe how the *server* treats this client rather than whether the url exists: the method it refuses (405/501), the bot filtering big retailers/social sites answer datacenter IPs with (403, and LinkedIn's own non-standard 999), and rate limiting (429). All inconclusive, never broken. Public so ContentQualityAnalyzer judges a page the same way rather than keeping its own copy - a site behind a WAF would otherwise have every one of its own pages reported as an error
     public const INCONCLUSIVE_STATUSES = [403, 405, 429, 501, 999];
 
-    // The subset of those that describes a client being filtered or rate limited rather than a method being refused - the difference decides whether a second, heavier GET is worth firing at that host (see LINK_FILTERED): a 405/501 is a url that serves perfectly well in GET, a 403/429/999 is a host asking to be left alone
+    // A host that is momentarily down, overloaded or asking to be called later - the hour the link was checked at, not the url. Told apart from INCONCLUSIVE_STATUSES because that one also judges the site's own pages, where a 503 is a real incident to report in red, while a linked host in maintenance for an hour is not a dead link: reporting it broken freezes it as such for a month (see ExternalLinkCheckSchedule). A 500 is not here, being the linked page's own code failing rather than the infrastructure in front of it
+    public const TRANSIENT_STATUSES = [408, 502, 503, 504];
+
+    // The subset of INCONCLUSIVE_STATUSES that describes a client being filtered or rate limited rather than a method being refused - the difference decides whether a second, heavier GET is worth firing at that host (see LINK_FILTERED): a 405/501 is a url that serves perfectly well in GET, a 403/429/999 is a host asking to be left alone
     public const FILTERED_STATUSES = [403, 429, 999];
 
     // Identifies the checker honestly (a WAF operator can look it up and allow it) while keeping the "Mozilla/5.0 (compatible; ...)" shape crawlers have used since Googlebot, which far fewer filters reject outright than a bare library default. Sites that still answer 403 are reported as inconclusive, not as broken - see INCONCLUSIVE_STATUSES
@@ -90,13 +93,13 @@ class ContentQualityClient
         return $this->httpClient->request('HEAD', $url, ['timeout' => 15, 'headers' => ['User-Agent' => self::LINK_CHECK_USER_AGENT]]);
     }
 
-    // Second pass for a link the HEAD couldn't conclude on - a fair share of servers answer 405/501 to HEAD, or drop it altogether, on urls that serve perfectly well in GET
+    // Second pass for a link the HEAD didn't settle - a fair share of servers answer 405/501 to HEAD, or drop it altogether, on urls that serve perfectly well in GET, and a client-side routed url (a share intent, a single-page app) answers a plain 404 to it
     public function requestLinkCheckFallback(string $url): ResponseInterface
     {
         return $this->httpClient->request('GET', $url, ['timeout' => 15, 'headers' => ['User-Agent' => self::LINK_CHECK_USER_AGENT]]);
     }
 
-    // Only a conclusive >= 400 answer means broken. A transport failure (DNS, timeout, connection refused) yields LINK_UNKNOWN, and so does anything in INCONCLUSIVE_STATUSES, which describes how the server treats this client rather than whether the url exists - all worth a requestLinkCheckFallback() retry before anything is called broken
+    // Only a conclusive >= 400 answer means broken. A transport failure (DNS, timeout, connection refused) yields LINK_UNKNOWN, and so does anything in INCONCLUSIVE_STATUSES or TRANSIENT_STATUSES, which describe how the server treats this client, or the hour it was called at, rather than whether the url exists - all worth a requestLinkCheckFallback() retry before anything is called broken, as is a HEAD answering >= 400, which the callers here retry too
     public function readLinkCheck(ResponseInterface $response): string
     {
         try {
@@ -107,18 +110,18 @@ class ContentQualityClient
 
         return match (true) {
             \in_array($status, self::FILTERED_STATUSES, true) => self::LINK_FILTERED,
-            \in_array($status, self::INCONCLUSIVE_STATUSES, true) => self::LINK_UNKNOWN,
+            \in_array($status, [...self::INCONCLUSIVE_STATUSES, ...self::TRANSIENT_STATUSES], true) => self::LINK_UNKNOWN,
             $status >= 400 => self::LINK_BROKEN,
             default => self::LINK_OK,
         };
     }
 
-    // Convenience for a single-URL check, HEAD then GET - returns LINK_OK, LINK_BROKEN or LINK_UNKNOWN, catching a synchronous failure from request() itself the same way as a failed transfer. A host answering that it filters this client is reported as unknown and not retried (see LINK_FILTERED)
+    // Convenience for a single-URL check, HEAD then GET - returns LINK_OK, LINK_BROKEN or LINK_UNKNOWN, catching a synchronous failure from request() itself the same way as a failed transfer. A host answering that it filters this client is reported as unknown and not retried (see LINK_FILTERED). The GET is fired on a HEAD answering >= 400 as well, and its own verdict is the one kept: a url routed client-side (a share intent, a single-page app) answers 404 to a HEAD it serves in 200, and only a GET tells that apart from a page that is really gone
     public function checkLink(string $url): string
     {
         $verdict = $this->readLinkCheckSafely(fn (): ResponseInterface => $this->requestLinkCheck($url));
 
-        if (self::LINK_UNKNOWN === $verdict) {
+        if (\in_array($verdict, [self::LINK_UNKNOWN, self::LINK_BROKEN], true)) {
             $verdict = $this->readLinkCheckSafely(fn (): ResponseInterface => $this->requestLinkCheckFallback($url));
         }
 

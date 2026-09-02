@@ -10,7 +10,6 @@
 
 namespace c975L\UiBundle\Twig;
 
-use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use Twig\Attribute\AsTwigFunction;
 
@@ -18,17 +17,15 @@ use Twig\Attribute\AsTwigFunction;
 class EmailTemplateExtension
 {
     public function __construct(
-        private readonly EmailTemplateRepository $emailTemplateRepository,
         private readonly EmailTemplateRenderer $emailTemplateRenderer,
     ) {
     }
 
     // Renders nothing when unknown: a renamed template must leave a section blank, never break the email
+    // The recipient's language decides which version is read, the site's own standing in where that language has none (see EmailTemplateRenderer::renderNamedBody) - this used to take whichever row the name matched first, which on a multilingual site was whichever locale happened to be created first
     #[AsTwigFunction('email_template_body', isSafe: ['html'])]
-    public function renderEmailTemplateBody(string $name, array $variables = []): string
+    public function renderEmailTemplateBody(string $name, array $variables = [], ?string $locale = null): string
     {
-        $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name]);
-
-        return null !== $emailTemplate ? $this->emailTemplateRenderer->renderBody($emailTemplate, $variables) : '';
+        return $this->emailTemplateRenderer->renderNamedBody($name, $variables, $locale) ?? '';
     }
 }

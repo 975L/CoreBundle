@@ -14,10 +14,13 @@ use c975L\UiBundle\Entity\EmailBlock;
 use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Repository\FormRepository;
+use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Service\EmailTemplateFactory;
 use c975L\UiBundle\Service\FormSeeder;
+use c975L\UiBundle\Service\FormTranslator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -337,6 +340,7 @@ class FormSeederTest extends TestCase
             $this->formRepository(null),
             $this->emailTemplateRepository(null),
             new EmailTemplateFactory(),
+            new FormTranslator(),
             'en'
         );
 
@@ -400,6 +404,87 @@ class FormSeederTest extends TestCase
         $this->assertSame('en', $emailTemplate->getLocale());
     }
 
+    // The words for the site's other languages ship with the declaration, so a bilingual site's contact form is readable in both from the moment it is seeded rather than waiting for an admin to retype them
+    public function testASeededFormCarriesItsOtherLanguagesWording(): void
+    {
+        $translations = [];
+        $seeder = $this->bilingualSeeder($translations);
+
+        $seeder->ensureForm('contact', self::CONTACT_FIELDS);
+
+        // The fields have no id until the caller's flush, which is exactly what the queue is for
+        $this->assertSame([], $translations);
+
+        foreach ($this->onlyPersisted(Form::class)->getFields() as $position => $field) {
+            new \ReflectionProperty(FormField::class, 'id')->setValue($field, 100 + $position);
+        }
+
+        $seeder->writeQueuedTranslations();
+
+        $this->assertSame([
+            [Translation::OWNER_FORM_FIELD, 100, 'en', ['label' => 'Your e-mail']],
+            [Translation::OWNER_FORM_FIELD, 101, 'en', ['label' => 'Your message']],
+        ], $translations);
+    }
+
+    // A form already in place has been through the back-office since, and what it says in each language is an admin's to write - the same rule every backfill above follows
+    public function testAFormAlreadyInPlaceIsNeverRetranslated(): void
+    {
+        $translations = [];
+        $seeder = $this->bilingualSeeder($translations, new Form()->setName('contact')->setRestricted(true));
+
+        $seeder->ensureForm('contact', self::CONTACT_FIELDS);
+        $seeder->writeQueuedTranslations();
+
+        $this->assertSame([], $translations);
+    }
+
+    // Nothing is written twice: a second flush finds the queue empty
+    public function testTheQueueIsEmptiedOnItsWayOut(): void
+    {
+        $translations = [];
+        $seeder = $this->bilingualSeeder($translations);
+
+        $seeder->ensureForm('contact', self::CONTACT_FIELDS);
+        foreach ($this->onlyPersisted(Form::class)->getFields() as $position => $field) {
+            new \ReflectionProperty(FormField::class, 'id')->setValue($field, 100 + $position);
+        }
+
+        $seeder->writeQueuedTranslations();
+        $written = \count($translations);
+        $seeder->writeQueuedTranslations();
+
+        $this->assertSame($written, \count($translations));
+    }
+
+    // A seeder on a site written in French and also read in English, recording what it stores rather than writing it
+    private function bilingualSeeder(array &$translations, ?Form $existingForm = null): FormSeeder
+    {
+        $contentTranslator = $this->createStub(ContentTranslator::class);
+        $contentTranslator->method('isActive')->willReturn(true);
+        $contentTranslator->method('getTranslatableLocales')->willReturn(['en']);
+        $contentTranslator->method('store')->willReturnCallback(
+            static function (string $ownerType, int $ownerId, string $locale, array $values) use (&$translations): void {
+                $translations[] = [$ownerType, $ownerId, $locale, $values];
+            }
+        );
+
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('persist')->willReturnCallback(function (object $entity): void {
+            $this->persisted[] = $entity;
+        });
+
+        return new FormSeeder(
+            $entityManager,
+            $this->formRepository($existingForm),
+            $this->emailTemplateRepository(null),
+            new EmailTemplateFactory(),
+            new FormTranslator($contentTranslator),
+            'fr',
+            ['fr', 'en']
+        );
+    }
+
     private function seeder(string $defaultLocale, ?Form $existingForm = null, ?EmailTemplate $existingEmailTemplate = null, array $enabledLocales = [], ?EmailTemplate $localelessEmailTemplate = null): FormSeeder
     {
         $entityManager = $this->createStub(EntityManagerInterface::class);
@@ -412,6 +497,7 @@ class FormSeederTest extends TestCase
             $this->formRepository($existingForm),
             $this->emailTemplateRepository($existingEmailTemplate, $localelessEmailTemplate),
             new EmailTemplateFactory(),
+            new FormTranslator(),
             $defaultLocale,
             $enabledLocales
         );

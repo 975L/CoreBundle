@@ -144,7 +144,7 @@ class ExportTablesCommand extends Command
     // Writes host/user/password to a temp file so credentials never appear in the process list
     private function createTempCredentialsFile(): string
     {
-        $host = (string) ($this->configService->get('site-backup-db-host') ?: 'localhost');
+        $host = (string) $this->configService->get('site-backup-db-host');
         $user = (string) $this->configService->get('site-backup-db-user');
         $password = (string) $this->configService->get('site-backup-db-password');
 

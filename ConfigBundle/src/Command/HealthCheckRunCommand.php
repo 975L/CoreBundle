@@ -13,12 +13,14 @@ namespace c975L\ConfigBundle\Command;
 use c975L\ConfigBundle\Attribute\AsHealthCheck;
 use c975L\ConfigBundle\Management\HealthCheckRetentionPurger;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Routing\RequestContext;
 
 #[AsCommand(
     name: HealthCheckRunCommand::NAME,
@@ -32,6 +34,8 @@ class HealthCheckRunCommand extends Command
     public function __construct(
         private readonly HealthCheckRunner $healthCheckRunner,
         private readonly HealthCheckRetentionPurger $healthCheckRetentionPurger,
+        private readonly ConfigServiceInterface $configService,
+        private readonly RequestContext $requestContext,
     ) {
         parent::__construct();
     }
@@ -47,6 +51,8 @@ class HealthCheckRunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
+        $this->applySiteUrlToRequestContext();
 
         $frequency = $input->getOption('frequency');
         if (null !== $frequency && !\in_array($frequency, AsHealthCheck::FREQUENCIES, true)) {
@@ -90,5 +96,27 @@ class HealthCheckRunCommand extends Command
         $io->success('Health check completed.');
 
         return Command::SUCCESS;
+    }
+
+    // Makes the urls this run records point at the site rather than at localhost. EasyAdmin generates an absolute url whenever there is no AdminContext, which a console run never has (see AdminUrlGenerator::generateUrl()), and the host then comes from the RequestContext - filled with "http://localhost" unless "framework.router.default_uri" happens to say otherwise, which is a per-site .env nobody remembers to set. The configured site url is what the site is really served at, and is already what the checks themselves are run against, so it is what every edit url they store must be built on
+    private function applySiteUrlToRequestContext(): void
+    {
+        $parts = parse_url((string) $this->configService->get('site-url'));
+        if (!isset($parts['host'])) {
+            return;
+        }
+
+        $scheme = $parts['scheme'] ?? 'https';
+        $this->requestContext
+            ->setScheme($scheme)
+            ->setHost($parts['host'])
+            ->setBaseUrl(rtrim($parts['path'] ?? '', '/'));
+
+        // Only a local install ever carries one, but an edit url missing it points nowhere at all
+        if (isset($parts['port'])) {
+            'https' === $scheme
+                ? $this->requestContext->setHttpsPort($parts['port'])
+                : $this->requestContext->setHttpPort($parts['port']);
+        }
     }
 }

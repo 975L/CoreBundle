@@ -111,7 +111,7 @@ class CardStatVariantTest extends TestCase
     public function testTheTagPropDrawsTheCardAsTheElementTheCallerAsksFor(): void
     {
         foreach (['article', 'section'] as $tag) {
-            $html = $this->render(['title' => 'Kalaan', 'tag' => $tag]);
+            $html = $this->render(['title' => 'Item Un', 'tag' => $tag]);
 
             $this->assertStringContainsString('<' . $tag . ' class="card box-shadow', $html);
             $this->assertStringContainsString('</' . $tag . '>', $html);
@@ -122,10 +122,10 @@ class CardStatVariantTest extends TestCase
     public function testAnUnknownTagFallsBackOnTheDiv(): void
     {
         foreach (['', 'script', 'p onclick="x"'] as $tag) {
-            $this->assertStringContainsString('<div class="card box-shadow', $this->render(['title' => 'Kalaan', 'tag' => $tag]));
+            $this->assertStringContainsString('<div class="card box-shadow', $this->render(['title' => 'Item Un', 'tag' => $tag]));
         }
 
-        $this->assertStringContainsString('<div class="card box-shadow', $this->render(['title' => 'Kalaan']));
+        $this->assertStringContainsString('<div class="card box-shadow', $this->render(['title' => 'Item Un']));
     }
 
     /**

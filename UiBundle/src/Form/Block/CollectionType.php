@@ -64,6 +64,20 @@ class CollectionType extends AbstractType
                 'label' => 'label.title',
                 'required' => false,
             ])
+            // The level of each item's own title, the block's head staying the <h2> of the section it opens. Left empty, it is deduced from that head - <h3> under a titled block, <h2> under one that has none - which is right for a block placed straight under the page's <h1>; a collection nested deeper, under a section that already carries an <h2>, is the case the field is there for
+            ->add('level', ChoiceType::class, [
+                'label' => 'label.collection_item_level',
+                'help' => 'label.collection_item_level_help',
+                'required' => false,
+                'choices' => [
+                    'label.collection_item_level_auto' => '',
+                    'h2' => 'h2',
+                    'h3' => 'h3',
+                    'h4' => 'h4',
+                ],
+                // No placeholder, same reading as CollectionEntryType's "pick": the stored empty value is itself a choice - the automatic one - and not the absence of one
+                'placeholder' => false,
+            ])
             // "Voir tout" link next to the head, e.g. pointing at a fuller listing elsewhere - same pair of fields as PortfolioGridType, rendered next to the head in either variant (see Collection/Grid.html.twig)
             ->add('linkLabel', TextType::class, [
                 'label' => 'label.link_label',

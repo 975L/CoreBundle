@@ -2,7 +2,8 @@
 // Only correctness rules are enabled, formatting is left to the developer
 export default [
     {
-        ignores: ["**/public/**", "vendor/**", "**/*.min.js"],
+        // The Stimulus copy served to the browser tests is third-party code, linted upstream
+        ignores: ["**/public/**", "vendor/**", "**/*.min.js", "**/src/Testing/stimulus.js"],
     },
     {
         files: ["**/*.js", "**/*.mjs"],
@@ -23,6 +24,7 @@ export default [
                 DataTransfer: "readonly",
                 document: "readonly",
                 DOMParser: "readonly",
+                Element: "readonly",
                 Event: "readonly",
                 fetch: "readonly",
                 File: "readonly",

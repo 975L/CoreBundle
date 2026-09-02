@@ -16,9 +16,15 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 // Calls the LLM answering the Q&A questions: Anthropic's native API, or any OpenAI-compatible one
 class <?= $class_name ?>
 {
-    private const ANTHROPIC_DEFAULT_URI = 'https://api.anthropic.com/v1/messages';
-    private const ANTHROPIC_DEFAULT_MODEL = 'claude-haiku-4-5';
     private const MAX_TOKENS = 1024;
+
+    // Config entries the call cannot be built without - see isEnabled()
+    private const REQUIRED_SLUGS = [
+        'donovan-qa-llm-api-key',
+        'donovan-qa-llm-provider',
+        'donovan-qa-llm-model',
+        'donovan-qa-llm-base-uri',
+    ];
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -34,22 +40,17 @@ class <?= $class_name ?>
             return false;
         }
 
-        if (null === $this->configService->get('donovan-qa-llm-api-key')) {
-            return false;
-        }
-
-        // Euria has no safe default model or base URI, so both must be set explicitly
-        $provider = (string) ($this->configService->get('donovan-qa-llm-provider') ?: 'anthropic');
-        if ('euria' === $provider && (
-            !$this->configService->get('donovan-qa-llm-model')
-            || !$this->configService->get('donovan-qa-llm-base-uri')
-        )) {
-            return false;
+        // Every setting comes from its own entry, none defaulted in code: an empty one keeps the feature off rather than running on a model the administrator cannot read
+        foreach (self::REQUIRED_SLUGS as $slug) {
+            if (!$this->configService->get($slug)) {
+                return false;
+            }
         }
 
         return true;
     }
 
+    // "sourceKinds" holds what the model cited: a block kind, or a guided project prefixed "tour:" - the context builder tells them apart
     // @return array{answer: string, sourceKinds: string[], inputTokens: int, outputTokens: int}|null
     public function ask(string $question, string $context): ?array
     {
@@ -57,7 +58,7 @@ class <?= $class_name ?>
             return null;
         }
 
-        $provider = (string) ($this->configService->get('donovan-qa-llm-provider') ?: 'anthropic');
+        $provider = (string) $this->configService->get('donovan-qa-llm-provider');
         $apiKey = (string) $this->configService->get('donovan-qa-llm-api-key');
 
         try {
@@ -75,8 +76,8 @@ class <?= $class_name ?>
 
     private function callAnthropic(string $question, string $context, string $apiKey): array
     {
-        $uri = $this->configService->get('donovan-qa-llm-base-uri') ?: self::ANTHROPIC_DEFAULT_URI;
-        $model = $this->configService->get('donovan-qa-llm-model') ?: self::ANTHROPIC_DEFAULT_MODEL;
+        $uri = (string) $this->configService->get('donovan-qa-llm-base-uri');
+        $model = (string) $this->configService->get('donovan-qa-llm-model');
 
         $response = $this->httpClient->request('POST', $uri, [
             'headers' => [
@@ -109,7 +110,6 @@ class <?= $class_name ?>
     private function callEuria(string $question, string $context, string $apiKey): array
     {
         $uri = rtrim((string) $this->configService->get('donovan-qa-llm-base-uri'), '/') . '/chat/completions';
-        // Always set at this point - isEnabled() requires "donovan-qa-llm-model" for euria
         $model = (string) $this->configService->get('donovan-qa-llm-model');
 
         $response = $this->httpClient->request('POST', $uri, [
@@ -137,8 +137,9 @@ class <?= $class_name ?>
 
     private function systemPrompt(string $context): string
     {
-        return "You are the admin dashboard assistant. Answer only from the following context, which documents the available blocks. If the question is unrelated, say so plainly rather than inventing anything outside this context.\n\n"
-            . "Always end your answer with a line exactly formatted as \"SOURCES: kind1, kind2\" listing the kind identifiers (the word after \"###\" in the context) you relied on, or \"SOURCES: none\" if no specific kind applies.\n\n"
+        return "You are the admin dashboard assistant. Answer only from the following context, which documents the available blocks and the guided tours walking through a task in the back office. If the question is unrelated, say so plainly rather than inventing anything outside this context.\n\n"
+            . "When a guided tour covers the task the question describes, say so and cite it: the reader is offered to start it right where they are reading your answer.\n\n"
+            . "Always end your answer with a line exactly formatted as \"SOURCES: id1, id2\" listing the identifiers (the word after \"###\" in the context, a bare one for a block, a \"tour:\" one for a guided tour) you relied on, or \"SOURCES: none\" if none applies.\n\n"
             . $context;
     }
 

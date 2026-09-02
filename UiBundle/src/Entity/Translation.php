@@ -25,6 +25,11 @@ class Translation implements \Stringable
     // What a translated block carries as its owner type; the other bundles name their own ("site_page" for a page)
     public const string OWNER_BLOCK = 'ui_block';
 
+    // A form is composed once and translated afterwards, the same way a page is: a field's label or an output's unit is text a visitor reads, not a translation key (see FormTranslator)
+    public const string OWNER_FORM_FIELD = 'ui_form_field';
+
+    public const string OWNER_FORM_OUTPUT = 'ui_form_output';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

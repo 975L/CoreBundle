@@ -27,19 +27,30 @@ export default class extends Controller {
     }
 
     disconnect() {
+        document.removeEventListener('click', this.boundClick);
         this.closePanel();
     }
 
     // The dashboard list is part of the page while this element is appended to <body>, so it is wired by hand
+    // Delegated on the document rather than bound button by button: a [data-guided-project-slug] can also be appended long after this ran, Donovan citing a parcours in an answer (see UiBundle's assets/js/ai-assistant.js)
     wireList() {
-        document.querySelectorAll('[data-guided-project-toggle]').forEach((button) => {
-            button.addEventListener('click', () => this.toggleList());
-        });
-        document.querySelectorAll('[data-guided-project-slug]').forEach((button) => {
-            button.addEventListener('click', () => this.open(button.dataset.guidedProjectSlug));
-        });
+        this.boundClick = this.onClick.bind(this);
+        document.addEventListener('click', this.boundClick);
 
         this.refreshList();
+    }
+
+    onClick(event) {
+        if (!(event.target instanceof Element)) return;
+
+        if (event.target.closest('[data-guided-project-toggle]')) {
+            this.toggleList();
+
+            return;
+        }
+
+        const button = event.target.closest('[data-guided-project-slug]');
+        if (button) this.open(button.dataset.guidedProjectSlug);
     }
 
     toggleList() {
@@ -48,19 +59,20 @@ export default class extends Controller {
     }
 
     // "Start"/"Resume"/"Replay" and the badge come from this browser's storage, the server rendering neutral
+    // Scoped to the dashboard list: a button elsewhere carries a label of its own, Donovan's naming the parcours it cites rather than the action
     refreshList() {
         const state = this.readState();
         const done = state.done ?? [];
         const labels = this.labelsValue;
 
-        document.querySelectorAll('[data-guided-project-slug]').forEach((button) => {
+        document.querySelectorAll('[data-guided-project-list] [data-guided-project-slug]').forEach((button) => {
             const slug = button.dataset.guidedProjectSlug;
             if (state.active?.slug === slug) button.textContent = labels.resume;
             else if (done.includes(slug)) button.textContent = labels.replay;
             else button.textContent = labels.start;
         });
 
-        document.querySelectorAll('[data-guided-project-badge]').forEach((badge) => {
+        document.querySelectorAll('[data-guided-project-list] [data-guided-project-badge]').forEach((badge) => {
             badge.hidden = !done.includes(badge.dataset.guidedProjectBadge);
         });
     }
@@ -208,6 +220,10 @@ export default class extends Controller {
         const labels = this.labelsValue;
 
         this.panel.replaceChildren();
+        // What the step sounds like spoken, carried by the panel rather than drawn in it: the recorder filming the back office reads the panel's own DOM (see video/record.js in bundles.975l.com)
+        this.panel.dataset.narration = step.narration ?? '';
+        // Written beside it for the same reader: nothing else tells a step that points at nothing from one that deliberately points at nothing at all
+        this.panel.dataset.highlight = step.highlight ?? '';
         this.panel.append(
             buildElement('div', 'guided-project-progress', `${this.project.label} — ${this.index + 1} / ${total}`),
             buildElement('h3', null, step.label),

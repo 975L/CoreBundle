@@ -47,11 +47,7 @@ ul {
   white-space: nowrap;
 }
 
-.health-check-advice-items > summary {
-  cursor: pointer;
-}
-
-.health-check-advice-items ul {
+.health-check-advice-items {
   list-style: none;
   padding-left: 0.75rem;
   word-break: break-word;

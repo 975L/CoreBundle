@@ -60,6 +60,22 @@ class EmailTemplateRenderer
     }
 
     /**
+     * Same as renderNamed(), but just the rows - what a layout embeds inside its own html rather than sends whole.
+     *
+     * Resolved exactly like renderNamed(): the recipient's language first, the site's own next, the wording the
+     * bundle declares last. Null when no version exists at all, which a caller renders as nothing.
+     *
+     * @param array<string, scalar|array<string, mixed>> $variables see renderBody()
+     */
+    public function renderNamedBody(string $name, array $variables = [], ?string $locale = null): ?string
+    {
+        $emailTemplate = $this->emailTemplateRepository->findForRendering($name, $locale, $this->defaultLocale)
+            ?? $this->declared($name, $locale);
+
+        return null !== $emailTemplate ? $this->renderBody($emailTemplate, $variables) : null;
+    }
+
+    /**
      * The files that same named template says it travels with, drawn.
      *
      * Read from the site's own row, which is the only place the answer lives: the wording a bundle declares is a

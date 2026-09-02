@@ -89,11 +89,11 @@ class BlockVideoNoCookieListenerTest extends TestCase
     // A url belonging to no declared platform - a self-hosted player, an instance of one's own - is left exactly as it was, the checkbox having nothing to offer it
     public function testPrePersistLeavesAnUnknownSrcUntouchedEvenWhenChecked(): void
     {
-        $block = $this->videoIframeBlock(['src' => 'https://975l.com/player/123456', 'noCookie' => true]);
+        $block = $this->videoIframeBlock(['src' => 'https://example.com/player/123456', 'noCookie' => true]);
 
         new BlockVideoNoCookieListener(new VideoExtension())->prePersist($this->createPersistArgs($block));
 
-        $this->assertSame('https://975l.com/player/123456', $block->getData()['src']);
+        $this->assertSame('https://example.com/player/123456', $block->getData()['src']);
     }
 
     public function testPreUpdateIgnoresEntitiesThatAreNotBlock(): void

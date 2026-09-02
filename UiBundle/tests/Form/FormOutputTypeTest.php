@@ -12,6 +12,8 @@ namespace c975L\UiBundle\Tests\Form;
 
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Form\FormOutputType;
+use c975L\UiBundle\Form\Util\FormTranslationBuilder;
+use c975L\UiBundle\Service\FormTranslator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,7 +34,7 @@ class FormOutputTypeTest extends TestCase
         });
         $builder->method('addEventListener')->willReturnSelf();
 
-        new FormOutputType()->buildForm($builder, []);
+        new FormOutputType(new FormTranslationBuilder(new FormTranslator()))->buildForm($builder, ['translation_locale' => null]);
 
         return $added;
     }
@@ -51,7 +53,7 @@ class FormOutputTypeTest extends TestCase
             }
         );
 
-        new FormOutputType()->buildForm($builder, []);
+        new FormOutputType(new FormTranslationBuilder(new FormTranslator()))->buildForm($builder, ['translation_locale' => null]);
 
         $added = [];
         $innerForm = $this->createStub(FormInterface::class);
@@ -135,7 +137,7 @@ class FormOutputTypeTest extends TestCase
     public function testOutputsAreMappedToTheEntity(): void
     {
         $resolver = new OptionsResolver();
-        new FormOutputType()->configureOptions($resolver);
+        new FormOutputType(new FormTranslationBuilder(new FormTranslator()))->configureOptions($resolver);
 
         $options = $resolver->resolve();
 

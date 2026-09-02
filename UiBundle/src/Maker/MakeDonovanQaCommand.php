@@ -62,10 +62,16 @@ class MakeDonovanQaCommand extends AbstractMaker
         $controllerClass = $generator->createClassNameDetails('DonovanQa', 'Controller\\Api\\', 'Controller');
         $twigExtensionClass = $generator->createClassNameDetails('DonovanQa', 'Twig\\', 'Extension');
         $testClass = $generator->createClassNameDetails('DonovanQaLlm', 'Tests\\Service\\', 'ClientTest');
+        $contextBuilderTestClass = $generator->createClassNameDetails('DonovanQaContext', 'Tests\\Service\\', 'BuilderTest');
 
         $generator->generateClass($llmClientClass->getFullName(), self::SKELETON_DIR . '/LlmClient.tpl.php');
 
         $generator->generateClass($contextBuilderClass->getFullName(), self::SKELETON_DIR . '/ContextBuilder.tpl.php');
+
+        $generator->generateClass($contextBuilderTestClass->getFullName(), self::SKELETON_DIR . '/ContextBuilderTest.tpl.php', [
+            'context_builder_full_name' => $contextBuilderClass->getFullName(),
+            'context_builder_short_name' => $contextBuilderClass->getShortName(),
+        ]);
 
         if ($this->withSemanticCache) {
             $entityClass = $generator->createClassNameDetails('DonovanQaAnswer', 'Entity\\');
@@ -150,7 +156,7 @@ class MakeDonovanQaCommand extends AbstractMaker
             '',
             '1. Add these 6 entries to your app\'s config/configs.json (create it, plus a small command',
             '   loading it via ConfigServiceInterface::loadDefaultConfig() at boot/deploy time, if you don\'t',
-            '   have one yet - see 975l.com\'s own AppConfigLoadCommand for a 15-line model):',
+            '   have one yet - fifteen lines are enough):',
             '',
             '    [',
             '        {',
@@ -221,7 +227,12 @@ class MakeDonovanQaCommand extends AbstractMaker
             '        }',
             '    ]',
             '',
-            '2. Point every consuming site\'s "ui-ai-assistant-dashboard-endpoint" at this app\'s',
+            '2. Fill "donovan-qa-llm-provider", "-api-key", "-model" and "-base-uri" in the back office:',
+            '   all four are required whatever the provider, none has a value hardcoded in the generated',
+            '   client, so an entry left empty simply keeps the feature off. The base URI is the full',
+            '   messages endpoint for Anthropic, the product base for an OpenAI-compatible API.',
+            '',
+            '3. Point every consuming site\'s "ui-ai-assistant-dashboard-endpoint" at this app\'s',
             '   /api/donovan-qa/ask, and its "ui-ai-assistant-dashboard-token" at its own token above.',
             '',
         ]);
@@ -230,7 +241,7 @@ class MakeDonovanQaCommand extends AbstractMaker
             $io->writeln([
                 'Semantic cache also needs:',
                 '',
-                '3. These 3 additional config/configs.json entries:',
+                '4. These 3 additional config/configs.json entries:',
                 '',
                 '    {',
                 '        "label": "label.donovan_qa_embedding_model",',
@@ -266,20 +277,20 @@ class MakeDonovanQaCommand extends AbstractMaker
                 '        "description": "description.donovan_qa_semantic_cache_threshold"',
                 '    }',
                 '',
-                '4. In config/packages/doctrine.yaml, under doctrine.dbal:',
+                '5. In config/packages/doctrine.yaml, under doctrine.dbal:',
                 '',
                 '    types:',
                 '        vector: c975L\\UiBundle\\Doctrine\\VectorType',
                 '    mapping_types:',
                 '        vector: vector',
                 '',
-                '5. php bin/console make:migration - requires MariaDB 11.7+/MySQL 9+ for the native VECTOR',
+                '6. php bin/console make:migration - requires MariaDB 11.7+/MySQL 9+ for the native VECTOR',
                 '   column type the generated Answer entity uses. On an older version, see this bundle\'s',
                 '   Readme "AI Assistant" > "Self-hosting your own backend" for the JSON+cosine-similarity',
                 '   fallback shape instead (a different Answer/AnswerRepository, not generated here).',
                 '   Review the generated migration, then run it.',
                 '',
-                '6. Set "donovan-qa-embedding-model" to an embedding-capable model id (e.g.',
+                '7. Set "donovan-qa-embedding-model" to an embedding-capable model id (e.g.',
                 '   Qwen/Qwen3-Embedding-8B on Euria/Infomaniak) - a chat model is never usable as one -',
                 '   and flip "donovan-qa-semantic-cache-enabled" to true once you\'ve verified it responds.',
                 '',

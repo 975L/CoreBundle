@@ -10,8 +10,6 @@
 
 namespace c975L\UiBundle\Tests\Twig;
 
-use c975L\UiBundle\Entity\EmailTemplate;
-use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use c975L\UiBundle\Twig\EmailTemplateExtension;
 use PHPUnit\Framework\TestCase;
@@ -20,19 +18,12 @@ class EmailTemplateExtensionTest extends TestCase
 {
     public function testRenderEmailTemplateBodyDelegatesToRendererWhenFound(): void
     {
-        $emailTemplate = new EmailTemplate();
-
-        $repository = $this->createStub(EmailTemplateRepository::class);
-        $repository->method('findOneBy')->willReturnCallback(
-            static fn (array $criteria) => ['name' => 'account_validation'] === $criteria ? $emailTemplate : null
-        );
-
         $renderer = $this->createStub(EmailTemplateRenderer::class);
-        $renderer->method('renderBody')->willReturnCallback(
-            static fn (EmailTemplate $template, array $variables) => $template === $emailTemplate ? '<p>' . ($variables['signed_url'] ?? '') . '</p>' : ''
+        $renderer->method('renderNamedBody')->willReturnCallback(
+            static fn (string $name, array $variables) => 'account_validation' === $name ? '<p>' . ($variables['signed_url'] ?? '') . '</p>' : null
         );
 
-        $extension = new EmailTemplateExtension($repository, $renderer);
+        $extension = new EmailTemplateExtension($renderer);
 
         $this->assertSame(
             '<p>https://example.test/verify</p>',
@@ -43,11 +34,19 @@ class EmailTemplateExtensionTest extends TestCase
     // A missing/renamed EmailTemplate must not break the email it's embedded into - only render nothing
     public function testRenderEmailTemplateBodyReturnsEmptyStringWhenNotFound(): void
     {
-        $repository = $this->createConfiguredStub(EmailTemplateRepository::class, ['findOneBy' => null]);
+        $renderer = $this->createConfiguredStub(EmailTemplateRenderer::class, ['renderNamedBody' => null]);
+
+        $this->assertSame('', new EmailTemplateExtension($renderer)->renderEmailTemplateBody('does_not_exist'));
+    }
+
+    // The recipient's language is what decides the version, and it reaches the renderer as it was given
+    public function testTheRecipientsLanguageIsHandedOver(): void
+    {
         $renderer = $this->createStub(EmailTemplateRenderer::class);
+        $renderer->method('renderNamedBody')->willReturnCallback(
+            static fn (string $name, array $variables, ?string $locale) => (string) $locale
+        );
 
-        $extension = new EmailTemplateExtension($repository, $renderer);
-
-        $this->assertSame('', $extension->renderEmailTemplateBody('does_not_exist'));
+        $this->assertSame('es', new EmailTemplateExtension($renderer)->renderEmailTemplateBody('layout_hello', [], 'es'));
     }
 }

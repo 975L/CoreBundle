@@ -297,11 +297,11 @@ class DashboardControllerTest extends TestCase
     public function testMadeByLogoPathIsResolvedThroughTheAssetPackages(): void
     {
         $controller = $this->createController(false, [], [
-            'site-made-by-logo' => 'images/logo-975l.svg',
-            'site-made-by-url' => 'https://975l.com',
+            'site-made-by-logo' => 'images/logo.svg',
+            'site-made-by-url' => 'https://example.com',
         ]);
 
-        $this->assertSame('/assets/images/logo-975l.svg?digest', $this->getMadeByLogoSrc($controller));
+        $this->assertSame('/assets/images/logo.svg?digest', $this->getMadeByLogoSrc($controller));
     }
 
     // A config still holding the absolute URL used before must keep working
@@ -309,8 +309,8 @@ class DashboardControllerTest extends TestCase
     public function testMadeByMenuItemFollowsTheWordingConfig(): void
     {
         $configs = [
-            'site-made-by-logo' => 'images/logo-975l.svg',
-            'site-made-by-url' => 'https://975l.com',
+            'site-made-by-logo' => 'images/logo.svg',
+            'site-made-by-url' => 'https://example.com',
         ];
 
         $this->assertSame('label.made_by', $this->getMadeByLabel($this->createController(false, [], $configs)));
@@ -320,16 +320,16 @@ class DashboardControllerTest extends TestCase
     public function testMadeByLogoAbsoluteUrlIsLeftUntouched(): void
     {
         $controller = $this->createController(false, [], [
-            'site-made-by-logo' => 'https://975l.com/images/logo-975l.svg',
-            'site-made-by-url' => 'https://975l.com',
+            'site-made-by-logo' => 'https://example.com/images/logo.svg',
+            'site-made-by-url' => 'https://example.com',
         ]);
 
-        $this->assertSame('https://975l.com/images/logo-975l.svg', $this->getMadeByLogoSrc($controller));
+        $this->assertSame('https://example.com/images/logo.svg', $this->getMadeByLogoSrc($controller));
     }
 
     public function testNoMadeByMenuItemWhenEitherConfigIsEmpty(): void
     {
-        $controller = $this->createController(false, [], ['site-made-by-logo' => 'images/logo-975l.svg']);
+        $controller = $this->createController(false, [], ['site-made-by-logo' => 'images/logo.svg']);
 
         $this->assertNull($this->getMadeByLogoSrc($controller));
     }

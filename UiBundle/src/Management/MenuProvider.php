@@ -25,9 +25,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuProvider implements MenuProviderInterface
 {
-    // Default value of the 'ui-block-showcase-url' config entry, repeated here as the fallback for an app whose configs.json hasn't been reloaded yet
-    public const BLOCK_SHOWCASE_URL = 'https://bundles.975l.com/pages/blocks';
-
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly TranslatorInterface $translator,
@@ -51,6 +48,7 @@ class MenuProvider implements MenuProviderInterface
             'media' => [
                 'controller' => MediaCrudController::class,
                 'label' => 'label.media_library',
+                'narration' => 'narration.media_library',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-photo-film',
                 // The bar MediaCrudController sets on its own index, and the reason this entry is one of the two this bundle keeps essential - the reviews below being the other, both being looked at on any given day
@@ -61,6 +59,7 @@ class MenuProvider implements MenuProviderInterface
             'form' => [
                 'controller' => FormCrudController::class,
                 'label' => 'label.forms',
+                'narration' => 'narration.forms',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-wpforms',
                 'tier' => 'advanced',
@@ -69,6 +68,7 @@ class MenuProvider implements MenuProviderInterface
             'email_template' => [
                 'controller' => EmailTemplateCrudController::class,
                 'label' => 'label.email_templates',
+                'narration' => 'narration.email_templates',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-envelope-open-text',
                 'tier' => 'advanced',
@@ -77,6 +77,7 @@ class MenuProvider implements MenuProviderInterface
             'font' => [
                 'controller' => FontCrudController::class,
                 'label' => 'label.fonts',
+                'narration' => 'narration.fonts',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-font',
                 'tier' => 'advanced',
@@ -87,6 +88,7 @@ class MenuProvider implements MenuProviderInterface
             'site_graphic' => [
                 'controller' => SiteGraphicCrudController::class,
                 'label' => 'label.site_graphics',
+                'narration' => 'narration.site_graphics',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-image',
                 'tier' => 'advanced',
@@ -101,6 +103,7 @@ class MenuProvider implements MenuProviderInterface
             $menus['review'] = [
                 'controller' => ReviewCrudController::class,
                 'label' => 'label.reviews',
+                'narration' => 'narration.reviews',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-star',
                 // The bar ReviewCrudController states on its own rows
@@ -112,15 +115,16 @@ class MenuProvider implements MenuProviderInterface
         return $menus;
     }
 
-    // An external url (not a route name), the showcase living on its own site - configurable so an app can point at its own, falling back on the ecosystem's when the key is empty or missing (an app installed before the key existed, its configs.json not reloaded yet)
+    // An external url (not a route name), the showcase living on its own site - so an app points at its own by filling the entry, and an empty entry drops the link rather than opening a tab on nothing
     public function getLinks(): array
     {
-        return [
+        $links = [
             'block_showcase' => [
                 'label' => 'label.block_showcase',
+                'narration' => 'narration.block_showcase',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-shapes',
-                'url' => $this->configService->get('ui-block-showcase-url') ?: self::BLOCK_SHOWCASE_URL,
+                'url' => (string) $this->configService->get('ui-block-showcase-url'),
                 'target' => '_blank',
                 // No local page to reuse text from (external showcase site) - unlike every other description, this one has no crud/index override backing it, so it's its own dedicated key
                 'description' => 'label.block_showcase_help',
@@ -128,6 +132,7 @@ class MenuProvider implements MenuProviderInterface
             'legal_models' => [
                 'name' => LegalModelController::INDEX_ROUTE,
                 'label' => 'label.legal_models',
+                'narration' => 'narration.legal_models',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-scale-balanced',
                 // Same gate as the screen itself (see LegalModelController) - without it the link shows to a back-office user who would only ever get a 403 out of it
@@ -142,6 +147,7 @@ class MenuProvider implements MenuProviderInterface
                     'Donovan (%s)',
                     $this->translator->trans('label.ai_assistant_menu_suffix', [], 'ui'),
                 ),
+                'narration' => 'narration.ai_assistant',
                 'translation_domain' => 'ui',
                 'icon' => 'fas fa-robot',
                 'name' => AiAssistantController::INDEX_ROUTE,
@@ -151,5 +157,11 @@ class MenuProvider implements MenuProviderInterface
                 'description' => 'label.ai_assistant_subtitle',
             ],
         ];
+
+        if ('' === $links['block_showcase']['url']) {
+            unset($links['block_showcase']);
+        }
+
+        return $links;
     }
 }

@@ -439,14 +439,14 @@ class MenuBuilderTest extends TestCase
         $this->assertSame(['whatsnew', 'site'], array_keys($builder->getLinks()));
     }
 
-    // An explicit "url" (a literal, already-absolute URL) is used as-is, bypassing route resolution entirely - for a provider that wants a link fixed/directly editable rather than derived from a route (e.g. 975l.com's own MenuProvider pinning its "vitrine des blocks" link to the real production domain on purpose, see App\Management\MenuProvider)
+    // An explicit "url" (a literal, already-absolute URL) is used as-is, bypassing route resolution entirely - for a provider that wants a link fixed/directly editable rather than derived from a route (an app's own MenuProvider pinning a showcase link to the production domain on purpose, rather than to the routes of the site rendering it)
     public function testGetMenuItemsUsesAnExplicitUrlAsIsWithoutRouteResolution(): void
     {
         $section = ['label' => 'label.management', 'translation_domain' => 'site'];
         $provider = $this->createProvider($section, [], [
             'showcase' => [
                 'label' => 'label.block_showcase',
-                'url' => 'https://975l.com/vitrine-blocks',
+                'url' => 'https://example.com/vitrine-blocks',
                 'translation_domain' => 'messages',
                 'icon' => 'fas fa-shapes',
                 'target' => '_blank',
@@ -456,6 +456,6 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertSame('https://975l.com/vitrine-blocks', $items[2]->getAsDto()->getLinkUrl());
+        $this->assertSame('https://example.com/vitrine-blocks', $items[2]->getAsDto()->getLinkUrl());
     }
 }

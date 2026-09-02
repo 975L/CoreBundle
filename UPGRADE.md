@@ -2,6 +2,55 @@
 
 ## Unreleased
 
+**A self-hosted Donovan (Q&A) backend generated before this version keeps answering without ever citing a guided
+project.** The consuming side ships in this bundle and needs nothing: `AiAssistantClient` already resolves a source
+carrying a `project` slug into a button starting that parcours. What has to be brought over is the backend's own
+half, which lives in the app that ran `c975l:ui:donovan-qa:create` - re-run the maker into a scratch project and
+carry over three things: the context builder (it now writes one prompt section per guided project beside the block
+kinds, reading the providers through `#[AutowireIterator('c975l.guided_project_provider')]` rather than
+`GuidedProjectBuilder`, which filters by a user a token-authenticated call never has), the LLM client's system
+prompt (it asks for `tour:<slug>` citations), and, if you generated the semantic cache, the context version moving
+to `v2` in the service - without that last one, every answer already cached keeps being served exactly as it was
+written, with no parcours to offer.
+
+**The `site-other-cookies` and `site-other-copyright` entries are gone from `configs.json`, and the text they held
+has to be moved before it is pruned.** The cookies and copyright models used to read them through `config()` and
+print them as a section of their own; that section is now written on the legal models screen, where the rest of the
+document is written, and it is translated - which a config entry never was.
+
+Run `php bin/console c975l:ui:legal-models:adopt-config-sections` **at deployment, before any
+`c975l:config:prune`**. It appends each entry's text to the matching model as an added section, then deletes the
+row. It is idempotent: the section carries its own identifier, so a second run recognises what the first one wrote
+instead of appending it again, and a site already through it says it has nothing left to move. An entry filled on a
+site that never created the page showing it is *not* deleted - the command reports it, and the text is moved by
+hand.
+
+Skipping it loses the section from the deployed site straight away, and what is left is a row no `configs.json`
+declares any more: "Obsolete configs" on the dashboard, and `c975l:config:prune`, both offer it for deletion, after
+which the text is gone for good. The command, and the deployment line calling it, are meant to be taken out once the
+whole fleet has run it.
+
+**The rephrase feature now requires `ui-ai-assistant-rephrase-base-uri` and `-model` whatever the provider.** Both
+were optional for `anthropic` and `openai`, which fell back on `AiRephraseClient`'s own `ANTHROPIC_URI` /
+`claude-haiku-4-5` and `OPENAI_URI` / `gpt-4o-mini`. Those four constants are gone: a config entry is what carries
+the value, and an empty one leaves `isEnabled()` at `false` rather than calling a model nobody chose and nobody can
+read in the back office. `euria` already required both, so a site on Euria has nothing to do.
+
+A site on `anthropic` or `openai` fills the two entries in *Configuration → AI* - the page's own setup guide links
+straight to each - with the full messages endpoint for Anthropic and the product base for an OpenAI-compatible API:
+
+| Provider | `-base-uri` | `-model` |
+| --- | --- | --- |
+| `anthropic` | `https://api.anthropic.com/v1/messages` | e.g. `claude-haiku-4-5` |
+| `openai` | `https://api.openai.com/v1` | e.g. `gpt-4o-mini` |
+| `euria` | `https://api.infomaniak.com/2/ai/<product>/openai/v1` | e.g. `mistralai/Mistral-Small-4-119B-2603` |
+
+Two smaller entries stop being repeated in the code the same way. `ui-block-showcase-url` left empty now drops the
+"Blocks showcase" menu item instead of falling back on `MenuProvider::BLOCK_SHOWCASE_URL` (removed); `site-form-delay`
+left empty leaves `FormBotProtection` to the honeypot alone rather than enforcing a hidden 7 seconds. Both entries
+ship with their value, and `ConfigService::loadDefaultConfig()` seeds an empty row on the next
+`c975l:config:load-all`, so a deployed site is unaffected.
+
 **`AlertBuilder::groupBySeverity()` is now `private`.** It grouped a flat alert list without filtering anything, so a
 screen calling it showed its reader alerts naming entries they may not open - a link to a 403. Call
 `groupOwnBySeverity()` instead, which is the same grouping with the role filter the dashboard's own alerts already go
@@ -286,6 +335,50 @@ Two renames for an app or a satellite bundle:
 
 Matomo and the cookie banner are rendered by this layout, so a site overriding its footer keeps both.
 Nothing to run.
+
+### The new `map` block, and the two settings it reads
+
+Nothing on a running site changes until someone places a `map` block, and there is no library to install:
+Leaflet is served by the bundle itself. The two new entries reach the back office the usual way:
+
+```bash
+composer update c975l/core-bundle
+php bin/console c975l:config:load-all
+```
+
+`ui-map-provider` starts on `leaflet` (OpenStreetMap: no account, no key, no cookie) and
+`ui-map-google-api-key` is empty; a Google map with no key stays undrawn, the block's list of places being
+what a visitor reads instead.
+
+**Name the origins in your own policy.** They are exposed as three container parameters, one per directive,
+the way `c975l_ui.video.embed_origins` already is:
+
+```yaml
+# config/packages/nelmio_security.yaml
+img-src:     ['self', 'data:', '%c975l_ui.map.img_origins%']
+script-src:  ['self', '%c975l_ui.map.script_origins%']
+connect-src: ['self', '%c975l_ui.map.connect_origins%']
+```
+
+**A site staying on OpenStreetMap only needs the first line**: the bundle serves Leaflet from `self`, so the
+script and connect lists are empty for it, and the image one is just the tile server. Missing, the map is an
+empty box in production and a drawn map in development.
+
+**Before turning the provider to `google`, read this.** Beyond the billing account it requires and the
+cookies it writes - which is why the block holds it behind the same consent category as `video_iframe` - its
+JavaScript API injects `<style>` elements into the head. A nonce-only policy blocks them and the map renders
+broken, and that is exactly the policy the c975L sites run (`style-src: ['self']`, `level1_fallback: false`).
+Making it render means adding `'unsafe-inline'` to `style-src`, which gives up the hardening that policy
+exists for. Leaflet has no such problem: it positions its panes through the CSSOM, which CSP does not
+restrict.
+
+The key's `sensitive` flag hides it in the back office and nothing more - a browser key is necessarily
+published in the page, and what protects it is the HTTP-referrer restriction you set on it in the Google
+Cloud console.
+
+Unrelated to any of the above, the `contact_details` block's new **Build the Google Maps link** box builds
+its "Directions" button from the coordinates or the address it already holds. That one is a plain Maps url:
+no key, no billing account, no script loaded, nothing to declare.
 
 ## To v1.14.1
 

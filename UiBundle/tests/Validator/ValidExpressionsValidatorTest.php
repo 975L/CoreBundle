@@ -16,6 +16,7 @@ use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Service\CalculatorExpressionLanguage;
 use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormFieldNamer;
+use c975L\UiBundle\Service\FormTranslator;
 use c975L\UiBundle\Validator\ValidExpressions;
 use c975L\UiBundle\Validator\ValidExpressionsValidator;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -30,7 +31,7 @@ class ValidExpressionsValidatorTest extends ConstraintValidatorTestCase
         $translator->method('trans')->willReturnArgument(0);
         $translator->method('getLocale')->willReturn('fr');
 
-        return new ValidExpressionsValidator(new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator));
+        return new ValidExpressionsValidator(new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator, new FormTranslator()));
     }
 
     private function createForm(array $fieldLabels, array $outputs): Form

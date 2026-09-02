@@ -144,24 +144,23 @@ class MenuProviderTest extends TestCase
         $this->assertSame('advanced', $links['legal_models']['tier']);
     }
 
-    // An app installed before the key existed (its configs.json not reloaded yet) still gets a working link
-    public function testGetLinksFallsBackOnTheEcosystemShowcaseWhenTheConfigIsEmpty(): void
+    // No address in the entry, no menu item: nothing here invents one, and an empty href would open a tab on this very back office
+    public function testGetLinksDropsTheShowcaseWhenItsEntryIsEmpty(): void
     {
         $provider = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService());
 
-        $this->assertSame(MenuProvider::BLOCK_SHOWCASE_URL, $provider->getLinks()['block_showcase']['url']);
-        $this->assertSame('https://bundles.975l.com/pages/blocks', MenuProvider::BLOCK_SHOWCASE_URL);
+        $this->assertArrayNotHasKey('block_showcase', $provider->getLinks());
     }
 
-    // The constant is the config entry's default repeated in PHP - the two drifting apart would have a fresh install and a not-yet-reloaded one point at different addresses
-    public function testTheFallbackMatchesTheConfigsJsonDefault(): void
+    // The address the link needs lives in the entry and nowhere else, so the entry has to ship with one
+    public function testTheShowcaseEntryShipsWithItsAddress(): void
     {
         $configs = json_decode(file_get_contents(__DIR__ . '/../../config/configs.json'), true, 512, \JSON_THROW_ON_ERROR);
 
         $entry = array_values(array_filter($configs, static fn (array $config): bool => 'ui-block-showcase-url' === $config['slug']));
 
         $this->assertCount(1, $entry, 'No "ui-block-showcase-url" entry in configs.json.');
-        $this->assertSame(MenuProvider::BLOCK_SHOWCASE_URL, $entry[0]['value']);
+        $this->assertSame('https://bundles.975l.com/pages/blocks', $entry[0]['value']);
     }
 
     // 'role' matches the page's own minimum bar, a plain editor being unable to act on either section

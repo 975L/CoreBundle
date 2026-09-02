@@ -75,4 +75,10 @@ class PlaceholderMediaRegistry
     {
         return $this->media['document'] ?? null;
     }
+
+    // The font file the demo dataset imports - null on a site declaring none, which then simply seeds no font
+    public function getFont(): ?string
+    {
+        return $this->media['font'] ?? null;
+    }
 }

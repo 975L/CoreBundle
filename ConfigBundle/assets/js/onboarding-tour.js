@@ -76,6 +76,10 @@ export default class extends Controller {
         const labels = this.labelsValue;
 
         this.panel.replaceChildren();
+        // What the step sounds like spoken, carried by the panel rather than drawn in it: the recorder filming the back office reads the panel's own DOM (see video/record.js in bundles.975l.com)
+        this.panel.dataset.narration = step.narration ?? '';
+        // Written beside it for the same reader: nothing else tells a step that points at nothing from one that deliberately points at nothing at all
+        this.panel.dataset.highlight = step.highlight ?? '';
         this.panel.append(
             buildElement('div', 'onboarding-tour-progress', `${this.index + 1} / ${total}`),
             buildElement('h3', null, step.label),

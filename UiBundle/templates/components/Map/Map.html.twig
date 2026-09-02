@@ -1,0 +1,60 @@
+{# <twig:c975LUi:Map:Map points="[{label, latitude, longitude, text, url}]" [title="optional title"] [id="anchor"] [height="medium"] [zoom="13"]/> #}
+{# The list of places is the content, and the map is what the browser makes of it: a visitor with no JavaScript, a browser that never got the library, or a Google map left without its key all keep the addresses and their links, which is also what a crawler reads #}
+{% set settings = ui_map_settings() %}
+{# Filtered and renumbered in PHP (see MapExtension::points): a point with no coordinates has nowhere to be drawn, and Twig's own filter would keep the original keys - which encodes the payload as a JSON object the controller reads as no points at all #}
+{% set points = ui_map_points(points|default([])) %}
+{% if points is not empty %}
+    <section class="ui-map ui-map--{{ height|default('medium') }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+        {% if title is defined and title %}<h2 class="ui-map__title">{{ title }}</h2>{% endif %}
+        {# Kebab-case identifier on both sides: Stimulus doesn't dasherize the identifier, only the value name #}
+        <div class="ui-map__frame"
+             {% if settings.usable %}
+                 data-controller="ui-map"
+                 data-ui-map-provider-value="{{ settings.provider }}"
+                 data-ui-map-api-key-value="{{ settings.apiKey }}"
+                 data-ui-map-tile-url-value="{{ settings.tileUrl }}"
+                 {# Served by this bundle, so a site has no package to require and no script host to open in its policy - the urls are asset()-resolved for the cache busting #}
+                 data-ui-map-script-value="{{ asset('bundles/c975lui/js/leaflet.js') }}"
+                 data-ui-map-stylesheet-value="{{ asset('bundles/c975lui/css/leaflet.css') }}"
+                 data-ui-map-attribution-value="{{ settings.attribution }}"
+                 data-ui-map-needs-consent-value="{{ settings.needsConsent ? 'true' : 'false' }}"
+                 data-ui-map-zoom-value="{{ zoom|default(13) }}"
+                 data-ui-map-points-value="{{ points|json_encode }}"
+                 {# Only for whoever may act on it: a visitor's page carries neither the sentences nor the element they would be written into #}
+                 {% if settings.diagnostic %}
+                     data-ui-map-diagnostic-value="{{ 'label.map_diagnostic_refused'|trans({}, 'ui') }}"
+                     data-ui-map-diagnostic-csp-value="{{ 'label.map_diagnostic_csp'|trans({}, 'ui') }}"
+                 {% endif %}
+             {% endif %}>
+            {# Filled by the controller once the library is there - left empty and out of the flow otherwise, the list below being what the visitor reads #}
+            <div class="ui-map__canvas" data-ui-map-target="canvas" hidden></div>
+            {# Why the map is not there, in place and at once, for whoever placed the block - a health check is read by somebody who went looking, and the person who has just chosen a provider is looking at the page. Never rendered for a visitor: a missing key and a security policy are not theirs to fix, and the list of places is the content either way #}
+            {% if settings.diagnostic %}
+                {% if not settings.usable %}
+                    <p class="ui-map__diagnostic">{{ 'label.map_diagnostic_no_key'|trans({}, 'ui') }}</p>
+                {% else %}
+                    <p class="ui-map__diagnostic" data-ui-map-target="diagnostic" hidden></p>
+                {% endif %}
+            {% endif %}
+            {# Consent still to be given, for a provider that costs one: shown by the controller, never on a map drawn from tiles that write no cookie #}
+            <div class="ui-map__prompt" data-ui-map-target="consent" hidden>
+                <p>{{ 'label.map_consent_required'|trans({}, 'ui') }}</p>
+                <button type="button" class="btn btn-primary" data-action="ui-map#accept">{{ 'label.map_accept'|trans({}, 'ui') }}</button>
+            </div>
+            <ul class="ui-map__list" data-ui-map-target="list">
+                {% for point in points %}
+                    <li class="ui-map__place">
+                        {% if point.url is defined and point.url %}
+                            <a href="{{ point.url }}">{{ point.label }}</a>
+                        {% else %}
+                            <span class="ui-map__place-label">{{ point.label }}</span>
+                        {% endif %}
+                        {% if point.text is defined and point.text %}<span class="ui-map__place-text">{{ point.text }}</span>{% endif %}
+                        {# The place on a map anyone can open, coordinates and all - the one link that works whether or not this page ever drew a map of its own #}
+                        <a class="ui-map__place-link" href="https://www.openstreetmap.org/?mlat={{ point.latitude }}&amp;mlon={{ point.longitude }}#map=16/{{ point.latitude }}/{{ point.longitude }}" target="_blank" rel="noopener">{{ 'label.map_see_on_map'|trans({}, 'ui') }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% endif %}

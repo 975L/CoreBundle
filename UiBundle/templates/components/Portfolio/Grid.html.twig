@@ -1,21 +1,27 @@
-{# Static usage: <twig:c975LUi:Portfolio:Grid media="{{ block.media }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Portfolio:Grid media="{{ block.media }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [level=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/PortfolioGrid.html.twig #}
 {# Per-project title/text/link come from each media's own label/description/url, no separate collection #}
 {# A headingless <section> is invalid HTML, hence the <div> fallback #}
-{% set tag = (eyebrow|default('') or title|default('')) ? 'section' : 'div' %}
+{% set hasHeading = eyebrow|default('') or title|default('') %}
+{% set tag = hasHeading ? 'section' : 'div' %}
+{# The level each project's title is drawn with. Matched against the offered ones and never interpolated, the same rule as every stored value writing a tag name; unset, it follows the head above - <h3> under it, <h2> for a grid standing on its projects alone, which is what a page's <h1> is directly followed by #}
+{% set projectLevel = level|default('') in ['h2', 'h3', 'h4'] ? level : (hasHeading ? 'h3' : 'h2') %}
 <{{ tag }} class="portfolio-grid"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
-        <div class="portfolio-grid__head">
-            <div>
-                {% if title|default('') %}
-                    {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
-                    <h2 class="section-title">{{ title }}</h2>
-                {% elseif eyebrow|default('') %}
-                    <h2 class="section-eyebrow">{{ eyebrow }}</h2>
-                {% endif %}
+        {# A head with nothing in it is margins standing over the projects, same rule as the collection grid's #}
+        {% if hasHeading or (linkLabel|default('') and linkUrl|default('')) %}
+            <div class="portfolio-grid__head">
+                <div>
+                    {% if title|default('') %}
+                        {% if eyebrow %}<p class="section-eyebrow">{{ eyebrow }}</p>{% endif %}
+                        <h2 class="section-title">{{ title }}</h2>
+                    {% elseif eyebrow|default('') %}
+                        <h2 class="section-eyebrow">{{ eyebrow }}</h2>
+                    {% endif %}
+                </div>
+                {% if linkLabel and linkUrl %}<a class="section-btn section-btn--ghost" href="{{ linkUrl }}">{{ linkLabel }}</a>{% endif %}
             </div>
-            {% if linkLabel and linkUrl %}<a class="section-btn section-btn--ghost" href="{{ linkUrl }}">{{ linkLabel }}</a>{% endif %}
-        </div>
+        {% endif %}
         <div class="portfolio-grid__grid">
             {% for m in media %}
                 {# No "url" on this media: nothing to link to, so this must not render as an <a> at all - a href="#" would be a dead link that still looks clickable #}
@@ -28,7 +34,7 @@
                         <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %} loading="lazy">
                     </div>
                     <div class="portfolio-grid__project-body">
-                        <h3 class="portfolio-grid__project-title">{{ m.label }}</h3>
+                        <{{ projectLevel }} class="portfolio-grid__project-title">{{ m.label }}</{{ projectLevel }}>
                         {% if m.description %}<p class="portfolio-grid__project-text">{{ m.description }}</p>{% endif %}
                     </div>
                 </{{ projectTag }}>

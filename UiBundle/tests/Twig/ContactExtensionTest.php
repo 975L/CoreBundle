@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Twig;
 
 use c975L\UiBundle\Registry\SameAsRegistry;
 use c975L\UiBundle\Service\ContactSnippetBuilder;
+use c975L\UiBundle\Service\GoogleMapsLinkBuilder;
 use c975L\UiBundle\Twig\ContactExtension;
 use PHPUnit\Framework\TestCase;
 use Twig\Extension\AttributeExtension;
@@ -20,7 +21,7 @@ class ContactExtensionTest extends TestCase
 {
     private function extension(): ContactExtension
     {
-        return new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry()));
+        return new ContactExtension(new ContactSnippetBuilder(new SameAsRegistry()), new GoogleMapsLinkBuilder());
     }
 
     // Names locked: templates/components/Contact/Details.html.twig calls both, and a rename would fail there silently
@@ -30,7 +31,7 @@ class ContactExtensionTest extends TestCase
         $names = array_map(static fn ($function) => $function->getName(), new AttributeExtension(ContactExtension::class)->getFunctions());
         sort($names);
 
-        $this->assertSame(['contact_day_runs', 'contact_json_ld'], $names);
+        $this->assertSame(['contact_day_runs', 'contact_json_ld', 'google_maps_url'], $names);
     }
 
     // The payload is escaped by the builder, so it is printed as-is rather than re-escaped by Twig
@@ -47,7 +48,7 @@ class ContactExtensionTest extends TestCase
 
     public function testJsonLdReturnsTheEncodedGraph(): void
     {
-        $this->assertSame('Autotech', json_decode($this->extension()->jsonLd(['name' => 'Autotech']), true)['name']);
+        $this->assertSame('Garage Central', json_decode($this->extension()->jsonLd(['name' => 'Garage Central']), true)['name']);
         $this->assertSame('', $this->extension()->jsonLd([]));
     }
 

@@ -70,7 +70,7 @@ class CollectionTypeTest extends TestCase
     {
         $added = $this->buildAddedFields(new CollectionSourceRegistry());
 
-        foreach (['source', 'limit', 'title', 'anchor', 'variant'] as $field) {
+        foreach (['source', 'limit', 'title', 'anchor', 'variant', 'level'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the Collection form");
         }
     }
@@ -84,6 +84,20 @@ class CollectionTypeTest extends TestCase
             'label.variant_compact' => 'compact',
             'label.variant_portfolio' => 'portfolio',
         ], $added['variant']['choices']);
+    }
+
+    // The stored empty value is the automatic reading, not the absence of an answer, so it is offered as a choice of its own rather than as a placeholder
+    public function testLevelOffersAnAutomaticChoiceAndTheThreeHeadings(): void
+    {
+        $added = $this->buildAddedFields(new CollectionSourceRegistry());
+
+        $this->assertSame([
+            'label.collection_item_level_auto' => '',
+            'h2' => 'h2',
+            'h3' => 'h3',
+            'h4' => 'h4',
+        ], $added['level']['choices']);
+        $this->assertFalse($added['level']['placeholder']);
     }
 
     // The header fields are optional - only "source" (which collection to pull from) is required

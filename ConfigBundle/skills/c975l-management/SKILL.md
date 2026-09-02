@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -79,6 +79,15 @@ Two nuances that get lost:
   answered, too low and it leads to a 403 the guided tour walks the user to. The dashboard itself
   opens on `BackOfficeAccessVoter::ACCESS`, not on a role, so an editor stands in it and every block
   filters itself (see `c975l-users`).
+- A guided project starts from any `[data-guided-project-slug]` button on the page, wherever it sits:
+  `guided-project.js` delegates the click on the document, so a button appended after the page loaded
+  works too (UiBundle's Donovan renders one when an answer cites a parcours). Only the buttons inside
+  the dashboard list are relabelled "Start"/"Resume"/"Replay".
+- A menu entry and a guided project step each take an optional `narration`: what the step sounds like
+  when it is **spoken** rather than read, a full sentence naming where to look and what to do. It is
+  read by the films of the back office and drawn nowhere; without one, the label and the description
+  stand in. It resolves in a domain of its own — the item's `translation_domain` suffixed `_narration`
+  (`site` reads `site_narration`) — and is written in French and English alone.
 - `whatsnew.json` is a marketing thread for non-developer users — no `version`, no `bundle` field,
   describe a benefit. The developer changelog is `ChangeLog.md`.
 

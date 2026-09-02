@@ -1,5 +1,70 @@
 [
     {
+        "date": "2026-09-02",
+        "description": [
+            {
+                "en": "A new “Map” block places the addresses you list on a map. Each one is set either by its postal address, resolved for you when you save, or by its GPS coordinates — the only way to pin a spot no address names. The places stay listed under the map, each with a link opening it elsewhere, so a visitor whose browser draws no map still gets them.",
+                "fr": "Un nouveau block « Carte » place sur une carte les adresses que vous listez. Chacune se saisit soit par son adresse postale, convertie pour vous à l'enregistrement, soit par ses coordonnées GPS — le seul moyen de pointer un lieu qu'aucune adresse ne nomme. Les lieux restent listés sous la carte, chacun avec un lien qui l'ouvre ailleurs, si bien qu'un visiteur dont le navigateur n'affiche aucune carte les obtient quand même.",
+                "es": "Un nuevo bloque «Mapa» sitúa en un mapa las direcciones que enumera. Cada una se introduce por su dirección postal, convertida por usted al guardar, o por sus coordenadas GPS: la única forma de marcar un lugar que ninguna dirección nombra. Los lugares siguen listados bajo el mapa, cada uno con un enlace que lo abre en otro sitio, de modo que un visitante cuyo navegador no dibuje ningún mapa los obtiene igualmente."
+            },
+            {
+                "en": "You choose once, in your settings, which service draws those maps: OpenStreetMap, which needs neither account nor key and writes no cookie, or Google Maps, which needs an API key, a billing account, and your visitor's consent before the map appears. OpenStreetMap is what a new site starts on, and there is nothing to install for it: the map library travels with the bundle.",
+                "fr": "Vous choisissez une fois pour toutes, dans vos réglages, le service qui affiche ces cartes : OpenStreetMap, qui ne demande ni compte ni clé et ne dépose aucun cookie, ou Google Maps, qui exige une clé d'API, un compte de facturation et le consentement de votre visiteur avant d'afficher la carte. Un site neuf démarre sur OpenStreetMap, et il n'y a rien à installer pour cela : la bibliothèque de cartographie voyage avec le bundle.",
+                "es": "Elige una sola vez, en sus ajustes, el servicio que dibuja esos mapas: OpenStreetMap, que no necesita cuenta ni clave y no escribe ninguna cookie, o Google Maps, que exige una clave de API, una cuenta de facturación y el consentimiento de su visitante antes de mostrar el mapa. Un sitio nuevo empieza con OpenStreetMap, y no hay nada que instalar para ello: la biblioteca cartográfica viaja con el bundle."
+            },
+            {
+                "en": "The “Contact details” block can now build its Google Maps link itself. Tick the box and the “Directions” button is assembled from the coordinates, or from the address you already filled in — no more going to Google, searching for your own business and pasting the address back. It costs nothing: it is a plain link, not the paid map.",
+                "fr": "Le block « Coordonnées » sait désormais construire lui-même son lien Google Maps. Cochez la case et le bouton « Itinéraire » est assemblé à partir des coordonnées, ou de l'adresse que vous avez déjà saisie — fini d'aller sur Google, d'y chercher votre propre établissement et d'en recopier l'adresse. Cela ne coûte rien : c'est un simple lien, pas la carte facturée.",
+                "es": "El bloque «Datos de contacto» ya sabe construir por sí mismo su enlace de Google Maps. Marque la casilla y el botón «Cómo llegar» se arma a partir de las coordenadas, o de la dirección que ya ha introducido: se acabó ir a Google, buscar allí su propio establecimiento y copiar la dirección. No cuesta nada: es un simple enlace, no el mapa facturado."
+            },
+            {
+                "en": "A form now says what it says in each of your site's languages. The form screen gains the same language selector the page screen has: pick a language and write the labels, the help texts and the results' wording in it. The fields themselves are composed once, in the language the form was written in — so a bilingual contact page no longer carries a form that only speaks one.",
+                "fr": "Un formulaire dit désormais ce qu'il dit dans chacune des langues de votre site. L'écran d'un formulaire reçoit le même sélecteur de langue que celui d'une page : choisissez une langue et écrivez-y les libellés, les textes d'aide et les intitulés des résultats. Les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit — une page de contact bilingue ne porte donc plus un formulaire qui ne parle qu'une langue.",
+                "es": "Un formulario dice ahora lo que dice en cada uno de los idiomas de su sitio. La pantalla de un formulario recibe el mismo selector de idioma que la de una página: elija un idioma y escriba en él las etiquetas, los textos de ayuda y los títulos de los resultados. Los campos se componen una sola vez, en el idioma en que se escribió el formulario, de modo que una página de contacto bilingüe ya no lleva un formulario que solo habla uno."
+            },
+            {
+                "en": "The text you add to your cookies policy and to your copyright page is now written on the legal documents screen, beside the rest of those documents, instead of in a setting. It is translated like everything else there, which the setting never was. What you had already written is moved over for you.",
+                "fr": "Le texte que vous ajoutez à votre politique de cookies et à votre page de droits d'auteur s'écrit désormais sur l'écran des documents légaux, à côté du reste de ces documents, plutôt que dans un réglage. Il est traduit comme tout ce qui s'y trouve, ce que le réglage n'était pas. Ce que vous aviez déjà écrit est repris pour vous.",
+                "es": "El texto que añade a su política de cookies y a su página de derechos de autor se escribe ahora en la pantalla de documentos legales, junto al resto de esos documentos, en lugar de en un ajuste. Se traduce como todo lo demás allí, cosa que el ajuste nunca fue. Lo que ya había escrito se traslada por usted."
+            },
+            {
+                "en": "A form field left without any wording no longer ends on an error page. The screen now says which line is missing its label, where saving used to fail outright.",
+                "fr": "Un champ de formulaire laissé sans aucun libellé ne se termine plus par une page d'erreur. L'écran indique désormais quelle ligne n'a pas de libellé, là où l'enregistrement échouait sans rien dire.",
+                "es": "Un campo de formulario sin ningún texto ya no acaba en una página de error. La pantalla indica ahora qué línea no tiene etiqueta, donde antes el guardado fallaba sin más."
+            },
+            {
+                "en": "An e-mail built from a template now arrives in the recipient's language on a site offering several, instead of whichever version happened to be created first.",
+                "fr": "Un e-mail construit à partir d'un modèle arrive désormais dans la langue de son destinataire sur un site qui en propose plusieurs, au lieu de la version qui se trouvait avoir été créée en premier.",
+                "es": "Un correo construido a partir de una plantilla llega ahora en el idioma de su destinatario en un sitio que ofrece varios, en lugar de la versión que se hubiera creado primero."
+            }
+        ]
+    },
+    {
+        "date": "2026-09-01",
+        "description": [
+            {
+                "en": "Donovan now points you to the guided project covering what you asked. When your question describes a task the back office knows how to walk through, the answer names that parcours and one click starts it right where you are reading, instead of sending you back to the dashboard to look for it.",
+                "fr": "Donovan vous renvoie désormais au parcours guidé qui traite ce que vous demandez. Quand votre question décrit une tâche que le back-office sait accompagner, la réponse nomme ce parcours et un clic le démarre là où vous lisez, au lieu de vous renvoyer le chercher sur le tableau de bord.",
+                "es": "Donovan ahora le remite al recorrido guiado que trata lo que pregunta. Cuando su pregunta describe una tarea que el back-office sabe acompañar, la respuesta nombra ese recorrido y un clic lo inicia allí donde está leyendo, en lugar de enviarle a buscarlo al panel."
+            },
+            {
+                "en": "Images only used by a page you put in the bin no longer crowd the media library. They are hidden, never deleted: a link on the gallery shows them back whenever you want, and restoring the page brings them straight back on its own.",
+                "fr": "Les images qui ne servent qu'à une page mise à la corbeille n'encombrent plus la médiathèque. Elles sont masquées, jamais supprimées : un lien sur la galerie les réaffiche quand vous le voulez, et restaurer la page les ramène d'elle-même.",
+                "es": "Las imágenes que solo sirven a una página enviada a la papelera ya no saturan la mediateca. Quedan ocultas, nunca eliminadas: un enlace en la galería vuelve a mostrarlas cuando quiera, y restaurar la página las devuelve por sí sola."
+            },
+            {
+                "en": "A listing block now says which heading size its items' titles are drawn with. Left on “Automatic”, it follows the block's own title, so a listing standing alone no longer skips a heading level right under the page title.",
+                "fr": "Un bloc de listing indique désormais avec quel niveau de titre s'affichent les titres de ses éléments. Laissé sur « Automatique », il suit le titre du bloc lui-même : un listing seul ne saute plus un niveau de titre juste sous le titre de la page.",
+                "es": "Un bloque de listado indica ahora con qué nivel de título se muestran los títulos de sus elementos. Dejado en «Automático», sigue al título del propio bloque: un listado solo ya no se salta un nivel justo debajo del título de la página."
+            },
+            {
+                "en": "When the dashboard assistant cannot answer, it now says so in plain words, and points you to its configuration page or to the address it queries — where the word “unavailable” used to appear in place of an answer.",
+                "fr": "Quand l'assistant du tableau de bord ne peut pas répondre, il le dit désormais en clair et vous renvoie à sa page de configuration ou à l'adresse qu'il interroge — là où s'affichait le mot « unavailable » à la place d'une réponse.",
+                "es": "Cuando el asistente del panel no puede responder, ahora lo dice claramente y le remite a su página de configuración o a la dirección que consulta, allí donde aparecía la palabra «unavailable» en lugar de una respuesta."
+            }
+        ]
+    },
+    {
         "date": "2026-08-31",
         "description": [
             {

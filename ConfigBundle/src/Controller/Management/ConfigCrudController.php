@@ -67,6 +67,9 @@ use function Symfony\Component\Translation\t;
 
 class ConfigCrudController extends AbstractCrudController
 {
+    // Reserved value of the "group" query parameter scoping the grid to the configs still waiting for a value, whatever group they belong to. Never stored: no configs.json declares it, so it cannot collide with a real group
+    public const string GROUP_EMPTY = '_empty';
+
     public function __construct(
         private readonly Security $security,
         private readonly ConfigServiceInterface $configService,
@@ -105,6 +108,9 @@ class ConfigCrudController extends AbstractCrudController
 
             return $this->render('@c975LConfig/management/config_crud_groups.html.twig', [
                 'counts' => $this->configGroupLabelResolver->sortByLabel($this->configRepository->countsByGroup($showSensitive, $this->security->isGranted('ROLE_SUPER_ADMIN'))),
+                // Drawn apart from the groups, being a state rather than a group: it cuts across all of them and holds the sensitive entries too, which no group row shows unless the toggle is on
+                'emptyCount' => $this->configRepository->countEmpty($this->security->isGranted('ROLE_SUPER_ADMIN')),
+                'emptyGroup' => self::GROUP_EMPTY,
                 'showSensitive' => $showSensitive,
                 // The grid's own toggle is a global action of the index page, which this screen replaces - so it draws its own, under the same permission (see configureActions())
                 'canShowSensitive' => $this->security->isGranted((string) $this->configService->get('site-role-admin')),
@@ -379,7 +385,9 @@ class ConfigCrudController extends AbstractCrudController
         $toggleAction = Action::new('toggleSensitive', $sensitiveLabel, $sensitiveIcon)
             ->linkToUrl('?' . http_build_query($params))
             ->addCssClass($sensitiveCss)
-            ->createAsGlobalAction();
+            ->createAsGlobalAction()
+            // Dead in the "to fill in" view, which lists sensitive and non-sensitive entries together and so ignores the toggle (see createIndexQueryBuilder())
+            ->displayIf(fn (): bool => self::GROUP_EMPTY !== $this->currentGroup());
 
         // Reachable once a group is selected, or once a cross-group search query has bypassed the "pick a group" screen (see index()) - unsets both "group" and "query" to go back to it cleanly
         $backToGroupsAction = Action::new('groups', t('label.config', [], 'config'), 'fas fa-layer-group')
@@ -500,10 +508,15 @@ class ConfigCrudController extends AbstractCrudController
                 ->setParameter('matchingSlugs', $matchingSlugs ?: ['']);
         }
 
-        $request = $this->requestStack->getCurrentRequest();
-        $showSensitive = $request?->query->getBoolean('showSensitive', false);
-        $qb->andWhere('entity.isSensitive = :isSensitive')
-            ->setParameter('isSensitive', $showSensitive);
+        $group = $this->currentGroup();
+        $isEmptyGroup = self::GROUP_EMPTY === $group;
+
+        // Sensitive and non-sensitive are two exclusive listings, one shown at a time by the toggle - except in the "to fill in" view, whose whole point is to gather every empty entry: an empty sensitive config reads as empty anyway (see valueField()), so there is nothing the toggle would be protecting here
+        if (!$isEmptyGroup) {
+            $showSensitive = $this->requestStack->getCurrentRequest()?->query->getBoolean('showSensitive', false);
+            $qb->andWhere('entity.isSensitive = :isSensitive')
+                ->setParameter('isSensitive', $showSensitive);
+        }
 
         // Configs flagged "restricted" (backup DB credentials, payment API keys...) stay out of the list entirely below ROLE_SUPER_ADMIN, see denyAccessToRestrictedConfig() (isRestricted is nullable: legacy rows not yet synced must NOT be treated as restricted)
         if (!$this->security->isGranted('ROLE_SUPER_ADMIN')) {
@@ -511,8 +524,10 @@ class ConfigCrudController extends AbstractCrudController
                 ->setParameter('isRestricted', false);
         }
 
-        $group = $this->currentGroup();
-        if (null !== $group) {
+        // The reserved slug scopes on the state instead of the group, the two being mutually exclusive ways of reaching the grid
+        if ($isEmptyGroup) {
+            $qb->andWhere("entity.value IS NULL OR entity.value = ''");
+        } elseif (null !== $group) {
             $qb->andWhere('entity.group = :group')->setParameter('group', $group);
         }
 

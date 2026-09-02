@@ -1,10 +1,13 @@
 {# Items are never stored on this block: they are pulled live from "source" and rendered as never-persisted "collection_item" blocks #}
+{# The item titles' level, resolved here rather than in the item template so it also enters their cache key (see CollectionRuntime::itemCacheKey()). Unset, it follows the head the grid draws - the same rule as its own "hasHeading": <h3> under the <h2> of a titled block, <h2> under a block with no head, which is what a page's <h1> is directly followed by #}
+{# Matched against the offered levels and never interpolated, the same rule as every other stored value that writes a tag name: what the form holds is data, and data must not be able to write markup #}
+{% set itemLevel = level|default('') in ['h2', 'h3', 'h4'] ? level : ((title|default('') or eyebrow|default('')) ? 'h3' : 'h2') %}
 <twig:c975LUi:Collection:Grid
     eyebrow="{{ eyebrow|default('') }}"
     title="{{ title|default('') }}"
     linkLabel="{{ linkLabel|default('') }}"
     linkUrl="{{ linkUrl|default('') }}"
-    items="{{ collection_render_items(source, limit|default(null), detailPage|default(null), variant|default(null), order|default(null)) }}"
+    items="{{ collection_render_items(source, limit|default(null), detailPage|default(null), variant|default(null), order|default(null), itemLevel) }}"
     variant="{{ variant|default('') }}"
     id="{{ anchor_id }}"
 />

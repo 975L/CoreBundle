@@ -70,6 +70,7 @@ class GuidedProjectBuilderTest extends TestCase
                 'steps' => [[
                     'label' => 'translated:label.creer-page_step',
                     'description' => '',
+                    'narration' => 'translated:label.creer-page_step.',
                     'url' => null,
                     'highlight' => null,
                 ]],
@@ -100,6 +101,36 @@ class GuidedProjectBuilderTest extends TestCase
         $this->assertSame('translated:label.step_two', $project['steps'][1]['label']);
     }
 
+    // What a step sounds like spoken, read by the films of the back office and by nothing on screen - and looked up in a domain of its own, the narrations being written in fewer locales than the rest of the bundle
+    public function testGetProjectsTranslatesTheNarrationOfAStepInItsOwnDomain(): void
+    {
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(fn (string $id, array $parameters, string $domain) => $domain . ':' . $id);
+
+        $builder = new GuidedProjectBuilder([$this->createProvider([
+            $this->project('creer-page', 10, [
+                'steps' => [['label' => 'label.step_one', 'narration' => 'narration.step_one']],
+            ]),
+        ])], $this->createSecurity(), $translator);
+
+        $this->assertSame('site_narration:narration.step_one', $builder->getProjects()[0]['steps'][0]['narration']);
+    }
+
+    // A step nobody has written a sentence for is still said, its caption and its explanation read as one passage
+    public function testAStepWithoutNarrationFallsBackToItsCaptionAndDescription(): void
+    {
+        $builder = $this->createBuilder([$this->createProvider([
+            $this->project('creer-page', 10, [
+                'steps' => [['label' => 'label.step_one', 'description' => 'description.step_one']],
+            ]),
+        ])]);
+
+        $this->assertSame(
+            'translated:label.step_one. translated:description.step_one',
+            $builder->getProjects()[0]['steps'][0]['narration'],
+        );
+    }
+
     // "order" is a deliberate sequence across every provider (create a page, then add a block to it), not the alphabetical merge menus and alerts use
     public function testGetProjectsSortsEveryProviderTogetherByOrder(): void
     {
@@ -122,6 +153,18 @@ class GuidedProjectBuilderTest extends TestCase
         );
 
         $this->assertSame([], $builder->getProjects());
+    }
+
+    // The documentation of the back office reads every parcours, whatever role opens the screens it walks through - the reader's own role is checked again when they start one (see getProject())
+    public function testGetAllProjectsKeepsAProjectTheCurrentUserLacksTheRoleFor(): void
+    {
+        $builder = $this->createBuilder(
+            [$this->createProvider([$this->project('gerer-utilisateur', 70, ['role' => 'ROLE_SUPER_ADMIN'])])],
+            false,
+        );
+
+        $this->assertSame([], $builder->getProjects());
+        $this->assertSame(['gerer-utilisateur'], array_column($builder->getAllProjects(), 'slug'));
     }
 
     public function testGetProjectsKeepsAProjectWithoutARole(): void

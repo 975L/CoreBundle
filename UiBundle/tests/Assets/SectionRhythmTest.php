@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// The page's vertical rhythm: one step, declared on the top edge of every section-level block and nowhere else, so any two blocks are parted by exactly one. Every defect this locks was live at once on 975l.com - a kind left out of the rhythm sat flush against the one above it, and the two kinds padding their bottom too parted their pair by two steps.
+// The page's vertical rhythm: one step, declared on the top edge of every section-level block and nowhere else, so any two blocks are parted by exactly one. Every defect this locks was live at once on a production site - a kind left out of the rhythm sat flush against the one above it, and the two kinds padding their bottom too parted their pair by two steps.
 class SectionRhythmTest extends TestCase
 {
     // Read through the token, never written out: a rule carrying the value itself is one a theme cannot retune
@@ -95,6 +95,49 @@ class SectionRhythmTest extends TestCase
             $this->normalize('styles.min.css'),
             'A "text_readmore" laid out as a page-level block declares no step of its own: it sits all but flush against the block above it.'
         );
+    }
+
+    // The "form" kind hangs its own wrapper under ".blocks" and is named by no kind either: the reset has nothing to name, its root being a <div> and not the <section> the reset cancels the margin of. It was the last page-level block outside the rhythm, sitting flush against whatever stood above it - a "banner_title" declaring no gap below itself made it plain
+    public function testTheFormBlockOwnsAStep(): void
+    {
+        $this->assertMatchesRegularExpression(
+            $this->declarationPattern('.blocks>.ui-form-block', 'padding-top', [self::STEP_TIGHT]),
+            $this->normalize('styles.min.css'),
+            'A "form" block declares no step of its own: it sits flush against the block above it.'
+        );
+    }
+
+    // The three run-of-blocks contexts, as the calculator's own measure rule reads them: a form animated on scroll or shown in the editor is the same page-level block, and a rule naming ".blocks" alone leaves both flush
+    public function testTheFormBlocksStepReachesTheAnimatedAndEditableRuns(): void
+    {
+        $css = $this->normalize('styles.min.css');
+
+        foreach (['.block-animation>.ui-form-block', '.block-editable>.ui-form-block'] as $selector) {
+            $this->assertStringContainsString(
+                $selector,
+                $css,
+                sprintf('The form block\'s step does not reach "%s", where a page\'s blocks are just as often rendered.', $selector)
+            );
+        }
+    }
+
+    // The rule above reaches the kind through one class, and the "form" kind renders through four templates: the form, the calculator, and the two notices standing in for a form that is closed or already answered. One losing the class is one block back out of the rhythm
+    public function testEveryRenderingOfTheFormBlockCarriesTheWrapperClass(): void
+    {
+        $templates = [
+            'components/Form/Form.html.twig',
+            'components/Form/Calculator.html.twig',
+            'components/Form/FormDisabled.html.twig',
+            'components/Form/FormAlreadyAuthenticated.html.twig',
+        ];
+
+        foreach ($templates as $template) {
+            $this->assertMatchesRegularExpression(
+                '/<div class="ui-form-block/',
+                (string) file_get_contents($this->path('templates/' . $template)),
+                sprintf('"%s" no longer opens on the wrapper the form block\'s step is written against.', $template)
+            );
+        }
     }
 
     // Written as a descendant and not as a child: the kind is one an editor can dress in the site's own classes, whose wrapper is a real box and stands between the run of blocks and the fold

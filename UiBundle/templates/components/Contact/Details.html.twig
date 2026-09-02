@@ -1,4 +1,4 @@
-{# Static usage: <twig:c975LUi:Contact:Details [schemaType=""] [name=""] [description=""] [imageUrl=""] [addressStreetAddress=""] [addressComplement=""] [addressPostalCode=""] [addressLocality=""] [addressRegion=""] [addressCountryName=""] [addressCountryCode=""] [telephone=""] [mobile=""] [email=""] [url=""] [hours=[]] [priceRange=""] [mapUrl=""] [latitude=""] [longitude=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Contact:Details [schemaType=""] [name=""] [description=""] [imageUrl=""] [addressStreetAddress=""] [addressComplement=""] [addressPostalCode=""] [addressLocality=""] [addressRegion=""] [addressCountryName=""] [addressCountryCode=""] [telephone=""] [mobile=""] [email=""] [url=""] [hours=[]] [priceRange=""] [mapUrl=""] [googleMapsLink="false"] [latitude=""] [longitude=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/ContactDetails.html.twig #}
 {% trans_default_domain 'ui' %}
 
@@ -98,7 +98,16 @@
         </div>
     {% endif %}
 
-    {% if mapUrl|default('') %}
+    {# Resolved once, so the button and the graph's "hasMap" below never point at two different places. A url typed by hand wins: a business with a Google listing of its own has an address worth more than a search built from its street #}
+    {% set mapUrl = mapUrl|default('') ?: (googleMapsLink|default(false)|to_bool ? google_maps_url({
+        addressStreetAddress: addressStreetAddress|default(''),
+        addressPostalCode: addressPostalCode|default(''),
+        addressLocality: addressLocality|default(''),
+        addressCountryName: addressCountryName|default(''),
+        latitude: latitude|default(''),
+        longitude: longitude|default(''),
+    }) : '') %}
+    {% if mapUrl %}
         <p class="contact-details__map"><a class="btn btn-primary" href="{{ mapUrl }}" target="_blank" rel="noopener">{{ 'label.directions'|trans }}</a></p>
     {% endif %}
 
@@ -118,7 +127,7 @@
         email: email|default(''),
         url: url|default(''),
         priceRange: priceRange|default(''),
-        mapUrl: mapUrl|default(''),
+        mapUrl: mapUrl,
         latitude: latitude|default(''),
         longitude: longitude|default(''),
         hours: hours,

@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 class StatusReportBuilderTest extends TestCase
 {
     // One health check row, only the fields the report reads being set
-    private function row(string $status, string $kind = 'ssl', string $url = 'https://papa-calin.com', string $checkedAt = '2026-08-01 03:00:00'): HealthCheckResult
+    private function row(string $status, string $kind = 'ssl', string $url = 'https://example.com', string $checkedAt = '2026-08-01 03:00:00'): HealthCheckResult
     {
         return new HealthCheckResult()
             ->setKind($kind)
@@ -35,7 +35,7 @@ class StatusReportBuilderTest extends TestCase
     private function createBuilder(array | \Throwable $rows = [], array $statusProviders = []): StatusReportBuilder
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
-        $configService->method('get')->willReturn('https://papa-calin.com');
+        $configService->method('get')->willReturn('https://example.com');
 
         $repository = $this->createStub(HealthCheckResultRepository::class);
 
@@ -53,7 +53,7 @@ class StatusReportBuilderTest extends TestCase
         $report = $this->createBuilder()->build();
 
         $this->assertSame(StatusReportBuilder::VERSION, $report['version']);
-        $this->assertSame('https://papa-calin.com', $report['site']);
+        $this->assertSame('https://example.com', $report['site']);
         $this->assertSame('prod', $report['environment']);
         $this->assertSame(\PHP_VERSION, $report['php']);
         $this->assertNotSame('', $report['generatedAt']);
@@ -127,7 +127,7 @@ class StatusReportBuilderTest extends TestCase
         $rows = [];
 
         for ($i = 0; $i < 25; ++$i) {
-            $rows[] = $this->row(HealthCheckResult::STATUS_ERROR, 'ssl', 'https://papa-calin.com/' . $i);
+            $rows[] = $this->row(HealthCheckResult::STATUS_ERROR, 'ssl', 'https://example.com/' . $i);
         }
 
         $checks = $this->createBuilder($rows)->build()['checks'];

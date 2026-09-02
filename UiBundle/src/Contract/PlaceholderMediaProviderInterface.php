@@ -18,7 +18,9 @@ interface PlaceholderMediaProviderInterface
      *
      * "images" is the pool a showcase draws from when anything will do. "keyed_images" is the other half: the pictures of one named thing, in the order they are to be attached - "shop/table-basse-chene" being that product's own photographs, which no rotation through a generic pool can stand in for. Keys are namespaced by the bundle the slug belongs to, two bundles being free to name a row alike.
      *
-     * @return array{images?: list<string>, keyed_images?: array<string, list<string>>, video?: string, video_embed?: string, audio?: string, document?: string}
+     * "font" is the odd one out: not a picture a showcase stands in with, but the font file the demo dataset imports so the screen listing a site's own fonts is not empty (see UiDemoFixtureProvider). Its name is the one a bulk import reads the family and the weight off, so it is left as the foundry wrote it.
+     *
+     * @return array{images?: list<string>, keyed_images?: array<string, list<string>>, video?: string, video_embed?: string, audio?: string, document?: string, font?: string}
      */
     public function getPlaceholderMedia(): array;
 }

@@ -50,12 +50,8 @@ ul {
     white-space: nowrap;
 }
 
-// Collapsed list of the offenders behind an advice line, its own marker removed, urls breaking inside the cell
-.health-check-advice-items > summary {
-    cursor: pointer;
-}
-
-.health-check-advice-items ul {
+// The offenders behind an advice line, listed under it without a marker of their own, urls breaking inside the cell
+.health-check-advice-items {
     list-style: none;
     padding-left: .75rem;
     word-break: break-word;

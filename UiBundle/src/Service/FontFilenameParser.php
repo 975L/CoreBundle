@@ -46,7 +46,7 @@ class FontFilenameParser
         $parts = preg_split('/[-_]+/', $base, -1, PREG_SPLIT_NO_EMPTY) ?: [$base];
         $suffix = $this->parseSuffix($parts);
 
-        // The last segment is only dropped from the name when it really was a weight/style suffix - "Papa-Calin.woff2" keeps both words
+        // The last segment is only dropped from the name when it really was a weight/style suffix - "Grand-Corps.woff2" keeps both words
         $nameParts = null === $suffix ? $parts : \array_slice($parts, 0, -1);
 
         return [

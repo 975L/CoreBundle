@@ -20,10 +20,13 @@ interface AiAssistantClientInterface
      * Returns null when the feature is disabled/unconfigured, so callers can distinguish "no answer
      * available" from an empty string answer. "sources" is always present (possibly empty) - a backend
      * with no citation support of its own can simply omit it from its response, AiAssistantClient
-     * defaults it to []. Each source is a plain {label, url} pair, not a bare kind slug - this bundle
-     * makes no assumption about what URL scheme a backend's own citations resolve to.
+     * defaults it to []. A source is a {label, url} pair, this bundle making no assumption about what
+     * URL scheme a backend's own citations resolve to. The one exception is a source carrying
+     * "project", a guided project's slug: that one names something this site holds itself, so it comes
+     * with no url at all and is rendered as a button starting the parcours where the answer is read
+     * (see assets/js/ai-assistant.js and ConfigBundle's assets/js/guided-project.js).
      *
-     * @return array{answer: string, sources: array{label: string, url: string}[]}|null
+     * @return array{answer: string, sources: array{label: string, url: string, project?: string}[]}|null
      */
     public function ask(string $question): ?array;
 }

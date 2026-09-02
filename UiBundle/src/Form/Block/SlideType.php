@@ -14,7 +14,6 @@ use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -31,10 +30,10 @@ class SlideType extends AbstractType
                 'label' => 'label.content',
                 'required' => false,
             ])
-            ->add('url', UrlType::class, [
+            // TextType and not UrlType, for the reason given in MediaUploadType: a slide links to a page of this very site as often as elsewhere, and an <input type="url"> refuses anything but an absolute url - blocking the whole form client-side, silently
+            ->add('url', TextType::class, [
                 'label' => 'label.url',
                 'required' => false,
-                'default_protocol' => null,
             ])
             ->add('credits', TextType::class, [
                 'label' => 'label.credits',

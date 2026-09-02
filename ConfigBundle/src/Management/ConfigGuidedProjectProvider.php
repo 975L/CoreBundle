@@ -55,37 +55,44 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_config_not_found_open',
                     'description' => 'description.guided_step_config_not_found_open',
+                    'narration' => 'narration.guided_step_config_not_found_open',
                     'url' => $this->indexUrl(NotFoundCrudController::class),
                 ],
                 [
                     // Sorted by "lastSeen" descending (see NotFoundCrudController::configureCrud()), so the first row is the link that broke most recently
                     'label' => 'label.guided_step_config_not_found_row',
                     'description' => 'description.guided_step_config_not_found_row',
+                    'narration' => 'narration.guided_step_config_not_found_row',
                     'highlight' => 'table tbody tr:first-child',
                 ],
                 [
                     // A custom action, so EasyAdmin names its button after it just the same - it opens RedirectCrudController's "new" with the dead path already set (see its createEntity())
                     'label' => 'label.guided_step_config_not_found_create',
                     'description' => 'description.guided_step_config_not_found_create',
+                    'narration' => 'narration.guided_step_config_not_found_create',
                     'highlight' => '.action-createRedirect',
                 ],
                 [
                     'label' => 'label.guided_step_config_not_found_from',
                     'description' => 'description.guided_step_config_not_found_from',
+                    'narration' => 'narration.guided_step_config_not_found_from',
                     'highlight' => '#Redirect_fromPath',
                 ],
                 [
                     'label' => 'label.guided_step_config_not_found_to',
                     'description' => 'description.guided_step_config_not_found_to',
+                    'narration' => 'narration.guided_step_config_not_found_to',
                     'highlight' => '#Redirect_toUrl',
                 ],
                 [
                     'label' => 'label.guided_step_config_not_found_save',
+                    'narration' => 'narration.guided_step_config_not_found_save',
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_config_not_found_done',
                     'description' => 'description.guided_step_config_not_found_done',
+                    'narration' => 'narration.guided_step_config_not_found_done',
                 ],
             ],
         ];
@@ -106,30 +113,36 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_config_settings_open',
                     'description' => 'description.guided_step_config_settings_open',
+                    'narration' => 'narration.guided_step_config_settings_open',
                     'url' => $this->indexUrl(ConfigCrudController::class),
                 ],
                 [
                     'label' => 'label.guided_step_config_settings_group',
                     'description' => 'description.guided_step_config_settings_group',
+                    'narration' => 'narration.guided_step_config_settings_group',
                     'highlight' => 'table tbody tr:first-child a',
                 ],
                 [
                     'label' => 'label.guided_step_config_settings_entry',
                     'description' => 'description.guided_step_config_settings_entry',
+                    'narration' => 'narration.guided_step_config_settings_entry',
                     'highlight' => '.action-edit',
                 ],
                 [
                     'label' => 'label.guided_step_config_settings_value',
                     'description' => 'description.guided_step_config_settings_value',
+                    'narration' => 'narration.guided_step_config_settings_value',
                     'highlight' => '#Config_value',
                 ],
                 [
                     'label' => 'label.guided_step_config_settings_save',
+                    'narration' => 'narration.guided_step_config_settings_save',
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_config_settings_alerts',
                     'description' => 'description.guided_step_config_settings_alerts',
+                    'narration' => 'narration.guided_step_config_settings_alerts',
                 ],
             ],
         ];
@@ -150,25 +163,30 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_config_health_check_open',
                     'description' => 'description.guided_step_config_health_check_open',
+                    'narration' => 'narration.guided_step_config_health_check_open',
                     'url' => $this->urlGenerator->generate('management_health_check_index'),
                 ],
                 [
                     'label' => 'label.guided_step_config_health_check_run',
                     'description' => 'description.guided_step_config_health_check_run',
+                    'narration' => 'narration.guided_step_config_health_check_run',
                     'highlight' => 'form[action$="/health-check/run"] button',
                 ],
                 [
                     'label' => 'label.guided_step_config_health_check_read',
                     'description' => 'description.guided_step_config_health_check_read',
+                    'narration' => 'narration.guided_step_config_health_check_read',
                     'highlight' => '[data-controller="health-check-table"]',
                 ],
                 [
                     'label' => 'label.guided_step_config_health_check_fix',
                     'description' => 'description.guided_step_config_health_check_fix',
+                    'narration' => 'narration.guided_step_config_health_check_fix',
                 ],
                 [
                     'label' => 'label.guided_step_config_health_check_again',
                     'description' => 'description.guided_step_config_health_check_again',
+                    'narration' => 'narration.guided_step_config_health_check_again',
                 ],
             ],
         ];
@@ -189,25 +207,30 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_config_maintenance_open',
                     'description' => 'description.guided_step_config_maintenance_open',
+                    'narration' => 'narration.guided_step_config_maintenance_open',
                     'url' => $this->urlGenerator->generate('management'),
                 ],
                 [
                     'label' => 'label.guided_step_config_maintenance_enable',
                     'description' => 'description.guided_step_config_maintenance_enable',
+                    'narration' => 'narration.guided_step_config_maintenance_enable',
                     'highlight' => 'form[action$="/config/maintenance-toggle"] button',
                 ],
                 [
                     'label' => 'label.guided_step_config_maintenance_check',
                     'description' => 'description.guided_step_config_maintenance_check',
+                    'narration' => 'narration.guided_step_config_maintenance_check',
                 ],
                 [
                     'label' => 'label.guided_step_config_maintenance_disable',
                     'description' => 'description.guided_step_config_maintenance_disable',
+                    'narration' => 'narration.guided_step_config_maintenance_disable',
                     'highlight' => 'form[action$="/config/maintenance-toggle"] button',
                 ],
                 [
                     'label' => 'label.guided_step_config_maintenance_done',
                     'description' => 'description.guided_step_config_maintenance_done',
+                    'narration' => 'narration.guided_step_config_maintenance_done',
                 ],
             ],
         ];
@@ -228,36 +251,43 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                 [
                     'label' => 'label.guided_step_config_url_metadata_open',
                     'description' => 'description.guided_step_config_url_metadata_open',
+                    'narration' => 'narration.guided_step_config_url_metadata_open',
                     'url' => $this->indexUrl(UrlMetadataCrudController::class),
                 ],
                 [
                     // Edit and not new: the rows are created by the c975l:url-metadata:sync command from what the bundles declare, Action::NEW being disabled on purpose (see UrlMetadataCrudController::configureActions())
                     'label' => 'label.guided_step_config_url_metadata_edit',
                     'description' => 'description.guided_step_config_url_metadata_edit',
+                    'narration' => 'narration.guided_step_config_url_metadata_edit',
                     'highlight' => '.action-edit',
                 ],
                 [
                     'label' => 'label.guided_step_config_url_metadata_title',
                     'description' => 'description.guided_step_config_url_metadata_title',
+                    'narration' => 'narration.guided_step_config_url_metadata_title',
                     'highlight' => '#UrlMetadata_title',
                 ],
                 [
                     'label' => 'label.guided_step_config_url_metadata_summary',
                     'description' => 'description.guided_step_config_url_metadata_summary',
+                    'narration' => 'narration.guided_step_config_url_metadata_summary',
                     'highlight' => '#UrlMetadata_summarySocialNetwork',
                 ],
                 [
                     'label' => 'label.guided_step_config_url_metadata_image',
                     'description' => 'description.guided_step_config_url_metadata_image',
+                    'narration' => 'narration.guided_step_config_url_metadata_image',
                     'highlight' => '#UrlMetadata_ogImage',
                 ],
                 [
                     'label' => 'label.guided_step_config_url_metadata_save',
+                    'narration' => 'narration.guided_step_config_url_metadata_save',
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
                     'label' => 'label.guided_step_config_url_metadata_done',
                     'description' => 'description.guided_step_config_url_metadata_done',
+                    'narration' => 'narration.guided_step_config_url_metadata_done',
                 ],
             ],
         ];

@@ -11,7 +11,8 @@ services:
         # Field/ excluded: EasyAdmin fields, built by their own static new() with a private constructor, which the container refuses to instantiate - a CRUD controller calls them directly, nothing asks the container for one
         # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same stylesheet analysis over their own sheets, never instantiated by the application itself
         # Video/ excluded: an enum and the value object it builds, read statically by whoever needs them - autowiring ResolvedVideo fails on the enum the container refuses to instantiate
-        exclude: '../src/{DependencyInjection,Entity,Field,Maker,Model,Testing,Video}'
+        # Map/ excluded: an enum, read statically for the same reason - the container refuses to instantiate one
+        exclude: '../src/{DependencyInjection,Entity,Field,Map,Maker,Model,Testing,Video}'
 
     # Three classes implement PdfGeneratorInterface - the two engines and the service picking between them - so the contract has to say which one a caller gets. It is the picker: which engine draws a document is decided per site from "ui-pdf-engine", and nothing calling for a PDF has to know there are two (see PdfGenerator)
     c975L\UiBundle\Contract\PdfGeneratorInterface: '@c975L\UiBundle\Service\PdfGenerator'
@@ -259,6 +260,22 @@ services:
               media_types: 'image/*'
               media_required: true
               priority: 85
+              pickable: true
+              cacheable: true
+
+    # Which provider draws it and which key it draws with are site-wide settings ("ui-map-provider", "ui-map-google-api-key"), never fields of this form - see MapType. Only the title is translatable: a place is where it is in every language, and the collection holding those places is not a per-locale screen (same reading as process_steps)
+    ui.block.map:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: map
+              label: "label.block_map"
+              description: "label.block_map_description"
+              form: c975L\UiBundle\Form\Block\MapType
+              translatable: 'title'
+              template: '@c975LUi/blocks/Map.html.twig'
+              category: 'label.category_media'
+              priority: 80
               pickable: true
               cacheable: true
 

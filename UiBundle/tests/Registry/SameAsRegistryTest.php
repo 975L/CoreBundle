@@ -35,37 +35,37 @@ class SameAsRegistryTest extends TestCase
     {
         $registry = new SameAsRegistry();
         $registry->addProvider($this->createProvider(['https://www.google.com/maps?cid=1']));
-        $registry->addProvider($this->createProvider(['https://facebook.com/autotech']));
+        $registry->addProvider($this->createProvider(['https://facebook.com/example']));
 
-        $this->assertSame(['https://www.google.com/maps?cid=1', 'https://facebook.com/autotech'], $registry->all());
+        $this->assertSame(['https://www.google.com/maps?cid=1', 'https://facebook.com/example'], $registry->all());
     }
 
     // The same profile named by two bundles would otherwise be published twice, which reads as two entities
     public function testAllDeduplicatesUrlsAcrossProviders(): void
     {
         $registry = new SameAsRegistry();
-        $registry->addProvider($this->createProvider(['https://www.google.com/maps?cid=1', 'https://facebook.com/autotech']));
-        $registry->addProvider($this->createProvider(['https://facebook.com/autotech', 'https://fr.linkedin.com/company/autotech']));
+        $registry->addProvider($this->createProvider(['https://www.google.com/maps?cid=1', 'https://facebook.com/example']));
+        $registry->addProvider($this->createProvider(['https://facebook.com/example', 'https://fr.linkedin.com/company/example']));
 
-        $this->assertSame(['https://www.google.com/maps?cid=1', 'https://facebook.com/autotech', 'https://fr.linkedin.com/company/autotech'], $registry->all());
+        $this->assertSame(['https://www.google.com/maps?cid=1', 'https://facebook.com/example', 'https://fr.linkedin.com/company/example'], $registry->all());
     }
 
     // A url left empty in a provider's own config reaches the registry as a blank string, and would publish an empty node
     public function testAllDropsEmptyUrlsAndTrimsTheOthers(): void
     {
         $registry = new SameAsRegistry();
-        $registry->addProvider($this->createProvider(['', '   ', '  https://facebook.com/autotech  ']));
+        $registry->addProvider($this->createProvider(['', '   ', '  https://facebook.com/example  ']));
 
-        $this->assertSame(['https://facebook.com/autotech'], $registry->all());
+        $this->assertSame(['https://facebook.com/example'], $registry->all());
     }
 
     // Trimming is what makes the de-duplication hold: the same url padded differently by two providers is one profile
     public function testAllDeduplicatesUrlsDifferingOnlyByTheirPadding(): void
     {
         $registry = new SameAsRegistry();
-        $registry->addProvider($this->createProvider(['https://facebook.com/autotech']));
-        $registry->addProvider($this->createProvider([' https://facebook.com/autotech']));
+        $registry->addProvider($this->createProvider(['https://facebook.com/example']));
+        $registry->addProvider($this->createProvider([' https://facebook.com/example']));
 
-        $this->assertSame(['https://facebook.com/autotech'], $registry->all());
+        $this->assertSame(['https://facebook.com/example'], $registry->all());
     }
 }

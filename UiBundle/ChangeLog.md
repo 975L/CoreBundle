@@ -35,7 +35,7 @@ Lay a hero's medias as a grid, and rebuild the contact_details panel
 - `.card` now carries `position: relative` (01/08/2026)
 - A registered stylesheet path under `assets/` is now read as one of the app's own sheets (01/08/2026)
 - Added `StylesheetRegistry::isAppAsset()` and `StylesheetRegistry::logicalPath()` (01/08/2026)
-- `BlockFixtureProvider`'s urls are now `example.com` instead of `975l.com` (01/08/2026)
+- `BlockFixtureProvider`'s urls are now `example.com` instead of a real site's (01/08/2026)
 - `BlockFixtureProvider`'s section fixtures now hold neutral sample text (01/08/2026)
 - Added `tests/Templates/HeroMediaLayoutTest` and `tests/Assets/HeroSlideshowTimingTest` (01/08/2026)
 - Added `tests/Form/BlockAccentChoiceTypeTest` (01/08/2026)
@@ -527,7 +527,7 @@ Added the guided projects for the media, form and email screens
 
 - Added `Doctrine\VectorType`, mapping a PHP `float[]` to MariaDB's native `VECTOR(n)` column (11.7+) - a shared building block for a semantic cache, not used by anything in this bundle itself (21/07/2026)
 - Added an interactive question to `c975l:ui:donovan-qa:create` ("add a semantic cache?", default no) - answering yes additionally generates an `Answer` entity/repository (exact-hash + `VEC_DISTANCE_COSINE()` semantic match), an `EmbeddingClient`, and a `Service` orchestrating cache-or-call, on top of the previously-generated exact-hash-free skeleton (21/07/2026)
-- Documented the two-tier (exact-hash + semantic/embeddings) caching pattern 975l.com's own Donovan Q&A backend now uses, as a reference for a self-hosted dashboard-assistant backend past a handful of questions (see Readme "AI Assistant" > "Self-hosting your own backend") (21/07/2026)
+- Documented the two-tier (exact-hash + semantic/embeddings) caching pattern the ecosystem's own Donovan Q&A backend now uses, as a reference for a self-hosted dashboard-assistant backend past a handful of questions (see Readme "AI Assistant" > "Self-hosting your own backend") (21/07/2026)
 
 ## v1.9.3
 
@@ -607,7 +607,7 @@ Added the guided projects for the media, form and email screens
 - Added `Contract/DebugPreviewCapableInterface`, showing a debug email preview on `FormController` (19/07/2026)
 - Added `Service/FormPrefillHelper` - see UPGRADE.md [BC-Break] (19/07/2026)
 - Added a `form` Block showcase fixture, replacing ContactFormBundle's own (19/07/2026)
-- Changed the sidebar's block showcase link to `https://975l.com/pages/blocks` (19/07/2026)
+- Changed the sidebar's block showcase link to the ecosystem's own showcase page (19/07/2026)
 - Added an "AI Assistant" back-office page (dashboard Q&A + text rephrase), optional and config-driven (19/07/2026)
 - Added `c975l:ui:donovan-qa:create` maker command (19/07/2026)
 - Added monthly AI rephrase spend tracking and dashboard alerts (19/07/2026)
@@ -644,7 +644,7 @@ Added the guided projects for the media, form and email screens
 
 ## v1.7.1
 
-- Corrected link <https://975l.com/pages/blocks> (17/07/2026)
+- Corrected the block showcase link (17/07/2026)
 
 ## v1.7
 
@@ -659,8 +659,8 @@ Added the guided projects for the media, form and email screens
 - Fixed `image_compare`/`slider` under CSP `style-src` (16/07/2026)
 - Changed `video_iframe` to gate behind cookie consent and use `youtube-nocookie.com` (16/07/2026) [BC-Break]
 - Fixed `expertise_banner` text color on dark background (16/07/2026)
-- Removed the EasyAdmin block gallery, superseded by 975l.com's showcase (16/07/2026) [BC-Break]
-- Added sidebar link to `https://975l.com/pages/blocks` (16/07/2026)
+- Removed the EasyAdmin block gallery, superseded by the ecosystem's own showcase (16/07/2026) [BC-Break]
+- Added a sidebar link to the ecosystem's block showcase (16/07/2026)
 
 ## v1.6
 

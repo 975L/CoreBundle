@@ -22,11 +22,23 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 // Seeds the restricted Form/EmailTemplate rows a bundle needs to have working out of the box - lives here rather than in whichever bundle declares them (SiteBundle's "contact", ConfigBundle's "register"/"reset_password_request") so each one only carries its own field/block definitions, not the persistence machinery. Never flushes: the caller decides when, so a batch of seeds is one transaction
 class FormSeeder
 {
+    // What this run has already queued, which the repository cannot see before the caller's flush: a batch naming the same form twice would otherwise write it twice and break on the unique index
+    /** @var array<string, Form> */
+    private array $queuedForms = [];
+
+    /** @var array<string, EmailTemplate> */
+    private array $queuedTemplates = [];
+
+    // The fields this run has just created, with the words the caller shipped for the other languages: they have no id before the caller's flush, so their translations are written after it (see SeededTranslationWriteListener)
+    /** @var list<array{0: FormField, 1: string, 2: array<string, string|null>}> */
+    private array $queuedTranslations = [];
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly FormRepository $formRepository,
         private readonly EmailTemplateRepository $emailTemplateRepository,
         private readonly EmailTemplateFactory $emailTemplateFactory,
+        private readonly FormTranslator $formTranslator,
         #[Autowire(param: 'kernel.default_locale')]
         private readonly string $defaultLocale,
         /** @var string[] */
@@ -57,14 +69,56 @@ class FormSeeder
             $actionConfig = array_merge($actionConfig ?? [], ['links' => $links]);
         }
 
-        $existing = $this->formRepository->findOneBy(['name' => $name]);
+        $existing = $this->formRepository->findOneBy(['name' => $name]) ?? $this->queuedForms[$name] ?? null;
         if (null !== $existing) {
             $this->backfillForm($existing, $fields, $action, $actionConfig);
 
             return;
         }
 
-        $this->entityManager->persist($this->buildForm($name, $fields, $action, $actionConfig));
+        $this->entityManager->persist($this->queuedForms[$name] = $this->buildForm($name, $fields, $action, $actionConfig));
+        $this->queueTranslations($this->queuedForms[$name], $coreFieldsByLocale);
+    }
+
+    /**
+     * Keeps the other languages' wording of a form just created, to be written once it has an id.
+     *
+     * Only ever for a form this run has built: a form already in place has been through the back-office since, and its
+     * translations are an admin's to write - the same rule the backfills above follow. A language the caller ships no
+     * words for is left untouched rather than given the default one's, which would read as a translation nobody wrote.
+     *
+     * @param array<string, array<string, array{0: string, 1: string, 2: ?string}>> $coreFieldsByLocale
+     */
+    private function queueTranslations(Form $form, array $coreFieldsByLocale): void
+    {
+        foreach ($this->formTranslator->getTranslatableLocales() as $locale) {
+            $translated = $coreFieldsByLocale[$locale] ?? [];
+            if ([] === $translated) {
+                continue;
+            }
+
+            foreach ($form->getFields() as $field) {
+                $label = $translated[(string) $field->getName()][1] ?? null;
+                if (null !== $label && $label !== $field->getLabel()) {
+                    $this->queuedTranslations[] = [$field, $locale, ['label' => $label]];
+                }
+            }
+        }
+    }
+
+    /**
+     * Writes what queueTranslations() kept, the fields now carrying the ids they were waiting for.
+     *
+     * Emptied on the way out, so a second flush writes nothing twice.
+     */
+    public function writeQueuedTranslations(): void
+    {
+        $queued = $this->queuedTranslations;
+        $this->queuedTranslations = [];
+
+        foreach ($queued as [$field, $locale, $values]) {
+            $this->formTranslator->store($field, $locale, $values);
+        }
     }
 
     // kernel.default_locale's own wording, falling back on "en" for a locale the caller ships none for
@@ -101,13 +155,12 @@ class FormSeeder
 
         foreach (array_unique([$this->defaultLocale, ...$this->enabledLocales]) as $locale) {
             $isDefault = $locale === $this->defaultLocale;
-            $blocks = $blocksByLocale[$locale] ?? ($isDefault ? ($blocksByLocale['en'] ?? []) : []);
+            $blocks = $this->blocksFor($blocksByLocale, $locale, $isDefault);
             if (!$isDefault && [] === $blocks) {
                 continue;
             }
 
-            $emailTemplate = $this->emailTemplateRepository->findOneBy(['name' => $name, 'locale' => $locale])
-                ?? ($isDefault ? $this->adoptLocaleless($name) : null);
+            $emailTemplate = $this->existingEmailTemplate($name, $locale, $isDefault);
 
             if ($emailTemplate instanceof EmailTemplate) {
                 $backfilled += $this->backfillEmailTemplate($emailTemplate, $blocks);
@@ -115,10 +168,31 @@ class FormSeeder
                 continue;
             }
 
-            $this->entityManager->persist($this->emailTemplateFactory->build($name, $locale, $blocks));
+            $this->entityManager->persist(
+                $this->queuedTemplates[$name . '|' . $locale] = $this->emailTemplateFactory->build($name, $locale, $blocks),
+            );
         }
 
         return $backfilled;
+    }
+
+    /**
+     * The wording a locale is seeded with: its own, or - for the site's own language alone - the English the declaration is written in.
+     *
+     * @param array<string, array<int, array{0: string, 1: ?string, 2: ?string, 3: ?string, 4: ?string, 5: ?string}>> $blocksByLocale
+     *
+     * @return array<int, array{0: string, 1: ?string, 2: ?string, 3: ?string, 4: ?string, 5: ?string}>
+     */
+    private function blocksFor(array $blocksByLocale, string $locale, bool $isDefault): array
+    {
+        return $blocksByLocale[$locale] ?? ($isDefault ? ($blocksByLocale['en'] ?? []) : []);
+    }
+
+    // The row this run would fill rather than create: one already in place, one it has queued itself, or - for the site's own language - one written before e-mails had a language
+    private function existingEmailTemplate(string $name, string $locale, bool $isDefault): ?EmailTemplate
+    {
+        return $this->emailTemplateRepository->findOneBy(['name' => $name, 'locale' => $locale])
+            ?? $this->queuedTemplates[$name . '|' . $locale] ?? ($isDefault ? $this->adoptLocaleless($name) : null);
     }
 
     // A template written before e-mails had a language, given the site's own rather than left beside a duplicate of itself. Only looked up when the site's locale has no row of its own, so the collision c975l:ui:email-templates:ensure warns about (both versions in place, one name for the two) can't be reached from here. The row is managed, so nothing is persisted: the caller's flush carries it, as it does everything else seeded here

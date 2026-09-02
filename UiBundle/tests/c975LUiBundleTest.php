@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests;
 
 use c975L\UiBundle\c975LUiBundle;
 use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
+use c975L\UiBundle\Map\MapProvider;
 use c975L\UiBundle\Video\VideoPlatform;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -203,6 +204,22 @@ class c975LUiBundleTest extends TestCase
         // A space-separated string, which is what a CSP directive is: an array could only be a whole config node, never one item of a sequence next to the site's own origins
         $this->assertSame(implode(' ', VideoPlatform::allCspOrigins()), $origins);
         $this->assertStringContainsString('https://www.youtube-nocookie.com', (string) $origins);
+    }
+
+    // Same reading for the map providers: a tile server an "img-src" refuses is an empty box in production, and the site names this parameter wherever its own policy needs it (see Map\MapProvider)
+    public function testLoadExtensionExposesTheMapOriginsAsAParameter(): void
+    {
+        $container = new ContainerBuilder();
+
+        new c975LUiBundle()->loadExtension([], $this->containerConfigurator($container), $container);
+
+        $this->assertSame(implode(' ', MapProvider::allImgOrigins()), $container->getParameter('c975l_ui.map.img_origins'));
+        $this->assertStringContainsString('https://tile.openstreetmap.org', (string) $container->getParameter('c975l_ui.map.img_origins'));
+
+        // The tile server never reaches the script list: this bundle serves Leaflet itself, and a policy naming that host for scripts is the hole these three parameters exist to avoid
+        $this->assertStringNotContainsString('openstreetmap', (string) $container->getParameter('c975l_ui.map.script_origins'));
+        $this->assertSame('https://maps.googleapis.com', $container->getParameter('c975l_ui.map.script_origins'));
+        $this->assertSame('https://maps.googleapis.com', $container->getParameter('c975l_ui.map.connect_origins'));
     }
 
     // A real configurator over a stubbed loader: ContainerConfigurator::import() is final, so it cannot be stubbed away, and the service definitions it would pull in are not what this test reads

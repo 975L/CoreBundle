@@ -1,0 +1,97 @@
+// Same measure as the body copy, a map being read as part of the page rather than as a full-bleed banner
+.ui-map {
+    max-width: var(--reading-max-width, min(75ch, 90vw));
+    margin: var(--ui-map-margin-block, 3em) auto;
+}
+
+.ui-map__title {
+    margin-bottom: .5em;
+}
+
+// The three heights the block offers, as classes: an inline style is what a Content-Security-Policy refuses, and the canvas needs a height of its own or every tile library collapses it to nothing
+.ui-map--small .ui-map__canvas {
+    height: var(--ui-map-height-small, 15rem);
+}
+
+.ui-map--medium .ui-map__canvas {
+    height: var(--ui-map-height-medium, 25rem);
+}
+
+.ui-map--large .ui-map__canvas {
+    height: var(--ui-map-height-large, 35rem);
+}
+
+.ui-map__canvas {
+    width: 100%;
+    border: var(--ui-map-border, 1px solid var(--border-color));
+    border-radius: 15px;
+    // Leaflet paints its tiles in a stack of absolutely positioned panes, which run past the rounded corners without this
+    overflow: hidden;
+}
+
+// Shown in place of the map for a provider whose consent has not been given yet - same shape as the video block's own prompt
+.ui-map__prompt {
+    padding: 1.5em;
+    border: var(--ui-map-border, 1px solid var(--border-color));
+    border-radius: 15px;
+    text-align: center;
+}
+
+// Why a map is missing, said in place to whoever may act on it and rendered for nobody else (see components/Map/Map.html.twig). Drawn as a notice rather than as content: it is not part of the page, and it is gone the moment the map draws
+.ui-map__diagnostic {
+    margin: 0 0 1em;
+    padding: .75em 1em;
+    border-left: 4px solid var(--alert-danger-color);
+    background: var(--alert-danger-background);
+    color: var(--alert-danger-color);
+    font-size: .9em;
+}
+
+// The places, rendered server-side and left on screen under the map: it is what a visitor with no map reads, and the only version of it a keyboard and a screen reader can work through
+.ui-map__list {
+    margin: 1em 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ui-map__place {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25em .75em;
+    align-items: baseline;
+    padding: .5em 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ui-map__place-label {
+    font-weight: bold;
+}
+
+.ui-map__place-text {
+    flex: 1 1 100%;
+    font-size: .9em;
+}
+
+.ui-map__place-link {
+    margin-left: auto;
+    font-size: .9em;
+}
+
+// The marker itself, drawn here rather than loaded: it takes the site's own palette through --ui-map-pin-color, where Leaflet's default pin is a fixed blue image (see assets/js/map.js)
+.ui-map__pin {
+    width: 24px;
+    height: 24px;
+    background-color: var(--ui-map-pin-color, var(--primary));
+    border: 2px solid #fff;
+    // A circle closed into a point at the bottom left, then turned upright: the teardrop every map pin is
+    border-radius: 50% 50% 50% 0;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+    transform: rotate(-45deg);
+}
+
+.ui-map__popup {
+    p {
+        margin: .25em 0 0;
+        font-size: .9em;
+    }
+}

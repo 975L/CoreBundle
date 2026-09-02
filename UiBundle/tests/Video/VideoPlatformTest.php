@@ -41,7 +41,7 @@ class VideoPlatformTest extends TestCase
         yield 'youtube nocookie embed' => ['https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ', VideoPlatform::Youtube, 'dQw4w9WgXcQ'];
         yield 'youtube short link' => ['https://youtu.be/dQw4w9WgXcQ', VideoPlatform::Youtube, 'dQw4w9WgXcQ'];
 
-        yield 'tiktok watch' => ['https://www.tiktok.com/@kalaan/video/6860377138386734341', VideoPlatform::Tiktok, '6860377138386734341'];
+        yield 'tiktok watch' => ['https://www.tiktok.com/@example/video/6860377138386734341', VideoPlatform::Tiktok, '6860377138386734341'];
         yield 'tiktok embed v2' => ['https://www.tiktok.com/embed/v2/6860377138386734341', VideoPlatform::Tiktok, '6860377138386734341'];
         yield 'tiktok embed' => ['https://www.tiktok.com/embed/6860377138386734341', VideoPlatform::Tiktok, '6860377138386734341'];
 
@@ -72,7 +72,7 @@ class VideoPlatformTest extends TestCase
         yield 'empty' => [''];
         yield 'whitespace only' => ['   '];
         yield 'not a url' => ['not-a-url'];
-        yield 'a site of its own' => ['https://975l.com/videos/1'];
+        yield 'a site of its own' => ['https://example.com/videos/1'];
         // A bare path on the nocookie host is a deliberate choice made upstream, left alone rather than second-guessed
         yield 'nocookie bare path' => ['https://www.youtube-nocookie.com/dQw4w9WgXcQ'];
         // "/watch" with no video in it - a playlist page, which has no single video to frame
@@ -143,7 +143,7 @@ class VideoPlatformTest extends TestCase
         yield 'vimeo empty hash' => [VideoPlatform::Vimeo, 'https://vimeo.com/123456789?h=', []];
         // A platform with nothing to carry reads no query at all
         yield 'dailymotion' => [VideoPlatform::Dailymotion, 'https://geo.dailymotion.com/player.html?video=x8abcde&list=PL123', []];
-        yield 'tiktok' => [VideoPlatform::Tiktok, 'https://www.tiktok.com/@kalaan/video/6860377138386734341?h=abc', []];
+        yield 'tiktok' => [VideoPlatform::Tiktok, 'https://www.tiktok.com/@example/video/6860377138386734341?h=abc', []];
         yield 'no query at all' => [VideoPlatform::Youtube, 'https://youtu.be/dQw4w9WgXcQ', []];
     }
 

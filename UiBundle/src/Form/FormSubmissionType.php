@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Service\CaptchaVerifier;
 use c975L\UiBundle\Service\FormBotProtection;
+use c975L\UiBundle\Service\FormTranslator;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -46,6 +47,7 @@ class FormSubmissionType extends AbstractType
         private readonly RequestStack $requestStack,
         private readonly TranslatorInterface $translator,
         private readonly CaptchaVerifier $captchaVerifier,
+        private readonly FormTranslator $formTranslator,
     ) {
     }
 
@@ -55,6 +57,9 @@ class FormSubmissionType extends AbstractType
         if ($options['protections']) {
             $this->botProtection->addHoneypotField($builder, $this->requestStack->getCurrentRequest());
         }
+
+        // Read once for the whole form rather than field by field: what an admin typed is translated like a page's own text (see FormTranslator), and a single-language site pays nothing for it
+        $this->formTranslator->preloadFields($options['fields']);
 
         foreach ($options['fields'] as $field) {
             $this->addField($builder, $field, $options['prefill']);
@@ -96,12 +101,12 @@ class FormSubmissionType extends AbstractType
                 'type' => PasswordType::class,
                 'required' => $required,
                 'first_options' => [
-                    'label' => $field->getLabel(),
+                    'label' => $this->formTranslator->getLabel($field),
                     'translation_domain' => false,
                     'constraints' => [...$constraints, new Length(min: 8, max: 25), new PasswordStrength(), new NotCompromisedPassword()],
                     'attr' => array_merge($fieldOptions['attr'], ['autocomplete' => 'new-password']),
                 ],
-                'second_options' => ['label' => 'label.password_confirm', 'attr' => array_filter(['placeholder' => $field->getPlaceholder(), 'autocomplete' => 'new-password'])],
+                'second_options' => ['label' => 'label.password_confirm', 'attr' => array_filter(['placeholder' => $this->formTranslator->getPlaceholder($field), 'autocomplete' => 'new-password'])],
                 'invalid_message' => 'text.password_mismatch',
             ]);
 
@@ -143,7 +148,7 @@ class FormSubmissionType extends AbstractType
             // "readonly", not "disabled", so a prefilled field is still submitted
             // "new-password" stops a password manager autofilling this as a login form
             'attr' => array_filter([
-                'placeholder' => $field->getPlaceholder(),
+                'placeholder' => $this->formTranslator->getPlaceholder($field),
                 'readonly' => $prefilled ?: null,
                 'autocomplete' => FormField::TYPE_PASSWORD === $field->getType() ? 'new-password' : null,
                 'rows' => FormField::TYPE_TEXTAREA === $field->getType() ? 10 : null,
@@ -161,7 +166,7 @@ class FormSubmissionType extends AbstractType
             if (FormField::TYPE_CHECKBOX === $field->getType()) {
                 $fieldOptions['data'] = filter_var($field->getDefaultValue(), FILTER_VALIDATE_BOOLEAN);
             } elseif ($this->acceptsDefaultValue($field)) {
-                $fieldOptions['data'] = $field->getDefaultValue();
+                $fieldOptions['data'] = $this->formTranslator->getDefaultValue($field);
             }
         }
 
@@ -210,13 +215,15 @@ class FormSubmissionType extends AbstractType
     // Plain admin-typed text by default; with a "url" set, the label text stays exactly as typed but gains a translated, escaped "(label.field_url_link)" <a> - the surrounding label itself never becomes a link so clicking the rest of it still toggles a checkbox field as expected
     private function buildLabel(FormField $field): string
     {
+        $label = (string) $this->formTranslator->getLabel($field);
+
         if (null === $field->getUrl()) {
-            return $field->getLabel();
+            return $label;
         }
 
         return sprintf(
             '%s (<a href="%s" target="_blank" rel="noopener">%s</a>)',
-            htmlspecialchars($field->getLabel(), ENT_QUOTES),
+            htmlspecialchars($label, ENT_QUOTES),
             htmlspecialchars($field->getUrl(), ENT_QUOTES),
             htmlspecialchars($this->translator->trans('label.field_url_link', domain: 'ui'), ENT_QUOTES),
         );

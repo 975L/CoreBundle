@@ -43,7 +43,7 @@ class IntrusionHealthCheckProviderTest extends TestCase
     /**
      * @param array<string, string> $uploadedFiles path under public/medias => contents
      */
-    private function createProvider(array $uploadedFiles = [], int $admins = 0, ?int $previousAccounts = null, string $adminRole = 'ROLE_ADMIN', ?string $siteRoot = self::SITE_ROOT): IntrusionHealthCheckProvider
+    private function createProvider(array $uploadedFiles = [], int $admins = 0, ?int $previousAccounts = null, string $adminRole = 'ROLE_ADMIN', ?string $siteRoot = self::SITE_ROOT, bool $canExec = false): IntrusionHealthCheckProvider
     {
         foreach ($uploadedFiles as $path => $contents) {
             file_put_contents($this->projectDir . '/public/medias/' . $path, $contents);
@@ -75,8 +75,8 @@ class IntrusionHealthCheckProviderTest extends TestCase
 
         // Reads are taken as they come on the machine running the suite, except where a test needs one pinned - what matters is the row produced, not what this host allows
         $environmentProbe = $this->createStub(EnvironmentProbe::class);
-        $environmentProbe->method('canExec')->willReturn(false);
-        $environmentProbe->method('getBinaryVersion')->willReturn(null);
+        $environmentProbe->method('canExec')->willReturn($canExec);
+        $environmentProbe->method('getBinaryVersion')->willReturn($canExec ? '2.0.0' : null);
 
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn($adminRole);
@@ -159,6 +159,57 @@ class IntrusionHealthCheckProviderTest extends TestCase
 
         $this->assertSame(HealthCheckResult::STATUS_SKIPPED, $row['status']);
         $this->assertStringContainsString('label.health_check_intrusion_code_no_repository', $row['summary']);
+    }
+
+    // config/reference.php is rewritten by FrameworkBundle itself on every debug-mode container compile - a deployment running its migrations in a dedicated env leaves it modified every single time, which had this row warning for good about a file nothing loads
+    public function testAFileTheFrameworkItselfRegeneratesIsNotReportedAsAChange(): void
+    {
+        $rows = $this->createProviderOnRepository(['config/reference.php' => "<?php // regenerated\n"])->runChecks();
+        $row = $this->rowFor($rows, '#code');
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $row['status']);
+        $this->assertStringContainsString('label.health_check_intrusion_code_clean', $row['summary']);
+    }
+
+    // What the row exists for: a deployed file that no longer matches what was deployed, reported alongside the generated one being ignored
+    public function testAModifiedDeployedFileIsStillReported(): void
+    {
+        $rows = $this->createProviderOnRepository([
+            'config/reference.php' => "<?php // regenerated\n",
+            'src/Controller/HomeController.php' => "<?php // touched\n",
+        ])->runChecks();
+        $row = $this->rowFor($rows, '#code');
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $row['status']);
+        // The porcelain line as git wrote it, its status letter included - what changed and how is what a maintainer goes and looks at
+        $this->assertSame(['M src/Controller/HomeController.php'], $row['details']['changed']);
+    }
+
+    /**
+     * A provider over a real repository holding both files committed, then the given ones rewritten - the check reads git's own porcelain output, which only a real repository produces.
+     *
+     * @param array<string, string> $modifiedFiles path under the project directory => new contents
+     */
+    private function createProviderOnRepository(array $modifiedFiles): IntrusionHealthCheckProvider
+    {
+        if (null === new EnvironmentProbe()->getBinaryVersion('git')) {
+            $this->markTestSkipped('git is not available');
+        }
+
+        $filesystem = new Filesystem();
+        foreach (['config/reference.php' => "<?php // deployed\n", 'src/Controller/HomeController.php' => "<?php // deployed\n"] as $path => $contents) {
+            $filesystem->dumpFile($this->projectDir . '/' . $path, $contents);
+        }
+
+        foreach (['init -q', 'add -A', '-c user.name=Test -c user.email=test@example.com commit -qm deployed'] as $command) {
+            exec(sprintf('git -C %s %s 2>&1', escapeshellarg($this->projectDir), $command));
+        }
+
+        foreach ($modifiedFiles as $path => $contents) {
+            $filesystem->dumpFile($this->projectDir . '/' . $path, $contents);
+        }
+
+        return $this->createProvider(canExec: true);
     }
 
     public function testAFirstRunHasNothingToCompareAccountsAgainst(): void

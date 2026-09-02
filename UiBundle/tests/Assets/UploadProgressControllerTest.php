@@ -73,32 +73,12 @@ class UploadProgressControllerTest extends TestCase
         $this->assertStringContainsString("['redirect' => \$url]", $this->read(self::SERVICE));
     }
 
-    // XMLHttpRequest and not fetch: it is the only api a browser reports the upload of, and the transfer is what this bar exists to show
-    public function testTheTransferIsMeasuredOnTheUploadItself(): void
-    {
-        $controller = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringContainsString('new XMLHttpRequest()', $controller);
-        $this->assertStringContainsString('request.upload.addEventListener("progress"', $controller);
-        $this->assertStringContainsString('progress.lengthComputable', $controller);
-    }
-
-    // The two phases told apart: the transfer has a percentage, the processing that follows has none and gets the browser's own indeterminate bar
-    public function testTheProcessingPhaseDropsTheValueRatherThanFreezingAtFullBar(): void
-    {
-        $controller = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringContainsString('request.upload.addEventListener("load", () => this.processing());', $controller);
-        $this->assertStringContainsString('this.bar.removeAttribute("value");', $controller);
-    }
-
     // A batch the network refused is one to send again, where a rejected form comes back as its own html and is swapped in place
     public function testTheSubmitIsHandedBackOnFailureAndOnlyThen(): void
     {
         $controller = $this->read(self::CONTROLLER_JS);
 
-        $this->assertStringContainsString('this.toggleSubmit(true);', $controller);
-        $this->assertStringContainsString('this.toggleSubmit(false);', $controller);
+        // Handing the submit back is UploadProgressBehaviourTest's; what stays here is the path no scenario reaches, the form coming back with the errors the server found rather than the screen being loaded again
         $this->assertStringContainsString('this.form.replaceWith(form);', $controller);
     }
 

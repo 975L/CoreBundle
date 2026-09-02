@@ -104,7 +104,9 @@ export default class extends Controller {
             return;
         }
 
-        // The listeners stay on while the poster waits for its click, so a withdrawal from the banner takes the button back off screen (see onConsent)
+        // The listeners go on (or stay on) while the poster waits for its click, so a withdrawal from the banner takes the button back off screen (see onConsent). Attached here rather than only in connect(): a visitor who had already accepted reaches this straight from connect() without ever having listened, and their withdrawal would otherwise be announced to nobody. addEventListener is given the same bound reference every time, so asking twice attaches once
+        this.listen();
+
         if (this.hasConsentTarget) {
             this.consentTarget.hidden = true;
         }

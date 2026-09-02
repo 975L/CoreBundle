@@ -124,7 +124,7 @@
             </trans-unit>
             <trans-unit id="l7P49Wf">
                 <source>description.site_backup_offsite_target</source>
-                <target>Destination rclone de la copie hors site, sous la forme « remote:chemin » (ex. storagebox:975l.com). Les identifiants restent dans la configuration de rclone, jamais ici. Vide, rien n'est envoyé : c'est le mode où une machine extérieure vient chercher les sauvegardes</target>
+                <target>Destination rclone de la copie hors site, sous la forme « remote:chemin » (ex. storagebox:example.com). Les identifiants restent dans la configuration de rclone, jamais ici. Vide, rien n'est envoyé : c'est le mode où une machine extérieure vient chercher les sauvegardes</target>
             </trans-unit>
             <trans-unit id="OV1T_sI">
                 <source>description.site_backup_retention_days</source>

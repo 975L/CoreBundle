@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="fr" datatype="plaintext" original="ui_narration.fr.xlf">
+        <body>
+            <trans-unit id="kEEDMk2">
+                <source>narration.ai_assistant</source>
+                <target>« Donovan » est l'assistant du back-office : demandez-lui comment marche le système de blocks avec vos mots, il répond à partir de ce que les bundles installés proposent vraiment.</target>
+            </trans-unit>
+            <trans-unit id="5ATKQD9">
+                <source>narration.block_showcase</source>
+                <target>« Vitrine des blocks » montre tous les types de blocks disponibles, chacun avec un aperçu en direct : de quoi choisir lequel poser sur une page.</target>
+            </trans-unit>
+            <trans-unit id="1PeeT85">
+                <source>narration.email_templates</source>
+                <target>« Modèles d'email » porte les e-mails que le site envoie. Ils sont composés de blocks, exactement comme une page.</target>
+            </trans-unit>
+            <trans-unit id="O2BHCGy">
+                <source>narration.fonts</source>
+                <target>« Polices » reçoit les polices téléversées pour le site. Chaque graisse et chaque style y compte une ligne, et devient utilisable dans le thème.</target>
+            </trans-unit>
+            <trans-unit id="zAz9DUW">
+                <source>narration.forms</source>
+                <target>« Formulaires » tient les formulaires du site, contact, inscription ou calculateur, chacun avec ses champs et l'action qu'il déclenche à l'envoi.</target>
+            </trans-unit>
+            <trans-unit id="7pTq006">
+                <source>narration.guided_step_ui_ai_assistant_done</source>
+                <target>Le même bouton se trouve sous chaque champ de texte du back-office : blocks, pages, modèles d'e-mail. Les mêmes trois commandes partout, et cet écran compte les jetons dépensés dans le mois.</target>
+            </trans-unit>
+            <trans-unit id="CJXjyKs">
+                <source>narration.guided_step_ui_ai_assistant_length</source>
+                <target>Choisissez ensuite une longueur : plus court, plus long, ou identique. Une section qui doit tenir dans une carte ne se réécrit pas comme une autre qui remplit toute une page.</target>
+            </trans-unit>
+            <trans-unit id="uj9FxKX">
+                <source>narration.guided_step_ui_ai_assistant_open</source>
+                <target>Le panneau vous emmène sur Donovan, l'assistant du site. L'écran s'affiche même quand rien n'est configuré : c'est là même que sa mise en place est expliquée.</target>
+            </trans-unit>
+            <trans-unit id="PLzBLiL">
+                <source>narration.guided_step_ui_ai_assistant_run</source>
+                <target>Lancez la reformulation. La suggestion revient sous le texte, à garder ou à laisser : rien n'est écrit nulle part tant que vous ne la reprenez pas.</target>
+            </trans-unit>
+            <trans-unit id="uHYO1WV">
+                <source>narration.guided_step_ui_ai_assistant_setup</source>
+                <target>Renseignez ce qui manque : chaque entrée ouvre le réglage qu'elle nomme, au minimum le fournisseur et sa clé d'API. La liste disparaît dès qu'il ne manque plus rien, et c'est là que commence la suite.</target>
+            </trans-unit>
+            <trans-unit id="a712HHa">
+                <source>narration.guided_step_ui_ai_assistant_style</source>
+                <target>Choisissez un ton dans la liste. La même est proposée sous chaque champ de texte du back-office : ce que vous choisissez ici, vous le retrouverez là-bas.</target>
+            </trans-unit>
+            <trans-unit id="veOfKCP">
+                <source>narration.guided_step_ui_ai_assistant_text</source>
+                <target>Collez un texte à reformuler dans cette zone. Elle n'appartient à aucune page du site : ce qu'on y essaie est jeté, ce qui en fait l'endroit pour découvrir ce que donne la reformulation.</target>
+            </trans-unit>
+            <trans-unit id="OP28253">
+                <source>narration.guided_step_ui_calculator_fields</source>
+                <target>Ajoutez ce que le visiteur règle : un curseur pour un réglage, un nombre pour un prix. Remplissez le minimum, le maximum, le pas et la valeur par défaut, pour que le résultat s'affiche avant qu'on touche à quoi que ce soit.</target>
+            </trans-unit>
+            <trans-unit id="C7e_qE4">
+                <source>narration.guided_step_ui_calculator_hidden</source>
+                <target>Pour un calcul intermédiaire, décochez « Affiché » : le résultat sert aux formules suivantes sans être montré. Un résultat ne lit que ceux placés au-dessus de lui, alors placez-les en premier.</target>
+            </trans-unit>
+            <trans-unit id="RJeGy.m">
+                <source>narration.guided_step_ui_calculator_highlighted</source>
+                <target>Sur le chiffre qu'on est venu chercher, et sur celui-là seul, cochez « Mis en avant » : il devient la grande carte au milieu du panneau.</target>
+            </trans-unit>
+            <trans-unit id="Vd_EMBU">
+                <source>narration.guided_step_ui_calculator_name</source>
+                <target>Commencez par le nommer, dans le champ Nom en haut du formulaire. Choisissez un nom court et parlant : c’est sous celui-là que vous le retrouverez dans la liste, et c’est celui que le block Formulaire vous proposera quand vous voudrez le poser sur une page. Ce champ est obligatoire, l’enregistrement le refusera s’il est vide.</target>
+            </trans-unit>
+            <trans-unit id="aIuHWBj">
+                <source>narration.guided_step_ui_calculator_new</source>
+                <target>Créez le formulaire avec le bouton en haut de l'écran.</target>
+            </trans-unit>
+            <trans-unit id="9Ln0WdI">
+                <source>narration.guided_step_ui_calculator_open</source>
+                <target>Un calculateur est un formulaire comme les autres. Le panneau vous emmène sur l'écran des formulaires ; laissez son action vide, il n'envoie rien.</target>
+            </trans-unit>
+            <trans-unit id="sHJo_BJ">
+                <source>narration.guided_step_ui_calculator_outputs</source>
+                <target>Écrivez les résultats : un libellé, une formule. Copiez les noms de variables listés sous la collection plutôt que de les taper. Une formule fausse est refusée ici, jamais découverte par un visiteur.</target>
+            </trans-unit>
+            <trans-unit id="O3y3VPp">
+                <source>narration.guided_step_ui_calculator_outputs_first</source>
+                <target>L'interrupteur suivant fixe l'ordre de lecture : activez-le pour que les résultats se lisent avant les champs, au-dessus d'eux sur un téléphone, à gauche sur un écran large.</target>
+            </trans-unit>
+            <trans-unit id="GrLeRoP">
+                <source>narration.guided_step_ui_calculator_place</source>
+                <target>Posez-le enfin sur une page : dans les blocks de la page, ajoutez un block « formulaire » et choisissez celui-ci par son nom.</target>
+            </trans-unit>
+            <trans-unit id="16ifUSt">
+                <source>narration.guided_step_ui_calculator_reopen</source>
+                <target>L'enregistrement vous a ramené à la liste. Rouvrez le formulaire : les noms de variables sont désormais affichés sous la collection des résultats.</target>
+            </trans-unit>
+            <trans-unit id="gGlIQUe">
+                <source>narration.guided_step_ui_calculator_save_fields</source>
+                <target>Enregistrez avant d'écrire la moindre formule : le nom des variables est dérivé des libellés, et il n'apparaît qu'une fois les champs enregistrés.</target>
+            </trans-unit>
+            <trans-unit id="xhapUqZ">
+                <source>narration.guided_step_ui_email_template_attachments</source>
+                <target>Joignez les documents qui partent avec. Un document légal est joint tel que le site le publie, et son PDF est regénéré dès que le texte change : un e-mail envoyé des mois plus tard emporte donc toujours la version en vigueur.</target>
+            </trans-unit>
+            <trans-unit id="MTcJxYs">
+                <source>narration.guided_step_ui_email_template_blocks</source>
+                <target>Modifiez son contenu : ce sont les mêmes blocks que dans une page. L'habillage, lui, vient de la charte du site.</target>
+            </trans-unit>
+            <trans-unit id="9Ix_744">
+                <source>narration.guided_step_ui_email_template_check</source>
+                <target>Pour le voir pour de vrai, déclenchez l'e-mail depuis le site — une demande de mot de passe oublié, par exemple — et lisez-le dans une vraie boîte.</target>
+            </trans-unit>
+            <trans-unit id="GFTvNsC">
+                <source>narration.guided_step_ui_email_template_edit</source>
+                <target>Ouvrez un modèle avec le crayon, au bout de sa ligne.</target>
+            </trans-unit>
+            <trans-unit id="oozBzRb">
+                <source>narration.guided_step_ui_email_template_open</source>
+                <target>Le panneau vous emmène sur les modèles d'e-mail. Les e-mails que le site envoie sont composés de blocks, exactement comme une page.</target>
+            </trans-unit>
+            <trans-unit id="yq3XDDm">
+                <source>narration.guided_step_ui_email_template_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="JEJ4qQG">
+                <source>narration.guided_step_ui_font_bulk</source>
+                <target>Ajouter une famille ligne par ligne est le chemin long. Cliquez plutôt sur le bouton d'import groupé, qui prend tous les fichiers d'un coup.</target>
+            </trans-unit>
+            <trans-unit id="19MHSWA">
+                <source>narration.guided_step_ui_font_done</source>
+                <target>Vous pouvez maintenant l'utiliser dans le thème : la feuille de style est reconstruite à partir des lignes toute seule, et la famille devient sélectionnable partout où le site nomme une police.</target>
+            </trans-unit>
+            <trans-unit id="8Zk.5JV">
+                <source>narration.guided_step_ui_font_files</source>
+                <target>Sélectionnez tous les fichiers d'une seule fois : ttf, woff ou woff2, cinq mégaoctets au plus chacun. Prenez tout le contenu du dossier.</target>
+            </trans-unit>
+            <trans-unit id="H3mofLU">
+                <source>narration.guided_step_ui_font_fix</source>
+                <target>Corrigez au besoin une déduction fausse : un nom de fichier ne disant rien d'utile arrive en graisse normale et style romain. La ligne se modifie comme une autre.</target>
+            </trans-unit>
+            <trans-unit id="DPoc08R">
+                <source>narration.guided_step_ui_font_import</source>
+                <target>Envoyez-les. Chaque nom de fichier est lu pour en deviner le nom, la graisse et le style ; un fichier qui n'est pas une police exploitable est signalé et écarté, plutôt que de faire échouer tout le lot.</target>
+            </trans-unit>
+            <trans-unit id="T956Z8o">
+                <source>narration.guided_step_ui_font_open</source>
+                <target>Le panneau vous emmène sur les polices. Une ligne par fichier : une famille compte autant de lignes qu'elle a de graisses et de styles.</target>
+            </trans-unit>
+            <trans-unit id="y1zi798">
+                <source>narration.guided_step_ui_form_action</source>
+                <target>Choisissez ensuite ce qu'il déclenche. L'action décide de ce qui se passe à la soumission : envoyer un e-mail, inscrire quelqu'un, réinitialiser un mot de passe.</target>
+            </trans-unit>
+            <trans-unit id="MeB2xYx">
+                <source>narration.guided_step_ui_form_field_template_done</source>
+                <target>Sur l'écran des formulaires, le sélecteur placé à côté du bouton « Ajouter » de la collection propose désormais ce modèle, et remplit toute une ligne de champ d'un coup.</target>
+            </trans-unit>
+            <trans-unit id="dC8.46H">
+                <source>narration.guided_step_ui_form_field_template_label</source>
+                <target>Écrivez maintenant ce que lit le visiteur, le libellé imprimé au-dessus du champ. Réglez-le ici une fois, et tous les formulaires qui demandent ce champ posent la question de la même manière.</target>
+            </trans-unit>
+            <trans-unit id="wmqX2Y_">
+                <source>narration.guided_step_ui_form_field_template_name</source>
+                <target>Nommez-le. Ce nom ne regarde que vous : c'est celui que le sélecteur affiche au moment de déposer le champ dans un formulaire, jamais celui que lit le visiteur.</target>
+            </trans-unit>
+            <trans-unit id="Ihs9dwC">
+                <source>narration.guided_step_ui_form_field_template_new</source>
+                <target>Ajoutez un modèle avec le bouton en haut de l'écran.</target>
+            </trans-unit>
+            <trans-unit id="HjJbivt">
+                <source>narration.guided_step_ui_form_field_template_open</source>
+                <target>Aucune entrée de menu ne mène au catalogue des champs : il s'ouvre depuis la barre d'outils de l'écran des formulaires, comme de celui des modèles d'e-mail.</target>
+            </trans-unit>
+            <trans-unit id="oOuLDSp">
+                <source>narration.guided_step_ui_form_field_template_required</source>
+                <target>Décidez enfin s'il est obligatoire. Ce n'est qu'une valeur par défaut : un formulaire qui dépose ce champ peut encore en décider autrement.</target>
+            </trans-unit>
+            <trans-unit id="AZovWS7">
+                <source>narration.guided_step_ui_form_field_template_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="xwX5dvn">
+                <source>narration.guided_step_ui_form_field_template_type</source>
+                <target>Choisissez son type : il décide de la façon dont le champ est dessiné et de ce que le visiteur a le droit d'y écrire. Un champ e-mail refuse une adresse qui n'en est pas une.</target>
+            </trans-unit>
+            <trans-unit id="P7.Gast">
+                <source>narration.guided_step_ui_form_fields</source>
+                <target>Ajoutez les champs, un par information demandée et rien de plus : chaque champ en trop vous coûte des réponses.</target>
+            </trans-unit>
+            <trans-unit id="ffqKDfR">
+                <source>narration.guided_step_ui_form_name</source>
+                <target>Donnez-lui un nom dans le premier champ : c'est celui que vous retrouverez dans le block de formulaire.</target>
+            </trans-unit>
+            <trans-unit id="Kh90.DO">
+                <source>narration.guided_step_ui_form_new</source>
+                <target>Créez un formulaire avec le bouton en haut de l'écran.</target>
+            </trans-unit>
+            <trans-unit id="gk7HMbt">
+                <source>narration.guided_step_ui_form_open</source>
+                <target>Le panneau vous emmène sur les formulaires. Un formulaire se construit ici, indépendamment de la page qui l'affichera.</target>
+            </trans-unit>
+            <trans-unit id="LNNfR_x">
+                <source>narration.guided_step_ui_form_place</source>
+                <target>Il ne reste qu'à le poser dans une page : ajoutez-y un block de formulaire, et choisissez celui que vous venez de créer.</target>
+            </trans-unit>
+            <trans-unit id="JE.beBm">
+                <source>narration.guided_step_ui_form_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="MHIvS60">
+                <source>narration.guided_step_ui_form_translate</source>
+                <target>Rouvrez le formulaire : sur un site qui propose plusieurs langues, un sélecteur se trouve juste au-dessus. Choisissez-en une, et écrivez-y les libellés et les textes d'aide - les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
+            </trans-unit>
+            <trans-unit id="aPBTIn6">
+                <source>narration.guided_step_ui_legal_model_apply</source>
+                <target>Appliquez vos modifications avec le bouton du formulaire : la page publiée est reconstruite aussitôt, le document étant mis en cache jusque-là.</target>
+            </trans-unit>
+            <trans-unit id="hjYzwoo">
+                <source>narration.guided_step_ui_legal_model_customize</source>
+                <target>Cliquez sur le bouton de personnalisation : il ouvre le document section par section. Seul un modèle encore fourni par le bundle est proposé ici, un modèle inconnu étant signalé comme tel.</target>
+            </trans-unit>
+            <trans-unit id="0vkjuof">
+                <source>narration.guided_step_ui_legal_model_done</source>
+                <target>Le document est désormais le vôtre, et il reste à jour : seul ce que vous avez modifié est enregistré, tout le reste suit le modèle, si bien qu'une mise à jour du bundle atteint votre page d'elle-même.</target>
+            </trans-unit>
+            <trans-unit id="4cik3r0">
+                <source>narration.guided_step_ui_legal_model_extra</source>
+                <target>Vous pouvez aussi ajouter une section de votre cru, pour ce que le modèle ne couvre pas. Elle se place sous la section que vous choisissez, et aucune mise à jour n'y touche jamais.</target>
+            </trans-unit>
+            <trans-unit id="IP08348">
+                <source>narration.guided_step_ui_legal_model_open</source>
+                <target>Le panneau vous emmène sur les documents légaux. Ils sont tous listés ici, avec la page où ils se trouvent et l'écart pris avec le texte fourni par le bundle.</target>
+            </trans-unit>
+            <trans-unit id="hesS4xb">
+                <source>narration.guided_step_ui_legal_model_reset</source>
+                <target>Le bouton de retour remet le texte du bundle dans la section : c'est ce qu'il faut faire dès qu'une mise à jour l'a reformulé.</target>
+            </trans-unit>
+            <trans-unit id="4MRnqsr">
+                <source>narration.guided_step_ui_legal_model_unit</source>
+                <target>Chaque carte est une section. Donnez-lui votre propre titre, réécrivez son texte, ou cochez la case qui la masque sur la page publiée.</target>
+            </trans-unit>
+            <trans-unit id="7aAQu1I">
+                <source>narration.guided_step_ui_media_alt</source>
+                <target>Écrivez le texte alternatif : ce que montre l'image, en une phrase. Il est lu par les lecteurs d'écran et s'affiche quand l'image ne se charge pas.</target>
+            </trans-unit>
+            <trans-unit id="NYKiQA_">
+                <source>narration.guided_step_ui_media_credits</source>
+                <target>Indiquez ensuite l'auteur, si l'image n'est pas de vous : un photographe, une banque d'images, une licence.</target>
+            </trans-unit>
+            <trans-unit id="ZZtBJGF">
+                <source>narration.guided_step_ui_media_done</source>
+                <target>Une image, une seule fiche : ce que vous venez d'écrire la suit dans toutes les pages et tous les blocks qui l'utilisent déjà. La fiche liste aussi où elle sert, pour le savoir avant d'en supprimer une. Une image qui semble disparue n'est le plus souvent qu'attachée à une page en corbeille : la galerie a un lien pour afficher celles-là aussi.</target>
+            </trans-unit>
+            <trans-unit id="OK1vLdo">
+                <source>narration.guided_step_ui_media_open</source>
+                <target>Le panneau vous emmène sur la bibliothèque de médias. Toutes les images du site sont là, qu'elles aient été téléversées depuis une page, depuis un block ou parmi les graphiques du site.</target>
+            </trans-unit>
+            <trans-unit id=".ftPqIg">
+                <source>narration.guided_step_ui_media_pick</source>
+                <target>Cliquez sur une vignette pour ouvrir sa fiche. Un graphique global du site, comme le favicon ou le logo, ouvre plutôt l'écran des graphiques du site, où ceux-là se modifient.</target>
+            </trans-unit>
+            <trans-unit id="zIcpbRr">
+                <source>narration.guided_step_ui_media_save</source>
+                <target>Enregistrez le média avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="lv5yC9T">
+                <source>narration.guided_step_ui_review_decide</source>
+                <target>Voici les deux boutons pour lesquels cet écran existe : un clic publie l'avis, un autre le refuse, depuis la liste comme depuis l'avis lui-même.</target>
+            </trans-unit>
+            <trans-unit id="QQadmr1">
+                <source>narration.guided_step_ui_review_done</source>
+                <target>C'est terminé : l'avis publié apparaît sur la page du livre ou du produit concerné, avec sa date.</target>
+            </trans-unit>
+            <trans-unit id="KB17jek">
+                <source>narration.guided_step_ui_review_open</source>
+                <target>Le panneau vous emmène sur l'écran des avis. Ceux qui attendent sont en tête de liste : aucun n'apparaît sur le site tant que vous ne l'avez pas lu.</target>
+            </trans-unit>
+            <trans-unit id="CJRTQgn">
+                <source>narration.guided_step_ui_review_pick</source>
+                <target>Ouvrez un avis avec le crayon, au bout de sa ligne. Le texte, la note et le nom sont ceux de son auteur : cet écran ne les réécrit pas. Le crayon n'apparaît d'ailleurs que sur un avis auquel ce site peut répondre.</target>
+            </trans-unit>
+            <trans-unit id="jrjzfDU">
+                <source>narration.guided_step_ui_review_reply</source>
+                <target>Le champ suivant est votre réponse publique : elle s'affiche sous l'avis. Pour un avis venu d'une plateforme, elle y est renvoyée dès l'enregistrement.</target>
+            </trans-unit>
+            <trans-unit id="7qxqc1B">
+                <source>narration.guided_step_ui_review_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="utjJpCt">
+                <source>narration.guided_step_ui_review_status</source>
+                <target>Vous pouvez aussi poser le statut à la main dans le formulaire. « Publié » affiche l'avis sur la page concernée et compte sa note dans la moyenne, « Rejeté » l'en retire. Un avis venu d'une plateforme n'est pas modifiable ici.</target>
+            </trans-unit>
+            <trans-unit id="5AgYdI2">
+                <source>narration.guided_step_ui_site_graphic_done</source>
+                <target>Vérifiez sur le site : le favicon apparaît dans l'onglet du navigateur, l'image de partage lorsqu'une page est publiée sur un réseau social. L'un comme l'autre peuvent demander un rafraîchissement forcé avant de s'afficher.</target>
+            </trans-unit>
+            <trans-unit id="H8qip51">
+                <source>narration.guided_step_ui_site_graphic_file</source>
+                <target>Choisissez le fichier. Le rôle étant déjà fixé, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert.</target>
+            </trans-unit>
+            <trans-unit id="9dmAOkA">
+                <source>narration.guided_step_ui_site_graphic_open</source>
+                <target>Le panneau vous emmène sur les graphiques du site. Ces images appartiennent au site lui-même plutôt qu'à une page, d'où leur écran distinct de la médiathèque.</target>
+            </trans-unit>
+            <trans-unit id="LhYTSwQ">
+                <source>narration.guided_step_ui_site_graphic_pick</source>
+                <target>Choisissez celui qui manque encore : un bouton par graphique dont le site ne dispose pas, qui ouvre le formulaire de dépôt avec son rôle déjà choisi. S'ils sont tous en place, modifiez plutôt celui que vous voulez remplacer.</target>
+            </trans-unit>
+            <trans-unit id="IP7FAq7">
+                <source>narration.guided_step_ui_site_graphic_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="qj2GNDz">
+                <source>narration.legal_models</source>
+                <target>« Modèles légaux » liste les textes légaux fournis par le bundle, qui restent maintenus et mis à jour. Vous pouvez masquer une section, la réécrire ou en ajouter : seul ce que vous modifiez cesse de suivre les mises à jour.</target>
+            </trans-unit>
+            <trans-unit id="Lq2heTn">
+                <source>narration.media_library</source>
+                <target>« Bibliothèque de médias » rassemble toutes les images téléversées, d'où qu'elles viennent. La légende, le texte alternatif et les crédits s'y écrivent une fois pour toutes les pages qui les utilisent.</target>
+            </trans-unit>
+            <trans-unit id="UkAKU5V">
+                <source>narration.reviews</source>
+                <target>« Avis clients » rassemble les avis du site, quelle que soit la plateforme d'où ils viennent. Aucun n'apparaît en ligne tant que vous ne l'avez pas publié.</target>
+            </trans-unit>
+            <trans-unit id="f.chQ4a">
+                <source>narration.site_graphics</source>
+                <target>« Graphiques du site » tient les images qui appartiennent au site lui-même : favicon, icône Apple, image de partage par défaut, logo et images d'erreur.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

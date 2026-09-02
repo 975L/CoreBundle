@@ -27,8 +27,8 @@ class NotFoundSubscriberTest extends TestCase
     private const string SEEN_AT = '2026-08-23 10:00:00';
 
     private function createEvent(
-        string $url = 'https://papa-calin.com/histoire/disparue',
-        ?string $referer = 'https://papa-calin.com/histoires',
+        string $url = 'https://example.com/histoire/disparue',
+        ?string $referer = 'https://example.com/histoires',
         \Throwable $throwable = new NotFoundHttpException(),
         string $method = 'GET',
         bool $isMainRequest = true,
@@ -65,7 +65,7 @@ class NotFoundSubscriberTest extends TestCase
         $repository = $this->createRepository();
         $repository->expects($this->once())
             ->method('record')
-            ->with('/histoire/disparue', 'https://papa-calin.com/histoires', true, new \DateTimeImmutable(self::SEEN_AT))
+            ->with('/histoire/disparue', 'https://example.com/histoires', true, new \DateTimeImmutable(self::SEEN_AT))
         ;
 
         $this->createSubscriber($repository)->onKernelException($this->createEvent());
@@ -77,10 +77,10 @@ class NotFoundSubscriberTest extends TestCase
         $repository = $this->createRepository();
         $repository->expects($this->once())
             ->method('record')
-            ->with('/histoire/disparue', 'https://example.com/blog', false, new \DateTimeImmutable(self::SEEN_AT))
+            ->with('/histoire/disparue', 'https://elsewhere.example/blog', false, new \DateTimeImmutable(self::SEEN_AT))
         ;
 
-        $this->createSubscriber($repository)->onKernelException($this->createEvent(referer: 'https://example.com/blog'));
+        $this->createSubscriber($repository)->onKernelException($this->createEvent(referer: 'https://elsewhere.example/blog'));
     }
 
     // The whole filter: a scanner walking for an admin panel sends no referer, and that is what keeps the table down to links that exist somewhere
@@ -89,7 +89,7 @@ class NotFoundSubscriberTest extends TestCase
         $repository = $this->createRepository();
         $repository->expects($this->never())->method('record');
 
-        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://papa-calin.com/wp-admin', referer: null));
+        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://example.com/wp-admin', referer: null));
     }
 
     // A referer that is not a url at all is a forged header, not a page anyone could open
@@ -107,7 +107,7 @@ class NotFoundSubscriberTest extends TestCase
         $repository = $this->createRepository();
         $repository->expects($this->never())->method('record');
 
-        $this->createSubscriber($repository)->onKernelException($this->createEvent(referer: 'javascript://papa-calin.com/%0aalert(1)'));
+        $this->createSubscriber($repository)->onKernelException($this->createEvent(referer: 'javascript://example.com/%0aalert(1)'));
     }
 
     // A 410 is a url someone decided to remove (see RedirectSubscriber), which is an answer, not a broken link
@@ -134,7 +134,7 @@ class NotFoundSubscriberTest extends TestCase
         $repository = $this->createRepository();
         $repository->expects($this->never())->method('record');
 
-        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://papa-calin.com/assets/app-123456.css'));
+        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://example.com/assets/app-123456.css'));
     }
 
     // Skipped rather than truncated: half a path is a row nobody could act on
@@ -143,7 +143,7 @@ class NotFoundSubscriberTest extends TestCase
         $repository = $this->createRepository();
         $repository->expects($this->never())->method('record');
 
-        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://papa-calin.com/' . str_repeat('a', 300)));
+        $this->createSubscriber($repository)->onKernelException($this->createEvent(url: 'https://example.com/' . str_repeat('a', 300)));
     }
 
     public function testRecordsNothingForASubRequest(): void

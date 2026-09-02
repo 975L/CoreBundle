@@ -38,6 +38,18 @@
                 <source>text.hero_media_max</source>
                 <target>Une section hero peut contenir au maximum {{ limit }} images.</target>
             </trans-unit>
+            <trans-unit id="_ma7JPd">
+                <source>text.map_point_address_not_found</source>
+                <target>Cette adresse est introuvable. Vérifiez-la, ou placez ce point par ses coordonnées GPS.</target>
+            </trans-unit>
+            <trans-unit id="Av4AwYl">
+                <source>text.map_point_address_required</source>
+                <target>Saisissez une adresse, ou placez ce point par ses coordonnées GPS.</target>
+            </trans-unit>
+            <trans-unit id=".T3tyLp">
+                <source>text.map_point_coordinates_required</source>
+                <target>Saisissez à la fois une latitude et une longitude.</target>
+            </trans-unit>
             <trans-unit id="G1fcoic">
                 <source>text.password_mismatch</source>
                 <target>Les mots de passe ne correspondent pas</target>

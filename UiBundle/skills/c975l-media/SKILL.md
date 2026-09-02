@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
 ---
 
 # c975L UiBundle — media and uploads
@@ -117,6 +117,16 @@ declare.
 Two contributions worth knowing: `MediaUsageProviderInterface` tells the media library where a media
 is used inside your own entities — without it the library cannot warn before a deletion — and
 `PlaceholderMediaProviderInterface` offers stand-in images.
+
+A usage may carry an optional `binned` flag saying whether the owner naming it is in the bin. A media
+every owner of which is binned is left out of the gallery — a binned page keeps its blocks and their
+medias, which crowded the library with files nobody could act on — and the gallery offers a link
+showing them back. `Registry\MediaUsageRegistry::getBinnedOnlyMediaIds()` reads the verdict across
+every provider: one live usage keeps a media, a provider omitting the flag has no verdict and does not
+vote, and a media used nowhere at all is never hidden. It is fed
+`Repository\MediaRepository::findAttachedToBlock()`, the rows hanging off a block being the only ones
+a binned page can hold on its own — a provider voting `binned` on a media with no block would go
+unread. Nothing is deleted: restoring the page brings them straight back.
 
 That provider returns `images` — a pool a showcase draws from when anything will do — plus
 `keyed_images`, an array of slug ⇒ paths holding the pictures of one **named** row, in the order they

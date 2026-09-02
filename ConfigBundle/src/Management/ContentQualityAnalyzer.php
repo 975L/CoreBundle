@@ -139,7 +139,7 @@ class ContentQualityAnalyzer
         return $status >= 400 ? $status : null;
     }
 
-    // Every link found on every page, deduped, each checked once regardless of how many pages link to it - fired in batches (see BATCH_SIZE), then whatever the HEAD pass couldn't conclude on retried once in GET, so that only a real >= 400 answer ever ends up reported as broken. Internal and external links are checked apart, and only because they are not batched the same way (see batchesByHost()): a batch of this site's own pages is a batch against our own server, a batch of external ones is somebody else's server to be careful with. The dedup is per group, which loses nothing - the same url cannot be internal on one page and external on another, both being decided against the same site's host
+    // Every link found on every page, deduped, each checked once regardless of how many pages link to it - fired in batches (see BATCH_SIZE), then whatever the HEAD pass didn't settle - what it couldn't conclude on as much as what it answered >= 400 - retried once in GET, so that only a >= 400 the GET itself confirms ever ends up reported as broken. Internal and external links are checked apart, and only because they are not batched the same way (see batchesByHost()): a batch of this site's own pages is a batch against our own server, a batch of external ones is somebody else's server to be careful with. The dedup is per group, which loses nothing - the same url cannot be internal on one page and external on another, both being decided against the same site's host
     private function checkBrokenLinks(array $analyses, array $externalLinkCheck): array
     {
         $internalLinks = [];
@@ -171,14 +171,15 @@ class ContentQualityAnalyzer
         );
     }
 
-    // One group of links checked through, HEAD first then GET for whatever the HEAD couldn't conclude on - $batcher is what decides how many of them are in flight together, and the retry goes through it again rather than through a plain chunk, so a group being careful with its hosts stays careful on the second pass too. A host that answered that it filters this client is not retried (see ContentQualityClient::LINK_FILTERED): the GET would learn nothing and call it a second time
+    // One group of links checked through, HEAD first then GET for whatever the HEAD didn't settle - $batcher is what decides how many of them are in flight together, and the retry goes through it again rather than through a plain chunk, so a group being careful with its hosts stays careful on the second pass too. A host that answered that it filters this client is not retried (see ContentQualityClient::LINK_FILTERED): the GET would learn nothing and call it a second time
     private function checkLinkGroup(array $links, callable $batcher): array
     {
         $verdicts = $this->runLinkChecks($batcher($links), fn (string $link) => $this->contentQualityClient->requestLinkCheck($link));
 
-        $inconclusive = array_keys($verdicts, ContentQualityClient::LINK_UNKNOWN, true);
-        if ($inconclusive) {
-            $verdicts = array_replace($verdicts, $this->runLinkChecks($batcher($inconclusive), fn (string $link) => $this->contentQualityClient->requestLinkCheckFallback($link)));
+        // A HEAD that answered >= 400 is retried alongside the inconclusive ones, and only the GET decides: a share intent, a single-page app's route, anything routed client-side answers 404 to a HEAD its own GET serves in 200 (bsky.app/intent/compose is one), which reported a working link as dead
+        $unsettled = array_keys(array_filter($verdicts, static fn (string $verdict): bool => \in_array($verdict, [ContentQualityClient::LINK_UNKNOWN, ContentQualityClient::LINK_BROKEN], true)));
+        if ($unsettled) {
+            $verdicts = array_replace($verdicts, $this->runLinkChecks($batcher($unsettled), fn (string $link) => $this->contentQualityClient->requestLinkCheckFallback($link)));
         }
 
         return $verdicts;

@@ -17,15 +17,21 @@ use c975L\UiBundle\Form\ImageClassChoiceType;
 use c975L\UiBundle\Form\MediaUsagesType;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use c975L\UiBundle\Registry\MediaUsageRegistry;
+use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
@@ -46,6 +52,12 @@ class MediaCrudController extends AbstractCrudController
     // Kept in line with php.ini's upload_max_filesize/post_max_size - MediaUploadType (the Block-attached upload form) has no such constraint of its own and simply relies on those same ini limits
     private const string MAX_FILE_SIZE = '100M';
 
+    // Query parameter the gallery's own link toggles, to show back what is only used by an owner in the bin
+    public const string BINNED_PARAM = 'binned';
+
+    // How many rows the gallery is leaving out, read by index() once createIndexQueryBuilder() has counted them - there is no second query for it, and no link offered when there is nothing to show back
+    private int $binnedOnlyCount = 0;
+
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly MediaDimensionsFiller $mediaDimensionsFiller,
@@ -53,6 +65,7 @@ class MediaCrudController extends AbstractCrudController
         private readonly ConfigServiceInterface $configService,
         private readonly Security $security,
         private readonly MediaUsageRegistry $mediaUsageRegistry,
+        private readonly MediaRepository $mediaRepository,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
     ) {
@@ -77,6 +90,8 @@ class MediaCrudController extends AbstractCrudController
 
         if ($responseParameters instanceof KeyValueStore) {
             $responseParameters->set('site_graphic_urls', $this->siteGraphicUrls($responseParameters->get('entities')));
+            $responseParameters->set('binned_only_count', $this->binnedOnlyCount);
+            $responseParameters->set('binned_only_shown', $this->showsBinnedOnly());
         }
 
         return $responseParameters;
@@ -120,6 +135,31 @@ class MediaCrudController extends AbstractCrudController
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    // Leaves out the medias nothing on the live site draws any more: a page moved to the bin keeps its blocks, and their medias with them, which crowd the gallery with files an admin cannot act on and would not find twice. Nothing is deleted and nothing is lost - restoring the page brings them straight back, and the gallery's own link shows them meanwhile
+    #[\Override]
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        $binnedOnly = $this->mediaUsageRegistry->getBinnedOnlyMediaIds($this->mediaRepository->findAttachedToBlock());
+        $this->binnedOnlyCount = \count($binnedOnly);
+
+        if ([] === $binnedOnly || $this->showsBinnedOnly()) {
+            return $queryBuilder;
+        }
+
+        return $queryBuilder
+            ->andWhere(sprintf('%s.id NOT IN (:binnedOnly)', $queryBuilder->getRootAliases()[0]))
+            ->setParameter('binnedOnly', $binnedOnly)
+        ;
+    }
+
+    // Whether the admin asked to see them back, from the gallery's own link
+    private function showsBinnedOnly(): bool
+    {
+        return (bool) $this->getContext()?->getRequest()->query->getBoolean(self::BINNED_PARAM);
     }
 
     #[\Override]
@@ -207,7 +247,7 @@ class MediaCrudController extends AbstractCrudController
                 ->setLabel(t('label.alt_text', [], 'ui'))
                 ->hideOnIndex(),
 
-            // Slugified by UiMediaNamer into the stored/physical filename (e.g. "cv-lilouan-xxx.pdf") instead of the default "block-{kind}-{id}" - only takes effect on the next upload, editing it here doesn't rename a file already on disk. Distinct from "label" below (a display caption, not filesystem-safe).
+            // Slugified by UiMediaNamer into the stored/physical filename (e.g. "cv-candidat-xxx.pdf") instead of the default "block-{kind}-{id}" - only takes effect on the next upload, editing it here doesn't rename a file already on disk. Distinct from "label" below (a display caption, not filesystem-safe).
             TextField::new('name')
                 ->setLabel(t('label.file_name', [], 'ui'))
                 ->setHelp(t('label.file_name_help', [], 'ui'))

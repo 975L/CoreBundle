@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: 975L <contact@example.com>
  * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
  *
  * This source file is subject to the MIT license that is bundled
@@ -13,9 +13,11 @@ namespace c975L\ConfigBundle\Tests\Command;
 use c975L\ConfigBundle\Command\HealthCheckRunCommand;
 use c975L\ConfigBundle\Management\HealthCheckRetentionPurger;
 use c975L\ConfigBundle\Management\HealthCheckRunner;
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Routing\RequestContext;
 
 class HealthCheckRunCommandTest extends TestCase
 {
@@ -136,13 +138,59 @@ class HealthCheckRunCommandTest extends TestCase
         $this->assertStringNotContainsString('retention window', $tester->getDisplay());
     }
 
-    private function createCommand(HealthCheckRunner $healthCheckRunner, ?HealthCheckRetentionPurger $purger = null): HealthCheckRunCommand
+    // Every url this run records is generated without a request, so the context is what decides whether they point at the site or at localhost
+    public function testExecuteBuildsUrlsOnTheConfiguredSiteUrl(): void
+    {
+        $healthCheckRunner = $this->createStub(HealthCheckRunner::class);
+        $healthCheckRunner->method('run')->willReturn(['pagespeed' => 1]);
+
+        $requestContext = new RequestContext();
+        $tester = new CommandTester($this->createCommand($healthCheckRunner, null, 'https://example.com', $requestContext));
+        $tester->execute([]);
+
+        $this->assertSame('https', $requestContext->getScheme());
+        $this->assertSame('example.com', $requestContext->getHost());
+    }
+
+    // A site url carrying a port and a path, as a local install has: dropping either points the url nowhere
+    public function testExecuteKeepsThePortAndThePathOfTheSiteUrl(): void
+    {
+        $healthCheckRunner = $this->createStub(HealthCheckRunner::class);
+        $healthCheckRunner->method('run')->willReturn(['pagespeed' => 1]);
+
+        $requestContext = new RequestContext();
+        $tester = new CommandTester($this->createCommand($healthCheckRunner, null, 'http://localhost:8000/site/', $requestContext));
+        $tester->execute([]);
+
+        $this->assertSame(8000, $requestContext->getHttpPort());
+        $this->assertSame('/site', $requestContext->getBaseUrl());
+    }
+
+    // An unconfigured site url leaves the context as it was, rather than blanking the host it already holds
+    public function testExecuteLeavesTheContextAloneWithoutASiteUrl(): void
+    {
+        $healthCheckRunner = $this->createStub(HealthCheckRunner::class);
+        $healthCheckRunner->method('run')->willReturn(['pagespeed' => 1]);
+
+        $requestContext = new RequestContext();
+        $requestContext->setHost('kept.example');
+
+        $tester = new CommandTester($this->createCommand($healthCheckRunner, null, null, $requestContext));
+        $tester->execute([]);
+
+        $this->assertSame('kept.example', $requestContext->getHost());
+    }
+
+    private function createCommand(HealthCheckRunner $healthCheckRunner, ?HealthCheckRetentionPurger $purger = null, ?string $siteUrl = null, ?RequestContext $requestContext = null): HealthCheckRunCommand
     {
         if (null === $purger) {
             $purger = $this->createStub(HealthCheckRetentionPurger::class);
             $purger->method('purge')->willReturn(0);
         }
 
-        return new HealthCheckRunCommand($healthCheckRunner, $purger);
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn($siteUrl);
+
+        return new HealthCheckRunCommand($healthCheckRunner, $purger, $configService, $requestContext ?? new RequestContext());
     }
 }

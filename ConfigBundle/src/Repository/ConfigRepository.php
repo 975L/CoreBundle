@@ -51,6 +51,22 @@ class ConfigRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // How many configs are still waiting for a value, backing the "to fill in" row of ConfigCrudController's "pick a group" screen. Sensitive entries are counted along with the others, unlike countsByGroup(): an empty secret has nothing to hide and is precisely what this row is there to surface
+    public function countEmpty(bool $includeRestricted): int
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where("c.value IS NULL OR c.value = ''")
+        ;
+
+        if (!$includeRestricted) {
+            $qb->andWhere('c.isRestricted IS NULL OR c.isRestricted = :isRestricted')
+                ->setParameter('isRestricted', false);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
     // Every sensitive config actually holding a value, which is what tells an entry filled but unreadable from one simply left empty (see ConfigAlertProvider)
     public function findSensitiveWithValue(): array
     {

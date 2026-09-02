@@ -90,7 +90,7 @@ class ConfigGetCommandTest extends TestCase
     public function testExecuteDisplaysEveryEntryMatchingThePattern(): void
     {
         $tester = $this->createTester([
-            $this->createConfig('site-backup-offsite-target', 'storagebox:975l.com'),
+            $this->createConfig('site-backup-offsite-target', 'storagebox:example.com'),
             $this->createConfig('site-backup-offsite-keep-days', '15', false, Config::TYPE_INT),
             $this->createConfig('site-name', 'My Site'),
         ]);
@@ -99,18 +99,18 @@ class ConfigGetCommandTest extends TestCase
         $display = $tester->getDisplay();
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
-        $this->assertStringContainsString('storagebox:975l.com', $display);
+        $this->assertStringContainsString('storagebox:example.com', $display);
         $this->assertStringContainsString('15', $display);
         $this->assertStringNotContainsString('My Site', $display);
     }
 
     public function testExecuteAcceptsTheSqlWildcardAsPattern(): void
     {
-        $tester = $this->createTester([$this->createConfig('site-backup-offsite-target', 'storagebox:975l.com')]);
+        $tester = $this->createTester([$this->createConfig('site-backup-offsite-target', 'storagebox:example.com')]);
         $tester->execute(['slug' => 'site-backup-offsite%']);
 
         $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
-        $this->assertStringContainsString('storagebox:975l.com', $tester->getDisplay());
+        $this->assertStringContainsString('storagebox:example.com', $tester->getDisplay());
     }
 
     public function testExecuteMasksSensitiveValueByDefault(): void
@@ -182,7 +182,7 @@ class ConfigGetCommandTest extends TestCase
     {
         $encryptor = new VaultEncryptor(self::VAULT_KEY);
         $tester = $this->createTester([
-            $this->createConfig('site-backup-offsite-target', 'storagebox:975l.com'),
+            $this->createConfig('site-backup-offsite-target', 'storagebox:example.com'),
             $this->createConfig('site-backup-offsite-password', $encryptor->encrypt('s3cret'), true),
         ]);
         $tester->execute(['slug' => 'site-backup-offsite*', '--raw' => true], ['capture_stderr_separately' => true]);

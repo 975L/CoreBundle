@@ -81,7 +81,7 @@ class NotFoundSubscriber implements EventSubscriberInterface
         return 0 === strcasecmp((string) $this->hostOf($referer), $request->getHost());
     }
 
-    // The scheme is checked as well as the host: a header is whatever its sender wrote, and "javascript://papa-calin.com/..." carries this very host - it would be filed as one of our own broken links and listed as a link to click on
+    // The scheme is checked as well as the host: a header is whatever its sender wrote, and "javascript://example.com/..." carries this very host - it would be filed as one of our own broken links and listed as a link to click on
     private function isWebUrl(string $referer): bool
     {
         $scheme = parse_url($referer, \PHP_URL_SCHEME);

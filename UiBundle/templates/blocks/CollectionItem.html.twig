@@ -14,7 +14,10 @@
             </div>
         {% endif %}
         <div class="portfolio-grid__project-body">
-            <h3 class="portfolio-grid__project-title">{{ title }}</h3>
+            {# The level the "collection" block resolved for its items, this markup's own <h3> when it drew none - see blocks/Collection.html.twig #}
+            {# Matched against the offered levels and never interpolated, the same rule as every other stored value that writes a tag name: what the form holds is data, and data must not be able to write markup #}
+            {% set titleLevel = level|default('') in ['h2', 'h3', 'h4'] ? level : 'h3' %}
+            <{{ titleLevel }} class="portfolio-grid__project-title">{{ title }}</{{ titleLevel }}>
             {% if content %}<p class="portfolio-grid__project-text">{{ content }}</p>{% endif %}
         </div>
     </{{ tag }}>

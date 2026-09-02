@@ -34,6 +34,9 @@ class IntrusionHealthCheckProvider implements HealthCheckProviderInterface
         'cgi', 'pl', 'py', 'sh', 'htaccess',
     ];
 
+    // Files the framework itself rewrites in the working tree, dropped from what "changed since deployment" reports. config/reference.php is dumped by FrameworkBundle on every debug-mode container compile (a console command run with any env but prod, which a deployment running its migrations in a dedicated env does): it is a versioned file nothing ever loads, written for the IDE alone, so it drifts on every deploy and would leave this row in warning for good - the one thing that makes the other traces worth reading
+    private const array GENERATED_PATHS = ['config/reference.php'];
+
     // Suffixes the three rows are keyed by, appended to the site root so each keeps its own history (results are stored per url and kind)
     private const string ROW_UPLOADS = '#uploads';
     private const string ROW_CODE = '#code';
@@ -120,7 +123,7 @@ class IntrusionHealthCheckProvider implements HealthCheckProviderInterface
             return $this->row($siteRoot . self::ROW_CODE, HealthCheckResult::STATUS_SKIPPED, 'label.health_check_intrusion_code_unavailable');
         }
 
-        $changed = array_values(array_filter(array_map(trim(...), $output)));
+        $changed = array_values(array_filter(array_map(trim(...), $output), $this->isReportable(...)));
 
         if ([] === $changed) {
             return $this->row($siteRoot . self::ROW_CODE, HealthCheckResult::STATUS_OK, 'label.health_check_intrusion_code_clean');
@@ -133,6 +136,18 @@ class IntrusionHealthCheckProvider implements HealthCheckProviderInterface
             ['%count%' => \count($changed), '%files%' => implode(', ', \array_slice($changed, 0, 5))],
             ['changed' => \array_slice($changed, 0, 50)],
         );
+    }
+
+    // Whether one "XY path" line of the porcelain output names something worth reporting - an empty line and the framework's own generated files are not. The path is what follows the two status columns, and a rename ("R  old -> new") is judged on the name it now carries, which is the file actually sitting in the tree
+    private function isReportable(string $line): bool
+    {
+        if ('' === $line) {
+            return false;
+        }
+
+        $renamed = explode(' -> ', (string) preg_replace('/^\S+\s+/', '', $line));
+
+        return !\in_array(trim(end($renamed), '"'), self::GENERATED_PATHS, true);
     }
 
     // How many accounts hold the role that opens the back office, against how many held it last time. A count rather than a list: who they are is the site's business, and the number moving on its own is the whole signal

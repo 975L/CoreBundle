@@ -17,6 +17,7 @@ use c975L\UiBundle\Registry\EmailTemplateProviderRegistry;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Service\EmailTemplateFactory;
 use c975L\UiBundle\Service\FormSeeder;
+use c975L\UiBundle\Service\FormTranslator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -116,7 +117,7 @@ class EmailTemplateEnsureCommandTest extends TestCase
             $registry,
             $repository,
             $entityManager,
-            new FormSeeder($entityManager, $this->createStub(\c975L\UiBundle\Repository\FormRepository::class), $repository, new EmailTemplateFactory(), 'fr'),
+            new FormSeeder($entityManager, $this->createStub(\c975L\UiBundle\Repository\FormRepository::class), $repository, new EmailTemplateFactory(), new FormTranslator(), 'fr'),
             'fr'
         ));
         $tester->execute([]);

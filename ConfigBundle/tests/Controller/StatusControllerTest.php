@@ -22,7 +22,7 @@ class StatusControllerTest extends TestCase
 {
     private const string KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
-    private const array REPORT = ['version' => 1, 'site' => 'https://papa-calin.com'];
+    private const array REPORT = ['version' => 1, 'site' => 'https://example.com'];
 
     private function createController(?string $configuredKey, ?LoggerInterface $logger = null): StatusController
     {

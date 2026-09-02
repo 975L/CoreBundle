@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, GoogleMapsLinkBuilder, google_maps_url, map block, MapProvider, MapType, MapPointType, MapGeocoder, MapGeocoderInterface, ui_map_settings, ui_map_points, vendor-assets.json, VendorAssetsTest, vendored library, ui-map-provider, ui-map-google-api-key, c975l_ui.map.img_origins, leaflet, OpenStreetMap, Google Maps, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales."
 ---
 
 # c975L UiBundle — blocks
@@ -214,6 +214,35 @@ no tag needed; the registry is read at render time, so urls kept in the database
 de-duplicates across providers. **Do not add a field to the block for them** — the bundle owning the
 profiles is the only one that knows their urls.
 
+## The map block
+
+The `map` kind holds a list of places, each set **either** by its address **or** by its GPS
+coordinates — the editor says which, rather than the form guessing from which field they filled.
+An address is geocoded once, on save (`MapGeocoder`, Nominatim, aliasable through
+`MapGeocoderInterface`), and the coordinates are kept beside it, so a page carrying a map never
+geocodes while a visitor waits and a block saved again is not geocoded again.
+
+**The list of places is the content, the map is what the browser makes of it**: the list is rendered
+server-side, each entry linking to the place on OpenStreetMap, and the map is drawn over it. That is
+what a visitor with no JavaScript, a browser that never got the library, and a Google key that was refused
+all keep — and the only version a keyboard and a screen reader can work through.
+
+Which service draws it is **site-wide**, never a field of the block: `ui-map-provider` picks between
+`leaflet` and `google`, `ui-map-google-api-key` holds the key. `Map\MapProvider` declares a provider —
+tile server, attribution, whether it needs a key, whether it needs consent — and `ui_map_settings()`
+hands that to the component. Google writes cookies and is billed per load, so it waits on the same
+`content` consent category as `video_iframe`; OpenStreetMap's tiles write none and are never gated.
+Leaflet is **served by this bundle** (`public/js/leaflet.js`, declared in `config/vendor-assets.json`),
+appended on demand like `cookie-consent.js` serves its banner — a consuming app installs nothing. The
+origins are three container parameters, one per directive (`c975l_ui.map.img_origins`, `.script_origins`,
+`.connect_origins`), for the **site** to name in its own policy; a site on OpenStreetMap names the image
+one alone. Google's API also injects `<style>` into the head, which the nonce-only `style-src` the c975L
+sites run blocks outright — turning it on means giving up that hardening.
+
+Separately, the `contact_details` block builds its own **Google Maps link** from its coordinates or
+its address when the box is ticked (`GoogleMapsLinkBuilder`): a plain Maps url, free and loading no
+script — nothing to do with the billed JavaScript API above.
+
 ## Legal models
 
 The legal notice, privacy policy, terms of sales and use, cookies and copyright are **this bundle's**:
@@ -414,6 +443,14 @@ them** rather than writing a walk of your own. A content export never carries th
 - **Do not write legal text in a template** or duplicate the legal models.
 - **Do not add a field for outside profile urls** to the contact block — contribute them through
   `SameAsProviderInterface`.
+- **Do not add a provider or an API key field to the `map` block** — both are site-wide settings, and
+  an editor composing a page must not be asked to decide them again on every map.
+- **Do not geocode at render time**, and do not put `leaflet` back into an app's importmap — the bundle
+  serves it, so a consuming site has nothing to install and no script host to open in its policy.
+- **Do not bump a vendored library's number without fetching the file** (or the other way round) —
+  `bin/vendor-assets.sh <name> <version>` does both, and `VendorAssetsTest` refuses the mismatch.
+- **Do not reach for `symfony/ux-map` for a block** — it builds one renderer from a compile-time DSN,
+  which a provider picked in the back office and a key held in the database can never reach.
 - **Do not make a singleton kind pickable.**
 - **Do not store a block's default language in `site_translation`** — it stays in `Block::$data`.
 - **Do not offer a field for translation because it is a text field**: declare `translatable`

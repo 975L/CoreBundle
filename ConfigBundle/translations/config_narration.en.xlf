@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="config_narration.en.xlf">
+        <body>
+            <trans-unit id="R7d7CYz">
+                <source>narration.config</source>
+                <target>"Configuration" opens every setting of the site, grouped by subject. Each is edited from its own page; sensitive values stay encrypted in the database, even when the screen shows them to you in clear.</target>
+            </trans-unit>
+            <trans-unit id="CjZepAN">
+                <source>narration.content_import</source>
+                <target>"Import content" takes in an archive exported from another site, for instance pages carried out with their blocks and their pictures.</target>
+            </trans-unit>
+            <trans-unit id="wxnPT.p">
+                <source>narration.guided_step_config_health_check_again</source>
+                <target>Once your corrections are made, run the check again: the trend chart at the top of the page shows whether the site is improving.</target>
+            </trans-unit>
+            <trans-unit id="mjJnyUV">
+                <source>narration.guided_step_config_health_check_fix</source>
+                <target>Deal with one error at a time. Each failing row carries the advice of the bundle that produced it: that is where to start, not the whole list.</target>
+            </trans-unit>
+            <trans-unit id="8_kAglj">
+                <source>narration.guided_step_config_health_check_open</source>
+                <target>The panel takes you to the health check. Pages not found, redirects, security headers, certificate, sitemaps, W3C validation: your site is combed through, seen from the outside.</target>
+            </trans-unit>
+            <trans-unit id="YOwl5TZ">
+                <source>narration.guided_step_config_health_check_read</source>
+                <target>Read the results table: one row per url and per family. Filter by status to keep only what is wrong.</target>
+            </trans-unit>
+            <trans-unit id="fYsT8a0">
+                <source>narration.guided_step_config_health_check_run</source>
+                <target>Run the check with the button at the top of the page. One job per family of checks is queued: the page waits for nothing, the results land as they come.</target>
+            </trans-unit>
+            <trans-unit id="CibE15s">
+                <source>narration.guided_step_config_maintenance_check</source>
+                <target>Check what your visitors see: open the site in a private browsing window, that is exactly what they have in front of them.</target>
+            </trans-unit>
+            <trans-unit id="bGWMIU3">
+                <source>narration.guided_step_config_maintenance_disable</source>
+                <target>Click the same shortcut, its label now changed: it puts the site back online.</target>
+            </trans-unit>
+            <trans-unit id="Cu_DaBS">
+                <source>narration.guided_step_config_maintenance_done</source>
+                <target>Now you know: the switch is one click away. Nothing forces you to warn ahead for a few minutes of work.</target>
+            </trans-unit>
+            <trans-unit id="Vbk0ouS">
+                <source>narration.guided_step_config_maintenance_enable</source>
+                <target>Click the maintenance shortcut: your visitors immediately get the maintenance page, while you, signed in, keep seeing the site.</target>
+            </trans-unit>
+            <trans-unit id="nYZwnfu">
+                <source>narration.guided_step_config_maintenance_open</source>
+                <target>The panel brings you back to the dashboard. Its shortcuts are immediate actions, with no screen in between.</target>
+            </trans-unit>
+            <trans-unit id="59LPu8b">
+                <source>narration.guided_step_config_not_found_create</source>
+                <target>On that row, click the button creating the redirect: it opens a form with the dead path already filled in.</target>
+            </trans-unit>
+            <trans-unit id="75YQjtn">
+                <source>narration.guided_step_config_not_found_done</source>
+                <target>The link answers again: that path leads to the chosen page, for a visitor as for a search engine. The row stays in the list until nothing hits it any more.</target>
+            </trans-unit>
+            <trans-unit id="nD1m.i7">
+                <source>narration.guided_step_config_not_found_from</source>
+                <target>The first field is already filled in. Nothing to type: it is the path the list showed you, copied as-is.</target>
+            </trans-unit>
+            <trans-unit id="_1uk958">
+                <source>narration.guided_step_config_not_found_open</source>
+                <target>Let's start with the missing pages. In the left-hand column, under "Advanced", the panel takes you to their list. These rows are written by the requests themselves, never by hand.</target>
+            </trans-unit>
+            <trans-unit id="oomn1I3">
+                <source>narration.guided_step_config_not_found_row</source>
+                <target>Read the first row: the most recently hit path comes first. Its number of hits says how much traffic is being lost, and the internal column says whether the broken link is on your own pages. That one is fixed by editing the page, not by a redirect.</target>
+            </trans-unit>
+            <trans-unit id=".QoEjor">
+                <source>narration.guided_step_config_not_found_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="7l4ApyP">
+                <source>narration.guided_step_config_not_found_to</source>
+                <target>In the next field, say where that path should lead from now on. This is the only decision left to you.</target>
+            </trans-unit>
+            <trans-unit id="TnV5eu0">
+                <source>narration.guided_step_config_settings_alerts</source>
+                <target>See what the dashboard makes of it: essential entries left empty are raised there as alerts, until they get filled in.</target>
+            </trans-unit>
+            <trans-unit id="eDf_oz0">
+                <source>narration.guided_step_config_settings_entry</source>
+                <target>Open an entry with the edit button, at the end of its row. Each entry is declared by the bundle using it, which sets its label, its kind and its group.</target>
+            </trans-unit>
+            <trans-unit id="tYy0SvG">
+                <source>narration.guided_step_config_settings_group</source>
+                <target>Pick a group from the list. Identity, e-mails, legal notices, security: each one gathers the entries of a single subject.</target>
+            </trans-unit>
+            <trans-unit id="9_lFHaB">
+                <source>narration.guided_step_config_settings_open</source>
+                <target>The panel takes you to the site configuration. Every setting lives here, grouped by subject: none of them is to be written in a file.</target>
+            </trans-unit>
+            <trans-unit id="Nmyq_ZH">
+                <source>narration.guided_step_config_settings_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="5y4RUl6">
+                <source>narration.guided_step_config_settings_value</source>
+                <target>Fill the value in the form field. An entry marked sensitive is encrypted in the database and never shown in clear again.</target>
+            </trans-unit>
+            <trans-unit id="UguEqcj">
+                <source>narration.guided_step_config_url_metadata_done</source>
+                <target>See what it changes: the content quality health check stops reporting this url, and a link to it now carries a title instead of a bare address.</target>
+            </trans-unit>
+            <trans-unit id="KlRi7ZC">
+                <source>narration.guided_step_config_url_metadata_edit</source>
+                <target>Pick an url to describe and open it with the edit button. The rows are listed by the bundles serving these addresses: none is ever added by hand, only what they say is yours to write.</target>
+            </trans-unit>
+            <trans-unit id="oRtK0u1">
+                <source>narration.guided_step_config_url_metadata_image</source>
+                <target>Add the share image. Without one, a social network falls back on the site's default image, which describes the site and never this particular address.</target>
+            </trans-unit>
+            <trans-unit id="9Tq6Ji4">
+                <source>narration.guided_step_config_url_metadata_open</source>
+                <target>The panel takes you to the url descriptions: one row per address served by a listing rather than by a content of its own, such as a blog index, a gallery or a search page.</target>
+            </trans-unit>
+            <trans-unit id="6cZyyM8">
+                <source>narration.guided_step_config_url_metadata_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="BYohRCV">
+                <source>narration.guided_step_config_url_metadata_summary</source>
+                <target>Then write the summary, two sentences at most: it is what appears under the title in a search result, and next to the link when the page is shared.</target>
+            </trans-unit>
+            <trans-unit id="OlELs4x">
+                <source>narration.guided_step_config_url_metadata_title</source>
+                <target>Write the title in the first field. This is the line a search engine shows above the address, and the one a browser tab carries.</target>
+            </trans-unit>
+            <trans-unit id="2nHgm8X">
+                <source>narration.health_check</source>
+                <target>"Health check" combs through the site as seen from outside: performance, accessibility, console errors, page by page, on demand or periodically.</target>
+            </trans-unit>
+            <trans-unit id="Dgj9o_a">
+                <source>narration.not_founds</source>
+                <target>"Broken links" gathers the addresses that no longer exist and that somebody reached by following a link. Only requests coming from a link are recorded there, never intrusion attempts.</target>
+            </trans-unit>
+            <trans-unit id="S3k1pWH">
+                <source>narration.redirects</source>
+                <target>"Redirects" holds the forwards from one address to another. Always check both addresses: a mistake breaks a link, or sends the visitor round in circles.</target>
+            </trans-unit>
+            <trans-unit id="7UEVTAj">
+                <source>narration.site_link</source>
+                <target>The last link opens the site itself in a new tab, as your visitors see it.</target>
+            </trans-unit>
+            <trans-unit id="lRnR3Ht">
+                <source>narration.url_metadata</source>
+                <target>"Url descriptions" carries the title and the summary of the pages no record describes: the listings, the filtered listings, the tool pages. A page backed by a record, a product or a photo already says what it is and has no business here.</target>
+            </trans-unit>
+            <trans-unit id="ryA9n4C">
+                <source>narration.users</source>
+                <target>"Users" lists the accounts of the site. You can change a person's roles there: the change takes effect at once on their access to the back office.</target>
+            </trans-unit>
+            <trans-unit id="JVTtJoh">
+                <source>narration.whatsnew</source>
+                <target>"What's new" tells what has recently changed on this dashboard and in every installed bundle.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

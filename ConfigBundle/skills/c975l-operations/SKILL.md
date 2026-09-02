@@ -144,7 +144,10 @@ mostly to two or three merchants would otherwise fire ten requests at one of the
 single server address, which is what gets that address rate limited and then blocked. A host answering
 `403`, `429` or `999` is not retried in `GET` (`ContentQualityClient::FILTERED_STATUSES`) — that
 answer describes a filtered client, where the `405`/`501` a retry does resolve describes a method a
-server refuses.
+server refuses. **Everything else the `HEAD` pass did not settle is retried in `GET`, a `404`
+included, and the `GET`'s verdict is the one kept**: a url routed client-side — a share intent
+(`bsky.app/intent/compose`), a single-page app's route — answers `404` to a `HEAD` it serves in `200`,
+which had a working share button reported as a dead link on every page carrying it.
 
 **For the files a bundle stores rather than the urls it publishes**, UiBundle ships
 `AbstractDeclaredFilesHealthCheckProvider`: extend it, yield the files your rows name, and every one

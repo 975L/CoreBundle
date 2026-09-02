@@ -18,7 +18,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class StatusDumpCommandTest extends TestCase
 {
-    private const array REPORT = ['version' => 1, 'site' => 'https://papa-calin.com', 'packages' => ['c975l/core-bundle' => 'v1.4.3']];
+    private const array REPORT = ['version' => 1, 'site' => 'https://example.com', 'packages' => ['c975l/core-bundle' => 'v1.4.3']];
 
     private function createTester(): CommandTester
     {
@@ -53,6 +53,6 @@ class StatusDumpCommandTest extends TestCase
         $tester = $this->createTester();
         $tester->execute([]);
 
-        $this->assertStringContainsString('https://papa-calin.com', $tester->getDisplay());
+        $this->assertStringContainsString('https://example.com', $tester->getDisplay());
     }
 }

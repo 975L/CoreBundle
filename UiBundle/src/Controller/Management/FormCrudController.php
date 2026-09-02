@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Controller\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\Export\ContentExporter;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
@@ -25,6 +26,7 @@ use c975L\UiBundle\Registry\FormActionRegistry;
 use c975L\UiBundle\Repository\FormRepository;
 use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\FormFieldNamer;
+use c975L\UiBundle\Service\FormTranslator;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -32,6 +34,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
@@ -46,6 +49,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Contracts\Translation\TranslatableInterface;
@@ -56,6 +60,9 @@ use function Symfony\Component\Translation\t;
 // Generic "manage any Form" admin screen - unlike a bundle owning its own dedicated CrudController scoped to one hardcoded name (e.g. ContactFormBundle's former ContactFormCrudController), this one lists/creates/edits every c975L\UiBundle\Entity\Form. A seeded, restricted Form (see Form::$restricted) keeps its "name" locked and can't be deleted from here - same spirit as FormField::$restricted for individual fields
 class FormCrudController extends AbstractCrudController
 {
+    // Same query parameter the page screen uses, so the two language selectors read the same in the url bar
+    public const string CONTENT_LOCALE_PARAM = 'contenu';
+
     public function __construct(
         private readonly ConfigServiceInterface $configService,
         private readonly FormFieldNamer $formFieldNamer,
@@ -67,7 +74,18 @@ class FormCrudController extends AbstractCrudController
         private readonly FormRepository $formRepository,
         private readonly FormExportProvider $formExportProvider,
         private readonly ContentExporter $contentExporter,
+        private readonly FormTranslator $formTranslator,
+        private readonly SiteLocales $siteLocales,
+        private readonly RequestStack $requestStack,
     ) {
+    }
+
+    // The language a form is being written in, when it is not the one the site was written in: read from the url the language selector links to (see form_crud_edit.html.twig), and only ever one the site declares
+    private function contentLocale(): ?string
+    {
+        $asked = (string) $this->requestStack->getCurrentRequest()?->query->get(self::CONTENT_LOCALE_PARAM);
+
+        return \in_array($asked, $this->formTranslator->getTranslatableLocales(), true) ? $asked : null;
     }
 
     public static function getEntityFqcn(): string
@@ -186,11 +204,44 @@ class FormCrudController extends AbstractCrudController
         return $this->contentExporter->export(FormImportProvider::KIND, $data['items'], $data['files']);
     }
 
+    /**
+     * The very same form, offered in the language being written: its fields and its results through the types they
+     * are always edited with (see FormFieldType's "translation_locale").
+     *
+     * Neither allowAdd() nor allowDelete(), unlike the collections below: a form is composed once, and a field taken
+     * away from a language screen would be taken away from every language at once.
+     *
+     * @return iterable<FieldInterface>
+     */
+    private function translationFields(): iterable
+    {
+        yield CollectionField::new('fields')
+            ->setLabel(t('label.fields', [], 'ui'))
+            ->setEntryType(FormFieldType::class)
+            ->allowAdd(false)
+            ->allowDelete(false)
+            ->setFormTypeOption('by_reference', false)
+            ->setFormTypeOption('entry_options.translation_locale', $this->contentLocale());
+
+        yield CollectionField::new('outputs')
+            ->setLabel(t('label.outputs', [], 'ui'))
+            ->setEntryType(FormOutputType::class)
+            ->allowAdd(false)
+            ->allowDelete(false)
+            ->setFormTypeOption('by_reference', false)
+            ->setFormTypeOption('entry_options.translation_locale', $this->contentLocale());
+    }
+
     #[\Override]
     public function configureFields(string $pageName): iterable
     {
         $entity = $this->adminContextProvider->getContext()?->getEntity()?->getInstance();
         $isRestricted = $entity instanceof Form && $entity->isRestricted();
+
+        // A language screen shows what a language can change and nothing else: the form is named, configured and enabled once, in the language it was written in
+        if (Crud::PAGE_EDIT === $pageName && null !== $this->contentLocale()) {
+            return $this->translationFields();
+        }
 
         $actionKeys = $this->actionRegistry->getKeys();
 
@@ -316,6 +367,39 @@ class FormCrudController extends AbstractCrudController
             // Detail adds no information beyond what edit already shows
             ->disable(Action::DETAIL)
         ;
+    }
+
+    // What the language selector at the top of the edit screen needs: the languages offered, the one being written, and where each of them opens the very same form
+    #[\Override]
+    public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
+    {
+        if (Crud::PAGE_EDIT !== $responseParameters->get('pageName')) {
+            return parent::configureResponseParameters($responseParameters);
+        }
+
+        $entity = $responseParameters->get('entity')?->getInstance();
+        if (!$entity instanceof Form || null === $entity->getId()) {
+            return parent::configureResponseParameters($responseParameters);
+        }
+
+        $locales = $this->formTranslator->getTranslatableLocales();
+
+        $urls = [];
+        foreach ([null, ...$locales] as $locale) {
+            $urls[$locale ?? ''] = $this->adminUrlGenerator
+                ->setController(self::class)
+                ->setAction(Action::EDIT)
+                ->setEntityId($entity->getId())
+                ->set(self::CONTENT_LOCALE_PARAM, $locale)
+                ->generateUrl();
+        }
+
+        $responseParameters->set('form_content_locales', $locales);
+        $responseParameters->set('form_content_locale', $this->contentLocale());
+        $responseParameters->set('form_default_locale', $this->siteLocales->getDefaultLocale());
+        $responseParameters->set('form_content_urls', $urls);
+
+        return parent::configureResponseParameters($responseParameters);
     }
 
     #[\Override]

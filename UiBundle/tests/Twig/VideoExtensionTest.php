@@ -93,7 +93,7 @@ class VideoExtensionTest extends TestCase
         yield 'not a URL' => ['not-a-url'];
         yield 'youtube.com watch URL without a v param' => ['https://www.youtube.com/watch?list=abc123'];
         // A self-hosted player, or any platform nobody declared - the filter has to be safe to apply to anything
-        yield 'a site of its own' => ['https://975l.com/videos/kalaan.mp4'];
+        yield 'a site of its own' => ['https://example.com/videos/clip.mp4'];
     }
 
     // The way out of the page: wherever the video was stored from, the address the platform itself opens it at
@@ -113,7 +113,7 @@ class VideoExtensionTest extends TestCase
         yield 'from the address bar itself' => ['https://www.youtube.com/watch?v=PbSR03g31vk', 'https://www.youtube.com/watch?v=PbSR03g31vk'];
         yield 'vimeo drops its player host' => ['https://player.vimeo.com/video/76979871', 'https://vimeo.com/76979871'];
         // The way out has to leave the player, TikTok's embed url being a bare frame like everyone else's: the mobile permalink is the form that reaches the page without the author handle nothing stored
-        yield 'tiktok leaves the player frame' => ['https://www.tiktok.com/@kalaan/video/7234567890123456789', 'https://m.tiktok.com/v/7234567890123456789.html'];
+        yield 'tiktok leaves the player frame' => ['https://www.tiktok.com/@example/video/7234567890123456789', 'https://m.tiktok.com/v/7234567890123456789.html'];
         // The params a player cannot play without address the page too: without them a playlist reads as a video named "videoseries", and an unlisted video as one nobody is allowed to open
         yield 'a playlist is addressed by its list' => ['https://www.youtube.com/embed/videoseries?list=PLabc123', 'https://www.youtube.com/playlist?list=PLabc123'];
         yield 'a video inside a playlist keeps both' => ['https://www.youtube.com/watch?v=PbSR03g31vk&list=PLabc123', 'https://www.youtube.com/watch?v=PbSR03g31vk&list=PLabc123'];
@@ -121,7 +121,7 @@ class VideoExtensionTest extends TestCase
         yield 'dailymotion drops its embed path' => ['https://www.dailymotion.com/embed/video/x7tgad0', 'https://www.dailymotion.com/video/x7tgad0'];
         yield 'a dailymotion share link' => ['https://dai.ly/x7tgad0', 'https://www.dailymotion.com/video/x7tgad0'];
         // Untouched, exactly as the filter above leaves it: a page offering a way out of a video it knows nothing about would offer a dead link
-        yield 'a site of its own' => ['https://975l.com/videos/kalaan.mp4', 'https://975l.com/videos/kalaan.mp4'];
+        yield 'a site of its own' => ['https://example.com/videos/clip.mp4', 'https://example.com/videos/clip.mp4'];
         yield 'null' => [null, null];
     }
 

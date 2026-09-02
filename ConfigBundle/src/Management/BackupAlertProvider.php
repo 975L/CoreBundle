@@ -20,9 +20,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Alerts on the state of the last backup, read live at every dashboard load. This is the half no report email can cover: an email only exists when the command ran far enough to send one, so a scheduler consumer that died, a crontab lost on a server move or a PHP fatal in the middle of a dump all produce the exact same signal - nothing at all - and the absence of a mail is precisely what nobody notices. Here, a run that never happened is what raises the loudest alert
 class BackupAlertProvider implements AlertProviderInterface
 {
-    // Backups run every 6 hours in the schedule the bundles document, so a full day and a quarter without one means something stopped rather than merely ran late. Public because BackupDigestBuilder falls back on the very same threshold: the dashboard alert and the weekly email disagreeing on what "late" means is how one of them ends up ignored
-    public const DEFAULT_MAX_AGE_HOURS = 30;
-
     public function __construct(
         private readonly HealthCheckResultRepository $healthCheckResultRepository,
         private readonly ConfigServiceInterface $configService,
@@ -55,8 +52,10 @@ class BackupAlertProvider implements AlertProviderInterface
     {
         $hours = $this->hoursSince($latest->getCheckedAt());
 
+        $maxAgeHours = $this->maxAgeHours();
+
         // Staleness first, and whatever the last run's own status was: a backup that succeeded a fortnight ago is a worse problem than one that failed this morning, and the successful row would otherwise keep the dashboard quiet
-        if ($hours > $this->maxAgeHours()) {
+        if (null !== $maxAgeHours && $hours > $maxAgeHours) {
             return $this->alert('label.backup_alert_stale', ['%hours%' => $hours], Config::SEVERITY_DANGER, $latest);
         }
 
@@ -81,11 +80,12 @@ class BackupAlertProvider implements AlertProviderInterface
         ];
     }
 
-    private function maxAgeHours(): int
+    // What "late" means is the entry's to say - null when it holds nothing, which drops the staleness check rather than turning a threshold of zero into a danger alert
+    private function maxAgeHours(): ?int
     {
         $configured = (int) $this->configService->get('site-backup-max-age-hours');
 
-        return $configured > 0 ? $configured : self::DEFAULT_MAX_AGE_HOURS;
+        return $configured > 0 ? $configured : null;
     }
 
     private function hoursSince(\DateTimeInterface $checkedAt): int

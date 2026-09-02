@@ -24,11 +24,11 @@
             </trans-unit>
             <trans-unit id="_bGjWVc">
                 <source>description.ai_assistant_rephrase_base_uri</source>
-                <target>URL de base de l'API compatible OpenAI, requise uniquement pour euria</target>
+                <target>URL de base de l'API, obligatoire quel que soit le fournisseur : l'URL complète de l'endpoint messages pour Anthropic, la base du produit pour une API compatible OpenAI (OpenAI, Euria)</target>
             </trans-unit>
             <trans-unit id="bWfhcXt">
                 <source>description.ai_assistant_rephrase_model</source>
-                <target>Modèle de reformulation - optionnel pour Anthropic/OpenAI (défaut raisonnable), obligatoire pour Euria (catalogue instable, pas de défaut sûr)</target>
+                <target>Modèle de reformulation, obligatoire quel que soit le fournisseur : aucun modèle n'est codé en repli, une entrée vide laisse la fonctionnalité éteinte</target>
             </trans-unit>
             <trans-unit id="ArNa8qa">
                 <source>description.ai_assistant_rephrase_provider</source>
@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="sQ9y3iP">
                 <source>description.block_showcase_url</source>
-                <target>URL de la vitrine des blocks, ouverte par le lien de la barre latérale - vide pour retomber sur la vitrine de l'écosystème c975L</target>
+                <target>URL de la vitrine des blocks, ouverte par le lien de la barre latérale - vide, le lien disparaît du menu</target>
             </trans-unit>
             <trans-unit id="o3sVBy1">
                 <source>description.email_debug</source>
@@ -81,14 +81,6 @@
             <trans-unit id="X8T2_9z">
                 <source>description.site_matomo_url</source>
                 <target>URL de l'instance Matomo, ex. https://matomo.example.com</target>
-            </trans-unit>
-            <trans-unit id="Q4suaeP">
-                <source>description.site_other_cookies</source>
-                <target>Autres informations sur les cookies des mentions légales (HTML autorisé, non traduit)</target>
-            </trans-unit>
-            <trans-unit id="vvM5TVl">
-                <source>description.site_other_copyright</source>
-                <target>Autres informations de copyright des mentions légales (HTML autorisé, non traduit)</target>
             </trans-unit>
             <trans-unit id="ooJKbLK">
                 <source>description.theme_color_background</source>
@@ -133,6 +125,14 @@
             <trans-unit id="5gWmNrB">
                 <source>description.ui_enable_reviews</source>
                 <target>Permet aux visiteurs de déposer un avis, affiche les avis publiés et le menu qui permet de les modérer. Laisser à false tant qu'aucun avis n'est attendu.</target>
+            </trans-unit>
+            <trans-unit id="HIIlbc1">
+                <source>description.ui_map_google_api_key</source>
+                <target>Lue uniquement si le fournisseur ci-dessus est Google. Une clé de navigateur est nécessairement publiée dans la page que charge le visiteur : ce qui la protège est la restriction par référent HTTP posée dans la console Google Cloud, pas ce champ qui la masque ici.</target>
+            </trans-unit>
+            <trans-unit id="ND.iLqC">
+                <source>description.ui_map_provider</source>
+                <target>Le service qui affiche les cartes posées par un block "Carte". OpenStreetMap ne demande ni clé ni compte et ne dépose aucun cookie. Google demande une clé d'API, un compte de facturation, le consentement du visiteur avant d'afficher la carte, et une Content-Security-Policy qui nomme ses hôtes : sans cela la carte reste la liste des lieux, sans un mot pour dire pourquoi.</target>
             </trans-unit>
             <trans-unit id="z8AyzGD">
                 <source>description.ui_pdf_engine</source>
@@ -218,14 +218,6 @@
                 <source>label.site_matomo_url</source>
                 <target>URL de Matomo</target>
             </trans-unit>
-            <trans-unit id="cF7QFBj">
-                <source>label.site_other_cookies</source>
-                <target>Autres informations sur les cookies</target>
-            </trans-unit>
-            <trans-unit id="SRPjCF3">
-                <source>label.site_other_copyright</source>
-                <target>Autres droits d'auteur du site</target>
-            </trans-unit>
             <trans-unit id="copCVwP">
                 <source>label.theme_color_background</source>
                 <target>Couleur de fond</target>
@@ -301,6 +293,14 @@
             <trans-unit id="xJvR5pw">
                 <source>label.ui_enable_reviews</source>
                 <target>Activer les avis</target>
+            </trans-unit>
+            <trans-unit id="BSROuu3">
+                <source>label.ui_map_google_api_key</source>
+                <target>Clé d'API Google Maps</target>
+            </trans-unit>
+            <trans-unit id="olcXuaW">
+                <source>label.ui_map_provider</source>
+                <target>Fournisseur de cartes</target>
             </trans-unit>
             <trans-unit id="JOHdv5C">
                 <source>label.ui_pdf_engine</source>

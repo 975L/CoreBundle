@@ -76,7 +76,7 @@ class OffsiteSynchronizerTest extends TestCase
     // What a working install holds, which must get past the validation and fail - if it fails at all - only on rclone being absent
     public function testAPlainRemoteAndPathPassesValidation(): void
     {
-        $reason = $this->createSynchronizer('storagebox:975l.com')->getUnavailabilityReason();
+        $reason = $this->createSynchronizer('storagebox:example.com')->getUnavailabilityReason();
 
         $this->assertTrue(null === $reason || str_contains($reason, 'rclone was not found'));
     }
@@ -84,13 +84,13 @@ class OffsiteSynchronizerTest extends TestCase
     // A trailing slash is what anyone types, and would otherwise produce "remote:path//backup" on every sub-path
     public function testATrailingSlashIsDroppedFromTheTarget(): void
     {
-        $this->assertSame('storagebox:975l.com', $this->createSynchronizer('storagebox:975l.com/')->getTarget());
+        $this->assertSame('storagebox:example.com', $this->createSynchronizer('storagebox:example.com/')->getTarget());
     }
 
     // Nothing to impose when the install keeps its remotes where rclone looks by default
     public function testNoConfigFileIsPassedWhenTheProjectHasNone(): void
     {
-        $this->assertNull($this->createSynchronizer('storagebox:975l.com')->getConfigFile());
+        $this->assertNull($this->createSynchronizer('storagebox:example.com')->getConfigFile());
     }
 
     // The failure this guards against: rclone resolves HOME, which an interactive SSH session has and a task scheduler often hasn't, and starts with no remote configured at all - reported as an unknown target, which reads exactly like "rclone doesn't work on this host"
@@ -100,7 +100,7 @@ class OffsiteSynchronizerTest extends TestCase
 
         $this->assertSame(
             $this->projectDir . '/rclone.conf',
-            $this->createSynchronizer('storagebox:975l.com')->getConfigFile(),
+            $this->createSynchronizer('storagebox:example.com')->getConfigFile(),
         );
     }
 
@@ -109,7 +109,7 @@ class OffsiteSynchronizerTest extends TestCase
     {
         touch($this->projectDir . '/var/rclone.conf');
 
-        $this->assertNull($this->createSynchronizer('storagebox:975l.com')->getConfigFile());
+        $this->assertNull($this->createSynchronizer('storagebox:example.com')->getConfigFile());
     }
 
     // The first run of every install: nothing has been overwritten yet, so there is no previous/ folder to purge and rclone says so as an error. Reported as a failure it warns that first night and then every night a site's files don't change, which is how the warning that matters goes unread
@@ -142,7 +142,7 @@ class OffsiteSynchronizerTest extends TestCase
             ->purgeBackupDirs('previous', 15);
 
         $this->assertSame(
-            ['delete', '--rmdirs', '--min-age', '15d', 'storagebox:975l.com/previous'],
+            ['delete', '--rmdirs', '--min-age', '15d', 'storagebox:example.com/previous'],
             $captured['arguments'],
         );
     }
@@ -152,7 +152,7 @@ class OffsiteSynchronizerTest extends TestCase
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(
-            static fn (string $key) => 'site-backup-offsite-target' === $key ? 'storagebox:975l.com' : null
+            static fn (string $key) => 'site-backup-offsite-target' === $key ? 'storagebox:example.com' : null
         );
 
         $bag = $this->createStub(ParameterBagInterface::class);

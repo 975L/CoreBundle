@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Templates;
 
 use c975L\UiBundle\Entity\Form;
+use c975L\UiBundle\Service\FormTranslator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Component\Translation\Loader\ArrayLoader;
@@ -27,7 +28,7 @@ class CalculatorOutputsFirstTest extends TestCase
     {
         $html = $this->render(true);
 
-        $this->assertStringContainsString('class="ui-calculator ui-calculator-outputs-first"', $html);
+        $this->assertStringContainsString('class="ui-form-block ui-calculator ui-calculator-outputs-first"', $html);
     }
 
     // The switch off, which is what every existing calculator keeps: the fields are read first, as they always were
@@ -35,7 +36,7 @@ class CalculatorOutputsFirstTest extends TestCase
     {
         $html = $this->render(false);
 
-        $this->assertStringContainsString('class="ui-calculator"', $html);
+        $this->assertStringContainsString('class="ui-form-block ui-calculator"', $html);
         $this->assertStringNotContainsString('ui-calculator-outputs-first', $html);
     }
 
@@ -55,6 +56,9 @@ class CalculatorOutputsFirstTest extends TestCase
         // The form and routing layers play no part in the class this test varies
         $twig->addFunction(new TwigFunction('form_widget', static fn (): string => '', ['is_safe' => ['html']]));
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/'));
+        // The results' own words go through the translator, a site declaring a single language reading them as they were written
+        $formTranslator = new FormTranslator();
+        $twig->addFunction(new TwigFunction('ui_form_label', static fn (object $row): ?string => $formTranslator->getLabel($row)));
 
         return $twig->render('components/Form/Calculator.html.twig', [
             'uiForm' => $form,

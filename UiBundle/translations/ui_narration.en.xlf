@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="en" datatype="plaintext" original="ui_narration.en.xlf">
+        <body>
+            <trans-unit id="kEEDMk2">
+                <source>narration.ai_assistant</source>
+                <target>"Donovan" is the back office's own assistant: ask it how the block system works in plain words, and it answers from what the installed bundles actually ship.</target>
+            </trans-unit>
+            <trans-unit id="5ATKQD9">
+                <source>narration.block_showcase</source>
+                <target>"Block showcase" shows every available block kind, each with a live preview: enough to choose which one to put on a page.</target>
+            </trans-unit>
+            <trans-unit id="1PeeT85">
+                <source>narration.email_templates</source>
+                <target>"E-mail templates" carries the e-mails the site sends. They are made of blocks, exactly like a page.</target>
+            </trans-unit>
+            <trans-unit id="O2BHCGy">
+                <source>narration.fonts</source>
+                <target>"Fonts" takes in the fonts uploaded for the site. Every weight and style counts as a row there, and becomes usable in the theme.</target>
+            </trans-unit>
+            <trans-unit id="zAz9DUW">
+                <source>narration.forms</source>
+                <target>"Forms" holds the forms of the site, contact, sign-up or calculator, each with its fields and the action it triggers on submit.</target>
+            </trans-unit>
+            <trans-unit id="7pTq006">
+                <source>narration.guided_step_ui_ai_assistant_done</source>
+                <target>The same button sits under every text field of the back office: blocks, pages, e-mail templates. The same three controls everywhere, and this screen counts the tokens spent over the month.</target>
+            </trans-unit>
+            <trans-unit id="CJXjyKs">
+                <source>narration.guided_step_ui_ai_assistant_length</source>
+                <target>Then pick a length: shorter, longer, or the same. A section that has to hold in a card is not rewritten like one filling a whole page.</target>
+            </trans-unit>
+            <trans-unit id="uj9FxKX">
+                <source>narration.guided_step_ui_ai_assistant_open</source>
+                <target>The panel takes you to Donovan, the site's assistant. The screen shows even when nothing is configured: this is the very place its setup is walked through.</target>
+            </trans-unit>
+            <trans-unit id="PLzBLiL">
+                <source>narration.guided_step_ui_ai_assistant_run</source>
+                <target>Run the rephrasing. The suggestion comes back under the text, to keep or to leave: nothing is written anywhere until you take it.</target>
+            </trans-unit>
+            <trans-unit id="uHYO1WV">
+                <source>narration.guided_step_ui_ai_assistant_setup</source>
+                <target>Fill in what is missing: each entry opens the setting it names, the provider and its API key at the very least. The list is gone once nothing is left, and that is where the rest begins.</target>
+            </trans-unit>
+            <trans-unit id="a712HHa">
+                <source>narration.guided_step_ui_ai_assistant_style</source>
+                <target>Pick a tone from the list. The same one is offered under every text field of the back office: what you pick here is what you will find there.</target>
+            </trans-unit>
+            <trans-unit id="veOfKCP">
+                <source>narration.guided_step_ui_ai_assistant_text</source>
+                <target>Paste a text to rephrase into this area. It belongs to no page of the site: whatever is tried in it is thrown away, which makes it the place to find out what the rephrasing gives.</target>
+            </trans-unit>
+            <trans-unit id="OP28253">
+                <source>narration.guided_step_ui_calculator_fields</source>
+                <target>Add what the visitor sets: a range for a setting, a number for a price. Fill in the minimum, the maximum, the step and the default value, so the result shows before anything is touched.</target>
+            </trans-unit>
+            <trans-unit id="C7e_qE4">
+                <source>narration.guided_step_ui_calculator_hidden</source>
+                <target>For an intermediate result, untick "Shown": it feeds the formulas below without being displayed. A result only reads the ones placed above it, so put those first.</target>
+            </trans-unit>
+            <trans-unit id="RJeGy.m">
+                <source>narration.guided_step_ui_calculator_highlighted</source>
+                <target>On the figure they came for, and on that one only, tick "Highlighted": it becomes the large card in the middle of the panel.</target>
+            </trans-unit>
+            <trans-unit id="Vd_EMBU">
+                <source>narration.guided_step_ui_calculator_name</source>
+                <target>Start by naming it, in the Name field at the top of the form. Pick something short and telling: this is what you will find it under in the list, and what the Form block will offer you when you come to place it on a page. The field is required, and saving is refused while it is empty.</target>
+            </trans-unit>
+            <trans-unit id="aIuHWBj">
+                <source>narration.guided_step_ui_calculator_new</source>
+                <target>Create the form with the button at the top of the screen.</target>
+            </trans-unit>
+            <trans-unit id="9Ln0WdI">
+                <source>narration.guided_step_ui_calculator_open</source>
+                <target>A calculator is an ordinary form. The panel takes you to the forms screen; leave its action empty, it sends nothing.</target>
+            </trans-unit>
+            <trans-unit id="sHJo_BJ">
+                <source>narration.guided_step_ui_calculator_outputs</source>
+                <target>Write the results: a label, a formula. Copy the variable names listed under the collection rather than typing them. A wrong formula is refused here, never found by a visitor.</target>
+            </trans-unit>
+            <trans-unit id="O3y3VPp">
+                <source>narration.guided_step_ui_calculator_outputs_first</source>
+                <target>The next switch sets the reading order: turn it on for the results to be read before the fields, above them on a phone, on the left on a wide screen.</target>
+            </trans-unit>
+            <trans-unit id="GrLeRoP">
+                <source>narration.guided_step_ui_calculator_place</source>
+                <target>Finally put it on a page: in the page's blocks, add a form block and pick this one by its name.</target>
+            </trans-unit>
+            <trans-unit id="16ifUSt">
+                <source>narration.guided_step_ui_calculator_reopen</source>
+                <target>Saving brought you back to the list. Reopen the form: the variable names are now listed under the outputs collection.</target>
+            </trans-unit>
+            <trans-unit id="gGlIQUe">
+                <source>narration.guided_step_ui_calculator_save_fields</source>
+                <target>Save before writing a single formula: variable names are derived from the labels, and they only appear once the fields are saved.</target>
+            </trans-unit>
+            <trans-unit id="xhapUqZ">
+                <source>narration.guided_step_ui_email_template_attachments</source>
+                <target>Attach the documents that travel with it. A legal document is attached as the site publishes it, and its PDF is redrawn as soon as the text changes: an e-mail sent months later still carries the version in force.</target>
+            </trans-unit>
+            <trans-unit id="MTcJxYs">
+                <source>narration.guided_step_ui_email_template_blocks</source>
+                <target>Change its content: these are the same blocks as in a page. The styling itself comes from the site's own charter.</target>
+            </trans-unit>
+            <trans-unit id="9Ix_744">
+                <source>narration.guided_step_ui_email_template_check</source>
+                <target>To see it for real, trigger the e-mail from the site - a forgotten-password request, for instance - and read it in a real inbox.</target>
+            </trans-unit>
+            <trans-unit id="GFTvNsC">
+                <source>narration.guided_step_ui_email_template_edit</source>
+                <target>Open a template with the pencil, at the end of its row.</target>
+            </trans-unit>
+            <trans-unit id="oozBzRb">
+                <source>narration.guided_step_ui_email_template_open</source>
+                <target>The panel takes you to the e-mail templates. The e-mails the site sends are made of blocks, exactly like a page.</target>
+            </trans-unit>
+            <trans-unit id="yq3XDDm">
+                <source>narration.guided_step_ui_email_template_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="JEJ4qQG">
+                <source>narration.guided_step_ui_font_bulk</source>
+                <target>Adding a family one row at a time is the slow way round. Click the bulk import button instead, which takes every file at once.</target>
+            </trans-unit>
+            <trans-unit id="19MHSWA">
+                <source>narration.guided_step_ui_font_done</source>
+                <target>You can now use it in the theme: the stylesheet is rebuilt from the rows on its own, and the family becomes selectable wherever the site names a font.</target>
+            </trans-unit>
+            <trans-unit id="8Zk.5JV">
+                <source>narration.guided_step_ui_font_files</source>
+                <target>Select every file in one go: ttf, woff or woff2, up to five megabytes each. Take the whole folder's worth.</target>
+            </trans-unit>
+            <trans-unit id="H3mofLU">
+                <source>narration.guided_step_ui_font_fix</source>
+                <target>Correct a wrong guess if need be: a filename saying nothing useful lands as a regular upright weight. The row is edited like any other.</target>
+            </trans-unit>
+            <trans-unit id="DPoc08R">
+                <source>narration.guided_step_ui_font_import</source>
+                <target>Send them. Each filename is read to guess its name, its weight and its style; a file that is not a usable font is reported and left out, rather than failing the whole batch.</target>
+            </trans-unit>
+            <trans-unit id="T956Z8o">
+                <source>narration.guided_step_ui_font_open</source>
+                <target>The panel takes you to the fonts. One row per file: a family is as many rows as it has weights and styles.</target>
+            </trans-unit>
+            <trans-unit id="y1zi798">
+                <source>narration.guided_step_ui_form_action</source>
+                <target>Then pick what it triggers. The action decides what happens on submit: sending an e-mail, signing somebody up, resetting a password.</target>
+            </trans-unit>
+            <trans-unit id="MeB2xYx">
+                <source>narration.guided_step_ui_form_field_template_done</source>
+                <target>On the forms screen, the picker sitting next to the collection's own "Add" button now offers this model, and fills a whole field row at once.</target>
+            </trans-unit>
+            <trans-unit id="dC8.46H">
+                <source>narration.guided_step_ui_form_field_template_label</source>
+                <target>Now write what the visitor reads, the wording printed above the field. Settle it here once, and every form asking for this field words the question the same way.</target>
+            </trans-unit>
+            <trans-unit id="wmqX2Y_">
+                <source>narration.guided_step_ui_form_field_template_name</source>
+                <target>Name it. This name stays yours alone: it is what the picker shows when the time comes to drop the field into a form, never what the visitor reads.</target>
+            </trans-unit>
+            <trans-unit id="Ihs9dwC">
+                <source>narration.guided_step_ui_form_field_template_new</source>
+                <target>Add a model with the button at the top of the screen.</target>
+            </trans-unit>
+            <trans-unit id="HjJbivt">
+                <source>narration.guided_step_ui_form_field_template_open</source>
+                <target>No menu entry leads to the field catalog: it opens from the toolbar of the forms screen, and of the e-mail templates one alike.</target>
+            </trans-unit>
+            <trans-unit id="oOuLDSp">
+                <source>narration.guided_step_ui_form_field_template_required</source>
+                <target>Finally decide whether it is required. This is only a default: a form dropping this field in can still decide otherwise.</target>
+            </trans-unit>
+            <trans-unit id="AZovWS7">
+                <source>narration.guided_step_ui_form_field_template_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="xwX5dvn">
+                <source>narration.guided_step_ui_form_field_template_type</source>
+                <target>Choose its type: it decides how the field is drawn and what the visitor is allowed to type into it. An e-mail field refuses an address that isn't one.</target>
+            </trans-unit>
+            <trans-unit id="P7.Gast">
+                <source>narration.guided_step_ui_form_fields</source>
+                <target>Add the fields, one per piece of information asked for and no more: every extra field costs you answers.</target>
+            </trans-unit>
+            <trans-unit id="ffqKDfR">
+                <source>narration.guided_step_ui_form_name</source>
+                <target>Give it a name in the first field: it is the one you will find again in the form block.</target>
+            </trans-unit>
+            <trans-unit id="Kh90.DO">
+                <source>narration.guided_step_ui_form_new</source>
+                <target>Create a form with the button at the top of the screen.</target>
+            </trans-unit>
+            <trans-unit id="gk7HMbt">
+                <source>narration.guided_step_ui_form_open</source>
+                <target>The panel takes you to the forms. A form is built here, independently of the page that will show it.</target>
+            </trans-unit>
+            <trans-unit id="LNNfR_x">
+                <source>narration.guided_step_ui_form_place</source>
+                <target>All that is left is to drop it into a page: add a form block there, and pick the one you have just created.</target>
+            </trans-unit>
+            <trans-unit id="JE.beBm">
+                <source>narration.guided_step_ui_form_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="MHIvS60">
+                <source>narration.guided_step_ui_form_translate</source>
+                <target>Open the form again: on a site offering several languages, a selector sits above it. Pick one, and write the labels and the help texts in it - the fields themselves are composed once, in the language the form was written in.</target>
+            </trans-unit>
+            <trans-unit id="aPBTIn6">
+                <source>narration.guided_step_ui_legal_model_apply</source>
+                <target>Apply your changes with the form's button: the published page is rebuilt right away, the document being cached until then.</target>
+            </trans-unit>
+            <trans-unit id="hjYzwoo">
+                <source>narration.guided_step_ui_legal_model_customize</source>
+                <target>Click the customize button: it opens the document section by section. Only a model the bundle still ships is offered here, an unknown one being named as such.</target>
+            </trans-unit>
+            <trans-unit id="0vkjuof">
+                <source>narration.guided_step_ui_legal_model_done</source>
+                <target>The document is now yours, and it stays up to date: only what you changed is stored, everything else follows the model, so an update to the bundle reaches your page on its own.</target>
+            </trans-unit>
+            <trans-unit id="4cik3r0">
+                <source>narration.guided_step_ui_legal_model_extra</source>
+                <target>You can also add a section of your own, for what the model does not cover. It is placed under the section you pick, and no update ever touches it.</target>
+            </trans-unit>
+            <trans-unit id="IP08348">
+                <source>narration.guided_step_ui_legal_model_open</source>
+                <target>The panel takes you to the legal documents. They are all listed here, with the page each one sits on and how far it has drifted from the wording the bundle ships.</target>
+            </trans-unit>
+            <trans-unit id="hesS4xb">
+                <source>narration.guided_step_ui_legal_model_reset</source>
+                <target>The reset button puts the bundle's own text back into the section: that is what to do as soon as an update has reworded it.</target>
+            </trans-unit>
+            <trans-unit id="4MRnqsr">
+                <source>narration.guided_step_ui_legal_model_unit</source>
+                <target>Each card is one section. Give it a title of your own, rewrite its text, or tick the box hiding it from the published page.</target>
+            </trans-unit>
+            <trans-unit id="7aAQu1I">
+                <source>narration.guided_step_ui_media_alt</source>
+                <target>Write the alternative text: what the picture shows, in a sentence. It is read out by screen readers and shown when the image fails to load.</target>
+            </trans-unit>
+            <trans-unit id="NYKiQA_">
+                <source>narration.guided_step_ui_media_credits</source>
+                <target>Then name the author, if the picture is not yours: a photographer, a stock library, a licence.</target>
+            </trans-unit>
+            <trans-unit id="ZZtBJGF">
+                <source>narration.guided_step_ui_media_done</source>
+                <target>One picture, one row: what you have just written follows it into every page and every block already using it. The form also lists where it is used, so you know before deleting one. A picture that looks gone is usually just attached to a binned page: the gallery has a link showing those too.</target>
+            </trans-unit>
+            <trans-unit id="OK1vLdo">
+                <source>narration.guided_step_ui_media_open</source>
+                <target>The panel takes you to the media library. Every image of the site is here, whether it was uploaded from a page, from a block or among the site graphics.</target>
+            </trans-unit>
+            <trans-unit id=".ftPqIg">
+                <source>narration.guided_step_ui_media_pick</source>
+                <target>Click a thumbnail to open its form. A site-wide graphic such as the favicon or the logo opens the site graphics screen instead, which is where those are edited.</target>
+            </trans-unit>
+            <trans-unit id="zIcpbRr">
+                <source>narration.guided_step_ui_media_save</source>
+                <target>Save the media with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="lv5yC9T">
+                <source>narration.guided_step_ui_review_decide</source>
+                <target>Here are the two buttons this screen exists for: one click publishes the review, another turns it down, from the list as well as from the review itself.</target>
+            </trans-unit>
+            <trans-unit id="QQadmr1">
+                <source>narration.guided_step_ui_review_done</source>
+                <target>That is done: the published review shows on the page of the book or product it is about, with its date.</target>
+            </trans-unit>
+            <trans-unit id="KB17jek">
+                <source>narration.guided_step_ui_review_open</source>
+                <target>The panel takes you to the reviews screen. Those waiting come first: none of them shows on the site until you have read it.</target>
+            </trans-unit>
+            <trans-unit id="CJRTQgn">
+                <source>narration.guided_step_ui_review_pick</source>
+                <target>Open a review with the pencil, at the end of its row. The text, the score and the name are its author's: this screen does not rewrite them. The pencil only shows on a review this site can answer.</target>
+            </trans-unit>
+            <trans-unit id="jrjzfDU">
+                <source>narration.guided_step_ui_review_reply</source>
+                <target>The next field is your public answer: it shows under the review. For a review from a platform, it is sent back there as soon as you save.</target>
+            </trans-unit>
+            <trans-unit id="7qxqc1B">
+                <source>narration.guided_step_ui_review_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="utjJpCt">
+                <source>narration.guided_step_ui_review_status</source>
+                <target>You can also set the status by hand in the form. "Published" shows the review on the page it is about and counts its score into the average, "Rejected" takes it back out. A review from a platform cannot be changed here.</target>
+            </trans-unit>
+            <trans-unit id="5AgYdI2">
+                <source>narration.guided_step_ui_site_graphic_done</source>
+                <target>Check it on the site: the favicon shows in the browser tab, the share image when a page is posted on a social network. Either may need a forced refresh before it appears.</target>
+            </trans-unit>
+            <trans-unit id="H8qip51">
+                <source>narration.guided_step_ui_site_graphic_file</source>
+                <target>Choose the file. The role being already set, only the image is left: it is renamed on save and kept at the fixed address the site serves it from.</target>
+            </trans-unit>
+            <trans-unit id="9dmAOkA">
+                <source>narration.guided_step_ui_site_graphic_open</source>
+                <target>The panel takes you to the site graphics. These images belong to the site itself rather than to any one page, which is why they live apart from the media library.</target>
+            </trans-unit>
+            <trans-unit id="LhYTSwQ">
+                <source>narration.guided_step_ui_site_graphic_pick</source>
+                <target>Pick the one still missing: one button per graphic the site does not have, opening the upload form with its role already chosen. If they are all in place, edit the one you want to replace instead.</target>
+            </trans-unit>
+            <trans-unit id="IP7FAq7">
+                <source>narration.guided_step_ui_site_graphic_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="qj2GNDz">
+                <source>narration.legal_models</source>
+                <target>"Legal models" lists the legal texts the bundle ships, which stay maintained and updated. You can hide a section, rewrite it or add your own: only what you change stops following the updates.</target>
+            </trans-unit>
+            <trans-unit id="Lq2heTn">
+                <source>narration.media_library</source>
+                <target>"Media library" gathers every uploaded picture, wherever it came from. The caption, the alternative text and the credits are written there once for every page using them.</target>
+            </trans-unit>
+            <trans-unit id="UkAKU5V">
+                <source>narration.reviews</source>
+                <target>"Customer reviews" gathers the site's reviews, whatever platform they come from. None shows online until you have published it.</target>
+            </trans-unit>
+            <trans-unit id="f.chQ4a">
+                <source>narration.site_graphics</source>
+                <target>"Site graphics" holds the images belonging to the site itself: favicon, Apple icon, default share image, logo and error images.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

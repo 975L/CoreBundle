@@ -12,7 +12,8 @@ namespace c975L\UiBundle\Tests\Assets;
 
 use PHPUnit\Framework\TestCase;
 
-// The summary is a working list of links without a line of JS: what the controller adds is the two things no selector can ask - which section the reader is in, and how tall the bar covering the page is
+// What the markup, the barrel and the stylesheet have to say for the controller to have anything to work with - read as text, which is what they are
+// What the controller then does with it is TocBehaviourTest's, run in a browser: which entry lights up, what it announces, and what it leaves behind on disconnect were all asserted here as lines of source, which passes on a line sitting in a branch nothing reaches and fails on a rename that changed nothing
 class TocControllerTest extends TestCase
 {
     private const string CONTROLLER_JS = 'assets/js/toc.js';
@@ -32,7 +33,6 @@ class TocControllerTest extends TestCase
     {
         $component = $this->read(self::COMPONENT);
 
-        $this->assertStringContainsString('static targets = ["link"];', $this->read(self::CONTROLLER_JS));
         $this->assertStringContainsString('data-toc-target="link"', $component);
         $this->assertStringContainsString('data-toc-anchor="{{ entry.anchor }}"', $component);
     }
@@ -40,17 +40,7 @@ class TocControllerTest extends TestCase
     // The class marking the entry being read is added after measure and never written in the markup, so a browser reaching no JS gets a summary with no entry wrongly lit
     public function testTheCurrentClassIsAddedByTheControllerAloneAndNeverByTheMarkup(): void
     {
-        $this->assertStringContainsString('"toc-link--current"', $this->read(self::CONTROLLER_JS));
         $this->assertStringNotContainsString('toc-link--current', $this->read(self::COMPONENT));
-    }
-
-    // Said to a screen reader as well as shown, and taken back off the entry that stops being current
-    public function testTheCurrentEntryIsAlsoSaidRatherThanOnlyColoured(): void
-    {
-        $controller = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringContainsString('setAttribute("aria-current", "true")', $controller);
-        $this->assertStringContainsString('removeAttribute("aria-current")', $controller);
     }
 
     // The bar comes to rest over the page, so a section jumped to would land under it. The room is left by the stylesheet alone, on .toc-target: a nonced style-src drops any rule a script writes onto an element, which is what measuring it here would have come to
@@ -61,31 +51,6 @@ class TocControllerTest extends TestCase
         $this->assertStringContainsString('scroll-margin-top: calc(var(--toc-sticky-top) + var(--toc-height));', $this->read(self::STYLESHEET));
         $this->assertStringNotContainsString('scrollMarginTop', $controller);
         $this->assertStringNotContainsString('getBoundingClientRect', $controller);
-    }
-
-    // Several sections share the observer's band while scrolling: the one being read is the first of them in the page's own order, not the last the observer happened to report
-    public function testTheCurrentSectionIsTheFirstOfThoseInTheBandAndNotTheLastReported(): void
-    {
-        $controller = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringContainsString('for (const section of this.sections.keys()) {', $controller);
-        $this->assertStringContainsString('break;', $controller);
-    }
-
-    // Turbo caches the page as it stands, so the marks are undone rather than left frozen in a snapshot restored before this controller connects again
-    public function testTheControllerUndoesItselfOnDisconnect(): void
-    {
-        $controller = $this->read(self::CONTROLLER_JS);
-
-        $this->assertStringContainsString('this.observer?.disconnect();', $controller);
-        $this->assertStringContainsString('for (const link of this.sections.values()) {', $controller);
-        $this->assertStringContainsString('this.mark(link, false);', $controller);
-    }
-
-    // Between two sections nothing crosses the band: an emptied summary reads as broken where the reader has simply not reached the next one yet
-    public function testTheLastLitEntryStaysLitWhileNoSectionCrossesTheBand(): void
-    {
-        $this->assertStringContainsString("if (!current) {\n            return;\n        }", $this->read(self::CONTROLLER_JS));
     }
 
     private function read(string $relativePath): string

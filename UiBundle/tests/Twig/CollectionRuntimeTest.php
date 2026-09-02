@@ -355,6 +355,68 @@ class CollectionRuntimeTest extends TestCase
         $this->assertSame($keys[0][0], $keys[1][0]);
     }
 
+    // The heading its title is drawn with is the block's call, not the source's: it reaches the item as plain data, exactly as a stored block would carry the editor's own
+    public function testTheGivenLevelIsCarriedByTheItemsBlockData(): void
+    {
+        $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
+        $sourceRegistry->method('items')->willReturn([new CollectionItem('Project A')]);
+
+        $renderedBlock = null;
+        $blockExtension = $this->createStub(BlockExtension::class);
+        $blockExtension->method('renderBlock')->willReturnCallback(function (Block $block) use (&$renderedBlock): string {
+            $renderedBlock = $block;
+
+            return '';
+        });
+
+        $this->createRuntime($sourceRegistry, $blockExtension)->renderItems('site.collection.projects', null, null, null, null, 'h2');
+
+        $this->assertSame('h2', $renderedBlock->getData()['level']);
+    }
+
+    // Added and not defaulted: a source drawing a card of its own may hand back a "level" in its item's data, which a block asking for none must not blank out
+    public function testASourcesOwnLevelIsKeptWhenTheBlockAsksForNone(): void
+    {
+        $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
+        $sourceRegistry->method('items')->willReturn([new CollectionItem(title: 'Project A', data: ['level' => 'h4'])]);
+
+        $renderedBlock = null;
+        $blockExtension = $this->createStub(BlockExtension::class);
+        $blockExtension->method('renderBlock')->willReturnCallback(function (Block $block) use (&$renderedBlock): string {
+            $renderedBlock = $block;
+
+            return '';
+        });
+
+        $this->createRuntime($sourceRegistry, $blockExtension)->renderItems('site.collection.projects', null, null);
+
+        $this->assertSame('h4', $renderedBlock->getData()['level']);
+    }
+
+    // Same reading as the detail url below: the level is the page's decision and part of what the html varies with, so two blocks listing the same source at two levels must not share one entry
+    public function testTheLevelIsPartOfTheItemsCacheKey(): void
+    {
+        $item = new CollectionItem(title: 'Project A', slug: 'project-a');
+
+        $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
+        $sourceRegistry->method('items')->willReturn([$item]);
+        $sourceRegistry->method('cacheTags')->willReturn(['site_collection_4']);
+
+        $keys = [];
+        $blockExtension = $this->createStub(BlockExtension::class);
+        $blockExtension->method('renderBlock')->willReturnCallback(function (Block $block, ?string $cacheKey = null) use (&$keys): string {
+            $keys[] = $cacheKey;
+
+            return '';
+        });
+
+        $runtime = $this->createRuntime($sourceRegistry, $blockExtension);
+        $runtime->renderItems('site.collection.projects', null, null, null, null, 'h2');
+        $runtime->renderItems('site.collection.projects', null, null, null, null, 'h3');
+
+        $this->assertNotSame($keys[0], $keys[1]);
+    }
+
     // The detail url is the one thing in an item's html the page holding the block decides, so it is part of the item's identity - the same project listed from two pages is two entries, each holding its own link
     public function testTheDetailUrlIsPartOfTheItemsCacheKey(): void
     {

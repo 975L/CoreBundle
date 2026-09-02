@@ -37,6 +37,7 @@ class SocialMenuProvider implements MenuProviderInterface
             'url_metadata' => [
                 'controller' => UrlMetadataCrudController::class,
                 'label' => 'label.url_metadata',
+                'narration' => 'narration.url_metadata',
                 'translation_domain' => 'config',
                 'icon' => 'fas fa-tags',
                 // The bar UrlMetadataCrudController sets on its own index and edit - what an url says of itself is written by whoever wrote the page

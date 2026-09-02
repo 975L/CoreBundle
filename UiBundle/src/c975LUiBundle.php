@@ -18,6 +18,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\BlockOwnerResolverPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CacheInvalidatorPass;
 use c975L\UiBundle\DependencyInjection\Compiler\CollectionSourceProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\DemoFixtureLinkerPass;
 use c975L\UiBundle\DependencyInjection\Compiler\DemoFixtureProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailAttachmentProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\EmailLayoutProviderPass;
@@ -39,6 +40,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\ScriptRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetManagementRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\WhatsNewProviderPass;
+use c975L\UiBundle\Map\MapProvider;
 use c975L\UiBundle\Namer\UiMediaNamer;
 use c975L\UiBundle\Storage\NestedFileSystemStorage;
 use c975L\UiBundle\Video\VideoPlatform;
@@ -54,6 +56,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new EmailTemplateProviderPass());
         $container->addCompilerPass(new BlockFixtureProviderPass());
         $container->addCompilerPass(new DemoFixtureProviderPass());
+        $container->addCompilerPass(new DemoFixtureLinkerPass());
         $container->addCompilerPass(new PlaceholderMediaProviderPass());
         $container->addCompilerPass(new BlockOwnerResolverPass());
         $container->addCompilerPass(new BlockCacheTagProviderPass());
@@ -163,6 +166,12 @@ class c975LUiBundle extends AbstractBundle
         // A space-separated string rather than the array it is built from: a CSP directive is exactly that, and a parameter holding an array can only be a whole config node, never one item of a yaml sequence next to the site's own origins - which is the only way this is ever used. PHP callers read VideoPlatform::allCspOrigins() directly
         // A parameter rather than a prepended nelmio_security config: the app owns its policy, and a bundle silently widening someone's frame-src is exactly what a security header exists to prevent
         $containerBuilder->setParameter('c975l_ui.video.embed_origins', implode(' ', VideoPlatform::allCspOrigins()));
+
+        // Same reading for the map providers, on the directives a drawn map needs instead. One parameter per directive and not one blob for the three: a list holding a tile server and a script host at once would authorise scripts from that tile server the day a site named it in its "script-src", which is the opposite of what naming origins is for
+        // The script list holds Google's host alone, this bundle serving Leaflet itself (public/js/leaflet.js) - an OpenStreetMap site opens its policy to nobody
+        $containerBuilder->setParameter('c975l_ui.map.img_origins', implode(' ', MapProvider::allImgOrigins()));
+        $containerBuilder->setParameter('c975l_ui.map.script_origins', implode(' ', MapProvider::allScriptOrigins()));
+        $containerBuilder->setParameter('c975l_ui.map.connect_origins', implode(' ', MapProvider::allConnectOrigins()));
 
         // symfony/maker-bundle is dev-only in a consuming app - only wire MakeBlockCommand as a service when it's actually installed, instead of requiring it unconditionally
         if (class_exists(\Symfony\Bundle\MakerBundle\Maker\AbstractMaker::class)) {

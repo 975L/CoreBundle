@@ -34,13 +34,4 @@
 	<div data-legal-id="learn-more">
 		Para ampliar información sobre lo que dice la ley en Francia: <a href="https://www.cnil.fr/fr/cookies-et-autres-traceurs/que-dit-la-loi">https://www.cnil.fr/fr/cookies-et-autres-traceurs/que-dit-la-loi</a>
 	</div>
-
-	{% if config('site-other-cookies') %}
-		<section data-legal-id="other-cookies">
-			<h2>Otras cookies</h2>
-			<div class="text text-justify">
-				{{ config('site-other-cookies')|raw|nl2br }}
-			</div>
-		</section>
-	{% endif %}
 </div>

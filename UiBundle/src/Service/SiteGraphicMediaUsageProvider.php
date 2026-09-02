@@ -51,6 +51,8 @@ class SiteGraphicMediaUsageProvider implements MediaUsageProviderInterface
                     ->setAction(Action::EDIT)
                     ->setEntityId($media->getId())
                     ->generateUrl(),
+                // A site-wide role has no bin to sit in: the favicon a site serves is served, so the verdict is given rather than left open (see MediaUsageProviderInterface) - which is what keeps a media carrying a role out of the library's hidden ones, whatever else holds it
+                'binned' => false,
             ];
         }
 

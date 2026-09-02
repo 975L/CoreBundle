@@ -217,6 +217,24 @@ class ContentQualityClientTest extends TestCase
         $this->assertSame([], $client->analyze('https://example.com/pages/home/')['imagesWithoutAlt']);
     }
 
+    // The site logo sitting next to the site name inside the same link: the link is named by its own text, so an alt there would have a screen reader announce that name twice (see SiteBundle's Navbar)
+    public function testAnalyzeSkipsAnEmptyAltInsideALinkNamedByItsText(): void
+    {
+        $html = '<html><body><h1>T</h1><a href="/"><img src="/logo.webp" alt=""><span>Laurent Marquet</span></a></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame([], $client->analyze('https://example.com/pages/home/')['imagesWithoutAlt']);
+    }
+
+    // The real failure the check is there to catch: the image is all the link holds, so an empty alt leaves it with no accessible name at all
+    public function testAnalyzeListsAnEmptyAltOnAnImageAloneInItsLink(): void
+    {
+        $html = '<html><body><h1>T</h1><a href="/pages/contact/"><img src="icon.svg" alt=""></a></body></html>';
+        $client = new ContentQualityClient($this->htmlResponse($html));
+
+        $this->assertSame(['icon.svg'], $client->analyze('https://example.com/pages/home/')['imagesWithoutAlt']);
+    }
+
     // A missing alt attribute stays an error even on an image nothing else would have flagged
     public function testAnalyzeStillListsAMissingAltOnADecorativeImage(): void
     {
@@ -303,6 +321,27 @@ class ContentQualityClientTest extends TestCase
             $this->assertSame(ContentQualityClient::LINK_UNKNOWN, $client->checkLink('https://www.fnac.com/livre/123'), 'HTTP ' . $status);
             $this->assertFalse($client->isLinkBroken('https://www.fnac.com/livre/123'));
         }
+    }
+
+    // A host down or overloaded for an hour is not a dead link, and a verdict is reported back for a month before it is called again (see ExternalLinkCheckSchedule) - a maintenance window would otherwise leave a working link on the dashboard as broken all that time
+    public function testCheckLinkTreatsATemporarilyUnavailableHostAsInconclusive(): void
+    {
+        foreach (ContentQualityClient::TRANSIENT_STATUSES as $status) {
+            $httpClient = new MockHttpClient(fn (string $method, string $url, array $options) => new MockResponse('', ['http_code' => $status]));
+            $client = new ContentQualityClient($httpClient);
+
+            $this->assertSame(ContentQualityClient::LINK_UNKNOWN, $client->checkLink('https://partner.example.org/'), 'HTTP ' . $status);
+            $this->assertFalse($client->isLinkBroken('https://partner.example.org/'));
+        }
+    }
+
+    // The linked page's own code failing, not the infrastructure in front of it - a 500 is the one 5xx that stays broken
+    public function testCheckLinkStillReportsAServerErrorAsBroken(): void
+    {
+        $httpClient = new MockHttpClient(fn (string $method, string $url, array $options) => new MockResponse('', ['http_code' => 500]));
+        $client = new ContentQualityClient($httpClient);
+
+        $this->assertSame(ContentQualityClient::LINK_BROKEN, $client->checkLink('https://partner.example.org/'));
     }
 
     // Identifying the checker is what lets a WAF operator allow it rather than guess at it
@@ -399,18 +438,44 @@ class ContentQualityClientTest extends TestCase
         $this->assertSame(['HEAD'], $methods);
     }
 
-    // No retry when the HEAD already concluded
-    public function testCheckLinkDoesNotRetryAConclusiveHead(): void
+    // No retry when the HEAD already answered that the url is there - the only verdict a HEAD settles on its own
+    public function testCheckLinkDoesNotRetryAHeadThatAnswersOk(): void
     {
         $calls = 0;
         $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$calls): MockResponse {
             ++$calls;
 
-            return new MockResponse('', ['http_code' => 404]);
+            return new MockResponse('', ['http_code' => 200]);
         });
         $client = new ContentQualityClient($httpClient);
 
-        $this->assertSame(ContentQualityClient::LINK_BROKEN, $client->checkLink('https://example.com/pages/missing/'));
+        $this->assertSame(ContentQualityClient::LINK_OK, $client->checkLink('https://example.com/pages/home/'));
         $this->assertSame(1, $calls);
+    }
+
+    // A url routed client-side (bsky.app/intent/compose, and every share intent or single-page app route like it) answers 404 to a HEAD it serves in 200 - the GET's verdict is the one kept, otherwise a working share button is reported as a dead link on every page carrying it
+    public function testCheckLinkRetriesInGetWhenHeadAnswers404(): void
+    {
+        $methods = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$methods): MockResponse {
+            $methods[] = $method;
+
+            return new MockResponse('', ['http_code' => 'HEAD' === $method ? 404 : 200]);
+        });
+        $client = new ContentQualityClient($httpClient);
+
+        $this->assertSame(ContentQualityClient::LINK_OK, $client->checkLink('https://bsky.app/intent/compose?text=https%3A%2F%2Fexample.com%2F'));
+        $this->assertSame(['HEAD', 'GET'], $methods);
+    }
+
+    // A GET that never completes leaves a HEAD's 404 unconfirmed, and unconfirmed is not broken - the same rule the whole check follows
+    public function testCheckLinkReportsUnknownWhenTheGetRetryOfA404NeverCompletes(): void
+    {
+        $httpClient = new MockHttpClient(fn (string $method, string $url, array $options) => 'HEAD' === $method
+            ? new MockResponse('', ['http_code' => 404])
+            : new MockResponse('', ['error' => 'Connection refused']));
+        $client = new ContentQualityClient($httpClient);
+
+        $this->assertSame(ContentQualityClient::LINK_UNKNOWN, $client->checkLink('https://example.com/pages/maybe/'));
     }
 }

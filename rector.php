@@ -32,8 +32,11 @@ return RectorConfig::configure()
     ->withSets([
         DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES,
     ])
-    // Two rules are dropped rather than followed: a readonly class can only be extended by another readonly one, which closes the door these bundles are built to leave open - a site overriding a service would have to make its own readonly too, and could then no longer hold state of its own; and copying a parent's parameters after a variadic $args does not compile, while that variadic is deliberate in the CrudControllers, where it absorbs EasyAdmin's signature changes without the bundle having to follow them
+    // Three rules are dropped rather than followed: a readonly class can only be extended by another readonly one, which closes the door these bundles are built to leave open - a site overriding a service would have to make its own readonly too, and could then no longer hold state of its own; copying a parent's parameters after a variadic $args does not compile, while that variadic is deliberate in the CrudControllers, where it absorbs EasyAdmin's signature changes without the bundle having to follow them
+    // One file is left out as well, for a rewrite the other half of this very toolchain cannot read back
     ->withSkip([
         AddParamBasedOnParentClassMethodRector::class,
+        // Testing/JsCase keeps the parentheses around the "new" it immediately calls on: PDepend, which phpmd runs on, stops parsing a file at that token and then analyses nothing in it at all (see "composer mess", which already loses 43 files to it). Named by path rather than by rule, rector refusing one of its own rule names from this configuration
+        __DIR__ . '/UiBundle/src/Testing/JsCase.php',
         ReadOnlyClassRector::class,
     ]);

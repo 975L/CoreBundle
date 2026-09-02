@@ -237,6 +237,8 @@ class AiAssistantControllerTest extends TestCase
             'ui-ai-assistant-dashboard-token' => 'token',
             'ui-ai-assistant-rephrase-provider' => 'anthropic',
             'ui-ai-assistant-rephrase-api-key' => 'key',
+            'ui-ai-assistant-rephrase-base-uri' => 'https://api.anthropic.com/v1/messages',
+            'ui-ai-assistant-rephrase-model' => 'a-model',
             default => null,
         });
 
@@ -250,18 +252,19 @@ class AiAssistantControllerTest extends TestCase
             $this->createStub(ContentTranslator::class),
         );
 
-        // "anthropic" doesn't need base-uri/model, and every other slug is filled in above
+        // Every slug is filled in above, base-uri and model included - they are asked of anthropic just as of the others
         $this->assertSame([], $this->invokeMissingSlugs($controller));
     }
 
-    public function testMissingSlugsRequiresBaseUriAndModelOnlyForEuria(): void
+    // Whatever the provider: nothing in the code stands in for an endpoint or a model nobody set
+    public function testMissingSlugsRequiresBaseUriAndModelWhateverTheProvider(): void
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(static fn (string $slug) => match ($slug) {
             'ui-ai-assistant-dashboard-enabled' => true,
             'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ask',
             'ui-ai-assistant-dashboard-token' => 'token',
-            'ui-ai-assistant-rephrase-provider' => 'euria',
+            'ui-ai-assistant-rephrase-provider' => 'anthropic',
             'ui-ai-assistant-rephrase-api-key' => 'key',
             default => null,
         });

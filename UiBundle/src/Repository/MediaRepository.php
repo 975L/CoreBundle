@@ -89,6 +89,17 @@ class MediaRepository extends ServiceEntityRepository
         ;
     }
 
+    // @return Media[] The rows hanging off a Block, with it already loaded - what MediaUsageRegistry::getBinnedOnlyMediaIds() is fed to decide which medias the library leaves out. The join is inner on purpose: only a media a block draws can be used by a binned page alone, so a library holding thousands of loose rows never reads them. The select is the point: BlockMediaUsageProvider reads each block's label and kind, and a lazy relation would fetch them one row at a time
+    public function findAttachedToBlock(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->addSelect('b')
+            ->innerJoin('m.block', 'b')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     // @return Media[] Rows whose width or height is still unset - what MediaDimensionsCommand backfills. An empty string counts as unset: the admin form (see MediaUploadType) submits one for a field left blank, where an untouched row holds null
     public function findWithoutDimensions(): array
     {

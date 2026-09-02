@@ -632,7 +632,7 @@
             </trans-unit>
             <trans-unit id="GnuqUyG">
                 <source>label.from_path_help</source>
-                <target>Chemin URL avec le / initial (ex : /la-guilde-des-seigneurs). Un * final couvre tout un dossier (ex : /personnage/*)</target>
+                <target>Chemin URL avec le / initial (ex : /mon-dossier). Un * final couvre tout un dossier (ex : /personnage/*)</target>
             </trans-unit>
             <trans-unit id="qrvRsVy">
                 <source>label.gone</source>
@@ -665,6 +665,10 @@
             <trans-unit id="XRPo6XS">
                 <source>label.group_email</source>
                 <target>Email</target>
+            </trans-unit>
+            <trans-unit id="9Zy4_0i">
+                <source>label.group_empty</source>
+                <target>À remplir</target>
             </trans-unit>
             <trans-unit id="0lC5dLu">
                 <source>label.group_form</source>
@@ -945,10 +949,6 @@
             <trans-unit id="qINjVhb">
                 <source>label.health_check_advice_database_load_slow</source>
                 <target>%count% requête(s) lente(s) enregistrée(s) sur %days% j</target>
-            </trans-unit>
-            <trans-unit id="kUWeqbk">
-                <source>label.health_check_advice_details</source>
-                <target>Voir le détail (%count%)</target>
             </trans-unit>
             <trans-unit id="0NB_2s2">
                 <source>label.health_check_advice_fix_link</source>

@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
+use c975L\ConfigBundle\Management\GuidedProjectBuilder;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Service\AiAssistantClient;
 use PHPUnit\Framework\TestCase;
@@ -29,11 +30,20 @@ class AiAssistantClientTest extends TestCase
         return $configService;
     }
 
+    private function createGuidedProjectBuilder(array $projectsBySlug): GuidedProjectBuilder
+    {
+        $guidedProjectBuilder = $this->createStub(GuidedProjectBuilder::class);
+        $guidedProjectBuilder->method('getProject')->willReturnCallback(fn (string $slug) => $projectsBySlug[$slug] ?? null);
+
+        return $guidedProjectBuilder;
+    }
+
     public function testReturnsNullWhenDisabled(): void
     {
         $client = new AiAssistantClient(
             new MockHttpClient(),
             $this->createConfigService(['ui-ai-assistant-dashboard-enabled' => false]),
+            $this->createStub(GuidedProjectBuilder::class),
             $this->createStub(LoggerInterface::class),
         );
 
@@ -49,6 +59,7 @@ class AiAssistantClientTest extends TestCase
                 'ui-ai-assistant-dashboard-endpoint' => null,
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
+            $this->createStub(GuidedProjectBuilder::class),
             $this->createStub(LoggerInterface::class),
         );
 
@@ -74,6 +85,7 @@ class AiAssistantClientTest extends TestCase
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
+            $this->createStub(GuidedProjectBuilder::class),
             $this->createStub(LoggerInterface::class),
         );
 
@@ -103,10 +115,44 @@ class AiAssistantClientTest extends TestCase
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
+            $this->createStub(GuidedProjectBuilder::class),
             $this->createStub(LoggerInterface::class),
         );
 
         $this->assertSame([], $client->ask('Which block for a gallery?')['sources']);
+    }
+
+    // The backend answers every site it serves at once, so a parcours it cites is resolved here or dropped
+    public function testResolvesAGuidedProjectSourceAgainstThisSite(): void
+    {
+        $httpClient = new MockHttpClient(
+            fn (string $method, string $url, array $options) => new MockResponse(
+                json_encode([
+                    'answer' => 'Follow the media library tour.',
+                    'sources' => [
+                        ['label' => 'Media library', 'url' => '', 'project' => 'ui-media'],
+                        ['label' => 'Gone with its bundle', 'url' => '', 'project' => 'shop-product'],
+                    ],
+                ]),
+                ['http_code' => 200]
+            )
+        );
+
+        $client = new AiAssistantClient(
+            $httpClient,
+            $this->createConfigService([
+                'ui-ai-assistant-dashboard-enabled' => true,
+                'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
+                'ui-ai-assistant-dashboard-token' => 'some-token',
+            ]),
+            $this->createGuidedProjectBuilder(['ui-media' => ['slug' => 'ui-media', 'label' => 'Bibliothèque de médias', 'description' => '', 'steps' => []]]),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $this->assertSame(
+            [['label' => 'Bibliothèque de médias', 'url' => '', 'project' => 'ui-media']],
+            $client->ask('How do I add an image?')['sources'],
+        );
     }
 
     public function testReturnsNullOnTransportError(): void
@@ -122,6 +168,7 @@ class AiAssistantClientTest extends TestCase
                 'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
                 'ui-ai-assistant-dashboard-token' => 'some-token',
             ]),
+            $this->createStub(GuidedProjectBuilder::class),
             $this->createStub(LoggerInterface::class),
         );
 

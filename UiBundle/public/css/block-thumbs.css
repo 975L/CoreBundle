@@ -721,6 +721,21 @@
   display: none;
 }
 
+/* Map: a surface with a pin planted in it, and the places listed under it - the two halves the block actually renders */
+.ui-block-thumb--map .ui-block-thumb__media {
+  display: block;
+  flex: 1 1 auto;
+  /* The pin, and the two roads crossing under it: nothing else tells a map apart from any other picture at this size */
+  background-image: radial-gradient(circle at 50% 38%, currentcolor 0 12%, transparent 13%), linear-gradient(to right, transparent 0 28%, currentcolor 28% 31%, transparent 31%), linear-gradient(to bottom, transparent 0 68%, currentcolor 68% 71%, transparent 71%);
+  opacity: 0.35;
+}
+.ui-block-thumb--map .ui-block-thumb__title {
+  width: 55%;
+}
+.ui-block-thumb--map .ui-block-thumb__line + .ui-block-thumb__line {
+  display: none;
+}
+
 /* Slider: one picture at a time, and the markers saying how many follow */
 .ui-block-thumb--slider .ui-block-thumb__media {
   display: block;

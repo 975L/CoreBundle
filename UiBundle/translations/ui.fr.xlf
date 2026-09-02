@@ -18,6 +18,14 @@
                 <source>action.font_bulk_import</source>
                 <target>Import en masse</target>
             </trans-unit>
+            <trans-unit id="yPaAhaL">
+                <source>action.media_binned_hide</source>
+                <target>Les masquer</target>
+            </trans-unit>
+            <trans-unit id="hacdCj0">
+                <source>action.media_binned_show</source>
+                <target>Les afficher</target>
+            </trans-unit>
             <trans-unit id="6AhEKNM">
                 <source>description.email_attachments</source>
                 <target>Documents joints à cet email. Un document légal est joint tel que le site le publie, le PDF étant regénéré dès que son texte change.</target>
@@ -101,6 +109,10 @@
             <trans-unit id="L6fBz95">
                 <source>description.guided_step_ui_calculator_highlighted</source>
                 <target>Cochez « Mis en avant » sur celui-là, et sur lui seul : il devient la grande carte au milieu du panneau.</target>
+            </trans-unit>
+            <trans-unit id="Y7jE2a.">
+                <source>description.guided_step_ui_calculator_name</source>
+                <target>Un nom court, celui sous lequel vous le retrouverez dans la liste et que le block « Formulaire » vous proposera. Il est obligatoire : sans lui, l’enregistrement refuse.</target>
             </trans-unit>
             <trans-unit id="Urf9i7v">
                 <source>description.guided_step_ui_calculator_open</source>
@@ -210,6 +222,10 @@
                 <source>description.guided_step_ui_form_place</source>
                 <target>Ajoutez un block de formulaire à une page, et choisissez celui que vous venez de créer.</target>
             </trans-unit>
+            <trans-unit id="9zih8su">
+                <source>description.guided_step_ui_form_translate</source>
+                <target>Rouvrez le formulaire : sur un site qui propose plusieurs langues, un sélecteur se trouve juste au-dessus. Choisissez-en une, et écrivez-y les libellés et les textes d'aide - les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
+            </trans-unit>
             <trans-unit id="UUhHZlk">
                 <source>description.guided_step_ui_legal_model_apply</source>
                 <target>La page publiée est reconstruite aussitôt, le document étant mis en cache jusque-là</target>
@@ -248,7 +264,7 @@
             </trans-unit>
             <trans-unit id="tDo_284">
                 <source>description.guided_step_ui_media_done</source>
-                <target>Une image, une seule fiche : ce que vous venez d'écrire la suit dans toutes les pages et tous les blocks qui l'utilisent déjà. La fiche liste aussi où elle sert, pour savoir avant d'en supprimer une.</target>
+                <target>Une image, une seule fiche : ce que vous venez d'écrire la suit dans toutes les pages et tous les blocks qui l'utilisent déjà. La fiche liste aussi où elle sert, pour savoir avant d'en supprimer une. Une image qui semble disparue n'est le plus souvent qu'attachée à une page en corbeille : la galerie a un lien pour afficher celles-là aussi.</target>
             </trans-unit>
             <trans-unit id=".imAjIX">
                 <source>description.guided_step_ui_media_open</source>
@@ -482,6 +498,18 @@
                 <source>label.ai_assistant_dashboard_section_title</source>
                 <target>Assistant du tableau de bord</target>
             </trans-unit>
+            <trans-unit id="JnfU73d">
+                <source>label.ai_assistant_error</source>
+                <target>%name% n'a pas pu répondre : le service qu'il interroge est indisponible.</target>
+            </trans-unit>
+            <trans-unit id="b1Tqn.g">
+                <source>label.ai_assistant_error_check_endpoint</source>
+                <target>Vérifier l'endpoint interrogé</target>
+            </trans-unit>
+            <trans-unit id="Z0g14ox">
+                <source>label.ai_assistant_error_open_page</source>
+                <target>Voir la configuration de %name%</target>
+            </trans-unit>
             <trans-unit id="yJ_8hXS">
                 <source>label.ai_assistant_menu_suffix</source>
                 <target>Agent IA</target>
@@ -588,7 +616,7 @@
             </trans-unit>
             <trans-unit id="lnnGqK7">
                 <source>label.ai_rephrase_setup_step_base_uri</source>
-                <target>Renseignez l'URL de base (requise pour euria)</target>
+                <target>Renseignez l'URL de base (obligatoire : l'endpoint messages pour Anthropic, la base du produit pour OpenAI/Euria)</target>
             </trans-unit>
             <trans-unit id="_eIfjEL">
                 <source>label.ai_rephrase_setup_step_key</source>
@@ -600,7 +628,7 @@
             </trans-unit>
             <trans-unit id="xBoqLs1">
                 <source>label.ai_rephrase_setup_step_model_required</source>
-                <target>définir le modèle (obligatoire pour Euria - conseillé : mistralai/Mistral-Small-4-119B-2603)</target>
+                <target>définir le modèle (obligatoire - conseillé pour Euria : mistralai/Mistral-Small-4-119B-2603)</target>
             </trans-unit>
             <trans-unit id="g1CSOaz">
                 <source>label.ai_rephrase_setup_step_provider</source>
@@ -978,6 +1006,14 @@
                 <source>label.block_legal_model_description</source>
                 <target>Insère un modèle de texte légal préexistant (CGU, mentions légales...)</target>
             </trans-unit>
+            <trans-unit id="RnqHnBy">
+                <source>label.block_map</source>
+                <target>Carte</target>
+            </trans-unit>
+            <trans-unit id="Ju.U9cR">
+                <source>label.block_map_description</source>
+                <target>Une carte des lieux que vous listez, chacun avec son marqueur</target>
+            </trans-unit>
             <trans-unit id="zClb.Hs">
                 <source>label.block_portfolio_grid</source>
                 <target>Grille de réalisations</target>
@@ -1225,6 +1261,18 @@
             <trans-unit id="8pHG3oe">
                 <source>label.collection_entry_slug_help</source>
                 <target>Uniquement si l'élément est désigné par son identifiant</target>
+            </trans-unit>
+            <trans-unit id="NpUVzYV">
+                <source>label.collection_item_level</source>
+                <target>Niveau de titre des éléments</target>
+            </trans-unit>
+            <trans-unit id="x5HqaOD">
+                <source>label.collection_item_level_auto</source>
+                <target>Automatique (selon le titre du bloc)</target>
+            </trans-unit>
+            <trans-unit id="ZEJYlus">
+                <source>label.collection_item_level_help</source>
+                <target>Automatique donne h3 sous le titre du bloc, h2 s'il n'en a pas - à choisir si le bloc est placé sous un titre de niveau plus profond</target>
             </trans-unit>
             <trans-unit id="Z2OPJRi">
                 <source>label.collection_limit_help</source>
@@ -1958,6 +2006,10 @@
                 <source>label.form_submitted</source>
                 <target>Merci, votre envoi a bien été reçu.</target>
             </trans-unit>
+            <trans-unit id="9KeSRak">
+                <source>label.form_translation_help</source>
+                <target>Les mêmes champs, dans la langue choisie. Le texte d'origine entre crochets marque ce qui reste à traduire : laissé tel quel, il n'est pas enregistré. Le formulaire lui-même se compose dans la langue d'origine.</target>
+            </trans-unit>
             <trans-unit id="EptgKcw">
                 <source>label.forms</source>
                 <target>Formulaires</target>
@@ -2025,6 +2077,14 @@
             <trans-unit id="tOZXzoP">
                 <source>label.gallery_showcase_video_grid_description</source>
                 <target>Un titre de section suivi de lecteurs vidéo placés côte à côte, chacun rendu comme s'il était seul dans la page.</target>
+            </trans-unit>
+            <trans-unit id="O9EXaKf">
+                <source>label.google_maps_link</source>
+                <target>Construire le lien Google Maps</target>
+            </trans-unit>
+            <trans-unit id="Bv3aYIl">
+                <source>label.google_maps_link_help</source>
+                <target>Construit le bouton "Itinéraire" à partir des coordonnées, ou à défaut de l'adresse postale ci-dessus. Un simple lien, gratuit et sans script chargé — le champ ci-dessus l'emporte si vous le remplissez.</target>
             </trans-unit>
             <trans-unit id="b_WLGhv">
                 <source>label.group_direction</source>
@@ -2141,6 +2201,10 @@
             <trans-unit id="So2G1Ky">
                 <source>label.guided_step_ui_calculator_highlighted</source>
                 <target>Le chiffre qu'on est venu chercher</target>
+            </trans-unit>
+            <trans-unit id="DzNj04C">
+                <source>label.guided_step_ui_calculator_name</source>
+                <target>Nommez le calculateur</target>
             </trans-unit>
             <trans-unit id="vdCDS8b">
                 <source>label.guided_step_ui_calculator_new</source>
@@ -2277,6 +2341,10 @@
             <trans-unit id="GAmp352">
                 <source>label.guided_step_ui_form_save</source>
                 <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="eHQUaD.">
+                <source>label.guided_step_ui_form_translate</source>
+                <target>L'écrire dans une autre langue</target>
             </trans-unit>
             <trans-unit id="XrsXRca">
                 <source>label.guided_step_ui_legal_model_apply</source>
@@ -2682,6 +2750,106 @@
                 <source>label.loop</source>
                 <target>Boucle</target>
             </trans-unit>
+            <trans-unit id="HtJU.RN">
+                <source>label.map_accept</source>
+                <target>Afficher la carte</target>
+            </trans-unit>
+            <trans-unit id="s.r9DKV">
+                <source>label.map_consent_required</source>
+                <target>Cette carte est affichée par Google, qui dépose des cookies sur votre appareil.</target>
+            </trans-unit>
+            <trans-unit id="XlVvGfd">
+                <source>label.map_csp_allowed</source>
+                <target>La carte Google est dessinée : la politique de sécurité du site nomme bien les hôtes dont elle a besoin.</target>
+            </trans-unit>
+            <trans-unit id="ZpEpegw">
+                <source>label.map_csp_call_failed</source>
+                <target>Impossible de lire les en-têtes du site pour vérifier ce que la carte Google a le droit de charger.</target>
+            </trans-unit>
+            <trans-unit id="ONP8rA8">
+                <source>label.map_csp_no_policy</source>
+                <target>La carte Google est dessinée : le site ne sert aucune politique de sécurité, donc rien ne refuse ses hôtes.</target>
+            </trans-unit>
+            <trans-unit id="_qHZoUh">
+                <source>label.map_csp_refused</source>
+                <target>La carte Google ne se dessinera pas : la politique de sécurité du site ne nomme pas ses hôtes (%directives%). Le navigateur refuse la requête sans un mot, et seule la liste des lieux reste à l'écran.</target>
+            </trans-unit>
+            <trans-unit id="PZ3TL80">
+                <source>label.map_diagnostic_csp</source>
+                <target>Cette carte n'a pas pu être chargée : la politique de sécurité du site (%directive%) refuse les hôtes de Google. Ce message n'est visible que par vous.</target>
+            </trans-unit>
+            <trans-unit id="Vl7HFGd">
+                <source>label.map_diagnostic_no_key</source>
+                <target>Cette carte n'est pas dessinée : Google est le fournisseur choisi et aucune clé d'API n'est renseignée. Ce message n'est visible que par vous.</target>
+            </trans-unit>
+            <trans-unit id="bekQHGg">
+                <source>label.map_diagnostic_refused</source>
+                <target>Cette carte n'a pas pu être chargée : le fournisseur n'a pas répondu, ou la clé d'API a été refusée. Ce message n'est visible que par vous.</target>
+            </trans-unit>
+            <trans-unit id="5e7rQfb">
+                <source>label.map_height</source>
+                <target>Hauteur</target>
+            </trans-unit>
+            <trans-unit id="9l6fH_p">
+                <source>label.map_height_large</source>
+                <target>Grande</target>
+            </trans-unit>
+            <trans-unit id="Z2PRUZj">
+                <source>label.map_height_medium</source>
+                <target>Moyenne</target>
+            </trans-unit>
+            <trans-unit id="AlQR0jc">
+                <source>label.map_height_small</source>
+                <target>Petite</target>
+            </trans-unit>
+            <trans-unit id="5bI93CU">
+                <source>label.map_point_address</source>
+                <target>Adresse</target>
+            </trans-unit>
+            <trans-unit id="5D2xOYo">
+                <source>label.map_point_address_help</source>
+                <target>Convertie en coordonnées à l'enregistrement, par le géocodeur d'OpenStreetMap.</target>
+            </trans-unit>
+            <trans-unit id="zjqOcvm">
+                <source>label.map_point_label</source>
+                <target>Nom</target>
+            </trans-unit>
+            <trans-unit id="VMhNxrE">
+                <source>label.map_point_latitude</source>
+                <target>Latitude</target>
+            </trans-unit>
+            <trans-unit id="P7Jqevj">
+                <source>label.map_point_longitude</source>
+                <target>Longitude</target>
+            </trans-unit>
+            <trans-unit id="Y_pfL2R">
+                <source>label.map_point_mode</source>
+                <target>Localisé par</target>
+            </trans-unit>
+            <trans-unit id="QdDDIRj">
+                <source>label.map_point_mode_address</source>
+                <target>Une adresse</target>
+            </trans-unit>
+            <trans-unit id="cufsf15">
+                <source>label.map_point_mode_coordinates</source>
+                <target>Des coordonnées GPS</target>
+            </trans-unit>
+            <trans-unit id="5Gvd2b6">
+                <source>label.map_point_text</source>
+                <target>Texte</target>
+            </trans-unit>
+            <trans-unit id="8F9wssn">
+                <source>label.map_point_text_help</source>
+                <target>Affiché dans la bulle du marqueur, sous le nom.</target>
+            </trans-unit>
+            <trans-unit id="fccw7xZ">
+                <source>label.map_points</source>
+                <target>Lieux</target>
+            </trans-unit>
+            <trans-unit id="0_j1dH6">
+                <source>label.map_see_on_map</source>
+                <target>Voir sur une carte</target>
+            </trans-unit>
             <trans-unit id="TGYsC6q">
                 <source>label.map_url</source>
                 <target>Lien vers la carte</target>
@@ -2690,9 +2858,25 @@
                 <source>label.map_url_help</source>
                 <target>URL de la fiche Google Maps ou OpenStreetMap</target>
             </trans-unit>
+            <trans-unit id="HpNqTUo">
+                <source>label.map_zoom</source>
+                <target>Zoom</target>
+            </trans-unit>
+            <trans-unit id="GP82z2B">
+                <source>label.map_zoom_help</source>
+                <target>De 1, le monde entier, à 19, une maison. Utilisé seulement quand la carte ne porte qu'un lieu : avec plusieurs, elle se cadre d'elle-même dessus.</target>
+            </trans-unit>
             <trans-unit id="hC0xs1.">
                 <source>label.media</source>
                 <target>Media</target>
+            </trans-unit>
+            <trans-unit id="1KeI6eo">
+                <source>label.media_binned_hidden</source>
+                <target>%count% média(s) n'appartiennent plus qu'à des pages dans la corbeille et ne sont pas affichés ici.</target>
+            </trans-unit>
+            <trans-unit id="KC7qdVJ">
+                <source>label.media_binned_shown</source>
+                <target>Les médias n'appartenant qu'à des pages dans la corbeille sont affichés.</target>
             </trans-unit>
             <trans-unit id="5JB.rhD">
                 <source>label.media_help</source>
@@ -3441,6 +3625,34 @@
             <trans-unit id="CooV25J">
                 <source>label.tuesday</source>
                 <target>Mardi</target>
+            </trans-unit>
+            <trans-unit id="2eZSVqt">
+                <source>label.ui_sample_review_pending_author</source>
+                <target>Hélène Vasseur</target>
+            </trans-unit>
+            <trans-unit id="fDnXn5o">
+                <source>label.ui_sample_review_pending_comment</source>
+                <target>Commande reçue en deux jours, emballage soigné et le mot glissé dans le colis fait plaisir. Je reviendrai.</target>
+            </trans-unit>
+            <trans-unit id="HF8Jb8c">
+                <source>label.ui_sample_review_published_author</source>
+                <target>Marc Dutilleul</target>
+            </trans-unit>
+            <trans-unit id="R1Yecmn">
+                <source>label.ui_sample_review_published_comment</source>
+                <target>Très bon accueil au téléphone et conseils utiles. Un point en moins pour le délai annoncé, tenu à un jour près.</target>
+            </trans-unit>
+            <trans-unit id="8wRj7Lh">
+                <source>label.ui_sample_review_published_reply</source>
+                <target>Merci de votre retour, et désolé pour cette journée de décalage : nous avons revu depuis la façon dont nous annonçons nos délais.</target>
+            </trans-unit>
+            <trans-unit id="KBq0Xde">
+                <source>label.ui_sample_review_rejected_author</source>
+                <target>Visiteur anonyme</target>
+            </trans-unit>
+            <trans-unit id="MRS_5_x">
+                <source>label.ui_sample_review_rejected_comment</source>
+                <target>Message hors sujet, publié par erreur sur cette page.</target>
             </trans-unit>
             <trans-unit id="YKASrao">
                 <source>label.upload_progress_failed</source>

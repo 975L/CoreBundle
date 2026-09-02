@@ -22,6 +22,12 @@ class AiRephraseClientTest extends TestCase
 {
     private function createConfigService(array $values): ConfigServiceInterface
     {
+        // What every call needs, unless the test empties one itself to check the feature stays off
+        $values += [
+            'ui-ai-assistant-rephrase-base-uri' => 'https://api.anthropic.com/v1/messages',
+            'ui-ai-assistant-rephrase-model' => 'a-model',
+        ];
+
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap(
             array_map(fn (string $key, mixed $value) => [$key, $value], array_keys($values), array_values($values))
@@ -50,7 +56,7 @@ class AiRephraseClientTest extends TestCase
         $this->assertFalse($client->isEnabled());
     }
 
-    public function testIsEnabledRequiresABaseUriForEuria(): void
+    public function testIsEnabledRequiresABaseUri(): void
     {
         $client = new AiRephraseClient(
             new MockHttpClient(),
@@ -66,7 +72,7 @@ class AiRephraseClientTest extends TestCase
         $this->assertFalse($client->isEnabled());
     }
 
-    public function testIsEnabledRequiresAModelForEuria(): void
+    public function testIsEnabledRequiresAModel(): void
     {
         $client = new AiRephraseClient(
             new MockHttpClient(),
@@ -83,32 +89,35 @@ class AiRephraseClientTest extends TestCase
         $this->assertFalse($client->isEnabled());
     }
 
-    public function testIsEnabledDoesNotRequireABaseUriForAnthropicOrOpenAi(): void
+    // Endpoint and model are asked of every provider alike, none of them getting one picked here on its behalf
+    public function testIsEnabledRequiresABaseUriAndAModelWhateverTheProvider(): void
     {
-        $anthropicClient = new AiRephraseClient(
-            new MockHttpClient(),
-            $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'anthropic',
-                'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-base-uri' => null,
-            ]),
-            $this->createStub(LoggerInterface::class),
-            $this->createUsageTracker(),
-        );
+        foreach (['anthropic', 'openai', 'euria'] as $provider) {
+            $filled = [
+                'ui-ai-assistant-rephrase-provider' => $provider,
+                'ui-ai-assistant-rephrase-api-key' => 'a-key',
+            ];
 
-        $openAiClient = new AiRephraseClient(
-            new MockHttpClient(),
-            $this->createConfigService([
-                'ui-ai-assistant-rephrase-provider' => 'openai',
-                'ui-ai-assistant-rephrase-api-key' => 'openai-key',
-                'ui-ai-assistant-rephrase-base-uri' => null,
-            ]),
-            $this->createStub(LoggerInterface::class),
-            $this->createUsageTracker(),
-        );
+            foreach (['ui-ai-assistant-rephrase-base-uri', 'ui-ai-assistant-rephrase-model'] as $slug) {
+                $client = new AiRephraseClient(
+                    new MockHttpClient(),
+                    $this->createConfigService($filled + [$slug => null]),
+                    $this->createStub(LoggerInterface::class),
+                    $this->createUsageTracker(),
+                );
 
-        $this->assertTrue($anthropicClient->isEnabled());
-        $this->assertTrue($openAiClient->isEnabled());
+                $this->assertFalse($client->isEnabled(), $provider . ' / ' . $slug);
+            }
+
+            $client = new AiRephraseClient(
+                new MockHttpClient(),
+                $this->createConfigService($filled),
+                $this->createStub(LoggerInterface::class),
+                $this->createUsageTracker(),
+            );
+
+            $this->assertTrue($client->isEnabled(), $provider);
+        }
     }
 
     public function testRephraseReturnsNullWhenDisabled(): void
@@ -146,7 +155,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'anthropic',
                 'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $usageTracker,
@@ -175,7 +183,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'openai',
                 'ui-ai-assistant-rephrase-api-key' => 'openai-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $usageTracker,
@@ -266,7 +273,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'anthropic',
                 'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -297,7 +303,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'anthropic',
                 'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -363,7 +368,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'anthropic',
                 'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -394,7 +398,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'anthropic',
                 'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -425,7 +428,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'anthropic',
                 'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -455,7 +457,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'anthropic',
                 'ui-ai-assistant-rephrase-api-key' => 'anthropic-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $this->createUsageTracker(),
@@ -481,7 +482,6 @@ class AiRephraseClientTest extends TestCase
             $this->createConfigService([
                 'ui-ai-assistant-rephrase-provider' => 'openai',
                 'ui-ai-assistant-rephrase-api-key' => 'openai-key',
-                'ui-ai-assistant-rephrase-model' => null,
             ]),
             $this->createStub(LoggerInterface::class),
             $usageTracker,

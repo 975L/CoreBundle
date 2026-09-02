@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\SvgTextDetector;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -31,6 +32,7 @@ class SvgFontsHealthCheckProvider implements HealthCheckExhaustiveInterface
     public function __construct(
         private readonly MediaRepository $mediaRepository,
         private readonly SvgTextDetector $svgTextDetector,
+        private readonly MediaUsageRegistry $mediaUsageRegistry,
         private readonly ConfigServiceInterface $configService,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly TranslatorInterface $translator,
@@ -48,8 +50,17 @@ class SvgFontsHealthCheckProvider implements HealthCheckExhaustiveInterface
     {
         $siteUrl = rtrim((string) $this->configService->get('site-url'), '/');
 
+        $candidates = $this->mediaRepository->findSvgCandidates();
+
+        // A file only the bin still draws is nothing anyone has to fix: the page it belongs to is not served any more, and restoring that page brings the media - and its row - back on the next run. Read once for the whole batch rather than per file
+        $binnedOnly = array_flip($this->mediaUsageRegistry->getBinnedOnlyMediaIds($candidates));
+
         $rows = [];
-        foreach ($this->mediaRepository->findSvgCandidates() as $media) {
+        foreach ($candidates as $media) {
+            if (isset($binnedOnly[$media->getId()])) {
+                continue;
+            }
+
             $filename = (string) $media->getFilename();
             $absolutePath = $this->projectDir . '/public/' . $filename;
 

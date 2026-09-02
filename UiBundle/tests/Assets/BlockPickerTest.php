@@ -34,8 +34,8 @@ class BlockPickerTest extends TestCase
     {
         $module = $this->read(self::MODULE_JS);
 
+        // That the row ends up carrying the class is BlockPickerBehaviourTest's; the absence of the other way out is what no scenario can show
         $this->assertStringNotContainsString('select.remove()', $module);
-        $this->assertStringContainsString("row.classList.add('ui-block-picker-on')", $module);
         $this->assertStringContainsString('.ui-block-picker-on', $this->read(self::STYLESHEET), 'The select is hidden by the row class, so the stylesheet is what has to carry it.');
     }
 
@@ -62,17 +62,8 @@ class BlockPickerTest extends TestCase
     {
         $module = $this->read(self::MODULE_JS);
 
+        // EasyAdmin wraps a list of ten choices or more with TomSelect, which no fixture here carries: that it is told to stay silent is the half only the source can answer, the single change reaching block.js being BlockPickerBehaviourTest's
         $this->assertStringContainsString('select.tomselect.setValue(kind, true)', $module, 'TomSelect is no longer told to stay silent, so it fires a change of its own on top of the one below.');
-        $this->assertSame(1, substr_count($module, "select.dispatchEvent(new Event('change'"), 'The change event block.js listens for is dispatched from more than one place.');
-    }
-
-    // Which kinds a row may take depends on its context (a menu, a column of a flexible section), and BlockType puts back a kind the context no longer offers for the row already holding it - a list built anywhere else would offer the wrong ones
-    public function testTheGridIsBuiltFromTheRowsOwnSelect(): void
-    {
-        $module = $this->read(self::MODULE_JS);
-
-        $this->assertStringContainsString("select.querySelectorAll('optgroup')", $module);
-        $this->assertStringContainsString('if (!option.value) continue;', $module, 'The placeholder option would be offered as a block kind of its own.');
     }
 
     // The option's own text is "Label (description)", the only way a bare <select> can say what a kind does - printed as is, the palette would show the description twice, once inside the label and once under it
@@ -89,8 +80,7 @@ class BlockPickerTest extends TestCase
     {
         $module = $this->read(self::MODULE_JS);
 
-        $this->assertStringContainsString("document.addEventListener('ea.collection.item-added'", $module);
-        $this->assertStringContainsString("document.addEventListener('c975l:block-data-loaded'", $module);
+        // The two events are BlockPickerBehaviourTest's; the guard against a row being enhanced twice is what stays here
         $this->assertStringContainsString('if (row.dataset.uiBlockPicker) return;', $module, 'Nothing stops a row from being given a second trigger.');
     }
 
@@ -150,7 +140,7 @@ class BlockPickerTest extends TestCase
     {
         $stylesheet = $this->read(self::SILHOUETTES);
 
-        foreach (['hero', 'card', 'image', 'portfolio_grid', 'image_compare', 'cta_band', 'form', 'flex_columns'] as $kind) {
+        foreach (['hero', 'card', 'image', 'portfolio_grid', 'image_compare', 'map', 'cta_band', 'form', 'flex_columns'] as $kind) {
             $this->assertStringContainsString('.ui-block-thumb--' . $kind, $stylesheet, sprintf('The "%s" kind lost the silhouette that told it apart.', $kind));
         }
     }

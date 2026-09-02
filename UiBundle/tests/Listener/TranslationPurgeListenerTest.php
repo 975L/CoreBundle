@@ -11,6 +11,8 @@
 namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Listener\TranslationPurgeListener;
@@ -55,6 +57,34 @@ class TranslationPurgeListenerTest extends TestCase
         $repository->expects($this->never())->method('deleteByOwner');
 
         new TranslationPurgeListener($repository)->postRemove($this->createEvent(new Media()));
+    }
+
+    // Taken out of its form's collection, a field is deleted by Doctrine's orphanRemoval - a removal like any other, and its translations have to go the same way
+    public function testAFormFieldTakesItsTranslationsWithIt(): void
+    {
+        $field = new FormField();
+        new \ReflectionProperty(FormField::class, 'id')->setValue($field, 12);
+
+        $repository = $this->createMock(TranslationRepository::class);
+        $repository->expects($this->once())
+            ->method('deleteByOwner')
+            ->with(Translation::OWNER_FORM_FIELD, 12);
+
+        new TranslationPurgeListener($repository)->postRemove($this->createEvent($field));
+    }
+
+    // Named apart from the fields, so a result's own words are the ones taken away
+    public function testAFormOutputTakesItsTranslationsWithIt(): void
+    {
+        $output = new FormOutput();
+        new \ReflectionProperty(FormOutput::class, 'id')->setValue($output, 12);
+
+        $repository = $this->createMock(TranslationRepository::class);
+        $repository->expects($this->once())
+            ->method('deleteByOwner')
+            ->with(Translation::OWNER_FORM_OUTPUT, 12);
+
+        new TranslationPurgeListener($repository)->postRemove($this->createEvent($output));
     }
 
     // A block that was never persisted owns no row keyed on an id it does not have

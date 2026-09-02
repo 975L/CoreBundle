@@ -14,6 +14,7 @@ use c975L\UiBundle\Repository\FormFieldRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FormFieldRepository::class)]
 #[ORM\Table(name: 'site_form_field')]
@@ -65,7 +66,9 @@ class FormField implements \Stringable
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Form $form = null;
 
+    // Required on the entity and not only on the form: the back office submits without the browser's own check, and an empty row then reached a column refusing it - a 500 where the screen should have named the line
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank]
     private ?string $label = null;
 
     // Derived from "label", scoped unique within the owning Form - see c975L\UiBundle\Service\FormFieldNamer

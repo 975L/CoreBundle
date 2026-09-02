@@ -38,7 +38,7 @@ class PortfolioGridTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['eyebrow', 'title', 'linkLabel', 'linkUrl', 'anchor'] as $field) {
+        foreach (['eyebrow', 'title', 'linkLabel', 'linkUrl', 'anchor', 'level'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the PortfolioGrid form");
         }
     }
@@ -51,6 +51,20 @@ class PortfolioGridTypeTest extends TestCase
         foreach ($added as $field => $options) {
             $this->assertFalse($options['required'], "\"$field\" should not be required");
         }
+    }
+
+    // The same field the "collection" block offers, so one design decision reads the same on both grids
+    public function testLevelOffersAnAutomaticChoiceAndTheThreeHeadings(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame([
+            'label.collection_item_level_auto' => '',
+            'h2' => 'h2',
+            'h3' => 'h3',
+            'h4' => 'h4',
+        ], $added['level']['choices']);
+        $this->assertFalse($added['level']['placeholder']);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

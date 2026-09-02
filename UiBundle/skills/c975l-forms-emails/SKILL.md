@@ -1,6 +1,6 @@
 ---
 name: c975l-forms-emails
-description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
+description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: FormTranslator, ui_form_label, translation_locale, FormTranslationBuilder, SeededTranslationWriteListener, translate a form, EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
 ---
 
 # c975L UiBundle — forms and emails
@@ -87,6 +87,34 @@ displays, it never submits. The `form` block embeds it like any other form.
   Form index carries an "Export selection" batch action. A `Form`, its fields and its outputs are all
   matched by `name`; a row the payload drops is removed, except a **restricted** field, and
   `restricted` is only ever set on a row the import creates.
+
+### A form in the site's other languages
+
+What an admin types in the form builder is text a visitor reads, not a translation key, so it is
+translated the way a page's own text is. `Service\FormTranslator` puts `FormField`'s `label`,
+`placeholder` and `defaultValue`, and `FormOutput`'s `label` and `unit`, in the shared `Translation`
+table (`Translation::OWNER_FORM_FIELD` / `OWNER_FORM_OUTPUT`) — **one form in every language**,
+`Form::$name` being unique site-wide, so a second row was never an option. No migration: the table
+takes a new owner type as it stands.
+
+- A field's `name` is its programmatic key — the HTML input name, the key an expression reads — and is
+  **never** translated. Choice options and `Form::$links` are not covered yet, both living inside a
+  JSON column.
+- The public form reads them in one query for the whole form (`preloadFields()`, called by
+  `Form\FormSubmissionType`); a calculator's results read theirs through `ExpressionEvaluator` for the
+  unit and the **`ui_form_label()`** Twig function for the label — named apart from Symfony's own
+  `form_label()`.
+- The back office writes them on the form's own screen: the same `?contenu=xx` language selector the
+  page screen has, offering the translatable texts alone, unmapped, with the source between brackets
+  marking what is left to do (`FormFieldType` / `FormOutputType`'s `translation_locale`, shared through
+  `FormTranslationBuilder`). That screen **neither adds nor deletes a row** — a form is composed once,
+  and a field taken away from one language would be taken away from every language at once.
+- A seeded form carries the wording its declaration shipped for the other languages, but only for a
+  form the run has just created: `SeededTranslationWriteListener` writes them once the caller's flush
+  has given the fields their ids.
+- `TranslationPurgeListener` takes a removed field's or result's translations with it.
+- A site declaring a single language pays nothing for any of this — `ContentTranslator` short-circuits
+  on `isActive()`.
 
 ### Protections, already there
 
@@ -272,6 +300,7 @@ class InvoiceAttachmentProvider implements EmailAttachmentProviderInterface
 - **Do not create a fields table for your bundle's form.** Use `Form` / `FormField`.
 - **Do not add your own honeypot, delay, captcha or rate limiter** — they are already on every form.
 - **Do not overwrite an admin's edit when seeding.** `FormSeeder` only ever fills what is unset.
+- **Do not translate a field's `name`** — an expression and the HTML input read it, and both break the day a language changes one.
 - **Do not write an email layout in a satellite bundle**, and do not `extends` a layout from an email
   template: send the body with `wrapLayout: true`.
 - **Do not turn structured content into an `EmailTemplate`** — the blocks have no loop, and the

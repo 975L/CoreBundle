@@ -21,7 +21,7 @@
         title: alertsTitle|default(''),
     }) }}
 
-    {% if counts|length > 0 %}
+    {% if counts|length > 0 or emptyCount|default(0) > 0 %}
         <div class="table-responsive">
             <table class="table table-sm">
                 <thead>
@@ -31,6 +31,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                {# A state rather than a group, drawn first and apart: it cuts across every group and gathers the sensitive entries too, which the rows below hide unless the toggle is on #}
+                {% if emptyCount|default(0) > 0 %}
+                    <tr class="table-warning">
+                        <td>
+                            <a href="{{ ea_url().setAction('index').set('group', emptyGroup) }}">{{ ('label.group_empty'|trans({}, 'config')) }}</a>
+                        </td>
+                        <td>{{ emptyCount }}</td>
+                    </tr>
+                {% endif %}
                 {% for group, count in counts %}
                     <tr>
                         <td>

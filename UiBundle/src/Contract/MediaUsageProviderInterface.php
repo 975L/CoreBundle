@@ -16,9 +16,13 @@ use c975L\UiBundle\Entity\Media;
 interface MediaUsageProviderInterface
 {
     /**
+     * "binned" says whether the owner of that usage is in the bin rather than deleted outright (a soft-deleted Page, say): the usage is real, so the media is still not free to be removed, but nothing on the live site draws it any more. It is what lets the library leave those medias out of its gallery and svg-fonts out of its run, rather than the alternative of dropping the usage altogether - which would make the media read as unused, and hand it to the delete button.
+     *
+     * Set it only if you know the answer, and then on every usage you report: an omitted key means "no verdict", not "live". BlockMediaUsageProvider omits it on purpose - it knows a media hangs off a block, never what owns that block, so a media it alone reports is left visible rather than hidden on a guess.
+     *
      * @param Media[] $medias the Media rows to resolve, already loaded by the caller (avoids every provider re-querying them)
      *
-     * @return array<int, list<array{label: string, url: ?string}>> usages keyed by Media id, only for medias this provider recognizes as its own
+     * @return array<int, list<array{label: string, url: ?string, binned?: bool}>> usages keyed by Media id, only for medias this provider recognizes as its own
      */
     public function getUsages(array $medias): array;
 }

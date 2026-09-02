@@ -366,6 +366,29 @@ class ConfigCrudControllerTest extends TestCase
         $this->assertFalse($this->renderGroupsScreen($controller)['canShowSensitive']);
     }
 
+    // The "to fill in" row, counted apart from the groups: it cuts across all of them and, unlike them, counts the sensitive entries too
+    public function testIndexPassesTheEmptyConfigsCountToTheGroupsScreen(): void
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn(true);
+
+        $configRepository = $this->createStub(ConfigRepository::class);
+        $configRepository->method('countsByGroup')->willReturn(['general' => 3]);
+        $configRepository->method('countEmpty')->willReturn(7);
+
+        $controller = $this->createController(
+            security: $security,
+            configRepository: $configRepository,
+            requestStack: new RequestStack([new Request()]),
+            adminUrlGenerator: $this->createParameterEchoingAdminUrlGenerator(),
+        );
+
+        $parameters = $this->renderGroupsScreen($controller);
+
+        $this->assertSame(7, $parameters['emptyCount']);
+        $this->assertSame(ConfigCrudController::GROUP_EMPTY, $parameters['emptyGroup']);
+    }
+
     // Renders the "pick a group" screen through a Twig double and hands back the parameters it was given
     private function renderGroupsScreen(ConfigCrudController $controller): array
     {
@@ -615,6 +638,70 @@ class ConfigCrudControllerTest extends TestCase
         $repository->method('createQueryBuilder')->willReturn($queryBuilder);
 
         $controller = $this->createController(security: $security, requestStack: $this->createRequestStackWithGroup('general'));
+        $controller->setContainer($this->createContainer([
+            EntityRepositoryInterface::class => $repository,
+        ]));
+
+        $controller->createIndexQueryBuilder(
+            new SearchDto(new Request(), null, null, [], [], null),
+            new EntityDto(Config::class, new ClassMetadata(Config::class)),
+            new FieldCollection([]),
+            new FilterCollection([]),
+        );
+    }
+
+    // The reserved "_empty" slug scopes on the value instead of the group, and drops the sensitive toggle along the way: an empty secret has nothing to hide, and gathering every empty entry is the whole point of the view
+    public function testCreateIndexQueryBuilderScopesToEmptyValuesAndIgnoresTheSensitiveToggle(): void
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn(true);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        // The empty-value condition alone: no isSensitive, no group, no isRestricted (super admin)
+        $queryBuilder->expects($this->once())->method('andWhere')
+            ->with("entity.value IS NULL OR entity.value = ''")
+            ->willReturnSelf();
+        $queryBuilder->expects($this->never())->method('setParameter');
+
+        $repository = $this->createStub(EntityRepositoryInterface::class);
+        $repository->method('createQueryBuilder')->willReturn($queryBuilder);
+
+        $controller = $this->createController(
+            security: $security,
+            requestStack: $this->createRequestStackWithGroup(ConfigCrudController::GROUP_EMPTY),
+        );
+        $controller->setContainer($this->createContainer([
+            EntityRepositoryInterface::class => $repository,
+        ]));
+
+        $controller->createIndexQueryBuilder(
+            new SearchDto(new Request(), null, null, [], [], null),
+            new EntityDto(Config::class, new ClassMetadata(Config::class)),
+            new FieldCollection([]),
+            new FilterCollection([]),
+        );
+    }
+
+    // Dropping the sensitive toggle must not drop the restricted guard with it, or the view would hand the backup credentials to any admin
+    public function testCreateIndexQueryBuilderKeepsTheRestrictedGuardInTheEmptyView(): void
+    {
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn(false);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        // isRestricted + the empty-value condition
+        $queryBuilder->expects($this->exactly(2))->method('andWhere')->willReturnSelf();
+        $queryBuilder->expects($this->once())->method('setParameter')
+            ->with('isRestricted', false)
+            ->willReturnSelf();
+
+        $repository = $this->createStub(EntityRepositoryInterface::class);
+        $repository->method('createQueryBuilder')->willReturn($queryBuilder);
+
+        $controller = $this->createController(
+            security: $security,
+            requestStack: $this->createRequestStackWithGroup(ConfigCrudController::GROUP_EMPTY),
+        );
         $controller->setContainer($this->createContainer([
             EntityRepositoryInterface::class => $repository,
         ]));
@@ -955,6 +1042,30 @@ class ConfigCrudControllerTest extends TestCase
 
         $this->assertFalse($editAction->getLabel());
         $this->assertSame(['title' => 'action.edit'], $editAction->getHtmlAttributes());
+    }
+
+    // The toggle would be a dead button in the "to fill in" view, which lists sensitive and non-sensitive entries together
+    public function testConfigureActionsHidesTheSensitiveToggleInTheEmptyView(): void
+    {
+        $controller = $this->createController(requestStack: $this->createRequestStackWithGroup(ConfigCrudController::GROUP_EMPTY));
+
+        $toggle = $controller->configureActions(Actions::new()->add(Crud::PAGE_INDEX, Action::EDIT))
+            ->getAsDto(Crud::PAGE_INDEX)
+            ->getAction(Crud::PAGE_INDEX, 'toggleSensitive');
+
+        $this->assertFalse($toggle->isDisplayed());
+    }
+
+    // Anywhere else it is the only way to reach the sensitive entries
+    public function testConfigureActionsKeepsTheSensitiveToggleInAGroupView(): void
+    {
+        $controller = $this->createController(requestStack: $this->createRequestStackWithGroup('general'));
+
+        $toggle = $controller->configureActions(Actions::new()->add(Crud::PAGE_INDEX, Action::EDIT))
+            ->getAsDto(Crud::PAGE_INDEX)
+            ->getAction(Crud::PAGE_INDEX, 'toggleSensitive');
+
+        $this->assertTrue($toggle->isDisplayed());
     }
 
     // Detail adds no information beyond what edit already shows (sensitive values are revealed there too) - disabled entirely, alongside new/delete since configs are fixed by the bundles' import json

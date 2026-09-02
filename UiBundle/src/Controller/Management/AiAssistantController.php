@@ -85,15 +85,10 @@ class AiAssistantController extends AbstractController
         return $links;
     }
 
-    // Per-slug rather than all-or-nothing, so a filled-in step stops being prompted; "-base-uri"/"-model" only block euria
+    // Per-slug rather than all-or-nothing, so a filled-in step stops being prompted - and every slug blocks, whatever the provider, none of them having a value picked in the code on its behalf
     private function missingSlugs(): array
     {
-        $blockingSlugs = self::LINKED_SLUGS;
-        if ('euria' !== $this->configService->get('ui-ai-assistant-rephrase-provider')) {
-            $blockingSlugs = array_diff($blockingSlugs, ['ui-ai-assistant-rephrase-base-uri', 'ui-ai-assistant-rephrase-model']);
-        }
-
-        return array_values(array_filter($blockingSlugs, function (string $slug): bool {
+        return array_values(array_filter(self::LINKED_SLUGS, function (string $slug): bool {
             $value = $this->configService->get($slug);
 
             return 'ui-ai-assistant-dashboard-enabled' === $slug ? true !== $value : !$value;

@@ -143,21 +143,6 @@ class FavoriteButtonControllerTest extends TestCase
         $this->assertStringContainsString('Demasiados cambios', $this->read('translations/ui.es.xlf'));
     }
 
-    // Its own store, not the rating one: a visitor clearing one of the two features must not lose the other
-    public function testTheStoreIsTheFavoritesOwn(): void
-    {
-        $this->assertStringContainsString('"c975l-favorite"', $this->read(self::STORE_JS));
-    }
-
-    // A browser refusing storage (private mode, site data blocked) reads as an empty list rather than taking the page down with it
-    public function testABrowserRefusingStorageIsReadAsAnEmptyList(): void
-    {
-        $store = $this->read(self::STORE_JS);
-
-        $this->assertStringContainsString('return { token: null, keys: {} };', $store);
-        $this->assertSame(2, substr_count($store, '} catch {'));
-    }
-
     // What the server holds is written over what the browser assumed: one visit to the list and every heart of the site paints right, which is how a list follows an account onto a device that never saw it
     public function testThePageWritesTheServersKeysOverWhatTheBrowserAssumed(): void
     {

@@ -162,7 +162,8 @@ class FormBotProtectionTest extends TestCase
     }
 
     // "site-form-delay" isn't seeded when c975l/config-bundle hasn't loaded it yet - falls back to 7s
-    public function testIsSuspiciousFallsBackTo7SecondsWhenDelayNotSeeded(): void
+    // Nothing in the entry, no delay to enforce: the honeypot is left to answer on its own rather than a delay nobody set
+    public function testIsSuspiciousEnforcesNoDelayWhenTheEntryIsEmpty(): void
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnMap([['site-form-delay', null]]);
@@ -174,7 +175,7 @@ class FormBotProtectionTest extends TestCase
 
         $botProtection = new FormBotProtection($configService);
 
-        $this->assertTrue($botProtection->isSuspicious($request, 'test_form', 'test_started_at'));
+        $this->assertFalse($botProtection->isSuspicious($request, 'test_form', 'test_started_at'));
     }
 
     public function testIsSuspiciousRemovesTimestampAndHoneypotFromSession(): void

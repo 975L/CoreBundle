@@ -12,8 +12,10 @@ namespace c975L\UiBundle\Tests\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Contract\MediaUsageProviderInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\SvgFontsHealthCheckProvider;
+use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\SvgTextDetector;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -40,9 +42,10 @@ class SvgFontsHealthCheckProviderTest extends TestCase
     }
 
     /**
-     * @param array<string, ?string> $files filename => contents, null for a row whose file is missing
+     * @param array<string, ?string> $files              filename => contents, null for a row whose file is missing
+     * @param ?MediaUsageRegistry    $mediaUsageRegistry the usages a media is known through, only given by the test checking the ones in the bin are left out
      */
-    private function createProvider(array $files): SvgFontsHealthCheckProvider
+    private function createProvider(array $files, ?MediaUsageRegistry $mediaUsageRegistry = null): SvgFontsHealthCheckProvider
     {
         $media = [];
         foreach ($files as $filename => $contents) {
@@ -52,6 +55,8 @@ class SvgFontsHealthCheckProviderTest extends TestCase
 
             $row = new Media();
             $row->setFilename($filename);
+            // The binned-only check reads ids, which only a persisted row would carry
+            new \ReflectionProperty(Media::class, 'id')->setValue($row, \count($media) + 1);
             $media[] = $row;
         }
 
@@ -76,6 +81,7 @@ class SvgFontsHealthCheckProviderTest extends TestCase
         return new SvgFontsHealthCheckProvider(
             $mediaRepository,
             new SvgTextDetector(),
+            $mediaUsageRegistry ?? new MediaUsageRegistry(),
             $configService,
             $adminUrlGenerator,
             $translator,
@@ -135,5 +141,21 @@ class SvgFontsHealthCheckProviderTest extends TestCase
             [HealthCheckResult::STATUS_WARNING, HealthCheckResult::STATUS_OK],
             array_column($rows, 'status'),
         );
+    }
+
+    // A file only a binned page still draws is nothing anyone has to fix, and the exhaustive purge retires the row it had (see MediaUsageProviderInterface)
+    public function testAMediaOnlyUsedByABinnedOwnerIsSkipped(): void
+    {
+        $usageProvider = $this->createStub(MediaUsageProviderInterface::class);
+        $usageProvider->method('getUsages')->willReturn([
+            1 => [['label' => 'binned page', 'url' => null, 'binned' => true]],
+        ]);
+
+        $registry = new MediaUsageRegistry();
+        $registry->addProvider($usageProvider);
+
+        $provider = $this->createProvider(['drawn.svg' => self::WITH_TEXT], $registry);
+
+        $this->assertSame([], $provider->runChecks());
     }
 }

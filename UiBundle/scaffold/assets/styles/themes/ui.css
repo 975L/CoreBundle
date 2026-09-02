@@ -39,6 +39,14 @@
     /* What delimits a comparison on the page - the one image kind carrying an outline, a screenshot ending on white having no edge of its own. "none" takes it back off for a design whose shots come already framed */
     /* --image-compare-border: 1px solid var(--border-color); */
 
+    /* The map block: the room it keeps on the page, the three heights an editor picks between, what frames the canvas, and the colour of the pin drawn over it */
+    /* --ui-map-margin-block: 3em; */
+    /* --ui-map-height-small: 15rem; */
+    /* --ui-map-height-medium: 25rem; */
+    /* --ui-map-height-large: 35rem; */
+    /* --ui-map-border: 1px solid var(--border-color); */
+    /* --ui-map-pin-color: var(--primary); */
+
     /* What parts two blocks grouped in a "block_group" - the row gap first, which only shows once the group wraps. It is the gap of a footer's own items too, a group being what puts a footer's links on a line */
     /* --blocks-group-gap: 0.5rem 1.5rem; */
 
