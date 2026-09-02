@@ -87,7 +87,27 @@ class CheckDeprecationsCommandTest extends TestCase
         $this->assertStringNotContainsString('To be checked', $display);
     }
 
-    public function testExecuteReportsNamespaceOnlyMatchAsPossibleHit(): void
+    // The case the namespace token exists for: an aliased import never spells the full name out, so only the namespace and the short name are there to be found - separately
+    public function testExecuteReportsAliasedImportAsPossibleHit(): void
+    {
+        $this->filesystem->mkdir($this->projectDir . '/src');
+        $this->filesystem->dumpFile(
+            $this->projectDir . '/src/Foo.php',
+            '<?php use App\Deprecated as Alias; new Alias\ThingDoer();'
+        );
+        $this->writeDeprecationsLog(['Class "App\Deprecated\ThingDoer" is deprecated, use something else instead.']);
+
+        $tester = $this->createTester();
+        $tester->execute([]);
+
+        $display = $tester->getDisplay();
+        $this->assertStringNotContainsString('ACTIONABLE', $display);
+        $this->assertStringContainsString('To be checked', $display);
+        $this->assertStringContainsString('app -> src/Foo.php', $display);
+    }
+
+    // A sibling class of the same namespace proves nothing about the deprecated one: the namespace alone used to list the file, which is how every maker of a bundle ended up under a deprecation about a maker none of them uses
+    public function testExecuteIgnoresNamespaceMatchWhenTheClassNameIsNowhereInTheFile(): void
     {
         $this->filesystem->mkdir($this->projectDir . '/src');
         $this->filesystem->dumpFile(
@@ -100,7 +120,42 @@ class CheckDeprecationsCommandTest extends TestCase
         $tester->execute([]);
 
         $display = $tester->getDisplay();
-        $this->assertStringNotContainsString('ACTIONABLE', $display);
+        $this->assertStringNotContainsString('To be checked', $display);
+        $this->assertStringContainsString('No actionable deprecation found', $display);
+    }
+
+    // Naming the package in a comment, and importing a class of the same namespace, is what a bundle wiring its own makers does - neither says a word about the deprecated maker the message is about
+    public function testExecuteIgnoresPackageNameMentionedWithoutTheDeprecatedClass(): void
+    {
+        $this->filesystem->mkdir($this->projectDir . '/src');
+        $this->filesystem->dumpFile(
+            $this->projectDir . '/src/Foo.php',
+            '<?php // symfony/maker-bundle is dev-only in a consuming app' . "\n" . 'use Symfony\Bundle\MakerBundle\Maker\AbstractMaker;'
+        );
+        $this->writeDeprecationsLog(['User Deprecated: Since symfony/maker-bundle 1.29: The "Symfony\Bundle\MakerBundle\Maker\MakeFunctionalTest" class is deprecated, use "Symfony\Bundle\MakerBundle\Maker\MakeTest" instead.']);
+
+        $tester = $this->createTester();
+        $tester->execute([]);
+
+        $display = $tester->getDisplay();
+        $this->assertStringNotContainsString('To be checked', $display);
+        $this->assertStringContainsString('No actionable deprecation found', $display);
+    }
+
+    // A deprecated method is written "Foo\Bar::baz()", which the class pattern does not catch: there is no name to corroborate the package token with, so it keeps listing the file as it always did
+    public function testExecuteKeepsPossibleHitWhenTheMessageQuotesNoClass(): void
+    {
+        $this->filesystem->mkdir($this->projectDir . '/src');
+        $this->filesystem->dumpFile(
+            $this->projectDir . '/src/Foo.php',
+            '<?php // Requires symfony/foo-bundle'
+        );
+        $this->writeDeprecationsLog(['Since symfony/foo-bundle 1.2: The "App\Thing::doSomething()" method is deprecated.']);
+
+        $tester = $this->createTester();
+        $tester->execute([]);
+
+        $display = $tester->getDisplay();
         $this->assertStringContainsString('To be checked', $display);
         $this->assertStringContainsString('app -> src/Foo.php', $display);
     }

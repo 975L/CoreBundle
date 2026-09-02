@@ -25,6 +25,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 )]
 class CheckDeprecationsCommand extends Command
 {
+    // A fully-qualified class name as a deprecation message quotes it
+    private const string FQCN_PATTERN = '/"([A-Za-z0-9_]+(?:\\\\[A-Za-z0-9_]+)+)"/';
+
     public function __construct(
         private readonly BundleLocator $bundleLocator,
         #[Autowire(param: 'kernel.project_dir')]
@@ -116,7 +119,7 @@ class CheckDeprecationsCommand extends Command
                 $io->listing($entry['hits']);
             }
             if ($entry['possibleHits']) {
-                $io->note('To be checked - the deprecated class\' namespace was found, with no certainty that it is the one being used:');
+                $io->note('To be checked - the deprecated class\' package or namespace was found, with no certainty that it is the one being used:');
                 $io->listing($entry['possibleHits']);
             }
         }
@@ -129,6 +132,7 @@ class CheckDeprecationsCommand extends Command
         foreach ($messages as $message => $count) {
             $hits = [];
             $possibleHits = [];
+            $shortNames = $this->extractShortNames($message);
             foreach ($this->extractTokens($message) as $token => $exact) {
                 foreach ($sourceDirs as $label => $dir) {
                     if (!is_dir($dir)) {
@@ -139,7 +143,7 @@ class CheckDeprecationsCommand extends Command
                         $key = $label . ' -> ' . str_replace($this->projectDir . '/', '', $file);
                         if ($exact) {
                             $hits[$key] = true;
-                        } else {
+                        } elseif ($this->mentionsAnyShortName($file, $shortNames)) {
                             $possibleHits[$key] = true;
                         }
                     }
@@ -167,10 +171,36 @@ class CheckDeprecationsCommand extends Command
         return $report;
     }
 
+    // A low-confidence token only counts when the file also names one of the classes the message quotes: code writing "use Foo\Bar\Annotation as X;" then "X\Uploadable" spells out "Uploadable" somewhere, while a file merely importing another class of the same namespace, or naming the package in a comment, never does. A message quoting no class at all - a deprecated method reads "Foo\Bar::baz()", which the pattern does not catch - has no short name to require, and the token stands on its own as it always did
+    private function mentionsAnyShortName(string $file, array $shortNames): bool
+    {
+        if (!$shortNames) {
+            return true;
+        }
+
+        $contents = (string) file_get_contents($file);
+
+        return array_any($shortNames, fn ($shortName) => str_contains($contents, $shortName));
+    }
+
+    // The short name of every class the message quotes - the deprecated one and the replacement it advises alike, the wording giving no reliable way to tell them apart
+    private function extractShortNames(string $message): array
+    {
+        preg_match_all(self::FQCN_PATTERN, $message, $matches);
+
+        $shortNames = [];
+        foreach ($matches[1] as $fqcn) {
+            $parts = explode('\\', $fqcn);
+            $shortNames[] = end($parts);
+        }
+
+        return array_unique($shortNames);
+    }
+
     // Candidate tokens: fully-qualified class names quoted in the message are "exact" (high-confidence) matches. Composer package names and each FQCN's parent namespace are kept as lower-confidence tokens - code that imports a class via "use Foo\Bar\Annotation as X;" and references "X\Uploadable" never spells out the full "Foo\Bar\Annotation\Uploadable" string, only the "use" line does, and a bundle can mention a package name (e.g. in a comment or composer.json) without using the specific deprecated class it ships - both match just as easily without proving real usage, hence "possible" and not "actionable"
     private function extractTokens(string $message): array
     {
-        preg_match_all('/"([A-Za-z0-9_]+(?:\\\\[A-Za-z0-9_]+)+)"/', $message, $fqcnMatches);
+        preg_match_all(self::FQCN_PATTERN, $message, $fqcnMatches);
         preg_match_all('/\b([a-z0-9_-]+\/[a-z0-9_-]+)\b/', $message, $pkgMatches);
 
         $tokens = [];

@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.21.3
+
+The deprecations report stops listing files that have nothing to do with the deprecation
+
+### ConfigBundle
+
+- **`c975l:deprecations:check` requires the deprecated class' own name before listing a file under a namespace or package match**: every maker of a bundle was reported under a maker-bundle deprecation about a maker none of them uses, and the command listed its own source for quoting a package name in a comment. The case the loose match exists for - `use Foo\Bar\Annotation as X;` then `X\Uploadable` - still spells the name out, so it is kept; a message quoting no class at all, a deprecated method being written `Foo\Bar::baz()`, has no name to require and matches as before (02/09/2026)
+
 ## v1.21.2
 
 The one-off legal-sections migration command retires
