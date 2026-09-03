@@ -380,11 +380,10 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '.action-saveAndReturn',
                 ],
                 [
-                    // Only a site declaring several languages draws the selector (see form_crud_edit.html.twig), and the save above came back to the index, so the highlight finds nothing until the form is opened again - a step that reads as a plain instruction meanwhile, which is what it is on a site written in one language
+                    // No highlight and none possible: the selector sits on the edit screen (drawn only on a site declaring several languages, see form_crud_edit.html.twig) while this step is read from the index the save above returned to
                     'label' => 'label.guided_step_ui_form_translate',
                     'description' => 'description.guided_step_ui_form_translate',
                     'narration' => 'narration.guided_step_ui_form_translate',
-                    'highlight' => '.nav-pills',
                 ],
                 [
                     'label' => 'label.guided_step_ui_form_place',

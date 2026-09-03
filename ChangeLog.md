@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.21.4
+
+A guided step drops a highlight its own screen never draws
+
+### UiBundle
+
+- The translation step of the `ui-form` guided project drops its `.nav-pills` highlight: the save before it returns to the index, so the selector was looked for on a screen that never carries it - and only a site declaring several languages draws it at all (03/09/2026)
+
 ## v1.21.3
 
 The deprecations report stops listing files that have nothing to do with the deprecation
