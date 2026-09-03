@@ -11,7 +11,7 @@
 
 // The block on its own has nothing around it to be read against, where an article's hook already sits under a title, inside a body of text. --section-accent first, so the bar follows a colored flat
 .text-hook--standalone {
-    border-inline-start: var(--text-hook-bar-width, 3px) solid var(--section-accent, var(--primary));
+    border-inline-start: var(--text-hook-bar-width, 3px) solid var(--section-accent, var(--primary-ink));
     padding-inline-start: var(--text-hook-bar-gap, 20px);
     margin-block: var(--text-hook-standalone-margin, 32px);
 }
@@ -20,7 +20,7 @@
 // Its own measure is dropped too: a hook the editor centered would otherwise read off-center against the article it introduces
 .text-hook--article {
     max-width: var(--text-hook-article-max-width, none);
-    color: var(--text-hook-article-color, var(--section-accent, var(--primary)));
+    color: var(--text-hook-article-color, var(--section-accent, var(--primary-ink)));
     margin-block: var(--text-hook-article-margin, 24px);
 }
 

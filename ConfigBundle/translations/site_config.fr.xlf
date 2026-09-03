@@ -86,6 +86,10 @@
                 <source>description.site_address</source>
                 <target>Adresse postale du vendeur, reprise par le formulaire de rétractation des conditions générales de vente. Facultative, à laisser vide pour un site édité depuis un domicile.</target>
             </trans-unit>
+            <trans-unit id="60wz_Fo">
+                <source>description.site_age_warning</source>
+                <target>Phrase affichée sur les fiches portant un âge (livre, produit). Vide, rien ne s'affiche (HTML autorisé)</target>
+            </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
                 <target>L'auteur qui sera renseigné dans les métadonnées</target>
@@ -341,6 +345,10 @@
             <trans-unit id="Yc66g7d">
                 <source>label.site_address</source>
                 <target>Adresse postale</target>
+            </trans-unit>
+            <trans-unit id="ApFBZ1D">
+                <source>label.site_age_warning</source>
+                <target>Avertissement d'âge</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

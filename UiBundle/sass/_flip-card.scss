@@ -77,7 +77,7 @@ $radius: var(--block-radius, var(--flip-card-radius));
 .flip-card-face {
     // Positioning context for the toggle below, which fills the whole face
     position: relative;
-    border: var(--flip-card-border-width) solid var(--flip-card-accent, var(--primary));
+    border: var(--flip-card-border-width) solid var(--flip-card-accent, var(--primary-ink));
     border-radius: $radius;
     background-color: var(--flip-card-front-background);
     // Unlike a card, a flip card has always been shadowed: the field retunes that shadow, so "theme" is --box-shadow and not "none" - a card stored before the field existed goes on looking as it did
@@ -104,7 +104,7 @@ $radius: var(--block-radius, var(--flip-card-radius));
     font-family: var(--font-family-title);
     font-size: var(--flip-card-title-size);
     font-weight: var(--font-title-weight);
-    color: var(--flip-card-accent, var(--primary));
+    color: var(--flip-card-accent, var(--primary-ink));
     text-align: center;
     margin: 0.25rem auto;
     padding: 0 0.5em;
@@ -145,7 +145,7 @@ $radius: var(--block-radius, var(--flip-card-radius));
 
 // The control is invisible by design, so the ring is the only thing telling a keyboard where it stands. Drawn inside the face, the toggle being flush with a border the outline would otherwise be hidden under
 .flip-card-toggle:focus-visible {
-    outline: 3px solid var(--flip-card-accent, var(--primary));
+    outline: 3px solid var(--flip-card-accent, var(--primary-ink));
     outline-offset: -6px;
     border-radius: calc(#{$radius} - var(--flip-card-border-width));
 }

@@ -75,7 +75,7 @@
     font-size: 1.75rem;
     line-height: 1;
     margin-left: auto;
-    color: var(--primary);
+    color: var(--primary-ink);
 }
 
 // Wrapping rather than scrolling: at a high total the segments hit their 3px floor and the row would otherwise push the whole page sideways on a phone. The gap then doubles as the gutter between rows

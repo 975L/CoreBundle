@@ -110,12 +110,14 @@
     --input-invalid-shadow-color: var(--button-background-danger);
     --input-invalid-text-color: var(--button-background-danger);
     --input-margin-block: 0.4em 1em;
+    --input-placeholder-color: color-mix(in srgb, var(--text) 62%, var(--background));
     --input-shadow-color: #4d4d4d;
     --input-valid-border-color: var(--button-background-success);
     --input-valid-shadow-color: var(--button-background-success);
     --label-color: #808080;
-    --link-color: var(--primary);
+    --link-color: var(--primary-ink);
     --primary: var(--c975l-color-primary, var(--button-background-primary));
+    --primary-ink: var(--primary);
     --radius-btn: 5px;
     --radius-card: 10px;
     --radius-panel: 16px;
@@ -136,7 +138,7 @@
     --toc-background: var(--background);
     --toc-chip-radius: 999px;
     --toc-column-width: 220px;
-    --toc-current-color: var(--primary);
+    --toc-current-color: var(--primary-ink);
     --toc-gap: 0.5rem;
     /* What the resting bar covers, which is what a section jumped to has to leave above itself - one 44px chip plus its own breathing room. Stated rather than measured: a nonced style-src drops any rule a script writes onto an element */
     --toc-height: 4rem;
@@ -595,14 +597,14 @@ blockquote.pull-right .small::after {
 .btn.btn-link:visited {
   background-color: transparent;
   box-shadow: none;
-  color: var(--primary);
+  color: var(--primary-ink);
   text-decoration: underline;
 }
 
 .btn.btn-link:hover,
 .btn.btn-link:visited:hover {
   background-color: transparent;
-  color: var(--button-background-primary-dark);
+  color: color-mix(in srgb, var(--primary-ink) 85%, black);
   text-decoration: underline;
 }
 
@@ -1063,7 +1065,7 @@ h2.card-header {
 
 /* COLORS */
 .primary {
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .secondary {
@@ -1155,8 +1157,8 @@ label[for=contact_form_username],
 
 .document-download:hover,
 .document-download:focus-visible {
-  border-color: var(--primary);
-  box-shadow: 0 0 16px 2px color-mix(in srgb, var(--primary) 35%, transparent);
+  border-color: var(--primary-ink);
+  box-shadow: 0 0 16px 2px color-mix(in srgb, var(--primary-ink) 35%, transparent);
   color: inherit;
   text-decoration: none;
 }
@@ -1239,7 +1241,7 @@ label[for=contact_form_username],
 }
 
 .favorite-button:focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--primary-ink);
   outline-offset: 2px;
 }
 
@@ -1315,7 +1317,7 @@ label[for=contact_form_username],
 
 .flip-card-face {
   position: relative;
-  border: var(--flip-card-border-width) solid var(--flip-card-accent, var(--primary));
+  border: var(--flip-card-border-width) solid var(--flip-card-accent, var(--primary-ink));
   border-radius: var(--block-radius, var(--flip-card-radius));
   background-color: var(--flip-card-front-background);
   box-shadow: var(--block-shadow, var(--box-shadow));
@@ -1335,7 +1337,7 @@ label[for=contact_form_username],
   font-family: var(--font-family-title);
   font-size: var(--flip-card-title-size);
   font-weight: var(--font-title-weight);
-  color: var(--flip-card-accent, var(--primary));
+  color: var(--flip-card-accent, var(--primary-ink));
   text-align: center;
   margin: 0.25rem auto;
   padding: 0 0.5em;
@@ -1371,7 +1373,7 @@ label[for=contact_form_username],
 }
 
 .flip-card-toggle:focus-visible {
-  outline: 3px solid var(--flip-card-accent, var(--primary));
+  outline: 3px solid var(--flip-card-accent, var(--primary-ink));
   outline-offset: -6px;
   border-radius: calc(var(--block-radius, var(--flip-card-radius)) - var(--flip-card-border-width));
 }
@@ -1540,6 +1542,11 @@ textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+}
+
+::placeholder {
+  color: var(--input-placeholder-color);
+  opacity: 1;
 }
 
 label {
@@ -2195,7 +2202,7 @@ img.white {
   font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--primary);
+  color: var(--primary-ink);
   margin: 0 0 14px;
   text-align: start;
 }
@@ -2216,7 +2223,8 @@ img.white {
   max-width: var(--section-head-max-width, 640px);
 }
 
-main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
+main :is(.blocks, .block-animation, .block-editable) > :is(.block-section,
+.hero,
 .text-section,
 .section-features-section,
 .section-cards-section,
@@ -2231,6 +2239,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   margin-block: 0;
 }
 
+.block-section,
 .section-features-section,
 .section-cards-section,
 .expertise-banner,
@@ -2334,9 +2343,14 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 .section-btn--ghost {
   color: var(--section-text, var(--text));
-  border-bottom: 2px solid var(--section-accent, var(--primary));
+  border-bottom: 2px solid var(--section-accent, var(--primary-ink));
   border-radius: 0;
   padding-bottom: 3px;
+}
+
+.section-btn--ghost:focus-visible {
+  outline: 2px solid var(--section-accent, var(--primary-ink));
+  outline-offset: 2px;
 }
 
 .section-btn--ghost:hover {
@@ -2383,7 +2397,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   --section-border: var(--border-color);
   --section-text: var(--text);
   --section-text-soft: var(--label-color);
-  --section-accent: var(--primary);
+  --section-accent: var(--primary-ink);
   --section-overlay: var(--surface-accent);
 }
 
@@ -2461,7 +2475,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--section-text, var(--primary));
+  color: var(--section-text, var(--primary-ink));
   background: var(--section-overlay, var(--surface-accent));
   padding: 7px 13px;
   border-radius: var(--radius-btn);
@@ -2487,7 +2501,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 .hero__title em {
-  color: var(--section-accent, var(--primary));
+  color: var(--section-accent, var(--primary-ink));
   font-style: italic;
 }
 
@@ -2836,7 +2850,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   font-family: var(--font-family-title);
   font-size: calc(34px * var(--font-size-title-scale, 1));
   font-weight: var(--font-title-weight);
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .hero__stat span {
@@ -3076,13 +3090,13 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 }
 
 .section-step--first {
-  border-top-color: var(--primary);
+  border-top-color: var(--primary-ink);
 }
 
 .section-step__num {
   font-family: var(--font-family-title);
   font-size: calc(15px * var(--font-size-title-scale, 1));
-  color: var(--primary);
+  color: var(--primary-ink);
   margin-bottom: 8px;
 }
 
@@ -3227,7 +3241,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 .cta-band .section-btn {
   background: var(--card-background);
-  color: var(--primary);
+  color: var(--primary-ink);
   font-weight: 700;
   padding: 17px 36px;
 }
@@ -3840,7 +3854,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
   font-size: 1.75rem;
   line-height: 1;
   margin-left: auto;
-  color: var(--primary);
+  color: var(--primary-ink);
 }
 
 .tracker-segments {
@@ -4403,14 +4417,14 @@ span {
 }
 
 .text-hook--standalone {
-  border-inline-start: var(--text-hook-bar-width, 3px) solid var(--section-accent, var(--primary));
+  border-inline-start: var(--text-hook-bar-width, 3px) solid var(--section-accent, var(--primary-ink));
   padding-inline-start: var(--text-hook-bar-gap, 20px);
   margin-block: var(--text-hook-standalone-margin, 32px);
 }
 
 .text-hook--article {
   max-width: var(--text-hook-article-max-width, none);
-  color: var(--text-hook-article-color, var(--section-accent, var(--primary)));
+  color: var(--text-hook-article-color, var(--section-accent, var(--primary-ink)));
   margin-block: var(--text-hook-article-margin, 24px);
 }
 
@@ -4827,14 +4841,14 @@ span {
   width: 10px;
   height: 14px;
   background-color: rgba(255, 255, 255, 0);
-  border: 2px solid var(--primary);
+  border: 2px solid var(--primary-ink);
   border-radius: 100%;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 }
 
 .slider-dot.active {
-  background-color: var(--primary);
+  background-color: var(--primary-ink);
 }
 
 .slider img.angle {
@@ -4931,7 +4945,7 @@ span {
   align-items: center;
   list-style: none;
   border-radius: 0.25rem;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--primary-ink);
   margin: 20px auto;
   padding: 0;
 }
@@ -4948,7 +4962,7 @@ span {
 
 .pagination-next,
 .pagination-previous {
-  color: var(--primary);
+  color: var(--primary-ink);
   padding: 0.6em 1em;
   margin: 0;
 }

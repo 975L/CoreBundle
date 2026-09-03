@@ -46,6 +46,12 @@ textarea {
     color: inherit;
 }
 
+// "opacity" restated: Firefox dims its own placeholder to .54, which would take the token's contrast back down under the threshold it exists to clear
+::placeholder {
+    color: var(--input-placeholder-color);
+    opacity: 1;
+}
+
 label {
     display: block;
     max-width: 100%;

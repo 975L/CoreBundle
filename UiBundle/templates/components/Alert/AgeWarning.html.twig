@@ -1,0 +1,7 @@
+{# <twig:c975LUi:Alert:AgeWarning/> #}
+{# The sentence that goes with an age restriction, written once for the whole site (config "site-age-warning") and rendered by whichever bundle displays an item carrying one - BookBundle's book sheet, ShopBundle's product sheet. The two of them already let an editor declare an age and already publish it (a printed "Age" line, a schema.org PeopleAudience node), this is what says it in words #}
+{# Self-sufficient like the Matomo fragment next to it: the "is it filled" guard lives here rather than in each calling template, so a catalogue with no age restriction to state renders nothing and has nothing to guard #}
+{% set ageWarning = config('site-age-warning') %}
+{% if ageWarning %}
+    <twig:c975LUi:Alert:Alert type="warning" content="{{ ageWarning }}"/>
+{% endif %}

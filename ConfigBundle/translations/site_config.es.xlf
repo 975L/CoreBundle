@@ -86,6 +86,10 @@
                 <source>description.site_address</source>
                 <target>Dirección postal del vendedor, utilizada por el formulario de desistimiento de las condiciones generales de venta. Facultativa, déjela vacía para un sitio gestionado desde un domicilio.</target>
             </trans-unit>
+            <trans-unit id="60wz_Fo">
+                <source>description.site_age_warning</source>
+                <target>Frase mostrada en las fichas que llevan una edad (libro, producto). Vacía, no se muestra nada (HTML permitido)</target>
+            </trans-unit>
             <trans-unit id="ZDgy5oO">
                 <source>description.site_author</source>
                 <target>El autor que se indicará en los metadatos</target>
@@ -341,6 +345,10 @@
             <trans-unit id="Yc66g7d">
                 <source>label.site_address</source>
                 <target>Dirección postal</target>
+            </trans-unit>
+            <trans-unit id="ApFBZ1D">
+                <source>label.site_age_warning</source>
+                <target>Advertencia de edad</target>
             </trans-unit>
             <trans-unit id="rP1GyPO">
                 <source>label.site_author</source>

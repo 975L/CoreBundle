@@ -35,7 +35,7 @@ $section-space-tight: clamp(24px, 4vw, 48px);
     font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--primary);
+    color: var(--primary-ink);
     margin: 0 0 14px;
     text-align: start;
 }
@@ -61,7 +61,9 @@ $section-space-tight: clamp(24px, 4vw, 48px);
 // Cancels SiteBundle's page-wide "section { margin: 1em auto }", which parts two flats meant to touch
 // By class, not by the bare "section" element: a slider is a <section> too, and matching it stripped the vertical room it sets for itself, leaving it flush against the block above and below
 // Vertical only: the shorthand's "0" would also drop the horizontal "auto" a centered section reads, and beat the negative margins the colored flats and .hero--has-bg break out of the measure with .feature-bar is left out: it is the one kind whose step has to be a margin (see its own rule further down), which this reset would strip - it zeroes its own bottom margin instead, SiteBundle's rule reaching it as soon as a head is typed on it and it renders as a <section> rather than a <div>
+// ".block-section" is how a satellite bundle joins the two lists without this file having to name its kinds: a listing ShopBundle renders as a block wears it and reads the page's rhythm like any kind declared here, where enumerating "products-section" would make UiBundle know what a shop is
 main :is(.blocks, .block-animation, .block-editable) > :is(
+    .block-section,
     .hero,
     .text-section,
     .section-features-section,
@@ -79,6 +81,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 // The shared rhythm, on the top edge only: a block owns the room above it and declares nothing below, so any two blocks are parted by exactly one step whichever pair they are. A bottom padding anywhere here would be added to the next block's top one and part that pair by two, which is what .hero and .cta-band used to do
+.block-section,
 .section-features-section,
 .section-cards-section,
 .expertise-banner,
@@ -197,9 +200,15 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 .section-btn--ghost {
     color: var(--section-text, var(--text));
-    border-bottom: 2px solid var(--section-accent, var(--primary));
+    border-bottom: 2px solid var(--section-accent, var(--primary-ink));
     border-radius: 0;
     padding-bottom: 3px;
+}
+
+// The underline is all this button is drawn with, and it does not move on focus, so the keyboard is given a ring of its own
+.section-btn--ghost:focus-visible {
+    outline: 2px solid var(--section-accent, var(--primary-ink));
+    outline-offset: 2px;
 }
 
 // Else the theme's global "a:hover" wins, this class having no :hover of its own
@@ -251,7 +260,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     // Restated, not inherited: a muted flat nested in a dark one would otherwise keep its white text
     --section-text: var(--text);
     --section-text-soft: var(--label-color);
-    --section-accent: var(--primary);
+    --section-accent: var(--primary-ink);
     --section-overlay: var(--surface-accent);
 }
 
@@ -339,7 +348,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     font-size: calc(12.5px * var(--font-size-eyebrow-scale, 1));
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: var(--section-text, var(--primary));
+    color: var(--section-text, var(--primary-ink));
     background: var(--section-overlay, var(--surface-accent));
     padding: 7px 13px;
     border-radius: var(--radius-btn);
@@ -367,7 +376,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 .hero__title em {
-    color: var(--section-accent, var(--primary));
+    color: var(--section-accent, var(--primary-ink));
     font-style: italic;
 }
 
@@ -504,9 +513,9 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 .hero__stat b {
     font-family: var(--font-family-title);
     font-size: calc(34px * var(--font-size-title-scale, 1));
-    // Le token plutôt qu'un 600 : la famille de titre juste au-dessus peut n'être livrée qu'en une graisse, que le navigateur épaissirait lui-même au lieu de prendre une coupe plus grasse
+    // The token rather than a stated 600: the title family just above may ship in one weight only, which the browser would thicken itself instead of taking a bolder cut
     font-weight: var(--font-title-weight);
-    color: var(--primary);
+    color: var(--primary-ink);
 }
 
 .hero__stat span {
@@ -772,19 +781,19 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 }
 
 .section-step--first {
-    border-top-color: var(--primary);
+    border-top-color: var(--primary-ink);
 }
 
 .section-step__num {
     font-family: var(--font-family-title);
     font-size: calc(15px * var(--font-size-title-scale, 1));
-    color: var(--primary);
+    color: var(--primary-ink);
     margin-bottom: 8px;
 }
 
 .section-step__title {
     font-family: var(--font-family-title);
-    // Le token plutôt qu'un 600 : la famille de titre juste au-dessus peut n'être livrée qu'en une graisse, que le navigateur épaissirait lui-même au lieu de prendre une coupe plus grasse
+    // The token rather than a stated 600: the title family just above may ship in one weight only, which the browser would thicken itself instead of taking a bolder cut
     font-weight: var(--font-title-weight);
     font-size: calc(20px * var(--font-size-title-scale, 1));
     margin: 0 0 8px;
@@ -884,7 +893,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 .portfolio-grid__project-title {
     font-family: var(--font-family-title);
-    // Le token plutôt qu'un 600 : la famille de titre juste au-dessus peut n'être livrée qu'en une graisse, que le navigateur épaissirait lui-même au lieu de prendre une coupe plus grasse
+    // The token rather than a stated 600: the title family just above may ship in one weight only, which the browser would thicken itself instead of taking a bolder cut
     font-weight: var(--font-title-weight);
     font-size: calc(19px * var(--font-size-title-scale, 1));
     margin: 0 0 5px;
@@ -935,7 +944,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 .cta-band .section-btn {
     background: var(--card-background);
-    color: var(--primary);
+    color: var(--primary-ink);
     font-weight: 700;
     padding: 17px 36px;
 }

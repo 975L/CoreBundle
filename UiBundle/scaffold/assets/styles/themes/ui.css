@@ -133,8 +133,8 @@
     /* --text-hook-bar-width: 3px; */
     /* --text-hook-bar-gap: 20px; */
     /* --text-hook-standalone-margin: 32px; */
-    /* An article's hook falls back to --primary, so set this on a theme whose primary is its text color */
-    /* --text-hook-article-color: var(--section-accent, var(--primary)); */
+    /* An article's hook falls back to the brand ink, so set this on a theme whose hook is a color of its own */
+    /* --text-hook-article-color: var(--section-accent, var(--primary-ink)); */
     /* --text-hook-article-max-width: none; */
     /* --text-hook-article-margin: 24px; */
 
@@ -158,7 +158,7 @@
     /* --section-flat-margin-x: -50vw; */
 
     /* Content bits */
-    /* --link-color: var(--primary); */
+    /* --link-color: var(--primary-ink); */
     /* --label-color: #808080; */
     /* --card-background: #fff; */
     /* The eyebrow above a card's title - the page's own ink by default, an eyebrow being set small enough that an accent rarely holds the 4.5:1 a 12px text asks for. Set the accent here once it has been checked that it does */
@@ -188,7 +188,7 @@
     /* --toc-sticky-top: var(--scroll-offset, 80px); */
     /* --toc-height: 4rem; */
     /* --toc-background: var(--background); */
-    /* --toc-current-color: var(--primary); */
+    /* --toc-current-color: var(--primary-ink); */
     /* --toc-chip-radius: 999px; */
     /* --toc-column-width: 220px; */
     /* --toc-gap: 0.5rem; */
@@ -206,7 +206,7 @@
        flip card is an object a visitor reaches for - outlined, rounded, titled - where a card is a panel to
        read, so retuning one here never moves the other. The back is what the turn reveals, hence a surface
        of its own rather than the front's; mixed out of the palette, so it follows the admin's colors. Its
-       outline and its two titles take the accent an editor picks, or --primary when there is none - where a
+       outline and its two titles take the accent an editor picks, or --primary-ink when there is none - where a
        card's accent paints a header band instead, see --block-accent-* below, shared by both */
     /* --flip-card-radius: 25px; */
     /* --flip-card-border-width: 3px; */
@@ -255,6 +255,8 @@
     /* --banner-title-height-large: 520px; */
 
     /* Surfaces and rules mixed out of the admin's own palette - they follow it automatically when the colors are retuned in the backoffice, which a hardcoded value here would stop. */
+    /* The brand color as ink - what is written, outlined or underlined in it, where --primary is what is painted with it. A design whose primary reads too dark on a dark page lightens this one and leaves the fills their hue */
+    /* --primary-ink: var(--primary); */
     /* --surface-accent: color-mix(in srgb, var(--primary) 12%, var(--background)); */
     /* --surface-alt: color-mix(in srgb, var(--background) 94%, var(--text)); */
     /* --border-color: color-mix(in srgb, var(--text) 12%, var(--background)); */
@@ -313,6 +315,9 @@
     /* --input-focus-shadow-color: rgb(66, 130, 189); */
     /* Surface of the field. Transparent, i.e. the page shows through - dark mode washes it faintly instead, a field being otherwise indistinguishable from the page behind it */
     /* --input-background: transparent; */
+
+    /* The placeholder, mixed down from the text rather than set to a grey of its own, so it stays the required 4.5:1 against the field on any background */
+    /* --input-placeholder-color: color-mix(in srgb, var(--text) 62%, var(--background)); */
     /* Room above and below a field - a box-shadow takes no space, so the validation ring would otherwise be drawn over the label above it and the field below */
     /* --input-margin-block: 0.4em 1em; */
     /* Distance from the bottom of a field's wrapper to its validation glyph - retune it for a form theme putting anything after the input */

@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, StylesheetProvider, block-thumbs.min.css, block-picker."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, StylesheetProvider, block-thumbs.min.css, block-picker."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -131,6 +131,15 @@ property's value is substituted where the declaration sits, not where the token 
 only, every derived token resolves once against the root palette and descends already computed, and a
 scope opened below cannot repaint it.
 
+**Write with `--primary-ink`, paint with `--primary`.** The brand color is two tokens, told apart by
+what the rule does with it: `--primary` is the fill laid on the page (a button's background, a chip, a
+band), `--primary-ink` that same color read against it (text, an outline, a rule, a focus ring). They
+hold the same value until dark mode, where SiteBundle lightens the ink and leaves the fill its hue — so
+a rule writing with `--primary` on a dark ground stays the dark brand color and vanishes into it.
+`PrimaryInkRoleTest` fails on any ink property (`color`, `outline`, `border-*`, `text-decoration-color`,
+`caret-color`, `fill`, `stroke`) reading `--primary`, its one listed exception being a label on a flat
+that inverts to a stated white.
+
 **Read the viewport through `--viewport-width`, never as a bare `100vw`.** A `calc()` subtracting a
 `var()` from a `vw` length is valid CSS that the W3C validator reports as an *error* ("The types are
 incompatible") on every page of a site — read through a custom property the same expression validates,
@@ -202,6 +211,8 @@ every bundle that copies it.
 - **Do not declare a token on `:root` alone**, and do not read a token without declaring its default.
 - **Do not write a bare `vw` length into a `calc()` that also subtracts a `var()`** — use
   `--viewport-width`.
+- **Do not write text, an outline or a rule with `--primary`** — that is the fill; ink is
+  `--primary-ink`.
 - **Do not set colors or fonts in a theme file** — they belong to the admin.
 - **Do not put a second `@layer` in this bundle's stylesheets.**
 - **Do not ship an empty theme file** "for later".

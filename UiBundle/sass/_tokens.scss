@@ -138,12 +138,16 @@
         --input-invalid-shadow-color: var(--button-background-danger);
         --input-invalid-text-color: var(--button-background-danger);
         --input-margin-block: 0.4em 1em;
+        // The hint written in an empty field, which no rule of this bundle ever painted: left alone it takes the browser's own grey (#757575 in Chromium), a constant that follows neither the palette nor "color-scheme: dark" - on a dark ground it lands under the 4.5:1 WCAG AA asks of a 14px line. Mixed out of the two tokens rather than stated, the same recipe --shop-text-muted reads by, so it follows any palette a site sets in either mode and needs no second value for the dark one
+        --input-placeholder-color: color-mix(in srgb, var(--text) 62%, var(--background));
         --input-shadow-color: #4d4d4d;
         --input-valid-border-color: var(--button-background-success);
         --input-valid-shadow-color: var(--button-background-success);
         --label-color: #808080;
-        --link-color: var(--primary);
+        --link-color: var(--primary-ink);
         --primary: var(--c975l-color-primary, var(--button-background-primary));
+        // Where --primary has to be read *against* the page instead of painting it: a surtitle, a link, a "Voir" on a card, the dots of a slider. Its own token because the two roles part ways as soon as the page goes dark - there --primary stays the dark flat a button and a band need, and a deep brand colour used as an ink on that same dark ground reads at 1.4:1. SiteBundle lightens this one alone in its dark palette, which is why every rule painting with --primary and not on it reads it through here. The default is --primary itself, so a light page is unchanged and a site setting nothing keeps exactly what it had
+        --primary-ink: var(--primary);
         --radius-btn: 5px;
         --radius-card: 10px;
         --radius-panel: 16px;
@@ -166,7 +170,7 @@
         --toc-background: var(--background);
         --toc-chip-radius: 999px;
         --toc-column-width: 220px;
-        --toc-current-color: var(--primary);
+        --toc-current-color: var(--primary-ink);
         --toc-gap: 0.5rem;
         /* What the resting bar covers, which is what a section jumped to has to leave above itself - one 44px chip plus its own breathing room. Stated rather than measured: a nonced style-src drops any rule a script writes onto an element */
         --toc-height: 4rem;

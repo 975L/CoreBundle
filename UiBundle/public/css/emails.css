@@ -110,12 +110,14 @@
     --input-invalid-shadow-color: var(--button-background-danger);
     --input-invalid-text-color: var(--button-background-danger);
     --input-margin-block: 0.4em 1em;
+    --input-placeholder-color: color-mix(in srgb, var(--text) 62%, var(--background));
     --input-shadow-color: #4d4d4d;
     --input-valid-border-color: var(--button-background-success);
     --input-valid-shadow-color: var(--button-background-success);
     --label-color: #808080;
-    --link-color: var(--primary);
+    --link-color: var(--primary-ink);
     --primary: var(--c975l-color-primary, var(--button-background-primary));
+    --primary-ink: var(--primary);
     --radius-btn: 5px;
     --radius-card: 10px;
     --radius-panel: 16px;
@@ -136,7 +138,7 @@
     --toc-background: var(--background);
     --toc-chip-radius: 999px;
     --toc-column-width: 220px;
-    --toc-current-color: var(--primary);
+    --toc-current-color: var(--primary-ink);
     --toc-gap: 0.5rem;
     /* What the resting bar covers, which is what a section jumped to has to leave above itself - one 44px chip plus its own breathing room. Stated rather than measured: a nonced style-src drops any rule a script writes onto an element */
     --toc-height: 4rem;

@@ -91,14 +91,14 @@
 .btn.btn-link:visited {
     background-color: transparent;
     box-shadow: none;
-    color: var(--primary);
+    color: var(--primary-ink);
     text-decoration: underline;
 }
 
 .btn.btn-link:hover,
 .btn.btn-link:visited:hover {
     background-color: transparent;
-    color: var(--button-background-primary-dark);
+    color: color-mix(in srgb, var(--primary-ink) 85%, black);
     text-decoration: underline;
 }
 

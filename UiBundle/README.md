@@ -696,9 +696,9 @@ An `article`'s own **Hook phrase** field (`ArticleType::$hook`) shares that look
 
 - `.text-hook`, worn by both: size, line height, measure and color (`--text-hook-size`, `--text-hook-line-height`, `--text-hook-max-width`, `--text-hook-color`, `--text-hook-margin-bottom`);
 - `.text-hook--standalone`, worn by the block alone: the primary-colored bar down its left side (`--text-hook-bar-width`, `--text-hook-bar-gap`, `--text-hook-standalone-margin`). The block drops between two sections with nothing around it to be read against, where an article's hook already sits under a title and above a body of text - marking that one too would only over-decorate it;
-- `.text-hook--article`, worn by the article's hook alone: the accent color in place of that bar (`--text-hook-article-color`, `--text-hook-article-margin`), already placed by the title above it. It also drops the base rule's own measure (`--text-hook-article-max-width`, `none` by default) so the hook is laid out on the article's, a 62ch box having otherwise left a centered hook reading off-center against the text it introduces. Set `--text-hook-article-color` on a theme whose `--primary` *is* its text color, where the accent would mark out nothing.
+- `.text-hook--article`, worn by the article's hook alone: the accent color in place of that bar (`--text-hook-article-color`, `--text-hook-article-margin`), already placed by the title above it. It also drops the base rule's own measure (`--text-hook-article-max-width`, `none` by default) so the hook is laid out on the article's, a 62ch box having otherwise left a centered hook reading off-center against the text it introduces. Set `--text-hook-article-color` on a theme whose `--primary-ink` *is* its text color, where the accent would mark out nothing.
 
-Every one of those tokens is read with the bundle's own value as its fallback and declared nowhere, so a site setting none of them renders exactly as before. The bar follows `--section-accent` before `--primary`, so it inverts along with a colored flat. `TextHookStyleTest` locks both rules in the compiled stylesheets, `TextHookMarkupTest` locks the modifier to the component.
+Every one of those tokens is read with the bundle's own value as its fallback and declared nowhere, so a site setting none of them renders exactly as before. The bar follows `--section-accent` before `--primary-ink`, so it inverts along with a colored flat. `TextHookStyleTest` locks both rules in the compiled stylesheets, `TextHookMarkupTest` locks the modifier to the component.
 
 Note that this only touches how an article renders. `c975L/SiteBundle`'s `articles_slider` reads that very same stored hook as a plain `striptags`'d excerpt, and keeps the slider's own text style.
 
@@ -829,7 +829,7 @@ Each variant redefines a handful of custom properties, and every section rule re
 | `--section-background` | the section's own background | its usual one (page background, `--surface-alt`…) |
 | `--section-text` | titles, `<b>` figures, the blanket color of everything inside a flat | `--text` |
 | `--section-text-soft` | subtitles, legends, muted copy | `--label-color` |
-| `--section-accent` | eyebrow, emphasized word of a title, ghost button's rule | `--primary` |
+| `--section-accent` | eyebrow, emphasized word of a title, ghost button's rule | `--primary-ink` |
 | `--section-border` | dividers and hairlines | `--border-color` |
 | `--section-overlay` | badges and translucent chips | `--surface-accent` |
 
@@ -1874,6 +1874,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 
 | Component | Purpose |
 | --- | --- |
+| `<twig:c975LUi:Alert:AgeWarning>` | The sentence going with an age restriction, from `site-age-warning`. **Carries its own guard**: a site leaving that config empty renders nothing, so a calling template needs no `if` of its own |
 | `<twig:c975LUi:Alert:Alert>` | Bootstrap-style alert box |
 | `<twig:c975LUi:Article:Article>` | Single article (title/content/media) |
 | `<twig:c975LUi:Article:Articles>` | Loops `Article` over a collection |
@@ -2543,7 +2544,7 @@ A satellite bundle needing its own Vich-uploaded media entity (e.g. ShopBundle's
 Implement `Contract\VichMediaNamableInterface::getVichMediaPath(): string` on that entity (the trait doesn't do this for you, since the path depends on your own storage layout) to get two things for free:
 
 - `UiMediaNamer` (Vich's naming strategy) already requires it for any entity going through it.
-- `Listener\MediaFileRemoveListener` deletes the underlying file from `public/` whenever such an entity is removed - a generic `preRemove` Doctrine listener, auto-registered, that needs no per-entity listener of your own.
+- `Listener\MediaFileRemoveListener` deletes the underlying file from `public/` whenever such an entity is removed - a generic Doctrine listener, auto-registered, that needs no per-entity listener of your own. On an entity that is also `Contract\VichPrivateFileInterface`, it takes the replacement path too: the file having been moved out of `public/`, Vich's own `delete_on_update` looks for it where the mapping says and finds nothing, so the one a new upload replaces would otherwise stay on disk for good. Deletions happen on `postFlush`, so a flush that throws never removes a file its row still points at.
 
 For a **private** download (e.g. a paid file in a shop) instead of a public one, also implement `Contract\VichPrivateFileInterface` (see [PDF thumbnails](#pdf-thumbnails) above) and use `Service\PrivateFileResponseFactory::createDownloadResponse(string $absoluteFilePath, string $downloadFilename): ?BinaryFileResponse` from your own controller to build the attachment response (`null` if the file is missing) - it only builds the response, access control (checking the current user actually purchased/owns the file) stays your controller's job.
 
@@ -2877,6 +2878,8 @@ They sit in `@layer ui-defaults`, and that layer is the point: a layered rule al
 They are declared on `:root, [data-theme]`, never on `:root` alone — and a site's own theme file has to declare on that same pair, which is how `scaffold/assets/styles/themes/ui.css` ships. A `var()` written inside a custom property's value is substituted where that declaration sits, not where the token is finally read, so a derived token (`--surface-alt`, `--border-color`, the `--section-bg-*` family) would otherwise resolve once against the root palette and descend already computed. Declared on both, any element carrying `data-theme` recomputes the whole chain against the palette in scope — which is what lets a single card or a single section open a second color ambiance below the root.
 
 Values are light-mode only. Dark mode is SiteBundle's (`sass/_theme-dark.scss`); with that bundle absent there is no dark theme to follow.
+
+The brand color is two tokens, and which one a rule reads is decided by what it does with it. `--primary` is the **fill**, painted on the page — a button's background, a chip, a band. `--primary-ink` is that same color as **ink**, read against the page — text, an outline, a rule, a focus ring. They are the same value here and part company in dark mode, where SiteBundle lightens the ink and leaves the fill its hue: a rule writing with `--primary` on a dark ground therefore stays the dark brand color and disappears into it. `PrimaryInkRoleTest` fails if any ink property (`color`, `outline`, `border-*`, `text-decoration-color`, `caret-color`, `fill`, `stroke`) reads `--primary`, the one listed exception being a label on a flat that inverts to a stated white.
 
 `scaffold/assets/styles/themes/ui.css` is the catalogue of those tokens, installed by `c975l:scaffold:install`: every one of them commented out at its default, so the lines a site leaves active read as exactly what its design decides. One such file per bundle, each holding what that bundle reads — this one travels with UiBundle, so a site running ShopBundle or BookBundle without SiteBundle still gets its whole retunable surface. Colors and fonts are deliberately absent, being admin-editable, and so are the per-variant `--section-*` tokens. `ScaffoldThemeTest` fails if a declared token is missing from it, if a value shown there is no longer the one in force, or if a line ships uncommented.
 

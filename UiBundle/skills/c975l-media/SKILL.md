@@ -27,7 +27,9 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 On your own entity, implement `Contract\VichMediaNamableInterface::getVichMediaPath()` — the trait
 deliberately does not, the path depending on your storage layout. That one method buys the naming
 strategy and `MediaFileRemoveListener`, which deletes the file from `public/` when the row is removed,
-with **no listener of your own to write**.
+with **no listener of your own to write**. On a `VichPrivateFileInterface` entity it also deletes the
+file a new upload replaces — Vich's own `delete_on_update` never finds that one, the file having been
+moved out of `public/`.
 
 ## Three sizes of one image
 

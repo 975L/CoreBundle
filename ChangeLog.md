@@ -1,5 +1,28 @@
 # ChangeLog
 
+## v1.22.0
+
+The brand color splits into ink and fill
+
+### ConfigBundle
+
+- Added the `site-age-warning` config, the sentence a site states next to an item carrying an age restriction - empty by default, nothing showing on a site declaring none (03/09/2026)
+- New `url_metadata_title()` and `url_metadata_summary()` Twig functions, what a listing setting its own label hands it over to, the row written for it being otherwise unreachable (03/09/2026)
+
+### UiBundle
+
+- Added `--primary-ink`, the brand color as ink where `--primary` stays the fill, SiteBundle lightening the ink alone in dark mode (03/09/2026)
+- Every rule writing text, an outline, a rule or a focus ring in the brand color reads `--primary-ink` (03/09/2026)
+- `.section--bg-muted` states its accent as ink, the flat having neutralised the migrated fallbacks under it (03/09/2026)
+- `.section-btn--ghost` gains a `:focus-visible` ring, its underline being all a keyboard had to go on (03/09/2026)
+- `.block-section` joins the block rhythm lists, the class a satellite bundle's own listing wears to read the page's step (03/09/2026)
+- Added `--input-placeholder-color`, mixed out of the palette, a browser's own grey clearing no contrast threshold on a dark ground (03/09/2026)
+- New `PrimaryInkRoleTest` fails on any ink property reading `--primary` (03/09/2026)
+- The scaffolded `ui.css` offers the two new tokens and shows the two values that had drifted from `_tokens.scss` (03/09/2026)
+- Added `Alert:AgeWarning`, rendering that sentence as a warning alert, and nothing at all when the site wrote none (03/09/2026)
+- `MediaFileRemoveListener` now takes the update path, deleting the private file a new upload replaces (03/09/2026)
+- `MediaFileRemoveListener` defers its deletions to `postFlush`, a failed flush no longer removing a file its row still points at (03/09/2026)
+
 ## v1.21.6
 
 A browser that dies on its way up is started again

@@ -542,6 +542,17 @@
         "description": "description.site_dpo"
     },
     {
+        "label": "label.site_age_warning",
+        "slug": "site-age-warning",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "html",
+        "group": "legal",
+        "severity": null,
+        "description": "description.site_age_warning"
+    },
+    {
         "label": "label.site_author",
         "slug": "site-author",
         "sensitive": false,

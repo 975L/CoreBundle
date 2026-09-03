@@ -53,7 +53,7 @@ class DocumentDownloadCardTest extends TestCase
     {
         $rule = $this->rule($file, '.document-download:hover,.document-download:focus-visible');
 
-        $this->assertStringContainsString('border-color:var(--primary)', $rule);
+        $this->assertStringContainsString('border-color:var(--primary-ink)', $rule, sprintf('"%s" outlines a hovered card with the --primary fill, which stays the dark brand hue on a dark ground.', $file));
         $this->assertStringContainsString('text-decoration:none', $rule, sprintf('"%s" underlines a document card on hover.', $file));
     }
 

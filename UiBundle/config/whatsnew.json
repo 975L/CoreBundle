@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-09-03",
+        "description": [
+            {
+                "en": "Dark mode reads properly again wherever your site's colour is used to write rather than to paint: a link, a surtitle, a card title, the outline around the button your keyboard is on. All of them used to keep the dark shade meant for backgrounds, and faded into the page.",
+                "fr": "Le mode sombre redevient lisible partout où la couleur de votre site sert à écrire plutôt qu'à peindre : un lien, un surtitre, un titre de carte, le contour du bouton sur lequel se trouve votre clavier. Tous gardaient jusqu'ici la teinte foncée prévue pour les fonds, et s'effaçaient dans la page.",
+                "es": "El modo oscuro vuelve a leerse bien allí donde el color de su sitio sirve para escribir y no para pintar: un enlace, un antetítulo, un título de tarjeta, el contorno del botón donde está su teclado. Todos conservaban hasta ahora el tono oscuro previsto para los fondos y se desvanecían en la página."
+            },
+            {
+                "en": "The grey hint shown inside an empty form field now follows your own colours instead of the browser's, so it stays readable in dark mode too.",
+                "fr": "L'indication grisée affichée dans un champ de formulaire vide suit désormais vos propres couleurs plutôt que celles du navigateur, et reste donc lisible en mode sombre aussi.",
+                "es": "La indicación gris que aparece dentro de un campo de formulario vacío sigue ahora sus propios colores en lugar de los del navegador, por lo que también se lee bien en modo oscuro."
+            },
+            {
+                "en": "The age warning you write in your settings is shown on the sheets of the items carrying an age, and nowhere if you left it empty.",
+                "fr": "L'avertissement d'âge que vous saisissez dans vos réglages s'affiche sur les fiches des articles portant un âge, et nulle part si vous l'avez laissé vide.",
+                "es": "La advertencia de edad que escribe en sus ajustes aparece en las fichas de los artículos con una edad, y en ningún sitio si la dejó vacía."
+            }
+        ]
+    },
+    {
         "date": "2026-09-02",
         "description": [
             {

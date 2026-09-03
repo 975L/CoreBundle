@@ -29,13 +29,12 @@
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-// The whole card lights up, not just whichever part the pointer landed on - and the underline
-// SiteBundle's global "a:hover" would otherwise add is taken back off
+// The whole card lights up, not just whichever part the pointer landed on - and the underline SiteBundle's global "a:hover" would otherwise add is taken back off
 .document-download:hover,
 .document-download:focus-visible {
-    border-color: var(--primary);
-    // A glow, not a drop shadow: no offset, so it spreads evenly all around, and in the theme's own hue - an offset black shadow would sink into a dark flat instead of lifting the card off it
-    box-shadow: 0 0 16px 2px color-mix(in srgb, var(--primary) 35%, transparent);
+    border-color: var(--primary-ink);
+    // A glow, not a drop shadow: no offset, so it spreads evenly all around, and in the same ink the border is drawn in - an offset black shadow would sink into a dark flat instead of lifting the card off it
+    box-shadow: 0 0 16px 2px color-mix(in srgb, var(--primary-ink) 35%, transparent);
     color: inherit;
     text-decoration: none;
 }

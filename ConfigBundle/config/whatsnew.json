@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-09-03",
+        "description": [
+            {
+                "en": "A new “Age warning” setting holds the sentence your site states next to an item meant for a given age. Leave it empty and nothing shows.",
+                "fr": "Un nouveau réglage « Avertissement d'âge » contient la phrase que votre site affiche à côté d'un article réservé à un certain âge. Laissez-le vide et rien ne s'affiche.",
+                "es": "Un nuevo ajuste «Advertencia de edad» contiene la frase que su sitio muestra junto a un artículo destinado a cierta edad. Déjelo vacío y no se muestra nada."
+            }
+        ]
+    },
+    {
         "date": "2026-09-01",
         "description": [
             {

@@ -30,4 +30,18 @@ class UrlMetadataExtension
             ? $this->urlMetadataResolver->forCurrentRequest()
             : $this->urlMetadataResolver->forPath($path);
     }
+
+    // What a listing sets its own title from. The layouts only read a row for what the rendering template left unsaid, so a listing setting its translated label unconditionally made its own row unreachable - it hands that label here instead, and what an editor wrote wins over it
+    #[AsTwigFunction('url_metadata_title')]
+    public function getTitle(string $fallback, ?string $path = null): string
+    {
+        return $this->getUrlMetadata($path)?->getTitle() ?: $fallback;
+    }
+
+    // The same for the sentence a listing is shared and indexed with
+    #[AsTwigFunction('url_metadata_summary')]
+    public function getSummary(string $fallback, ?string $path = null): string
+    {
+        return $this->getUrlMetadata($path)?->getSummarySocialNetwork() ?: $fallback;
+    }
 }

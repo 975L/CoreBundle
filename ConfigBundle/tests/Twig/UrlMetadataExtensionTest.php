@@ -18,12 +18,14 @@ use Twig\Extension\AttributeExtension;
 
 class UrlMetadataExtensionTest extends TestCase
 {
-    public function testGetFunctionsRegistersUrlMetadataFunction(): void
+    public function testGetFunctionsRegistersTheThreeFunctions(): void
     {
         $functions = new AttributeExtension(UrlMetadataExtension::class)->getFunctions();
 
-        $this->assertCount(1, $functions);
-        $this->assertSame('url_metadata', $functions[0]->getName());
+        $this->assertSame(
+            ['url_metadata', 'url_metadata_title', 'url_metadata_summary'],
+            array_map(static fn ($function): string => $function->getName(), $functions)
+        );
     }
 
     // Called with nothing, the function answers for the page being rendered - what both layouts do
@@ -61,5 +63,45 @@ class UrlMetadataExtensionTest extends TestCase
 
         $this->assertNull($extension->getUrlMetadata());
         $this->assertNull($extension->getUrlMetadata('/animaux'));
+    }
+
+    // What a listing hands over instead of setting its own title outright: the layouts only read a row for what the template left unsaid, so a label set unconditionally made the row unreachable
+    public function testTheRowWinsOverTheListingsOwnLabel(): void
+    {
+        $extension = $this->extensionFor(new UrlMetadata()->setTitle('Nos histoires')->setSummarySocialNetwork('Toutes nos histoires, illustrees'));
+
+        $this->assertSame('Nos histoires', $extension->getTitle('Catalogue'));
+        $this->assertSame('Toutes nos histoires, illustrees', $extension->getSummary('Tous nos livres'));
+    }
+
+    // No row at all, or a row left half-written: the listing keeps the word it always printed rather than showing an empty title
+    public function testTheLabelIsKeptWhenTheRowSaysNothing(): void
+    {
+        $this->assertSame('Catalogue', $this->extensionFor(null)->getTitle('Catalogue'));
+        $this->assertSame('Tous nos livres', $this->extensionFor(null)->getSummary('Tous nos livres'));
+
+        $halfWritten = $this->extensionFor(new UrlMetadata()->setTitle('Nos histoires'));
+
+        $this->assertSame('Nos histoires', $halfWritten->getTitle('Catalogue'));
+        $this->assertSame('Tous nos livres', $halfWritten->getSummary('Tous nos livres'));
+    }
+
+    // A template serving several urls names the one the row was written for, here too
+    public function testAPathIsPassedThroughToTheResolver(): void
+    {
+        $resolver = $this->createMock(UrlMetadataResolver::class);
+        $resolver->expects($this->once())->method('forPath')->with('/animaux')->willReturn(new UrlMetadata()->setTitle('Animaux'));
+        $resolver->expects($this->never())->method('forCurrentRequest');
+
+        $this->assertSame('Animaux', new UrlMetadataExtension($resolver)->getTitle('Catalogue', '/animaux'));
+    }
+
+    private function extensionFor(?UrlMetadata $urlMetadata): UrlMetadataExtension
+    {
+        $resolver = $this->createStub(UrlMetadataResolver::class);
+        $resolver->method('forCurrentRequest')->willReturn($urlMetadata);
+        $resolver->method('forPath')->willReturn($urlMetadata);
+
+        return new UrlMetadataExtension($resolver);
     }
 }

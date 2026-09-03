@@ -13,7 +13,10 @@ namespace c975L\UiBundle\Tests\Listener;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Listener\MediaFileRemoveListener;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Persistence\ObjectManager;
 use Metadata\MetadataFactory;
 use PHPUnit\Framework\TestCase;
@@ -78,6 +81,18 @@ class MediaFileRemoveListenerTest extends TestCase
         return new PreRemoveEventArgs($entity, $this->createStub(ObjectManager::class));
     }
 
+    private function createUpdateEventArgs(object $entity): PreUpdateEventArgs
+    {
+        $changeSet = [];
+
+        return new PreUpdateEventArgs($entity, $this->createStub(EntityManagerInterface::class), $changeSet);
+    }
+
+    private function createPostFlushEventArgs(): PostFlushEventArgs
+    {
+        return new PostFlushEventArgs($this->createStub(EntityManagerInterface::class));
+    }
+
     public function testPreRemoveDeletesTheUnderlyingFileWhenFileNamePropertyIsName(): void
     {
         mkdir($this->projectDir . '/public/medias/site', 0777, true);
@@ -86,7 +101,9 @@ class MediaFileRemoveListenerTest extends TestCase
         // As ShopBundle's/CrowdfundingBundle's real media entities are, via VichMediaTrait
         $entity = new MediaFileRemoveListenerTestNameFixture('medias/site/logo.webp');
 
-        $this->createListener()->preRemove($this->createEventArgs($entity));
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
 
         $this->assertFileDoesNotExist($this->projectDir . '/public/medias/site/logo.webp');
     }
@@ -99,7 +116,9 @@ class MediaFileRemoveListenerTest extends TestCase
         // As UiBundle's own Media/GalleryBundle's GalleryPhoto are - getName(), when it exists at all on these, is unrelated to the Vich-managed filename
         $entity = new MediaFileRemoveListenerTestFilenameFixture('medias/site/cover.webp');
 
-        $this->createListener()->preRemove($this->createEventArgs($entity));
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
 
         $this->assertFileDoesNotExist($this->projectDir . '/public/medias/site/cover.webp');
     }
@@ -111,7 +130,9 @@ class MediaFileRemoveListenerTest extends TestCase
 
         $entity = new \stdClass();
 
-        $this->createListener()->preRemove($this->createEventArgs($entity));
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
 
         $this->assertFileExists($this->projectDir . '/public/medias/untouched.webp');
     }
@@ -121,7 +142,9 @@ class MediaFileRemoveListenerTest extends TestCase
         $entity = new MediaFileRemoveListenerTestNameFixture(null);
 
         // Would throw if it tried to build a path from a null name
-        $this->createListener()->preRemove($this->createEventArgs($entity));
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
 
         $this->addToAssertionCount(1);
     }
@@ -131,7 +154,9 @@ class MediaFileRemoveListenerTest extends TestCase
         $entity = new MediaFileRemoveListenerTestNameFixture('medias/site/missing.webp');
 
         // Would throw on unlink() if it didn't check file_exists() first
-        $this->createListener()->preRemove($this->createEventArgs($entity));
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
 
         $this->addToAssertionCount(1);
     }
@@ -144,9 +169,72 @@ class MediaFileRemoveListenerTest extends TestCase
 
         $entity = new MediaFileRemoveListenerTestPrivateFixture('invoice-abc123.pdf');
 
-        $this->createListener()->preRemove($this->createEventArgs($entity));
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
 
         $this->assertFileDoesNotExist($this->projectDir . '/private/downloads/invoice-abc123.pdf');
+    }
+
+    // The whole point of deferring to postFlush: a flush that throws leaves the file where the row still points at it
+    public function testNothingIsDeletedUntilTheFlushHasGoneThrough(): void
+    {
+        mkdir($this->projectDir . '/private/downloads', 0777, true);
+        file_put_contents($this->projectDir . '/private/downloads/invoice-abc123.pdf', 'content');
+
+        $entity = new MediaFileRemoveListenerTestPrivateFixture('invoice-abc123.pdf');
+
+        $this->createListener()->preRemove($this->createEventArgs($entity));
+
+        $this->assertFileExists($this->projectDir . '/private/downloads/invoice-abc123.pdf');
+    }
+
+    // Vich's own delete_on_update looks for the replaced file under the mapping's public destination, where a private one is not - it stayed on disk, paid downloads piling up, until this listener took the update path too
+    public function testPreUpdateDeletesTheReplacedPrivateFile(): void
+    {
+        mkdir($this->projectDir . '/private/downloads', 0777, true);
+        file_put_contents($this->projectDir . '/private/downloads/invoice-abc123.pdf', 'content');
+        file_put_contents($this->projectDir . '/new-upload.pdf', 'content');
+
+        // The name still reads as the file being replaced, Vich's own upload listener not having run yet at this priority
+        $entity = new MediaFileRemoveListenerTestPrivateFixture('invoice-abc123.pdf');
+        $entity->setFile(new File($this->projectDir . '/new-upload.pdf'));
+
+        $listener = $this->createListener();
+        $listener->preUpdate($this->createUpdateEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileDoesNotExist($this->projectDir . '/private/downloads/invoice-abc123.pdf');
+    }
+
+    // Editing a title, a position or an alternative text carries no upload, and the file the entity already holds has to survive it
+    public function testPreUpdateKeepsTheFileWhenNoNewOneIsBeingUploaded(): void
+    {
+        mkdir($this->projectDir . '/private/downloads', 0777, true);
+        file_put_contents($this->projectDir . '/private/downloads/invoice-abc123.pdf', 'content');
+
+        $entity = new MediaFileRemoveListenerTestPrivateFixture('invoice-abc123.pdf');
+
+        $listener = $this->createListener();
+        $listener->preUpdate($this->createUpdateEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileExists($this->projectDir . '/private/downloads/invoice-abc123.pdf');
+    }
+
+    // A stored file still sitting where the mapping says is Vich's own business (delete_on_update), and removing it here would race its own clean listener
+    public function testPreUpdateLeavesAPublicFileToVich(): void
+    {
+        mkdir($this->projectDir . '/public/medias/site', 0777, true);
+        file_put_contents($this->projectDir . '/public/medias/site/logo.webp', 'content');
+
+        $entity = new MediaFileRemoveListenerTestNameFixture('medias/site/logo.webp');
+
+        $listener = $this->createListener();
+        $listener->preUpdate($this->createUpdateEventArgs($entity));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileExists($this->projectDir . '/public/medias/site/logo.webp');
     }
 }
 
@@ -208,6 +296,19 @@ class MediaFileRemoveListenerTestPrivateFixture implements VichMediaNamableInter
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    // The pending upload the update path reads through the Vich mapping, as the real entities expose it (see VichMediaTrait)
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    public function setFile(?File $file): static
+    {
+        $this->file = $file;
+
+        return $this;
     }
 
     public function getVichMediaPath(): string
