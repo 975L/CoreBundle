@@ -286,6 +286,10 @@ On a listing, two more props turn the widget into what a catalog card has room f
 - **Only a listing rendered outside the block cache asks for it.** The html of a cached block is shared
   by every visitor and its averages would freeze with it, which is why `Book:Books`, `Strip:Cards` and
   ShopBundle's `Product:Products` all take the widget as an opt-in prop their index pages alone pass.
+- **`locale`** names the language the rated thing is written in — a book's page reading in French
+  whatever language the visitor arrived in. It carries the words of the tally rendered server-side and
+  the ones handed to `assets/js/rating.js`, so a vote reads in the language of the page it was cast on;
+  left out, the widget speaks the visitor's own.
 
 - **The icon and the scale are the site's**, two `configs.json` entries of the `general` group:
   `ui-rating-icon` (`star`, `heart`, `thumbs-up`, `face-smile`) and `ui-rating-scale` (1 to 10). A

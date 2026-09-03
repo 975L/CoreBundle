@@ -710,6 +710,8 @@ The paragraph *answering* a hook is the other half of the same problem, and it i
 
 `text_readmore` - and the `<twig:c975LUi:Text:Readmore>` behind it - folds a long text to `--readmore-lines` (`5`) and opens it on a click. The fold is `sass/_readmore.scss`'s alone, a checkbox and the `~` rules keyed on it: no script has to run for the text to be folded, or for the link to open it.
 
+`locale` names the language the text itself is written in - a book's page reading in French whatever language the visitor arrived in. The fold's two words then follow the text rather than the visitor; left out, they speak the visitor's own.
+
 What the `readmore` controller adds is the one thing a stylesheet cannot ask - **whether the clamp clamped anything**. `-webkit-line-clamp` cuts at the fifth line when there is a sixth and does nothing when there isn't, and no selector tells the two apart, so the link used to sit under every folded block, including the short ones where it opened nothing. The controller measures the clamped box against its content and adds `readmore--complete` when the whole text is already on screen, which is what takes the link away.
 
 It is written that way round on purpose - link visible in the markup, hidden after measure - so a browser reaching no JS keeps a link that costs at most a click turning nothing. Hiding it by default and showing it from the controller would fold a long text behind a link that never appears.
@@ -1375,6 +1377,8 @@ still paints the rest of the row.
 `compact` prints the score and nothing else — the "37 avis" a product page spells out is dropped, and a thing nobody voted on says nothing at all rather than "pas encore noté", the empty row of icons saying it already. Except on a scale of 1, where the count *is* the reading and there is no average to drop it for. `aggregate` hands the widget the tally the listing already read, so thirty cards run **no query of their own**; leave it out and each one reads its own.
 
 Only a listing rendered **outside the block cache** should ask for it: the html of a cached block is shared by every visitor, and its averages would be frozen with it. That is why `Book:Books`, `Strip:Cards` and ShopBundle's `Product:Products` all take the widget as an opt-in prop, which only the index pages pass.
+
+`locale` names the language the rated thing is written in - a book's page reading in French whatever language the visitor arrived in. It carries both the words of the tally rendered here and the ones handed to `assets/js/rating.js`, so a vote cast reads in the language of the page it was cast on; left out, the widget speaks the visitor's own.
 
 **Reading the tallies yourself** — `ui_rating(ownerType, ownerId)` returns `{average, count, scale, icon}`, and `ui_ratings(ownerType, ids)` returns one tally per id **in a single query**, which is what a listing needs to avoid an N+1.
 

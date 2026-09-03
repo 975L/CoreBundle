@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.21.5
+
+A provider matched by an instanceof conditional reaches its registry
+
+### UiBundle
+
+- `AbstractProviderPass` skips abstract definitions, which no reference may point at (03/09/2026)
+- `AbstractProviderPass` reads a service's class off its parent when it carries none of its own (03/09/2026)
+- `Text:Readmore` takes a `locale`, the language its text is written in (03/09/2026)
+- `Rating:Rating` takes a `locale`, the language the rated thing is written in (03/09/2026)
+
 ## v1.21.4
 
 A guided step drops a highlight its own screen never draws

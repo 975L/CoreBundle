@@ -1,8 +1,10 @@
-{# <twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}" [scale="5"] [icon="heart"] [compact="true"] [aggregate="{{ ratings[book.id] }}"]/> - a score a visitor sets, next to Progress:Rating's read-only row #}
+{# <twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}" [scale="5"] [icon="heart"] [compact="true"] [aggregate="{{ ratings[book.id] }}"] [locale="fr"]/> - a score a visitor sets, next to Progress:Rating's read-only row #}
+{# "locale": the language the thing being scored is written in, given by a page reading in one language whatever language the visitor arrived in - a book's page, say. It carries the words the tally is written with here and the ones assets/js/rating.js is handed below, so a vote cast reads in the same language as the page it was cast on. Left out, the widget speaks the visitor's own #}
 {# The tally is rendered here and the page carrying it is usually cached and shared (a book's is public for an hour), so nothing about the visitor's own vote is printed: assets/js/rating.js reads that from their own browser, then from the answer to their vote #}
 {# "compact": the score alone, without how many voted - what a catalog card has room for, where the visitor is choosing between items and not reading up on one #}
 {# "aggregate": the tally the listing already read for the whole page (see ui_ratings()), so thirty cards do not run thirty queries. Left out, this widget reads its own #}
 {% set compact = compact|default(false)|to_bool %}
+{% set locale = locale|default('') ?: null %}
 {% set rating = ui_rating(ownerType, ownerId, scale|default(null), icon|default(null), aggregate|default(null)) %}
 {% set filled = rating.count > 0 ? rating.average|round : 0 %}
 <div class="rating-vote{{ compact ? ' rating-vote--compact' : '' }}"
@@ -13,11 +15,11 @@
      data-ui-rating-count-value="{{ rating.count }}"
      data-ui-rating-average-value="{{ rating.average }}"
      data-ui-rating-compact-value="{{ compact ? 'true' : 'false' }}"
-     data-ui-rating-none-label-value="{{ 'label.rating_none'|trans({}, 'ui') }}"
-     data-ui-rating-one-label-value="{{ 'label.rating_votes_one'|trans({}, 'ui') }}"
-     data-ui-rating-many-label-value="{{ 'label.rating_votes_many'|trans({}, 'ui') }}"
-     data-ui-rating-error-label-value="{{ 'label.rating_error'|trans({}, 'ui') }}"
-     data-ui-rating-throttled-label-value="{{ 'label.rating_throttled'|trans({}, 'ui') }}">
+     data-ui-rating-none-label-value="{{ 'label.rating_none'|trans({}, 'ui', locale) }}"
+     data-ui-rating-one-label-value="{{ 'label.rating_votes_one'|trans({}, 'ui', locale) }}"
+     data-ui-rating-many-label-value="{{ 'label.rating_votes_many'|trans({}, 'ui', locale) }}"
+     data-ui-rating-error-label-value="{{ 'label.rating_error'|trans({}, 'ui', locale) }}"
+     data-ui-rating-throttled-label-value="{{ 'label.rating_throttled'|trans({}, 'ui', locale) }}">
     {# Each icon is a button and not a label on a radio: the vote is sent by fetch, there is no form to submit, and a radio already checked could not be clicked again to take the vote back #}
     <p class="rating rating--{{ rating.icon }}" data-ui-rating-target="row">
         {% for i in 1..rating.scale %}
@@ -27,7 +29,7 @@
                     data-action="ui-rating#vote"
                     data-ui-rating-value-param="{{ i }}"
                     aria-pressed="false"
-                    aria-label="{{ 1 == rating.scale ? 'label.rating_like'|trans({}, 'ui') : 'label.rating_give'|trans({'%value%': i, '%scale%': rating.scale}, 'ui') }}"></button>
+                    aria-label="{{ 1 == rating.scale ? 'label.rating_like'|trans({}, 'ui', locale) : 'label.rating_give'|trans({'%value%': i, '%scale%': rating.scale}, 'ui', locale) }}"></button>
         {% endfor %}
     </p>
     {# The average is only worth printing on a real scale: a single icon is a "like", where what counts is how many, not the average of a column of ones #}
@@ -35,12 +37,12 @@
     <p class="rating-tally" data-ui-rating-target="tally" aria-live="polite">
         {%- if 0 == rating.count -%}
             {# A compact widget says nothing rather than "not rated yet": an empty row of icons already says it, and the sentence would take the width of the card it sits in #}
-            {{- compact ? '' : 'label.rating_none'|trans({}, 'ui') -}}
+            {{- compact ? '' : 'label.rating_none'|trans({}, 'ui', locale) -}}
         {%- else -%}
             {%- if rating.scale > 1 %}<span class="rating-average">{{ rating.average }}/{{ rating.scale }}</span>{% if not compact %} - {% endif %}{% endif -%}
             {# How many voted is dropped by a compact widget - except on a single icon, where the count is the whole reading and there is no average to drop it for #}
             {%- if not compact or 1 == rating.scale -%}
-                {{- (1 == rating.count ? 'label.rating_votes_one' : 'label.rating_votes_many')|trans({'%count%': rating.count}, 'ui') -}}
+                {{- (1 == rating.count ? 'label.rating_votes_one' : 'label.rating_votes_many')|trans({'%count%': rating.count}, 'ui', locale) -}}
             {%- endif -%}
         {%- endif -%}
     </p>

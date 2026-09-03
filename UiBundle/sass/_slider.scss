@@ -154,7 +154,8 @@
     padding: 8px 10px;
     font-family: var(--font-family-title);
     font-size: calc(16px * var(--font-size-title-scale, 1));
-    font-weight: bold;
+    // The token this file declares rather than "bold": the family stated just above may ship a single weight, which the browser would thicken itself instead of swapping for a bolder cut
+    font-weight: var(--font-title-weight);
     text-align: center;
     border-radius: 15px 15px 0 0;
 }

@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\DependencyInjection\Compiler;
 
 use c975L\UiBundle\DependencyInjection\Compiler\AbstractProviderPass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\Compiler\ResolveInstanceofConditionalsPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -60,6 +61,24 @@ class AbstractProviderPassTest extends TestCase
         $calls = $container->getDefinition(FakeRegistry::class)->getMethodCalls();
         $this->assertCount(1, $calls);
         $this->assertSame('addProvider', $calls[0][0]);
+        $this->assertEquals(new Reference('fake.provider'), $calls[0][1][0]);
+    }
+
+    // A provider also matched by an instanceof conditional - anything implementing ResetInterface, say - is left a child definition carrying no class of its own, its class sitting on an abstract ".abstract.instanceof." parent no reference may point at (see CheckReferenceValidityPass). Referencing that parent is what stopped the container building
+    public function testProcessRegistersAProviderMatchedByAnInstanceofConditional(): void
+    {
+        $container = new ContainerBuilder();
+        $container->register(FakeRegistry::class);
+        $container->registerForAutoconfiguration(FakeProviderInterface::class)->addTag('fake.reset');
+        $container->register('fake.provider', FakeProviderImplementation::class)->setAutoconfigured(true);
+
+        // The one pass that has already run when a bundle's own runs: the child definitions it writes are only merged later, by ResolveChildDefinitionsPass
+        new ResolveInstanceofConditionalsPass()->process($container);
+
+        $this->createPass()->process($container);
+
+        $calls = $container->getDefinition(FakeRegistry::class)->getMethodCalls();
+        $this->assertCount(1, $calls);
         $this->assertEquals(new Reference('fake.provider'), $calls[0][1][0]);
     }
 

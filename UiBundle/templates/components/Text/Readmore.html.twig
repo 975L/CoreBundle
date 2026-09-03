@@ -1,11 +1,13 @@
-{# Static usage: <twig:c975LUi:Text:Readmore text="{{ text }}" id="{{ id }}"/> #}
+{# Static usage: <twig:c975LUi:Text:Readmore text="{{ text }}" id="{{ id }}" [locale="fr"]/> #}
+{# "locale": the language the text itself is written in, given by a page reading in one language whatever language the visitor arrived in - a book's page, say. Left out, the fold speaks the visitor's own #}
 {# The wrapper carries the reading measure; the three stay siblings inside it, the checked-state rules matching on "~" #}
 {# "readmore" only takes the link away when the text ends inside the folded measure - the fold is the stylesheet's, and holds without it #}
+{% set locale = locale|default('') ?: null %}
 <div class="readmore" data-controller="readmore">
     <input type="checkbox" id="readmore-toggle-{{ id }}" class="readmore-toggle" data-readmore-target="toggle" hidden>
     <div class="readmore-content" data-readmore-target="content">{{ text|raw|nl2br }}</div>
     <label for="readmore-toggle-{{ id }}" class="readmore-toggle-label">
-        <span class="read-more">{{ 'label.readmore'|trans({}, 'ui') }}</span>
-        <span class="read-less">{{ 'label.readless'|trans({}, 'ui') }}</span>
+        <span class="read-more">{{ 'label.readmore'|trans({}, 'ui', locale) }}</span>
+        <span class="read-less">{{ 'label.readless'|trans({}, 'ui', locale) }}</span>
     </label>
 </div>

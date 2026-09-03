@@ -2835,7 +2835,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 .hero__stat b {
   font-family: var(--font-family-title);
   font-size: calc(34px * var(--font-size-title-scale, 1));
-  font-weight: 600;
+  font-weight: var(--font-title-weight);
   color: var(--primary);
 }
 
@@ -3088,7 +3088,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 .section-step__title {
   font-family: var(--font-family-title);
-  font-weight: 600;
+  font-weight: var(--font-title-weight);
   font-size: calc(20px * var(--font-size-title-scale, 1));
   margin: 0 0 8px;
   color: var(--text);
@@ -3180,7 +3180,7 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.hero,
 
 .portfolio-grid__project-title {
   font-family: var(--font-family-title);
-  font-weight: 600;
+  font-weight: var(--font-title-weight);
   font-size: calc(19px * var(--font-size-title-scale, 1));
   margin: 0 0 5px;
   color: var(--text);
@@ -4677,7 +4677,7 @@ span {
   padding: 8px 10px;
   font-family: var(--font-family-title);
   font-size: calc(16px * var(--font-size-title-scale, 1));
-  font-weight: bold;
+  font-weight: var(--font-title-weight);
   text-align: center;
   border-radius: 15px 15px 0 0;
 }
