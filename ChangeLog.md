@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.21.6
+
+A browser that dies on its way up is started again
+
+### UiBundle
+
+- `JsCase` starts Chrome a second time when the first launch dies before the first message reaches it (03/09/2026)
+- `JsCase` starts Chrome with `--disable-dev-shm-usage`, an image sizing `/dev/shm` small killing the tab instead of saying so (03/09/2026)
+
 ## v1.21.5
 
 A provider matched by an instanceof conditional reaches its registry

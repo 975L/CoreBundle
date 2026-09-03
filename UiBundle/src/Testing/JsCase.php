@@ -12,6 +12,8 @@ namespace c975L\UiBundle\Testing;
 
 use HeadlessChromium\Browser;
 use HeadlessChromium\BrowserFactory;
+use HeadlessChromium\Exception\CommunicationException;
+use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Page;
 use PHPUnit\Framework\TestCase;
 
@@ -311,13 +313,7 @@ abstract class JsCase extends TestCase
         file_put_contents(self::$docroot . '/index.html', '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>c975L</title></head><body></body></html>');
         self::$port = $this->serve(self::$docroot);
 
-        // Parenthesised on purpose: PDepend, which phpmd reads this file through now that it lives in src/, cannot parse the parentheses-less form
-        self::$browser = (new BrowserFactory(self::CHROME))->createBrowser([
-            'headless' => true,
-            // Same reason as LayoutAuditor: the sandbox refuses to start for the user a CI image runs as
-            'noSandbox' => true,
-            'windowSize' => [1200, 900],
-        ]);
+        self::$browser = self::launch();
 
         self::$page = self::$browser->createPage();
         self::$page->navigate(sprintf('http://127.0.0.1:%d/', self::$port))->waitForNavigation();
@@ -345,6 +341,33 @@ abstract class JsCase extends TestCase
         });
 
         return self::$page;
+    }
+
+    // Opens the browser, and once more if the first attempt dies on its way up
+    // The run's first test pays for the coldest launch of the whole CI job, and that launch has been seen printing its debugging endpoint and then dying before the first message reached it, while the one the next test made worked (run 33774815362)
+    // Twice rather than indefinitely, so a Chrome that is genuinely broken still fails the suite rather than doubling its time
+    private static function launch(int $attempts = 2): Browser
+    {
+        try {
+            // Parenthesised on purpose: PDepend, which phpmd reads this file through now that it lives in src/, cannot parse the parentheses-less form
+            return (new BrowserFactory(self::CHROME))->createBrowser([
+                'headless' => true,
+                // Same reason as LayoutAuditor: the sandbox refuses to start for the user a CI image runs as
+                'noSandbox' => true,
+                'windowSize' => [1200, 900],
+                // Chrome keeps a tab's shared memory under /dev/shm, and an image that sizes it small kills the tab instead of saying so
+                'customFlags' => ['--disable-dev-shm-usage'],
+            ]);
+        } catch (CommunicationException | OperationTimedOut $exception) {
+            if ($attempts <= 1) {
+                throw $exception;
+            }
+
+            // Left the time to give back what the dead process still held
+            usleep(500000);
+
+            return self::launch($attempts - 1);
+        }
     }
 
     // The bundles' assets copied under a docroot rather than served from the working tree: the copy is where the bare "@hotwired/stimulus" every controller imports is rewritten towards the vendored fixture, which is the only thing standing between a controller and a browser that has never heard of an import map
