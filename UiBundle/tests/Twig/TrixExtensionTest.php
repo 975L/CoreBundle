@@ -158,4 +158,20 @@ class TrixExtensionTest extends TestCase
 
         $this->assertSame('Marre des radars', strip_tags($inline));
     }
+
+    // A break already stored as "<br>" - written by an older editor, an import or by hand - is separated too: the rule above only covers the ones this method makes out of the editor's divs
+    public function testABreakAlreadyInTheStoredTextIsSeparatedAsWell(): void
+    {
+        $inline = new TrixExtension()->trixInline('<div><strong>Marre<br>des radars</strong></div>');
+
+        $this->assertSame('Marre des radars', strip_tags($inline));
+    }
+
+    // A break already written with its space keeps it, rather than collecting a second one
+    public function testABreakThatAlreadyHasItsSpaceIsLeftAlone(): void
+    {
+        $inline = new TrixExtension()->trixInline('<div>Marre <br>des radars</div>');
+
+        $this->assertSame('Marre <br>des radars', $inline);
+    }
 }

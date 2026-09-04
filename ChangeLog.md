@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.23.1
+
+A break stored verbatim gets the space its neighbour has
+
+### UiBundle
+
+- `trix_inline` separates a break already stored as `<br>` too, the rule ahead of it only covering the ones it makes out of the editor's divs (04/09/2026)
+- A break already carrying its space keeps the one it has, rather than collecting a second (04/09/2026)
+- Two `TrixExtensionTest` cases cover the stored break and the one left alone (04/09/2026)
+
 ## v1.23.0
 
 A named setting is said in the reader's language
