@@ -137,8 +137,8 @@ band), `--primary-ink` that same color read against it (text, an outline, a rule
 hold the same value until dark mode, where SiteBundle lightens the ink and leaves the fill its hue — so
 a rule writing with `--primary` on a dark ground stays the dark brand color and vanishes into it.
 `PrimaryInkRoleTest` fails on any ink property (`color`, `outline`, `border-*`, `text-decoration-color`,
-`caret-color`, `fill`, `stroke`) reading `--primary`, its one listed exception being a label on a flat
-that inverts to a stated white.
+`text-emphasis-color`, `column-rule-color`, `caret-color`, `fill`, `stroke`) reading `--primary`, its
+one listed exception being a label on a flat that inverts to a stated white.
 
 **Read the viewport through `--viewport-width`, never as a bare `100vw`.** A `calc()` subtracting a
 `var()` from a `vw` length is valid CSS that the W3C validator reports as an *error* ("The types are

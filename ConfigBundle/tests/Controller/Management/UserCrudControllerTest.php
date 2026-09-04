@@ -21,6 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\FieldProvider;
@@ -39,15 +40,19 @@ class UserCrudControllerTest extends TestCase
     private const array DEFAULT_ROLES = ['ROLE_ADMIN', 'ROLE_EDITOR'];
 
     // AbstractCrudController::configureFields() only ever calls getDefaultFields() on whatever the container returns for FieldProvider::class - the real one is final readonly, so an anonymous object with that single method stands in for it
-    private function createContainer(): Container
+    private function createContainer(array $defaultFields = []): Container
     {
         $container = new Container();
-        $container->set(FieldProvider::class, new class {
+        $fieldProvider = new class {
+            public array $defaultFields = [];
+
             public function getDefaultFields(string $pageName): iterable
             {
-                return [];
+                return $this->defaultFields;
             }
-        });
+        };
+        $fieldProvider->defaultFields = $defaultFields;
+        $container->set(FieldProvider::class, $fieldProvider);
 
         return $container;
     }
@@ -68,7 +73,7 @@ class UserCrudControllerTest extends TestCase
         return new AdminContextProvider($requestStack);
     }
 
-    private function createController(bool $actingUserIsSuperAdmin, ?User $editedUser = null, ?array $availableRoles = null): UserCrudController
+    private function createController(bool $actingUserIsSuperAdmin, ?User $editedUser = null, ?array $availableRoles = null, array $defaultFields = []): UserCrudController
     {
         $availableRoles ??= self::AVAILABLE_ROLES;
 
@@ -90,17 +95,49 @@ class UserCrudControllerTest extends TestCase
             $this->createStub(TranslatorInterface::class),
             $this->createAdminContextProvider($editedUser),
         );
-        $controller->setContainer($this->createContainer());
+        $controller->setContainer($this->createContainer($defaultFields));
 
         return $controller;
     }
 
-    private function createUser(array $roles): User
+    private function createUser(array $roles, bool $isVerified = true): User
     {
         $user = new User();
         $user->setRoles($roles);
+        $user->setIsVerified($isVerified);
 
         return $user;
+    }
+
+    // --- configureFields: isEnabled -----------------------------------------------------------------
+
+    // An account nobody confirmed is deleted rather than disabled: unverified and disabled are the same state on a fresh sign-up, and the registration resend would hand such an account its way back in
+    public function testTheEnabledFieldIsFrozenOnAnUnverifiedAccount(): void
+    {
+        $field = $this->enabledField($this->createController(true, $this->createUser(['ROLE_USER'], false), defaultFields: [BooleanField::new('isEnabled')]));
+
+        $this->assertNotNull($field);
+        $this->assertSame('disabled', $field->getAsDto()->getFormTypeOption('disabled'));
+    }
+
+    // Locking an account out without deleting it is what the field is there for, once the address is confirmed
+    public function testTheEnabledFieldStaysEditableOnAVerifiedAccount(): void
+    {
+        $field = $this->enabledField($this->createController(true, $this->createUser(['ROLE_USER']), defaultFields: [BooleanField::new('isEnabled')]));
+
+        $this->assertNotNull($field);
+        $this->assertNull($field->getAsDto()->getFormTypeOption('disabled'));
+    }
+
+    private function enabledField(UserCrudController $controller): mixed
+    {
+        foreach ($controller->configureFields(Crud::PAGE_EDIT) as $field) {
+            if ('isEnabled' === $field->getAsDto()->getProperty()) {
+                return $field;
+            }
+        }
+
+        return null;
     }
 
     private function rolesField(UserCrudController $controller): mixed

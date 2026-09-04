@@ -18,6 +18,7 @@ use c975L\UiBundle\Service\EmailTemplateRenderer;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Model\VerifyEmailSignatureComponents;
@@ -69,7 +70,7 @@ class EmailVerifierTest extends TestCase
 
         $entityManager = $this->createStub(EntityManagerInterface::class);
 
-        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $entityManager);
+        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $entityManager, new ArrayAdapter());
         $result = $emailVerifier->sendEmailConfirmation('app_verify_email', $user, 'Confirm your email', 'user@example.test');
 
         $this->assertTrue($result);
@@ -93,9 +94,95 @@ class EmailVerifierTest extends TestCase
         $emailService = $this->createMock(EmailService::class);
         $emailService->expects($this->never())->method('send');
 
-        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $this->createStub(EntityManagerInterface::class));
+        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $emailTemplateRenderer, $this->createTranslator(), $this->createStub(EntityManagerInterface::class), new ArrayAdapter());
 
         $this->assertFalse($emailVerifier->sendEmailConfirmation('app_verify_email', $user, 'Confirm your email', 'user@example.test'));
+    }
+
+    // The registration form never says whether an address is already taken, so anyone may post a stranger's and have this email sent to them. The form's rate limiter counts the caller, and a block of IPv6 addresses opens as many buckets as it holds: the mailbox itself is what has to be capped
+    public function testTheSameAddressIsNotWrittenToTwiceWithinTheCooldown(): void
+    {
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->once())->method('send')->willReturn(true);
+
+        $emailVerifier = $this->createSendingVerifier($emailService);
+
+        $this->assertTrue($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', 'user@example.test'));
+        $this->assertFalse($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', 'user@example.test'));
+    }
+
+    // The very same mailbox, spelled another way: a cap opening a bucket per spelling caps nothing at all
+    public function testTheCooldownReadsAnAddressWhateverItsCaseAndSpacing(): void
+    {
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->once())->method('send')->willReturn(true);
+
+        $emailVerifier = $this->createSendingVerifier($emailService);
+
+        $this->assertTrue($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', 'user@example.test'));
+        $this->assertFalse($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', '  User@Example.TEST '));
+    }
+
+    // Another address is another mailbox, and one flood must not silence everybody else's registration
+    public function testAnotherAddressIsWrittenToStraightAway(): void
+    {
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->exactly(2))->method('send')->willReturn(true);
+
+        $emailVerifier = $this->createSendingVerifier($emailService);
+
+        $this->assertTrue($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', 'user@example.test'));
+        $this->assertTrue($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('other@example.test')->withId(43), 'Confirm your email', 'other@example.test'));
+    }
+
+    // A template an administrator renamed sends nothing, and must not lock the address out for an hour on top of it
+    public function testATemplateThatIsGoneDoesNotBurnTheCooldown(): void
+    {
+        $emailTemplateRenderer = $this->createStub(EmailTemplateRenderer::class);
+        $emailTemplateRenderer->method('renderNamed')->willReturn(null, '<html>rendered</html>');
+
+        $emailService = $this->createMock(EmailService::class);
+        $emailService->expects($this->once())->method('send')->willReturn(true);
+
+        $emailVerifier = new EmailVerifier(
+            $this->createSigningHelper(),
+            $emailService,
+            $emailTemplateRenderer,
+            $this->createTranslator(),
+            $this->createStub(EntityManagerInterface::class),
+            new ArrayAdapter(),
+        );
+
+        $this->assertFalse($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', 'user@example.test'));
+        $this->assertTrue($emailVerifier->sendEmailConfirmation('app_verify_email', new UserStub('user@example.test')->withId(42), 'Confirm your email', 'user@example.test'));
+    }
+
+    private function createSigningHelper(): VerifyEmailHelperInterface
+    {
+        $verifyEmailHelper = $this->createStub(VerifyEmailHelperInterface::class);
+        $verifyEmailHelper->method('generateSignature')->willReturn(new VerifyEmailSignatureComponents(
+            new \DateTimeImmutable('+1 hour'),
+            'https://example.test/verification/email?signed=1',
+            time()
+        ));
+
+        return $verifyEmailHelper;
+    }
+
+    // Everything but the email service stubbed to succeed, the cooldown being the only thing these cases are about
+    private function createSendingVerifier(EmailService $emailService): EmailVerifier
+    {
+        $emailTemplateRenderer = $this->createStub(EmailTemplateRenderer::class);
+        $emailTemplateRenderer->method('renderNamed')->willReturn('<html>rendered</html>');
+
+        return new EmailVerifier(
+            $this->createSigningHelper(),
+            $emailService,
+            $emailTemplateRenderer,
+            $this->createTranslator(),
+            $this->createStub(EntityManagerInterface::class),
+            new ArrayAdapter(),
+        );
     }
 
     public function testHandleEmailConfirmationMarksUserAsVerifiedAndEnabled(): void
@@ -139,7 +226,7 @@ class EmailVerifierTest extends TestCase
         $entityManager->expects($this->once())->method('persist')->with($user);
         $entityManager->expects($this->once())->method('flush');
 
-        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $this->createStub(EmailTemplateRenderer::class), $this->createTranslator(), $entityManager);
+        $emailVerifier = new EmailVerifier($verifyEmailHelper, $emailService, $this->createStub(EmailTemplateRenderer::class), $this->createTranslator(), $entityManager, new ArrayAdapter());
         $emailVerifier->handleEmailConfirmation($request, $user);
 
         $this->assertSame(1, $verifyEmailHelper->calls);

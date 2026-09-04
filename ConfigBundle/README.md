@@ -231,12 +231,46 @@ Set `restricted: true` on top of that for secrets shared across the whole instal
 
 `label` and `description` are displayed through the `site_config` translation domain, but neither has to be a key. The label is looked up as `label.<slug with underscores>` (so `console-digest-mailto` → `label.console_digest_mailto`) and the description as whatever string it holds (`description.xxx` by convention); when the lookup finds nothing, the text written in the json is displayed as-is. A bundle shipping configs for several locales therefore keeps its `translations/site_config.*.xlf`, while an application declaring its own configs can simply write both in clear.
 
-`group` is optional and clusters entries on the "pick a group" screen (see below). It must be one of the fixed values in `Config::GROUPS`, each backed by a `label.group_*` translation key:
+### A setting said in another language
+
+A setting written in words carries a **Traduire** action on the index, which
+opens its very edit screen on another language: the value field alone, filled with what that language already says
+or with the typed text between brackets. Which settings those are is named one by one in `ConfigTranslator::TRANSLATABLE`
+(`site-age-warning` today), and not deduced from the `kind`: almost every text setting of a site is a url, a postal
+address, a name or a technical key, said the same way in every language — and the ones PHP reads straight from
+`ConfigService::get()` (the legal identity behind `legal_var()`, the SEO files, the confirmation e-mail's subject)
+never see the layer at all, so offering them would store text nothing renders. A bundle shipping a setting genuinely
+written in words names its slug there. The typed value never moves, playing the part of the msgid exactly as
+`Page::$title` does — what a language screen writes goes to UiBundle's `site_translation` table under the owner
+type `site_config` (see `ConfigTranslator`, and ECOSYSTEM.md §26 for the layer itself). A removed setting takes its
+rows with it (`ConfigTranslationPurgeListener`), no foreign key doing it for them.
+
+A setting marked `sensitive` is left out whatever its kind: a secret holds no sentence, and the language screen
+leaves the stored value untouched, which on such a setting is its encrypted envelope.
+
+Nothing of this exists on a site declaring a single language, which is every c975L site until it says otherwise:
+the action is not drawn, the table stays empty, and every read hands back the value as it was typed.
+
+Reading it is the `config()` function's business, and a template says which language it wants when it is not the
+visitor's:
+
+```twig
+{# The visitor's language #}
+{{ config('site-age-warning') }}
+
+{# The language this page is written in - a book sheet renders in the book's own #}
+{{ config('site-age-warning', book.language) }}
+```
+
+A setting nobody translated keeps its typed text rather than rendering empty, the same merge every other read of
+the layer does. Anything that is not a string — a boolean, a number, a decoded json — is handed straight back.
+
+`group` is optional and clusters entries on the "pick a group" screen (see below). `Config::GROUPS` lists the drawers ConfigBundle itself labels, each backed by a `label.group_*` key in the `config` domain:
 
 | Value | Meaning |
 | --- | --- |
 | `system` | Access control, maintenance mode |
-| `general` | Site identity (name, logo, favicon, URL...) |
+| `general` | Site identity (name, author, url, timezone) |
 | `legal` | Terms of use, cookies, legal notice, DPO |
 | `credits` | Hosted-by / made-by links and logos |
 | `analytics` | Matomo and other tracking |
@@ -249,8 +283,14 @@ Set `restricted: true` on top of that for secrets shared across the whole instal
 | `theme` | Theme CSS variables (colors, fonts, light/dark mode) |
 | `ai` | AI-related settings (LLM providers, prompts...) |
 | `messenger` | Symfony Messenger cleanup settings |
+| `seo` | Robots, sitemap and crawler settings |
+| `health_check` | What the dashboard's health check reads and keeps |
 
-This list is closed on purpose so filtering stays useful; if none fits, leave `group` unset rather than inventing a new value (adding one requires extending `Config::GROUPS` and the matching translations in ConfigBundle itself).
+That list is not closed. **The drawer belongs to the question the editor asks, not to the bundle that answers it**: a bundle either files its entry under one of the drawers above — which is what makes `legal`, `shop`, `security` and `email` shared, several bundles filling the one place an editor goes looking — or names a drawer of its own and ships `label.group_<slug>` in the `config` domain, as BookBundle (`book`) and GalleryBundle (`gallery`) do. `ConfigsJsonTest` locks that: a drawer named and not labelled fails the test rather than showing up as a raw `label.group_x` string on the screen.
+
+The screen reads in three bands rather than as one flat list (`ConfigGroupLabelResolver::bands()`): **the site** (`general`, `legal`, `credits`, `email`, `theme`, `seo`, `site`), **the features** — every drawer a bundle brought — and **the technical** ones (`system`, `security`, `backup`, `messenger`, `health_check`), each band ordered on the label it shows. A drawer listed in neither the first nor the third falls under the features, which is what a satellite's drawer is: a bundle installed tomorrow lands where it belongs without naming itself in ConfigBundle. A band holding nothing is left out.
+
+The bad reflex is inventing `book-legal` or `payment-email` to avoid sharing. What files two settings together is the editor's gesture, not the composer.json. Conversely a setting that has nothing to do with the drawer it landed in leaves it: PaymentBundle's six `shop-email-*` are the shop's own senders, not the site's, so they sit under `payment` and not under `email`.
 
 `severity` is optional and flags an entry that needs an admin's attention as long as its `value` is empty — it never affects front-end rendering, `ConfigService::get()` still returns `null`/empty as before. It must be one of `Config::SEVERITIES`: `danger`, `warning`, `info`. Any entry with a severity and no value is listed on the `/management` dashboard as a colored alert with a direct link to fill it in; once a value is set, the alert disappears on its own (no flag to unset).
 
@@ -544,7 +584,8 @@ Registration/reset-password-request reject bots at several layers, so a public f
 - **`Assert\Email` + `c975L\UiBundle\Validator\Constraints\DnsEmail`** on every email-typed field — format check, then a live MX/A DNS lookup (via `egulias/email-validator`) rejecting domains that can't receive mail at all (e.g. `something@dominatingkeywords.com`). Applies to any generic Form's email field (contact/register/reset-password-request alike), plus `User::$email` itself on every entity validation (including the User CRUD in the backoffice, which still carries its own `#[DnsEmail]`).
 - **Honeypot + minimum submit delay** — an invisible rotating-name field (hidden inline, no CSS dependency), and a minimum delay between displaying the form and submitting it, tracked in session. Either one failing silently redirects back (same "form_submitted" flash as a real submission) without creating an account or sending any email, giving no signal back to the bot. The delay is the shared `site-form-delay` ConfigBundle key (seconds, default `3`) - one setting for every public form (contact, register, reset-password-request) instead of one per bundle.
 - **GDPR information line** - shown under both forms (`text.gdpr_information`, linking to the page `url-privacy-policy` names, and skipped when that key is empty). No consent checkbox: answering a visitor rests on the site's legitimate interest, and a box they cannot refuse without giving up the form is no consent at all. The registration form does carry a `cgu` field (terms-of-use acceptance), which is contractual and enforced with `IsTrue`.
-- **Duplicate email** - `RegisterFormAction` silently succeeds (same flash, no account created, no email sent) when the submitted email already has an account, same non-revealing stance `ResetPasswordRequestFormAction` already has for "no such account".
+- **Duplicate email** - `RegisterFormAction` silently succeeds (same flash, no account created) when the submitted email already has an account, same non-revealing stance `ResetPasswordRequestFormAction` already has for "no such account". An account left unverified gets a new confirmation email on the way out - the only way out of an undelivered or expired link, `UserChecker` refusing the login until it is followed. An account nobody confirmed is therefore deleted from the Users screen rather than disabled: the back office freezes `isEnabled` until the address is confirmed (`UserCrudController`), since disabled and unverified are the same state on a fresh sign-up and a new confirmation link would hand back the way in that was taken away.
+- **One confirmation email per hour and per address** — `EmailVerifier` holds an address for `EmailVerifier::COOLDOWN` (3600 seconds) in `cache.app` and answers `false` rather than sending a second one. The registration flash says so (`label.form_registered`, the wording `FormController` picks for the `register` action): the visitor is told a confirmation email is on its way *unless one already left less than an hour ago*, which is generic enough to reveal nothing about the address. The rate limiter below counts the caller, and a block of IPv6 addresses opens as many buckets as it holds: since anyone may post a stranger's address on a form that never says whether it is taken, the ceiling that matters is the one on the mailbox being written to - the same hour SymfonyCasts' `ResetPasswordHelper` already holds a reset request for.
 - **Rate limiting by IP** — shared with every other generic Form (`limiter.ui_form`), not a dedicated `registration`/`reset_password` limiter anymore. UiBundle prepends it itself (`sliding_window`, 5 attempts per 10 minutes), so there is nothing to add for it to apply; write this to decide otherwise:
 
 ```yaml

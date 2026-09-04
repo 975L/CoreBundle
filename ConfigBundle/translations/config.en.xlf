@@ -34,6 +34,10 @@
                 <source>action.preview_preset</source>
                 <target>Preview: %label%</target>
             </trans-unit>
+            <trans-unit id="VOwL1H0">
+                <source>action.translate</source>
+                <target>Translate</target>
+            </trans-unit>
             <trans-unit id="1RI0n59">
                 <source>confirm.apply_preset</source>
                 <target>Apply this preset? It switches the site's visual shape (rounded corners, shadows, navigation...) - your colors and fonts are not affected.</target>
@@ -53,6 +57,10 @@
             <trans-unit id="QYdNDiU">
                 <source>description.config_prune</source>
                 <target>Entries left in database that no configs*.json declares anymore, e.g. a setting a bundle dropped, or a bundle uninstalled. Nothing is deleted until the form below is submitted.</target>
+            </trans-unit>
+            <trans-unit id="Vc3GRPQ">
+                <source>description.config_translation</source>
+                <target>Write here what this setting says in this language. Left as it stands, between brackets, it counts as untranslated and the original text keeps showing.</target>
             </trans-unit>
             <trans-unit id="4qwnKQS">
                 <source>description.config_unreadable</source>
@@ -398,6 +406,10 @@
                 <source>help.value_theme_color</source>
                 <target>Hex (#b30000), rgb()/rgba(), hsl()/hsla(), or a CSS name (e.g. tomato)</target>
             </trans-unit>
+            <trans-unit id="iL.nOO8">
+                <source>help.value_translation</source>
+                <target>The value in this language alone — the one that was typed stays untouched.</target>
+            </trans-unit>
             <trans-unit id="s0jNbR8">
                 <source>label.account_validation_button</source>
                 <target>Confirm my email</target>
@@ -481,6 +493,18 @@
             <trans-unit id="M6cJ.ah">
                 <source>label.backup_digest_warnings</source>
                 <target>Warnings:</target>
+            </trans-unit>
+            <trans-unit id="92TxJg9">
+                <source>label.band_features</source>
+                <target>Features</target>
+            </trans-unit>
+            <trans-unit id="oLhh9Kx">
+                <source>label.band_site</source>
+                <target>The site</target>
+            </trans-unit>
+            <trans-unit id="BbYAB1a">
+                <source>label.band_technical</source>
+                <target>Technical</target>
             </trans-unit>
             <trans-unit id="13FkC7i">
                 <source>label.boolean</source>

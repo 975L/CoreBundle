@@ -34,6 +34,10 @@
                 <source>action.preview_preset</source>
                 <target>Aperçu : %label%</target>
             </trans-unit>
+            <trans-unit id="VOwL1H0">
+                <source>action.translate</source>
+                <target>Traduire</target>
+            </trans-unit>
             <trans-unit id="1RI0n59">
                 <source>confirm.apply_preset</source>
                 <target>Appliquer ce thème ? Il change la forme visuelle du site (arrondis, ombres, navigation...) - vos couleurs et polices ne sont pas modifiées.</target>
@@ -53,6 +57,10 @@
             <trans-unit id="QYdNDiU">
                 <source>description.config_prune</source>
                 <target>Entrées restées en base de données qu'aucun configs*.json ne déclare plus, par exemple un paramètre abandonné par un bundle, ou un bundle désinstallé. Rien n'est supprimé tant que le formulaire ci-dessous n'est pas validé.</target>
+            </trans-unit>
+            <trans-unit id="Vc3GRPQ">
+                <source>description.config_translation</source>
+                <target>Écrivez ici ce que ce réglage dit dans cette langue. Laissé tel quel, entre crochets, il n'est pas traduit et le texte d'origine reste affiché.</target>
             </trans-unit>
             <trans-unit id="4qwnKQS">
                 <source>description.config_unreadable</source>
@@ -398,6 +406,10 @@
                 <source>help.value_theme_color</source>
                 <target>Hexadécimal (#b30000), rgb()/rgba(), hsl()/hsla(), ou un nom CSS (ex. tomato)</target>
             </trans-unit>
+            <trans-unit id="iL.nOO8">
+                <source>help.value_translation</source>
+                <target>La valeur dans cette langue seulement — celle qui a été saisie reste intacte.</target>
+            </trans-unit>
             <trans-unit id="s0jNbR8">
                 <source>label.account_validation_button</source>
                 <target>Confirmer mon email</target>
@@ -481,6 +493,18 @@
             <trans-unit id="M6cJ.ah">
                 <source>label.backup_digest_warnings</source>
                 <target>Avertissements :</target>
+            </trans-unit>
+            <trans-unit id="92TxJg9">
+                <source>label.band_features</source>
+                <target>Les fonctionnalités</target>
+            </trans-unit>
+            <trans-unit id="oLhh9Kx">
+                <source>label.band_site</source>
+                <target>Le site</target>
+            </trans-unit>
+            <trans-unit id="BbYAB1a">
+                <source>label.band_technical</source>
+                <target>Technique</target>
             </trans-unit>
             <trans-unit id="13FkC7i">
                 <source>label.boolean</source>

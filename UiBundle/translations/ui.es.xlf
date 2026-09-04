@@ -2002,6 +2002,10 @@
                 <source>label.form_picker_name</source>
                 <target>Formulario</target>
             </trans-unit>
+            <trans-unit id="5uwc7v7">
+                <source>label.form_registered</source>
+                <target>Gracias, hemos recibido su registro. Le enviamos un correo de confirmación, salvo que ya se haya enviado otro a esta dirección hace menos de una hora.</target>
+            </trans-unit>
             <trans-unit id="OD0CMev">
                 <source>label.form_submission_failed</source>
                 <target>Se produjo un error, tu envío no pudo ser procesado.</target>

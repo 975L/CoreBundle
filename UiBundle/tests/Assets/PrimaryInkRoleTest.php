@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 class PrimaryInkRoleTest extends TestCase
 {
     // The properties that put a color on the page as ink rather than as a fill
-    private const string INK_PROPERTIES = 'color|outline|outline-color|border|border-[a-z-]+-color|border-(top|right|bottom|left|inline|block)(-(start|end))?|text-decoration-color|caret-color|fill|stroke|-webkit-text-fill-color';
+    private const string INK_PROPERTIES = 'color|outline|outline-color|border(?:-[a-z-]+)?|text-decoration-color|text-emphasis-color|column-rule-color|caret-color|fill|stroke|-webkit-text-fill-color';
 
     // Declarations reading --primary on purpose, listed in full so an accidental one never hides behind a line number
     private const array ALLOWED = [
@@ -34,13 +34,14 @@ class PrimaryInkRoleTest extends TestCase
         foreach ($this->sassFiles() as $path) {
             $lines = explode("\n", (string) file_get_contents($path));
             foreach ($lines as $number => $line) {
-                if (1 !== preg_match('/^\s*(' . self::INK_PROPERTIES . ')\s*:\s*(.+;)\s*$/', $line, $match)) {
+                if (1 !== preg_match('/^\s*(' . self::INK_PROPERTIES . ')\s*:\s*(.+?;)(?:\s*\/\/.*)?\s*$/', $line, $match)) {
                     continue;
                 }
 
                 ++$scanned;
-                $declaration = trim($line);
-                if (!str_contains($match[0], 'var(--primary)') || in_array($declaration, self::ALLOWED, true)) {
+                // Rebuilt from the property and its value rather than read off the line, so a trailing "//" comment neither hides an offence nor keeps a declaration out of ALLOWED
+                $declaration = $match[1] . ': ' . $match[2];
+                if (!str_contains($match[2], 'var(--primary)') || in_array($declaration, self::ALLOWED, true)) {
                     continue;
                 }
 

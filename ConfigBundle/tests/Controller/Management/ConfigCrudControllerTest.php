@@ -20,10 +20,12 @@ use c975L\ConfigBundle\Management\ConfigGroupLabelResolver;
 use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\ConfigTranslator;
 use c975L\ConfigBundle\Service\Export\ConfigSqlExporter;
 use c975L\ConfigBundle\Service\Export\ContentExporter;
 use c975L\ConfigBundle\Service\Export\ExportFormat;
 use c975L\ConfigBundle\Service\Export\TableExporter;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Service\VaultEncryptor;
 use c975L\UiBundle\Contract\FontProviderInterface;
 use c975L\UiBundle\Form\FontChoiceType;
@@ -38,6 +40,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Context\CrudContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
@@ -116,6 +119,7 @@ class ConfigCrudControllerTest extends TestCase
         ?ConfigRepository $configRepository = null,
         ?AdminUrlGenerator $adminUrlGenerator = null,
         ?FontRegistry $fontRegistry = null,
+        ?ConfigTranslator $configTranslator = null,
     ): ConfigCrudController {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
@@ -141,6 +145,8 @@ class ConfigCrudControllerTest extends TestCase
             $configRepository ?? $this->createStub(ConfigRepository::class),
             $adminUrlGenerator ?? $this->createAdminUrlGenerator(),
             $fontRegistry ?? new FontRegistry(),
+            $configTranslator ?? $this->createStub(ConfigTranslator::class),
+            $this->createStub(SiteLocales::class),
         );
     }
 
@@ -267,7 +273,8 @@ class ConfigCrudControllerTest extends TestCase
             ->with(
                 '@c975LConfig/management/config_crud_groups.html.twig',
                 $this->callback(function (array $parameters) {
-                    $this->assertSame(['general' => 3, 'legal' => 2], $parameters['counts']);
+                    // Cut into the bands the screen reads in, the two of them belonging to the site's own (see ConfigGroupLabelResolver::bands)
+                    $this->assertSame(['site' => ['general' => 3, 'legal' => 2]], $parameters['bands']);
 
                     return true;
                 })
@@ -767,6 +774,8 @@ class ConfigCrudControllerTest extends TestCase
             $this->createStub(ConfigRepository::class),
             $this->createAdminUrlGenerator(),
             new FontRegistry(),
+            $this->createStub(ConfigTranslator::class),
+            $this->createStub(SiteLocales::class),
         );
         $controller->setContainer($this->createContainer([
             EntityRepositoryInterface::class => $repository,
@@ -1179,6 +1188,79 @@ class ConfigCrudControllerTest extends TestCase
         $controller->setContainer($this->createContainer([
             AdminContextProviderInterface::class => $contextProvider,
         ]));
+    }
+
+    // The language screen, asked for through the url the language bar links to
+    private function createTranslatingRequestStack(string $locale): RequestStack
+    {
+        return new RequestStack([new Request([ConfigCrudController::CONTENT_LOCALE_PARAM => $locale])]);
+    }
+
+    // A translator answering for one language, "translates" being whatever the test is about
+    private function createConfigTranslator(bool $translates): ConfigTranslator
+    {
+        $configTranslator = $this->createStub(ConfigTranslator::class);
+        $configTranslator->method('translates')->willReturn($translates);
+        $configTranslator->method('getTranslatableLocales')->willReturn(['en']);
+        $configTranslator->method('promptValue')->willReturn('[Mon site]');
+
+        return $configTranslator;
+    }
+
+    // The language screen shows the setting's label and its value, and the value is unmapped: written here it belongs to the translation table, mapped back it would overwrite the text the site was typed in
+    public function testConfigureFieldsShowsOnlyTheValueOnTheLanguageScreen(): void
+    {
+        $config = new Config()->setSlug('site-name')->setKind(Config::TYPE_TEXT)->setValue('Mon site');
+        $controller = $this->createController(
+            requestStack: $this->createTranslatingRequestStack('en'),
+            configTranslator: $this->createConfigTranslator(true),
+        );
+        $this->setContextEntity($controller, $config);
+
+        $fields = iterator_to_array($controller->configureFields('edit'));
+
+        $this->assertCount(2, $fields);
+        $this->assertFalse($this->findField($fields, 'value')->getAsDto()->getFormTypeOptions()['mapped']);
+        $this->assertSame('[Mon site]', $this->findField($fields, 'value')->getAsDto()->getFormTypeOptions()['data']);
+    }
+
+    // The url is typed as easily as followed: on a setting holding no words it must open the ordinary edit screen, not a language screen whose every field is unmapped and whose Save writes nothing
+    public function testConfigureFieldsIgnoresTheAskedLanguageOnASettingThatHoldsNoWords(): void
+    {
+        $config = new Config()->setSlug('site-maintenance')->setKind(Config::TYPE_BOOL)->setValue(true);
+        $controller = $this->createController(
+            requestStack: $this->createTranslatingRequestStack('en'),
+            configTranslator: $this->createConfigTranslator(false),
+        );
+        $this->setContextEntity($controller, $config);
+
+        $fields = iterator_to_array($controller->configureFields('edit'));
+
+        $this->assertGreaterThan(2, \count($fields));
+        $this->assertArrayNotHasKey('mapped', $this->findField($fields, 'value')->getAsDto()->getFormTypeOptions());
+    }
+
+    // The language bar is drawn from these parameters, and a setting holding no words draws none
+    public function testConfigureResponseParametersOffersTheLanguagesOnlyWhereTheySaySomething(): void
+    {
+        $translating = $this->responseParametersForEdit(new Config()->setSlug('site-name')->setKind(Config::TYPE_TEXT), true);
+        $this->assertTrue($translating->has('config_content_urls'));
+        $this->assertSame(['en'], $translating->get('config_content_locales'));
+
+        $plain = $this->responseParametersForEdit(new Config()->setSlug('site-maintenance')->setKind(Config::TYPE_BOOL), false);
+        $this->assertFalse($plain->has('config_content_urls'));
+        $this->assertFalse($plain->has('config_content_locale'));
+    }
+
+    private function responseParametersForEdit(Config $config, bool $translates): KeyValueStore
+    {
+        $controller = $this->createController(
+            requestStack: $this->createTranslatingRequestStack('en'),
+            configTranslator: $this->createConfigTranslator($translates),
+        );
+        $this->setContextEntity($controller, $config);
+
+        return $controller->configureResponseParameters(KeyValueStore::new(['pageName' => Crud::PAGE_EDIT]));
     }
 
     private function findField(iterable $fields, string $property): FieldInterface

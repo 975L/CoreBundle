@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, highlight selector, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -83,6 +83,12 @@ Two nuances that get lost:
   `guided-project.js` delegates the click on the document, so a button appended after the page loaded
   works too (UiBundle's Donovan renders one when an answer cites a parcours). Only the buttons inside
   the dashboard list are relabelled "Start"/"Resume"/"Replay".
+- A guided project step's `highlight` is a raw CSS selector run through one `document.querySelector`,
+  and nothing checks it against the template: prefer a `data-*` marker put on the element for that
+  purpose over a structural selector (`table tbody tr:first-child a` stops matching the day a `tbody`
+  per band is introduced). A step highlighting an action shown conditionally must itself be added
+  conditionally — an action behind a `displayIf()` leaves the step lighting up nothing, and one drawn
+  on a single row of a single screen is not worth a step at all.
 - A menu entry and a guided project step each take an optional `narration`: what the step sounds like
   when it is **spoken** rather than read, a full sentence naming where to look and what to do. It is
   read by the films of the back office and drawn nowhere; without one, the label and the description
@@ -149,4 +155,6 @@ and the container compilation of every production site breaks otherwise.
 - **Do not put a technical changelog entry in `whatsnew.json`** — it is read by the site's owner.
 - **Do not declare a GET admin route under `/config/...`** — `/config/{entityId}` of the Config CRUD
   swallows it. Pages sit at the root; only POST actions may live under `/config/`.
+- **Do not point a step's `highlight` at a structure rather than at a marker**, and do not keep a step
+  whose action the screen may not draw — both light up nothing, which is what a guided tour must never do.
 - **Do not leave a `TestCase` subclass inside a scanned `src/`.**

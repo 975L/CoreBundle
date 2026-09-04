@@ -22,10 +22,12 @@ use c975L\ConfigBundle\Management\ConfigLabelResolver;
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Repository\ConfigRepository;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\ConfigTranslator;
 use c975L\ConfigBundle\Service\Export\ConfigSqlExporter;
 use c975L\ConfigBundle\Service\Export\ContentExporter;
 use c975L\ConfigBundle\Service\Export\ExportFormat;
 use c975L\ConfigBundle\Service\Export\TableExporter;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Service\VaultEncryptor;
 use c975L\UiBundle\Form\FontChoiceType;
 use c975L\UiBundle\Registry\FontRegistry;
@@ -59,6 +61,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -69,6 +74,9 @@ class ConfigCrudController extends AbstractCrudController
 {
     // Reserved value of the "group" query parameter scoping the grid to the configs still waiting for a value, whatever group they belong to. Never stored: no configs.json declares it, so it cannot collide with a real group
     public const string GROUP_EMPTY = '_empty';
+
+    // The query parameter the language screen is opened on, read the way SiteBundle's PageCrudController reads its own
+    public const string CONTENT_LOCALE_PARAM = 'contentLocale';
 
     public function __construct(
         private readonly Security $security,
@@ -88,6 +96,8 @@ class ConfigCrudController extends AbstractCrudController
         private readonly ConfigRepository $configRepository,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly FontRegistry $fontRegistry,
+        private readonly ConfigTranslator $configTranslator,
+        private readonly SiteLocales $siteLocales,
     ) {
     }
 
@@ -107,7 +117,7 @@ class ConfigCrudController extends AbstractCrudController
             $showSensitive = $this->requestStack->getCurrentRequest()?->query->getBoolean('showSensitive', false) ?? false;
 
             return $this->render('@c975LConfig/management/config_crud_groups.html.twig', [
-                'counts' => $this->configGroupLabelResolver->sortByLabel($this->configRepository->countsByGroup($showSensitive, $this->security->isGranted('ROLE_SUPER_ADMIN'))),
+                'bands' => $this->configGroupLabelResolver->bands($this->configRepository->countsByGroup($showSensitive, $this->security->isGranted('ROLE_SUPER_ADMIN'))),
                 // Drawn apart from the groups, being a state rather than a group: it cuts across all of them and holds the sensitive entries too, which no group row shows unless the toggle is on
                 'emptyCount' => $this->configRepository->countEmpty($this->security->isGranted('ROLE_SUPER_ADMIN')),
                 'emptyGroup' => self::GROUP_EMPTY,
@@ -134,6 +144,12 @@ class ConfigCrudController extends AbstractCrudController
         $entity = null !== $context ? $context->getEntity()->getInstance() : null;
         $config = $entity instanceof Config ? $entity : null;
         $isEdit = Crud::PAGE_EDIT === $pageName;
+
+        // A language screen shows what a language can change and nothing else: a setting is declared, typed and grouped once, in the language the site was written in
+        $contentLocale = $isEdit ? $this->contentLocale($config) : null;
+        if (null !== $config && null !== $contentLocale) {
+            return $this->translationFields($config, $contentLocale);
+        }
 
         return [
             IdField::new('id')
@@ -186,6 +202,53 @@ class ConfigCrudController extends AbstractCrudController
                 ->setFormTypeOption('disabled', 'disabled')
                 ->hideOnIndex(),
         ];
+    }
+
+    // The very same edit screen, offered in the language being written: the setting's own value, and nothing else
+    // Unmapped: what is written here belongs to the translation table, and mapped back it would overwrite the text the site itself was typed in (see ConfigTranslator)
+    /** @return iterable<FieldInterface> */
+    private function translationFields(Config $config, string $locale): iterable
+    {
+        yield $this->labelField(true, $config);
+
+        yield $this->kindValueField((string) $config->getKind(), $config->getValue())
+            ->setRequired(false)
+            ->setFormTypeOption('mapped', false)
+            ->setFormTypeOption('data', $this->configTranslator->promptValue($config, $locale))
+            ->setHelp(t('help.value_translation', [], 'config'));
+    }
+
+    // The language a setting is being written in, when it is not the one the site was written in: read from the url the language bar links to (see config_crud_edit.html.twig), and only ever one the site declares
+    // The setting is asked for too, the url being typed as easily as followed: a boolean has no language screen, and opening one on it would show an edit page whose every field is unmapped and stage a translation row nothing ever reads
+    private function contentLocale(?Config $config): ?string
+    {
+        if (null === $config || !$this->configTranslator->translates($config)) {
+            return null;
+        }
+
+        $asked = (string) $this->requestStack->getCurrentRequest()?->query->get(self::CONTENT_LOCALE_PARAM);
+
+        return \in_array($asked, $this->configTranslator->getTranslatableLocales(), true) ? $asked : null;
+    }
+
+    // The value the language screen wrote, handed over the way a page's texts are: written on the flush that saves the setting, never before it, so a refused submission writes nothing (see ContentTranslator::stage)
+    #[\Override]
+    public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    {
+        $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
+        $instance = $entityDto->getInstance();
+        $contentLocale = $this->contentLocale($instance instanceof Config ? $instance : null);
+
+        if (null !== $contentLocale) {
+            $formBuilder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($contentLocale): void {
+                $config = $event->getData();
+                if ($config instanceof Config && $event->getForm()->has('value')) {
+                    $this->configTranslator->stage($config, $contentLocale, $event->getForm()->get('value')->getData());
+                }
+            });
+        }
+
+        return $formBuilder;
     }
 
     // Label uses a 'site_config' translation key derived from the slug (label.xxx), mirroring description's key format, and falls back to the stored label when untranslated - see ConfigLabelResolver. formatValue() only runs on index/detail (EasyAdmin skips it for disabled form fields), so the edit page's disabled input needs the resolved text injected via form data instead
@@ -399,6 +462,17 @@ class ConfigCrudController extends AbstractCrudController
                 ->generateUrl())
             ->createAsGlobalAction();
 
+        // The very same edit screen, opened on another language: the field is the setting's own value, filled in that language (see translationFields). Shown only on a setting a language can change - a site declaring one language, or a boolean, and there is nothing to open
+        $translateAction = Action::new('translate', t('action.translate', [], 'config'), 'fa fa-language')
+            ->linkToUrl(fn (Config $config) => $this->adminUrlGenerator
+                ->setController(self::class)
+                ->setAction(Action::EDIT)
+                ->setEntityId($config->getId())
+                ->set(self::CONTENT_LOCALE_PARAM, $this->configTranslator->getTranslatableLocales()[0] ?? null)
+                ->generateUrl())
+            ->displayIf(fn (Config $config): bool => $this->configTranslator->translates($config))
+            ->addCssClass('btn btn-secondary');
+
         // Lets the admin back out of an edit without saving - mirrors EasyAdmin's own built-in actions (linkToCrudAction targeting INDEX, same as Action::INDEX itself)
         $cancelAction = Action::new('cancel', $this->translator->trans('action.cancel', [], 'EasyAdminBundle'), 'fa fa-times')
             ->linkToCrudAction(Action::INDEX)
@@ -408,6 +482,7 @@ class ConfigCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, $exportGroup)
             ->add(Crud::PAGE_INDEX, $toggleAction)
             ->add(Crud::PAGE_INDEX, $backToGroupsAction)
+            ->add(Crud::PAGE_INDEX, $translateAction)
             ->add(Crud::PAGE_EDIT, $cancelAction)
             ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => EasyAdminActionHelper::toIconOnly(
                 $action,
@@ -416,6 +491,7 @@ class ConfigCrudController extends AbstractCrudController
             // Stated rather than left open: the screen used to be unreachable for want of a menu entry, the dashboard being admin-only - it now renders for an editor, who has no business reading the site's own settings
             ->setPermission(Action::INDEX, $this->configService->get('site-role-admin'))
             ->setPermission(Action::EDIT, $this->configService->get('site-role-admin'))
+            ->setPermission('translate', $this->configService->get('site-role-admin'))
             ->setPermission('exportCsv', $this->configService->get('site-role-admin'))
             ->setPermission('toggleSensitive', $this->configService->get('site-role-admin'))
             ->setPermission('exportSql', $this->configService->get('site-role-admin'))
@@ -444,6 +520,10 @@ class ConfigCrudController extends AbstractCrudController
     #[\Override]
     public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
     {
+        if (Crud::PAGE_EDIT === $responseParameters->get('pageName')) {
+            $this->addContentLocaleParameters($responseParameters);
+        }
+
         if (Crud::PAGE_INDEX === $responseParameters->get('pageName')) {
             $responseParameters->set('alerts', $this->alertBuilder->groupOwnBySeverity($this->configAlertProvider->getAlerts()));
             $responseParameters->set('alertsTitle', $this->translator->trans(
@@ -454,6 +534,35 @@ class ConfigCrudController extends AbstractCrudController
         }
 
         return $responseParameters;
+    }
+
+    // What the edit screen draws its language bar from: nothing at all where the site declares a single language, or where the setting holds no words
+    private function addContentLocaleParameters(KeyValueStore $responseParameters): void
+    {
+        $entity = $this->getContext()?->getEntity()->getInstance();
+        if (!$entity instanceof Config || !$this->configTranslator->translates($entity)) {
+            return;
+        }
+
+        $urls = ['' => $this->editUrl($entity, null)];
+        foreach ($this->configTranslator->getTranslatableLocales() as $locale) {
+            $urls[$locale] = $this->editUrl($entity, $locale);
+        }
+
+        $responseParameters->set('config_content_locale', $this->contentLocale($entity));
+        $responseParameters->set('config_content_locales', $this->configTranslator->getTranslatableLocales());
+        $responseParameters->set('config_content_urls', $urls);
+        $responseParameters->set('config_default_locale', $this->siteLocales->getDefaultLocale());
+    }
+
+    private function editUrl(Config $config, ?string $locale): string
+    {
+        return $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::EDIT)
+            ->setEntityId($config->getId())
+            ->set(self::CONTENT_LOCALE_PARAM, $locale)
+            ->generateUrl();
     }
 
     // "group" is deliberately not filterable here anymore - the index is already scoped to one group via the "pick a group" screen (see index()), and a second, conflicting group filter on top of that URL-driven scoping would just AND against it and silently return zero rows

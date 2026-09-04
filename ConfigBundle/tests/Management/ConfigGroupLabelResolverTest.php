@@ -69,6 +69,35 @@ class ConfigGroupLabelResolverTest extends TestCase
         $this->assertSame([], $this->resolver()->sortByLabel([]));
     }
 
+    // The order the screen is read in: what the site says of itself, then what its bundles brought, then what is touched once
+    public function testTheBandsComeInTheOrderTheScreenDrawsThem(): void
+    {
+        $bands = $this->resolver()->bands(['system' => 7, 'shop' => 5, 'email' => 9, 'backup' => 6]);
+
+        $this->assertSame(['site', 'features', 'technical'], array_keys($bands));
+        $this->assertSame(['email' => 9], $bands['site']);
+        $this->assertSame(['shop' => 5], $bands['features']);
+        $this->assertSame(['backup' => 6, 'system' => 7], $bands['technical']);
+    }
+
+    // A drawer a bundle named and this class knows nothing of - which is what every satellite's is - belongs to what that bundle brought
+    public function testADrawerNamedByABundleFallsUnderTheFeatures(): void
+    {
+        $bands = $this->resolver()->bands(['book' => 18, 'gallery' => 24]);
+
+        $this->assertSame(['features'], array_keys($bands));
+        $this->assertSame(['book' => 18, 'gallery' => 24], $bands['features']);
+    }
+
+    // A site running no satellite has no feature drawer to show, and the band is left out rather than drawn with a heading over nothing
+    public function testABandHoldingNothingIsLeftOut(): void
+    {
+        $bands = $this->resolver()->bands(['system' => 7]);
+
+        $this->assertSame(['technical' => ['system' => 7]], $bands);
+        $this->assertSame([], $this->resolver()->bands([]));
+    }
+
     private function resolver(): ConfigGroupLabelResolver
     {
         $translator = $this->createStub(TranslatorInterface::class);

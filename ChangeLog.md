@@ -1,5 +1,54 @@
 # ChangeLog
 
+## v1.23.0
+
+A named setting is said in the reader's language
+
+### ConfigBundle
+
+- **A setting written in words is said in the reader's language**: a named setting now carries a "Traduire" action opening its very edit screen on another language, the typed value playing the part of the msgid the way `Page::$title` does (new `ConfigTranslator`, owner type `site_config`, see ECOSYSTEM.md §26) (04/09/2026)
+- The settings offered are named one by one in `ConfigTranslator::TRANSLATABLE` (`site-age-warning` today): holding words is not enough, a url, a postal address or a technical key being said the same way in every language and read straight from `ConfigService::get()`, which never sees the layer (04/09/2026)
+- `config()` takes the language to read in - `config('site-age-warning', book.language)` - a page rendering in a language other than the visitor's asking for its own (04/09/2026)
+- A site declaring a single language never leaves the value it typed, and every existing `config()` call is unchanged (04/09/2026)
+- New `ConfigTranslationPurgeListener`: a removed setting takes its translations with it, which no foreign key does (04/09/2026)
+- New `ConfigRepository::idsBySlug()`, read once per request - the values are handed around by slug, the translation table names its owner by id (04/09/2026)
+- New `action.translate`, `description.config_translation` and `help.value_translation`, in the three locales (04/09/2026)
+- A `sensitive` setting is never offered for translation whatever its kind, the flush encrypting its stored envelope a second time (04/09/2026)
+- The language screen no longer opens on a setting holding no words, the url being typed as easily as followed (04/09/2026)
+- `ConfigTranslator` reads every slug's translations ahead of the first one asked for, a page reading ten settings costing one query rather than ten (04/09/2026)
+- `EmailVerifier` sends one confirmation email per hour and per address (`EmailVerifier::COOLDOWN`, held in `cache.app`), the form's rate limiter counting the caller and not the mailbox (04/09/2026)
+- `ConfigTranslatorTest`, `ConfigTranslationPurgeListenerTest` and two more `ConfigExtensionTest` cases cover the layer, the purge and the value handed back untouched (04/09/2026)
+- `ConfigCrudControllerTest` covers the language screen, the setting that refuses it and the language bar's parameters (04/09/2026)
+- `EmailVerifierTest` covers the cooldown, its reading of an address whatever its case, and a missing template not burning it (04/09/2026)
+- Two `UserCrudControllerTest` cases cover the frozen and the editable `isEnabled` (04/09/2026)
+- **The "pick a group" screen reads in three bands** rather than as one flat alphabetical list of twenty-two drawers: what the site says of itself (identité, légal, crédits, e-mail, thème, SEO), what its bundles brought, and what is only ever touched once (système, sécurité, sauvegarde, messenger, bilan de santé). A drawer named by a bundle and listed in neither falls under the second, so a bundle installed tomorrow lands where it belongs without naming itself here (new `ConfigGroupLabelResolver::bands()`, `label.band_*` in the three locales) (04/09/2026)
+- **A drawer is no longer picked from a closed list.** `Config::$group` carried an `Assert\Choice` over `Config::GROUPS`, written before the satellites named their own, and it refused every BookBundle and GalleryBundle entry from the back office (04/09/2026)
+- A bundle now names its drawer and ships `label.group_<slug>` in the `config` domain, which `ConfigsJsonTest` locks in each of them (04/09/2026)
+- `Config::GROUPS` stays, and says what it really is: the drawers ConfigBundle itself labels (`legal`, `shop`, `security`, `email`) (04/09/2026)
+- New `Config::GROUP_HEALTH_CHECK`, which SiteBundle files its PageSpeed key under (04/09/2026)
+- New `testGroupsAreEitherSharedOrLabelledByThisBundle` in every bundle's `ConfigsJsonTest`: a drawer named and not translated fails the suite (04/09/2026)
+- A band holding nothing is left out rather than drawn with a heading over an empty list (04/09/2026)
+- The guided step on picking a group highlights `[data-config-group-link]`, a band's heading row carrying no link at all (04/09/2026)
+- Three `ConfigGroupLabelResolverTest` cases cover the bands' order, the fallback and the band left out (04/09/2026)
+- The scaffolded `RegisterFormAction` sends a new confirmation email when the submitted address belongs to an unverified account, the only way out of an undelivered or expired link (03/09/2026)
+- The resend is keyed on `isVerified` rather than `isEnabled`, an account an administrator disabled no longer re-enabling itself by registering again (03/09/2026)
+- The Users screen freezes `isEnabled` until the address is confirmed: an unconfirmed account is deleted rather than disabled, the two states being indistinguishable on a fresh sign-up (04/09/2026)
+- The registration flash says a confirmation email may not have left, one already sent to that address less than an hour ago not being sent again (new `label.form_registered`, in the three locales) (04/09/2026)
+- `RegisterFormActionTest` covers the resend and the verified-but-disabled account (03/09/2026)
+
+### UiBundle
+
+- `FormController` picks a registration wording after a `register` form is submitted, `label.form_registered` saying a confirmation email may not have been resent (04/09/2026)
+- A `FormControllerTest` case covers that wording (04/09/2026)
+- **The twelve settings that sat in *Général* move to three drawers of their own**: `media` (the watermark), `reviews` (the ratings and the reviews switch) and `ui` (the map, the PDF engine, the showcase urls) (04/09/2026) **Needs `c975l:config:load-all`**
+- *Général* was the drawer of "the bundle had no group" and held twenty-eight unrelated entries; it now holds the site's identity alone (04/09/2026)
+- New `translations/config.{en,es,fr}.xlf`, holding `label.group_media`, `label.group_reviews` and `label.group_ui` (04/09/2026)
+- `Alert:AgeWarning` takes the `age` the item declares and the `locale` it is read in, so a book sheet states the site's warning in the book's own language (04/09/2026)
+- The component carries the "does the item declare an age" guard too, a calling sheet passing the age instead of wrapping the call in an `if` of its own (04/09/2026)
+- `Alert:AgeWarning` called with no `age` at all reads the setting as it always did, the `default` filter having made an absent attribute indistinguishable from an empty one (04/09/2026)
+- `PrimaryInkRoleTest` reads every `border-*`, `column-rule-color` and `text-emphasis-color` property (03/09/2026)
+- The declaration is rebuilt from its property and value, an end-of-line comment no longer hiding a breach (03/09/2026)
+
 ## v1.22.0
 
 The brand color splits into ink and fill

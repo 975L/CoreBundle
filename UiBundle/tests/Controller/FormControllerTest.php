@@ -85,6 +85,8 @@ class FormControllerTest extends TestCase
         return $security;
     }
 
+    // Every collaborator the controller takes, each one optional so a test only names the ones it cares about
+    // #lizard forgives - no branch here: Lizard counts each nullable "?" and each "??" twice, reading eight optional parameters as CCN 24
     private function createController(
         FormInterface $form,
         ?FormRepository $formRepository = null,
@@ -561,6 +563,43 @@ class FormControllerTest extends TestCase
 
         $this->assertSame(
             ['Votre message a bien été envoyé.'],
+            $request->getSession()->getFlashBag()->get('success')
+        );
+    }
+
+    // The registration flash is the only place a visitor ever learns that a confirmation email may not have left: EmailVerifier holds an address for an hour after writing to it and answers false without sending anything
+    public function testSubmitFlashesTheRegistrationWordingOnARegistration(): void
+    {
+        $action = new class implements FormActionInterface {
+            public function getKey(): string
+            {
+                return 'register';
+            }
+
+            public function handle(Form $form, array $submittedData): bool
+            {
+                return true;
+            }
+        };
+        $actionRegistry = $this->createStub(FormActionRegistry::class);
+        $actionRegistry->method('get')->willReturn($action);
+
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('trans')->willReturnCallback(
+            static fn (string $id, array $parameters = [], ?string $domain = null): string => 'ui' === $domain && 'label.form_registered' === $id
+                ? 'Merci, votre inscription a bien été reçue.'
+                : $id
+        );
+
+        $request = $this->createRequest('POST', 'http://localhost/page');
+        $this->createController(
+            $this->createSubmittedForm(true, true),
+            actionRegistry: $actionRegistry,
+            translator: $translator,
+        )->submit('register', $request);
+
+        $this->assertSame(
+            ['Merci, votre inscription a bien été reçue.'],
             $request->getSession()->getFlashBag()->get('success')
         );
     }

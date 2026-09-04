@@ -21,7 +21,7 @@
         title: alertsTitle|default(''),
     }) }}
 
-    {% if counts|length > 0 or emptyCount|default(0) > 0 %}
+    {% if bands|default({})|length > 0 or emptyCount|default(0) > 0 %}
         <div class="table-responsive">
             <table class="table table-sm">
                 <thead>
@@ -30,25 +30,33 @@
                         <th>{{ ('label.group_items_count'|trans({}, 'config')) }}</th>
                     </tr>
                 </thead>
-                <tbody>
                 {# A state rather than a group, drawn first and apart: it cuts across every group and gathers the sensitive entries too, which the rows below hide unless the toggle is on #}
                 {% if emptyCount|default(0) > 0 %}
-                    <tr class="table-warning">
-                        <td>
-                            <a href="{{ ea_url().setAction('index').set('group', emptyGroup) }}">{{ ('label.group_empty'|trans({}, 'config')) }}</a>
-                        </td>
-                        <td>{{ emptyCount }}</td>
-                    </tr>
+                    <tbody>
+                        <tr class="table-warning">
+                            <td>
+                                <a href="{{ ea_url().setAction('index').set('group', emptyGroup) }}">{{ ('label.group_empty'|trans({}, 'config')) }}</a>
+                            </td>
+                            <td>{{ emptyCount }}</td>
+                        </tr>
+                    </tbody>
                 {% endif %}
-                {% for group, count in counts %}
-                    <tr>
-                        <td>
-                            <a href="{{ ea_url().setAction('index').set('group', group) }}">{{ ('label.group_' ~ group)|trans({}, 'config') }}</a>
-                        </td>
-                        <td>{{ count }}</td>
-                    </tr>
+                {# Three bands rather than one flat list: what the site says of itself, what its bundles brought, and what is touched once (see ConfigGroupLabelResolver::bands) #}
+                {% for band, groups in bands|default({}) %}
+                    <tbody>
+                        <tr>
+                            <th colspan="2" class="text-muted">{{ ('label.band_' ~ band)|trans({}, 'config') }}</th>
+                        </tr>
+                        {% for group, count in groups %}
+                            <tr>
+                                <td>
+                                    <a href="{{ ea_url().setAction('index').set('group', group) }}" data-config-group-link>{{ ('label.group_' ~ group)|trans({}, 'config') }}</a>
+                                </td>
+                                <td>{{ count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
                 {% endfor %}
-                </tbody>
             </table>
         </div>
     {% endif %}

@@ -160,8 +160,12 @@ class FormController extends AbstractController
             $this->prefillHelper->clear($request, $uiForm->getName());
         }
 
-        // A form that emails its submission (contact and the like) says so - "your message has been sent"; every other action keeps the generic wording, a registration or a password reset request being no message sent by the visitor
-        $successKey = 'send_email' === $action->getKey() ? 'label.form_message_sent' : 'label.form_submitted';
+        // A form that emails its submission (contact and the like) says so - "your message has been sent"; a registration says that its confirmation email may not have left, EmailVerifier holding an address for an hour after writing to it and this flash being the only thing the visitor ever reads back; every other action keeps the generic wording, a password reset request being no message sent by the visitor
+        $successKey = match ($action->getKey()) {
+            'send_email' => 'label.form_message_sent',
+            'register' => 'label.form_registered',
+            default => 'label.form_submitted',
+        };
 
         // Translated here, not in the template: the redirect-to-referer path lands on the site layout, which renders flashes as-is
         $this->addFlashTo(

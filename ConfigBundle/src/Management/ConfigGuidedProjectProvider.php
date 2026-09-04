@@ -120,7 +120,8 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_settings_group',
                     'description' => 'description.guided_step_config_settings_group',
                     'narration' => 'narration.guided_step_config_settings_group',
-                    'highlight' => 'table tbody tr:first-child a',
+                    // The group links carry a marker of their own: the screen holds one tbody per band, whose first row is a heading with no link at all, and the "empty entries" row above them is a state rather than a group (see config_crud_groups.html.twig)
+                    'highlight' => '[data-config-group-link]',
                 ],
                 [
                     'label' => 'label.guided_step_config_settings_entry',

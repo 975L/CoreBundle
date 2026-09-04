@@ -53,6 +53,27 @@ class ConfigGuidedProjectProviderTest extends TestCase
         return new ConfigGuidedProjectProvider($this->createAdminUrlGenerator(), $configService, $this->createUrlGenerator($routes));
     }
 
+    // The "Traduire" action is drawn on one entry of one drawer (ConfigTranslator::TRANSLATABLE), so a step highlighting it lights nothing up wherever the visitor walked - which is what a guided tour must never do
+    public function testTheSettingsProjectWalksNoTranslateStep(): void
+    {
+        $this->assertNotContains('label.guided_step_config_settings_translate', $this->settingsStepLabels());
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function settingsStepLabels(): array
+    {
+        $routes = [];
+        foreach ($this->createProvider($routes)->getGuidedProjects() as $project) {
+            if ('config-settings' === $project['slug']) {
+                return array_column($project['steps'], 'label');
+            }
+        }
+
+        self::fail('The "config-settings" guided project was not found.');
+    }
+
     // The 1000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states
     public function testGetGuidedProjectsOpensTheOrderSequence(): void
     {

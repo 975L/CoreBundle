@@ -15,6 +15,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // What a config group is called on screen, and the order those names come in - the group itself being stored as an English slug, which is neither what the admin reads nor what they look the row up by
 class ConfigGroupLabelResolver
 {
+    // The three bands the "pick a group" screen is read in, in the order it draws them: what the site says about itself, what its bundles brought, and what is only ever touched once
+    // A drawer named by a bundle and listed in neither falls in the middle one, which is what a satellite's drawer is (see ECOSYSTEM.md §15) - so a bundle installed tomorrow lands where it belongs without naming itself here
+    public const string BAND_SITE = 'site';
+
+    public const string BAND_FEATURES = 'features';
+
+    public const string BAND_TECHNICAL = 'technical';
+
+    private const array BANDS = [
+        self::BAND_SITE => ['general', 'legal', 'credits', 'email', 'theme', 'seo', 'site'],
+        self::BAND_TECHNICAL => ['system', 'security', 'backup', 'messenger', 'health_check'],
+    ];
+
     public function __construct(
         private readonly TranslatorInterface $translator,
     ) {
@@ -50,5 +63,36 @@ class ConfigGroupLabelResolver
             : strnatcasecmp($labels[$a], $labels[$b]));
 
         return $counts;
+    }
+
+    // The same rows, cut into the three bands the screen reads in - a hundred and sixty drawers laid flat drown the five an editor opens on the day the site goes live
+    // A band holding nothing is left out rather than drawn empty: a site without a single satellite has no features to show
+    /**
+     * @param array<string, int> $counts count per group, keyed by slug
+     *
+     * @return array<string, array<string, int>> band => group => count
+     */
+    public function bands(array $counts): array
+    {
+        $bands = [];
+        foreach ([self::BAND_SITE, self::BAND_FEATURES, self::BAND_TECHNICAL] as $band) {
+            $rows = array_filter($counts, fn (string $group): bool => $band === $this->band($group), \ARRAY_FILTER_USE_KEY);
+            if ([] !== $rows) {
+                $bands[$band] = $this->sortByLabel($rows);
+            }
+        }
+
+        return $bands;
+    }
+
+    private function band(string $group): string
+    {
+        foreach (self::BANDS as $band => $groups) {
+            if (\in_array($group, $groups, true)) {
+                return $band;
+            }
+        }
+
+        return self::BAND_FEATURES;
     }
 }

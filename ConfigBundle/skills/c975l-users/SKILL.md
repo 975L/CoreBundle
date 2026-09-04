@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, ROLE_SUPER_ADMIN, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, delete a user, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, ROLE_SUPER_ADMIN, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -93,10 +93,19 @@ Protections, all shared with every other public form:
   failing redirects back with the very same flash a real submission gets, giving a bot no signal;
 - a GDPR information line pointing at `url-privacy-policy`, never a consent checkbox, and, for
   registration, a terms-of-use one;
-- a **duplicate email succeeds silently** — same flash, no account, no email — the same non-revealing
-  stance a reset request has for an unknown address;
+- a **duplicate email succeeds silently** — same flash, no account created — the same non-revealing
+  stance a reset request has for an unknown address; an address whose account is still unverified is
+  sent a new confirmation email, the only way out of an undelivered or expired link, keyed on
+  `isVerified` so an account an administrator disabled cannot re-enable itself;
 - rate limiting by caller through the shared `limiter.ui_form` (sliding window, 5 per 10 minutes),
-  prepended by UiBundle, an IPv6 caller counted by its /64.
+  prepended by UiBundle, an IPv6 caller counted by its /64;
+- **one confirmation email per hour and per address** — `EmailVerifier` holds the address in
+  `cache.app` for `EmailVerifier::COOLDOWN` and answers `false` rather than sending a second one. The
+  registration flash says so (`label.form_registered`, the wording `FormController` picks for the
+  `register` action), that hour being long enough for a visitor to think the email never came. The
+  limiter above counts the caller, and a block of IPv6 addresses opens as many buckets as it holds:
+  since anyone may post a stranger's address on a form that never says whether it is taken, the mailbox
+  is what has to be capped, the way SymfonyCasts already caps a reset request.
 
 ## Login and access
 
@@ -122,7 +131,10 @@ production log. Nothing that could ever authenticate is turned away.
 `isEnabled` gates login independently from `isVerified`. `EmailVerifier::handleEmailConfirmation()`
 sets both on confirmation; `isVerified` is readonly in the back office — only that confirmation may
 set it — while `isEnabled` stays editable, which is how an account is locked out without being
-deleted.
+deleted. On an account nobody confirmed, `isEnabled` is frozen too
+(`UserCrudController::editsAnUnverifiedAccount()`): unverified and disabled are the very same state on
+a fresh sign-up, so the two cannot be told apart afterwards and the registration resend would hand the
+account its way back in. **Such an account is deleted, not disabled.**
 
 **Deleting an account never fails on the rows it merely touched.** `Config::$user`, `Block::$user` and
 `Media::$user` — the user columns of `site_config`, `site_block` and `site_media` — are joined
@@ -150,3 +162,9 @@ the registration itself.
   a `FormActionInterface`.
 - **Do not reveal that an email is already registered**, or that an address has no account.
 - **Do not make `isVerified` editable** in a back-office form.
+- **Do not disable an account nobody has confirmed** — delete it: the back office freezes `isEnabled`
+  there, and a resent confirmation link would re-enable it.
+- **Do not key the registration resend on `isEnabled`** — a disabled account would mail itself a link
+  re-enabling it.
+- **Do not cap the confirmation email on the caller alone** — a rate limiter keyed on an IP leaves a
+  stranger's mailbox open to whoever holds a block of addresses.

@@ -2002,6 +2002,10 @@
                 <source>label.form_picker_name</source>
                 <target>Formulaire</target>
             </trans-unit>
+            <trans-unit id="5uwc7v7">
+                <source>label.form_registered</source>
+                <target>Merci, votre inscription a bien été reçue. Un e-mail de confirmation vous a été envoyé, sauf si un autre a déjà été adressé à cette adresse il y a moins d'une heure.</target>
+            </trans-unit>
             <trans-unit id="OD0CMev">
                 <source>label.form_submission_failed</source>
                 <target>Une erreur est survenue, votre envoi n'a pas pu être traité.</target>

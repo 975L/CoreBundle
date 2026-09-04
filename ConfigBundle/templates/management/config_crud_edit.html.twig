@@ -1,7 +1,26 @@
 {% extends '@EasyAdmin/crud/edit.html.twig' %}
 
 {% block main %}
-    <p>{{ ('description.config'|trans({}, 'config')) }}</p>
+    {# The language the setting is being written in. Nothing at all on a site declaring a single one, nor on a setting no language can change (see ConfigCrudController::addContentLocaleParameters) #}
+    {% if config_content_locales|default([]) is not empty %}
+        <ul class="nav nav-pills mb-3" data-config-content-locales>
+            {# Each language named in its own, the way the back office's own language menu names them #}
+            <li class="nav-item">
+                <a class="nav-link{{ config_content_locale is null ? ' active' : '' }}" href="{{ config_content_urls[''] }}">{{ config_default_locale|locale_name(config_default_locale) }}</a>
+            </li>
+            {% for locale in config_content_locales %}
+                <li class="nav-item">
+                    <a class="nav-link{{ locale == config_content_locale ? ' active' : '' }}" href="{{ config_content_urls[locale] }}">{{ locale|locale_name(locale) }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if config_content_locale|default(null) is not null %}
+        <p class="text-muted">{{ 'description.config_translation'|trans({}, 'config') }}</p>
+    {% else %}
+        <p>{{ ('description.config'|trans({}, 'config')) }}</p>
+    {% endif %}
 
     {{ parent() }}
 {% endblock main %}

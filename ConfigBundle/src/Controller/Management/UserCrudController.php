@@ -50,7 +50,7 @@ class UserCrudController extends AbstractCrudController
         return User::class;
     }
 
-    // Relies on EasyAdmin's auto-discovery of App\Entity\User's own fields (which vary per app), except for: the hashed password (excluded so it's never displayed or overwritten from the backoffice), creation/modification (made readonly since they're set automatically), isVerified (made readonly since it must only be set by EmailVerifier upon email confirmation); "roles" is excluded by EasyAdmin's own auto-discovery (JSON columns are never auto-discovered), so it's added explicitly as a proper multiple-choice field
+    // Relies on EasyAdmin's auto-discovery of App\Entity\User's own fields (which vary per app), except for: the hashed password (excluded so it's never displayed or overwritten from the backoffice), creation/modification (made readonly since they're set automatically), isVerified (made readonly since it must only be set by EmailVerifier upon email confirmation), isEnabled on an account nobody confirmed yet (see editsAnUnverifiedAccount()); "roles" is excluded by EasyAdmin's own auto-discovery (JSON columns are never auto-discovered), so it's added explicitly as a proper multiple-choice field
     #[\Override]
     public function configureFields(string $pageName): iterable
     {
@@ -74,6 +74,12 @@ class UserCrudController extends AbstractCrudController
                 continue;
             }
 
+            if ('isEnabled' === $property && $this->editsAnUnverifiedAccount()) {
+                yield $field->setFormTypeOption('disabled', 'disabled');
+
+                continue;
+            }
+
             yield $field;
         }
 
@@ -92,6 +98,14 @@ class UserCrudController extends AbstractCrudController
         }
 
         yield $rolesField;
+    }
+
+    // An account nobody has confirmed is deleted, never disabled: disabled and unverified are the very same state on a fresh sign-up, so the two cannot be told apart afterwards - and RegisterFormAction, which sends a new confirmation link to any unverified address, would hand the account back its way in (see scaffold/src/Service/RegisterFormAction.php)
+    private function editsAnUnverifiedAccount(): bool
+    {
+        $edited = $this->adminContextProvider->getContext()?->getEntity()?->getInstance();
+
+        return $edited instanceof User && !$edited->isVerified();
     }
 
     // A super admin's roles are shown to a lesser admin, but frozen. Symfony's ChoiceType silently drops a value missing from the choices when displaying the field (unlike on submit, where it rejects it), so without this the form would come back without ROLE_SUPER_ADMIN in the submitted set - and a plain ROLE_ADMIN saving a super admin's record would demote them without ever seeing the role. Second line of defence since UserManagementVoter: the edit page of a super admin's account is no longer reachable by a lesser admin at all, unless an app overrides configureCrud() and drops the entity permission with it

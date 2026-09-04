@@ -2002,6 +2002,10 @@
                 <source>label.form_picker_name</source>
                 <target>Form</target>
             </trans-unit>
+            <trans-unit id="5uwc7v7">
+                <source>label.form_registered</source>
+                <target>Thank you, your registration has been received. A confirmation email is on its way, unless one was already sent to this address less than an hour ago.</target>
+            </trans-unit>
             <trans-unit id="OD0CMev">
                 <source>label.form_submission_failed</source>
                 <target>An error occurred, your submission could not be processed.</target>

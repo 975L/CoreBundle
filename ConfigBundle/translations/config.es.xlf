@@ -34,6 +34,10 @@
                 <source>action.preview_preset</source>
                 <target>Vista previa: %label%</target>
             </trans-unit>
+            <trans-unit id="VOwL1H0">
+                <source>action.translate</source>
+                <target>Traducir</target>
+            </trans-unit>
             <trans-unit id="1RI0n59">
                 <source>confirm.apply_preset</source>
                 <target>¿Aplicar este tema? Cambia la forma visual del sitio (bordes, sombras, navegación...) - tus colores y fuentes no se ven afectados.</target>
@@ -53,6 +57,10 @@
             <trans-unit id="QYdNDiU">
                 <source>description.config_prune</source>
                 <target>Entradas que permanecen en la base de datos y que ningún configs*.json declara ya, por ejemplo un ajuste abandonado por un bundle, o un bundle desinstalado. No se elimina nada mientras no se valide el formulario de abajo.</target>
+            </trans-unit>
+            <trans-unit id="Vc3GRPQ">
+                <source>description.config_translation</source>
+                <target>Escriba aquí lo que dice este ajuste en este idioma. Si lo deja tal cual, entre corchetes, cuenta como no traducido y se sigue mostrando el texto original.</target>
             </trans-unit>
             <trans-unit id="4qwnKQS">
                 <source>description.config_unreadable</source>
@@ -398,6 +406,10 @@
                 <source>help.value_theme_color</source>
                 <target>Hexadecimal (#b30000), rgb()/rgba(), hsl()/hsla(), o un nombre CSS (ej. tomato)</target>
             </trans-unit>
+            <trans-unit id="iL.nOO8">
+                <source>help.value_translation</source>
+                <target>El valor solo en este idioma: el que se escribió permanece intacto.</target>
+            </trans-unit>
             <trans-unit id="s0jNbR8">
                 <source>label.account_validation_button</source>
                 <target>Confirmar mi email</target>
@@ -481,6 +493,18 @@
             <trans-unit id="M6cJ.ah">
                 <source>label.backup_digest_warnings</source>
                 <target>Advertencias:</target>
+            </trans-unit>
+            <trans-unit id="92TxJg9">
+                <source>label.band_features</source>
+                <target>Funcionalidades</target>
+            </trans-unit>
+            <trans-unit id="oLhh9Kx">
+                <source>label.band_site</source>
+                <target>El sitio</target>
+            </trans-unit>
+            <trans-unit id="BbYAB1a">
+                <source>label.band_technical</source>
+                <target>Técnico</target>
             </trans-unit>
             <trans-unit id="13FkC7i">
                 <source>label.boolean</source>

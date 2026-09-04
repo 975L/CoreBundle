@@ -1,5 +1,19 @@
 # UPGRADE
 
+## v1.23.0
+
+**UiBundle's twelve settings that sat in *Général* moved to `media`, `reviews` and `ui`**, and the drawer a
+setting is filed under is no longer validated against a closed list - which is what made every BookBundle and
+GalleryBundle entry unsavable from the back office. **Run `c975l:config:load-all` after deploying.** Until it runs, the moved settings sit in the drawers they
+had, values untouched - nothing reads a setting by its group, and no page changes. The command moves them, and
+nothing else about them changes.
+
+**A site installed before this version keeps its own copy of `App\Service\RegisterFormAction`**, which the scaffold
+only writes once: an account left unverified by an undelivered or expired confirmation link stays locked out there,
+`UserChecker` refusing the login and nothing else setting `isEnabled`. Re-sync that one file from
+`ConfigBundle/scaffold/src/Service/RegisterFormAction.php` (and its test) to take the resend - it gains an
+`EmailVerifier` constructor argument, so a copy left alone keeps working but keeps the dead end.
+
 ## v1.21.2
 
 **`c975l:ui:legal-models:adopt-config-sections` no longer ships**, the fleet having run it. A deployment script still

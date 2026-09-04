@@ -42,7 +42,7 @@ class TrixExtensionTest extends TestCase
         $extension = new TrixExtension();
 
         $this->assertSame(
-            'Line 1<br>Line 2<br>Line 3',
+            'Line 1 <br>Line 2 <br>Line 3',
             $extension->trixInline('<div>Line 1</div><div>Line 2</div><div>Line 3</div>')
         );
     }
@@ -52,7 +52,7 @@ class TrixExtensionTest extends TestCase
         $extension = new TrixExtension();
 
         $this->assertSame(
-            'Line 1<br>Line 2',
+            'Line 1 <br>Line 2',
             $extension->trixInline('<div data-trix-id="1">Line 1</div><div class="x">Line 2</div>')
         );
     }
@@ -149,5 +149,13 @@ class TrixExtensionTest extends TestCase
         }
 
         return $filters;
+    }
+
+    // The heart of the space: a title typed on two lines is read by a search engine as one word without it, and "Marredes radars" matches no query anyone types
+    public function testTheGeneratedBreakKeepsTheWordsApartForWhoeverDoesNotRenderIt(): void
+    {
+        $inline = new TrixExtension()->trixInline('<div>Marre</div><div>des radars</div>');
+
+        $this->assertSame('Marre des radars', strip_tags($inline));
     }
 }

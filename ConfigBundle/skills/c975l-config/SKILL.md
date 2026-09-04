@@ -1,6 +1,6 @@
 ---
 name: c975l-config
-description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, the closed group list, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector."
+description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector."
 ---
 
 # c975L ConfigBundle — configuration
@@ -51,12 +51,27 @@ itself reads that list, which is what puts it outside this rule rather than besi
   a `choices` array and the admin picks from a `<select>`; a value off the list is refused on save
   rather than stored. For `json`, `value` is the escaped JSON string and `ConfigService::get()` returns
   the decoded PHP array.
-- **`group`** — a **closed list**: `system`, `general`, `legal`, `credits`, `analytics`, `backup`,
-  `email`, `form`, `security`, `shop`, `payment`, `theme`, `ai`, `messenger`. **If none fits, leave
-  `group` unset** — inventing one means extending `Config::GROUPS` and its translations here. The
-  back-office "pick a group" screen is ordered on that translated label rather than on the slug
-  (`Management\ConfigGroupLabelResolver`), so a group whose `label.group_*` key is missing from a locale
-  shows and sorts under that literal key, the translator handing it back untranslated.
+- **`group`** — the drawer of the "pick a group" screen. **The drawer belongs to the question the
+  editor asks, not to the bundle that answers it.** `Config::GROUPS` lists the ones ConfigBundle
+  labels — `system`, `general`, `legal`, `credits`, `analytics`, `backup`, `email`, `form`,
+  `security`, `shop`, `payment`, `theme`, `ai`, `messenger`, `seo`, `health_check` — and several
+  bundles fill `legal`, `shop`, `security` and `email` on purpose: that is the one place an editor
+  goes looking. Otherwise a bundle **names its own** (`book`, `gallery`, `social`, `site`, `media`,
+  `reviews`, `ui`) and ships `label.group_<slug>` in the **`config`** domain, `ConfigsJsonTest`
+  failing on a drawer named and not labelled. The screen reads in three bands — the site, the
+  features, the technical ones — each ordered on its translated label, an unlisted drawer falling
+  under the features (`Management\ConfigGroupLabelResolver::bands()`).
+- **A named entry is translatable**: the index draws a "Traduire" action opening
+  its edit screen on another language, and what is written there goes to UiBundle's `site_translation`
+  table under the owner type `site_config` (`Service\ConfigTranslator`, ECOSYSTEM.md §26). The typed
+  value never moves, playing the msgid the way `Page::$title` does, and a setting nobody translated
+  keeps it. Which entries those are is listed one by one in `ConfigTranslator::TRANSLATABLE`
+  (`site-age-warning` today) and **not** deduced from the kind: a url, a postal address, a name or a
+  technical key holds words and is still said the same way in every language, and anything PHP reads
+  straight from `ConfigService::get()` never sees the layer. A `sensitive` entry is left out whatever
+  its slug — a secret holds no sentence, and the
+  language screen leaves the stored value untouched, which there is its encrypted envelope. Nothing of
+  this exists on a site declaring a single language. Do **not** store a second entry per language.
 - **`sensitive: true`** for any secret: encrypted at rest, masked in the list. One holding a value the
   site can no longer decrypt is raised as a **danger alert** of its own (`ConfigAlertProvider`, off
   `ConfigRepository::findSensitiveWithValue()`): everything reading it gets an empty value while the
@@ -103,6 +118,9 @@ $env = $this->configService->getContainerParameter('kernel.environment');
 ```twig
 {{ config('site-name') }}
 {{ configParam('kernel.environment') }}
+
+{# The language a page is written in, when it is not the visitor's - a book sheet renders in the book's own #}
+{{ config('site-age-warning', book.language) }}
 ```
 
 **Inject the interface, never the concrete class.** There is already a one-hour cache, invalidated
@@ -171,7 +189,7 @@ temporary.
   and the Intl check.
 - **Do not inject `ConfigService`** — inject `ConfigServiceInterface`.
 - **Do not cache a config value yourself.** The service already does, and invalidates on save.
-- **Do not invent a `group`.** Omit it instead.
+- **Do not invent a `group` to avoid sharing one.** `book-legal` or `payment-email` splits what an editor fills in one sitting; file under the shared drawer instead. A drawer of your own is for what only your bundle answers, and it ships its `label.group_*` with it.
 - **Do not declare a slug in one bundle and read it from another.** The entry belongs to the bundle
   that reads it; if two read it, it moves to their common ancestor.
 - **Do not use emptiness as a meaningful state** on an entry carrying a seeded default.

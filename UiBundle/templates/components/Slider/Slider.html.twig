@@ -1,8 +1,10 @@
-{# Static usage : <twig:c975LUi:Slider:Slider media="{{ mediaList }}" id="id" duration="5000" [ratio="free"] [class=""] [label=""] /> #}
+{# Static usage : <twig:c975LUi:Slider:Slider media="{{ mediaList }}" id="id" duration="5000" [ratio="free"] [class=""] [label=""] [fallbackAlt=""] /> #}
 {# Rich usage (clickable title/text per slide) : <twig:c975LUi:Slider:Slider slides="{{ [{image: media, title: '', text: '', url: ''}, ...] }}" id="id" duration="5000" /> #}
 {# Add imageLinksToUrl="true" to also make the image itself link to slide.url instead of advancing to the next slide #}
 {# Add layout="freeflow" for a full-bleed carousel: every slide stays visible side by side and overflows past the viewport's left/right edges, no horizontal scrollbar #}
 {% set label = label|default("label.pages_gallery"|trans({}, "ui")) %}
+{# What a slide is described as when its own media carries nothing: the caller names what the gallery shows ("fallbackAlt"), and a media whose alternative text was typed in the back-office always wins over it. Without it a gallery of a hundred pages publishes a hundred empty alt attributes - invisible to Google Images, and silent to a screen reader #}
+{% set fallbackAlt = fallbackAlt|default('') %}
 {% set class = class|default([])|join(' ') %}
 {% set ratio = ratio|default("free") %}
 {% set layout = layout|default("default") %}
@@ -11,15 +13,16 @@
 {% set mediaList = slides|length > 0 ? slides|map(slide => slide.image) : media|default([]) %}
 {% if mediaList|length == 1 %}
     {% set media = mediaList[0] %}
+    {% set mediaAlt = media.alt ?: fallbackAlt %}
     {% set slide = slides[0]|default(null) %}
     {% set isVideo = media.mimeType starts with 'video' %}
     {% if slide and (slide.title or slide.text) %}
         <div class="slider-single {{ class }}">
             {% set mediaTag %}
                 {% if isVideo %}
-                    <video class="img-responsive img-rounded box-shadow" controls muted loop playsinline preload="metadata" aria-label="{{ media.alt }}"><source src="{{ vich_uploader_asset(media) }}" type="{{ media.mimeType }}"></video>
+                    <video class="img-responsive img-rounded box-shadow" controls muted loop playsinline preload="metadata" aria-label="{{ mediaAlt }}"><source src="{{ vich_uploader_asset(media) }}" type="{{ media.mimeType }}"></video>
                 {% else %}
-                    <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ media.alt }}" label="{{ media.label }}" class="img-responsive img-rounded box-shadow" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
+                    <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ mediaAlt }}" label="{{ media.label }}" class="img-responsive img-rounded box-shadow" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
                 {% endif %}
             {% endset %}
             {% if imageLinksToUrl and slide.url and not isVideo %}
@@ -31,9 +34,9 @@
             {% if slide.text %}<p class="slider-text">{% if slide.url %}<a href="{{ slide.url }}">{{ slide.text }}</a>{% else %}{{ slide.text }}{% endif %}</p>{% endif %}
         </div>
     {% elseif isVideo %}
-        <video class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" controls muted loop playsinline preload="metadata" aria-label="{{ media.alt }}"><source src="{{ vich_uploader_asset(media) }}" type="{{ media.mimeType }}"></video>
+        <video class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" controls muted loop playsinline preload="metadata" aria-label="{{ mediaAlt }}"><source src="{{ vich_uploader_asset(media) }}" type="{{ media.mimeType }}"></video>
     {% else %}
-        <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ media.alt }}" label="{{ media.label }}" class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
+        <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ mediaAlt }}" label="{{ media.label }}" class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
     {% endif %}
 {% elseif mediaList|length > 1 %}
     <section id="{{ id }}" class="slider {{ layout == "freeflow" ? "slider-freeflow" : "" }} {{ ratio != "free" ? "slider-ratio-" ~ ratio : "" }} {{ class }}" aria-labelledby="{{ id }}-heading" data-controller="slider" data-slider-id="{{ id }}" data-slider-duration="{{ duration|default(0) }}">
@@ -42,14 +45,15 @@
         {% for slideMedia in mediaList %}
             {% set slide = slides[loop.index0]|default(null) %}
             {% set isVideo = slideMedia.mimeType starts with 'video' %}
+            {% set slideAlt = slideMedia.alt ?: fallbackAlt %}
             {# Freeflow shows every slide at once, so lazy would leave the peeking ones blank #}
             {% set isEager = loop.first or layout == "freeflow" %}
             <li class="slider-item{% if loop.first and layout != "freeflow" %} slider-item-active{% endif %}"{% if not loop.first and layout != "freeflow" %} aria-hidden="true"{% endif %}>
                 {% set img %}
                     {% if isVideo %}
-                        <video class="slider-img slider-video img-responsive img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" controls muted loop playsinline preload="{{ isEager ? "auto" : "metadata" }}" aria-label="{{ slideMedia.alt }}"><source src="{{ vich_uploader_asset(slideMedia) }}" type="{{ slideMedia.mimeType }}"></video>
+                        <video class="slider-img slider-video img-responsive img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" controls muted loop playsinline preload="{{ isEager ? "auto" : "metadata" }}" aria-label="{{ slideAlt }}"><source src="{{ vich_uploader_asset(slideMedia) }}" type="{{ slideMedia.mimeType }}"></video>
                     {% else %}
-                        <img src="{{ vich_uploader_asset(slideMedia) }}" alt="{{ slideMedia.alt }}" class="slider-img img img-responsive img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" width="{{ slideMedia.width }}" height="{{ slideMedia.height }}" loading="{{ isEager ? "eager" : "lazy" }}">
+                        <img src="{{ vich_uploader_asset(slideMedia) }}" alt="{{ slideAlt }}" class="slider-img img img-responsive img-rounded box-shadow {{ slideMedia.cssClasses|join(' ') }}" width="{{ slideMedia.width }}" height="{{ slideMedia.height }}" loading="{{ isEager ? "eager" : "lazy" }}">
                     {% endif %}
                 {% endset %}
                 {% if imageLinksToUrl and slide and slide.url and not isVideo %}<a href="{{ slide.url }}" class="slider-img-link">{{ img|raw }}</a>{% else %}{{ img|raw }}{% endif %}

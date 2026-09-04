@@ -14,6 +14,7 @@ use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Service\EmailService;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -25,18 +26,27 @@ class EmailVerifier
     // The admin-editable EmailTemplate this email is composed of, seeded by UserFormSeeder
     public const EMAIL_TEMPLATE = 'account_validation';
 
+    // How long an address is left alone after one confirmation email, whoever asked for it - the same hour SymfonyCasts' ResetPasswordHelper holds a password-reset request for
+    public const int COOLDOWN = 3600;
+
     public function __construct(
         private readonly VerifyEmailHelperInterface $verifyEmailHelper,
         private readonly EmailService $emailService,
         private readonly EmailTemplateRenderer $emailTemplateRenderer,
         private readonly TranslatorInterface $translator,
         private readonly EntityManagerInterface $entityManager,
+        private readonly CacheItemPoolInterface $cache,
     ) {
     }
 
-    // Rendered here rather than from a Twig file: the layout wrapping it comes from whichever bundle registers an EmailLayoutProviderInterface (SiteBundle's branded one when installed, UiBundle's plain fallback otherwise), so this bundle sends the same email whether or not a site foundation sits on top of it. Through EmailService, so registration gets the same "email-debug" preview as every other email. False when the template was renamed or deleted from the back-office, an empty email being worse than none
+    // Rendered here rather than from a Twig file: the layout wrapping it comes from whichever bundle registers an EmailLayoutProviderInterface (SiteBundle's branded one when installed, UiBundle's plain fallback otherwise), so this bundle sends the same email whether or not a site foundation sits on top of it. Through EmailService, so registration gets the same "email-debug" preview as every other email. False when the template was renamed or deleted from the back-office, an empty email being worse than none - and false too where the address was written to less than an hour ago
     public function sendEmailConfirmation(string $verifyEmailRouteName, UserInterface $user, string $subject, string $to): bool
     {
+        // The registration form answers the same thing whether or not the address is already taken, so anyone may post a stranger's address and have this email sent to them. The form's rate limiter counts the caller and nothing else, and one address after another out of one's own IPv6 block walks straight through it: the ceiling that matters here is the one on the mailbox being written to
+        if ($this->withinCooldown($to)) {
+            return false;
+        }
+
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
             (string) $this->getUserId($user),
@@ -58,12 +68,36 @@ class EmailVerifier
             return false;
         }
 
+        $this->markSent($to);
+
         return $this->emailService->send(new EmailSendRequest(
             subject: $subject,
             context: [],
             html: $html,
             to: $to,
         ));
+    }
+
+    // Whether this address was written to less than an hour ago, and is therefore left alone. Read before anything is composed, so a flood costs a cache lookup rather than an email
+    private function withinCooldown(string $to): bool
+    {
+        return $this->cache->getItem($this->cooldownKey($to))->isHit();
+    }
+
+    // Marked only once the email is about to leave: a template an administrator renamed must not lock the address out for an hour on top of sending nothing
+    private function markSent(string $to): void
+    {
+        $item = $this->cache->getItem($this->cooldownKey($to));
+        $item->set(true);
+        $item->expiresAfter(self::COOLDOWN);
+
+        $this->cache->save($item);
+    }
+
+    // Hashed, an address holding characters PSR-6 reserves ("@" among them) and being no business of whoever reads a cache directory. Cased and spaced alike, or the very same mailbox would open a bucket per spelling
+    private function cooldownKey(string $to): string
+    {
+        return 'c975l_email_confirmation_' . hash('xxh128', mb_strtolower(trim($to)));
     }
 
     public function handleEmailConfirmation(Request $request, UserInterface $user): void

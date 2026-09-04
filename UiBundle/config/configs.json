@@ -99,7 +99,7 @@
         "restricted": true,
         "value": "https://bundles.975l.com/pages/blocks",
         "kind": "text",
-        "group": "general",
+        "group": "ui",
         "severity": null,
         "description": "description.block_showcase_url"
     },
@@ -110,7 +110,7 @@
         "restricted": true,
         "value": "https://bundles.975l.com/demo",
         "kind": "text",
-        "group": "general",
+        "group": "ui",
         "severity": null,
         "description": "description.ui_showcase_demo_url"
     },
@@ -341,7 +341,7 @@
             "bottom-right",
             "bottom-left"
         ],
-        "group": "general",
+        "group": "media",
         "severity": null,
         "description": "description.watermark_position"
     },
@@ -352,7 +352,7 @@
         "restricted": false,
         "value": "13.75",
         "kind": "text",
-        "group": "general",
+        "group": "media",
         "severity": null,
         "description": "description.watermark_width"
     },
@@ -363,7 +363,7 @@
         "restricted": false,
         "value": "0.42",
         "kind": "text",
-        "group": "general",
+        "group": "media",
         "severity": null,
         "description": "description.watermark_margin"
     },
@@ -380,7 +380,7 @@
             "thumbs-up",
             "face-smile"
         ],
-        "group": "general",
+        "group": "reviews",
         "severity": null,
         "description": "description.ui_rating_icon"
     },
@@ -391,7 +391,7 @@
         "restricted": false,
         "value": "false",
         "kind": "bool",
-        "group": "general",
+        "group": "reviews",
         "severity": null,
         "description": "description.ui_enable_reviews"
     },
@@ -414,7 +414,7 @@
             "9",
             "10"
         ],
-        "group": "general",
+        "group": "reviews",
         "severity": null,
         "description": "description.ui_rating_scale"
     },
@@ -430,7 +430,7 @@
             "dompdf",
             "weasyprint"
         ],
-        "group": "general",
+        "group": "ui",
         "severity": null,
         "description": "description.ui_pdf_engine"
     },
@@ -441,7 +441,7 @@
         "restricted": true,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "ui",
         "severity": null,
         "description": "description.ui_pdf_weasyprint_path"
     },
@@ -456,7 +456,7 @@
             "leaflet",
             "google"
         ],
-        "group": "general",
+        "group": "ui",
         "severity": null,
         "description": "description.ui_map_provider"
     },
@@ -467,7 +467,7 @@
         "restricted": false,
         "value": null,
         "kind": "text",
-        "group": "general",
+        "group": "ui",
         "severity": null,
         "description": "description.ui_map_google_api_key"
     }

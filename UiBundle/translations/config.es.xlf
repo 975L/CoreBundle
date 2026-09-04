@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="es" datatype="plaintext" original="config.es.xlf">
+        <body>
+            <trans-unit id="u1_dVLs">
+                <source>label.group_media</source>
+                <target>Medios</target>
+            </trans-unit>
+            <trans-unit id="8vXLGz7">
+                <source>label.group_reviews</source>
+                <target>Opiniones y valoraciones</target>
+            </trans-unit>
+            <trans-unit id="liMORTw">
+                <source>label.group_ui</source>
+                <target>Interfaz</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

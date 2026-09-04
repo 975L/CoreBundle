@@ -30,6 +30,17 @@ class ConfigRepository extends ServiceEntityRepository
         return $this->findOneBy(['slug' => $slug]);
     }
 
+    // The id every slug is stored under - what the translation layer names its owner by, the values themselves being handed around by slug (see ConfigTranslator)
+    public function idsBySlug(): array
+    {
+        $rows = $this->createQueryBuilder('c')
+            ->select('c.slug', 'c.id')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($rows, 'id', 'slug');
+    }
+
     // Returns every slug stored in database, to be compared with what the configs*.json files declare
     public function findAllSlugs(): array
     {

@@ -1,7 +1,11 @@
-{# <twig:c975LUi:Alert:AgeWarning/> #}
+{# <twig:c975LUi:Alert:AgeWarning age="{{ book.age }}" locale="{{ book.language }}"/> #}
 {# The sentence that goes with an age restriction, written once for the whole site (config "site-age-warning") and rendered by whichever bundle displays an item carrying one - BookBundle's book sheet, ShopBundle's product sheet. The two of them already let an editor declare an age and already publish it (a printed "Age" line, a schema.org PeopleAudience node), this is what says it in words #}
-{# Self-sufficient like the Matomo fragment next to it: the "is it filled" guard lives here rather than in each calling template, so a catalogue with no age restriction to state renders nothing and has nothing to guard #}
-{% set ageWarning = config('site-age-warning') %}
+{# The language is handed over rather than taken from the request: a book sheet renders in the book's own (see BookBundle), and a site that translated the setting in the back office would otherwise read an English book the sentence typed in French. A site declaring a single language never leaves the sentence it typed (see ConfigTranslator) #}
+{# Self-sufficient like the Matomo fragment next to it: both guards live here rather than in each calling template, so an item declaring no age, and a site leaving the setting empty, render nothing from a call neither has to wrap #}
+
+{# "age" not passed at all is the call this component shipped with, and it still reads the sentence: an attribute left empty by an item declaring no restriction is the only silence asked for here. The two cannot be told apart by the "default" filter, which answers its fallback for an empty string as readily as for an undefined variable #}
+{% set locale = locale | default(null) %}
+{% set ageWarning = (age is not defined or age) ? config('site-age-warning', locale) : '' %}
 {% if ageWarning %}
     <twig:c975LUi:Alert:Alert type="warning" content="{{ ageWarning }}"/>
 {% endif %}

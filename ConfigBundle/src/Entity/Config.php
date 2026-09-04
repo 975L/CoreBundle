@@ -66,6 +66,10 @@ class Config
     public const GROUP_MESSENGER = 'messenger';
     public const GROUP_SEO = 'seo';
 
+    // The drawer the health check's own settings sit in, wherever they are declared from - SiteBundle files its PageSpeed key here
+    public const GROUP_HEALTH_CHECK = 'health_check';
+
+    // The drawers ConfigBundle itself labels, and nothing more: a bundle either files its entry under one of them - because that is where the editor goes looking, which is what makes "legal", "shop", "security" and "email" shared - or names a drawer of its own and ships "label.group_<slug>" in the "config" domain, as BookBundle and GalleryBundle do (see ECOSYSTEM.md §15)
     public const GROUPS = [
         self::GROUP_SYSTEM,
         self::GROUP_GENERAL,
@@ -82,6 +86,7 @@ class Config
         self::GROUP_AI,
         self::GROUP_MESSENGER,
         self::GROUP_SEO,
+        self::GROUP_HEALTH_CHECK,
     ];
 
     public const SEVERITY_DANGER = 'danger';
@@ -129,8 +134,8 @@ class Config
     private ?array $choices = null;
 
     // Column name is backtick-quoted because `group` is a reserved SQL keyword (MySQL/MariaDB): without this, Doctrine emits unquoted `group` in generated SQL and every UPDATE/INSERT fails with a syntax error
+    // Deliberately unconstrained: a bundle names its own drawer and ships the label that goes with it (see GROUPS). The Assert\Choice this used to carry made every entry of BookBundle and GalleryBundle unsavable from the back office, the two having named theirs years after the list was written
     #[ORM\Column(name: '`group`', length: 20, nullable: true)]
-    #[Assert\Choice(choices: self::GROUPS)]
     private ?string $group = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

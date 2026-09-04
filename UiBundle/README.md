@@ -1874,7 +1874,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 
 | Component | Purpose |
 | --- | --- |
-| `<twig:c975LUi:Alert:AgeWarning>` | The sentence going with an age restriction, from `site-age-warning`. **Carries its own guard**: a site leaving that config empty renders nothing, so a calling template needs no `if` of its own |
+| `<twig:c975LUi:Alert:AgeWarning>` | The sentence going with an age restriction, from `site-age-warning`. Takes the `age` the item declares and the `locale` it is read in, a book sheet rendering in the book's own rather than in the visitor's. **Carries its own guard**: an item declaring no age, and a site leaving that setting empty, render nothing, so a calling template needs no `if` of its own. Called with no `age` at all, it reads the setting as it always did |
 | `<twig:c975LUi:Alert:Alert>` | Bootstrap-style alert box |
 | `<twig:c975LUi:Article:Article>` | Single article (title/content/media) |
 | `<twig:c975LUi:Article:Articles>` | Loops `Article` over a collection |

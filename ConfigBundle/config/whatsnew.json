@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-09-04",
+        "description": [
+            {
+                "en": "The settings your site writes in words - the age warning today - can now be said in your other languages: a “Translate” button opens one on each of them, and what you leave untouched keeps showing the text you typed. Nothing changes on a site written in one language.",
+                "fr": "Les réglages que votre site écrit en toutes lettres - l'avertissement d'âge aujourd'hui - peuvent désormais être dits dans vos autres langues : un bouton « Traduire » en ouvre un sur chacune, et ce que vous laissez tel quel continue d'afficher le texte que vous avez saisi. Rien ne change sur un site écrit dans une seule langue.",
+                "es": "Los ajustes que su sitio escribe con palabras - la advertencia de edad hoy - pueden decirse ahora en sus otros idiomas: un botón «Traducir» abre uno en cada uno, y lo que deje tal cual sigue mostrando el texto que escribió. Nada cambia en un sitio escrito en un solo idioma."
+            },
+            {
+                "en": "Your sign-up form now sends at most one confirmation email per hour to the same address, so nobody can use it to flood someone else's mailbox - and the message shown after signing up says so, so a visitor waiting for an email knows why it may not have come.",
+                "fr": "Votre formulaire d'inscription n'envoie plus qu'un e-mail de confirmation par heure à la même adresse, pour que personne ne puisse s'en servir pour inonder la boîte de quelqu'un d'autre - et le message affiché après l'inscription le dit, pour qu'un visiteur qui attend un e-mail sache pourquoi il peut ne pas être arrivé.",
+                "es": "Su formulario de registro envía como máximo un correo de confirmación por hora a la misma dirección, para que nadie pueda usarlo para inundar el buzón de otra persona - y el mensaje mostrado tras el registro lo indica, para que un visitante que espera un correo sepa por qué puede no haber llegado."
+            },
+            {
+                "en": "An account whose email address was never confirmed can no longer be disabled from the Users screen: delete it instead. Such an account cannot sign in anyway, and disabling it would not have held - registering again would have sent a new confirmation link.",
+                "fr": "Un compte dont l'adresse e-mail n'a jamais été confirmée ne peut plus être désactivé depuis l'écran Utilisateurs : supprimez-le. Un tel compte ne peut de toute façon pas se connecter, et la désactivation n'aurait pas tenu - une nouvelle inscription aurait renvoyé un lien de confirmation.",
+                "es": "Una cuenta cuya dirección de correo nunca se confirmó ya no puede desactivarse desde la pantalla Usuarios: elimínela. Esa cuenta no puede iniciar sesión de todos modos, y la desactivación no habría durado: un nuevo registro habría enviado otro enlace de confirmación."
+            }
+        ]
+    },
+    {
         "date": "2026-09-03",
         "description": [
             {
