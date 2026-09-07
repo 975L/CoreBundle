@@ -142,6 +142,24 @@ class CheckDeprecationsCommandTest extends TestCase
         $this->assertStringContainsString('No actionable deprecation found', $display);
     }
 
+    // A message naming the offending template says everything already: cutting two segments out of its path used to hand out "templates/components", or "-header/menu" where a hyphen opens a segment, as package names, and every file writing that directory came back as a possible hit
+    public function testExecuteIgnoresPathSegmentsOfAQuotedFileLocation(): void
+    {
+        $this->filesystem->mkdir($this->projectDir . '/src');
+        $this->filesystem->dumpFile(
+            $this->projectDir . '/src/Foo.php',
+            "<?php return ['template' => 'templates/components/site-header/menu.html.twig'];"
+        );
+        $this->writeDeprecationsLog(['Since twig/twig 3.12: Character "." should not be escaped in "templates/components/site-header/menu.html.twig" at line 5.']);
+
+        $tester = $this->createTester();
+        $tester->execute([]);
+
+        $display = $tester->getDisplay();
+        $this->assertStringNotContainsString('To be checked', $display);
+        $this->assertStringContainsString('No actionable deprecation found', $display);
+    }
+
     // A deprecated method is written "Foo\Bar::baz()", which the class pattern does not catch: there is no name to corroborate the package token with, so it keeps listing the file as it always did
     public function testExecuteKeepsPossibleHitWhenTheMessageQuotesNoClass(): void
     {

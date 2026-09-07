@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.23.2
+
+A path is not a package name
+
+### ConfigBundle
+
+- `c975l:deprecations:check` stops cutting a Composer package name out of a quoted file path (07/09/2026)
+- New `CheckDeprecationsCommand::PACKAGE_PATTERN`, matching a package with nothing of a path around it (07/09/2026)
+- A `CheckDeprecationsCommandTest` case covers a message quoting a template rather than a class (07/09/2026)
+- README and the `c975l-operations` skill document `c975l:deprecations:check`, named in neither (07/09/2026)
+
 ## v1.23.1
 
 A break stored verbatim gets the space its neighbour has

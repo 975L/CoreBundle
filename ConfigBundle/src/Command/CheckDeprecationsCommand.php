@@ -28,6 +28,9 @@ class CheckDeprecationsCommand extends Command
     // A fully-qualified class name as a deprecation message quotes it
     private const string FQCN_PATTERN = '/"([A-Za-z0-9_]+(?:\\\\[A-Za-z0-9_]+)+)"/';
 
+    // A Composer package name as a deprecation message writes it: two segments beginning and ending on a letter or a digit, with nothing of a path around them. A message quoting a template's location would otherwise hand out "templates/components", "vendor/c975l" or, a hyphen opening a segment just as a slash does, "-header/menu", and every file merely naming that directory would come back as a possible hit
+    private const string PACKAGE_PATTERN = '/(?<![\w\/.-])([a-z0-9]+(?:[_-][a-z0-9]+)*\/[a-z0-9]+(?:[_-][a-z0-9]+)*)(?![\w\/.-])/';
+
     public function __construct(
         private readonly BundleLocator $bundleLocator,
         #[Autowire(param: 'kernel.project_dir')]
@@ -201,7 +204,7 @@ class CheckDeprecationsCommand extends Command
     private function extractTokens(string $message): array
     {
         preg_match_all(self::FQCN_PATTERN, $message, $fqcnMatches);
-        preg_match_all('/\b([a-z0-9_-]+\/[a-z0-9_-]+)\b/', $message, $pkgMatches);
+        preg_match_all(self::PACKAGE_PATTERN, $message, $pkgMatches);
 
         $tokens = [];
         foreach ($fqcnMatches[1] as $token) {

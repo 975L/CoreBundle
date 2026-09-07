@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks and the dev profile. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, c975l:dev-profile:run, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -27,6 +27,7 @@ php bin/console c975l:config:backup:digest   # emails a digest of the last 7 day
 php bin/console c975l:status:dump            # the status report, locally
 php bin/console c975l:config:sessions-cleanup # expired rows of the PdoSessionHandler table
 php bin/console c975l:dev-profile:run        # dev only: what the toolbar would flag, on every page
+php bin/console c975l:deprecations:check     # groups the logged deprecations your own code triggers
 ```
 
 **Sitemaps and SEO files are generated static files under `public/`, not routes** — served by the web
@@ -240,7 +241,7 @@ what has failed for good sits in the failure transport, what was never tried pil
 ones, so a console reading only the failure count reads a dead worker as healthy. Transports that
 cannot count themselves (the scheduler's) are left out rather than reported as zero.
 
-## Scheduler and dev profile
+## Scheduler, dev profile and deprecations
 
 `c975l:config:sessions-cleanup` deletes the expired rows of `PdoSessionHandler`'s `sessions` table —
 the same `DELETE` its own garbage collection runs, on a cadence instead of on a dice roll: that
@@ -252,6 +253,14 @@ A bundle contributes scheduled work with `MaintenanceTaskProviderInterface` rath
 site to add a cron line. `DevProfilePathProviderInterface` declares the paths `c975l:dev-profile:run`
 walks — it hands each path to the **local** kernel, no HTTP and no host involved, unlike the health
 check and the smoke test which fetch the live site at `site-url`.
+
+`c975l:deprecations:check` reads `var/log/{env}.deprecations.log` — so `config/packages/monolog.yaml`
+has to isolate the `deprecation` channel in its own handler — groups the identical messages, and drops
+the ones no file of the app's `src/` or of an installed c975L bundle matches. A hit is **ACTIONABLE**
+when the file names the deprecated class the message quotes, **To be checked** when it only names its
+package or parent namespace. `PACKAGE_PATTERN` reads a package as the two segments it is, bounded on
+both sides: a message quoting a template's path must not hand out `templates/components` or
+`-header/menu` as a package and drag in every file naming that directory.
 
 ## Do not
 
