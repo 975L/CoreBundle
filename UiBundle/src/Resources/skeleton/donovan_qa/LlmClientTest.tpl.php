@@ -113,6 +113,36 @@ class <?= $class_name ?> extends TestCase
         $this->assertSame(['collection'], $result['sourceKinds']);
     }
 
+    // The split takes the last "SOURCES:" of the text, not the first: an answer naming the word on its way used to be cut short there
+    public function testAskKeepsAnAnswerThatNamesSourcesBeforeItsOwnLine(): void
+    {
+        $httpClient = new MockHttpClient(
+            fn (string $method, string $url, array $options) => new MockResponse(
+                json_encode([
+                    'content' => [['text' => "The SOURCES: line comes last.\nSOURCES: collection"]],
+                ]),
+                ['http_code' => 200]
+            )
+        );
+
+        $client = new <?= $llm_client_short_name ?>(
+            $httpClient,
+            $this->createConfigService([
+                'donovan-qa-llm-enabled' => true,
+                'donovan-qa-llm-provider' => 'anthropic',
+                'donovan-qa-llm-api-key' => 'anthropic-key',
+                'donovan-qa-llm-model' => 'claude-haiku-4-5',
+                'donovan-qa-llm-base-uri' => 'https://api.anthropic.com/v1',
+            ]),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $result = $client->ask('Which block for a gallery?', 'context');
+
+        $this->assertSame('The SOURCES: line comes last.', $result['answer']);
+        $this->assertSame(['collection'], $result['sourceKinds']);
+    }
+
     public function testAskKeepsGuidedTourIdentifiersAlongsideBlockKinds(): void
     {
         $httpClient = new MockHttpClient(

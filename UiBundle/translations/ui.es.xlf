@@ -514,6 +514,10 @@
                 <source>label.ai_assistant_menu_suffix</source>
                 <target>Agente IA</target>
             </trans-unit>
+            <trans-unit id="wqwOGFx">
+                <source>label.ai_assistant_pending</source>
+                <target>%name% está buscando la respuesta, esto puede tardar unos segundos…</target>
+            </trans-unit>
             <trans-unit id="Ohcg3dV">
                 <source>label.ai_assistant_question</source>
                 <target>Haga una pregunta sobre el sistema de bloques…</target>

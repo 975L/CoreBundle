@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, BATCH_SIZE, HealthCheckErrorRow, STATUS_WARNING, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -125,7 +125,9 @@ content check, and do not remount in an `extra` status section what it already r
 
 **`accessibility` reads the same sitemap list, for the RGAA**: `AccessibilityHealthCheckProvider`
 answers the eight RGAA 4.1 criteria a page's rendered markup can settle (2.1, 5.6, 6.2, 8.3, 8.4,
-9.1, 11.1, 12.6), one row per url, monthly, capped at `MAX_URLS_PER_SOURCE` (50) urls per sitemap.
+9.1, 11.1, 12.6), one row per url, monthly, capped at `MAX_URLS_PER_SOURCE` (50) urls per sitemap,
+fired `BATCH_SIZE` (10) requests at a time — the urls are the site's own, and the whole list opened at
+once comes back as 503s from the very site being asked to answer them.
 Nothing to implement bundle-side either. Each row's `details` carries the whole verdict table,
 **conforming criteria included** — that half is what an accessibility statement is written from.
 Contrast, focus, tab order and any judgement of relevance are **not attempted**, a browser engine
@@ -171,6 +173,15 @@ with, not on every row recorded — a passing site records hundreds of `ok` ones
 *not verifiable* and is hidden with them: it covers a target that is up and turns automated probes
 down (a store answering `403` to a `HEAD`) as much as a page never reached, and neither is an editor's
 to fix. Return `STATUS_SKIPPED` for those rather than an error nobody can act on.
+
+**A call that never answered is a warning, never an error.** A provider wrapping a client call in a
+`try/catch` builds its failure row with `Management\HealthCheckErrorRow::build()` — and that row is a
+`STATUS_WARNING`, deliberately: an error says the page is broken, where a third-party API answering
+500 says the verdict is missing. Ranking the two alike had a site whose PageSpeed quota ran out
+announce five broken pages it had never looked at, and `StatusReportBuilder` mails every error out to
+the console watching every site. Return the helper's row as **one entry of the list** `runChecks()`
+answers (`return [HealthCheckErrorRow::build(...)];`), never bare: the runner walks what it is given
+and reads a bare row's keys as rows.
 
 **A fixed row is acknowledged, never re-run**: the ✓ button stamps `HealthCheckResult::setAcknowledgedAt()`
 and the row leaves the default view and the dashboard alert on the spot. The stamp is borne by the

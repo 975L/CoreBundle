@@ -49,6 +49,23 @@ class AiAssistantErrorMessageTest extends TestCase
         $this->assertStringContainsString('showError()', $script);
     }
 
+    // A backend spends seconds on a question it has never seen, and a disabled field used to be the only sign of it
+    public function testTheWidgetCarriesAHiddenPendingMessage(): void
+    {
+        $html = $this->render();
+
+        $this->assertStringContainsString('data-ai-assistant-target="pending"', $html);
+        $this->assertStringContainsString('label.ai_assistant_pending', $html);
+    }
+
+    // An answer carrying no text reached the log as an empty line, which reads as nothing having happened at all
+    public function testTheScriptTreatsAnAnswerWithNoTextAsAFailure(): void
+    {
+        $script = (string) file_get_contents(\dirname(__DIR__, 2) . '/assets/js/ai-assistant.js');
+
+        $this->assertStringContainsString("'' !== data.answer.trim()", $script);
+    }
+
     // "path" and "csrf_token" come from the app; "ai_assistant_name" from AiRephraseExtension, covered on its own
     private function render(array $context = []): string
     {

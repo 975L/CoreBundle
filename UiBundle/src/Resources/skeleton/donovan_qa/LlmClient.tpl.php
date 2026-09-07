@@ -140,13 +140,16 @@ class <?= $class_name ?>
         return "You are the admin dashboard assistant. Answer only from the following context, which documents the available blocks and the guided tours walking through a task in the back office. If the question is unrelated, say so plainly rather than inventing anything outside this context.\n\n"
             . "When a guided tour covers the task the question describes, say so and cite it: the reader is offered to start it right where they are reading your answer.\n\n"
             . "Always end your answer with a line exactly formatted as \"SOURCES: id1, id2\" listing the identifiers (the word after \"###\" in the context, a bare one for a block, a \"tour:\" one for a guided tour) you relied on, or \"SOURCES: none\" if none applies.\n\n"
+            // Sent on its own, six tokens and nothing else, on a question the context did not cover: it is a footer under an answer, never the answer
+            . "That line always comes under a written answer: answer in at least one sentence first, even to say the context does not cover the question, and never send that line on its own.\n\n"
             . $context;
     }
 
     // Splits the trailing "SOURCES:" line off; a malformed one degrades to zero sources, never a failure
     private function parseSourcedAnswer(string $rawAnswer): array
     {
-        if (!preg_match('/^(.*?)\n*SOURCES:\s*(.*)$/is', trim($rawAnswer), $matches)) {
+        // Greedy, so the split happens on the last "SOURCES:" of the text rather than the first: the line is asked for at the end, and an answer naming the word earlier would otherwise be cut short there
+        if (!preg_match('/^(.*)\n*SOURCES:\s*(.*)$/is', trim($rawAnswer), $matches)) {
             return ['answer' => trim($rawAnswer), 'sourceKinds' => []];
         }
 

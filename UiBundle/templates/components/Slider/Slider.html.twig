@@ -39,8 +39,8 @@
         <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ mediaAlt }}" label="{{ media.label }}" class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
     {% endif %}
 {% elseif mediaList|length > 1 %}
-    <section id="{{ id }}" class="slider {{ layout == "freeflow" ? "slider-freeflow" : "" }} {{ ratio != "free" ? "slider-ratio-" ~ ratio : "" }} {{ class }}" aria-labelledby="{{ id }}-heading" data-controller="slider" data-slider-id="{{ id }}" data-slider-duration="{{ duration|default(0) }}">
-        <h3 id="{{ id }}-heading" class="visuallyhidden">{{ label|default("Image slider") }}</h3>
+    {# Named by aria-label rather than by a hidden heading: an <h3> under a page's <h1> skips level 2, a validation error on every page carrying a slider, for a title nobody reads - aria-label names the region just as well and leaves nothing in the outline #}
+    <section id="{{ id }}" class="slider {{ layout == "freeflow" ? "slider-freeflow" : "" }} {{ ratio != "free" ? "slider-ratio-" ~ ratio : "" }} {{ class }}" aria-label="{{ label|default("Image slider") }}" data-controller="slider" data-slider-id="{{ id }}" data-slider-duration="{{ duration|default(0) }}">
         <ul class="slider-list">
         {% for slideMedia in mediaList %}
             {% set slide = slides[loop.index0]|default(null) %}

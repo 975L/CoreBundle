@@ -48,13 +48,22 @@ class AiAssistantClient implements AiAssistantClientInterface
             $response = $this->httpClient->request('POST', $endpoint, [
                 'auth_bearer' => $token,
                 'json' => ['question' => $question],
-                'timeout' => 15,
+                // Idle timeout, so the whole budget given to the backend since nothing comes back before it has finished - above what a Donovan backend spends on a cache miss, reading its context then embedding the question then calling the model, each with its own timeout
+                'timeout' => 45,
             ]);
 
             $data = $response->toArray();
+            $answer = (string) ($data['answer'] ?? '');
+
+            // No text is no answer, whatever status code carried it: null is what the controller turns into the "unavailable" the widget shows, rather than an empty line the reader reads as nothing having happened
+            if ('' === trim($answer)) {
+                $this->logger->error('AI assistant answered with no text.');
+
+                return null;
+            }
 
             return [
-                'answer' => (string) ($data['answer'] ?? ''),
+                'answer' => $answer,
                 'sources' => $this->resolveSources(is_array($data['sources'] ?? null) ? $data['sources'] : []),
             ];
         } catch (ExceptionInterface $e) {

@@ -42,7 +42,8 @@ class <?= $class_name ?>
 
         $existing = $this->repository->findOneByQuestionHash($hash);
 
-        if (null !== $existing && $existing->getContextVersion() === $version) {
+        // An empty stored answer is not an answer: rather than serving emptiness until the version moves, it falls through to a fresh call below, which overwrites this very row
+        if (null !== $existing && $existing->getContextVersion() === $version && '' !== trim($existing->getAnswerText())) {
             $existing->recordHit();
             $this->entityManager->flush();
 
@@ -76,7 +77,9 @@ class <?= $class_name ?>
         }
 
         $result = $this->llmClient->ask($normalized, $this->contextBuilder->context());
-        if (null === $result) {
+
+        // An answer with no text is a failure, not a cheap answer: storing it would serve emptiness to everyone asking the same question until the version moves, and the caller renders it as a blank line rather than as the failure it is
+        if (null === $result || '' === trim($result['answer'])) {
             return null;
         }
 

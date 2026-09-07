@@ -144,7 +144,7 @@ class ContentQualityAnalyzerTest extends TestCase
             ['https://example.com/one', 'https://example.com/two', 'https://example.com/three'],
             array_column($rows, 'url')
         );
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $rows[1]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[1]['status']);
         $this->assertSame(['error' => 'Connection refused'], $rows[1]['details']);
     }
 
@@ -161,6 +161,21 @@ class ContentQualityAnalyzerTest extends TestCase
 
         $this->assertSame(HealthCheckResult::STATUS_ERROR, $rows[0]['status']);
         $this->assertSame('label.health_check_url_not_found', $rows[0]['summary']);
+    }
+
+    // A HEAD that never completed read nothing of the page, exactly like the analysis call that fails with a message - the two halves of the same case rank alike
+    public function testAnalyzeWarnsRatherThanErrorsOnAHeadThatNeverCompleted(): void
+    {
+        $checker = $this->createStub(UrlStatusChecker::class);
+        $checker->method('status')->willReturn(null);
+
+        $client = $this->createMock(ContentQualityClient::class);
+        $client->expects($this->never())->method('request');
+
+        $rows = $this->createAnalyzer($client, $checker)->analyze([$this->entry('https://example.com/silent', new \stdClass())]);
+
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[0]['status']);
+        $this->assertSame('label.health_check_url_unreachable', $rows[0]['summary']);
     }
 
     // A url declared gone answers correctly, what's left to fix is that something still declares it

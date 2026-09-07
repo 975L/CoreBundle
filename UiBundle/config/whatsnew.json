@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-07",
+        "description": [
+            {
+                "en": "The Background choice no longer appears on a video grid, where it was stored and never painted. It stays on the hero, the feature bar, the text section, the column row and the card row, which do read it.",
+                "fr": "Le choix Arrière-plan n'apparaît plus sur une grille de vidéos, où il était enregistré sans jamais être peint. Il reste sur le hero, la barre d'atouts, la section de texte, la rangée de colonnes et la rangée de cartes, qui en tiennent compte.",
+                "es": "La opción Fondo ya no aparece en una cuadrícula de vídeos, donde se guardaba sin llegar a pintarse nunca. Se mantiene en el hero, la barra de ventajas, la sección de texto, la fila de columnas y la fila de tarjetas, que sí la leen."
+            },
+            {
+                "en": "A hero placed inside a column now uses the whole width of that column: its title used to be squeezed into half of it and wrapped over several lines.",
+                "fr": "Un hero placé dans une colonne occupe désormais toute la largeur de cette colonne : son titre était jusqu'ici serré dans la moitié et s'enroulait sur plusieurs lignes.",
+                "es": "Un hero colocado dentro de una columna ocupa ahora todo el ancho de esa columna: su título quedaba antes apretado en la mitad y se envolvía en varias líneas."
+            }
+        ]
+    },
+    {
         "date": "2026-09-03",
         "description": [
             {

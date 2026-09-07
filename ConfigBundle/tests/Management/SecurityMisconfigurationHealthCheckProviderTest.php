@@ -227,7 +227,8 @@ class SecurityMisconfigurationHealthCheckProviderTest extends TestCase
         $this->assertSame('info', $result['details']['issues'][0]['severity']);
     }
 
-    public function testRunChecksReturnsAnErrorRowWhenTheRootCallFails(): void
+    // A warning: nothing was probed, so the row says the verdict is missing rather than that the site is misconfigured (see HealthCheckErrorRow)
+    public function testRunChecksReturnsAWarningRowWhenTheRootCallFails(): void
     {
         $client = $this->createStub(SecurityProbeClient::class);
         $client->method('probe')->willThrowException(new \RuntimeException('Connection refused'));
@@ -235,7 +236,7 @@ class SecurityMisconfigurationHealthCheckProviderTest extends TestCase
         $provider = new SecurityMisconfigurationHealthCheckProvider($client, $this->createUrlResolver(), $this->createTranslator());
         $result = $provider->runChecks()[0];
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $result['status']);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $result['status']);
         $this->assertSame(['error' => 'Connection refused'], $result['details']);
     }
 }

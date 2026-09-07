@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-07",
+        "description": [
+            {
+                "en": "A check that never managed to look at a page is now shown as a warning rather than as an error, and is no longer mailed out as a broken page: an outside service that is down or out of quota says nothing about your page, only that the verdict is missing.",
+                "fr": "Un contrôle qui n'a pas réussi à regarder une page s'affiche désormais en avertissement plutôt qu'en erreur, et n'est plus envoyé par mail comme une page cassée : un service extérieur en panne ou à court de quota ne dit rien de votre page, seulement que le verdict manque.",
+                "es": "Una comprobación que no ha logrado mirar una página se muestra ahora como advertencia y no como error, y ya no se envía por correo como página rota: un servicio externo caído o sin cuota no dice nada de su página, solo que falta el veredicto."
+            },
+            {
+                "en": "The accessibility check now opens your pages ten at a time instead of all at once, which used to make your own site turn its own check away and report perfectly good pages as unverifiable.",
+                "fr": "Le contrôle d'accessibilité ouvre désormais vos pages dix par dix au lieu de toutes d'un coup, ce qui amenait votre propre site à refuser son propre contrôle et à signaler comme invérifiables des pages parfaitement saines.",
+                "es": "La comprobación de accesibilidad abre ahora sus páginas de diez en diez en lugar de todas a la vez, lo que hacía que su propio sitio rechazara su propia comprobación y señalara como no verificables páginas perfectamente correctas."
+            }
+        ]
+    },
+    {
         "date": "2026-09-04",
         "description": [
             {

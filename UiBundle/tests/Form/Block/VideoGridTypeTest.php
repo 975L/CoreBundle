@@ -54,6 +54,14 @@ class VideoGridTypeTest extends TestCase
         }
     }
 
+    // The grid paints no background of its own - "video-grid" is written as a fixed class, so the field is carried by the two container kinds that do read it
+    public function testNoBackgroundFieldIsAdded(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertArrayNotHasKey('background', $added);
+    }
+
     // Every field is optional: a grid with no head at all is a valid row of players
     public function testNoFieldIsRequired(): void
     {

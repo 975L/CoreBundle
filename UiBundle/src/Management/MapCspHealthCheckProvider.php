@@ -56,7 +56,7 @@ class MapCspHealthCheckProvider implements HealthCheckProviderInterface
         try {
             $headers = $this->securityHeadersClient->fetchHeaders($url);
         } catch (\Throwable $e) {
-            return HealthCheckErrorRow::build($this->translator, 'ui', $url, null, 'label.map_csp_call_failed', $e->getMessage());
+            return [HealthCheckErrorRow::build($this->translator, 'ui', $url, null, 'label.map_csp_call_failed', $e->getMessage())];
         }
 
         return [$this->check($url, (string) ($headers['content-security-policy'] ?? ''))];

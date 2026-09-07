@@ -155,6 +155,12 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding-top: 0;
 }
 
+// The hero carries its step on its own wrap, and that wrap splits in two from the md breakpoint on: in a column a fifth of the row wide, the second track leaves the title six lines to stand in - stated at 0,3,0 so it wins over the media query wherever it sits in the sheet
+.flex-columns__col > .hero > .section-wrap {
+    grid-template-columns: 1fr;
+    padding-top: 0;
+}
+
 // Same reason, for the one kind carrying its step as a margin instead of a padding
 .flex-columns__col > .feature-bar {
     margin-block-start: 0;
@@ -241,6 +247,12 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     margin-left: var(--section-flat-margin-x, -50vw);
     margin-right: var(--section-flat-margin-x, -50vw);
     background-color: var(--section-background);
+}
+
+// A container painted as a flat closes on its own edge: the band paints down past its last column, which would sit flush against it without a bottom step - only these two, every other kind stating its own (see .text-section, .hero and .feature-bar above)
+.section-cards-section:is(.section--bg-muted, .section--bg-primary, .section--bg-dark),
+.flex-columns-section:is(.section--bg-muted, .section--bg-primary, .section--bg-dark) {
+    padding-bottom: var(--section-space, #{$section-space});
 }
 
 // A flat used as a column slot paints its column, so it drops the breakout above

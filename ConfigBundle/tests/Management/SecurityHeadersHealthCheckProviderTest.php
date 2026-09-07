@@ -156,7 +156,8 @@ class SecurityHeadersHealthCheckProviderTest extends TestCase
         $this->assertStringContainsString('label.health_check_security_headers_cors_wildcard', $result['summary']);
     }
 
-    public function testRunChecksReturnsAnErrorRowWhenTheCallFails(): void
+    // A warning: the headers were never read, so the row says the verdict is missing rather than that it failed (see HealthCheckErrorRow)
+    public function testRunChecksReturnsAWarningRowWhenTheCallFails(): void
     {
         $client = $this->createStub(SecurityHeadersClient::class);
         $client->method('fetchHeaders')->willThrowException(new \RuntimeException('Connection refused'));
@@ -169,7 +170,7 @@ class SecurityHeadersHealthCheckProviderTest extends TestCase
 
         $result = $provider->runChecks()[0];
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $result['status']);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $result['status']);
         $this->assertSame(['error' => 'Connection refused'], $result['details']);
     }
 }

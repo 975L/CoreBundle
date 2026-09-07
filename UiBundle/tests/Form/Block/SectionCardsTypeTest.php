@@ -34,11 +34,11 @@ class SectionCardsTypeTest extends TestCase
         return $added;
     }
 
-    public function testBuildFormAddsEyebrowTitleAndAnchorFields(): void
+    public function testBuildFormAddsEyebrowTitleAnchorAndBackgroundFields(): void
     {
         $added = $this->buildAddedFields();
 
-        foreach (['eyebrow', 'title', 'anchor'] as $field) {
+        foreach (['eyebrow', 'title', 'anchor', 'background'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the SectionCards form");
         }
     }

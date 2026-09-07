@@ -69,6 +69,47 @@ class <?= $class_name ?> extends TestCase
         $this->assertSame(1, $existing->getHitCount());
     }
 
+    public function testAskCallsTheLlmWhenTheStoredAnswerIsOnlyWhitespace(): void
+    {
+        $existing = (new <?= $entity_short_name ?>())->recordFreshAnswer(
+            hash('sha256', 'which block for a gallery?'),
+            'which block for a gallery?',
+            '   ',
+            'v2',
+            100,
+            20,
+            [],
+        );
+
+        $repository = $this->createStub(<?= $repository_short_name ?>::class);
+        $repository->method('findOneByQuestionHash')->willReturn($existing);
+
+        $llmClient = $this->createStub(<?= $llm_client_short_name ?>::class);
+        $llmClient->method('ask')->willReturn([
+            'answer' => 'Use the collection block.',
+            'sourceKinds' => ['collection'],
+            'inputTokens' => 100,
+            'outputTokens' => 20,
+        ]);
+
+        $contextBuilder = $this->createStub(<?= $context_builder_short_name ?>::class);
+        $contextBuilder->method('resolveSources')->willReturn([['label' => 'Collection', 'url' => '']]);
+
+        $service = new <?= $class_name ?>(
+            $repository,
+            $contextBuilder,
+            $llmClient,
+            $this->createDisabledEmbeddingClient(),
+            $this->createStub(ConfigServiceInterface::class),
+            $this->createMock(EntityManagerInterface::class),
+        );
+
+        $result = $service->ask('Which block for a gallery?');
+
+        $this->assertSame('Use the collection block.', $result['answer']);
+        $this->assertSame(0, $existing->getHitCount());
+    }
+
     public function testAskCallsTheLlmAndPersistsANewAnswerOnCacheMiss(): void
     {
         $repository = $this->createStub(<?= $repository_short_name ?>::class);
@@ -111,6 +152,31 @@ class <?= $class_name ?> extends TestCase
 
         $llmClient = $this->createStub(<?= $llm_client_short_name ?>::class);
         $llmClient->method('ask')->willReturn(null);
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->never())->method('persist');
+        $entityManager->expects($this->never())->method('flush');
+
+        $service = new <?= $class_name ?>(
+            $repository,
+            $this->createStub(<?= $context_builder_short_name ?>::class),
+            $llmClient,
+            $this->createDisabledEmbeddingClient(),
+            $this->createStub(ConfigServiceInterface::class),
+            $entityManager,
+        );
+
+        $this->assertNull($service->ask('Which block for a gallery?'));
+    }
+
+    // A model that answered nothing is a failure, not a cheap answer: caching it would serve emptiness to everyone asking the same question, and the caller renders it as a blank line
+    public function testAskStoresNothingWhenTheLlmAnswersWithNoText(): void
+    {
+        $repository = $this->createStub(<?= $repository_short_name ?>::class);
+        $repository->method('findOneByQuestionHash')->willReturn(null);
+
+        $llmClient = $this->createStub(<?= $llm_client_short_name ?>::class);
+        $llmClient->method('ask')->willReturn(['answer' => '  ', 'sourceKinds' => [], 'inputTokens' => 120, 'outputTokens' => 0]);
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $entityManager->expects($this->never())->method('persist');

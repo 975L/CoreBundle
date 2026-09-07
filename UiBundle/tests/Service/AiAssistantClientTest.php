@@ -155,6 +155,30 @@ class AiAssistantClientTest extends TestCase
         );
     }
 
+    // The failure that used to reach the reader as a blank line: a 200 carrying no text at all
+    public function testReturnsNullWhenBackendAnswersWithNoText(): void
+    {
+        $httpClient = new MockHttpClient(
+            fn (string $method, string $url, array $options) => new MockResponse(
+                json_encode(['answer' => '   ', 'sources' => []]),
+                ['http_code' => 200]
+            )
+        );
+
+        $client = new AiAssistantClient(
+            $httpClient,
+            $this->createConfigService([
+                'ui-ai-assistant-dashboard-enabled' => true,
+                'ui-ai-assistant-dashboard-endpoint' => 'https://example.test/ai-assistant',
+                'ui-ai-assistant-dashboard-token' => 'some-token',
+            ]),
+            $this->createStub(GuidedProjectBuilder::class),
+            $this->createStub(LoggerInterface::class),
+        );
+
+        $this->assertNull($client->ask('Which block for a gallery?'));
+    }
+
     public function testReturnsNullOnTransportError(): void
     {
         $httpClient = new MockHttpClient(

@@ -3,6 +3,8 @@
 {% set text = text ?? true %}
 {# Width through a precomputed class: a style attribute is never covered by a CSP nonce #}
 {% set widthStep = max(0, min(100, progressPercent|round)) %}
+{# The label is optional, as the usage line says: a caller passing none - the crowdfunding bars, which sit under a heading of their own - would otherwise raise on the undefined variable rather than simply go without #}
+{% set label = label|default('') %}
 {% if label %}
     <div class="progress-header">
         <span class="progress-label">{{ label }}</span>

@@ -112,6 +112,16 @@ class MapCspHealthCheckProviderTest extends TestCase
         $this->assertSame([], $this->provider('google', self::ALLOWED, null)->runChecks());
     }
 
+    // A list of rows, not one row: the runner walks what a provider gives it, and a bare row would have it read a string as a row and stop the whole page
+    public function testACallThatFailsIsReportedAsOneRowInAList(): void
+    {
+        $rows = $this->provider('google', null, 'https://exemple.fr', new \RuntimeException('timeout'))->runChecks();
+
+        $this->assertCount(1, $rows);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[0]['status']);
+        $this->assertSame('timeout', $rows[0]['details']['error']);
+    }
+
     // The row points at the setting it is about, so the dashboard offers the place to change it
     public function testTheRowIsLabelledWithTheSettingItIsAbout(): void
     {
@@ -121,13 +131,18 @@ class MapCspHealthCheckProviderTest extends TestCase
         $this->assertSame('label.ui_map_provider', $check['label']);
     }
 
-    private function provider(?string $setting, ?string $policy, ?string $url = 'https://exemple.fr'): MapCspHealthCheckProvider
+    private function provider(?string $setting, ?string $policy, ?string $url = 'https://exemple.fr', ?\Throwable $failure = null): MapCspHealthCheckProvider
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturn($setting);
 
         $client = $this->createStub(SecurityHeadersClient::class);
-        $client->method('fetchHeaders')->willReturn(null === $policy ? [] : ['content-security-policy' => $policy]);
+
+        if (null !== $failure) {
+            $client->method('fetchHeaders')->willThrowException($failure);
+        } else {
+            $client->method('fetchHeaders')->willReturn(null === $policy ? [] : ['content-security-policy' => $policy]);
+        }
 
         $resolver = $this->createStub(SiteUrlResolver::class);
         $resolver->method('siteRoot')->willReturn($url);

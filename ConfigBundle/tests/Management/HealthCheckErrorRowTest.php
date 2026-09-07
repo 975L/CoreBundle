@@ -28,7 +28,8 @@ class HealthCheckErrorRowTest extends TestCase
         return $translator;
     }
 
-    public function testBuildReturnsAnErrorRowCarryingTheMessage(): void
+    // Warning and not error: the check never got a verdict, so it has nothing to say about the page (see HealthCheckErrorRow)
+    public function testBuildReturnsAWarningRowCarryingTheMessage(): void
     {
         $row = HealthCheckErrorRow::build(
             $this->createTranslator(),
@@ -41,7 +42,7 @@ class HealthCheckErrorRowTest extends TestCase
 
         $this->assertSame('https://example.com/page', $row['url']);
         $this->assertSame('Home', $row['label']);
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $row['status']);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $row['status']);
         $this->assertSame(['error' => 'Connection timed out'], $row['details']);
         $this->assertNull($row['editUrl']);
     }

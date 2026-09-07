@@ -153,15 +153,41 @@ class AccessibilityHealthCheckProviderTest extends TestCase
         $this->assertCount(AccessibilityHealthCheckProvider::MAX_URLS_PER_SOURCE, $provider->runChecks());
     }
 
-    public function testAPageThatCannotBeReadIsAnErrorRowAndNotAVerdict(): void
+    // A warning and not an error: the page was never read, so nothing is known about its accessibility - saying "error" would announce a defect that no one can go and find (see HealthCheckErrorRow)
+    public function testAPageThatCannotBeReadIsAWarningRowAndNotAVerdict(): void
     {
         $httpClient = new MockHttpClient(static fn (): MockResponse => new MockResponse('', ['http_code' => 500]));
 
         $provider = new AccessibilityHealthCheckProvider([$this->createSitemapProvider(['https://example.com/accueil'])], new AccessibilityClient($httpClient), $this->createTranslator());
         $rows = $provider->runChecks();
 
-        $this->assertSame(HealthCheckResult::STATUS_ERROR, $rows[0]['status']);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[0]['status']);
         $this->assertSame('label.health_check_accessibility_call_failed', $rows[0]['summary']);
         $this->assertArrayNotHasKey('criteria', $rows[0]['details']);
+    }
+
+    // The regression this guards: every url of a fifty-page gallery opened at once, on the very site being asked to answer them, which returns the surplus 503 and reports perfectly good pages as unverifiable. Ten are opened, ten are read, then the next ten - so the log reads in blocks and never as fifteen requests followed by fifteen reads
+    public function testRequestsAreFiredInBatchesEachReadBeforeTheNextIsOpened(): void
+    {
+        $urls = array_map(static fn (int $i): string => 'https://example.com/photo/' . $i, range(1, 15));
+
+        $log = [];
+        $httpClient = new MockHttpClient(static function () use (&$log): MockResponse {
+            $log[] = 'request';
+
+            // A generator body is only walked when the response is read, which is what puts the 'read' entries in the log at the moment the provider blocks on them
+            return new MockResponse((static function () use (&$log): \Generator {
+                $log[] = 'read';
+
+                yield self::CONFORMING_PAGE;
+            })(), ['http_code' => 200]);
+        });
+
+        new AccessibilityHealthCheckProvider([$this->createSitemapProvider($urls)], new AccessibilityClient($httpClient), $this->createTranslator())->runChecks();
+
+        $this->assertSame(
+            [...array_fill(0, 10, 'request'), ...array_fill(0, 10, 'read'), ...array_fill(0, 5, 'request'), ...array_fill(0, 5, 'read')],
+            $log,
+        );
     }
 }

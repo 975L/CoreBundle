@@ -1,5 +1,39 @@
 # ChangeLog
 
+## v1.24.0
+
+A check that never ran says the verdict is missing, not that the page is broken
+
+### The package
+
+- `composer mess` counts the files PDepend cannot read rather than failing on them: `composer qa` was red on the 43 files PHP 8.4's `new X()->y()` costs it, every other tool having analysed them (07/09/2026)
+- `phpunit.xml.dist` fails on a notice as well, and `composer run -l` describes `rector`, `mess` and `lizard`, three scripts the list showed without a word (07/09/2026)
+
+### ConfigBundle
+
+- **`HealthCheckErrorRow` now builds a warning rather than an error**: a check that never managed to run says the verdict is missing, not that the page is broken - a site whose PageSpeed quota had run out announced five broken pages it had never looked at, and `StatusReportBuilder` mailed each of them out (07/09/2026)
+- Breaking for the satellites calling it: `SitePageHealthCheckProviderTest`, `W3cHtmlHealthCheckProviderTest` and `W3cCssHealthCheckProviderTest` in SiteBundle and `ShopIntegrityHealthCheckProviderTest` in ShopBundle assert `STATUS_ERROR` on that path and now assert `STATUS_WARNING` (07/09/2026)
+- `ContentQualityAnalyzer` reports a page whose existence request never completed as a warning too, the two halves of the same "nothing was read" case having ranked it differently (07/09/2026)
+- `AccessibilityHealthCheckProvider` now fires its requests ten at a time (new `BATCH_SIZE`): every url is this site's own, and the whole sitemap sent at once came back as 503s from the site answering its own check (07/09/2026)
+- `HealthCheckErrorRowTest` and the four provider tests cover the new status (07/09/2026)
+
+### UiBundle
+
+- `AiAssistantClient` now waits 45 s rather than 15, above the whole budget a Donovan backend spends on a question it has never seen (07/09/2026)
+- The assistant widget now shows a pending line for as long as the backend is being waited on, a disabled field having been the only sign anything was happening (07/09/2026)
+- New `label.ai_assistant_pending` in the three locales (07/09/2026)
+- `AiAssistantClient` now answers null on a response carrying no text, which the widget shows as the failure it is rather than as an empty line (07/09/2026)
+- `AiAssistantClientTest` and `AiAssistantErrorMessageTest` cover the textless answer and the pending line (07/09/2026)
+- The `make:donovan-qa` skeleton carries the same two guards, a generated backend having shipped both defects: an answer with no text is neither stored nor served, and the `SOURCES:` split takes the last occurrence rather than the first (07/09/2026)
+- Two skeleton test cases come with them, so a generated project is locked against both (07/09/2026)
+- The skeleton's system prompt now asks for a written answer above the `SOURCES:` line, that line having been sent on its own on a question the context did not cover (07/09/2026)
+- The skeleton's `findBestSemanticMatch()` skips a row whose stored answer is blank, the guard on the exact-hash path having been walked round by the semantic one - the very row just refused came back at distance 0 and was served (07/09/2026)
+- The skeleton's read guard trims before judging, a row holding only spaces having passed it (07/09/2026)
+- **`background` no longer reaches `video_grid`**: the field moves from `AbstractSectionHeadContainerType` down to `SectionCardsType` and `FlexColumnsType`, the grid writing its class in the template and storing a choice it never painted (07/09/2026)
+- A `hero` dropped in a `flex_columns` slot lays its wrap on one track: the two-track rule of the md breakpoint left the title a fifth of the row to stand in (07/09/2026)
+- Two `_page-sections.scss` rules that painted nothing removed with it, one naming a padding the hero does not carry, the other beaten by a rule of equal weight sitting after it (07/09/2026)
+- `MapCspHealthCheckProvider` answers a list on a failed call, the bare row it returned making the dashboard read a string as a row (07/09/2026)
+
 ## v1.23.2
 
 A path is not a package name

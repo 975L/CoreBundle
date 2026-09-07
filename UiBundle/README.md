@@ -820,7 +820,7 @@ No `services.yaml` entry is needed for `BlockAnchorSlugger` itself: it's autowir
 
 ## Colored backgrounds
 
-The `hero`, `feature_bar` and `text_section` kinds carry an optional **Background** field, painting the section as a full-width flat: **light grey**, the site's **primary color**, or **dark**. It exists because a colored band can't be expressed as a token: a section painted with one has to invert everything it holds - title, muted text, eyebrow, dividers, translucent chips, and the primary CTA, which is itself a `--primary` flat and turns white-on-color over one.
+The `hero`, `feature_bar`, `text_section`, `flex_columns` and `section_cards` kinds carry an optional **Background** field, painting the section as a full-width flat: **light grey**, the site's **primary color**, or **dark**. It exists because a colored band can't be expressed as a token: a section painted with one has to invert everything it holds - title, muted text, eyebrow, dividers, translucent chips, and the primary CTA, which is itself a `--primary` flat and turns white-on-color over one.
 
 Each variant redefines a handful of custom properties, and every section rule reads them with its own neutral value as the fallback:
 
@@ -832,6 +832,8 @@ Each variant redefines a handful of custom properties, and every section rule re
 | `--section-accent` | eyebrow, emphasized word of a title, ghost button's rule | `--primary-ink` |
 | `--section-border` | dividers and hairlines | `--border-color` |
 | `--section-overlay` | badges and translucent chips | `--surface-accent` |
+
+The two containers are painted the same way as the rest: a row of columns or of cards is a section too, which is what lets a design stack colored flats without wrapping the row in a section it would otherwise need. A section used as one of those columns drops the page gutters it would otherwise read a second time inside its own column, and the flat it may carry paints that column rather than breaking out of the row.
 
 A flat bleeds full-viewport-width past `--body-max-width`, else it paints a centered stripe between a full-width navbar and footer. That breakout is itself three tokens, each read with its own value as the fallback: `--section-flat-offset` (`50%`), `--section-flat-width` (`100vw`) and `--section-flat-margin-x` (`-50vw`) - `.hero--has-bg` reads the same three. A design framing its whole page inside `--body-max-width` (navbar and footer included, see SiteBundle's `--navbar-width`/`--footer-width`) sets them to `auto`/`auto`/`0` in its `theme.css`, and the flats paint their own box like any other section.
 

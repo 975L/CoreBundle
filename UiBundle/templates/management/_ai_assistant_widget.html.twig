@@ -8,6 +8,11 @@
 >
     <div class="ai-assistant__log" data-ai-assistant-target="log"></div>
 
+    {# The wait is measured in seconds on a question the backend has never seen, so it is shown rather than left to a disabled field to suggest #}
+    <p class="text-muted small d-none" data-ai-assistant-target="pending">
+        {{ 'label.ai_assistant_pending'|trans({'%name%': ai_assistant_name()}, 'ui') }}
+    </p>
+
     {# Everything the backend can answer but an answer - unreachable, unconfigured on its side, expired token - reads as one thing here: it did not answer. The reason is its operator's to read, not this reader's, and the raw error key was what used to be shown in its place #}
     <p class="text-danger small d-none" data-ai-assistant-target="error">
         {{ 'label.ai_assistant_error'|trans({'%name%': ai_assistant_name()}, 'ui') }}

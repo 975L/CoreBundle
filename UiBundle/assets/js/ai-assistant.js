@@ -33,6 +33,10 @@ export default class extends Controller {
         return this.element.querySelector('[data-ai-assistant-target="error"]');
     }
 
+    get pendingEl() {
+        return this.element.querySelector('[data-ai-assistant-target="pending"]');
+    }
+
     ask(event) {
         event.preventDefault();
 
@@ -43,6 +47,7 @@ export default class extends Controller {
 
         this.hideError();
         this.appendEntry('question', question);
+        this.showPending();
         if (input) {
             input.value = '';
             input.disabled = true;
@@ -59,11 +64,13 @@ export default class extends Controller {
         })
             .then(r => r.json().then(data => ({ ok: r.ok, data })))
             // An error key ("unavailable", "invalid_csrf") is a diagnostic, not an answer: the reader gets the message the template carries, with its link, rather than that word
-            .then(({ ok, data }) => ok && 'string' === typeof data.answer
+            // An answer with no text is one of those failures too, whatever the status code that carried it: rendering it would add an empty line and read as nothing having happened
+            .then(({ ok, data }) => ok && 'string' === typeof data.answer && '' !== data.answer.trim()
                 ? this.appendEntry('answer', data.answer, data.sources)
                 : this.showError())
             .catch(() => this.showError())
             .finally(() => {
+                this.hidePending();
                 if (input) {
                     input.disabled = false;
                     input.focus();
@@ -93,6 +100,17 @@ export default class extends Controller {
         }
 
         log.scrollTop = log.scrollHeight;
+    }
+
+    // A question the backend has never seen costs it a model call, so the wait is counted in seconds and needs to be visible: without this, a disabled field is the only sign anything is happening
+    showPending() {
+        const pending = this.pendingEl;
+        if (pending) pending.classList.remove('d-none');
+    }
+
+    hidePending() {
+        const pending = this.pendingEl;
+        if (pending) pending.classList.add('d-none');
     }
 
     // Server-rendered, message and link included: nothing here comes from the response

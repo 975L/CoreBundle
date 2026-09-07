@@ -2303,6 +2303,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-section,
   padding-top: 0;
 }
 
+.flex-columns__col > .hero > .section-wrap {
+  grid-template-columns: 1fr;
+  padding-top: 0;
+}
+
 .flex-columns__col > .feature-bar {
   margin-block-start: 0;
 }
@@ -2380,6 +2385,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-section,
   margin-left: var(--section-flat-margin-x, -50vw);
   margin-right: var(--section-flat-margin-x, -50vw);
   background-color: var(--section-background);
+}
+
+.section-cards-section:is(.section--bg-muted, .section--bg-primary, .section--bg-dark),
+.flex-columns-section:is(.section--bg-muted, .section--bg-primary, .section--bg-dark) {
+  padding-bottom: var(--section-space, clamp(48px, 8vw, 84px));
 }
 
 .flex-columns__col .section--bg-muted,

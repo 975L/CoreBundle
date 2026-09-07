@@ -283,10 +283,10 @@ class ContentQualityAnalyzer
             return $this->failedRow($entry, HealthCheckResult::STATUS_ERROR, 'label.health_check_url_http_error', ['%status%' => $status]);
         }
 
-        // No status at all: either the analysis request itself failed (its message says why), or the existence HEAD never completed
+        // No status at all: either the analysis request itself failed (its message says why), or the existence HEAD never completed. Nothing was read of the page either way, so the two say the same thing - a warning, not a verdict on the page
         return null !== $entry['error']
             ? HealthCheckErrorRow::build($this->translator, 'config', $entry['url'], $entry['label'], 'label.health_check_content_quality_call_failed', $entry['error'], $entry['editUrl'])
-            : $this->failedRow($entry, HealthCheckResult::STATUS_ERROR, 'label.health_check_url_unreachable', []);
+            : $this->failedRow($entry, HealthCheckResult::STATUS_WARNING, 'label.health_check_url_unreachable', []);
     }
 
     private function failedRow(array $entry, string $status, string $translationId, array $parameters): array

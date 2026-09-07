@@ -38,6 +38,7 @@ class <?= $class_name ?> extends ServiceEntityRepository
         $table = $metadata->getTableName();
         $contextVersionColumn = $metadata->getColumnName('contextVersion');
         $embeddingColumn = $metadata->getColumnName('questionEmbedding');
+        $answerColumn = $metadata->getColumnName('answerText');
         $packedEmbedding = VectorType::pack($embedding);
 
         $row = $this->getEntityManager()->getConnection()->fetchAssociative(
@@ -45,6 +46,7 @@ class <?= $class_name ?> extends ServiceEntityRepository
              FROM {$table}
              WHERE {$contextVersionColumn} = ?
                AND {$embeddingColumn} IS NOT NULL
+               AND TRIM({$answerColumn}) <> ''
                AND VEC_DISTANCE_COSINE({$embeddingColumn}, ?) <= ?
              ORDER BY VEC_DISTANCE_COSINE({$embeddingColumn}, ?) ASC
              LIMIT 1",
