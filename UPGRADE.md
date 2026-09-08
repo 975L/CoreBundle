@@ -1,5 +1,23 @@
 # UPGRADE
 
+## v1.25.0
+
+**`vich/uploader-bundle` is now required in `^3.0`.** The two majors cannot be supported side by side: this bundle
+overrides Vich's storage and namer, whose signatures now take `PropertyMappingInterface`, a type 2.x does not have.
+A site pulling another c975L bundle still pinned to `^2.9` has no resolvable set, so update them together.
+
+**A custom storage or namer of your own has to follow the same move**: `PropertyMapping` becomes
+`PropertyMappingInterface` in every overridden method, `NamerInterface::name()` takes `object|array`, and a storage
+implementing `StorageInterface` directly gains a `listFiles()` method. Vich's own `UPGRADE.md` lists the rest.
+
+**The new `vich:cleanup` command deletes nothing here, and that is deliberate.**
+`NestedFileSystemStorage::listFiles()` returns an empty listing. The command diffs, one mapping at a time, what the
+storage lists against the filenames that mapping's own entities hold, then deletes the rest - and two things here
+make any listing destructive. `block_media` and `site_font` share a single upload destination (`public/`), so each
+mapping would call the other's files orphans. And every image carries `-thumb`, `-highres` and original siblings,
+every PDF a poster, none of which any `filename` column holds: they would all be deleted while still in use.
+**Do not restore a listing** in a storage of your own overriding this one without solving both.
+
 ## v1.23.0
 
 **UiBundle's twelve settings that sat in *Général* moved to `media`, `reviews` and `ui`**, and the drawer a

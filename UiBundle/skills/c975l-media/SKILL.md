@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui."
 ---
 
 # c975L UiBundle — media and uploads
@@ -10,7 +10,7 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Service/UiMediaNamer.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`
+`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`
 
 **Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-operations` in ConfigBundle beside it.
 
@@ -84,9 +84,22 @@ everything written is webp, a format saved without EXIF, so nothing downstream r
 A file is uploaded on the server that serves it and never travels with a deployment, so one that goes
 missing leaves no trace at all: the row still names it, every screen still lists it, and only the page
 carrying it shows the hole. `Management\AbstractDeclaredFilesHealthCheckProvider` is the check that
-answers for that — one row per file a bundle's rows name, **error** when it is not under `public/`, ok
-when it is. `Management\MediaFilesHealthCheckProvider` (kind `files-ui`) covers this bundle's own
-`Media` and `Font` rows.
+answers for that — one row per file a bundle's rows name, **error** when the file is not there, ok when
+it is. `Management\MediaFilesHealthCheckProvider` (kind `files-ui`) covers this bundle's own `Media`
+and `Font` rows.
+
+A row is looked for under `public/` unless it yields a **`directory`** of its own, which is what a file
+served by a controller needs — ShopBundle's digital items are moved under `private/` once uploaded (see
+`VichPrivateFileInterface`), and every one of them would otherwise be reported missing. The row's
+identity stays the public url whatever directory holds the file, the exhaustive purge retiring a row by
+that value.
+
+**`vich:cleanup` deletes nothing here, on purpose.** Vich 3 asks a storage for the files it holds, and
+`Storage\NestedFileSystemStorage::listFiles()` returns none: it diffs one mapping at a time, where
+`block_media` and `site_font` share a single upload destination and each would call the other's files
+orphans — and every image carries its `-thumb`/`-highres`/original siblings and every PDF its poster,
+none of them held in any `filename` column. An orphan is found by the health check above, not by that
+command.
 
 The abstract provider declares itself exhaustive (see ConfigBundle's `HealthCheckExhaustiveInterface`),
 which is what takes a fixed file back to green: `UiMediaNamer` names a re-uploaded file anew, so the ok

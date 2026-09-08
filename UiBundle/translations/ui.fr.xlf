@@ -754,6 +754,10 @@
                 <source>label.animation_zoom_in</source>
                 <target>Zoom avant</target>
             </trans-unit>
+            <trans-unit id="nwlL2Yc">
+                <source>label.answer</source>
+                <target>Réponse</target>
+            </trans-unit>
             <trans-unit id="gBMbs0d">
                 <source>label.apple_touch_icon</source>
                 <target>Icône Apple Touch</target>
@@ -921,6 +925,14 @@
             <trans-unit id="5fesXvj">
                 <source>label.block_expertise_banner_description</source>
                 <target>Panneau sombre avec texte et liste de tags</target>
+            </trans-unit>
+            <trans-unit id="pnBV3qy">
+                <source>label.block_faq</source>
+                <target>FAQ</target>
+            </trans-unit>
+            <trans-unit id="hmFy0b3">
+                <source>label.block_faq_description</source>
+                <target>Les questions fréquentes, chacune se dépliant sous la sienne, avec les données structurées que Google lit.</target>
             </trans-unit>
             <trans-unit id="NhXaGJe">
                 <source>label.block_favorite_link</source>
@@ -1362,6 +1374,10 @@
                 <source>label.column_width_help</source>
                 <target>Nombre de douzièmes de la rangée occupés par cette colonne - les colonnes d'une rangée doivent totaliser 12. S'applique à partir des écrans larges : en dessous, chaque colonne prend toute la largeur.</target>
             </trans-unit>
+            <trans-unit id="DZZ1YLE">
+                <source>label.columns</source>
+                <target>Colonnes</target>
+            </trans-unit>
             <trans-unit id="jfLIJSU">
                 <source>label.compare_position</source>
                 <target>Position du curseur de comparaison</target>
@@ -1677,6 +1693,10 @@
             <trans-unit id="bDWBVol">
                 <source>label.face_front</source>
                 <target>Recto</target>
+            </trans-unit>
+            <trans-unit id="0UWxeZq">
+                <source>label.faq_open_first</source>
+                <target>Déplier la première réponse</target>
             </trans-unit>
             <trans-unit id="akTKyKA">
                 <source>label.favicon</source>
@@ -3086,6 +3106,14 @@
                 <source>label.progress_percent</source>
                 <target>Pourcentage (0-100)</target>
             </trans-unit>
+            <trans-unit id="kLuHeSA">
+                <source>label.question</source>
+                <target>Question</target>
+            </trans-unit>
+            <trans-unit id="03g1_sf">
+                <source>label.questions</source>
+                <target>Questions</target>
+            </trans-unit>
             <trans-unit id="LRh8E5t">
                 <source>label.radius</source>
                 <target>Coins arrondis</target>
@@ -3705,6 +3733,10 @@
             <trans-unit id="29S6.HK">
                 <source>label.variant_portfolio</source>
                 <target>Grille portfolio</target>
+            </trans-unit>
+            <trans-unit id="pbCnmPc">
+                <source>label.variant_portrait</source>
+                <target>Carte portrait</target>
             </trans-unit>
             <trans-unit id="M3Bgg9j">
                 <source>label.vertical_align</source>

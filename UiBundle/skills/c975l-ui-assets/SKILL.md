@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, FontProviderInterface, font_preloads, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, StylesheetProvider, block-thumbs.min.css, block-picker."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, FontProviderInterface, font_preloads, FontFilenameParser, font filename, family name, variable font, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, StylesheetProvider, block-thumbs.min.css, block-picker."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -10,7 +10,7 @@ description: "Use this skill when a stylesheet, a script, a font or a design tok
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Service/Paginator.php`, `src/Model/Pagination.php`, `src/Listener/ThemeVariablesCssListener.php`, `src/Service/StylesheetProvider.php`, `sass/_tokens.scss`, `sass/_block-thumbs.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`, `templates/layout.html.twig`
+`src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/FontFilenameParser.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Service/Paginator.php`, `src/Model/Pagination.php`, `src/Listener/ThemeVariablesCssListener.php`, `src/Service/StylesheetProvider.php`, `sass/_tokens.scss`, `sass/_block-thumbs.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`, `templates/layout.html.twig`
 
 **Related skills:** `c975l-blocks`, `c975l-media`, `c975l-forms-emails` in this same bundle, and `c975l-config` in ConfigBundle beside it.
 
@@ -151,6 +151,14 @@ Stay out of a theme file: colors and fonts, the per-variant section tokens mixed
 
 Fonts are uploaded in the back office; `FontProviderInterface` feeds the `font` config kind's select,
 and `font_preloads()` returns the files the current theme really uses.
+
+**The family, the weight and the style are read off the uploaded file's own name** by
+`Service\FontFilenameParser`, so the face a theme references is whatever the filename declares — not a
+field an editor fills. It reads several trailing segments and not the last one alone (Google puts the
+style before the axis segment, `SourceSans3-Italic-VariableFont_wght.ttf`), and it splits the family on
+an acronym and on a number: `IBMPlexMono` gives `IBM Plex Mono`, `SourceSans3` gives `Source Sans 3`.
+A face whose family name comes out wrong answers to nothing and the browser falls back on a generic —
+so a font that renders as the wrong face is a filename question first.
 
 ## Listings that grow instead of paging
 

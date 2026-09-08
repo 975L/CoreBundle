@@ -685,3 +685,18 @@ services:
               pickable: true
               # Embeds a Symfony form with its own CSRF token - never cache, every visitor needs a fresh one
               cacheable: false
+
+    ui.block.faq:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: faq
+              label: "label.block_faq"
+              description: "label.block_faq_description"
+              form: c975L\UiBundle\Form\Block\FaqType
+              translatable: 'title'
+              template: '@c975LUi/blocks/Faq.html.twig'
+              category: 'label.category_sections'
+              priority: 55
+              pickable: true
+              cacheable: true

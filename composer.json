@@ -58,7 +58,7 @@
         "symfonycasts/verify-email-bundle": "^1.18",
         "twig/intl-extra": "^3.26",
         "twig/twig": "^3.21",
-        "vich/uploader-bundle": "^2.9"
+        "vich/uploader-bundle": "^3.0"
     },
     "require-dev": {
         "chrome-php/chrome": "^1.16",

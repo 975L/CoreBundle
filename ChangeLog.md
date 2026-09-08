@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.25.0
+
+The uploader moves a major, and nothing lists a file it must not delete
+
+### The package
+
+- **`vich/uploader-bundle` moves from `^2.9` to `^3.0`**, whose signatures the storage and the namer here override - the two majors cannot be satisfied at once, `PropertyMappingInterface` not existing in 2.x (08/09/2026)
+- The five satellite bundles pinning `^2.9` have to move in the same lot, a site otherwise having no resolvable set (08/09/2026)
+
+### UiBundle
+
+- The `portfolio` variant of a collection prints its items' description as its source wrote it: it was the only branch of `CollectionItem` rendering the stored Trix markup escaped, so a name set in italics reached the page as its own tags (08/09/2026)
+- `NestedFileSystemStorage` and `UiMediaNamer` take `PropertyMappingInterface` where they took the now-final `PropertyMapping`, and `MediaFileRemoveListener` takes `PropertyMappingFactoryInterface` (08/09/2026)
+- `UiMediaNamer::name()` widens its subject to `object|array` as Vich 3 requires, and names the refused one with `get_debug_type()` - `$entity::class` on an array is a fatal error (08/09/2026)
+- **New `NestedFileSystemStorage::listFiles()`**, required by Vich 3's `StorageInterface` and returning nothing on purpose: **the new `vich:cleanup` command therefore deletes nothing here** (08/09/2026)
+- It diffs, one mapping at a time, what the storage lists against the filenames that mapping's entities hold - and `block_media` and `site_font` share a single upload destination, so each would call the other's files orphans (08/09/2026)
+- Every image also carries `-thumb`/`-highres`/original siblings and every PDF a poster, none of them held in any `filename` column: a listing would delete each one while still in use (08/09/2026)
+- `NestedFileSystemStorageTest` covers that nothing is ever named, siblings and other-mapping files included (08/09/2026)
+- **`AbstractDeclaredFilesHealthCheckProvider` now accepts a `directory` on a declared row**, so a bundle whose file is served by a controller from outside `public/` is looked for where it actually sits - ShopBundle's digital items are moved to `private/` after upload (see `VichPrivateFileInterface`) and every one of them would have been reported missing (08/09/2026)
+- The row's identity stays the public url whatever directory holds the file, an exhaustive purge retiring a row by that value (08/09/2026)
+- New `AbstractDeclaredFilesHealthCheckProviderTest` covers the default root, a row naming its own, and the copy left behind in the other (08/09/2026)
+- **`FontFilenameParser` reads several suffix segments and no longer the last one alone**: Google names a variable italic `SourceSans3-Italic-VariableFont_wght.ttf`, putting the style before the axis segment - the style was missed and `Italic` welded into the family name, which declared an upright face under a family nothing referenced (08/09/2026)
+- The family name splits on an acronym and on a number too: `IBMPlexMono` gives `IBM Plex Mono` and `SourceSans3` gives `Source Sans 3`, the names a theme is written with - a face named `IBMPlex Mono` answered to nothing and fell back to the generic `monospace` (08/09/2026)
+- `FontFilenameParserTest` covers the variable italic, the numbered family, the acronym and a weight and a style named in separate segments (08/09/2026)
+- **New `faq` block kind**: questions unfolding under their own `<details>`/`<summary>`, an optional first one open, one or two columns (08/09/2026)
+- Laid in one column, `faq` publishes a `FAQPage` JSON-LD payload built from its own questions (08/09/2026)
+- A silhouette for `faq` in the back-office block picker (08/09/2026)
+- **New `portrait` variant of the `collection` block**: each item's picture over its name and its text, everything centered (08/09/2026)
+- The portrait card's name keeps the accent it is painted with when it is a link, the theme's own link rules having beaten the inherited color (08/09/2026)
+- The portrait's picture and name follow the item's `target`, which its button already did (08/09/2026)
+- The portrait's picture carries the attached media's measure, a row of four having recomposed as the files arrived (08/09/2026)
+- **The `collection` block's `portfolio` variant draws a container carrying two links, and no longer one anchor around the whole tile**: a link written in an item's description nested in it and closed it early, leaving the rest of the card unclickable - the `portfolio_grid` block's own cards are unchanged (08/09/2026)
+- `CollectionItemPortraitVariantTest` and `PortfolioLinkTargetTest` cover the target, the reserved box and the description's own link (08/09/2026)
+- New `PortfolioCardUnderlineTest` locks the underline override for both markups drawing that card, a rule written for one of them leaving the other underlined (08/09/2026)
+- New `FaqTypeTest`, `FaqItemTypeTest` and `FaqMarkupTest` cover the questions form, the accordion and the payload published on one column only (08/09/2026)
+
 ## v1.24.1
 
 Every PDF of the site reaches the thumbnail check, not the library alone

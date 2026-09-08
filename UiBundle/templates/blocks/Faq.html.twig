@@ -1,0 +1,33 @@
+{# The questions a page is asked, each unfolding under its own summary - "details"/"summary" rather than a script, so the accordion works before any JavaScript loads and a printed page shows every answer #}
+{% set items = items|default([])|filter(item => item.question|default('')) %}
+{% if items is not empty %}
+    {% set columns = columns|default(1) %}
+    <section class="faq faq--cols{{ columns }}"{% if anchor_id %} id="{{ anchor_id }}"{% endif %}>
+        {% if title|default('') %}
+            <h2>{{ title }}</h2>
+        {% endif %}
+        <div class="faq__items">
+            {% for item in items %}
+                <details class="faq__item"{% if loop.first and openFirst|default(false) %} open{% endif %}>
+                    <summary class="faq__question">{{ item.question }}</summary>
+                    <div class="faq__answer">{{ item.answer|default('')|raw }}</div>
+                </details>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# Published only when the questions are laid in one column: Google reads a FAQPage as a single ordered list, and a two-column layout says the page is not one #}
+    {% if 1 == columns %}
+        {# Appended one by one rather than mapped: the list was filtered above, and json_encode writes gapped keys as an object where schema.org asks for an array #}
+        {% set questions = [] %}
+        {% for item in items %}
+            {% set questions = questions|merge([{
+                '@type': 'Question',
+                'name': item.question,
+                'acceptedAnswer': {'@type': 'Answer', 'text': item.answer|default('')|striptags},
+            }]) %}
+        {% endfor %}
+        {% set faqJsonLd = {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': questions} %}
+        <script type="application/ld+json">{{ faqJsonLd|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+    {% endif %}
+{% endif %}

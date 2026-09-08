@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Vich\UploaderBundle\Mapping\PropertyMapping;
+use Vich\UploaderBundle\Mapping\PropertyMappingInterface;
 use Vich\UploaderBundle\Naming\NamerInterface;
 
 class UiMediaNamer implements NamerInterface
@@ -29,16 +29,17 @@ class UiMediaNamer implements NamerInterface
         $this->filesystem = new Filesystem();
     }
 
-    public function name($entity, PropertyMapping $mapping): string
+    // Vich widens the subject to object|array to cover its array mappings, which this bundle never declares - anything but a namable entity is refused here rather than named at random
+    public function name(object | array $object, PropertyMappingInterface $mapping): string
     {
-        if (!$entity instanceof VichMediaNamableInterface) {
-            throw new \RuntimeException(sprintf('Entity "%s" must implement VichMediaNamableInterface.', $entity::class));
+        if (!$object instanceof VichMediaNamableInterface) {
+            throw new \RuntimeException(sprintf('Entity "%s" must implement VichMediaNamableInterface.', get_debug_type($object)));
         }
 
         // Read off the mapping rather than off the entity: which property holds the file is the mapping's own business, and no interface here declares a getter for it
-        $file = $mapping->getFile($entity);
+        $file = $mapping->getFile($object);
         if (!$file instanceof File) {
-            throw new \RuntimeException(sprintf('Entity "%s" carries no uploaded file to name.', $entity::class));
+            throw new \RuntimeException(sprintf('Entity "%s" carries no uploaded file to name.', $object::class));
         }
 
         $filePath = $file->getPathname();
@@ -47,16 +48,16 @@ class UiMediaNamer implements NamerInterface
         }
 
         // Singleton site-wide graphics (favicon, apple-touch-icon, og-image, logo) need a fixed, predictable filename at the root of public/ - no uniqid (would break the well-known URL)
-        if ($entity instanceof Media && $entity->isSingletonRole()) {
+        if ($object instanceof Media && $object->isSingletonRole()) {
             // Roles with a fixed icon spec (favicon, apple-touch-icon) always end up in that exact format, whatever the uploaded file was - see VichImageResizeListener, which converts it after upload. Other singleton roles (og-image, logo) are resized and forced to webp just like in-content block images (see VichImageResizeListener::processImage), so the extension must match that
-            $spec = $entity->getFixedIconSpec();
+            $spec = $object->getFixedIconSpec();
             $extension = null !== $spec ? $spec['format'] : $this->determineExtension($file);
 
-            return $entity->getVichMediaPath() . '.' . $extension;
+            return $object->getVichMediaPath() . '.' . $extension;
         }
 
         $extension = $this->determineExtension($file);
-        $basePath = $entity instanceof Media ? $this->resolveBasePath($entity) : $entity->getVichMediaPath();
+        $basePath = $object instanceof Media ? $this->resolveBasePath($object) : $object->getVichMediaPath();
 
         return $basePath . '-' . uniqid() . '.' . $extension;
     }

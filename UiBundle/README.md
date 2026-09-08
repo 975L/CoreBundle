@@ -503,6 +503,7 @@ The bundle ships the following kinds out of the box (see `config/services.yaml` 
 | `feature_bar` | Page sections | `FeatureBarType` | `blocks/FeatureBar.html.twig` |
 | `favorite_link` | Navigation | `FavoriteLinkType` | `blocks/FavoriteLink.html.twig` |
 | `flip_card` | Elements | `FlipCardType` | `blocks/FlipCard.html.twig` |
+| `faq` | Page sections | `FaqType` | `blocks/Faq.html.twig` |
 | `form` | Forms | `FormPickerType` | `components/Form/FormBlock.html.twig` |
 | `hero` | Page sections | `HeroType` | `blocks/Hero.html.twig` |
 | `image` | Media | `ImageType` | `blocks/Image.html.twig` |
@@ -778,7 +779,7 @@ The same move works at the finger, from the row's move handle (see [At the finge
 
 ## Anchors (in-page navigation)
 
-Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `flex_columns`, `section_cards`, `expertise_banner`, `process_steps`, `portfolio_grid`, `video_grid`, `cta_band`, `collection`) has an optional **Anchor** field, letting an editor build a one-page nav (a `menu_link` block - see `c975L/SiteBundle`'s README - pointing straight at a section of the same page).
+Every "Page sections" kind above (`hero`, `feature_bar`, `section_features`, `flex_columns`, `section_cards`, `expertise_banner`, `process_steps`, `faq`, `portfolio_grid`, `video_grid`, `cta_band`, `collection`) has an optional **Anchor** field, letting an editor build a one-page nav (a `menu_link` block - see `c975L/SiteBundle`'s README - pointing straight at a section of the same page).
 
 - Typing an anchor (e.g. `Services`) slugifies it (`services`). Leaving it empty falls back to slugifying the block's own title.
 - The final HTML `id` rendered on the section is always `{slug}-{block.id}` (e.g. `services-42`) - the trailing block id is added at render time, not stored, so two blocks of the same kind on the same page (or the same title reused elsewhere) never collide.
@@ -2159,8 +2160,15 @@ call-to-action reads the same as a manually placed `card`'s.
 
 The `collection` block's own **Presentation** field (`variant`) switches every item's markup at once,
 without an app-level template override: `''` (default) renders each item as a `card`, `'compact'`
-renders the same card at a thumbnail's width (`.card--compact`), and `'portfolio'` reuses
-`portfolio_grid`'s own markup/CSS instead (see `CollectionItem.html.twig`).
+renders the same card at a thumbnail's width (`.card--compact`), `'portrait'` stands each item's
+picture over its name and its text, everything centered (`.card--portrait` — a team, a cast, a board),
+and `'portfolio'` reuses `portfolio_grid`'s own markup/CSS instead (see `CollectionItem.html.twig`).
+
+A `collection` item in the `portfolio` presentation is a container carrying two links — the picture's
+and the title's — and not one anchor around the whole tile: an item's description is the editor's own
+markup and may hold a link, which nested in the tile's would close it early and leave the rest of the
+card unclickable. The `portfolio_grid` block's own cards are unaffected, their description being a
+plain string the component writes itself.
 
 A source shipping an item template of its own (`itemTemplate`) is handed the same `variant` and decides
 what it means for its own card — `c975L/BookBundle`'s `BookItem.html.twig` drops the book's summary
@@ -2354,6 +2362,21 @@ the viewport, as before. With one, it waits for a **click** on the poster — ea
 third-party JavaScript, and a grid of six would otherwise pull all six as they scroll past. Consent
 still comes first: while it is undecided the consent prompt is what sits over the poster, never a bare
 play button, so accepting third-party cookies can't be mistaken for pressing play.
+
+### FAQ (`faq`)
+
+An optional title over a list of questions, each unfolding under its own summary. It is built on
+`<details>`/`<summary>` rather than on a script: the accordion works before any JavaScript loads, a
+printed page shows every answer, and the browser's own "find in page" opens the section holding the
+match. **Open first** unfolds the first answer for the question everybody asks; **Columns** lays the
+list over two from 1024px up.
+
+Laid in **one** column, the block also publishes a `FAQPage` JSON-LD payload built from the very
+questions above it — which is what puts the answers straight in Google's results. It is deliberately
+not published in two columns: schema.org reads a `FAQPage` as one ordered list, and a two-column
+layout says the page is not one. Answers are stripped of their markup before going into the payload.
+
+---
 
 ### Video grid (`video_grid`)
 
@@ -2701,7 +2724,21 @@ class GalleryFilesHealthCheckProvider extends AbstractDeclaredFilesHealthCheckPr
 }
 ```
 
-Only the file a row *names* is looked for, never one derived from it: a thumbnail is rebuilt from the stored image (see [Three sizes of one image](#three-sizes-of-one-image)), where a named file gone is one nothing can bring back. SiteBundle covers its collection items this way, GalleryBundle its photographs and their self-hosted videos.
+A row may also name the **directory** its file hangs off, `public` being what it means when it says nothing:
+
+```php
+yield [
+    'filename' => (string) $file->getName(),
+    'label' => $product->getTitle(),
+    'editUrl' => $this->editUrl($product),
+    // Moved out of public/ once uploaded, its row still naming the path it had there
+    'directory' => $file->getPrivateDirectory(),
+];
+```
+
+That is what a file served by a controller rather than by the web server needs (see `Contract\VichPrivateFileInterface`): ShopBundle's digital items are moved to `private/` after upload, and looking for them under `public/` would report every one of them missing. The row's identity stays the public url whatever directory holds the file — it is what the exhaustive purge retires a row by, and a private file has no address of its own to show instead.
+
+Only the file a row *names* is looked for, never one derived from it: a thumbnail is rebuilt from the stored image (see [Three sizes of one image](#three-sizes-of-one-image)), where a named file gone is one nothing can bring back. SiteBundle covers its collection items this way, GalleryBundle its photographs and their self-hosted videos, ShopBundle its product pictures and digital items, BookBundle its covers and press files, CrowdfundingBundle its campaigns.
 
 ---
 

@@ -22,6 +22,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // One subclass per bundle, each naming its own rows (see MediaFilesHealthCheckProvider): the check is the same everywhere, only what declares a file changes.
 abstract class AbstractDeclaredFilesHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
+    // Where a declared file hangs off by default - a row saying otherwise names a directory of its own (e.g. ShopBundle's digital items, which VichImageResizeListener moves out of public/ once uploaded)
+    public const string PUBLIC_DIRECTORY = 'public';
+
     public function __construct(
         protected readonly ConfigServiceInterface $configService,
         protected readonly TranslatorInterface $translator,
@@ -29,11 +32,9 @@ abstract class AbstractDeclaredFilesHealthCheckProvider implements HealthCheckEx
     ) {
     }
 
+    // One entry per file the bundle's rows declare, an entity holding two of them (an image and a video, say) yielding two: "label" names the row on the dashboard, "editUrl" the admin screen the file is re-uploaded from, and "directory" the project-relative root the filename hangs off, for a row whose file does not live under public/
     /**
-     * One entry per file the bundle's rows declare - an entity holding two of them (an image and a video, say) yields two.
-     * "label" is what names the row on the dashboard, "editUrl" the admin screen the file is re-uploaded from.
-     *
-     * @return iterable<array{filename: string, label: string, editUrl: ?string}>
+     * @return iterable<array{filename: string, label: string, editUrl: ?string, directory?: string}>
      */
     abstract protected function declaredFiles(): iterable;
 
@@ -51,9 +52,10 @@ abstract class AbstractDeclaredFilesHealthCheckProvider implements HealthCheckEx
             }
 
             // The OK row is what lets a re-uploaded file go back to green where its filename is stable (the six singleton roles), and the exhaustive purge is what retires the old url everywhere else - re-uploading names the file anew (see UiMediaNamer), so the green row lands on a url of its own rather than replacing the red one (see HealthCheckExhaustiveInterface)
-            $found = is_file($this->projectDir . '/public/' . $filename);
+            $found = is_file($this->projectDir . '/' . ($file['directory'] ?? self::PUBLIC_DIRECTORY) . '/' . $filename);
 
             $rows[] = [
+                // The row's identity, kept as the public url even for a file served through a controller (see VichPrivateFileInterface): what makes it unique is the filename, and an exhaustive purge retires a row by that same value - a private file simply has no address of its own to show instead
                 'url' => $siteUrl . '/' . $filename,
                 'label' => '' === $file['label'] ? $filename : $file['label'],
                 'status' => $found ? HealthCheckResult::STATUS_OK : HealthCheckResult::STATUS_ERROR,

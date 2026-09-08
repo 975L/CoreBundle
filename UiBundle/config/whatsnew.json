@@ -1,5 +1,35 @@
 [
     {
+        "date": "2026-09-08",
+        "description": [
+            {
+                "en": "A new Questions block puts a list of questions on a page, each answer unfolding when it is clicked. Laid in one column, it also tells search engines what your questions and answers are, which is what puts them straight in a Google result.",
+                "fr": "Un nouveau block Questions pose une liste de questions sur une page, chaque réponse se dépliant au clic. Disposé sur une colonne, il annonce aussi vos questions et vos réponses aux moteurs de recherche, ce qui les fait apparaître directement dans un résultat Google.",
+                "es": "Un nuevo bloque Preguntas coloca una lista de preguntas en una página, y cada respuesta se despliega al hacer clic. Dispuesto en una columna, también anuncia sus preguntas y respuestas a los buscadores, lo que hace que aparezcan directamente en un resultado de Google."
+            },
+            {
+                "en": "A collection can now be shown as portraits: each item's picture over its name and its text, everything centered — the presentation a team, a cast or a board is read with. Pick it in the block's Presentation field.",
+                "fr": "Une collection peut désormais s'afficher en portraits : la photo de chaque élément au-dessus de son nom et de son texte, le tout centré — la présentation avec laquelle se lit une équipe, une distribution, un conseil. Choisissez-la dans le champ Présentation du block.",
+                "es": "Una colección puede mostrarse ahora en retratos: la foto de cada elemento sobre su nombre y su texto, todo centrado: la presentación con la que se lee un equipo, un reparto o un consejo. Elíjala en el campo Presentación del bloque."
+            },
+            {
+                "en": "A link written inside the description of a portfolio item works again, and the rest of the card stays clickable around it.",
+                "fr": "Un lien écrit dans la description d'un élément de portfolio fonctionne à nouveau, et le reste de la carte reste cliquable autour de lui.",
+                "es": "Un enlace escrito dentro de la descripción de un elemento de portafolio vuelve a funcionar, y el resto de la tarjeta sigue siendo pulsable a su alrededor."
+            },
+            {
+                "en": "A file your site keeps out of public reach — a document sold and downloaded after payment — is no longer reported as missing on the health page: it is now looked for where it actually sits.",
+                "fr": "Un fichier que votre site garde hors d'accès public — un document vendu et téléchargé après paiement — n'est plus signalé comme manquant sur la page de santé : il est désormais cherché là où il se trouve réellement.",
+                "es": "Un archivo que su sitio mantiene fuera del acceso público —un documento vendido y descargado tras el pago— ya no se señala como ausente en la página de estado: ahora se busca allí donde realmente está."
+            },
+            {
+                "en": "An uploaded font file is read more accurately: an italic, a family named with an acronym or a number (IBM Plex Mono, Source Sans 3) now declares the face your theme actually asks for, instead of falling back on a default lettering.",
+                "fr": "Un fichier de police téléversé est lu plus fidèlement : une italique, une famille nommée avec un sigle ou un chiffre (IBM Plex Mono, Source Sans 3) déclare désormais la fonte que votre thème demande vraiment, au lieu de retomber sur un lettrage par défaut.",
+                "es": "Un archivo de fuente subido se lee con más fidelidad: una cursiva, una familia nombrada con una sigla o una cifra (IBM Plex Mono, Source Sans 3) declara ahora la tipografía que su tema pide realmente, en lugar de recurrir a una letra por defecto."
+            }
+        ]
+    },
+    {
         "date": "2026-09-07",
         "description": [
             {

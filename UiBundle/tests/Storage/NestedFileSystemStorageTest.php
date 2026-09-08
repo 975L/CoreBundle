@@ -188,4 +188,23 @@ class NestedFileSystemStorageTest extends TestCase
             $storage->publicDoResolvePath($this->createMapping(), null, 'file.txt')
         );
     }
+
+    // A listing is never returned: vich:cleanup would delete the other mapping's files and every -thumb/-highres/original sibling with them (see NestedFileSystemStorage::listFiles)
+    public function testListFilesNeverNamesAnyFile(): void
+    {
+        $storage = $this->createStorage();
+        $this->writeFile('medias/site/logo-abc.webp');
+        $this->writeFile('medias/site/logo-abc-thumb.webp');
+        $this->writeFile('medias/fonts/font-3.woff2');
+        $this->writeFile('assets/app-1a2b3c.js');
+
+        $this->assertSame([], iterator_to_array($storage->listFiles($this->createMapping()), false));
+    }
+
+    private function writeFile(string $relativePath): void
+    {
+        $path = $this->uploadDestination . '/' . $relativePath;
+        @mkdir(dirname($path), 0777, true);
+        file_put_contents($path, 'content');
+    }
 }

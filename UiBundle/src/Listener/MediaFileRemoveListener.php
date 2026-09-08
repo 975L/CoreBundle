@@ -19,7 +19,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Vich\UploaderBundle\Mapping\PropertyMappingFactory;
+use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 
 // Generic file cleanup for any bundle's media entity - each satellite bundle (Shop, Crowdfunding...) only needs its own Media hierarchy to implement VichMediaNamableInterface, no per-entity listener of its own. Only needed for the private-file case below - Vich's own delete_on_remove/delete_on_update already clean up any file still under its original public mapping destination, which a private one is not. Priority 100 on preUpdate runs this before Vich's own "clean" listener (priority 50, see VichUploaderExtension::registerListeners) has a chance to erase the old filename, so the mapping here still reads the file being replaced. The actual deletion is deferred to postFlush so a failed flush never removes a file its row still points at. #[AsDoctrineListener] only reads the class-level attribute (TARGET_CLASS) - Doctrine then calls whichever method matches each tagged event's name, hence one attribute per event here rather than per method.
 #[AsDoctrineListener(event: Events::preUpdate, priority: 100)]
@@ -32,7 +32,7 @@ class MediaFileRemoveListener
 
     public function __construct(
         private readonly KernelInterface $kernel,
-        private readonly PropertyMappingFactory $propertyMappingFactory,
+        private readonly PropertyMappingFactoryInterface $propertyMappingFactory,
     ) {
     }
 

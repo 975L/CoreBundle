@@ -158,13 +158,14 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
         return ['' => $this->blockExtension->renderBlock($section)];
     }
 
-    // The three looks the "variant" field offers: the portfolio one borrowing PortfolioGrid's own grid and head (see Collection/Grid.html.twig), the compact one the same cards at a thumbnail's width (see sass/_cards.scss)
+    // The four looks the "variant" field offers: the portfolio one borrowing PortfolioGrid's own grid and head (see Collection/Grid.html.twig), the compact one the same cards at a thumbnail's width and the portrait one a markup of its own, the picture over the name (see sass/_cards.scss)
     private function collectionVariants(): array
     {
         return [
             'Cartes' => $this->renderCollection(null),
             'Cartes compactes' => $this->renderCollection('compact'),
             'Portfolio' => $this->renderCollection('portfolio'),
+            'Portraits' => $this->renderCollection('portrait'),
         ];
     }
 
@@ -176,7 +177,8 @@ class GalleryShowcaseProvider implements GalleryShowcaseProviderInterface
             $items[] = $this->blockExtension->renderBlock(
                 new Block()->setKind('collection_item')->setData($item + [
                     'url' => '',
-                    'imageUrl' => 'portfolio' === $variant ? $this->placeholderImage() : '',
+                    // The two variants a picture is the subject of: a portfolio cell reduced to its title is an empty frame, and a portrait card with no portrait is not one at all
+                    'imageUrl' => \in_array($variant, ['portfolio', 'portrait'], true) ? $this->placeholderImage() : '',
                     'buttonLabel' => '',
                     'buttonIcon' => '',
                     'detailUrl' => null,

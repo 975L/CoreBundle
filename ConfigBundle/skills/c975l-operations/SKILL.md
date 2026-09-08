@@ -154,7 +154,10 @@ which had a working share button reported as a dead link on every page carrying 
 
 **For the files a bundle stores rather than the urls it publishes**, UiBundle ships
 `AbstractDeclaredFilesHealthCheckProvider`: extend it, yield the files your rows name, and every one
-missing from `public/` is reported as an error (kinds `files-ui`, `files-site`, `files-gallery`). It is
+missing is reported as an error (kinds `files-ui`, `files-site`, `files-gallery`, `files-shop`,
+`files-book`, `files-crowdfunding`). A row is looked for under `public/` unless it names a `directory`
+of its own — which is what a file served by a controller needs, ShopBundle's digital items living
+under `private/` (see `VichPrivateFileInterface`). It is
 what catches a file that only ever existed on the server — a site graphic, a signature — and that no
 deployment carries. Do not write a file-exists check of your own. A PDF's `.webp` thumbnail is
 checked apart, by kind `pdf-thumbnail`, which a bundle holding PDFs of its own feeds through UiBundle's

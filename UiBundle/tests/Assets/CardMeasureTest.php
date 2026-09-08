@@ -26,11 +26,12 @@ class CardMeasureTest extends TestCase
 
     private const int DEFAULT_GUTTER = 64;
 
-    // Each token, the cap it stops at and how many of that card a row holds - 380 * 3, 190 * 6 and 570 * 2 are the same 1140px of cards, which is what makes the three one series
+    // Each token, the cap it stops at and how many of that card a row holds - 380 * 3, 190 * 6, 570 * 2 and 285 * 4 are the same 1140px of cards, which is what makes the four one series
     private const array WIDTHS = [
         '--card-width' => [380, 3],
         '--card-width-compact' => [190, 6],
         '--card-width-big' => [570, 2],
+        '--card-width-portrait' => [285, 4],
     ];
 
     /**

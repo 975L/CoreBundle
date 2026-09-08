@@ -102,9 +102,9 @@ class GalleryShowcaseProviderTest extends TestCase
 
         $items = $this->renderedOfKind('collection_item');
 
-        $this->assertCount(10, $items, 'Three items in each of the three variants, plus the single one the "collection_entry" showcase puts forward');
+        $this->assertCount(13, $items, 'Three items in each of the four variants, plus the single one the "collection_entry" showcase puts forward');
         $this->assertSame(['@c975LUi/components/Collection/Grid.html.twig'], array_unique(array_column($this->twigRenders, 0)));
-        $this->assertSame(['', 'compact', 'portfolio'], array_column(array_column($this->twigRenders, 1), 'variant'));
+        $this->assertSame(['', 'compact', 'portfolio', 'portrait'], array_column(array_column($this->twigRenders, 1), 'variant'));
     }
 
     // The one render this provider hand-feeds instead of letting the block pipeline build it, so the component has to find every variable it reads
@@ -127,8 +127,8 @@ class GalleryShowcaseProviderTest extends TestCase
         }
     }
 
-    // The bundle ships no image of its own, so the portfolio variant borrows whatever the app declared for its showcase
-    public function testThePortfolioVariantUsesTheDeclaredPlaceholderImage(): void
+    // The bundle ships no image of its own, so the two variants a picture is the subject of borrow whatever the app declared for its showcase
+    public function testTheVariantsBuiltOnAPictureUseTheDeclaredPlaceholderImage(): void
     {
         $this->createProvider($this->createPlaceholderMedia(['images' => ['showcase/sample.webp']]))->getShowcases();
 
@@ -138,8 +138,8 @@ class GalleryShowcaseProviderTest extends TestCase
         );
 
         // Leading "/" so the src is a site-root path whatever page the showcase is rendered on
-        // The first six are the card and compact looks, which carry no image; the last one is the single-entry showcase, which draws the card look and so carries none either
-        $this->assertSame(['', '', '', '', '', '', '/showcase/sample.webp', '/showcase/sample.webp', '/showcase/sample.webp', ''], $urls);
+        // The first six are the card and compact looks, which carry no image; then the portfolio and portrait ones, which are built on it; the last is the single-entry showcase, which draws the card look and so carries none either
+        $this->assertSame(['', '', '', '', '', '', '/showcase/sample.webp', '/showcase/sample.webp', '/showcase/sample.webp', '/showcase/sample.webp', '/showcase/sample.webp', '/showcase/sample.webp', ''], $urls);
     }
 
     // Nothing declared: the cards show their text alone rather than a broken image

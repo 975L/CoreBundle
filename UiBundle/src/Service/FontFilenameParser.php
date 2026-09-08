@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Entity\Font;
 
-// Guesses a Font's name/weight/style from "FamilyName-WeightStyle.ext", a best-effort saving three fields per file
+// Guesses a Font's name/weight/style from "FamilyName-WeightStyle.ext", a best-effort saving three fields per file - several suffix segments are read, an archive naming the style apart from the weight being as common as one welding them together
 class FontFilenameParser
 {
     // Substring-matched against the last segment, longest keyword first so "extrabold" beats "bold"
@@ -46,8 +46,8 @@ class FontFilenameParser
         $parts = preg_split('/[-_]+/', $base, -1, PREG_SPLIT_NO_EMPTY) ?: [$base];
         $suffix = $this->parseSuffix($parts);
 
-        // The last segment is only dropped from the name when it really was a weight/style suffix - "Grand-Corps.woff2" keeps both words
-        $nameParts = null === $suffix ? $parts : \array_slice($parts, 0, -1);
+        // Only the segments that really were weight/style suffixes are dropped from the name - "Grand-Corps.woff2" keeps both words
+        $nameParts = null === $suffix ? $parts : \array_slice($parts, 0, -$suffix['consumed']);
 
         return [
             'name' => $this->humanize(implode(' ', $nameParts)),
@@ -56,24 +56,41 @@ class FontFilenameParser
         ];
     }
 
-    // What the filename's last segment stands for, or null when it carries neither
-    // @return array{weight: int, style: string}|null
+    // What the filename's trailing segments stand for, and how many of them they took, or null when the last one carries neither
+    // Several segments rather than the last one alone: Google names a variable italic "SourceSans3-Italic-VariableFont_wght", putting the style before the axis segment - read from the end only, it was welded into the family name and the face declared upright
+    /**
+     * @param list<string> $parts
+     *
+     * @return array{weight: int, style: string, consumed: int}|null
+     */
     private function parseSuffix(array $parts): ?array
     {
-        if (\count($parts) < 2) {
+        $isItalic = false;
+        $weight = null;
+        $consumed = 0;
+
+        // Stops at the first segment saying neither, and never past the first one: a family needs a name left
+        for ($i = \count($parts) - 1; $i >= 1; --$i) {
+            $segment = strtolower($parts[$i]);
+            $segmentItalic = str_contains($segment, 'italic');
+            $weightSegment = str_replace('italic', '', $segment);
+            $segmentWeight = '' !== $weightSegment ? $this->matchWeight($weightSegment) : null;
+
+            if (!$segmentItalic && null === $segmentWeight) {
+                break;
+            }
+
+            $isItalic = $isItalic || $segmentItalic;
+            // The first weight met walking back wins, "Family-Bold-Italic" being read the same way as "Family-BoldItalic"
+            $weight ??= $segmentWeight;
+            ++$consumed;
+        }
+
+        if (0 === $consumed) {
             return null;
         }
 
-        $suffix = strtolower((string) end($parts));
-        $isItalic = str_contains($suffix, 'italic');
-        $weightSuffix = str_replace('italic', '', $suffix);
-        $weight = '' !== $weightSuffix ? $this->matchWeight($weightSuffix) : null;
-
-        if (!$isItalic && null === $weight) {
-            return null;
-        }
-
-        return ['weight' => $weight ?? 400, 'style' => $isItalic ? 'italic' : 'normal'];
+        return ['weight' => $weight ?? 400, 'style' => $isItalic ? 'italic' : 'normal', 'consumed' => $consumed];
     }
 
     private function matchWeight(string $suffix): ?int
@@ -90,7 +107,11 @@ class FontFilenameParser
     // Splits a camelCase family name (eg. "OpenSans", as bundled without spaces in most font archives) into words
     private function humanize(string $name): string
     {
+        // The end of an acronym, which is where the next word starts: "IBMPlexMono" gives "IBM Plex Mono" and not "IBMPlex Mono". Guarded by a following lowercase, so "PT Sans" is not cut between its two capitals
+        $name = preg_replace('/(?<=[A-Z])(?=[A-Z][a-z])/', ' ', $name) ?? $name;
         $name = preg_replace('/(?<=[a-z0-9])(?=[A-Z])/', ' ', $name) ?? $name;
+        // The number a family is numbered with is a word of its own: "SourceSans3" is the "Source Sans 3" of Google, and a face named "Source Sans3" answers to nothing anyone types
+        $name = preg_replace('/(?<=[a-zA-Z])(?=[0-9])/', ' ', $name) ?? $name;
         $name = preg_replace('/\s+/', ' ', $name) ?? $name;
 
         return trim($name);

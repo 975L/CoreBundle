@@ -29,6 +29,11 @@ class FontFilenameParserTest extends TestCase
         yield 'variable font axis tag stripped' => ['Inter-VariableFont_wght.ttf', ['name' => 'Inter', 'weight' => Font::WEIGHT_VARIABLE, 'style' => 'normal']];
         yield 'variable font, multiple axis tags' => ['Inter-VariableFont_wght,opsz.ttf', ['name' => 'Inter', 'weight' => Font::WEIGHT_VARIABLE, 'style' => 'normal']];
         yield 'unrecognized suffix kept as part of the name' => ['Family-Book.ttf', ['name' => 'Family Book', 'weight' => 400, 'style' => 'normal']];
+        yield 'variable italic, style before the axis segment' => ['SourceSans3-Italic-VariableFont_wght.ttf', ['name' => 'Source Sans 3', 'weight' => Font::WEIGHT_VARIABLE, 'style' => 'italic']];
+        yield 'numbered family keeps its number as a word' => ['SourceSans3-VariableFont_wght.ttf', ['name' => 'Source Sans 3', 'weight' => Font::WEIGHT_VARIABLE, 'style' => 'normal']];
+        yield 'acronym is a word of its own' => ['IBMPlexMono-Regular.ttf', ['name' => 'IBM Plex Mono', 'weight' => 400, 'style' => 'normal']];
+        yield 'acronym with weight and italic' => ['IBMPlexMono-BoldItalic.ttf', ['name' => 'IBM Plex Mono', 'weight' => 700, 'style' => 'italic']];
+        yield 'weight and style in separate segments' => ['Roboto-Bold-Italic.ttf', ['name' => 'Roboto', 'weight' => 700, 'style' => 'italic']];
     }
 
     #[DataProvider('provideFilenames')]

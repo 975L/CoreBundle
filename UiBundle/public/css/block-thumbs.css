@@ -178,6 +178,35 @@
   background-image: linear-gradient(to right, currentcolor 0 40%, transparent 40%);
 }
 
+/* FAQ: three closed questions stacked, the first one unfolded under its own bar */
+.ui-block-thumb--faq {
+  justify-content: center;
+  gap: 0.1875rem;
+}
+.ui-block-thumb--faq .ui-block-thumb__media {
+  display: none;
+}
+.ui-block-thumb--faq .ui-block-thumb__title {
+  width: 100%;
+  height: 0.1875rem;
+}
+.ui-block-thumb--faq .ui-block-thumb__line {
+  width: 80%;
+  height: 0.125rem;
+  opacity: 0.35;
+}
+.ui-block-thumb--faq .ui-block-thumb__line + .ui-block-thumb__line {
+  width: 100%;
+  height: 0.1875rem;
+  margin-top: 0.1875rem;
+  opacity: 1;
+}
+.ui-block-thumb--faq .ui-block-thumb__action {
+  width: 100%;
+  height: 0.1875rem;
+  border-radius: 0;
+}
+
 /* Étapes de méthode: numbered markers on the rule that runs through them */
 .ui-block-thumb--process_steps .ui-block-thumb__title {
   width: 45%;

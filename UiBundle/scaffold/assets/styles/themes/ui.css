@@ -171,6 +171,9 @@
     /* --viewport-width: 100vw; */
     /* --card-width-compact: min(calc((var(--viewport-width) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6)); */
     /* --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2)); */
+    /* The portrait card, four to the row: a collection whose items are people, the picture over the name. 285 * 4 is the same 1140px of cards as the three widths above, and the portrait itself keeps a measure of its own inside that card */
+    /* --card-width-portrait: min(90vw, 285px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 60px) / 4)); */
+    /* --card-portrait-media-max-width: 200px; */
     /* The card title's own size, stated rather than inherited from the theme's h1-h6, which would give a card the size of a page heading. The compact card steps down once more */
     /* --card-title-size: calc(19px * var(--font-size-title-scale, 1)); */
     /* --card-title-size-compact: calc(15px * var(--font-size-title-scale, 1)); */

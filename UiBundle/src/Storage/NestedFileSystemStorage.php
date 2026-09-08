@@ -12,13 +12,13 @@ namespace c975L\UiBundle\Storage;
 
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Vich\UploaderBundle\Mapping\PropertyMapping;
+use Vich\UploaderBundle\Mapping\PropertyMappingInterface;
 use Vich\UploaderBundle\Storage\AbstractStorage;
 
 // Vich's own FileSystemStorage is final and can't be extended, so doRemove()/doResolvePath() are duplicated here unchanged - only doUpload() differs. Namers (see UiMediaNamer) return a name that already contains the full path relative to the mapping's upload_destination (e.g. "medias/site/block-article-42-xxx.webp"), so that "filename" in DB is self-sufficient and doesn't need to be paired with a separate directory_namer to know where a file lives. But Symfony\Component\HttpFoundation\File\File::move() silently strips everything before the last "/" in the target name, so left to Vich's default storage, uploads would flatten into one folder while removal (which doesn't go through File::move()) would still expect the nested path - looking for a file that was never actually placed there, and silently failing (Vich swallows remove() exceptions).
 class NestedFileSystemStorage extends AbstractStorage
 {
-    protected function doUpload(PropertyMapping $mapping, File $file, ?string $dir, string $name): ?File
+    protected function doUpload(PropertyMappingInterface $mapping, File $file, ?string $dir, string $name): ?File
     {
         $name = str_replace('\\', '/', $name);
         $subDir = dirname($name);
@@ -46,7 +46,7 @@ class NestedFileSystemStorage extends AbstractStorage
         return new File($targetPathname);
     }
 
-    protected function doRemove(PropertyMapping $mapping, ?string $dir, string $name): ?bool
+    protected function doRemove(PropertyMappingInterface $mapping, ?string $dir, string $name): ?bool
     {
         $file = $this->doResolvePath($mapping, $dir, $name);
 
@@ -57,7 +57,7 @@ class NestedFileSystemStorage extends AbstractStorage
         return true;
     }
 
-    protected function doResolvePath(PropertyMapping $mapping, ?string $dir, string $name, ?bool $relative = false): string
+    protected function doResolvePath(PropertyMappingInterface $mapping, ?string $dir, string $name, ?bool $relative = false): string
     {
         $path = (is_string($dir) && '' !== $dir) ? $dir . \DIRECTORY_SEPARATOR . $name : $name;
 
@@ -66,5 +66,11 @@ class NestedFileSystemStorage extends AbstractStorage
         }
 
         return $mapping->getUploadDestination() . \DIRECTORY_SEPARATOR . $path;
+    }
+
+    // Vich 3 requires the method, and nothing is listed here on purpose: "vich:cleanup" diffs, one mapping at a time, what this returns against the filenames that mapping's own entities hold, and deletes the rest. Two things make any listing lethal - block_media and site_font share a single upload destination (public/), so each would call the other's files orphans; and every image carries -thumb/-highres/original siblings (see VichImageResizeListener) and every PDF a poster (see VichPdfThumbnailListener) that no filename column ever holds. A file named here is a file deleted while still in use.
+    public function listFiles(PropertyMappingInterface $mapping): iterable
+    {
+        return [];
     }
 }

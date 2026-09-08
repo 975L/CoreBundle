@@ -102,6 +102,10 @@
         --card-width-compact: min(calc((var(--viewport-width) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
         // Two to the row, one gap between them, and a 570px cap that is the same number as the other two: 380 * 3, 190 * 6 and 570 * 2 are one and the same 1140px of cards, which is what makes the three read as one series rather than three values
         --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2));
+        // Four to the row, three gaps between them, and 285 * 4 is that same 1140px: the portrait card joins the series rather than opening a measure of its own. Four and not three, a portrait card saying a name and a line or two where a full card holds a subject - and a row of people is counted, not read one item at a time
+        --card-width-portrait: min(90vw, 285px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 60px) / 4));
+        // The measure the portrait itself keeps inside that card, the way a flip card's media keeps its own: filling the body edge to edge would leave the face against the outline, where the card is read as a mount around it
+        --card-portrait-media-max-width: 200px;
         --disabled: #808080;
         // The wishlist heart's own size (sass/_favorite.scss), in em so it follows the type size of wherever it is dropped
         --favorite-size: 1.5em;

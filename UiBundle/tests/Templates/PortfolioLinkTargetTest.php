@@ -44,12 +44,31 @@ class PortfolioLinkTargetTest extends TestCase
         $this->assertStringNotContainsString('_blank', $html);
     }
 
-    // Nothing to link to: a href="#" would be a dead link that still looks clickable
+    // Nothing to link to: a href="#" would be a dead link that still looks clickable. Read on the absence of any anchor at all, the card itself being a <div> whether it links or not
     public function testAnItemWithNothingToLinkToIsNotALinkAtAll(): void
     {
-        $html = $this->renderItem(['title' => 'Projet Alpha']);
+        $html = $this->renderItem(['title' => 'Projet Alpha', 'imageUrl' => '/uploads/project.webp']);
 
         $this->assertStringContainsString('<div class="portfolio-grid__project">', $html);
+        $this->assertStringNotContainsString('<a ', $html);
+    }
+
+    // The card is a container and never a link itself: a link written in the description would otherwise be an anchor nested in another, which the browser resolves by closing the outer one early - everything after it stops being clickable
+    public function testALinkWrittenInTheDescriptionIsNotNestedInTheCardsOwn(): void
+    {
+        $html = $this->renderItem([
+            'title' => 'Projet Alpha',
+            'url' => '/pages/sites-realises/projet-alpha',
+            'imageUrl' => '/uploads/project.webp',
+            'content' => '<a href="https://projet-alpha.example">le site</a>',
+        ]);
+
+        // The card's own last link is the title's: the description's has to start after it closes
+        $titleLinkEnd = strpos($html, '</a>', (int) strpos($html, 'portfolio-grid__project-title'));
+
+        $this->assertIsInt($titleLinkEnd);
+        $this->assertGreaterThan($titleLinkEnd, strpos($html, 'https://projet-alpha.example'), "The description's own link sits inside the card's, which no browser can represent.");
+        $this->assertStringNotContainsString('<a class="portfolio-grid__project"', $html);
     }
 
     // The component draws the very same card from its own medias, so it reads the link the same way

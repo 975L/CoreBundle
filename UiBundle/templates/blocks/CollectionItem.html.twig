@@ -2,25 +2,56 @@
 {% if variant is defined and variant == 'portfolio' %}
     {# Reuses portfolio-grid's classes so a Collection can look like a PortfolioGrid with no override #}
     {% set href = detailUrl|default(null) ?: url|default(null) %}
-    {# Nothing to link to: a href="#" would be a dead link that still looks clickable #}
-    {% set tag = href ? 'a' : 'div' %}
     {# Only a link leaving the site opens a tab of its own: an item's "url" is just as legitimately a page of this very site (a real Page written for that one project, which wins over the shared detail page - see SiteBundle's PageController::display()), and sending the visitor out of their tab for it would be wrong #}
-    <{{ tag }} class="portfolio-grid__project"{% if href %} href="{{ href }}"{% if href starts with 'http' %} target="_blank" rel="noopener"{% endif %}{% endif %}>
+    {# Written once and carried to both links below, so the rule reading the destination lives in one place #}
+    {% set linkAttributes %}{% if href %} href="{{ href }}"{% if href starts with 'http' %} target="_blank" rel="noopener"{% endif %}{% endif %}{% endset %}
+    {# The card is a container and never a link itself: the description is Trix markup that may hold a link of its own, and an anchor nested in another is markup no browser can represent - it closes the outer one early, and the rest of the card stops being clickable. The picture and the title carry the destination instead #}
+    <div class="portfolio-grid__project">
         {% if imageUrl %}
             {# "imageUrl" alone is a bare string, so the dimensions come from the attached media instead #}
             {% set itemMedia = block.media|length > 0 ? block.media|first : null %}
             <div class="portfolio-grid__project-img">
-                <img src="{{ imageUrl }}" alt="{{ title }}"{% if itemMedia and itemMedia.intrinsicWidth %} width="{{ itemMedia.intrinsicWidth }}"{% endif %}{% if itemMedia and itemMedia.intrinsicHeight %} height="{{ itemMedia.intrinsicHeight }}"{% endif %} loading="lazy">
+                {# Kept out of the tab order and off the reading: it goes where the title's own link just below goes, and two links to one destination are announced twice #}
+                {% if href %}<a{{ linkAttributes }} tabindex="-1" aria-hidden="true">{% endif %}<img src="{{ imageUrl }}" alt="{{ title }}"{% if itemMedia and itemMedia.intrinsicWidth %} width="{{ itemMedia.intrinsicWidth }}"{% endif %}{% if itemMedia and itemMedia.intrinsicHeight %} height="{{ itemMedia.intrinsicHeight }}"{% endif %} loading="lazy">{% if href %}</a>{% endif %}
             </div>
         {% endif %}
         <div class="portfolio-grid__project-body">
             {# The level the "collection" block resolved for its items, this markup's own <h3> when it drew none - see blocks/Collection.html.twig #}
             {# Matched against the offered levels and never interpolated, the same rule as every other stored value that writes a tag name: what the form holds is data, and data must not be able to write markup #}
             {% set titleLevel = level|default('') in ['h2', 'h3', 'h4'] ? level : 'h3' %}
-            <{{ titleLevel }} class="portfolio-grid__project-title">{{ title }}</{{ titleLevel }}>
-            {% if content %}<p class="portfolio-grid__project-text">{{ content }}</p>{% endif %}
+            {# The anchor wraps the heading rather than sitting in it, so the title keeps the color its own class paints it with #}
+            {% if href %}<a{{ linkAttributes }}><{{ titleLevel }} class="portfolio-grid__project-title">{{ title }}</{{ titleLevel }}></a>{% else %}<{{ titleLevel }} class="portfolio-grid__project-title">{{ title }}</{{ titleLevel }}>{% endif %}
+            {# The description as its source wrote it, Trix HTML like the one every variant below renders: this branch was the only one printing it escaped, so a name set in italics reached the page as its own tags #}
+            {# A <div> and not a <p>, for the reason the portrait card states too: that markup is already block-level and a <p> would be split #}
+            {% if content %}<div class="portfolio-grid__project-text">{{ content|raw|nl2br }}</div>{% endif %}
         </div>
-    </{{ tag }}>
+    </div>
+{% elseif variant is defined and variant == 'portrait' %}
+    {# A card standing for someone: the picture opens it and the name comes under it. Written out here rather than drawn by the Card component, whose title lives in a band that is a sibling of the whole body - a name between the picture and the text is an order no class can put back #}
+    {# The level the "collection" block resolved for its items, this markup's own <h3> when it drew none - see blocks/Collection.html.twig #}
+    {# Matched against the offered levels and never interpolated, the same rule as every other stored value that writes a tag name: what the form holds is data, and data must not be able to write markup #}
+    {% set titleLevel = level|default('') in ['h2', 'h3', 'h4'] ? level : 'h3' %}
+    {# The item's detail page when the block was given one, its own url otherwise - the very order the default variant reads them in #}
+    {% set href = detailUrl|default('') ?: url|default('') %}
+    {# The tab is a setting of the item's own "url" and never of its detail page, which is a page of this very site: the button below reads it the same way, and so does the default variant's picture #}
+    {% set hrefTarget = href == url|default('') ? target|default('') : '' %}
+    {# "imageUrl" alone is a bare string, so the picture's box is reserved from the attached media instead - the very motif the default variant's card reads its own size with #}
+    {% set portraitMedia = block.media|length > 0 ? block.media|first : null %}
+    {% set portraitClass = class|default('') %}
+    {% set portraitClass = portraitClass is iterable ? portraitClass|join(' ') : portraitClass %}
+    <article class="card card--portrait box-shadow {{ portraitClass }}"{% if id|default('') %} id="{{ id }}"{% endif %}>
+        <div class="card-body">
+            {% if imageUrl|default('') %}
+                {# Linked to the card's own destination when it has one, so the portrait is not a dead zone above a name that is a link #}
+                <twig:c975LUi:Image:Link src="{{ imageUrl }}" url="{{ href }}" target="{{ hrefTarget }}" alt="{{ title }}" width="{{ portraitMedia ? portraitMedia.intrinsicWidth : '' }}" height="{{ portraitMedia ? portraitMedia.intrinsicHeight : '' }}"/>
+            {% endif %}
+            <{{ titleLevel }} class="card-title">{% if href %}<a href="{{ href }}"{% if hrefTarget %} target="{{ hrefTarget }}"{% endif %}>{{ title }}</a>{% else %}{{ title }}{% endif %}</{{ titleLevel }}>
+            {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split. No ".text-center" beside it, unlike the plain card below: this card centers everything it holds, and the alignment is declared there once (see sass/_cards.scss) #}
+            {% if content|default('') %}<div>{{ content|raw|nl2br }}</div>{% endif %}
+            {# Wrapped in the very ".card-data" the other variants use, so a row of portraits of unequal lengths still lines its buttons up - the text above it is left in plain flow, where a name is read right under its face #}
+            {% if url|default('') %}<div class="card-data"><twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/></div>{% endif %}
+        </div>
+    </article>
 {% else %}
     {% set resolvedImageUrl = imageUrl|default(null) %}
     {# Read under its own name because the two nesting branches below happen inside the component's context, where the card's own "content" prop - empty, nothing being passed to it - takes the place of the item's description #}

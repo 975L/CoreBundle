@@ -267,3 +267,39 @@ h2.card-header {
 .card--big h2.card-header {
     font-size: var(--card-title-size-big);
 }
+
+/* PORTRAIT CARD */
+
+// A card standing for someone rather than for a subject: the picture opens it, the name comes under it and everything is centered under both, where a plain card is headed with its title in a colored band. The band is the only thing it drops - the row, the outline, the shadow and the twelve accents are the card's own (see templates/blocks/CollectionItem.html.twig, which is the one place that writes this markup)
+.card--portrait {
+    width: var(--card-width-portrait);
+    text-align: center;
+}
+
+// The name, read where the band's title would have been: the same size, painted in the card's accent rather than on it - a hue filling a whole band above a face would be read before the face
+// The fallback is --primary-ink and not --primary: the name is read as ink here where a band paints it as a fill, and dark mode lightens the one and leaves the other its hue (see PrimaryInkRoleTest)
+.card--portrait .card-title {
+    font-family: var(--font-family-title);
+    font-size: var(--card-title-size);
+    color: var(--card-accent, var(--primary-ink));
+    margin: 0.5em 0;
+}
+
+// The name as a link: the theme's "*" and "a:hover" match the anchor directly and beat inheritance, so the accent painted just above would not reach it - the very couple the banded card carries higher up
+.card--portrait .card-title a,
+.card--portrait .card-title a:visited {
+    color: inherit;
+    font-family: inherit;
+    text-decoration: none;
+}
+
+.card--portrait .card-title a:hover,
+.card--portrait .card-title a:visited:hover {
+    color: inherit;
+    text-decoration: underline;
+}
+
+// ".img-responsive" already blocks the picture and centers it, so only its measure is left to say here
+.card--portrait .card-body img {
+    max-width: var(--card-portrait-media-max-width);
+}

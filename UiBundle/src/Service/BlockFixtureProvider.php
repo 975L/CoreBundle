@@ -353,6 +353,18 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                     ],
                 ],
             ],
+            'faq' => [
+                '' => [
+                    'title' => 'Les questions qu\'on nous pose',
+                    'items' => [
+                        ['question' => 'La première question, celle que tout le monde pose.', 'answer' => '<p>La réponse, en deux phrases au plus.</p>'],
+                        ['question' => 'Une deuxième question.', 'answer' => '<p>La réponse, en deux phrases au plus.</p>'],
+                        ['question' => 'Une troisième question.', 'answer' => '<p>La réponse, en deux phrases au plus.</p>'],
+                    ],
+                    'openFirst' => true,
+                    'columns' => 1,
+                ],
+            ],
             'portfolio_grid' => [
                 '' => [
                     'eyebrow' => 'Surtitre de la grille',

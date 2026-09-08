@@ -869,9 +869,19 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     text-decoration: none;
 }
 
-// Overrides the theme's "a:hover" underline: this anchor wraps a whole card, not a run of text
+// Overrides the theme's "a:hover" underline: this anchor wraps a whole card, not a run of text - which is what the portfolio_grid component still renders (see components/Portfolio/Grid.html.twig)
 .portfolio-grid__project:hover,
 .portfolio-grid__project:visited:hover {
+    text-decoration: none;
+}
+
+// The same rule for the two links a collection item in this presentation carries instead - the picture's and the title's - its card being a container and never an anchor. Scoped to those two rather than to every anchor the card holds, a link written in the description being a run of text that keeps its underline
+.portfolio-grid__project-img > a,
+.portfolio-grid__project-body > a,
+.portfolio-grid__project-img > a:hover,
+.portfolio-grid__project-body > a:hover,
+.portfolio-grid__project-img > a:visited:hover,
+.portfolio-grid__project-body > a:visited:hover {
     text-decoration: none;
 }
 
