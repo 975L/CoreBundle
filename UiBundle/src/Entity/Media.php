@@ -33,6 +33,8 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     public const ROLE_APPLE_TOUCH_ICON = 'apple-touch-icon';
     public const ROLE_OG_IMAGE = 'og-image';
     public const ROLE_LOGO = 'logo';
+    // The same logo drawn for a dark page, uploaded next to the one above the way the two watermarks are: a logo whose lettering is black disappears into a dark navbar, and no filter lightens it without flattening the colours around that lettering. Optional - a site whose logo reads on both grounds uploads none, and the one above is then used in both modes (see SiteBundle's Navbar)
+    public const ROLE_LOGO_ON_DARK = 'logo-on-dark';
 
     // The two signatures stamped into a corner of an uploaded photo, named after the background they are meant to be read against: a dark logo for a light corner, a light one for a dark corner. Which of the two a given photo gets is decided on that corner's own luminance (see ImageWatermarker), so a site wanting a watermark at all uploads both - one alone is used for every photo, readable or not
     public const ROLE_WATERMARK_ON_LIGHT = 'watermark-on-light';
@@ -46,6 +48,7 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
         self::ROLE_APPLE_TOUCH_ICON,
         self::ROLE_OG_IMAGE,
         self::ROLE_LOGO,
+        self::ROLE_LOGO_ON_DARK,
         self::ROLE_WATERMARK_ON_LIGHT,
         self::ROLE_WATERMARK_ON_DARK,
     ];
@@ -59,6 +62,7 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     // Roles resized to a max width (aspect ratio kept, unlike FIXED_ICON_SPECS) instead of the default IMAGE_WIDTH
     private const array MAX_WIDTHS = [
         self::ROLE_LOGO => 600,
+        self::ROLE_LOGO_ON_DARK => 600,
     ];
 
     // Block kinds needing a wider stored image than IMAGE_WIDTH (block medias all share role=null, so MAX_WIDTHS above can't key on them). Hero crops tightly via CSS object-fit:cover into a 4/3.2 box and can display up to 520px CSS-wide - on a retina/2x display that needs ~1040 native pixels, and the default 800 falls short, visibly pixelating once cover crops further into the image

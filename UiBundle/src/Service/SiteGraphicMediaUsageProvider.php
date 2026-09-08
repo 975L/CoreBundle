@@ -25,6 +25,7 @@ class SiteGraphicMediaUsageProvider implements MediaUsageProviderInterface
         Media::ROLE_APPLE_TOUCH_ICON => 'label.apple_touch_icon',
         Media::ROLE_OG_IMAGE => 'label.og_image',
         Media::ROLE_LOGO => 'label.logo',
+        Media::ROLE_LOGO_ON_DARK => 'label.logo_on_dark',
         Media::ROLE_ERROR_IMAGE => 'label.error_image',
     ];
 

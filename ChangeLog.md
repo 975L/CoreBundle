@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.25.1
+
+A dark navbar gets a logo of its own, and nobody is nagged for it
+
+### UiBundle
+
+- **New site graphic `logo-on-dark`** (`Media::ROLE_LOGO_ON_DARK`), the same logo drawn for a dark page - a logo whose lettering is black disappears into a dark navbar (08/09/2026)
+- Uploaded beside the other one on the site graphics screen, resized to the same 600px, read through `site_media('logo-on-dark')` (08/09/2026)
+- Optional, a site whose logo reads on both grounds uploading none - and absent from `SiteGraphicAlertProvider`, like the two watermarks (08/09/2026)
+- New `label.logo_on_dark` in the three locales (08/09/2026)
+- `MediaTest` covers the new role being a singleton resized like the light logo (08/09/2026)
+
 ## v1.25.0
 
 The uploader moves a major, and nothing lists a file it must not delete

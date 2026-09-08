@@ -2774,6 +2774,10 @@
                 <source>label.logo</source>
                 <target>Logo</target>
             </trans-unit>
+            <trans-unit id="Nc6DSw2">
+                <source>label.logo_on_dark</source>
+                <target>Logo for dark background</target>
+            </trans-unit>
             <trans-unit id="A3tB9aX">
                 <source>label.longitude</source>
                 <target>Longitude</target>

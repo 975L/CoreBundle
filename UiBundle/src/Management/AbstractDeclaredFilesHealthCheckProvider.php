@@ -51,7 +51,7 @@ abstract class AbstractDeclaredFilesHealthCheckProvider implements HealthCheckEx
                 continue;
             }
 
-            // The OK row is what lets a re-uploaded file go back to green where its filename is stable (the six singleton roles), and the exhaustive purge is what retires the old url everywhere else - re-uploading names the file anew (see UiMediaNamer), so the green row lands on a url of its own rather than replacing the red one (see HealthCheckExhaustiveInterface)
+            // The OK row is what lets a re-uploaded file go back to green where its filename is stable (the seven singleton roles), and the exhaustive purge is what retires the old url everywhere else - re-uploading names the file anew (see UiMediaNamer), so the green row lands on a url of its own rather than replacing the red one (see HealthCheckExhaustiveInterface)
             $found = is_file($this->projectDir . '/' . ($file['directory'] ?? self::PUBLIC_DIRECTORY) . '/' . $filename);
 
             $rows[] = [

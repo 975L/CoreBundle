@@ -2658,9 +2658,12 @@ Media::ROLE_FAVICON;          // 'favicon'
 Media::ROLE_APPLE_TOUCH_ICON; // 'apple-touch-icon'
 Media::ROLE_OG_IMAGE;         // 'og-image'
 Media::ROLE_LOGO;             // 'logo'
+Media::ROLE_LOGO_ON_DARK;     // 'logo-on-dark'
 Media::ROLE_WATERMARK_ON_LIGHT; // 'watermark-on-light'
 Media::ROLE_WATERMARK_ON_DARK;  // 'watermark-on-dark'
 ```
+
+`logo-on-dark` is the same logo drawn for a dark page, and the one role of the set a site is expected to leave empty: a logo whose lettering is black disappears into a dark navbar, and no filter lightens it without flattening the colours around that lettering. It is resized to the same 600px as `logo` and read through `site_media('logo-on-dark')`; a consumer falls back to `logo` when none was uploaded (see SiteBundle's navbar, which paints one or the other by theme).
 
 `role` is unique per value, so there is at most one `Media` for each. Create/replace one the same way as any other `Media` (e.g. from your own app's settings form or a fixture), setting `setRole(Media::ROLE_FAVICON)` — `UiMediaNamer` then stores it under a fixed, predictable filename at the root of `public/` instead of the usual per-block path.
 
@@ -2687,9 +2690,9 @@ Retrieve it anywhere in Twig with the `site_media()` function, which returns `nu
 
 ## Site graphics
 
-The favicon, Apple touch icon, logo, default Open Graph image, the two watermark signatures and the error-image pool are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
+The favicon, Apple touch icon, logo, its dark-background twin, default Open Graph image, the two watermark signatures and the error-image pool are `Media` rows carrying a `role` (see [Site-wide media](#site-wide-media-favicon-logo-og-image) above for the roles themselves and how they are stored). `Controller\Management\SiteGraphicCrudController` is the screen that fills them, under *Management → Advanced → Site graphics*, gated by `site-role-editor`.
 
-The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, for the four a site can't do without — the two watermark signatures are offered as buttons but never nagged about, a site signing nothing being a perfectly finished site. The buttons disappear once the six singleton graphics exist — `error-image` is a pool, added through the plain "new" action.
+The index shows one button per graphic still missing: each opens the upload form with the role already picked and the choice frozen, so only the file is left to choose. `SiteGraphicAlertProvider` raises the same thing as a dashboard alert, for the four a site can't do without — the dark logo and the two watermark signatures are offered as buttons but never nagged about, a site signing nothing, or drawing a logo that reads on both grounds, being a perfectly finished site. The buttons disappear once the seven singleton graphics exist — `error-image` is a pool, added through the plain "new" action.
 
 `SiteGraphicExportProvider`/`SiteGraphicImportProvider` plug them into ConfigBundle's **Export sync (everything)** shortcut and **Import content** screen: a singleton role matches by its own role on import, while the repeatable `error-image` pool is replaced wholesale (no natural key of its own to match against). `SiteGraphicMediaUsageProvider` is what makes the Media library say "this one is the favicon".
 
@@ -2703,7 +2706,7 @@ The `og-image` role is the one graphic offered an **alternative text** on that s
 
 A site graphic is uploaded on the server it serves from — it is not in the site's repository, so no deployment carries it. The day one is missing there, nothing says so: the row still declares it, the Site graphics screen still lists it, every export still carries it, and only whoever loads the page it belongs to sees the hole. A watermark signature missing in production had two days of photographs signed with the other one, silently, `ImageWatermarker` falling back rather than refusing to sign.
 
-`Management\MediaFilesHealthCheckProvider` (kind `files-ui`, on ConfigBundle's **Health check** page) is what answers that: one row per file a `Media` or a `Font` row names, **error** when it is not under `public/`, ok when it is. Only the six singleton roles keep a stable filename, so the ok row is what takes them back to green; everywhere else `UiMediaNamer` names the re-uploaded file anew, and the old url is retired instead — the provider declares itself exhaustive (see ConfigBundle's `HealthCheckExhaustiveInterface`), so a url a run no longer returns has its rows dropped rather than left standing in red. A media carrying a role links to the Site graphics screen, one without to the media library, and a font to its own — the screen the file is re-uploaded from, never merely the one it is listed on.
+`Management\MediaFilesHealthCheckProvider` (kind `files-ui`, on ConfigBundle's **Health check** page) is what answers that: one row per file a `Media` or a `Font` row names, **error** when it is not under `public/`, ok when it is. Only the seven singleton roles keep a stable filename, so the ok row is what takes them back to green; everywhere else `UiMediaNamer` names the re-uploaded file anew, and the old url is retired instead — the provider declares itself exhaustive (see ConfigBundle's `HealthCheckExhaustiveInterface`), so a url a run no longer returns has its rows dropped rather than left standing in red. A media carrying a role links to the Site graphics screen, one without to the media library, and a font to its own — the screen the file is re-uploaded from, never merely the one it is listed on.
 
 The check itself lives in `Management\AbstractDeclaredFilesHealthCheckProvider`, so a bundle covering its own uploads writes nothing but what declares a file:
 

@@ -148,6 +148,7 @@ class SiteGraphicCrudControllerTest extends TestCase
             [
                 Media::ROLE_APPLE_TOUCH_ICON,
                 Media::ROLE_OG_IMAGE,
+                Media::ROLE_LOGO_ON_DARK,
                 Media::ROLE_WATERMARK_ON_LIGHT,
                 Media::ROLE_WATERMARK_ON_DARK,
                 Media::ROLE_ERROR_IMAGE,
@@ -272,7 +273,7 @@ class SiteGraphicCrudControllerTest extends TestCase
         $missing = $this->missingRoles($this->createController());
 
         $this->assertSame(
-            ['label.favicon', 'label.apple_touch_icon', 'label.og_image', 'label.logo', 'label.watermark_on_light', 'label.watermark_on_dark'],
+            ['label.favicon', 'label.apple_touch_icon', 'label.og_image', 'label.logo', 'label.logo_on_dark', 'label.watermark_on_light', 'label.watermark_on_dark'],
             array_column($missing, 'label')
         );
         $this->assertSame('/management/site-graphic/new', $missing[0]['url']);
@@ -286,6 +287,7 @@ class SiteGraphicCrudControllerTest extends TestCase
             Media::ROLE_APPLE_TOUCH_ICON,
             Media::ROLE_OG_IMAGE,
             Media::ROLE_LOGO,
+            Media::ROLE_LOGO_ON_DARK,
             Media::ROLE_WATERMARK_ON_LIGHT,
             Media::ROLE_WATERMARK_ON_DARK,
         ]);

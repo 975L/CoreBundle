@@ -22,6 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Alerts for the site-wide graphics (favicon, apple-touch-icon, og-image, logo) not yet uploaded
 class SiteGraphicAlertProvider implements AlertProviderInterface
 {
+    // Only the graphics every site owes itself: the dark logo and the two watermarks are deliberately absent, being answers to a situation a given site may never be in - a dashboard warning about a file the design has no use for is a warning that gets ignored
     private const array ROLE_LABELS = [
         Media::ROLE_FAVICON => 'label.favicon',
         Media::ROLE_APPLE_TOUCH_ICON => 'label.apple_touch_icon',

@@ -48,6 +48,15 @@ class MediaTest extends TestCase
         $this->assertSame(600, $media->getImageWidth());
     }
 
+    // The dark logo is the same drawing on another ground: one singleton row like the light one, and resized to the same width, a pair coming out at two sizes showing the navbar jump on a theme switch
+    public function testTheDarkLogoIsASingletonRoleResizedLikeTheLightOne(): void
+    {
+        $media = new Media()->setRole(Media::ROLE_LOGO_ON_DARK);
+
+        $this->assertSame(600, $media->getImageWidth());
+        $this->assertContains(Media::ROLE_LOGO_ON_DARK, Media::getSingletonRoles());
+    }
+
     // Hero crops tightly via CSS object-fit:cover (see sass/_page-sections.scss) - needs a wider stored image than other block kinds to avoid pixelating on retina displays
     public function testGetImageWidthUsesBlockKindMaxWidthsForHero(): void
     {
