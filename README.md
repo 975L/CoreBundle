@@ -66,13 +66,13 @@ Its history, on the other hand, is the package's: [ChangeLog.md](ChangeLog.md) a
 
 ## Quality checks
 
-The seven checks the CI runs live in `composer.json` alone, as one list:
+The nine checks the CI runs live in `composer.json` alone, as one list:
 
 ```bash
 composer qa
 ```
 
-`composer run -l` names what each one covers, and each is callable on its own (`composer audit-deps`, `cs`, `fixer`, `stan`, `stan-scaffold`, `rector`, `test`). The workflow calls those same scripts, so a check is never declared twice.
+`composer run -l` names what each one covers, and each is callable on its own (`composer audit-deps`, `cs`, `fixer`, `stan`, `stan-scaffold`, `rector`, `lizard`, `test`, `mess`). The workflow calls those same scripts, so a check is never declared twice.
 
 `audit-deps` is `composer audit`: it matches the resolved dependencies against the Packagist security advisories, which is where a known CVE in a dependency gets caught — before the push, not once a site has deployed it. Abandoned packages are reported without failing the run.
 
@@ -84,7 +84,7 @@ A development machine's `vendor/` symlinks the sibling repositories, which expos
 bin/ci.sh
 ```
 
-The quality tools themselves are not dependencies of the bundle: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the four versions it ran with — a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
+The quality tools themselves are not dependencies of the bundle: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the six versions it ran with — Lizard excepted, pinned in both because its counting changed between releases and one release alone matches the thresholds Codacy reads — a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
 
 ## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
 

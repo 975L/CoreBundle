@@ -11,12 +11,13 @@
 namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Entity\HealthCheckResult;
-use c975L\ConfigBundle\Management\HealthCheckProviderInterface;
+use c975L\ConfigBundle\Management\HealthCheckExhaustiveInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\EnvironmentProbe;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
+use c975L\UiBundle\Registry\PdfDocumentRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -26,7 +27,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Lists the PDF medias whose thumbnail was never produced. Its whole reason for existing is that failing to produce one is silent by design (see VichPdfThumbnailListener): the upload succeeds, the document downloads fine, and the block falls back to a placeholder - so nothing anywhere says the site is missing something until someone happens to look at the page.
 //
 // Says why, not just how many: whether Ghostscript answers and whether exec() can be called at all are read here (see EnvironmentProbe), because those two turn "this document has no thumbnail" into either "re-save it" or "the server cannot do it for any document, and no amount of re-saving will help". They are read per run rather than stored, a host being free to withdraw either between two runs without anything on the site changing.
-class PdfThumbnailHealthCheckProvider implements HealthCheckProviderInterface
+class PdfThumbnailHealthCheckProvider implements HealthCheckExhaustiveInterface
 {
     // Named here rather than restated wherever a row of this kind is picked out
     public const string KIND = 'pdf-thumbnail';
@@ -36,6 +37,7 @@ class PdfThumbnailHealthCheckProvider implements HealthCheckProviderInterface
 
     public function __construct(
         private readonly MediaRepository $mediaRepository,
+        private readonly PdfDocumentRegistry $pdfDocumentRegistry,
         private readonly EnvironmentProbe $environmentProbe,
         private readonly ConfigServiceInterface $configService,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
@@ -54,8 +56,11 @@ class PdfThumbnailHealthCheckProvider implements HealthCheckProviderInterface
     {
         $medias = $this->mediaRepository->findPdfs();
 
+        // What the satellite bundles hold in tables of their own (BookBundle's book_media, say): without them the check would report a clean site while every press document renders the fallback picture
+        $declared = $this->pdfDocumentRegistry->getDocuments();
+
         // A site with no PDF at all has nothing to report: whether the server could make a thumbnail is not a defect until something needs one
-        if ([] === $medias) {
+        if ([] === $medias && [] === $declared) {
             return [];
         }
 
@@ -98,7 +103,46 @@ class PdfThumbnailHealthCheckProvider implements HealthCheckProviderInterface
             );
         }
 
+        foreach ($declared as $document) {
+            $rows[] = $this->documentRow($document, $siteUrl, $canGenerate);
+        }
+
         return $rows;
+    }
+
+    // The same verdict as above, for a document held outside this bundle's library: it carries its own label and its own edit screen, this bundle knowing neither the entity nor the controller behind it
+    /**
+     * @param array{filename: string, label: string, editUrl: ?string} $document
+     *
+     * @return array<string, mixed>
+     */
+    private function documentRow(array $document, string $siteUrl, bool $canGenerate): array
+    {
+        $filename = $document['filename'];
+        $thumbnail = VichPdfThumbnailListener::toWebpPath($filename);
+        $exists = file_exists($this->projectDir . '/public/' . $thumbnail);
+
+        return [
+            'url' => $siteUrl . '/' . $filename,
+            'label' => '' !== $document['label'] ? $document['label'] : $filename,
+            'status' => $exists ? HealthCheckResult::STATUS_OK : HealthCheckResult::STATUS_WARNING,
+            'summary' => $this->translator->trans(
+                match (true) {
+                    $exists => 'label.health_check_pdf_thumbnail_ok',
+                    $canGenerate => 'label.health_check_pdf_thumbnail_missing',
+                    default => 'label.health_check_pdf_thumbnail_unavailable',
+                },
+                ['%file%' => $filename],
+                'ui'
+            ),
+            'details' => $exists ? [] : [
+                'thumbnail' => $thumbnail,
+                'sapi' => $this->environmentProbe->getSapi(),
+                'exec' => $this->environmentProbe->canExec(),
+                'ghostscript' => $this->environmentProbe->getBinaryVersion(self::THUMBNAIL_BINARY),
+            ],
+            'editUrl' => $document['editUrl'],
+        ];
     }
 
     // Both halves of what the listener needs, in the order it needs them: without exec() the binary is unreachable whether it is installed or not, which is why its version is never even asked for then (see EnvironmentProbe)

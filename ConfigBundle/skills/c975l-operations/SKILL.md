@@ -12,7 +12,7 @@ description: "Use this skill when running, monitoring or backing up a Symfony ap
 **Key source paths** (relative to this bundle's directory inside the package):
 `src/Command/`, `src/Entity/Redirect.php`, `src/Entity/NotFound.php`, `src/Entity/UrlMetadata.php`, `src/Repository/NotFoundRepository.php`, `src/Management/NotFoundAlertProvider.php`, `src/EventSubscriber/`, `src/Management/`, `src/Scheduler/`, `src/Service/`, `templates/management/`
 
-**Related skills:** `c975l-config`, `c975l-management`, `c975l-users` in this same bundle.
+**Related skills:** `c975l-config`, `c975l-management`, `c975l-users` in this same bundle, and `c975l-media` in UiBundle beside it.
 
 ## The commands
 
@@ -156,9 +156,11 @@ which had a working share button reported as a dead link on every page carrying 
 `AbstractDeclaredFilesHealthCheckProvider`: extend it, yield the files your rows name, and every one
 missing from `public/` is reported as an error (kinds `files-ui`, `files-site`, `files-gallery`). It is
 what catches a file that only ever existed on the server — a site graphic, a signature — and that no
-deployment carries. Do not write a file-exists check of your own.
+deployment carries. Do not write a file-exists check of your own. A PDF's `.webp` thumbnail is
+checked apart, by kind `pdf-thumbnail`, which a bundle holding PDFs of its own feeds through UiBundle's
+`PdfDocumentSourceInterface`.
 
-A provider whose run lists the whole of its domain — the file checks above, `svg-fonts` — implements
+A provider whose run lists the whole of its domain — the file checks above, `pdf-thumbnail`, `svg-fonts` — implements
 `HealthCheckExhaustiveInterface`, and the runner then drops that kind's rows for the urls the run no
 longer returns. Without it a url carrying a generated filename keeps its last error for good, the
 retention purge preserving the latest row of each (url, kind). Never put it on a provider checking a

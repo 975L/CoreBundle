@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.24.1
+
+Every PDF of the site reaches the thumbnail check, not the library alone
+
+### The package
+
+- The CI runs `composer mess` and `composer lizard`, the two gate checks the workflow left out (07/09/2026)
+- `bin/ci.sh` installs phpmd and lizard beside the four other tools, and prints their versions too (07/09/2026)
+- Lizard is pinned to 1.17.31 in both, its counting having changed between releases (07/09/2026)
+
+### UiBundle
+
+- **`PdfThumbnailHealthCheckProvider` now reports the whole site, not this bundle's library alone**: a bundle holding its documents in a table of its own was invisible to it (07/09/2026)
+- New `PdfDocumentSourceInterface`, `PdfDocumentRegistry` and `PdfDocumentSourcePass`: a bundle declares its PDFs and the check reports them beside its own (07/09/2026)
+- A declared row carries the label and the edit screen its own bundle names, this one knowing neither the entity nor the controller behind it (07/09/2026)
+- `PdfThumbnailHealthCheckProvider` is now exhaustive (`HealthCheckExhaustiveInterface`), so the warning a re-saved document replaces leaves the dashboard (07/09/2026)
+- `PdfThumbnailHealthCheckProviderTest`, `PdfDocumentRegistryTest` and `PdfDocumentSourcePassTest` cover the declared documents (07/09/2026)
+- Readme and the `c975l-media`/`c975l-operations` skills document the new extension point (07/09/2026)
+
 ## v1.24.0
 
 A check that never ran says the verdict is missing, not that the page is broken

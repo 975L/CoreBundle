@@ -11,6 +11,16 @@
                 "en": "A hero placed inside a column now uses the whole width of that column: its title used to be squeezed into half of it and wrapped over several lines.",
                 "fr": "Un hero placé dans une colonne occupe désormais toute la largeur de cette colonne : son titre était jusqu'ici serré dans la moitié et s'enroulait sur plusieurs lignes.",
                 "es": "Un hero colocado dentro de una columna ocupa ahora todo el ancho de esa columna: su título quedaba antes apretado en la mitad y se envolvía en varias líneas."
+            },
+            {
+                "en": "The health check now covers every PDF of the site, and no longer the media library alone: the documents your catalogues hold appear there too, so a missing preview picture is reported rather than discovered on the page itself.",
+                "fr": "Le contrôle de santé couvre désormais tous les PDF du site, et non plus la seule médiathèque : les documents que portent vos catalogues y figurent aussi, si bien qu'une image d'aperçu manquante est signalée au lieu d'être découverte sur la page elle-même.",
+                "es": "El control de estado cubre ahora todos los PDF del sitio, y ya no solo la mediateca: los documentos que llevan sus catálogos también aparecen allí, de modo que una imagen de vista previa que falte se avisa en lugar de descubrirse en la propia página."
+            },
+            {
+                "en": "Once a document's preview picture is back, its warning leaves the health page instead of staying there for good.",
+                "fr": "Dès que l'image d'aperçu d'un document est revenue, son avertissement quitte la page de santé au lieu d'y rester indéfiniment.",
+                "es": "En cuanto vuelve la imagen de vista previa de un documento, su aviso desaparece de la página de estado en vez de quedarse allí para siempre."
             }
         ]
     },

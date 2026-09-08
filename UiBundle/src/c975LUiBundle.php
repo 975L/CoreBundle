@@ -31,6 +31,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\FormPageUrlProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormThemeRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\GalleryShowcaseProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\MediaUsageProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\PdfDocumentSourcePass;
 use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ReviewReplyPublisherPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ReviewVerifierPass;
@@ -58,6 +59,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new DemoFixtureProviderPass());
         $container->addCompilerPass(new DemoFixtureLinkerPass());
         $container->addCompilerPass(new PlaceholderMediaProviderPass());
+        $container->addCompilerPass(new PdfDocumentSourcePass());
         $container->addCompilerPass(new BlockOwnerResolverPass());
         $container->addCompilerPass(new BlockCacheTagProviderPass());
         $container->addCompilerPass(new CacheInvalidatorPass());

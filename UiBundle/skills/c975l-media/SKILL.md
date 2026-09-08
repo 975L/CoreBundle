@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, UploadProgress, upload progress bar, formAttr."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr."
 ---
 
 # c975L UiBundle — media and uploads
@@ -10,9 +10,9 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Service/UiMediaNamer.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`
+`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Service/UiMediaNamer.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`
 
-**Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle.
+**Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-operations` in ConfigBundle beside it.
 
 ## Two ways to hold a file
 
@@ -96,6 +96,14 @@ inherits that, and must therefore yield **every** file it declares on every run.
 A bundle storing uploads of its own extends it and implements `declaredFiles()` alone, yielding
 `filename`, `label` and `editUrl` per file — the screen the file is **re-uploaded from**. Only the file
 a row names, never a derivative: a thumbnail is rebuilt, a named file gone is not.
+
+**A PDF's `.webp` thumbnail is the derivative that check leaves out**, and losing it is silent too:
+`Management\PdfThumbnailHealthCheckProvider` (kind `pdf-thumbnail`, exhaustive as well) answers for it.
+It reads this bundle's own `Media` library alone, so a bundle holding its documents in a table of its
+own implements `Contract\PdfDocumentSourceInterface` and hands them over — the same `filename`, `label`
+and `editUrl` triple, `filename` relative to `public/` and exactly as the row stores it, since the
+`.webp` is derived from that very string (`VichPdfThumbnailListener::toWebpPath()`). Auto-discovered by
+`PdfDocumentSourcePass`, no tag needed.
 
 ## In the app
 
@@ -213,6 +221,9 @@ template is shipped to sites running either engine.
 - **Do not relate your media entity to this bundle's `Media`** — use the trait.
 - **Do not crop a thumbnail square on disk.** Use `object-fit`.
 - **Do not derive a thumbnail from the stored file** — the pipeline uses the original.
+- **Do not report a PDF under anything but its stored `filename`** in a `PdfDocumentSourceInterface`,
+  nor under an absolute path: the check derives the `.webp` from it and would look at a file the site
+  never asks for.
 - **Do not build a filename from what the browser sent.**
 - **Do not serve a private file directly**, and do not skip the access check because the factory
   built the response.

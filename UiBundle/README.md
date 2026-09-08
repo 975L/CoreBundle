@@ -2533,7 +2533,25 @@ When a `.pdf` file is uploaded through VichUploader on **any entity** (no interf
 
 No configuration needed — handled by `VichPdfThumbnailListener`, auto-registered like the rest of the bundle's services.
 
-Because that failure is silent by design — the upload succeeds, the document downloads fine, and the block falls back to a placeholder — `Management\PdfThumbnailHealthCheckProvider` (kind `pdf-thumbnail`, on ConfigBundle's **Health check** page) lists the PDF medias whose `.webp` is missing, each row linking to that media's own edit screen. It says *why*, not just how many: whether `exec()` can be called and whether Ghostscript answers are read per run (see ConfigBundle's `Service\EnvironmentProbe`), which is what turns "this document has no thumbnail" into either "re-save it" or "this server cannot make one for any document, and no amount of re-saving will help". A site holding no PDF at all reports nothing — a server that couldn't have made a thumbnail isn't a defect until something needs one.
+Because that failure is silent by design — the upload succeeds, the document downloads fine, and the block falls back to a placeholder — `Management\PdfThumbnailHealthCheckProvider` (kind `pdf-thumbnail`, on ConfigBundle's **Health check** page) lists the PDF medias whose `.webp` is missing, each row linking to that media's own edit screen. It says *why*, not just how many: whether `exec()` can be called and whether Ghostscript answers are read per run (see ConfigBundle's `Service\EnvironmentProbe`), which is what turns "this document has no thumbnail" into either "re-save it" or "this server cannot make one for any document, and no amount of re-saving will help". A site holding no PDF at all reports nothing — a server that couldn't have made a thumbnail isn't a defect until something needs one. `UiMediaNamer` names a re-uploaded PDF anew, so the green row lands on a url of its own: the provider declares itself exhaustive (see ConfigBundle's `HealthCheckExhaustiveInterface`) and the warning it replaces is dropped rather than left standing on the dashboard for good.
+
+That check only ever sees this bundle's own `Media` library, so a satellite bundle holding its documents in a table of its own (BookBundle's `book_media`, say) stays invisible to it - a whole catalog can lose every thumbnail without a single row saying so. Implement `Contract\PdfDocumentSourceInterface` to hand it yours (auto-discovered the same way as `MediaUsageProviderInterface`, no tag needed - see `Registry\PdfDocumentRegistry`/`DependencyInjection\Compiler\PdfDocumentSourcePass`):
+
+```php
+use c975L\UiBundle\Contract\PdfDocumentSourceInterface;
+
+class BookPdfDocumentSource implements PdfDocumentSourceInterface
+{
+    public function getPdfDocuments(): array
+    {
+        return [
+            ['filename' => 'medias/book/books/presse.pdf', 'label' => 'Dossier de presse', 'editUrl' => $this->adminUrlGenerator->setController(BookMediaCrudController::class)->setAction(Action::EDIT)->setEntityId(12)->generateUrl()],
+        ];
+    }
+}
+```
+
+`filename` is the path the file is served under, relative to `public/` and exactly as the row stores it - the same string the `.webp` is derived from, so a source reporting anything else has the check look at a file the site never asks for. `label` names the document on the dashboard, empty falling back to the filename, and `editUrl` is `null` for a document no back-office screen opens. The rows are read at run time, once per check, and land beside the library's own under the same `pdf-thumbnail` kind.
 
 By default an uploaded PDF is stored under an auto-generated name (`block-{kind}-{id}-{uniqid}.pdf`). Filling in the **File name** field (`Media::$name`, shown for `application/pdf` uploads) overrides this: `UiMediaNamer` slugifies it into the stored filename instead (e.g. "Rapport annuel" → `rapport-annuel-xxx.pdf`). It's distinct from **Caption** (`Media::$label`, a display string), which isn't filesystem-safe.
 

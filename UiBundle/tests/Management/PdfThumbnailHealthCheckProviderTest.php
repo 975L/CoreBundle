@@ -13,8 +13,10 @@ namespace c975L\UiBundle\Tests\Management;
 use c975L\ConfigBundle\Entity\HealthCheckResult;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\EnvironmentProbe;
+use c975L\UiBundle\Contract\PdfDocumentSourceInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\PdfThumbnailHealthCheckProvider;
+use c975L\UiBundle\Registry\PdfDocumentRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -37,9 +39,11 @@ class PdfThumbnailHealthCheckProviderTest extends TestCase
     }
 
     /**
-     * @param array<string, bool> $medias filename => whether its .webp sits next to it on disk
+     * @param array<string, bool>                                            $medias    filename => whether its .webp sits next to it on disk
+     * @param array<string, bool>                                            $declared  same, for the documents a satellite bundle hands over rather than this bundle's own library
+     * @param list<array{filename: string, label: string, editUrl: ?string}> $documents rows handed over as they stand, for what the map above cannot say - a nameless document, a screen that does not exist
      */
-    private function createProvider(array $medias, bool $canExec = true, ?string $ghostscript = 'GPL Ghostscript 10.02.1'): PdfThumbnailHealthCheckProvider
+    private function createProvider(array $medias, bool $canExec = true, ?string $ghostscript = 'GPL Ghostscript 10.02.1', array $declared = [], array $documents = []): PdfThumbnailHealthCheckProvider
     {
         $rows = [];
         foreach ($medias as $filename => $hasThumbnail) {
@@ -52,6 +56,20 @@ class PdfThumbnailHealthCheckProviderTest extends TestCase
 
         $mediaRepository = $this->createStub(MediaRepository::class);
         $mediaRepository->method('findPdfs')->willReturn($rows);
+
+        foreach ($declared as $filename => $hasThumbnail) {
+            if ($hasThumbnail) {
+                file_put_contents($this->projectDir . '/public/' . str_replace('.pdf', '.webp', $filename), 'webp');
+            }
+
+            $documents[] = ['filename' => $filename, 'label' => 'Declared ' . $filename, 'editUrl' => '/management/book/1'];
+        }
+
+        $source = $this->createStub(PdfDocumentSourceInterface::class);
+        $source->method('getPdfDocuments')->willReturn($documents);
+
+        $registry = new PdfDocumentRegistry();
+        $registry->addProvider($source);
 
         $environmentProbe = $this->createStub(EnvironmentProbe::class);
         $environmentProbe->method('getSapi')->willReturn('cli');
@@ -75,6 +93,7 @@ class PdfThumbnailHealthCheckProviderTest extends TestCase
 
         return new PdfThumbnailHealthCheckProvider(
             $mediaRepository,
+            $registry,
             $environmentProbe,
             $configService,
             $adminUrlGenerator,
@@ -142,5 +161,61 @@ class PdfThumbnailHealthCheckProviderTest extends TestCase
 
         $this->assertCount(1, $rows);
         $this->assertSame('https://example.com/kept.pdf', $rows[0]['url']);
+    }
+
+    // A satellite bundle holding its documents in a table of its own is invisible to the library, and this check is the only thing that would ever say its thumbnails went missing
+    public function testADeclaredDocumentWithoutItsThumbnailIsAWarningToo(): void
+    {
+        $rows = $this->createProvider([], declared: ['medias/book/books/presse.pdf' => false])->runChecks();
+
+        $this->assertCount(1, $rows);
+        $this->assertSame(HealthCheckResult::STATUS_WARNING, $rows[0]['status']);
+        $this->assertSame('https://example.com/medias/book/books/presse.pdf', $rows[0]['url']);
+        $this->assertSame('medias/book/books/presse.webp', $rows[0]['details']['thumbnail']);
+    }
+
+    // The declaring bundle names the document and the screen it is edited on, this one knowing neither the entity nor the controller behind it
+    public function testADeclaredDocumentCarriesItsOwnLabelAndEditScreen(): void
+    {
+        $rows = $this->createProvider([], declared: ['presse.pdf' => true])->runChecks();
+
+        $this->assertSame(HealthCheckResult::STATUS_OK, $rows[0]['status']);
+        $this->assertSame('Declared presse.pdf', $rows[0]['label']);
+        $this->assertSame('/management/book/1', $rows[0]['editUrl']);
+    }
+
+    // A site whose only PDFs are declared elsewhere is still a site with PDFs: reporting nothing here is what let a whole catalog lose its thumbnails unnoticed
+    public function testDeclaredDocumentsAloneAreEnoughToReport(): void
+    {
+        $rows = $this->createProvider([], declared: ['presse.pdf' => true])->runChecks();
+
+        $this->assertNotSame([], $rows);
+    }
+
+    // A source is free to hand over a document nothing names, the dashboard then reading the file itself rather than an empty cell
+    public function testADeclaredDocumentWithoutALabelFallsBackOnItsFilename(): void
+    {
+        $rows = $this->createProvider([], documents: [['filename' => 'presse.pdf', 'label' => '', 'editUrl' => null]])->runChecks();
+
+        $this->assertSame('presse.pdf', $rows[0]['label']);
+        $this->assertNull($rows[0]['editUrl']);
+    }
+
+    // Ghostscript out of reach makes every declared document unfixable too: re-saving it would achieve nothing, and the row has to say so
+    public function testADeclaredDocumentIsReportedUnavailableWhenTheServerCannotGenerate(): void
+    {
+        $rows = $this->createProvider([], canExec: false, declared: ['presse.pdf' => false])->runChecks();
+
+        $this->assertSame('label.health_check_pdf_thumbnail_unavailable|presse.pdf', $rows[0]['summary']);
+        $this->assertFalse($rows[0]['details']['exec']);
+    }
+
+    // Both halves land in the same run, the dashboard holding one list per kind
+    public function testTheLibraryAndTheDeclaredDocumentsAreReportedTogether(): void
+    {
+        $rows = $this->createProvider(['cv.pdf' => true], declared: ['presse.pdf' => true])->runChecks();
+
+        $this->assertCount(2, $rows);
+        $this->assertSame(['https://example.com/cv.pdf', 'https://example.com/presse.pdf'], array_column($rows, 'url'));
     }
 }
