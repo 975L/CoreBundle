@@ -1,4 +1,4 @@
-{# Static usage: <twig:c975LUi:Portfolio:Grid media="{{ block.media }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [level=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Portfolio:Grid media="{{ block.media }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [level=""] [variant=""] [zoom=false] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/PortfolioGrid.html.twig #}
 {# Per-project title/text/link come from each media's own label/description/url, no separate collection #}
 {# A headingless <section> is invalid HTML, hence the <div> fallback #}
@@ -6,7 +6,11 @@
 {% set tag = hasHeading ? 'section' : 'div' %}
 {# The level each project's title is drawn with. Matched against the offered ones and never interpolated, the same rule as every stored value writing a tag name; unset, it follows the head above - <h3> under it, <h2> for a grid standing on its projects alone, which is what a page's <h1> is directly followed by #}
 {% set projectLevel = level|default('') in ['h2', 'h3', 'h4'] ? level : (hasHeading ? 'h3' : 'h2') %}
-<{{ tag }} class="portfolio-grid"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# The pictures put forward for themselves rather than as projects a card announces. "plain" only takes the chrome off; "thumbnail" takes it off too and counts the pictures instead of reading them one at a time, at the very width a row of book covers is drawn with (--card-width-compact) #}
+{% set variant = variant|default('') in ['plain', 'thumbnail'] ? variant : '' %}
+{# One click opens the picture over the page (see c975LUi:Image:Zoom), the site's own call - a set of covers or of cards is looked at closely, a row of project screenshots is not #}
+{% set zoom = zoom|default(false)|to_bool %}
+<{{ tag }} class="portfolio-grid{{ variant ? ' portfolio-grid--' ~ variant : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         {# A head with nothing in it is margins standing over the projects, same rule as the collection grid's #}
         {% if hasHeading or (linkLabel|default('') and linkUrl|default('')) %}
@@ -30,13 +34,30 @@
                 {# Same reading as the "collection" block's own portfolio variant (see blocks/CollectionItem.html.twig): a tab of its own is for a link leaving the site, never for a page of this one #}
                 <{{ projectTag }} class="portfolio-grid__project"{% if m.url %} href="{{ m.url }}"{% if m.url starts with 'http' %} target="_blank" rel="noopener"{% endif %}{% endif %}>
                     <div class="portfolio-grid__project-img">
-                        {# Pixel size reserves the box so the grid doesn't reflow as each image lands #}
-                        <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %} loading="lazy">
+                        {# A project leading somewhere is already an <a>, and the zoom writes one of its own: nesting the two would have the browser split them and leave the dialog outside the controller's element, so the outbound link wins over the zoom #}
+                        {% if zoom and not m.url %}
+                            {# The stored file in both places: a block's media has no "-highres" sibling of its own (see VichMultiSizeImageInterface, which Media does not implement), and what the dialog opens is that file at its own size rather than at the width of the cell #}
+                            {# "filename" and not vich_uploader_asset(): the component wraps what it is given in asset(), the same as the gallery's own lightbox hands it #}
+                            <twig:c975LUi:Image:Zoom
+                                src="{{ m.filename }}"
+                                highres="{{ m.filename }}"
+                                alt="{{ m.alt|default(m.label) }}"
+                                width="{{ m.intrinsicWidth }}"
+                                height="{{ m.intrinsicHeight }}"
+                                :priority="false"
+                            />
+                        {% else %}
+                            {# Pixel size reserves the box so the grid doesn't reflow as each image lands #}
+                            <img src="{{ vich_uploader_asset(m) }}" alt="{{ m.alt|default(m.label) }}"{% if m.intrinsicWidth %} width="{{ m.intrinsicWidth }}"{% endif %}{% if m.intrinsicHeight %} height="{{ m.intrinsicHeight }}"{% endif %} loading="lazy">
+                        {% endif %}
                     </div>
-                    <div class="portfolio-grid__project-body">
-                        <{{ projectLevel }} class="portfolio-grid__project-title">{{ m.label }}</{{ projectLevel }}>
-                        {% if m.description %}<p class="portfolio-grid__project-text">{{ m.description }}</p>{% endif %}
-                    </div>
+                    {# Same rule as the head above: a body holding an empty heading is padding under the picture, and a heading with nothing in it is announced as such by a screen reader #}
+                    {% if m.label or m.description %}
+                        <div class="portfolio-grid__project-body">
+                            {% if m.label %}<{{ projectLevel }} class="portfolio-grid__project-title">{{ m.label }}</{{ projectLevel }}>{% endif %}
+                            {% if m.description %}<p class="portfolio-grid__project-text">{{ m.description }}</p>{% endif %}
+                        </div>
+                    {% endif %}
                 </{{ projectTag }}>
             {% endfor %}
         </div>

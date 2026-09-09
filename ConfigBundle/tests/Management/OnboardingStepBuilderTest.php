@@ -164,8 +164,8 @@ class OnboardingStepBuilderTest extends TestCase
         $urlGenerator->method('generate')->willReturn('/management/whatsnew');
 
         $menuBuilder = $this->createMenuBuilder(
-            [],
             ['whatsnew' => ['name' => 'management_whatsnew_index', 'label' => 'label.whatsnew', 'translation_domain' => 'config', 'icon' => 'fa fa-bullhorn']],
+            [],
         );
 
         $builder = new OnboardingStepBuilder(
@@ -189,7 +189,6 @@ class OnboardingStepBuilderTest extends TestCase
         $urlGenerator->expects($this->once())->method('generate')->with('management_whatsnew_index')->willReturn('/management/whatsnew');
 
         $menuBuilder = $this->createMenuBuilder(
-            [],
             ['whatsnew' => [
                 'name' => 'management_whatsnew_index',
                 'label' => 'label.whatsnew',
@@ -197,6 +196,7 @@ class OnboardingStepBuilderTest extends TestCase
                 'icon' => 'fa fa-bullhorn',
                 'description' => 'description.whatsnew',
             ]],
+            [],
         );
 
         $builder = new OnboardingStepBuilder(
@@ -220,7 +220,6 @@ class OnboardingStepBuilderTest extends TestCase
         $urlGenerator->expects($this->never())->method('generate');
 
         $menuBuilder = $this->createMenuBuilder(
-            [],
             ['shop' => [
                 'url' => 'https://example.com/showcase',
                 'label' => 'label.showcase',
@@ -228,6 +227,7 @@ class OnboardingStepBuilderTest extends TestCase
                 'icon' => 'fas fa-shapes',
                 'description' => 'description.showcase',
             ]],
+            [],
         );
 
         $builder = new OnboardingStepBuilder(
@@ -336,6 +336,7 @@ class OnboardingStepBuilderTest extends TestCase
                 'translation_domain' => 'config',
                 'icon' => 'fa fa-globe',
                 'description' => 'description.site',
+                'target' => '_blank',
             ]],
         );
 
@@ -351,15 +352,20 @@ class OnboardingStepBuilderTest extends TestCase
         $this->assertSame('label.site_link {"%name%":"My site"}', $builder->getSteps()[0]['label']);
     }
 
-    // getSteps() must not re-sort MenuBuilder::getOrderedMenus()'s own order (it's already the sidebar's own essential-then-advanced order, see MenuBuilder) - links are appended after every menu, same as the sidebar's own "links" section always sitting last
-    public function testGetStepsPreservesOrderedMenusOrderAndAppendsLinksAfter(): void
+    // getSteps() must not re-sort MenuBuilder::getOrderedMenus()'s own order (it's already the sidebar's own essential-then-advanced order, see MenuBuilder). A link staying inside the admin is drawn in its bundle's section, so it is walked there and not again at the end - getLinks() carries it too, only the ones leaving the admin belonging to the "Liens" section the sidebar draws last
+    public function testGetStepsWalksAnInternalLinkInPlaceAndAppendsOnlyThoseLeavingTheAdmin(): void
     {
+        $whatsnew = ['name' => 'management_whatsnew_index', 'label' => 'label.whatsnew', 'translation_domain' => 'config', 'icon' => 'fa fa-bullhorn'];
         $menuBuilder = $this->createMenuBuilder(
             [
                 'zebra' => ['controller' => 'ZebraController', 'label' => 'label.zebra', 'translation_domain' => 'config', 'icon' => 'fa fa-z'],
+                'whatsnew' => $whatsnew,
                 'apple' => ['controller' => 'AppleController', 'label' => 'label.apple', 'translation_domain' => 'config', 'icon' => 'fa fa-a'],
             ],
-            ['whatsnew' => ['name' => 'management_whatsnew_index', 'label' => 'label.whatsnew', 'translation_domain' => 'config', 'icon' => 'fa fa-bullhorn']],
+            [
+                'whatsnew' => $whatsnew,
+                'site' => ['url' => 'https://example.com', 'label' => 'label.site_link', 'translation_domain' => 'config', 'icon' => 'fa fa-globe', 'target' => '_blank'],
+            ],
         );
         $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturn('/management/whatsnew');
@@ -374,7 +380,7 @@ class OnboardingStepBuilderTest extends TestCase
         );
 
         $this->assertSame(
-            ['label.zebra', 'label.apple', 'label.whatsnew'],
+            ['label.zebra', 'label.whatsnew', 'label.apple', 'label.site_link'],
             array_column($builder->getSteps(), 'label'),
         );
     }

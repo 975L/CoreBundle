@@ -25,9 +25,13 @@ class MenuBuilder
     private const string LINKS_SECTION_LABEL = 'label.links';
     private const string LINKS_SECTION_TRANSLATION_DOMAIN = 'config';
 
-    // Fixed label for the single, merged "Avancé" submenu, regardless of which bundle contributes an advanced-tier section
+    // Fixed label and icon for the single, merged "Avancé" submenu, regardless of which bundle contributes an advanced-tier section
     private const string ADVANCED_SUBMENU_LABEL = 'label.menu_advanced';
     private const string ADVANCED_SUBMENU_TRANSLATION_DOMAIN = 'config';
+    private const string ADVANCED_SUBMENU_ICON = 'fas fa-screwdriver-wrench';
+
+    // Key (translation_domain.label) of the section every c975L bundle contributing back-office screens shares, kept first whatever the order its bundles were registered in
+    private const string PINNED_SECTION_KEY = 'site.label.management';
 
     public function __construct(
         private readonly iterable $menuProviders,
@@ -46,36 +50,40 @@ class MenuBuilder
             ->setPermission($menu['role'] ?? $this->configService->get('site-role-admin'));
     }
 
+    // Each section is a collapsible submenu rather than a flat header: with a dozen bundles contributing screens, every item at once made a sidebar taller than the viewport. EasyAdmin expands the one holding the current page on its own (see MenuItemMatcher::doMarkExpandedMenuItem()) and its sidebar script keeps a single one open at a time, so the column shows the sections plus the items of wherever you are. The shared "management" section is the exception, kept permanently open as the one every site uses daily
     // Items opting into the 'advanced' tier are collected into one collapsed submenu, rendered last
     // Tier is resolved per item first, several providers commonly sharing one section
     public function getMenuItems(): iterable
     {
         $advancedItems = [];
 
-        foreach ($this->getGroupedMenus() as $section) {
-            $essentialItems = [];
-            foreach ($section['items'] as $menu) {
-                $item = $this->buildMenuItem($menu);
+        foreach ($this->getGroupedMenus() as $key => $section) {
+            [$essentialItems, $sectionAdvancedItems] = $this->sectionItems($section);
+            $advancedItems = array_merge($advancedItems, $sectionAdvancedItems);
 
-                if ('advanced' === self::tier($menu, $section)) {
-                    $advancedItems[] = $item;
-                } else {
-                    $essentialItems[] = $item;
-                }
-            }
-
-            // Skip a section header that would sit above zero items - every one of its items moved to "Avancé" (a section contributing no items at all still gets its header, unchanged from before - see getMenuItemsOnlyAppendsALinksSectionWhenLinksExist)
-            if ([] === $essentialItems && [] !== $section['items']) {
+            // Nothing to draw: either the section contributes no items at all, or every one of them moved to "Avancé" - an empty submenu is rendered as nothing by EasyAdmin anyway (see its menu.html.twig)
+            if ([] === $essentialItems) {
                 continue;
             }
 
-            yield MenuItem::section(new TranslatableMessage($section['label'], [], $section['translation_domain']));
-            yield from $essentialItems;
+            $submenu = MenuItem::subMenu(new TranslatableMessage($section['label'], [], $section['translation_domain']), $section['icon'] ?? null)
+                ->setSubItems($essentialItems);
+
+            // The shared "management" section stays expanded and not collapsible, the accordion never closing it
+            if (self::PINNED_SECTION_KEY === $key) {
+                $submenu->keepOpen();
+            }
+
+            yield $submenu;
         }
 
-        // Links opting into 'advanced' join the same submenu as the CRUD items, which is why they are resolved before it is yielded rather than inside getLinkItems() below
+        // What is left is every link leaving the admin, gathered in one section whatever bundle contributes it - a link opting into 'advanced' joins the submenu instead, which is why they are resolved before it is yielded rather than inside getLinkItems() below
         $essentialLinks = [];
         foreach ($this->getLinks() as $link) {
+            if (!self::leavesTheAdmin($link)) {
+                continue;
+            }
+
             $item = $this->buildLinkItem($link);
 
             if ('advanced' === ($link['tier'] ?? 'essential')) {
@@ -86,16 +94,58 @@ class MenuBuilder
         }
 
         if ([] !== $advancedItems) {
-            yield MenuItem::subMenu(new TranslatableMessage(self::ADVANCED_SUBMENU_LABEL, [], self::ADVANCED_SUBMENU_TRANSLATION_DOMAIN))->setSubItems($advancedItems);
+            yield MenuItem::subMenu(new TranslatableMessage(self::ADVANCED_SUBMENU_LABEL, [], self::ADVANCED_SUBMENU_TRANSLATION_DOMAIN), self::ADVANCED_SUBMENU_ICON)->setSubItems($advancedItems);
         }
 
         yield from $this->getLinkItems($essentialLinks);
+    }
+
+    // One section's own entries, drawn and split in two: the ones it keeps, and the ones joining the "Avancé" submenu. A link to a back-office screen (one with no CRUD of its own, so a route rather than a controller) belongs with the entries of the bundle contributing it, sorted among them by label - only a link leaving the admin is grouped apart, in the "Liens" section
+    /**
+     * @return array{0: MenuItemInterface[], 1: MenuItemInterface[]}
+     */
+    private function sectionItems(array $section): array
+    {
+        $essentialItems = [];
+        $advancedItems = [];
+
+        foreach ($this->sortAlphabetically(array_merge(array_values($section['items']), array_values(self::internalLinks($section['links'])))) as $entry) {
+            $item = isset($entry['controller']) ? $this->buildMenuItem($entry) : $this->buildLinkItem($entry);
+
+            // A link's tier is its own, a section's default applying to its menus alone (see getMenuSection()) - otherwise two links a provider contributes without a tier of their own would land in different groups, according only to whether they name a target
+            if ('advanced' === self::entryTier($entry, $section)) {
+                $advancedItems[] = $item;
+            } else {
+                $essentialItems[] = $item;
+            }
+        }
+
+        return [$essentialItems, $advancedItems];
     }
 
     // An item's own tier wins over its section's default
     private static function tier(array $menu, array $section): string
     {
         return $menu['tier'] ?? $section['tier'] ?? 'essential';
+    }
+
+    // The tier of a section entry, whether menu or internal link - a menu inherits its section's default (see getMenuSection()), a link never does, so that it is grouped the same way wherever it is drawn
+    private static function entryTier(array $entry, array $section): string
+    {
+        return isset($entry['controller']) ? self::tier($entry, $section) : ($entry['tier'] ?? 'essential');
+    }
+
+    // A link opening outside the dashboard says so by naming a target (see MenuProviderInterface::getLinks()), and the "Liens" section is exactly those - a link to a back-office screen names none and sits with its own bundle's entries instead
+    // Public: OnboardingStepBuilder splits the same two kinds apart to walk them in the sidebar's own order, and the rule has to be spelled once
+    public static function leavesTheAdmin(array $link): bool
+    {
+        return isset($link['target']);
+    }
+
+    // The links of a section that stay inside the admin, the others being gathered in the "Liens" section
+    private static function internalLinks(array $links): array
+    {
+        return array_filter($links, static fn (array $link) => !self::leavesTheAdmin($link));
     }
 
     // The "Liens" section, rendered last and only when at least one link stayed out of the "Avancé" submenu
@@ -157,18 +207,19 @@ class MenuBuilder
         return $this->sortAlphabetically(ProviderMerger::merge($this->menuProviders, fn (MenuProviderInterface $provider) => $provider->getLinks()));
     }
 
-    // Every menu, flattened into the same essential-then-advanced-across-sections order the sidebar itself renders (see getMenuItems()) - every section's essential items first (in provider/section order, alphabetical within each), then every section's advanced items grouped together at the end (the collapsed "Avancé" submenu), rather than getMenus()'s plain alphabetical merge across all of them. Used by OnboardingStepBuilder so tour steps walk the sidebar in the order a user actually sees it
+    // Every menu and every link staying inside the admin, flattened into the same essential-then-advanced-across-sections order the sidebar itself renders (see getMenuItems()) - every section's essential entries first (in provider/section order, alphabetical within each), then every section's advanced ones grouped together at the end (the collapsed "Avancé" submenu), rather than getMenus()'s plain alphabetical merge across all of them. An internal link is drawn among its section's entries, so it is walked there too; only a link leaving the admin is left out, being drawn last in the "Liens" section. Used by OnboardingStepBuilder so tour steps walk the sidebar in the order a user actually sees it
     public function getOrderedMenus(): array
     {
         $essential = [];
         $advanced = [];
 
         foreach ($this->getGroupedMenus() as $section) {
-            foreach ($section['items'] as $key => $menu) {
-                if ('advanced' === ($menu['tier'] ?? $section['tier'] ?? 'essential')) {
-                    $advanced[$key] = $menu;
+            // Merged and sorted exactly as getMenuItems() does it, an internal link sitting among the entries of the bundle contributing it
+            foreach ($this->sortAlphabetically(array_merge($section['items'], self::internalLinks($section['links']))) as $key => $entry) {
+                if ('advanced' === self::entryTier($entry, $section)) {
+                    $advanced[$key] = $entry;
                 } else {
-                    $essential[$key] = $menu;
+                    $essential[$key] = $entry;
                 }
             }
         }
@@ -176,20 +227,39 @@ class MenuBuilder
         return $essential + $advanced;
     }
 
-    // Groups the menus by section, so providers sharing the same section (label + translation_domain) are merged
+    // Groups the menus by section, so providers sharing the same section (label + translation_domain) are merged - a provider's links are carried along too, those staying inside the admin being drawn in that same section (see getMenuItems())
     private function getGroupedMenus(): array
     {
         $sections = [];
         foreach ($this->menuProviders as $provider) {
             $section = $provider->getMenuSection();
             $key = $section['translation_domain'] . '.' . $section['label'];
-            $sections[$key] ??= $section + ['items' => []];
+            $sections[$key] ??= $section + ['items' => [], 'links' => []];
             $sections[$key]['items'] = array_merge($sections[$key]['items'], $provider->getMenus());
+            $sections[$key]['links'] = array_merge($sections[$key]['links'], $provider->getLinks());
         }
 
         foreach ($sections as &$section) {
             $section['items'] = $this->sortAlphabetically($section['items']);
         }
+        unset($section);
+
+        return $this->sortSections($sections);
+    }
+
+    // Sections in the order the sidebar shows them: the shared "management" one first, the rest alphabetically by translated label - the same rule their items already follow. Left unsorted they came out in tagged-iterator order, i.e. the order the bundles happen to be registered in, so a bundle installed later always landed at the bottom of the sidebar, right above the "Avancé" submenu. Sorting here rather than in getMenuItems() keeps getOrderedMenus(), and with it the onboarding tour, walking the sidebar in the order it is actually drawn
+    private function sortSections(array $sections): array
+    {
+        uksort($sections, function (string $a, string $b) use ($sections) {
+            if (self::PINNED_SECTION_KEY === $a || self::PINNED_SECTION_KEY === $b) {
+                return self::PINNED_SECTION_KEY === $a ? -1 : 1;
+            }
+
+            return strcasecmp(
+                $this->translator->trans($sections[$a]['label'], [], $sections[$a]['translation_domain']),
+                $this->translator->trans($sections[$b]['label'], [], $sections[$b]['translation_domain']),
+            );
+        });
 
         return $sections;
     }

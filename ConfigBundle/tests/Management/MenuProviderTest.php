@@ -45,7 +45,7 @@ class MenuProviderTest extends TestCase
         $provider = new MenuProvider($this->createConfigService());
 
         $this->assertInstanceOf(MenuProviderInterface::class, $provider);
-        $this->assertSame(['label' => 'label.management', 'translation_domain' => 'site'], $provider->getMenuSection());
+        $this->assertSame(['label' => 'label.management', 'translation_domain' => 'site', 'icon' => 'fas fa-sliders'], $provider->getMenuSection());
     }
 
     public function testGetMenusExposesTheConfigCrudControllerEntry(): void

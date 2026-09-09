@@ -72,7 +72,7 @@ class MenuProviderTest extends TestCase
     {
         $provider = new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService());
 
-        $this->assertSame(['label' => 'label.management', 'translation_domain' => 'site'], $provider->getMenuSection());
+        $this->assertSame(['label' => 'label.management', 'translation_domain' => 'site', 'icon' => 'fas fa-sliders'], $provider->getMenuSection());
     }
 
     // This bundle's own CRUD entries, which SiteBundle used to declare on its behalf - a site without SiteBundle got none of them

@@ -879,6 +879,7 @@ class MenuProvider implements MenuProviderInterface
         return [
             'label' => 'label.my_section',
             'translation_domain' => 'my_bundle',
+            'icon' => 'fas fa-star',
         ];
     }
 
@@ -905,6 +906,10 @@ class MenuProvider implements MenuProviderInterface
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
 
 **Section merging:** if several bundles declare the same `getMenuSection()` (identical `label` + `translation_domain`), their menus are merged under a single section header instead of being duplicated.
+
+**Collapsible sections:** each section is rendered as a collapsible submenu rather than a flat header — with a dozen bundles contributing screens, every item at once made a sidebar taller than the viewport. EasyAdmin expands the one holding the current page on its own and keeps a single one open at a time; the shared "management" section is the exception, kept permanently open as the one every site uses daily. Sections are ordered with that "management" one first, then alphabetically by their translated label.
+
+**Section icon:** `getMenuSection()` accepts an optional `'icon'` key — the icon drawn next to the section's own caption, the way its items carry one. Omit it for a caption with none. Like `tier`, it belongs to whichever provider is merged first when several share one section.
 
 **Alphabetical ordering:** within a section, menu items are always sorted alphabetically by their translated label.
 
@@ -942,7 +947,7 @@ public function getLinks(): array
 }
 ```
 
-Links from every bundle are merged into a single "Links" section, sorted alphabetically. `name` is a route name resolved to its real URL through the app's own router (not EasyAdmin's dashboard routing, so it also works for a route outside the dashboard, e.g. a public page). Use `url` instead for a literal, already-absolute URL — it's used as-is, no route resolution at all, and takes precedence when both are set:
+Only a link leaving the back office (one naming a `target`, see below) goes to the shared "Links" section, where every bundle's are merged and sorted alphabetically. A link naming none is a back-office screen with no CRUD of its own — a health check, a content import — and is drawn inside its own provider's section, sorted among that section's menu entries by label; the guided tour walks it there too. `name` is a route name resolved to its real URL through the app's own router (not EasyAdmin's dashboard routing, so it also works for a route outside the dashboard, e.g. a public page). Use `url` instead for a literal, already-absolute URL — it's used as-is, no route resolution at all, and takes precedence when both are set:
 
 ```php
 'showcase' => [
@@ -953,7 +958,7 @@ Links from every bundle are merged into a single "Links" section, sorted alphabe
 ],
 ```
 
-A few more optional keys: `role` (e.g. `'ROLE_EDITOR'`) hides the link from users lacking it — omit it for links with no access restriction of their own; `target` (e.g. `'_blank'`) is for a link leaving the admin entirely — it gets an external-link glyph automatically, and (for a `name`-based link) resolves to a full absolute URL instead of a relative path; `pinned` (bool) sorts the link after every non-pinned one regardless of its label — ConfigBundle's own "Visit the site" link (using the `site-url`/`site-name` configs) uses it to always stay at the very bottom of the links section; `label_parameters` (array) is passed through to the translator alongside `label`, for a translated label embedding a runtime value (e.g. `['%name%' => $siteName]`) — omit it for a plain translation key with no placeholder, the usual case; `tier` (`'essential'`/`'advanced'`, default `'essential'`) moves the link into the same collapsed "Advanced" submenu as the advanced menu items above, instead of the "Links" section — that section is not rendered at all if every link opted into it.
+A few more optional keys: `role` (e.g. `'ROLE_EDITOR'`) hides the link from users lacking it — omit it for links with no access restriction of their own; `target` (e.g. `'_blank'`) is for a link leaving the admin entirely — it gets an external-link glyph automatically, and (for a `name`-based link) resolves to a full absolute URL instead of a relative path; `pinned` (bool) sorts the link after every non-pinned one regardless of its label — ConfigBundle's own "Visit the site" link (using the `site-url`/`site-name` configs) uses it to always stay at the very bottom of the links section; `label_parameters` (array) is passed through to the translator alongside `label`, for a translated label embedding a runtime value (e.g. `['%name%' => $siteName]`) — omit it for a plain translation key with no placeholder, the usual case; `tier` (`'essential'`/`'advanced'`, default `'essential'`) moves the link into the same collapsed "Advanced" submenu as the advanced menu items above, instead of the section it would have been drawn in — the "Links" section is not rendered at all if every link opted into it. A link never inherits its section's own `tier`, which applies to `getMenus()` alone: two links contributed without a tier of their own are grouped the same way, wherever the sidebar draws them.
 
 **Guided tour:** any entry in `getMenus()`/`getLinks()` can add an optional `'description'` key — a one-line "what is this for" sentence, same `translation_domain` — to feed the `/management` dashboard's "Guided tour" button. It highlights every described item in turn with a short explanation, matched against the sidebar's own rendered link (see `OnboardingStepBuilder`), so there's nothing else to wire up. It's entirely optional and can be filled in bundle by bundle: an entry without a `description` is simply skipped, it never breaks anything.
 

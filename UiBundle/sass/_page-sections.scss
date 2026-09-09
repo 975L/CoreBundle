@@ -10,6 +10,12 @@ $page-section-bp-sm: 621px;
 $page-section-bp-md: 861px;
 $page-section-bp-lg: 1025px;
 
+// The gabarit a listing of covers is drawn with, the one ShopBundle's products already use (its sass/_products.scss): what is stated is the smallest a track may be, the grid sharing the rest of the measure between as many as fit - two to the row on a phone, four on a page at the default measure, and whatever the room allows in between. Stated rather than read off a card width token, so the same two numbers hold for a shop, a catalog and a grid of pictures
+$thumbnail-track: 150px;
+$thumbnail-track-wide: 215px;
+$thumbnail-gap: 12px;
+$thumbnail-gap-wide: 20px;
+
 // The one vertical step of the whole page, written once here and read through --section-space everywhere, so a site retunes the entire rhythm from its own theme.css instead of chasing the value down every kind's rule
 $section-space: clamp(48px, 8vw, 84px);
 $section-space-tight: clamp(24px, 4vw, 48px);
@@ -928,6 +934,59 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     color: var(--label-color);
     margin: 0;
     line-height: 1.5;
+}
+
+// The two frameless variants (see components/Portfolio/Grid.html.twig): the pictures and nothing around them - a set of covers, of posters or of playing cards, each read for what it shows and not as a project a card announces. The card's own chrome goes, and with it the 16/10 box a screenshot wants: each file keeps the shape it was uploaded in. What separates the two is the size, below
+:is(.portfolio-grid--plain, .portfolio-grid--thumbnail) .portfolio-grid__project {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+}
+
+:is(.portfolio-grid--plain, .portfolio-grid--thumbnail) .portfolio-grid__project-img {
+    aspect-ratio: auto;
+    background: none;
+}
+
+:is(.portfolio-grid--plain, .portfolio-grid--thumbnail) .portfolio-grid__project-img img {
+    height: auto;
+    padding: 0;
+    background: none;
+}
+
+// No card to zoom inside of: with the frame gone the picture would grow past its own cell, and a project with no url is a <div> - an effect that reads as clickable on something that is not
+:is(.portfolio-grid--plain, .portfolio-grid--thumbnail) .portfolio-grid__project:hover .portfolio-grid__project-img img {
+    transform: none;
+}
+
+// No side padding either: with no card around it, the title reads against the picture's own edge
+:is(.portfolio-grid--plain, .portfolio-grid--thumbnail) .portfolio-grid__project-body {
+    padding: 12px 0 0;
+}
+
+// The "thumbnail" variant: the same frameless picture counted rather than read one at a time, on the shared listing gabarit above - the very one the shop draws its products with, so a row of pictures, a row of covers and a row of products all read at one size. The fixed 1/2/3 columns the breakpoints further down set are overridden by the one class more this selector carries
+.portfolio-grid--thumbnail .portfolio-grid__grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, #{$thumbnail-track}), 1fr));
+    gap: $thumbnail-gap;
+}
+
+// Mobile first: the phone keeps the narrow track above, which is what puts two pictures on its row
+@media (min-width: $page-section-bp-sm) {
+    .portfolio-grid--thumbnail .portfolio-grid__grid {
+        grid-template-columns: repeat(auto-fill, minmax(#{$thumbnail-track-wide}, 1fr));
+        gap: $thumbnail-gap-wide;
+    }
+}
+
+// The title follows the picture, same rule as a compact card's (sass/_cards.scss): at full size it runs to three lines under the narrow track a phone draws
+.portfolio-grid--thumbnail .portfolio-grid__project-title {
+    font-size: var(--card-title-size-compact);
+}
+
+// The zoom's own link is what sits between the box and the picture once a grid opens its images: without a height of its own the "height: 100%" above resolves against an auto-height anchor, and the card variant loses the 16/10 box it reserves
+.portfolio-grid__project-img .image-zoom__link {
+    height: 100%;
 }
 
 /* ---- collection ---- */

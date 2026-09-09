@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-09",
+        "description": [
+            {
+                "en": "A grid of pictures can now be shown without its frames: no ground, no border, and each picture keeping the shape it was uploaded in — the way a set of covers, of posters or of playing cards is looked at. Pick it in the block's Presentation field, in the smaller thumbnail size too.",
+                "fr": "Une grille d'images peut désormais s'afficher sans ses cadres : pas de fond, pas de bordure, et chaque image gardant la forme dans laquelle elle a été déposée — la façon dont se regarde une série de couvertures, d'affiches ou de cartes à jouer. Choisissez-la dans le champ Présentation du block, en miniatures plus petites également.",
+                "es": "Una cuadrícula de imágenes puede mostrarse ahora sin sus marcos: sin fondo, sin borde, y cada imagen conservando la forma en la que se subió: la manera en que se mira una serie de portadas, de carteles o de cartas de juego. Elíjala en el campo Presentación del bloque, también en miniaturas más pequeñas."
+            },
+            {
+                "en": "A new Image zoom option on that same grid has a click open a picture over the page, at its full size. A picture already pointing somewhere keeps its link instead.",
+                "fr": "Une nouvelle option Zoom au clic sur cette même grille fait s'ouvrir une image par-dessus la page, à sa taille réelle. Une image qui pointe déjà quelque part garde son lien à la place.",
+                "es": "Una nueva opción Zoom al hacer clic en esa misma cuadrícula abre una imagen sobre la página, a su tamaño real. Una imagen que ya apunta a algún sitio conserva su enlace en su lugar."
+            }
+        ]
+    },
+    {
         "date": "2026-09-08",
         "description": [
             {

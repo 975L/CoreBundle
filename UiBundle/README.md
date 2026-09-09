@@ -729,6 +729,12 @@ Each section the summary points at wears `toc-target`, which is what leaves `--t
 
 Nothing is folded that fits: a short text renders as plain body copy with no link under it, so the component can be dropped on a field whose length isn't known - a description, a lore, an editor's paragraph - without a caller having to count its characters first.
 
+### The grid of pictures (`portfolio_grid`)
+
+Its **Presentation** field (`variant`) says what the grid is showing, without an app-level template override: `''` (default) draws each media as a project card - a picture in a 16/10 box, its title and its text over a ground; `'plain'` takes that chrome off, each file keeping the shape it was uploaded in; `'thumbnail'` takes it off too and counts the pictures instead of reading them one at a time, on the listing gabarit ShopBundle draws its products with, so a row of covers, of posters or of playing cards reads at one size across the site.
+
+Its **Image zoom** field (`zoom`) has one click open the picture over the page, through `<twig:c975LUi:Image:Zoom>` and its native `<dialog>`. It only fires on a project carrying no url: a project leading somewhere is already an `<a>` and the zoom writes one of its own, which no browser can nest - the outbound link wins. A block's media has no `-highres` sibling (`Media` does not implement `VichMultiSizeImageInterface`), so the dialog opens the stored file at its own size rather than at the width of its cell, and the link is announced as *enlarge the image* rather than as a high resolution that is not coming.
+
 ---
 
 ## Container kinds (blocks made of other blocks)

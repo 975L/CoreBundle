@@ -116,7 +116,7 @@ class BlockFixtureProviderTest extends TestCase
     {
         $fixtures = new BlockFixtureProvider()->getFixtures();
 
-        foreach (['audio', 'article', 'banner_title', 'document_download', 'form', 'image', 'image_compare', 'map', 'progress_bar', 'progress_tracker', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'portfolio_grid', 'cta_band'] as $kind) {
+        foreach (['audio', 'article', 'banner_title', 'document_download', 'form', 'image', 'image_compare', 'map', 'progress_bar', 'progress_tracker', 'contact_details', 'text_hook', 'text_readmore', 'text_section', 'video', 'video_iframe', 'feature_bar', 'section_features', 'expertise_banner', 'process_steps', 'cta_band'] as $kind) {
             $this->assertSame([''], array_keys($fixtures[$kind]), "Kind \"{$kind}\" should have a single unlabelled variant");
         }
     }
@@ -129,6 +129,18 @@ class BlockFixtureProviderTest extends TestCase
         $this->assertSame(['', 'freeflow'], array_keys($fixtures['slider']));
         $this->assertSame('default', $fixtures['slider']['']['layout']);
         $this->assertSame('freeflow', $fixtures['slider']['freeflow']['layout']);
+    }
+
+    // portfolio_grid shows its default cards alongside the two frameless variants - the picture at the grid's own width, then at a thumbnail's - three looks of one kind, the same reading as the slider's two above
+    public function testPortfolioGridFixtureCoversItsThreeVariants(): void
+    {
+        $fixtures = new BlockFixtureProvider()->getFixtures();
+
+        $this->assertSame(['Par défaut', 'Sans cadre', 'Miniature'], array_keys($fixtures['portfolio_grid']));
+        $this->assertArrayNotHasKey('variant', $fixtures['portfolio_grid']['Par défaut']);
+        $this->assertSame('plain', $fixtures['portfolio_grid']['Sans cadre']['variant']);
+        $this->assertSame('thumbnail', $fixtures['portfolio_grid']['Miniature']['variant']);
+        $this->assertTrue($fixtures['portfolio_grid']['Miniature']['zoom']);
     }
 
     // hero shows its ordinary layout alongside the background video, which fills the section and drops everything laid out beside the text - two looks of one kind, the same as the slider's above. The variant carries no field of its own: what tells them apart is the video BlockFixtureMediaAttacher attaches to this one only

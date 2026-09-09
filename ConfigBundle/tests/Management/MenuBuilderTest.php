@@ -61,6 +61,12 @@ class MenuBuilderTest extends TestCase
         return $generator;
     }
 
+    // The labels of a submenu's own items, every section being drawn as one (see MenuBuilder::getMenuItems())
+    private function subItemLabels(MenuItemInterface $item): array
+    {
+        return array_map(static fn ($subItem) => $subItem->getLabel()->getMessage(), $item->getAsDto()->getSubItems());
+    }
+
     public function testGetMenusSortsAlphabeticallyByTranslatedLabel(): void
     {
         $section = ['label' => 'label.management', 'translation_domain' => 'site'];
@@ -124,7 +130,7 @@ class MenuBuilderTest extends TestCase
         $this->assertSame(['aaa', 'zzz'], array_keys($builder->getLinks()));
     }
 
-    public function testGetMenuItemsYieldsOneSectionPerGroupAndAppliesAdminPermission(): void
+    public function testGetMenuItemsYieldsOneSubmenuPerGroupAndAppliesAdminPermission(): void
     {
         $section = ['label' => 'label.management', 'translation_domain' => 'site'];
         $provider = $this->createProvider($section, [
@@ -134,14 +140,95 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertCount(2, $items);
+        $this->assertCount(1, $items);
         $this->assertInstanceOf(MenuItemInterface::class, $items[0]);
         $sectionDto = $items[0]->getAsDto();
         $this->assertSame('label.management', $sectionDto->getLabel()->getMessage());
 
-        $itemDto = $items[1]->getAsDto();
+        $itemDto = $sectionDto->getSubItems()[0];
         $this->assertSame('label.config', $itemDto->getLabel()->getMessage());
         $this->assertSame('ROLE_SUPER_ADMIN', $itemDto->getPermission());
+    }
+
+    // Sections come out of a tagged iterator, i.e. in bundle registration order, which would otherwise put a bundle installed later at the bottom of the sidebar: the shared "management" section stays first and the rest sorts alphabetically by translated label
+    public function testGetMenuItemsSortsSectionsWithManagementFirst(): void
+    {
+        $zebra = $this->createProvider(['label' => 'label.zebra', 'translation_domain' => 'config'], [
+            'zebra' => ['controller' => 'ZebraController', 'label' => 'label.zebra', 'translation_domain' => 'config', 'icon' => 'fa fa-z'],
+        ]);
+        $management = $this->createProvider(['label' => 'label.management', 'translation_domain' => 'site'], [
+            'config' => ['controller' => 'ConfigCrudController', 'label' => 'label.config', 'translation_domain' => 'config', 'icon' => 'fa fa-cog'],
+        ]);
+        $apple = $this->createProvider(['label' => 'label.apple', 'translation_domain' => 'config'], [
+            'apple' => ['controller' => 'AppleController', 'label' => 'label.apple', 'translation_domain' => 'config', 'icon' => 'fa fa-a'],
+        ]);
+        $builder = new MenuBuilder([$zebra, $management, $apple], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        $labels = array_map(static fn (MenuItemInterface $item) => $item->getAsDto()->getLabel()->getMessage(), iterator_to_array($builder->getMenuItems(), false));
+
+        $this->assertSame(['label.management', 'label.apple', 'label.zebra'], $labels);
+    }
+
+    // Every section collapses so the sidebar stays short, EasyAdmin opening the one holding the current page on its own - except the shared "management" one, used daily enough to stay permanently open and not collapsible
+    public function testGetMenuItemsKeepsOnlyTheManagementSubmenuPermanentlyOpen(): void
+    {
+        $management = $this->createProvider(['label' => 'label.management', 'translation_domain' => 'site'], [
+            'config' => ['controller' => 'ConfigCrudController', 'label' => 'label.config', 'translation_domain' => 'config', 'icon' => 'fa fa-cog'],
+        ]);
+        $shop = $this->createProvider(['label' => 'label.shop', 'translation_domain' => 'shop'], [
+            'product' => ['controller' => 'ProductCrudController', 'label' => 'label.products', 'translation_domain' => 'shop', 'icon' => 'fa fa-tag'],
+        ]);
+        $builder = new MenuBuilder([$management, $shop], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        $items = iterator_to_array($builder->getMenuItems(), false);
+
+        $this->assertTrue($items[0]->getAsDto()->keepsOpen());
+        $this->assertFalse($items[1]->getAsDto()->keepsOpen());
+    }
+
+    // getOrderedMenus() feeds the onboarding tour, which highlights a step by matching the sidebar's own href: a link staying inside the admin is drawn among its section's entries, so it has to be walked there too rather than after every menu
+    public function testGetOrderedMenusWalksAnInternalLinkAmongItsSectionsEntries(): void
+    {
+        $provider = $this->createProvider(
+            ['label' => 'label.management', 'translation_domain' => 'site'],
+            ['zebra' => ['controller' => 'ZebraController', 'label' => 'label.zebra', 'translation_domain' => 'config', 'icon' => 'fa fa-z']],
+            [
+                'health' => ['name' => 'health_route', 'label' => 'label.health', 'translation_domain' => 'config', 'icon' => 'fa fa-h'],
+                'site' => ['name' => 'site_route', 'label' => 'label.site', 'translation_domain' => 'config', 'icon' => 'fa fa-s', 'target' => '_blank'],
+            ],
+        );
+        $builder = new MenuBuilder([$provider], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        // "label.site" leaves the admin, so it belongs to the "Liens" section and not here
+        $this->assertSame(['health', 'zebra'], array_keys($builder->getOrderedMenus()));
+    }
+
+    // A section's own 'advanced' default applies to its menus alone (see getMenuSection()): two links a provider contributes without a tier of their own must be grouped the same way, whether or not they name a target
+    public function testASectionsAdvancedDefaultDoesNotDragItsLinksAlong(): void
+    {
+        $provider = $this->createProvider(
+            ['label' => 'label.seo', 'translation_domain' => 'ui', 'tier' => 'advanced'],
+            ['seo' => ['controller' => 'SeoCrudController', 'label' => 'label.seo_settings', 'translation_domain' => 'ui', 'icon' => 'fa fa-search']],
+            ['docs' => ['name' => 'docs_route', 'label' => 'label.docs', 'translation_domain' => 'ui', 'icon' => 'fa fa-book']],
+        );
+        $builder = new MenuBuilder([$provider], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        // The link stays essential and is drawn in its section, the menu alone joining the "Avancé" submenu
+        $this->assertSame(['docs', 'seo'], array_keys($builder->getOrderedMenus()));
+    }
+
+    // getOrderedMenus() feeds the onboarding tour, so it has to walk the same section order the sidebar draws (see getMenuItems() above), not the providers' registration order
+    public function testGetOrderedMenusFollowsTheSameSectionOrderAsTheSidebar(): void
+    {
+        $zebra = $this->createProvider(['label' => 'label.zebra', 'translation_domain' => 'config'], [
+            'zebra' => ['controller' => 'ZebraController', 'label' => 'label.zebra', 'translation_domain' => 'config', 'icon' => 'fa fa-z'],
+        ]);
+        $management = $this->createProvider(['label' => 'label.management', 'translation_domain' => 'site'], [
+            'config' => ['controller' => 'ConfigCrudController', 'label' => 'label.config', 'translation_domain' => 'config', 'icon' => 'fa fa-cog'],
+        ]);
+        $builder = new MenuBuilder([$zebra, $management], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        $this->assertSame(['config', 'zebra'], array_keys($builder->getOrderedMenus()));
     }
 
     // An entry naming the bar its own screen states, rather than taking the admin default: a media library or a redirects list an editor is meant to reach would be missing from their sidebar otherwise (see MenuProviderInterface::getMenus())
@@ -155,7 +242,7 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertSame('ROLE_EDITOR', $items[1]->getAsDto()->getPermission());
+        $this->assertSame('ROLE_EDITOR', $items[0]->getAsDto()->getSubItems()[0]->getPermission());
     }
 
     // EasyAdmin only falls back to "index" on its own for a CRUD controller, so an entry pointing at a plain #[AdminRoute] screen would resolve to no route at all if the action were left unset (see MenuProviderInterface::getMenus())
@@ -168,39 +255,56 @@ class MenuBuilderTest extends TestCase
         ]);
         $builder = new MenuBuilder([$provider], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
 
-        // [0] is the section header, its two entries following in alphabetical order
+        // [0] is the section submenu, holding its two entries in alphabetical order
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertSame(Action::INDEX, $items[1]->getAsDto()->getRouteParameters()[EA::CRUD_ACTION]);
-        $this->assertSame('show', $items[2]->getAsDto()->getRouteParameters()[EA::CRUD_ACTION]);
+        $subItems = $items[0]->getAsDto()->getSubItems();
+        $this->assertSame(Action::INDEX, $subItems[0]->getRouteParameters()[EA::CRUD_ACTION]);
+        $this->assertSame('show', $subItems[1]->getRouteParameters()[EA::CRUD_ACTION]);
     }
 
-    public function testGetMenuItemsOnlyAppendsALinksSectionWhenLinksExist(): void
+    // A link naming a target leaves the back office, and those are what the "Liens" section gathers
+    public function testGetMenuItemsOnlyAppendsALinksSectionWhenLinksLeavingTheAdminExist(): void
     {
         $section = ['label' => 'label.management', 'translation_domain' => 'site'];
         $providerWithoutLinks = $this->createProvider($section, []);
         $builderWithoutLinks = new MenuBuilder([$providerWithoutLinks], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
 
-        // A provider's section header is yielded even when it contributes no items, since getGroupedMenus() registers the section for every provider regardless of getMenus()
-        $itemsWithoutLinks = iterator_to_array($builderWithoutLinks->getMenuItems(), false);
-        $this->assertCount(1, $itemsWithoutLinks);
-        $this->assertSame('label.management', $itemsWithoutLinks[0]->getAsDto()->getLabel()->getMessage());
+        // A section contributing no items at all is not drawn: an empty submenu would render as nothing anyway
+        $this->assertCount(0, iterator_to_array($builderWithoutLinks->getMenuItems(), false));
 
-        $providerWithLinks = $this->createProvider($section, [], ['whatsnew' => [
-            'label' => 'label.whatsnew',
-            'name' => 'management_whatsnew_index',
+        $providerWithLinks = $this->createProvider($section, [], ['site' => [
+            'label' => 'label.site_link',
+            'url' => 'https://example.test/',
             'translation_domain' => 'config',
-            'icon' => 'fa fa-bullhorn',
+            'icon' => 'fa fa-globe',
+            'target' => '_blank',
         ]]);
         $builderWithLinks = new MenuBuilder([$providerWithLinks], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
 
         $items = iterator_to_array($builderWithLinks->getMenuItems(), false);
 
-        // The provider's own (empty) menu section header, then the "links" section header followed by the one link item
-        $this->assertCount(3, $items);
-        $this->assertSame('label.management', $items[0]->getAsDto()->getLabel()->getMessage());
-        $this->assertSame('label.links', $items[1]->getAsDto()->getLabel()->getMessage());
-        $this->assertSame('label.whatsnew', $items[2]->getAsDto()->getLabel()->getMessage());
+        // The provider contributes no menu item, so only the "links" section header and its one link are drawn
+        $this->assertCount(2, $items);
+        $this->assertSame('label.links', $items[0]->getAsDto()->getLabel()->getMessage());
+        $this->assertSame('label.site_link', $items[1]->getAsDto()->getLabel()->getMessage());
+    }
+
+    // A link naming no target opens a back-office screen that simply has no CRUD of its own (a health check, an import): it belongs with the entries of the bundle contributing it, sorted among them by label, rather than in a "Liens" section away from them
+    public function testGetMenuItemsDrawsALinkStayingInTheAdminInsideItsOwnSection(): void
+    {
+        $section = ['label' => 'label.management', 'translation_domain' => 'site'];
+        $provider = $this->createProvider($section, [
+            'config' => ['controller' => 'ConfigCrudController', 'label' => 'label.config', 'translation_domain' => 'config', 'icon' => 'fa fa-cog'],
+        ], [
+            'whatsnew' => ['label' => 'label.whatsnew', 'name' => 'management_whatsnew_index', 'translation_domain' => 'config', 'icon' => 'fa fa-bullhorn'],
+        ]);
+        $builder = new MenuBuilder([$provider], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
+
+        $items = iterator_to_array($builder->getMenuItems(), false);
+
+        $this->assertCount(1, $items);
+        $this->assertSame(['label.config', 'label.whatsnew'], $this->subItemLabels($items[0]));
     }
 
     // A link can opt into the same collapsed submenu as an advanced CRUD item - and if every link does, the "Liens" section header is not yielded at all rather than sitting above nothing
@@ -215,26 +319,24 @@ class MenuBuilderTest extends TestCase
                 'icon' => 'fas fa-scale-balanced',
                 'tier' => 'advanced',
             ],
-            'whatsnew' => [
-                'label' => 'label.whatsnew',
-                'name' => 'management_whatsnew_index',
+            'site' => [
+                'label' => 'label.site_link',
+                'url' => 'https://example.test/',
                 'translation_domain' => 'config',
-                'icon' => 'fa fa-bullhorn',
+                'icon' => 'fa fa-globe',
+                'target' => '_blank',
             ],
         ]);
         $builder = new MenuBuilder([$provider], $this->createConfigService(), $this->createTranslator(), $this->createUrlGenerator());
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        // Section header, "Avancé" submenu holding the advanced link, then the "Liens" section and its one link
-        $this->assertCount(4, $items);
-        $this->assertSame('label.menu_advanced', $items[1]->getAsDto()->getLabel()->getMessage());
-        $this->assertSame(
-            ['label.legal_models'],
-            array_map(static fn ($sub) => $sub->getLabel()->getMessage(), $items[1]->getAsDto()->getSubItems()),
-        );
-        $this->assertSame('label.links', $items[2]->getAsDto()->getLabel()->getMessage());
-        $this->assertSame('label.whatsnew', $items[3]->getAsDto()->getLabel()->getMessage());
+        // "Avancé" submenu holding the advanced link, then the "Liens" section and its one link
+        $this->assertCount(3, $items);
+        $this->assertSame('label.menu_advanced', $items[0]->getAsDto()->getLabel()->getMessage());
+        $this->assertSame(['label.legal_models'], $this->subItemLabels($items[0]));
+        $this->assertSame('label.links', $items[1]->getAsDto()->getLabel()->getMessage());
+        $this->assertSame('label.site_link', $items[2]->getAsDto()->getLabel()->getMessage());
     }
 
     public function testGetMenuItemsDropsTheLinksSectionWhenEveryLinkIsAdvanced(): void
@@ -253,8 +355,8 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertCount(2, $items);
-        $this->assertSame('label.menu_advanced', $items[1]->getAsDto()->getLabel()->getMessage());
+        $this->assertCount(1, $items);
+        $this->assertSame('label.menu_advanced', $items[0]->getAsDto()->getLabel()->getMessage());
     }
 
     public function testGetMenuItemsAppliesLinkRoleWhenProvidedAndLeavesItUnsetOtherwise(): void
@@ -279,10 +381,10 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        // Provider's own (empty) menu section header, then the "links" section header, then links sorted alphabetically: media before shop
-        $this->assertCount(4, $items);
-        $this->assertSame('ROLE_EDITOR', $items[2]->getAsDto()->getPermission());
-        $this->assertNull($items[3]->getAsDto()->getPermission());
+        // Both links stay in the admin, so they are drawn in the provider's own section, sorted alphabetically: media before shop
+        $subItems = $items[0]->getAsDto()->getSubItems();
+        $this->assertSame('ROLE_EDITOR', $subItems[0]->getPermission());
+        $this->assertNull($subItems[1]->getPermission());
     }
 
     // A link's URL must come from the plain router (generate()), not EasyAdmin's own AdminUrlGenerator - the latter assumes the route is one of the dashboard's own registered actions and wraps it as "/management?routeName=...", which is wrong for a route outside the dashboard entirely (e.g. a consuming app's own public page) - regression test for exactly that bug
@@ -301,7 +403,7 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertSame('/app_block_showcase_index', $items[2]->getAsDto()->getLinkUrl());
+        $this->assertSame('/app_block_showcase_index', $items[0]->getAsDto()->getSubItems()[0]->getLinkUrl());
     }
 
     // Optional per-link "target" (e.g. '_blank' for a link leaving the admin) - unset by default, same opt-in shape as "role". A "target" link also gets a full absolute URL (scheme+host), not just a path, generated fresh from the current request each time (never a hardcoded domain, so it stays correct across dev/staging/prod or any future domain change) - it's meant to stand on its own once opened in a new tab, unlike a same-tab link staying relative to the current page.
@@ -327,11 +429,14 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        // Links sorted alphabetically by translated label: "label.block_showcase" before "label.shop". MenuItemDto's own default target (not set by MenuBuilder) is '_self', not null
+        // The showcase link names a target, so it leaves the admin for the "Liens" section; the shop one names none and stays in the provider's own section. MenuItemDto's own default target (not set by MenuBuilder) is '_self', not null
+        $shopDto = $items[0]->getAsDto()->getSubItems()[0];
+        $this->assertSame('_self', $shopDto->getLinkTarget());
+        $this->assertSame('/shop_index', $shopDto->getLinkUrl());
+
+        $this->assertSame('label.links', $items[1]->getAsDto()->getLabel()->getMessage());
         $this->assertSame('_blank', $items[2]->getAsDto()->getLinkTarget());
         $this->assertSame('https://example.test/app_block_showcase_index', $items[2]->getAsDto()->getLinkUrl());
-        $this->assertSame('_self', $items[3]->getAsDto()->getLinkTarget());
-        $this->assertSame('/shop_index', $items[3]->getAsDto()->getLinkUrl());
     }
 
     // A section opting into 'advanced' (see MenuProviderInterface::getMenuSection()) doesn't get its own top-level section header - its items are collected into one collapsed "Avancé" submenu instead, appended after every essential section
@@ -349,12 +454,12 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        // Essential section header + its item, then one submenu (no separate "seo" section header)
-        $this->assertCount(3, $items);
+        // Essential section submenu holding its item, then the "Avancé" one (no separate "seo" section)
+        $this->assertCount(2, $items);
         $this->assertSame('label.essential', $items[0]->getAsDto()->getLabel()->getMessage());
-        $this->assertSame('label.config', $items[1]->getAsDto()->getLabel()->getMessage());
+        $this->assertSame(['label.config'], $this->subItemLabels($items[0]));
 
-        $submenuDto = $items[2]->getAsDto();
+        $submenuDto = $items[1]->getAsDto();
         $this->assertSame('label.menu_advanced', $submenuDto->getLabel()->getMessage());
         $this->assertCount(1, $submenuDto->getSubItems());
         $this->assertSame('label.seo_settings', $submenuDto->getSubItems()[0]->getLabel()->getMessage());
@@ -375,12 +480,12 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        // One section header, its 2 essential items (config, page - alphabetical), then one submenu holding "redirect" alone
-        $this->assertCount(4, $items);
+        // One section submenu holding its 2 essential items (config, page - alphabetical), then the "Avancé" one holding "redirect" alone
+        $this->assertCount(2, $items);
         $this->assertSame('label.management', $items[0]->getAsDto()->getLabel()->getMessage());
-        $this->assertSame(['label.config', 'label.pages'], [$items[1]->getAsDto()->getLabel()->getMessage(), $items[2]->getAsDto()->getLabel()->getMessage()]);
+        $this->assertSame(['label.config', 'label.pages'], $this->subItemLabels($items[0]));
 
-        $submenuDto = $items[3]->getAsDto();
+        $submenuDto = $items[1]->getAsDto();
         $this->assertSame('label.menu_advanced', $submenuDto->getLabel()->getMessage());
         $this->assertCount(1, $submenuDto->getSubItems());
         $this->assertSame('label.redirects', $submenuDto->getSubItems()[0]->getLabel()->getMessage());
@@ -397,7 +502,7 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertCount(2, $items);
+        $this->assertCount(1, $items);
         foreach ($items as $item) {
             $this->assertNotSame('label.menu_advanced', $item->getAsDto()->getLabel()?->getMessage());
         }
@@ -420,7 +525,7 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertSame(['%name%' => 'My Site'], $items[2]->getAsDto()->getLabel()->getParameters());
+        $this->assertSame(['%name%' => 'My Site'], $items[0]->getAsDto()->getSubItems()[0]->getLabel()->getParameters());
     }
 
     // A "pinned" link (e.g. a "visit the site" link) always sorts after every non-pinned link, even one that would otherwise sort first alphabetically
@@ -456,6 +561,7 @@ class MenuBuilderTest extends TestCase
 
         $items = iterator_to_array($builder->getMenuItems(), false);
 
-        $this->assertSame('https://example.com/vitrine-blocks', $items[2]->getAsDto()->getLinkUrl());
+        $this->assertSame('https://example.com/vitrine-blocks', $items[1]->getAsDto()->getLinkUrl());
+        $this->assertSame('label.links', $items[0]->getAsDto()->getLabel()->getMessage());
     }
 }

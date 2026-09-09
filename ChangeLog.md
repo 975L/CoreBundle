@@ -1,5 +1,31 @@
 # ChangeLog
 
+## v1.26.1
+
+A grid of pictures drops its frames, and a click opens one over the page
+
+### UiBundle
+
+- **New `portfolio_grid` field "Presentation"** (`variant`): `plain` and `thumbnail` drop the card chrome, each file keeping the shape it was uploaded in (09/09/2026)
+- `thumbnail` draws the grid on the listing gabarit ShopBundle gives its products, so covers, posters and products read at one size (09/09/2026)
+- **New `portfolio_grid` field "Image zoom"** (`zoom`), one click opening the picture over the page through `<twig:c975LUi:Image:Zoom>` (09/09/2026)
+- The zoom only fires on a project carrying no url, an outbound link winning over it - the two anchors cannot nest (09/09/2026)
+- A project body holding neither title nor description is no longer drawn as padding under the picture (09/09/2026)
+- `Image:Zoom` takes optional `width`/`height`, emitted on the `<img>` so a grid reserves its box (09/09/2026)
+- `Image:Zoom` announces `label.enlarge_image` when the caller hands the same file twice, no high resolution being promised (09/09/2026)
+- New `_page-sections.scss` rules for the two frameless variants, on the shared `$thumbnail-track` gabarit (09/09/2026)
+- New `label.enlarge_image`, `label.image_zoom`, `label.image_zoom_help`, `label.variant_plain` and `label.variant_thumbnail` in the three locales (09/09/2026)
+- The showcase's "Miniature" fixture attaches linkless projects, the variant demonstrating a zoom that fires on those alone (09/09/2026)
+- `PortfolioLinkTargetTest` covers both branches of the zoom rule (09/09/2026)
+
+### ConfigBundle
+
+- **New optional `icon` key on `getMenuSection()`**, drawn beside a section's caption now that every section is a collapsible submenu (09/09/2026)
+- A link naming no `target` is drawn inside its own provider's section, sorted among its menu entries - only a link leaving the admin goes to the shared "Liens" section (09/09/2026)
+- `getOrderedMenus()` walks those internal links in place, so the guided tour follows the sidebar instead of sending the user back to the top (09/09/2026)
+- A link never inherits its section's `tier`, which applies to `getMenus()` alone (09/09/2026)
+- `MenuBuilder::leavesTheAdmin()` becomes public, `OnboardingStepBuilder` splitting the two kinds of link on the same rule (09/09/2026)
+
 ## v1.26.0
 
 The high resolution of a picture opens over the page, from any bundle

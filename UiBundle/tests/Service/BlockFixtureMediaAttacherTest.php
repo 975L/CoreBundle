@@ -328,6 +328,18 @@ class BlockFixtureMediaAttacherTest extends TestCase
         $this->assertNotNull($medias->first()->getUrl());
     }
 
+    // The "Miniature" variant is the one demonstrating the zoom, which only fires on a project carrying no url (see components/Portfolio/Grid.html.twig) - its cards would otherwise render exactly like the "Sans cadre" ones
+    public function testTheThumbnailVariantGetsLinklessProjectsSoItsZoomFires(): void
+    {
+        $attacher = $this->createAttacher(['image/*']);
+        $block = new Block()->setKind('portfolio_grid');
+
+        $attacher->attach($block, 'portfolio_grid', 'Miniature');
+
+        $this->assertCount(3, $block->getMedia());
+        $this->assertNull($block->getMedia()->first()->getUrl());
+    }
+
     // A kind with no media_types at all is left untouched, not crashed
     public function testKindWithNoMediaTypesGetsNothingAttached(): void
     {

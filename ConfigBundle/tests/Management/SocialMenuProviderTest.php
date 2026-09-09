@@ -21,7 +21,7 @@ class SocialMenuProviderTest extends TestCase
     public function testTheSectionIsSpelledTheWaySocialBundleSpellsIt(): void
     {
         $this->assertSame(
-            ['label' => 'label.social', 'translation_domain' => 'social'],
+            ['label' => 'label.social', 'translation_domain' => 'social', 'icon' => 'fas fa-share-nodes'],
             $this->createProvider()->getMenuSection(),
         );
     }

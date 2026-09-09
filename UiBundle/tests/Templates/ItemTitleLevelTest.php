@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Templates;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 // The heading each item's title is drawn with: resolved from the block's own head unless the editor picked one, then carried down to whichever markup draws it - the same field and the same rule on the "collection" and "portfolio_grid" blocks
@@ -83,6 +84,27 @@ class ItemTitleLevelTest extends TestCase
         $this->assertStringContainsString('portfolio-grid__head', $this->renderGrid(['linkLabel' => 'Voir tout', 'linkUrl' => '/realisations']));
     }
 
+    // The frameless variants only take the chrome off: one modifier on the section, the grid and its titles staying what they are
+    public function testThePortfolioGridCarriesItsVariantModifierOnlyWhenAsked(): void
+    {
+        $this->assertStringContainsString('class="portfolio-grid portfolio-grid--plain"', $this->renderGrid(['variant' => 'plain']));
+        $this->assertStringContainsString('class="portfolio-grid portfolio-grid--thumbnail"', $this->renderGrid(['variant' => 'thumbnail']));
+        $this->assertStringContainsString('class="portfolio-grid"', $this->renderGrid([]));
+    }
+
+    // Matched against the offered variants and never interpolated, the same rule as the level above: block data must not be able to write a class name
+    public function testAVariantOutsideTheOfferedOnesWritesNoModifier(): void
+    {
+        $this->assertStringContainsString('class="portfolio-grid"', $this->renderGrid(['variant' => 'evil onclick=x']));
+    }
+
+    // A media carrying neither label nor description gets no body at all: an empty heading is padding under the picture, and a screen reader announces it as a heading all the same
+    public function testAProjectWithNothingToSayPrintsNoBody(): void
+    {
+        $this->assertStringNotContainsString('portfolio-grid__project-body', $this->renderGrid([], label: '', description: null));
+        $this->assertStringContainsString('portfolio-grid__project-body', $this->renderGrid([], label: '', description: 'Le texte du projet.'));
+    }
+
     // The level the block hands collection_render_items(), the function itself being stubbed to record what it was given
     private function resolvedLevel(array $context): string
     {
@@ -99,11 +121,11 @@ class ItemTitleLevelTest extends TestCase
     }
 
     // The component knows nothing of VichUploader, which it calls for each project's own file
-    private function renderGrid(array $context): string
+    private function renderGrid(array $context, string $label = 'Projet Alpha', ?string $description = null): string
     {
         $twig = $this->twig();
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (): string => '/uploads/project.jpg'));
-        $media = (object) ['url' => null, 'label' => 'Projet Alpha', 'description' => null, 'intrinsicWidth' => null, 'intrinsicHeight' => null];
+        $media = (object) ['url' => null, 'label' => $label, 'description' => $description, 'intrinsicWidth' => null, 'intrinsicHeight' => null];
 
         return $this->render($twig, 'components/Portfolio/Grid.html.twig', [...$context, 'media' => [$media]]);
     }
@@ -130,7 +152,11 @@ class ItemTitleLevelTest extends TestCase
     {
         $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
         $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
+        $twig = new Environment($loader);
 
-        return new Environment($loader);
+        // The bundle's own filter, which a bare Environment knows nothing of - the same rule BoolExtension applies, so "false" spelled out stays false here too
+        $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => !\in_array($value, [false, 'false', '0', 0, ''], true)));
+
+        return $twig;
     }
 }

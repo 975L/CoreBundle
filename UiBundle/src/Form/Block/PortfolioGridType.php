@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Form\Block;
 
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -59,6 +60,24 @@ class PortfolioGridType extends AbstractType
             ])
             ->add('linkUrl', TextType::class, [
                 'label' => 'label.url',
+                'required' => false,
+            ])
+            // Picked up by the component to switch its markup, the same field CollectionType offers - a grid of projects reads as cards, a grid of pictures put forward for themselves (covers, posters, the cards of a game) reads better without: no ground, no border, and the ratio each file was uploaded in rather than the 16/10 a screenshot wants
+            ->add('variant', ChoiceType::class, [
+                'label' => 'label.variant',
+                'required' => false,
+                'choices' => [
+                    'label.variant_card' => '',
+                    'label.variant_plain' => 'plain',
+                    'label.variant_thumbnail' => 'thumbnail',
+                ],
+                // No placeholder, same reading as the level field above: the stored empty value is itself a choice - the card - and not the absence of one
+                'placeholder' => false,
+            ])
+            // Off by default: a grid already published goes on rendering exactly as it did, and a project pointing somewhere keeps its link either way (the component's own rule, see components/Portfolio/Grid.html.twig)
+            ->add('zoom', CheckboxType::class, [
+                'label' => 'label.image_zoom',
+                'help' => 'label.image_zoom_help',
                 'required' => false,
             ]);
     }

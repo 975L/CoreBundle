@@ -30,38 +30,56 @@ class OnboardingStepBuilder
     ) {
     }
 
-    // [{url, label, description}], one per menu/link (both kinds needing a role the user lacks excluded) - menus follow MenuBuilder::getOrderedMenus(), the same essential-then-advanced-across-sections order the sidebar itself renders, with links (already alphabetical/pinned-last, matching their own sidebar section) appended after
+    // [{url, label, description}], one per menu/link (both kinds needing a role the user lacks excluded) - every entry the sidebar draws in a section, menu or internal link alike, follows MenuBuilder::getOrderedMenus(), the same essential-then-advanced-across-sections order the sidebar itself renders, with the links leaving the admin (already alphabetical/pinned-last, matching their own "Liens" section) appended after, that section being drawn last
     public function getSteps(): array
     {
         $steps = [];
 
-        foreach ($this->menuBuilder->getOrderedMenus() as $menu) {
-            // Same default as MenuBuilder::getMenuItems() gives the sidebar item, and read here for the same reason it is read there: the tour is highlighted by matching an href, so an entry the sidebar doesn't draw has nothing to point at
-            if (!$this->security->isGranted($menu['role'] ?? $this->configService->get('site-role-admin'))) {
+        foreach ($this->menuBuilder->getOrderedMenus() as $entry) {
+            if (!$this->isGranted($entry)) {
                 continue;
             }
 
-            $url = $this->adminUrlGenerator->unsetAll()
-                ->setController($menu['controller'])
-                // Same action resolution as MenuBuilder::getMenuItems(), and for the same reason: a step is highlighted by matching its url against the sidebar's own href, so an item naming its action has to be read the same way here
-                ->setAction($menu['action'] ?? Action::INDEX)
-                ->generateUrl();
+            // Same split as MenuBuilder::getMenuItems() makes on the very same entries (an internal link carries a route, not a controller), and for the same reason: a step is highlighted by matching its url against the sidebar's own href, so both kinds have to be spelled the way the sidebar spells them
+            $url = isset($entry['controller'])
+                ? $this->adminUrlGenerator->unsetAll()
+                    ->setController($entry['controller'])
+                    // Same action resolution as MenuBuilder::getMenuItems(): an item naming its action has to be read the same way here
+                    ->setAction($entry['action'] ?? Action::INDEX)
+                    ->generateUrl()
+                : $this->linkUrl($entry);
 
-            $steps[] = $this->buildStep($url, $menu);
+            $steps[] = $this->buildStep($url, $entry);
         }
 
+        // What is left is every link leaving the admin, the ones getOrderedMenus() skips because the sidebar gathers them in its own section, below every menu
         foreach ($this->menuBuilder->getLinks() as $link) {
-            if (isset($link['role']) && !$this->security->isGranted($link['role'])) {
+            if (!MenuBuilder::leavesTheAdmin($link) || !$this->isGranted($link)) {
                 continue;
             }
 
-            $referenceType = isset($link['target']) ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
-            $url = $link['url'] ?? $this->urlGenerator->generate($link['name'], [], $referenceType);
-
-            $steps[] = $this->buildStep($url, $link);
+            $steps[] = $this->buildStep($this->linkUrl($link), $link);
         }
 
         return $steps;
+    }
+
+    // Same defaults as MenuBuilder gives the sidebar item - a menu falls back on the admin role, a link is gated only when it names one (see buildMenuItem()/buildLinkItem()) - and read here for the same reason it is read there: the tour is highlighted by matching an href, so an entry the sidebar doesn't draw has nothing to point at
+    private function isGranted(array $entry): bool
+    {
+        if (isset($entry['controller'])) {
+            return $this->security->isGranted($entry['role'] ?? $this->configService->get('site-role-admin'));
+        }
+
+        return !isset($entry['role']) || $this->security->isGranted($entry['role']);
+    }
+
+    // Same url resolution as MenuBuilder::linkUrl(): a literal url wins over a route, resolved absolute only for a link leaving the admin
+    private function linkUrl(array $link): string
+    {
+        $referenceType = isset($link['target']) ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
+
+        return $link['url'] ?? $this->urlGenerator->generate($link['name'], [], $referenceType);
     }
 
     // Same label/description resolution as MenuBuilder::getMenuItems() for a link (see its 'label_parameters' handling) - kept in sync by hand since both operate on the same MenuProviderInterface item shape

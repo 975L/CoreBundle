@@ -366,11 +366,28 @@ class BlockFixtureProvider implements BlockFixtureProviderInterface
                 ],
             ],
             'portfolio_grid' => [
-                '' => [
+                'Par défaut' => [
                     'eyebrow' => 'Surtitre de la grille',
                     'title' => 'Le titre de la grille de projets.',
                     'linkLabel' => 'Tout voir',
                     'linkUrl' => 'https://example.com/realisations',
+                ],
+                // The pictures put forward for themselves rather than as projects a card announces - a set of covers, of posters or of playing cards. A whole other look, so both are shown side by side in the gallery, the same as the slider's two layouts
+                'Sans cadre' => [
+                    'eyebrow' => 'Surtitre de la grille',
+                    'title' => 'Le titre de la grille, images sans cadre.',
+                    'linkLabel' => 'Tout voir',
+                    'linkUrl' => 'https://example.com/realisations',
+                    'variant' => 'plain',
+                ],
+                // The same pictures counted rather than read one at a time, and the click that opens one over the page - the two go together, a thumbnail being the size at which a visitor asks to see the picture bigger
+                'Miniature' => [
+                    'eyebrow' => 'Surtitre de la grille',
+                    'title' => 'Le titre de la grille, en miniatures.',
+                    'linkLabel' => 'Tout voir',
+                    'linkUrl' => 'https://example.com/realisations',
+                    'variant' => 'thumbnail',
+                    'zoom' => true,
                 ],
             ],
             'cta_band' => [

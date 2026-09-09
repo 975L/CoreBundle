@@ -64,7 +64,8 @@ class BlockFixtureMediaAttacher
     public function attach(Block $block, string $kind, string $variant = ''): void
     {
         if ('portfolio_grid' === $kind) {
-            foreach ($this->placeholderPortfolioProjects() as $project) {
+            // "Miniature" is the variant demonstrating the zoom, which only fires on a project carrying no url
+            foreach ($this->placeholderPortfolioProjects('Miniature' !== $variant) as $project) {
                 $block->addMedia($project);
             }
 
@@ -132,7 +133,7 @@ class BlockFixtureMediaAttacher
     /**
      * @return Media[]
      */
-    private function placeholderPortfolioProjects(): array
+    private function placeholderPortfolioProjects(bool $linked = true): array
     {
         // Generic client-project copy, not tied to any real portfolio
         $projects = [
@@ -148,11 +149,17 @@ class BlockFixtureMediaAttacher
                 break;
             }
 
-            $medias[] = $image
+            $image
                 ->setAlt($project[0])
                 ->setLabel($project[0])
-                ->setDescription($project[1])
-                ->setUrl('#');
+                ->setDescription($project[1]);
+
+            // The zoom only fires on a project carrying no url (see components/Portfolio/Grid.html.twig), so a variant demonstrating it gets its cards linkless
+            if ($linked) {
+                $image->setUrl('#');
+            }
+
+            $medias[] = $image;
         }
 
         return $medias;

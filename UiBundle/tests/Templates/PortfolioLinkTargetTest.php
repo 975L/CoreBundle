@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Tests\Templates;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 // A project card either leaves the site or stays in it, and only the first opens a tab of its own - locked for both templates drawing that same card, the "collection" block's portfolio variant and the PortfolioGrid component it borrows its classes from
@@ -92,9 +93,28 @@ class PortfolioLinkTargetTest extends TestCase
         $this->assertStringEndsWith("</section>\n", $html);
     }
 
+    // A picture the visitor is meant to open over the page: the zoom only fires on a project carrying no url, an outbound link winning over it (see components/Portfolio/Grid.html.twig)
+    public function testAProjectWithNothingToLinkToOpensItsPictureOverThePage(): void
+    {
+        $html = $this->renderGrid([$this->media('', 'Couverture')], ['zoom' => true]);
+
+        $this->assertStringContainsString('<twig:c975LUi:Image:Zoom', $html);
+        $this->assertStringContainsString('src="project.webp"', $html);
+        $this->assertStringContainsString('highres="project.webp"', $html);
+    }
+
+    // The two cannot both be drawn: the zoom writes an anchor of its own, and nesting it in the card's would have the browser close the outer one early - so a linked project keeps its plain <img>, zoom asked for or not
+    public function testALinkedProjectKeepsItsPictureRatherThanTheZoom(): void
+    {
+        $html = $this->renderGrid([$this->media('https://editions-exemple.example', 'Couverture')], ['zoom' => true]);
+
+        $this->assertStringNotContainsString('<twig:c975LUi:Image:Zoom', $html);
+        $this->assertStringContainsString('<img src="/uploads/project.jpg"', $html);
+    }
+
     private function media(string $url, string $label): object
     {
-        return (object) ['url' => $url, 'label' => $label, 'description' => null, 'intrinsicWidth' => null, 'intrinsicHeight' => null];
+        return (object) ['url' => $url, 'label' => $label, 'description' => null, 'filename' => 'project.webp', 'alt' => null, 'intrinsicWidth' => null, 'intrinsicHeight' => null];
     }
 
     private function renderItem(array $context): string
@@ -112,6 +132,9 @@ class PortfolioLinkTargetTest extends TestCase
     {
         $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (): string => '/uploads/project.jpg'));
+
+        // The bundle's own filter, which a bare Environment knows nothing of - the same rule BoolExtension applies
+        $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => !\in_array($value, [false, 'false', '0', 0, ''], true)));
 
         return $twig;
     }

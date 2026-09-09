@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, highlight selector, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, highlight selector, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -72,7 +72,14 @@ depends on the core and on nothing else.
 Two nuances that get lost:
 
 - Menu sections sharing the same `label` **and** `translation_domain` merge under one heading, and the
-  entries are sorted alphabetically on the **translated** label.
+  entries are sorted alphabetically on the **translated** label. Each section is drawn as a collapsible
+  submenu carrying the optional `icon` of `getMenuSection()`, the shared "management" one staying open;
+  `icon` and `tier` belong to whichever provider is merged first when several share a section.
+- `getLinks()` is not one section: **the `target` key is what says where a link is drawn.** Naming one
+  (`'_blank'`) puts it in the shared "Liens" section gathering everything leaving the back office;
+  naming none makes it a back-office screen with no CRUD of its own (a health check, an import), drawn
+  inside your own section among your menu entries and walked there by the guided tour. A link never
+  inherits its section's `tier`, which applies to `getMenus()` alone.
 - A menu entry, an alert and a guided project each take an optional `role`. On a menu it defaults to
   `site-role-admin` and must be set to the bar the entry's own screen states, `setPermission()` being
   unreadable from here: too high and the entry goes missing from a sidebar its screen would have

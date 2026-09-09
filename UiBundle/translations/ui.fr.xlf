@@ -1678,6 +1678,10 @@
                 <source>label.email_templates</source>
                 <target>Modèles d'email</target>
             </trans-unit>
+            <trans-unit id="DPSinkh">
+                <source>label.enlarge_image</source>
+                <target>Agrandir l'image</target>
+            </trans-unit>
             <trans-unit id="fZX2vH1">
                 <source>label.error_image</source>
                 <target>Image d'erreur</target>
@@ -2597,6 +2601,14 @@
             <trans-unit id="O_0K8EM">
                 <source>label.image</source>
                 <target>Image</target>
+            </trans-unit>
+            <trans-unit id="mHNISHP">
+                <source>label.image_zoom</source>
+                <target>Zoom au clic</target>
+            </trans-unit>
+            <trans-unit id="nbVcFMW">
+                <source>label.image_zoom_help</source>
+                <target>Un clic sur une image l'ouvre par-dessus la page. Sans effet sur une image qui porte déjà un lien.</target>
             </trans-unit>
             <trans-unit id="wufmcmY">
                 <source>label.info_email_debug</source>
@@ -3738,6 +3750,10 @@
                 <source>label.variant_help</source>
                 <target>Mode d'affichage des items, appliqué à toute la collection.</target>
             </trans-unit>
+            <trans-unit id="6EjDHUa">
+                <source>label.variant_plain</source>
+                <target>Image seule (sans cadre)</target>
+            </trans-unit>
             <trans-unit id="29S6.HK">
                 <source>label.variant_portfolio</source>
                 <target>Grille portfolio</target>
@@ -3745,6 +3761,10 @@
             <trans-unit id="pbCnmPc">
                 <source>label.variant_portrait</source>
                 <target>Carte portrait</target>
+            </trans-unit>
+            <trans-unit id="RDBtYWz">
+                <source>label.variant_thumbnail</source>
+                <target>Miniature (sans cadre, plus petite)</target>
             </trans-unit>
             <trans-unit id="M3Bgg9j">
                 <source>label.vertical_align</source>

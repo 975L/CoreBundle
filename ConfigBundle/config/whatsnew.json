@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-09",
+        "description": [
+            {
+                "en": "The guided tour of the back office now follows the column exactly as you see it, instead of walking you to the bottom and sending you back up to the top for the last few screens.",
+                "fr": "La visite guidée du back-office suit désormais la colonne exactement telle que vous la voyez, au lieu de vous mener jusqu'en bas puis de vous renvoyer en haut pour les derniers écrans.",
+                "es": "La visita guiada del back office sigue ahora la columna exactamente tal como usted la ve, en lugar de llevarle hasta abajo y devolverle arriba para las últimas pantallas."
+            },
+            {
+                "en": "Each group of the sidebar now carries an icon of its own beside its name, so a group is recognized at a glance without reading it.",
+                "fr": "Chaque groupe de la colonne de gauche porte désormais une icône à côté de son nom, de sorte qu'un groupe se reconnaît d'un coup d'œil sans être lu.",
+                "es": "Cada grupo de la columna de la izquierda lleva ahora un icono junto a su nombre, de modo que un grupo se reconoce de un vistazo sin necesidad de leerlo."
+            }
+        ]
+    },
+    {
         "date": "2026-09-07",
         "description": [
             {
