@@ -39,6 +39,11 @@
     /* What delimits a comparison on the page - the one image kind carrying an outline, a screenshot ending on white having no edge of its own. "none" takes it back off for a design whose shots come already framed */
     /* --image-compare-border: 1px solid var(--border-color); */
 
+    /* The zoom a picture's high resolution opens in, over the page: how far the dialog may spread, and what the page is veiled with behind it */
+    /* --image-zoom-max-width: 95vw; */
+    /* --image-zoom-max-height: 95vh; */
+    /* --image-zoom-backdrop: rgba(0, 0, 0, 0.9); */
+
     /* The map block: the room it keeps on the page, the three heights an editor picks between, what frames the canvas, and the colour of the pin drawn over it */
     /* --ui-map-margin-block: 3em; */
     /* --ui-map-height-small: 15rem; */

@@ -1,0 +1,26 @@
+{# <twig:c975LUi:Image:Zoom src="path/to/medium.webp" highres="path/to/highres.webp" [alt=""] [label=""] [class=""] [priority=true]/> #}
+{# The picture a page displays, opening its own high resolution over the page rather than on a page of its own: a listing keeps browsing the stored (medium) files, and the heavy one is only fetched the moment a visitor asks to see it #}
+{# "src" is what the page shows, "highres" the file the zoom opens - an entity implementing VichMultiSizeImageInterface has both, the second being the "-highres.webp" its upload produced beside the first #}
+{% set alt = alt|default('') %}
+{% set label = label|default('') is not empty ? label : 'label.see_high_resolution'|trans({}, 'ui') %}
+{# "priority": the picture a page is built around is above the fold, so it opts out of lazy-loading by default here, unlike Image.html.twig - pass false for one further down #}
+{% set priority = priority is defined ? priority|to_bool : true %}
+{# Nothing to open: the picture is rendered on its own rather than wrapped in a link that would lead to itself #}
+{% set zoomable = highres|default('') is not empty %}
+
+{# The link and the dialog under one element carrying the controller: a Stimulus target is looked up inside its controller's own element, and a dialog left as the link's sibling would never be found. "display: contents" keeps the wrapper out of the layout, so the picture sits exactly where it would without the zoom #}
+{# Never place this component inside a <p>: <dialog> closes an open paragraph implicitly, and the browser hoists it out of the wrapper, leaving the controller with no target #}
+{% if zoomable %}<span class="image-zoom" data-controller="imageZoom">{% endif %}
+    {# The markup is written out rather than delegated to c975LUi:Image:Link: that component lets nothing through onto the <a> itself, and both the Stimulus action and the class belong there #}
+    {# A real link, pointing at the file: without javascript the high resolution stays reachable, and the zoom is operable from the keyboard for free #}
+    {% if zoomable %}<a href="{{ asset(highres) }}" class="image-zoom__link" data-action="imageZoom#open" aria-label="{{ label }}">{% endif %}
+        {# aria-hidden doubles the empty alt so checkers read it as decorative, not as a missing alternative - the same rule as Image.html.twig #}
+        <img src="{{ asset(src) }}" class="img img-responsive {{ class|default('') }}" alt="{{ alt }}"{% if alt is empty %} aria-hidden="true"{% endif %}{% if priority %} loading="eager" fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+    {% if zoomable %}</a>
+
+    {# A native <dialog>: the backdrop, the escape key and the focus trap come with it, no library involved. The image carries no src at all until it is opened - an empty one would have the browser re-request the page itself #}
+    {# No close button: a click anywhere inside closes, and the escape key does too, so a cross in the corner would only cover a part of the very image it was opened to show #}
+    <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close">
+        <img class="image-zoom__image" data-imageZoom-target="image" alt="{{ alt }}">
+    </dialog>
+</span>{% endif %}

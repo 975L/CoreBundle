@@ -1945,6 +1945,36 @@ iframe {
   accent-color: var(--primary, #007bff);
 }
 
+.image-zoom {
+  display: contents;
+}
+
+.image-zoom__link {
+  display: block;
+  cursor: zoom-in;
+}
+
+.image-zoom__dialog {
+  max-width: var(--image-zoom-max-width, 95vw);
+  max-height: var(--image-zoom-max-height, 95vh);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.image-zoom__dialog::backdrop {
+  background: var(--image-zoom-backdrop, rgba(0, 0, 0, 0.9));
+}
+
+.image-zoom__image {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: var(--image-zoom-max-height, 95vh);
+  cursor: zoom-out;
+}
+
 /* IMAGES */
 img {
   overflow: clip;

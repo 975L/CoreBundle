@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, Image:Zoom, imageZoom, lightbox, see_high_resolution, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui."
 ---
 
 # c975L UiBundle — media and uploads
@@ -10,7 +10,7 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`
+`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`, `assets/js/image-zoom.js`, `templates/components/Image/Zoom.html.twig`
 
 **Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-operations` in ConfigBundle beside it.
 
@@ -47,6 +47,10 @@ Implement `Contract\VichMultiSizeImageInterface`, declaring three widths and not
 `Listener\VichImageResizeListener` generates both siblings from the **untouched original**, never from
 the already-downscaled stored file, and never upscales past it. Nothing is stored in the database for
 them: the entity reads their names back from its own filename.
+
+**The `-highres.webp` has a renderer**: `<twig:c975LUi:Image:Zoom src="..." highres="..."/>` shows the
+stored file and opens the heavy one over the page in a native `<dialog>`, fetching it only on the first
+opening. It is a real `<a>` toward the file, so the high resolution stays reachable without javascript.
 
 **The thumbnail keeps the image's proportions**, the longest side capped — it is square only for a
 square original. A grid wanting square tiles uses `object-fit: cover`, which stays reversible where a
@@ -249,5 +253,7 @@ template is shipped to sites running either engine.
   `AbstractDeclaredFilesHealthCheckProvider` and name the rows.
 - **Do not draw a share image with a `TextField` or an untyped field** - `OgImageField::new()` is the
   whole call, and a `TextField` breaks the edit screen as soon as an image is set.
+- **Do not write a lightbox of your own** for a `-highres.webp` — `Image:Zoom` is the component, and it
+  must not be placed inside a `<p>`, which `<dialog>` closes implicitly.
 - **Do not write a progress bar of your own**, and do not redirect from a controller answering a form
   that carries one — hand the url over.

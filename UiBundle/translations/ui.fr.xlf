@@ -3462,6 +3462,10 @@
                 <source>label.section_background_primary</source>
                 <target>Couleur principale</target>
             </trans-unit>
+            <trans-unit id="ZTREgcX">
+                <source>label.see_high_resolution</source>
+                <target>Voir en haute résolution</target>
+            </trans-unit>
             <trans-unit id="8wG6aGH">
                 <source>label.send</source>
                 <target>Envoyer</target>

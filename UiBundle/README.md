@@ -1898,6 +1898,7 @@ Block templates are thin adapters around a set of Symfony UX Twig components liv
 | `<twig:c975LUi:Image:Icon>` | Small icon image |
 | `<twig:c975LUi:Image:Image>` | Responsive image |
 | `<twig:c975LUi:Image:Link>` | Image wrapped in a link |
+| `<twig:c975LUi:Image:Zoom>` | Image whose high resolution opens over the page |
 | `<twig:c975LUi:Portfolio:Grid>` | Grid of project cards sourced from a block's own medias |
 | `<twig:c975LUi:Process:Steps>` | Section title followed by numbered steps |
 | `<twig:c975LUi:Progress:Bar>` | Progress bar |
@@ -2874,7 +2875,7 @@ php bin/console c975l:ui:media-dimensions
 
 It only fills a row that has none, so a value typed by hand survives, and it can be re-run at will.
 
-The reserved rectangle fixes the shift, not the delay: the one above-the-fold image likely to be the LCP element should also opt out of lazy-loading, with `priority` on `<twig:c975LUi:Image:Image>`, `<twig:c975LUi:Image:Icon>` or `<twig:c975LUi:Image:Link>` — it renders `loading="eager" fetchpriority="high"` instead of the default `loading="lazy"`. Use it on that one image only; marking everything as priority defeats the point.
+The reserved rectangle fixes the shift, not the delay: the one above-the-fold image likely to be the LCP element should also opt out of lazy-loading, with `priority` on `<twig:c975LUi:Image:Image>`, `<twig:c975LUi:Image:Icon>` or `<twig:c975LUi:Image:Link>` — it renders `loading="eager" fetchpriority="high"` instead of the default `loading="lazy"`. Use it on that one image only; marking everything as priority defeats the point. `<twig:c975LUi:Image:Zoom>` takes the same prop the other way round: the picture a page is built around being above the fold, it is eager by default, and `:priority="false"` puts one placed further down back to lazy.
 
 ### Declaring where a Media is used
 

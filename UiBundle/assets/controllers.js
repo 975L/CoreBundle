@@ -18,6 +18,7 @@ const LAZY_CONTROLLERS = {
     flipCard: () => import('./js/flip-card.js'),
     heroVideo: () => import('./js/hero-video.js'),
     imageCompare: () => import('./js/image-compare.js'),
+    imageZoom: () => import('./js/image-zoom.js'),
     infiniteScroll: () => import('./js/infinite-scroll.js'),
     'legal-model-edit': () => import('./js/legal-model-edit.js'),
     matomo: () => import('./js/matomo.js'),

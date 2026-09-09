@@ -1,0 +1,33 @@
+// The element carrying the controller, so the dialog is looked up inside it (see Image/Zoom.html.twig) - out of the layout itself, the picture sitting exactly where it would with no zoom on it
+.image-zoom {
+    display: contents;
+}
+
+// The picture on the page: the pointer says the click enlarges rather than navigates, and the link is laid out as the block its image is
+.image-zoom__link {
+    display: block;
+    cursor: zoom-in;
+}
+
+// The dialog holds no chrome of its own - no padding, no border, no ground: what it frames is the picture, and anything drawn around it would be read as part of the image
+.image-zoom__dialog {
+    max-width: var(--image-zoom-max-width, 95vw);
+    max-height: var(--image-zoom-max-height, 95vh);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+}
+
+.image-zoom__dialog::backdrop {
+    background: var(--image-zoom-backdrop, rgba(0, 0, 0, 0.9));
+}
+
+// Capped by the dialog's own measure, the picture being what the visitor opened it for. The pointer says the next click closes, which is how a lightbox with no close button stays operable
+.image-zoom__image {
+    display: block;
+    box-sizing: border-box;
+    max-width: 100%;
+    max-height: var(--image-zoom-max-height, 95vh);
+    cursor: zoom-out;
+}

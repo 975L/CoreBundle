@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.26.0
+
+The high resolution of a picture opens over the page, from any bundle
+
+### UiBundle
+
+- **New component `<twig:c975LUi:Image:Zoom>`**, the picture whose high resolution opens over the page rather than on a page of its own (08/09/2026)
+- A real `<a>` toward the file, a native `<dialog>` and the `imageZoom` controller, which assigns the heavy file's address on the first opening only (08/09/2026)
+- It renders the `-highres.webp` that `VichMultiSizeImageInterface` and `VichImageResizeListener` already produced and nothing displayed (08/09/2026)
+- The gesture leaves GalleryBundle, where no other bundle could reach it (08/09/2026)
+- A modified click is let through, so Cmd/Ctrl/Maj+clic still opens the file in a new tab (09/09/2026)
+- A `<dialog>` hoisted out of a `<p>` leaves the link working rather than dead (09/09/2026)
+- `priority` defaults to eager, `:priority="false"` putting a zoom further down back to lazy (09/09/2026)
+- New `_image-zoom.scss` reading `--image-zoom-max-width`, `--image-zoom-max-height` and `--image-zoom-backdrop` (08/09/2026)
+- New `label.see_high_resolution` in the three locales (08/09/2026)
+- `ImageZoomBehaviourTest` covers the browser side and `ImageZoomPriorityTest` pins the priority default (09/09/2026)
+
 ## v1.25.1
 
 A dark navbar gets a logo of its own, and nobody is nagged for it
