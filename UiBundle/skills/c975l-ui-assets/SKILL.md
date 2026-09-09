@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, FontProviderInterface, font_preloads, FontFilenameParser, font filename, family name, variable font, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, StylesheetProvider, block-thumbs.min.css, block-picker."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, FontProviderInterface, font_preloads, FontFilenameParser, font filename, family name, variable font, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, StylesheetProvider, block-thumbs.min.css, block-picker, :has(), nested :has, display contents, block-animation, block-editable, SectionRhythmTest."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -140,6 +140,17 @@ a rule writing with `--primary` on a dark ground stays the dark brand color and 
 `text-emphasis-color`, `column-rule-color`, `caret-color`, `fill`, `stroke`) reading `--primary`, its
 one listed exception being a label on a flat that inverts to a stated white.
 
+**A `:has()` may not be nested inside another**, and a selector doing it is dropped without a word —
+the rest of the rule goes on matching, so the sheet half-works instead of failing. A pair of branches
+that would read as one `:is()` holding a `:has()` is written as the two relative selectors `:has()`
+takes: `:has(+ :is(.a), + :is(.wrapper) > :is(.a))`. `SectionRhythmTest` refuses any nested `:has()`
+in the compiled sheet.
+
+**A sibling combinator reads the DOM, where the layout reads the block.** A page's blocks are rendered
+inside `.block-animation` (entrance effect) and `.block-editable` (the editor's overlay), both
+`display: contents` — so a rule pairing two blocks names both wrappers on **both** ends of the pair, or
+it is dropped the day an editor ticks an animation.
+
 **Read the viewport through `--viewport-width`, never as a bare `100vw`.** A `calc()` subtracting a
 `var()` from a `vw` length is valid CSS that the W3C validator reports as an *error* ("The types are
 incompatible") on every page of a site — read through a custom property the same expression validates,
@@ -219,6 +230,10 @@ every bundle that copies it.
 - **Do not declare a token on `:root` alone**, and do not read a token without declaring its default.
 - **Do not write a bare `vw` length into a `calc()` that also subtracts a `var()`** — use
   `--viewport-width`.
+- **Do not nest a `:has()` inside another** — the selector is dropped silently; use the relative
+  selector list `:has()` already takes.
+- **Do not pair two blocks with a sibling combinator without naming `.block-animation` and
+  `.block-editable`** on both ends — both are `display: contents`.
 - **Do not write text, an outline or a rule with `--primary`** — that is the fill; ink is
   `--primary-ink`.
 - **Do not set colors or fonts in a theme file** — they belong to the admin.

@@ -20,7 +20,10 @@ class SectionRhythmTest extends TestCase
 
     private const string STEP_TIGHT = 'var(--section-space-tight,clamp(24px,4vw,48px))';
 
-    // Its step is a margin, the band painting its own background between its own hairlines
+    // The three colored flats, as the compiled stylesheet names them
+    private const string FLATS = '.section--bg-muted,.section--bg-primary,.section--bg-dark';
+
+    // Its step is a margin, the band painting its own background between its own hairlines - which is also why it is a band, and left out of the step above a flat (see testABandAboveAFlatIsLeftOutOfThatStep)
     private const array SPACED_BY_MARGIN = ['.feature-bar'];
 
     // Laid out by their own container rather than by the page, and deliberately outside the rhythm
@@ -46,7 +49,7 @@ class SectionRhythmTest extends TestCase
         }
     }
 
-    // The step is declared on the top edge only. A bottom one is added to the next block's top one and parts that pair by two - which is what .hero and .cta-band did until the rhythm was harmonized. The exception is a flat: it paints down to its own edge, and its content would otherwise sit right on that edge.
+    // The step is declared on the top edge only. A bottom one is added to the next block's top one and parts that pair by two - which is what .hero and .cta-band did until the rhythm was harmonized. Two exceptions, both about a flat: the flat itself, which paints down to its own edge and whose content would otherwise sit right on it, and the block standing above one, parted from it by the rule testTheBlockAboveAFlatIsPartedFromIt locks - both say "section--bg-" in their selector, which is what this test reads them by.
     public function testOnlyAFlatPadsItsBottomEdge(): void
     {
         $css = $this->normalize('styles.min.css');
@@ -148,6 +151,75 @@ class SectionRhythmTest extends TestCase
             $this->normalize('styles.min.css'),
             'The fold\'s step is written as a child selector: a readmore wrapped in the site\'s own classes no longer takes it.'
         );
+    }
+
+    // The one pair the top-edge rule cannot part on its own: a flat paints its own top step inside its color, so the step that parts every other pair is invisible there and the band's edge lands on the last line of the block above it. That block carries the step instead, on the page's own ground - and a band above a band is left out of the rule, two of them being meant to touch.
+    public function testTheBlockAboveAFlatIsPartedFromIt(): void
+    {
+        $this->assertMatchesRegularExpression(
+            $this->declarationPattern($this->stepAboveAFlatSelector(), 'padding-bottom', [self::STEP]),
+            $this->normalize('styles.min.css'),
+            'A block laid straight above a colored flat declares no step of its own: the flat paints its top step inside its color, so the band\'s edge lands on the last line of that block.'
+        );
+    }
+
+    // Both wrappers a page's blocks are rendered inside are "display: contents", so the layout sees the block where the sibling combinator, reading the DOM, sees the wrapper. Named on both ends of the pair or the step is silently dropped the day an editor ticks an animation - which is what every other rhythm rule avoids by using no sibling combinator at all
+    public function testTheStepAboveAFlatSurvivesTheAnimationAndEditorWrappers(): void
+    {
+        $css = $this->normalize('styles.min.css');
+
+        // The flat is the one wrapped: the block above sees the wrapper as its next sibling, so the wrapper is stepped through inside the :has()
+        $this->assertStringContainsString(
+            '+:is(.block-animation,.block-editable)>:is(' . self::FLATS . ')',
+            $css,
+            'The step above a flat is not given when the flat itself is wrapped for its entrance effect or by the editor\'s overlay.'
+        );
+
+        // The block above is the one wrapped: it is the wrapper that has the flat for a sibling, and the step has to reach the block inside it
+        $this->assertMatchesRegularExpression(
+            $this->declarationPattern('>:is(.block-animation,.block-editable):has(+', 'padding-bottom', [self::STEP]),
+            $css,
+            'The step above a flat is not given when the block above is wrapped for its entrance effect or by the editor\'s overlay.'
+        );
+    }
+
+    // A :has() may not be nested inside another: written as one :is() holding a :has(), the wrapped-flat branch is dropped without a word and the step comes back only for the pairs that carry no animation - which is exactly how this rule was first written and how it silently half-worked
+    public function testTheStepAboveAFlatNestsNoHasInsideAHas(): void
+    {
+        preg_match_all('/:has\(([^()]|\([^()]*\))*\)/', $this->normalize('styles.min.css'), $matches);
+
+        foreach ($matches[0] as $selector) {
+            $this->assertStringNotContainsString(
+                ':has(',
+                substr($selector, 5),
+                sprintf('"%s" nests a :has() inside another, which no browser matches.', $selector)
+            );
+        }
+    }
+
+    // A band paints or bleeds to its own edge, so two of them touch rather than ask each other for room - and on the three carrying their step as a margin, a padding would be painted over rather than part anything
+    public function testABandAboveAFlatIsLeftOutOfThatStep(): void
+    {
+        $subject = $this->stepAboveAFlatSelector();
+
+        foreach (['.hero--has-bg', '.banner-title', '.feature-bar'] as $band) {
+            $this->assertStringContainsString(
+                $band,
+                $subject,
+                sprintf('"%s" bleeds to its own edge but is not excluded from the step above a flat, which would part two bands meant to touch.', $band)
+            );
+        }
+
+        $this->assertStringContainsString($subject, $this->normalize('styles.min.css'));
+    }
+
+    // The rule's first selector, the pair whose two halves are plain siblings - the shape the two tests above read the rest of the rule off
+    private function stepAboveAFlatSelector(): string
+    {
+        $bands = self::FLATS . ',.hero--has-bg,.banner-title,.feature-bar';
+        $next = '+:is(' . self::FLATS . '),+:is(.block-animation,.block-editable)>:is(' . self::FLATS . ')';
+
+        return 'main:is(.blocks,.block-animation,.block-editable)>:not(' . $bands . '):has(' . $next . ')';
     }
 
     // A value written out is a value no theme can reach: the rhythm has to stay retunable from one token

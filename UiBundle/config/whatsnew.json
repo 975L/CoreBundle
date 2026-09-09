@@ -16,6 +16,11 @@
                 "en": "A form placed beside something else — in a column, in a block's slot — now stays inside it instead of running over its neighbour.",
                 "fr": "Un formulaire posé à côté d'autre chose — dans une colonne, dans l'emplacement d'un block — reste désormais à l'intérieur au lieu de déborder sur son voisin.",
                 "es": "Un formulario colocado junto a otro elemento —en una columna, en la ubicación de un bloque— se mantiene ahora dentro de él en lugar de desbordarse sobre su vecino."
+            },
+            {
+                "en": "A section on a colored background no longer sits flush against the block above it: the spacing between the two is back, exactly the one that parts every other pair of blocks on the page.",
+                "fr": "Une section sur fond coloré ne colle plus au block qui la précède : l'espace entre les deux est rétabli, exactement celui qui sépare toutes les autres paires de blocks de la page.",
+                "es": "Una sección con fondo de color ya no queda pegada al bloque que la precede: se restablece el espacio entre ambos, exactamente el que separa todos los demás pares de bloques de la página."
             }
         ]
     },

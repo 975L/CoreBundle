@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.26.3
+
+A colored flat is parted from the block above it
+
+### UiBundle
+
+- A block standing above a colored flat pads its bottom edge, the flat's own top step being painted inside its color (09/09/2026)
+- A band above a flat is left out of that step, two bands being meant to touch (09/09/2026)
+- That step names `.block-animation` and `.block-editable` on both ends of the pair, both being `display: contents` (09/09/2026)
+- The step is written as two relative selectors inside one `:has()`, a `:has()` not being nestable inside another (09/09/2026)
+- `SectionRhythmTest` locks that step, its exclusions and refuses any nested `:has()` in the compiled sheet (09/09/2026)
+- The `c975l-ui-assets` skill names the nested `:has()` and the two `display: contents` wrappers (09/09/2026)
+- The README states the step a flat makes the block above it carry (09/09/2026)
+
 ## v1.26.2
 
 A lost tab no longer takes the rest of the run with it

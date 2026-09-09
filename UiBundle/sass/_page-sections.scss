@@ -20,6 +20,15 @@ $thumbnail-gap-wide: 20px;
 $section-space: clamp(48px, 8vw, 84px);
 $section-space-tight: clamp(24px, 4vw, 48px);
 
+// The three colored flats, named once here and read by the rule parting a flat from the block above it
+$section-flats: '.section--bg-muted, .section--bg-primary, .section--bg-dark';
+// Everything painting or bleeding to its own edge: two of them are meant to touch, and neither asks the other for room
+$bands: '#{$section-flats}, .hero--has-bg, .banner-title, .feature-bar';
+// The two wrappers a page's blocks are rendered inside, both "display: contents" (see BlockExtension and sass/_animations-media.scss)
+$block-wrappers: '.block-animation, .block-editable';
+// "the next block is a flat", read as the relative selectors :has() takes - the second for a flat rendered inside one of the wrappers above. Two relative selectors and not one :is() holding a :has(), which is invalid: a :has() may not be nested inside another, and the branch is dropped without a word
+$flat-next: '+ :is(#{$section-flats}), + :is(#{$block-wrappers}) > :is(#{$section-flats})';
+
 // Three typographic scales live in this file, and which one a rule belongs to is decided by the font it is set in.
 // Everything set in the body font - an item's text, a band's paragraph, a caption, a button's label - is sized in em, so it follows SiteBundle's --font-size-body and one value retunes the reading of the whole page. A title (--font-family-title) and an eyebrow (--font-family-accent) are the design's own marks and must not be dragged along by that value, so they keep their own lengths - each multiplied by --font-size-title-scale, resp. --font-size-eyebrow-scale, both 1 by default. A factor rather than one shared size: these lengths are a hierarchy, from a 66px hero title down to a 19px card title, and one value for all of them would flatten it - where a factor moves the whole family at once and leaves every proportion inside it where the design put it.
 // A face with a small x-height reads small at the size a wider one reads right, which is what these two answer
@@ -258,6 +267,12 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 // A container painted as a flat closes on its own edge: the band paints down past its last column, which would sit flush against it without a bottom step - only these two, every other kind stating its own (see .text-section, .hero and .feature-bar above)
 .section-cards-section:is(.section--bg-muted, .section--bg-primary, .section--bg-dark),
 .flex-columns-section:is(.section--bg-muted, .section--bg-primary, .section--bg-dark) {
+    padding-bottom: var(--section-space, #{$section-space});
+}
+
+// The one pair the shared rhythm above does not part: a flat paints its own top step inside its color, so that step is invisible and the band's edge lands on the last line of the block above - which carries it instead, on the page's own ground, the second selector reaching that block through a wrapper
+main :is(.blocks, #{$block-wrappers}) > :not(#{$bands}):has(#{$flat-next}),
+main :is(.blocks, #{$block-wrappers}) > :is(#{$block-wrappers}):has(#{$flat-next}) > :not(#{$bands}) {
     padding-bottom: var(--section-space, #{$section-space});
 }
 

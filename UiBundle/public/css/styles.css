@@ -2501,6 +2501,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-section,
   padding-bottom: var(--section-space, clamp(48px, 8vw, 84px));
 }
 
+main :is(.blocks, .block-animation, .block-editable) > :not(.section--bg-muted, .section--bg-primary, .section--bg-dark, .hero--has-bg, .banner-title, .feature-bar):has(+ :is(.section--bg-muted, .section--bg-primary, .section--bg-dark), + :is(.block-animation, .block-editable) > :is(.section--bg-muted, .section--bg-primary, .section--bg-dark)),
+main :is(.blocks, .block-animation, .block-editable) > :is(.block-animation, .block-editable):has(+ :is(.section--bg-muted, .section--bg-primary, .section--bg-dark), + :is(.block-animation, .block-editable) > :is(.section--bg-muted, .section--bg-primary, .section--bg-dark)) > :not(.section--bg-muted, .section--bg-primary, .section--bg-dark, .hero--has-bg, .banner-title, .feature-bar) {
+  padding-bottom: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
 .flex-columns__col .section--bg-muted,
 .flex-columns__col .section--bg-primary,
 .flex-columns__col .section--bg-dark {
