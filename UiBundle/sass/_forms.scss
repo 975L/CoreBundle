@@ -32,8 +32,9 @@ $valid-state: ':is(.success, :is(#{$constraints}):is(:user-valid, :is(:autofill,
     padding-top: var(--section-space-tight, clamp(24px, 4vw, 48px));
 }
 
+// The token is the measure a form is given when it has the page to itself, not a width it is owed everywhere: capped at the container, a form dropped into a column narrower than "--form-width" - a bundle's own two-column layout, a slot of a container block - stays inside it instead of running over whatever stands beside it
 form {
-    width: var(--form-width);
+    width: min(var(--form-width), 100%);
     margin: 0 auto 1em auto;
 }
 

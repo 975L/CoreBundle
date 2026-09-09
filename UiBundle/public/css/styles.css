@@ -1610,7 +1610,7 @@ label[for=contact_form_username],
 }
 
 form {
-  width: var(--form-width);
+  width: min(var(--form-width), 100%);
   margin: 0 auto 1em auto;
 }
 

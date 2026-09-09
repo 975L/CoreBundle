@@ -12,7 +12,7 @@ description: "Use this skill when a stylesheet, a script, a font or a design tok
 **Key source paths** (relative to this bundle's directory inside the package):
 `src/Contract/BundleStylesheetProviderInterface.php`, `src/Contract/BundleScriptProviderInterface.php`, `src/Contract/FontProviderInterface.php`, `src/Service/FontFilenameParser.php`, `src/Service/StylesheetCacheWarmer.php`, `src/Service/BuildFileWriter.php`, `src/Service/UniqueSlug.php`, `src/Service/BlockFocusUrl.php`, `src/Service/Paginator.php`, `src/Model/Pagination.php`, `src/Listener/ThemeVariablesCssListener.php`, `src/Service/StylesheetProvider.php`, `sass/_tokens.scss`, `sass/_block-thumbs.scss`, `scaffold/assets/styles/themes/ui.css`, `assets/js/`, `assets/controllers.js`, `assets/controllers-admin.js`, `templates/layout.html.twig`
 
-**Related skills:** `c975l-blocks`, `c975l-media`, `c975l-forms-emails` in this same bundle, and `c975l-config` in ConfigBundle beside it.
+**Related skills:** `c975l-blocks`, `c975l-media`, `c975l-forms-emails`, `c975l-js-testing` in this same bundle, and `c975l-config` in ConfigBundle beside it.
 
 ## Getting CSS and JS onto the page
 

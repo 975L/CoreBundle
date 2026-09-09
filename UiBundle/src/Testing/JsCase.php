@@ -14,6 +14,7 @@ use HeadlessChromium\Browser;
 use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Exception\CommunicationException;
 use HeadlessChromium\Exception\OperationTimedOut;
+use HeadlessChromium\Exception\TargetDestroyed;
 use HeadlessChromium\Page;
 use PHPUnit\Framework\TestCase;
 
@@ -68,14 +69,28 @@ abstract class JsCase extends TestCase
      */
     protected function observe(string $html, array $controllers, string $probe, array $options = []): mixed
     {
-        $this->preload($options);
-        $answer = $this->evaluate($this->scenario($html, $probe, $controllers, $options));
+        try {
+            $answer = $this->runScenario($html, $controllers, $probe, $options);
+        } catch (TargetDestroyed) {
+            // The tab the whole run shares has gone away under it - Chrome upgraded while the suite was running, a renderer taken for its memory - and every scenario after this one would read the same dead session
+            $this->reopen();
+            $answer = $this->runScenario($html, $controllers, $probe, $options);
+        }
 
         if (true !== ($answer['ok'] ?? false)) {
             $this->fail((string) ($answer['error'] ?? 'The scenario answered nothing at all.'));
         }
 
         return $answer['value'];
+    }
+
+    // One attempt at the scenario, both halves belonging to it: the libraries it asks for are put on the page, where the scripts put() loads live rather than in the scenario, then the scenario is run against it
+    /** @return array<string, mixed> */
+    private function runScenario(string $html, array $controllers, string $probe, array $options): array
+    {
+        $this->preload($options);
+
+        return $this->evaluate($this->scenario($html, $probe, $controllers, $options));
     }
 
     // Classic scripts and stylesheets belong to the page rather than to the scenario: they are the vendored libraries, they define globals, and loading one per scenario would be the only slow thing here
@@ -307,40 +322,75 @@ abstract class JsCase extends TestCase
             return self::$page;
         }
 
-        self::$docroot = sys_get_temp_dir() . '/jscase-' . bin2hex(random_bytes(6));
-        mkdir(self::$docroot . '/vendor', 0o777, true);
-        copy(__DIR__ . '/stimulus.js', self::$docroot . '/vendor/stimulus.js');
-        file_put_contents(self::$docroot . '/index.html', '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>c975L</title></head><body></body></html>');
-        self::$port = $this->serve(self::$docroot);
+        // The docroot and its server are made once and never again: self::$published names the bundles copied under that docroot, so a second one would leave every one of them unserved
+        if (null === self::$docroot) {
+            $docroot = sys_get_temp_dir() . '/jscase-' . bin2hex(random_bytes(6));
+            mkdir($docroot . '/vendor', 0o777, true);
+            copy(__DIR__ . '/stimulus.js', $docroot . '/vendor/stimulus.js');
+            file_put_contents($docroot . '/index.html', '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>c975L</title></head><body></body></html>');
+
+            // The browser outlives every test class on purpose, so it is closed with the process rather than by any one of them. Registered before the server is asked for, so an attempt that never gets one still has its temporary docroot removed
+            register_shutdown_function(static function () use ($docroot): void {
+                self::$browser?->close();
+                self::$browser = null;
+                self::$page = null;
+
+                if (\is_resource(self::$server)) {
+                    proc_terminate(self::$server);
+                    proc_close(self::$server);
+                    self::$server = null;
+                }
+
+                self::remove($docroot);
+            });
+
+            self::$port = $this->serve($docroot);
+
+            // Published only once the server answers: a serve() that throws leaves the guard above open, so the next test makes the whole thing again instead of navigating to port 0 for the rest of the run
+            self::$docroot = $docroot;
+        }
 
         self::$browser = self::launch();
 
-        self::$page = self::$browser->createPage();
-        self::$page->navigate(sprintf('http://127.0.0.1:%d/', self::$port))->waitForNavigation();
+        // Shared only once it is fully set up: a page whose mounting throws would otherwise leave the guard above handing that half-built page to every scenario left in the run
+        return self::$page = $this->openPage();
+    }
+
+    // A tab of the run's browser, brought to the state every scenario is written against. Protected so a test describing the harness can refuse to open one and watch what the failure leaves behind
+    protected function openPage(): Page
+    {
+        $page = self::$browser?->createPage() ?? throw new \RuntimeException('No browser is open to make a page on.');
+        $page->navigate(sprintf('http://127.0.0.1:%d/', self::$port))->waitForNavigation();
 
         // Headless Chrome announces itself through navigator.webdriver, and a library that hides from bots then behaves for the tests as it never would for a visitor: vanilla-cookieconsent's "hideFromBots" is on by default, so the banner simply never rendered. Denying the flag puts the page back in the state being described, and leaves this bundle's own configuration untouched, which is the point
-        self::$page->evaluate('Object.defineProperty(navigator, "webdriver", { get: () => false, configurable: true });')->getReturnValue();
+        $page->evaluate('Object.defineProperty(navigator, "webdriver", { get: () => false, configurable: true });')->getReturnValue();
 
         // Kept aside while nothing has touched them, so a scenario standing in for a browser that refuses storage - or for a network, a request, a media query - can be undone before the next one starts
-        self::$page->evaluate('window.__storage = { localStorage: Object.getOwnPropertyDescriptor(window, "localStorage"), sessionStorage: Object.getOwnPropertyDescriptor(window, "sessionStorage") };
+        $page->evaluate('window.__storage = { localStorage: Object.getOwnPropertyDescriptor(window, "localStorage"), sessionStorage: Object.getOwnPropertyDescriptor(window, "sessionStorage") };
             window.__globals = { matchMedia: window.matchMedia, fetch: window.fetch, XMLHttpRequest: window.XMLHttpRequest, open: window.open };')->getReturnValue();
 
-        // The browser outlives every test class on purpose, so it is closed with the process rather than by any one of them
-        register_shutdown_function(static function (): void {
+        return $page;
+    }
+
+    // The tab the run shares, for a test describing the harness itself - the only thing that has any business speaking to the tab rather than to the page it carries. Named apart from page(), which a test class of any bundle is free to shadow with a helper of its own
+    protected function tab(): Page
+    {
+        return $this->page();
+    }
+
+    // A browser and a tab of their own, the ones the run had being past answering. Taken down first, and whatever that throws swallowed: what is being cleared up here is exactly what has just died
+    private function reopen(): void
+    {
+        try {
             self::$browser?->close();
-            self::$browser = null;
-            self::$page = null;
+        } catch (\Throwable) {
+            // The browser this page belonged to is what went away
+        }
 
-            if (\is_resource(self::$server)) {
-                proc_terminate(self::$server);
-                proc_close(self::$server);
-                self::$server = null;
-            }
+        self::$browser = null;
+        self::$page = null;
 
-            self::remove((string) self::$docroot);
-        });
-
-        return self::$page;
+        $this->page();
     }
 
     // Opens the browser, and once more if the first attempt dies on its way up
@@ -467,8 +517,8 @@ abstract class JsCase extends TestCase
         }
     }
 
-    // A port taken at random and tried until one answers: the suite may well be run beside a site's own server, and a fixed port would make the two collide
-    private function serve(string $docroot): int
+    // A port taken at random and tried until one answers: the suite may well be run beside a site's own server, and a fixed port would make the two collide. Protected so a test describing the harness can refuse to serve and watch what the failure leaves behind
+    protected function serve(string $docroot): int
     {
         for ($attempt = 0; $attempt < 20; ++$attempt) {
             $port = random_int(8300, 8999);

@@ -12,7 +12,7 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 **Key source paths** (relative to this bundle's directory inside the package):
 `src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`, `assets/js/image-zoom.js`, `templates/components/Image/Zoom.html.twig`
 
-**Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets` in this same bundle, and `c975l-operations` in ConfigBundle beside it.
+**Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets`, `c975l-js-testing` in this same bundle, and `c975l-operations` in ConfigBundle beside it.
 
 ## Two ways to hold a file
 

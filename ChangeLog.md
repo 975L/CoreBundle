@@ -1,5 +1,24 @@
 # ChangeLog
 
+## v1.26.2
+
+A lost tab no longer takes the rest of the run with it
+
+### UiBundle
+
+- `JsCase` runs a scenario again on a tab of its own when the run's tab is destroyed under it - a Chrome upgraded mid-suite, a renderer taken for its memory - where every scenario left answered "The session is destroyed" without ever running (09/09/2026)
+- The docroot and its server are made once and kept across that reopening, the bundles already published being named under that docroot alone (09/09/2026)
+- The docroot is published only once its server answers, so a `serve()` that throws is attempted again instead of sending every later test to port 0 (09/09/2026)
+- The run's page is shared only once fully set up, a half-built one no longer being handed to every scenario left (09/09/2026)
+- **New `JsCase::tab()`**, the run's tab reachable by a test describing the harness itself (09/09/2026)
+- New `JsCaseRecoveryTest`, which destroys the run's tab and asserts the next scenario still answers (09/09/2026)
+- `serve()` and a new `openPage()` are protected, the seam a test describing the harness needs to refuse a server or a page (09/09/2026)
+- New `JsCaseGuardTest`, which refuses both and asserts an attempt that failed halfway left nothing shared for the run (09/09/2026)
+- **New `c975l-js-testing` skill**, the harness documented for the coding agent of a bundle depending on this one (09/09/2026)
+- `--form-width` is capped at its container, so a form dropped into a narrower column no longer runs over what stands beside it (09/09/2026)
+- The harness's README says what a lost tab costs and what is replayed after one (09/09/2026)
+- The README says `--form-width` is the measure a form is given when it has the page to itself (09/09/2026)
+
 ## v1.26.1
 
 A grid of pictures drops its frames, and a click opens one over the page

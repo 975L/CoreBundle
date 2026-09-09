@@ -11,6 +11,11 @@
                 "en": "A new Image zoom option on that same grid has a click open a picture over the page, at its full size. A picture already pointing somewhere keeps its link instead.",
                 "fr": "Une nouvelle option Zoom au clic sur cette même grille fait s'ouvrir une image par-dessus la page, à sa taille réelle. Une image qui pointe déjà quelque part garde son lien à la place.",
                 "es": "Una nueva opción Zoom al hacer clic en esa misma cuadrícula abre una imagen sobre la página, a su tamaño real. Una imagen que ya apunta a algún sitio conserva su enlace en su lugar."
+            },
+            {
+                "en": "A form placed beside something else — in a column, in a block's slot — now stays inside it instead of running over its neighbour.",
+                "fr": "Un formulaire posé à côté d'autre chose — dans une colonne, dans l'emplacement d'un block — reste désormais à l'intérieur au lieu de déborder sur son voisin.",
+                "es": "Un formulario colocado junto a otro elemento —en una columna, en la ubicación de un bloque— se mantiene ahora dentro de él en lugar de desbordarse sobre su vecino."
             }
         ]
     },

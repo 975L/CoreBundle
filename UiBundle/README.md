@@ -615,6 +615,8 @@ Two of those borrow from this bundle by name rather than by path: `PaymentBundle
 
 The usual cost objection runs the other way round: **one** browser and **one** page for the whole run, started in well under a second, and a scenario on that page costs about a millisecond - less than a node runner spends booting. The 187 scenarios currently written here - 17 of this bundle's scripts, all 5 of ConfigBundle's and the three libraries vendored here - take about 38 seconds all told, most of it real animations being waited out. The satellite bundles run theirs in their own suites, at their own cost.
 
+One page for the whole run also means one page to lose: a Chrome upgraded while the suite runs, or a renderer taken for its memory, destroys the tab, and every scenario left then answered `The session is destroyed` without ever running. A scenario meeting a destroyed tab is given a browser and a tab of its own and run again, once - the docroot and its server being kept, since they are what the bundles already copied are served from. `tab()` hands the run's tab to a test describing the harness itself, which is how `JsCaseRecoveryTest` destroys it and asserts the next scenario still answers; `serve()` and `openPage()` are protected for the same audience, `JsCaseGuardTest` refusing each in turn to assert that an attempt failing halfway publishes neither its docroot nor its page; a renderer that crashes rather than a tab that goes away reads as a timeout and is not replayed, being indistinguishable from a scenario that never settles.
+
 Each bundle's assets are copied under a temporary docroot the moment a test of that bundle first asks for them, and served under a directory named after it: the server lives for the whole run, so a shared name would belong to whichever bundle's test class happened to run first. Serving over `http://127.0.0.1` rather than opening files is not a detail either: a `file://` document has no cookie jar, so vanilla-cookieconsent accepted a category and remembered nothing, and a module served from a `data:` url cannot resolve the relative import its neighbour is behind. The bare `@hotwired/stimulus` every controller imports is rewritten, as the assets are copied, towards a Stimulus vendored beside the harness in `src/Testing/` - declared in `config/vendor-assets.json` like the shipped libraries, with `"scope": "tests"` saying it reaches no site. This bundle's own assets are published under the docroot whatever the bundle under test, so a satellite's borrowed import has somewhere to point.
 
 A shared page is a page every scenario has to be given back clean, and the resets are the interesting part of the harness:
@@ -2930,7 +2932,7 @@ A **"Recompile stylesheets"** dashboard tile (`ROLE_SUPER_ADMIN`, Maintenance) r
 
 `sass/_forms.scss` styles the bare form controls (`input`, `select`, `textarea`, `label`, the submit button, radio/checkbox rows) and belongs here rather than in SiteBundle: eight c975L bundles require `c975l/ui-bundle` and none requires `c975l/site-bundle`, so UiBundle is the only floor a form rendered by ShopBundle, BookBundle or PaymentBundle can count on — and UiBundle renders forms of its own (the `Form`/`FormField` builder, `components/Form/Form.html.twig`, the block and captcha form themes).
 
-Its `--input-*`, `--form-*`, `--label-*` and `--required-color` tokens are still declared by SiteBundle's `sass/_variables.scss`, the admin-editable theme contract — see [Token defaults](#token-defaults) for how they resolve without it. Override the width every form is laid out on with `--form-width` (defaults to `min(70vw, 1000px)`).
+Its `--input-*`, `--form-*`, `--label-*` and `--required-color` tokens are still declared by SiteBundle's `sass/_variables.scss`, the admin-editable theme contract — see [Token defaults](#token-defaults) for how they resolve without it. Override the width every form is laid out on with `--form-width` (defaults to `min(70vw, 1000px)`) — it is the measure a form is given when it has the page to itself, applied as `min(var(--form-width), 100%)`, so a form dropped into a narrower column stays inside it.
 
 A label reads `--form-label-color`, defaulting to `--black` so it follows the page into dark mode on its own — set that token rather than `--black` for a design whose labels alone read differently, `--black` also carrying `.lead` and SiteBundle's `--navbar-text` default. A focused field keeps `--form-input-color`, the ink it has at rest: focus is marked by the border and the ring, not by a change of text color.
 
@@ -3223,7 +3225,7 @@ Deliberately not a `HealthCheckProviderInterface`: those run from cron on the ma
 
 ## AI agent skills
 
-The bundle ships four skills of its own, written for the coding agent of the site installing it rather than for someone modifying it. Point your agent at the directory:
+The bundle ships five skills of its own, written for the coding agent of the site installing it rather than for someone modifying it - the last one for the agent of a bundle depending on this one, which is who writes browser tests against the shipped harness. Point your agent at the directory:
 
 ```text
 vendor/c975l/core-bundle/UiBundle/skills/
@@ -3235,6 +3237,7 @@ vendor/c975l/core-bundle/UiBundle/skills/
 | `c975l-media` | the shared `Media`, a bundle's own Vich entity, the three derivatives, kept originals, watermarking, private files |
 | `c975l-forms-emails` | `Form`/`FormField`, form actions, the shared protections and reCAPTCHA, `EmailTemplate` and the email layout registry |
 | `c975l-ui-assets` | the stylesheet and script registries, the token layers, the scaffolded theme files, the helpers a satellite must reuse |
+| `c975l-js-testing` | `Testing\JsCase`, what a satellite declares, a scenario and its options, what is given back clean between two, and what still belongs to a textual test |
 
 They are split by subject rather than shipped as one file so that an agent loads the one it needs. Each holds what an agent gets wrong when left to its own habits — that a block's data needs no column, that a kind reading outside data must not be cacheable, that the resize pipeline is never to be rewritten, that a token declared on `:root` alone breaks every scope below it.
 
