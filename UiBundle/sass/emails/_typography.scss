@@ -71,8 +71,9 @@ section {
     font-size: 90%;
 }
 
+// Stated and not read off --label-color like the page's own rule: that token is mixed out of --text and --background, which CssVariableResolver resolves against the admin's own palette right before inlining - a site with a dark palette would send a near-white grey onto the plain white a message keeps (see _base.scss), the same reason the blanket rule fixes its color too. At a grey clearing 4.5:1 on that white - the #808080 the token used to hold reads 3.95:1 there, under AA
 .text-muted {
-    color: var(--label-color);
+    color: #666;
     font-style: italic;
     font-size: 0.9rem;
 }

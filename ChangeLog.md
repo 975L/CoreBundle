@@ -1,5 +1,18 @@
 # ChangeLog
 
+## v1.26.4
+
+A label's grey is mixed out of the palette instead of stated
+
+### UiBundle
+
+- `--label-color` is mixed out of `--text` and `--background` rather than held as `#808080`, which followed neither a site's palette nor its dark mode (09/09/2026)
+- The scaffolded `themes/ui.css` shows that value as the one in force (09/09/2026)
+- The email `.text-muted` states its grey instead, `resolve_css_variables` mixing that token against the admin's palette and a message keeping a fixed white (09/09/2026)
+- `EmailStylesheetTest` refuses a themed color on `.text-muted` the way it already does on the blanket rule (09/09/2026)
+- The compiled email stylesheet catches up with `--card-width-portrait` and `--card-portrait-media-max-width` (09/09/2026)
+- The `c975l-ui-assets` skill and the README state that an email rule states its color rather than reading a palette-derived token (09/09/2026)
+
 ## v1.26.3
 
 A colored flat is parted from the block above it

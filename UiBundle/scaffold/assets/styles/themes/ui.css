@@ -164,7 +164,7 @@
 
     /* Content bits */
     /* --link-color: var(--primary-ink); */
-    /* --label-color: #808080; */
+    /* --label-color: color-mix(in srgb, var(--text) 70%, var(--background)); */
     /* --card-background: #fff; */
     /* The eyebrow above a card's title - the page's own ink by default, an eyebrow being set small enough that an accent rarely holds the 4.5:1 a 12px text asks for. Set the accent here once it has been checked that it does */
     /* --card-eyebrow-color: var(--text); */

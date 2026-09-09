@@ -79,6 +79,8 @@
     --viewport-width: 100vw;
     --card-width-compact: min(calc((var(--viewport-width) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - var(--cards-gap)) / 2), 190px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 100px) / 6));
     --card-width-big: min(90vw, 570px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 20px) / 2));
+    --card-width-portrait: min(90vw, 285px, calc((var(--section-wrap-max-width, var(--body-max-width, 1440px)) - 2 * var(--section-wrap-gutter, clamp(20px, 5vw, 64px)) - 60px) / 4));
+    --card-portrait-media-max-width: 200px;
     --disabled: #808080;
     --favorite-size: 1.5em;
     --flip-card-back-background: color-mix(in srgb, var(--secondary) 30%, var(--background));
@@ -114,7 +116,7 @@
     --input-shadow-color: #4d4d4d;
     --input-valid-border-color: var(--button-background-success);
     --input-valid-shadow-color: var(--button-background-success);
-    --label-color: #808080;
+    --label-color: color-mix(in srgb, var(--text) 70%, var(--background));
     --link-color: var(--primary-ink);
     --primary: var(--c975l-color-primary, var(--button-background-primary));
     --primary-ink: var(--primary);
@@ -240,7 +242,7 @@ section {
 }
 
 .text-muted {
-  color: var(--label-color);
+  color: #666;
   font-style: italic;
   font-size: 0.9rem;
 }

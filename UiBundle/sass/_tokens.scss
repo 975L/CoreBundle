@@ -147,7 +147,8 @@
         --input-shadow-color: #4d4d4d;
         --input-valid-border-color: var(--button-background-success);
         --input-valid-shadow-color: var(--button-background-success);
-        --label-color: #808080;
+        // The ink of a line that qualifies rather than says - a form label, a "mandatory field" mention, the author and date under a message. Mixed out of the two tokens rather than stated, the same recipe --input-placeholder-color reads by: a fixed grey follows neither the palette a site sets nor its dark mode, and #808080 read at 2.97:1 on a warm off-white ground, well under the 4.5:1 WCAG AA asks of a line this size. At 70% and not the 62% above, which still lands at 4.46:1 on a pale ground
+        --label-color: color-mix(in srgb, var(--text) 70%, var(--background));
         --link-color: var(--primary-ink);
         --primary: var(--c975l-color-primary, var(--button-background-primary));
         // Where --primary has to be read *against* the page instead of painting it: a surtitle, a link, a "Voir" on a card, the dots of a slider. Its own token because the two roles part ways as soon as the page goes dark - there --primary stays the dark flat a button and a band need, and a deep brand colour used as an ink on that same dark ground reads at 1.4:1. SiteBundle lightens this one alone in its dark palette, which is why every rule painting with --primary and not on it reads it through here. The default is --primary itself, so a light page is unchanged and a site setting nothing keeps exactly what it had

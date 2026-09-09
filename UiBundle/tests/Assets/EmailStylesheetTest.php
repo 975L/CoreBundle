@@ -50,6 +50,19 @@ class EmailStylesheetTest extends TestCase
         );
     }
 
+    // Second color fixed for the reason above: --label-color is mixed out of --text and --background, which resolve to the admin's own palette, and a dark one lands a near-white grey on the fixed white of a message
+    public function testTheMutedTextColorIsFixedRatherThanThemed(): void
+    {
+        preg_match('/\.text-muted\s*\{([^}]*)\}/', $this->compiled(), $matches);
+
+        $this->assertNotEmpty($matches, 'The compiled email stylesheet carries no ".text-muted" rule, the test itself is broken.');
+        $this->assertMatchesRegularExpression(
+            '/color:\s*#[0-9a-f]{3,6}\s*;/i',
+            $matches[1],
+            'The email ".text-muted" rule reads a themed color: mixed out of the site palette, it lands a near-white grey on the fixed white of a message.'
+        );
+    }
+
     // The page layer has no place here: an email is laid out in tables, and a client that ignores these collapses the layout rather than degrading it
     public function testTheStylesheetAvoidsWhatMailClientsDrop(): void
     {
