@@ -1,5 +1,31 @@
 # ChangeLog
 
+## v1.27.0
+
+The texts a media carries are translated like any other prose
+
+### UiBundle
+
+- **A media's `label`, `description` and `alt` are translatable**, `Translation::OWNER_MEDIA` joining the three owner types already stored (10/09/2026)
+- `MediaTranslator` reads and writes them, on the exact pattern of `PageTranslator` and `FormTranslator` (10/09/2026)
+- `Media` carries what the language being rendered says as an unmapped overlay, `getLabel()`/`getDescription()`/`getAlt()` preferring it (10/09/2026)
+- The overlay is never persisted, Doctrine computing its changeset from the mapped properties, and the templates go on saying `media.label` (10/09/2026)
+- `Media::getUntranslated()` hands back the text the row itself holds, which is both the thing to translate and what tells an untouched field from a written one (10/09/2026)
+- **A language screen now offers each media's texts**, one `MediaTranslationType` sub-form per media (10/09/2026)
+- Named `mediaTranslation_<id>`, so it never crosses the `medias` collection's own add/remove choreography (10/09/2026)
+- Only the fields the media says something in are offered: no source text, no msgid, no empty box (10/09/2026)
+- The file, its link, its credits and its dimensions stay off a language screen, a media being the same media in every language (10/09/2026)
+- `ContentTranslator::preloadBlocks()` collects the medias of the tree it already walks, so a grid of a dozen cards costs one query rather than a dozen (10/09/2026)
+- A `mediaTranslationsRendered` marker gates the staging, on the same guard as `slotsRendered` (10/09/2026)
+- Without it an unrendered child, submitted as null, would take the translations away on every save (10/09/2026)
+- `BlockCacheInvalidationListener` resolves a `ui_media` translation to the block its media hangs from (10/09/2026)
+- Nothing else would reach that entry: a language screen changes no mapped property of the block, and the render cache never expires (10/09/2026)
+- `Block::getMedia()`, the Twig alias, gains the generic annotation `getMedias()` already carried (10/09/2026)
+- `MediaTranslator::apply()` and `preload()` return before touching the collection on a single-language site, leaving the Doctrine proxy behind it uninitialised (10/09/2026)
+- A language screen reads its medias' translations ahead as well, rather than one query per sub-form (10/09/2026)
+- `MediaTranslationType` declares `media` as a required option rather than defaulting it to an impossible null (10/09/2026)
+- The media translation sub-forms carry `data-media-translation`, for a guided step to point at (10/09/2026)
+
 ## v1.26.5
 
 The language fragment nobody has included since 2018 goes

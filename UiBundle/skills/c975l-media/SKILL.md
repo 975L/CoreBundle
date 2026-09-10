@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, Image:Zoom, imageZoom, lightbox, see_high_resolution, enlarge_image, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, Image:Zoom, imageZoom, lightbox, see_high_resolution, enlarge_image, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui, MediaTranslator, ui_media, setTranslated, getUntranslated, translate a caption, translate an alt."
 ---
 
 # c975L UiBundle — media and uploads
@@ -33,6 +33,18 @@ strategy and `MediaFileRemoveListener`, which deletes the file from `public/` wh
 with **no listener of your own to write**. On a `VichPrivateFileInterface` entity it also deletes the
 file a new upload replaces — Vich's own `delete_on_update` never finds that one, the file having been
 moved out of `public/`.
+
+## What a media says, in each language
+
+`label`, `description` and `alt` are prose a visitor reads, so on a site declaring several languages
+they are translated the way a block's own data is — under the `ui_media` owner, through
+`Service\MediaTranslator`, on the same `site_translation` table. The file itself is the same file in
+every language, and so are its link, its credits and its dimensions: those are never offered.
+
+The three getters answer the language being rendered, `MediaTranslator::apply()` having laid it on as
+an **unmapped overlay** (`Media::setTranslated()`) Doctrine never persists. Read the row's own words
+with **`Media::getUntranslated($field)`** — what a form screen must show, and what tells a field
+nobody translated from a written one. See `c975l-blocks` for the language screen itself.
 
 ## Three sizes of one image
 
@@ -253,6 +265,8 @@ template is shipped to sites running either engine.
   built the response.
 - **Do not forget to remove your own derivatives** when a row is deleted — nothing does it for you.
 - **Do not upload the site logo or favicon as an entity of your own**; they are `Media` roles.
+- **Do not read `getLabel()`/`getAlt()`/`getDescription()` on a form screen** — they answer the
+  language being rendered; `getUntranslated()` is what the row itself says.
 - **Do not write a file-exists check of your own** for your uploads — extend
   `AbstractDeclaredFilesHealthCheckProvider` and name the rows.
 - **Do not draw a share image with a `TextField` or an untyped field** - `OgImageField::new()` is the

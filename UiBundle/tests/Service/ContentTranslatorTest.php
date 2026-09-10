@@ -11,6 +11,8 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\SiteLocales;
+use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\TranslationRepository;
 use c975L\UiBundle\Service\ContentTranslator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -158,6 +160,65 @@ class ContentTranslatorTest extends TestCase
 
         $this->assertSame(['title' => 'Workshops'], $translator->values('ui_block', 7, 'en'));
         $this->assertSame([], $translator->values('ui_block', 8, 'en'));
+    }
+
+    // What a page is about to render, read ahead in two queries: its blocks and their slots in one, every media hanging from any of them in the other
+    public function testAPageReadsItsBlocksAndAllTheirMediasInTwoQueries(): void
+    {
+        $asked = [];
+        $repository = $this->createMock(TranslationRepository::class);
+        $repository->expects($this->exactly(2))->method('findValues')->willReturnCallback(
+            static function (string $ownerType, array $ownerIds, string $locale) use (&$asked): array {
+                $asked[$ownerType] = array_values($ownerIds);
+
+                return [];
+            }
+        );
+
+        $container = $this->createBlockWithId(7);
+        $container->addMedia($this->createMediaWithId(21));
+        $slot = $this->createBlockWithId(8);
+        $slot->addMedia($this->createMediaWithId(22));
+        $container->addSlot($slot);
+
+        $this->createTranslator($repository, ['fr', 'en'])->preloadBlocks([$container]);
+
+        $this->assertSame([7, 8], $asked['ui_block']);
+        $this->assertSame([21, 22], $asked['ui_media'], 'A slot\'s own medias are read with the root\'s, not by a query of their own.');
+    }
+
+    // A page holding no media at all asks nothing of the media table
+    public function testAPageWithoutAMediaAsksTheMediaTableNothing(): void
+    {
+        $asked = [];
+        $repository = $this->createStub(TranslationRepository::class);
+        $repository->method('findValues')->willReturnCallback(
+            static function (string $ownerType, array $ownerIds, string $locale) use (&$asked): array {
+                $asked[] = $ownerType;
+
+                return [];
+            }
+        );
+
+        $this->createTranslator($repository, ['fr', 'en'])->preloadBlocks([$this->createBlockWithId(7)]);
+
+        $this->assertSame(['ui_block'], $asked);
+    }
+
+    private function createBlockWithId(int $id): Block
+    {
+        $block = new Block();
+        new \ReflectionProperty(Block::class, 'id')->setValue($block, $id);
+
+        return $block;
+    }
+
+    private function createMediaWithId(int $id): Media
+    {
+        $media = new Media();
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, $id);
+
+        return $media;
     }
 
     // The languages a translation screen offers: every declared one, save the language the content is written in

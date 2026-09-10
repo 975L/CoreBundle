@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, GoogleMapsLinkBuilder, google_maps_url, map block, MapProvider, MapType, MapPointType, MapGeocoder, MapGeocoderInterface, ui_map_settings, ui_map_points, vendor-assets.json, VendorAssetsTest, vendored library, ui-map-provider, ui-map-google-api-key, c975l_ui.map.img_origins, leaflet, OpenStreetMap, Google Maps, faq, FaqType, FaqItemType, FAQPage, details summary accordion, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, GoogleMapsLinkBuilder, google_maps_url, map block, MapProvider, MapType, MapPointType, MapGeocoder, MapGeocoderInterface, ui_map_settings, ui_map_points, vendor-assets.json, VendorAssetsTest, vendored library, ui-map-provider, ui-map-google-api-key, c975l_ui.map.img_origins, leaflet, OpenStreetMap, Google Maps, faq, FaqType, FaqItemType, FAQPage, details summary accordion, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales, MediaTranslator, ui_media, MediaTranslationType, mediaTranslation_, mediaTranslationsRendered, setTranslated, getUntranslated, translate a media, translate a caption, data-media-translation."
 ---
 
 # c975L UiBundle — blocks
@@ -151,9 +151,9 @@ invalidate your own tag where that data changes.
 everywhere else none of this runs and nothing changes.
 
 `Entity\Translation` (`site_translation`) holds **one field of one thing said in one other language**,
-keyed by `ownerType` / `ownerId` / `field` / `locale`. It names its owner (`ui_block`) rather than
-pointing at it, like `Favorite` and `Rating`: **no foreign key**, which is why
-`TranslationPurgeListener` deletes a block's rows on its `postRemove`.
+keyed by `ownerType` / `ownerId` / `field` / `locale`. It names its owner (`ui_block`, `ui_media`)
+rather than pointing at it, like `Favorite` and `Rating`: **no foreign key**, which is why
+`TranslationPurgeListener` deletes a block's - and a media's - rows on their `postRemove`.
 
 **The default language is never stored.** It stays in `Block::$data` and plays the part of the msgid,
 so a single-language site holds not one row here.
@@ -171,8 +171,19 @@ so a single-language site holds not one row here.
   nothing.
 - **`Service\TranslationFormContext`** carries the language being written for what cannot be handed
   the form's options — the AI toolbar of a field several levels below the sub-form.
+- **A media's own texts are translated too** (`ui_media`, `Service\MediaTranslator`): `label`,
+  `description` and `alt` live on the `Media` row and not in `Block::$data`, so the kind's
+  `translatable` list cannot declare them. `BlockExtension` lays the language on the entities as an
+  **unmapped overlay** (`Media::setTranslated()`), which the getters prefer and Doctrine never
+  persists — the templates go on saying `media.label`. The language screen adds one
+  `MediaTranslationType` per media, named `mediaTranslation_<id>` and carrying
+  `data-media-translation` for a guided step to point at, plus a `mediaTranslationsRendered`
+  marker without which nothing is staged: an unrendered child submits null, which would otherwise take
+  the translations away on every save. Only the fields the media says something in are offered; the
+  file, its link, its credits and its dimensions never are.
 - The render cache is already keyed by locale, and `BlockCacheInvalidationListener` watches
-  `Translation` too, a row of another table otherwise touching no block.
+  `Translation` too, a row of another table otherwise touching no block — a `ui_media` row resolving
+  to the block its media hangs from.
 
 ## Anchors, containers, edit overlay
 

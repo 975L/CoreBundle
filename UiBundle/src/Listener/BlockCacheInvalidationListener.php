@@ -72,20 +72,18 @@ class BlockCacheInvalidationListener
         }
     }
 
-    // The block this translation dresses, when there is one: the translations of the other bundles - a page's own - do not go through the blocks cache
+    // The block this translation dresses, when there is one - the other bundles' translations not going through the blocks cache: a media's translation names the media and the cache entry is the block's, so the block it hangs from goes stale with nothing else to reach it, a language screen changing no mapped property of the block and firing no postUpdate (see BlockExtension::renderHtml)
     private function resolveTranslatedBlock(Translation $translation, EntityManagerInterface $em): ?Block
     {
-        return Translation::OWNER_BLOCK === $translation->getOwnerType()
-            ? $em->getRepository(Block::class)->find($translation->getOwnerId())
-            : null;
+        return match ($translation->getOwnerType()) {
+            Translation::OWNER_BLOCK => $em->getRepository(Block::class)->find($translation->getOwnerId()),
+            Translation::OWNER_MEDIA => $this->resolveTranslatedMediaBlock($translation, $em),
+            default => null,
+        };
     }
 
-    /**
-     * The block's own tag, plus one per container above it: a container's cached html holds its slots' verbatim (see BlockCacheTagResolver), so a slot that changed leaves every container up the chain holding stale output.
-     * Adding or removing a slot is what makes this necessary rather than merely tidy - the new row's id was never a tag of its container's entry, so nothing else would ever reach it.
-     *
-     * @return string[]
-     */
+    // The block's own tag, plus one per container above it: a container's cached html holds its slots verbatim (see BlockCacheTagResolver), so a changed slot leaves every container up the chain stale - and adding or removing one makes this necessary rather than merely tidy, the new row's id never having been a tag of its container's entry
+    /** @return string[] */
     private function tagsUpTheChain(Block $block, EntityManagerInterface $em): array
     {
         $tags = [];
@@ -108,6 +106,14 @@ class BlockCacheInvalidationListener
     private function resolveParentBlock(Block $block, EntityManagerInterface $em): ?Block
     {
         return $this->resolveOwner($block, 'parentBlock', $block->getParentBlock(), $em);
+    }
+
+    // The block a translated media hangs from, the media itself being read back from its id - a translation names its owner rather than pointing at it (see Translation)
+    private function resolveTranslatedMediaBlock(Translation $translation, EntityManagerInterface $em): ?Block
+    {
+        $media = $em->getRepository(Media::class)->find($translation->getOwnerId());
+
+        return $media instanceof Media ? $this->resolveMediaBlock($media, $em) : null;
     }
 
     // Block::removeMedia() nulls the owning side in PHP as soon as a Media is dropped from the form's collection - well before flush() runs - so by the time this listener fires, $media->getBlock() is already null (see resolveOwner())

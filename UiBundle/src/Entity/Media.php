@@ -141,6 +141,10 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    // What this media says in the language being rendered, laid over the three texts below and stored nowhere on the row: unmapped on purpose, Doctrine computing its changeset from the mapped properties and never from these getters, so a page rendered in English cannot write English over the text the media was written in (see MediaTranslator, the only thing that sets it)
+    /** @var array<string, string|null>|null */
+    private ?array $translated = null;
+
     // "SET NULL" and not the default: this only records who last uploaded the file, and a media outlives whoever put it there - left restricting, an account that ever dropped one file could no longer be deleted at all
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
@@ -277,7 +281,7 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
 
     public function getAlt(): ?string
     {
-        return $this->alt;
+        return $this->translated['alt'] ?? $this->alt;
     }
 
     public function setAlt(?string $alt): self
@@ -289,7 +293,7 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
 
     public function getLabel(): ?string
     {
-        return $this->label;
+        return $this->translated['label'] ?? $this->label;
     }
 
     public function setLabel(?string $label): self
@@ -394,9 +398,27 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
         return $this;
     }
 
+    // Lays what a language says over the texts this media was written with, for the render being built and no longer than that - only MediaTranslator calls it, and only on the front, a form screen having to go on reading the row
+    /** @param array<string, string|null> $values field => value */
+    public function setTranslated(array $values): void
+    {
+        $this->translated = $values;
+    }
+
+    // The text the media itself carries, whatever language is being rendered - what a language screen offers as the thing to translate, and what tells an untouched field from a written one (see MediaTranslator)
+    public function getUntranslated(string $field): ?string
+    {
+        return match ($field) {
+            'alt' => $this->alt,
+            'label' => $this->label,
+            'description' => $this->description,
+            default => null,
+        };
+    }
+
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->translated['description'] ?? $this->description;
     }
 
     public function setDescription(?string $description): self

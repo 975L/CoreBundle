@@ -1,5 +1,15 @@
 [
     {
+        "date": "2026-09-10",
+        "description": [
+            {
+                "en": "The texts a picture carries are now translated like the rest of a page. Open a page in another language and each picture that says something — a portfolio card's title and text, a caption, the alternative a screen reader announces — has its own boxes, under the block it belongs to. The file itself, its link and its credits stay as they are: a picture is the same picture in every language.",
+                "fr": "Les textes que porte une image sont désormais traduits comme le reste d'une page. Ouvrez une page dans une autre langue et chaque image qui dit quelque chose — le titre et le texte d'une carte de réalisation, une légende, l'alternative qu'annonce un lecteur d'écran — a ses propres champs, sous le block auquel elle appartient. Le fichier lui-même, son lien et ses crédits ne bougent pas : une image est la même image dans toutes les langues.",
+                "es": "Los textos que lleva una imagen se traducen ahora como el resto de una página. Abra una página en otro idioma y cada imagen que dice algo — el título y el texto de una tarjeta de proyecto, un pie de foto, la alternativa que anuncia un lector de pantalla — tiene sus propios campos, bajo el bloque al que pertenece. El archivo en sí, su enlace y sus créditos no cambian: una imagen es la misma imagen en todos los idiomas."
+            }
+        ]
+    },
+    {
         "date": "2026-09-09",
         "description": [
             {

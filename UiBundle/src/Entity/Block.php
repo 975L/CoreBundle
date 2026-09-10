@@ -179,7 +179,11 @@ class Block implements \Stringable
         return $this->medias;
     }
 
-    /** Twig alias: block.media still works */
+    /**
+     * Twig alias: block.media still works.
+     *
+     * @return Collection<int, Media>
+     */
     public function getMedia(): Collection
     {
         return $this->medias;

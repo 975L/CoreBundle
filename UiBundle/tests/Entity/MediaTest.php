@@ -65,6 +65,39 @@ class MediaTest extends TestCase
         $this->assertSame(1200, $media->getImageWidth());
     }
 
+    // The overlay a render lays on: the three getters answer the language being rendered, the row itself untouched
+    public function testTheThreeTextsAnswerWhatTheLanguageSaysOnceItIsLaidOn(): void
+    {
+        $media = new Media()
+            ->setLabel('La boutique de démonstration')
+            ->setDescription('Un catalogue et ses filtres.')
+            ->setAlt('Capture de la boutique');
+        $media->setTranslated(['label' => 'The demonstration shop', 'alt' => 'A screenshot of the shop']);
+
+        $this->assertSame('The demonstration shop', $media->getLabel());
+        $this->assertSame('A screenshot of the shop', $media->getAlt());
+        $this->assertSame('Un catalogue et ses filtres.', $media->getDescription(), 'A field nobody translated keeps the text it was written in.');
+    }
+
+    // What Doctrine writes back and what a form screen shows: the mapped property, never the overlay above it
+    public function testTheRowGoesOnHoldingTheWordsItWasWrittenIn(): void
+    {
+        $media = new Media()->setLabel('La boutique de démonstration');
+        $media->setTranslated(['label' => 'The demonstration shop']);
+
+        $this->assertSame('La boutique de démonstration', $media->getUntranslated('label'));
+        $this->assertSame('La boutique de démonstration', new \ReflectionProperty(Media::class, 'label')->getValue($media));
+    }
+
+    // Nothing laid on at all - a single-language site, or a form screen - and the getters answer the row itself
+    public function testTheGettersAnswerTheRowWhenNoLanguageWasLaidOn(): void
+    {
+        $media = new Media()->setLabel('La boutique de démonstration');
+
+        $this->assertSame('La boutique de démonstration', $media->getLabel());
+        $this->assertNull($media->getUntranslated('credits'), 'Only the three texts are addressable - the file, its link and its credits are the same in every language.');
+    }
+
     public function testGetIntrinsicDimensionsReturnTheValueWhenItIsABarePixelCount(): void
     {
         $media = new Media()->setWidth('600')->setHeight('120');

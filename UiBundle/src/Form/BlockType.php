@@ -19,6 +19,7 @@ use c975L\UiBundle\Form\Util\SubmissionIntegrity;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Service\BlockMoveRowAttrBuilder;
 use c975L\UiBundle\Service\ContentTranslator;
+use c975L\UiBundle\Service\MediaTranslator;
 use c975L\UiBundle\Service\TranslationFormContext;
 use c975L\UiBundle\Service\VideoPosterImporter;
 use Symfony\Component\Form\AbstractType;
@@ -48,6 +49,12 @@ class BlockType extends AbstractType
     // Outside the collection's own rows on purpose, so deleting every one of them leaves it standing
     public const SLOTS_RENDERED = 'slotsRendered';
 
+    // How a language screen names the sub-form carrying one media's texts. A name of its own, never "medias": that collection has a choreography of its own around add/remove and file uploads (see onPreSubmit), which a translation has no business crossing
+    private const string MEDIA_TRANSLATION_PREFIX = 'mediaTranslation_';
+
+    // The proof that the screen really rendered those sub-forms, on the pattern SLOTS_RENDERED already sets. A child a theme never rendered is submitted as null all the same, which reads exactly like a field an editor emptied on purpose - and stored, it would take away on every save what the language screen or the translation pass had written. Nothing is staged unless this comes back
+    private const string MEDIA_TRANSLATIONS_RENDERED = 'mediaTranslationsRendered';
+
     public function __construct(
         private readonly BlockRegistry $registry,
         private readonly UrlGeneratorInterface $router,
@@ -55,6 +62,7 @@ class BlockType extends AbstractType
         private readonly ?VideoPosterImporter $videoPosterImporter = null,
         private readonly ?ContentTranslator $contentTranslator = null,
         private readonly ?TranslationFormContext $translationFormContext = null,
+        private readonly ?MediaTranslator $mediaTranslator = null,
     ) {
     }
 
@@ -120,9 +128,11 @@ class BlockType extends AbstractType
         $this->addKindField($form, $context, $kind, null !== $translationLocale);
         $this->addDataSubForm($form, $kind, $block, $translationLocale);
 
-        // An image is the same image in every language: a language screen has nothing to offer here, and rendering the rows would invite an editor to replace a file per language
+        // An image is the same image in every language, so a language screen never renders the rows themselves - what it does offer is the texts hanging from them, which are read by a visitor like any other prose (see addMediaTranslationSubForms)
         if (null === $translationLocale && $this->registry->hasMediaTypes($kind)) {
             $this->addMediaSubForm($form, $kind);
+        } elseif (null !== $translationLocale && null !== $block) {
+            $this->addMediaTranslationSubForms($form, $block, $translationLocale);
         }
 
         if ($this->registry->isContainer($kind)) {
@@ -256,6 +266,7 @@ class BlockType extends AbstractType
 
         if (null !== $translationLocale) {
             $this->stageTranslations($event->getForm(), $block, $translationLocale);
+            $this->stageMediaTranslations($event->getForm(), $block, $translationLocale);
 
             return;
         }
@@ -290,6 +301,73 @@ class BlockType extends AbstractType
 
         if ([] !== $values) {
             $this->contentTranslator->stage(Translation::OWNER_BLOCK, $id, $locale, $values);
+        }
+    }
+
+    // One sub-form per media the block hangs, each carrying that media's own texts in the language being written, named by the media's id rather than gathered in a collection: nothing is added or removed here - a media is put on a block once, in the language it was composed in - so there is no resize listener to satisfy and reading the submission back is a lookup rather than a walk
+    private function addMediaTranslationSubForms(FormInterface $form, Block $block, string $locale): void
+    {
+        if (null === $this->mediaTranslator) {
+            return;
+        }
+
+        // Read ahead, so a grid of a dozen cards costs the one query its block already ran rather than one per card (see ContentTranslator::preload, which dedupes against what is already loaded)
+        $this->mediaTranslator->preload($block->getMedias(), $locale);
+
+        $rendered = false;
+
+        foreach ($block->getMedias() as $media) {
+            $id = $media->getId();
+            if (null === $id) {
+                continue;
+            }
+
+            $values = $this->mediaTranslator->promptValues($media, $locale);
+
+            // Nothing written in any of the three: a decorative image, a slider's slide, a video poster - there is no msgid to offer a language
+            if ([] === array_filter($values, static fn (?string $value): bool => null !== $value)) {
+                continue;
+            }
+
+            $form->add(self::MEDIA_TRANSLATION_PREFIX . $id, MediaTranslationType::class, [
+                // Named by what it says rather than by its id: an editor reads the cards of a grid, not their primary keys
+                'label' => $media->getUntranslated('label') ?: $media->getFilename(),
+                // A caption is an editor's own words, not a key: a "%" in one would otherwise pass for a parameter
+                'translation_domain' => false,
+                'mapped' => false,
+                'required' => false,
+                'data' => $values,
+                'media' => $media,
+                // Named so a guided step has something to point at: the screen where a card's own texts are written (see the page translation project)
+                'attr' => ['data-media-translation' => true],
+            ]);
+
+            $rendered = true;
+        }
+
+        if ($rendered) {
+            $form->add(self::MEDIA_TRANSLATIONS_RENDERED, HiddenType::class, ['mapped' => false, 'data' => '1']);
+        }
+    }
+
+    // Hands each media's submitted texts over to be stored on the flush that saves the block, the same way its own data is (see stageTranslations)
+    private function stageMediaTranslations(FormInterface $form, Block $block, string $locale): void
+    {
+        // Nothing rendered, nothing written: a submission that never carried the marker never carried the texts either, and staging what it did not say would take them away (see MEDIA_TRANSLATIONS_RENDERED)
+        if (null === $this->mediaTranslator || !$form->has(self::MEDIA_TRANSLATIONS_RENDERED) || null === $form->get(self::MEDIA_TRANSLATIONS_RENDERED)->getData()) {
+            return;
+        }
+
+        foreach ($block->getMedias() as $media) {
+            $name = self::MEDIA_TRANSLATION_PREFIX . $media->getId();
+            if (!$form->has($name)) {
+                continue;
+            }
+
+            $submitted = $form->get($name)->getData();
+            if (is_array($submitted)) {
+                $this->mediaTranslator->stage($media, $locale, $submitted);
+            }
         }
     }
 

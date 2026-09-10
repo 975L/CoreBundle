@@ -67,6 +67,42 @@ class BlockCacheInvalidationListenerTest extends TestCase
         new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
     }
 
+    // A media's translation names the media, not the block - and the cache entry is the block's. A language screen changes no mapped property of the block, so no postUpdate fires for it, and the entry never expires: the cards would go on being served in the writing language until a cache clear
+    public function testPostUpdateInvalidatesTheBlockATranslatedMediaHangsFrom(): void
+    {
+        $block = $this->createConfiguredStub(Block::class, ['getId' => 7]);
+        $media = new Media()->setBlock($block);
+        $translation = new Translation(Translation::OWNER_MEDIA, 5, 'label', 'es');
+
+        $repository = $this->createStub(EntityRepository::class);
+        $repository->method('find')->willReturn($media);
+
+        $em = $this->createStub(EntityManagerInterface::class);
+        $em->method('getRepository')->willReturn($repository);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('invalidateTags')->with(['block_7']);
+
+        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
+    }
+
+    // A row left behind by a media that is gone: nothing to invalidate, and nothing to throw over either
+    public function testATranslationOfAMediaThatIsGoneInvalidatesNothing(): void
+    {
+        $translation = new Translation(Translation::OWNER_MEDIA, 5, 'label', 'es');
+
+        $repository = $this->createStub(EntityRepository::class);
+        $repository->method('find')->willReturn(null);
+
+        $em = $this->createStub(EntityManagerInterface::class);
+        $em->method('getRepository')->willReturn($repository);
+
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->never())->method('invalidateTags');
+
+        new BlockCacheInvalidationListener($cache)->postUpdate(new PostUpdateEventArgs($translation, $em));
+    }
+
     // The translations of the other bundles - a page's own title - do not go through the blocks cache
     public function testATranslationOfAnythingButABlockInvalidatesNothing(): void
     {

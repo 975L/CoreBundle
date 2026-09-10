@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Favorite;
 use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Entity\Media;
@@ -50,13 +51,27 @@ class TranslationPurgeListenerTest extends TestCase
         new TranslationPurgeListener($repository)->postRemove($this->createEvent($this->createBlock(7)));
     }
 
-    // postRemove fires for every entity of the flush, and this one only answers for blocks
-    public function testAnythingButABlockIsLeftAlone(): void
+    // postRemove fires for every entity of the flush, and this one only answers for the four that carry translations
+    public function testAnythingCarryingNoTranslationIsLeftAlone(): void
     {
         $repository = $this->createMock(TranslationRepository::class);
         $repository->expects($this->never())->method('deleteByOwner');
 
-        new TranslationPurgeListener($repository)->postRemove($this->createEvent(new Media()));
+        new TranslationPurgeListener($repository)->postRemove($this->createEvent(new Favorite()));
+    }
+
+    // A card taken off its grid is orphan-removed the same way a form field is, and the title and text it was given in each language have to go with it (see MediaTranslator)
+    public function testAMediaTakesItsTranslationsWithIt(): void
+    {
+        $media = new Media();
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, 21);
+
+        $repository = $this->createMock(TranslationRepository::class);
+        $repository->expects($this->once())
+            ->method('deleteByOwner')
+            ->with(Translation::OWNER_MEDIA, 21);
+
+        new TranslationPurgeListener($repository)->postRemove($this->createEvent($media));
     }
 
     // Taken out of its form's collection, a field is deleted by Doctrine's orphanRemoval - a removal like any other, and its translations have to go the same way

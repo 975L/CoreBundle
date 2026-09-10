@@ -78,12 +78,8 @@ class ContentTranslator
         $this->loaded[$ownerType][$locale] = $known;
     }
 
-    /**
-     * Reads ahead the translations of everything a page is about to render: its blocks, and the slots its containers
-     * hold. One query for the page, where each block asking for itself would run one apiece.
-     *
-     * @param iterable<Block> $blocks
-     */
+    // Reads ahead the translations of everything a page is about to render - its blocks, the slots its containers hold, and the medias hanging from any of them - so the page costs two queries where each block and each card asking for itself would run one apiece
+    /** @param iterable<Block> $blocks */
     public function preloadBlocks(iterable $blocks, ?string $locale = null): void
     {
         if (!$this->translates($locale ?? $this->currentLocale())) {
@@ -91,16 +87,23 @@ class ContentTranslator
         }
 
         $ids = [];
-        $this->collectBlockIds($blocks, $ids);
+        $mediaIds = [];
+        $this->collectBlockIds($blocks, $ids, $mediaIds);
 
         $this->preload(Translation::OWNER_BLOCK, array_values($ids), $locale);
+
+        // The same walk rather than one of its own: a grid's cards are read from the very blocks just collected, and MediaTranslator then lays them on without a query of its own (see BlockExtension::doRender)
+        if ([] !== $mediaIds) {
+            $this->preload(Translation::OWNER_MEDIA, array_values($mediaIds), $locale);
+        }
     }
 
     /**
      * @param iterable<Block> $blocks
      * @param array<int, int> $ids
+     * @param array<int, int> $mediaIds
      */
-    private function collectBlockIds(iterable $blocks, array &$ids): void
+    private function collectBlockIds(iterable $blocks, array &$ids, array &$mediaIds): void
     {
         foreach ($blocks as $block) {
             $id = $block->getId();
@@ -111,7 +114,15 @@ class ContentTranslator
             }
 
             $ids[$id] = $id;
-            $this->collectBlockIds($block->getSlots(), $ids);
+
+            foreach ($block->getMedias() as $media) {
+                $mediaId = $media->getId();
+                if (null !== $mediaId) {
+                    $mediaIds[$mediaId] = $mediaId;
+                }
+            }
+
+            $this->collectBlockIds($block->getSlots(), $ids, $mediaIds);
         }
     }
 

@@ -11,9 +11,12 @@
 namespace c975L\UiBundle\Tests\Form;
 
 use c975L\UiBundle\Entity\Block;
+use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Form\BlockType;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Service\ContentTranslator;
+use c975L\UiBundle\Service\MediaTranslator;
 use c975L\UiBundle\Service\TranslationFormContext;
 use c975L\UiBundle\Service\VideoPosterImporter;
 use PHPUnit\Framework\TestCase;
@@ -801,5 +804,163 @@ class BlockTypeTest extends TestCase
         new \ReflectionMethod(BlockType::class, 'addSlotsSubForm')->invoke($type, $form, 'flex_columns', null, $translationLocale);
 
         return $added['slots'];
+    }
+
+    // A media is the same file in every language and its texts are not: the language screen leaves the rows themselves out and offers a sub-form per card instead, holding the title and the text a visitor reads (see MediaTranslationType)
+    public function testTranslationModeOffersEachMediasOwnTexts(): void
+    {
+        $added = $this->mediaTranslationSubFormsFor([
+            $this->createMediaWithId(21, 'La boutique de démonstration', 'Un catalogue et ses filtres.'),
+            $this->createMediaWithId(22, 'Le code sur GitHub', null),
+        ]);
+
+        $this->assertArrayHasKey('mediaTranslation_21', $added);
+        $this->assertArrayHasKey('mediaTranslation_22', $added);
+        $this->assertArrayHasKey('mediaTranslationsRendered', $added, 'Without the marker, a submission that never carried the sub-forms is indistinguishable from one that emptied them.');
+        $this->assertSame('La boutique de démonstration', $added['mediaTranslation_21']['label']);
+        $this->assertFalse($added['mediaTranslation_21']['mapped'], 'Mapped back, what a language says would land on the text the site was written in.');
+        $this->assertSame(
+            ['label' => '[La boutique de démonstration]', 'description' => '[Un catalogue et ses filtres.]', 'alt' => null],
+            $added['mediaTranslation_21']['data'],
+        );
+    }
+
+    // A marker nobody pins is a marker that disappears: the guided step showing where a card's own texts are written has this attribute and nothing else to point at
+    public function testEachMediaTranslationSubFormCarriesTheMarkerAGuidedStepPointsAt(): void
+    {
+        $added = $this->mediaTranslationSubFormsFor([$this->createMediaWithId(27, 'Une carte', null)]);
+
+        $this->assertSame(['data-media-translation' => true], $added['mediaTranslation_27']['attr']);
+    }
+
+    // A decorative image, a slider's slide, a video poster: nothing written in any of the three, so there is no msgid to offer a language and no empty box to leave on the screen
+    public function testAMediaSayingNothingIsLeftOffTheLanguageScreen(): void
+    {
+        $added = $this->mediaTranslationSubFormsFor([$this->createMediaWithId(23, null, null)]);
+
+        $this->assertArrayNotHasKey('mediaTranslation_23', $added);
+        $this->assertArrayNotHasKey('mediaTranslationsRendered', $added, 'Nothing rendered, nothing to mark.');
+    }
+
+    // The no-regression contract: an ordinary edit screen offers the rows themselves and no translation sub-form
+    public function testAnOrdinaryScreenOffersNoMediaTranslationSubForm(): void
+    {
+        $added = $this->mediaTranslationSubFormsFor([$this->createMediaWithId(24, 'Une carte', null)], null);
+
+        $this->assertArrayHasKey('medias', $added);
+        $this->assertArrayNotHasKey('mediaTranslation_24', $added);
+    }
+
+    // What a language screen writes is staged for the flush that saves the block, and the row itself is left holding the words it was written in
+    public function testSubmittingALanguageScreenStagesTheMediasTextsAndLeavesTheRowAlone(): void
+    {
+        $media = $this->createMediaWithId(25, 'La boutique de démonstration', null);
+        $block = $this->createBlockWithId(7, ['title' => 'Bonjour']);
+        $block->addMedia($media);
+
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->expects($this->once())->method('stage')->with(
+            Translation::OWNER_MEDIA,
+            25,
+            'es',
+            ['label' => 'La tienda de demostración'],
+        );
+
+        $type = new BlockType($this->createStub(BlockRegistry::class), $this->createRouter(), null, null, null, null, new MediaTranslator($contentTranslator));
+        new \ReflectionMethod(BlockType::class, 'stageMediaTranslations')->invoke(
+            $type,
+            $this->createSubmittedLanguageScreen(['label' => 'La tienda de demostración'], '1'),
+            $block,
+            'es',
+        );
+
+        $this->assertSame('La boutique de démonstration', new \ReflectionProperty(Media::class, 'label')->getValue($media));
+    }
+
+    // A theme that never rendered the sub-forms submits each of their fields as null, which reads exactly like a field an editor emptied on purpose - stored, it would take away on every save what the language screen or the translation pass had written
+    public function testASubmissionThatNeverCarriedTheSubFormsStagesNothing(): void
+    {
+        $media = $this->createMediaWithId(26, 'La boutique de démonstration', null);
+        $block = $this->createBlockWithId(7, ['title' => 'Bonjour']);
+        $block->addMedia($media);
+
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->expects($this->never())->method('stage');
+
+        $type = new BlockType($this->createStub(BlockRegistry::class), $this->createRouter(), null, null, null, null, new MediaTranslator($contentTranslator));
+        new \ReflectionMethod(BlockType::class, 'stageMediaTranslations')->invoke(
+            $type,
+            $this->createSubmittedLanguageScreen(['label' => null], null),
+            $block,
+            'es',
+        );
+    }
+
+    // A language screen as it comes back from the browser: the texts of its one media, and the marker saying the sub-forms were really on the page
+    private function createSubmittedLanguageScreen(array $values, ?string $marker): FormInterface
+    {
+        $submitted = $this->createStub(FormInterface::class);
+        $submitted->method('getData')->willReturn($values);
+
+        $rendered = $this->createStub(FormInterface::class);
+        $rendered->method('getData')->willReturn($marker);
+
+        $form = $this->createStub(FormInterface::class);
+        $form->method('has')->willReturn(true);
+        $form->method('get')->willReturnCallback(
+            static fn (string $name): FormInterface => 'mediaTranslationsRendered' === $name ? $rendered : $submitted
+        );
+
+        return $form;
+    }
+
+    private function createMediaWithId(int $id, ?string $label, ?string $description): Media
+    {
+        $media = new Media()->setLabel($label)->setDescription($description);
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, $id);
+
+        return $media;
+    }
+
+    /**
+     * Captures what onPreSetData() puts on the form for a block hanging the given medias.
+     *
+     * @param list<Media> $medias
+     */
+    private function mediaTranslationSubFormsFor(array $medias, ?string $locale = 'es'): array
+    {
+        $block = $this->createBlockWithId(7, ['title' => 'Bonjour']);
+        foreach ($medias as $media) {
+            $block->addMedia($media);
+        }
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getFormClass')->willReturn(CollectionType::class);
+        $registry->method('getTranslatable')->willReturn(['title']);
+        $registry->method('hasMediaTypes')->willReturn(true);
+        $registry->method('getMediaTypes')->willReturn(['image/*']);
+        $registry->method('isContainer')->willReturn(false);
+        $registry->method('groupedByCategory')->willReturn([]);
+
+        $added = [];
+        $data = $this->createStub(FormInterface::class);
+        $data->method('all')->willReturn([]);
+        $form = $this->createStub(FormInterface::class);
+        $form->method('add')->willReturnCallback(function (string $name, ?string $fieldType = null, array $fieldOptions = []) use (&$added, $form) {
+            $added[$name] = $fieldOptions;
+
+            return $form;
+        });
+        $form->method('get')->willReturn($data);
+
+        $contentTranslator = $this->createStub(ContentTranslator::class);
+        $contentTranslator->method('values')->willReturn([]);
+        $contentTranslator->method('all')->willReturn([]);
+
+        $type = new BlockType($registry, $this->createRouter(), null, null, $contentTranslator, null, new MediaTranslator($contentTranslator));
+        new \ReflectionMethod(BlockType::class, 'onPreSetData')->invoke($type, new PreSetDataEvent($form, $block), null, $locale);
+
+        return $added;
     }
 }

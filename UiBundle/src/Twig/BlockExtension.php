@@ -18,6 +18,7 @@ use c975L\UiBundle\Service\BlockCacheTagResolver;
 use c975L\UiBundle\Service\BlockRenderContext;
 use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Service\CspNonceProvider;
+use c975L\UiBundle\Service\MediaTranslator;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -42,6 +43,7 @@ class BlockExtension
         private readonly CspNonceProvider $cspNonceProvider,
         private readonly BlockRenderContext $renderContext,
         private readonly ContentTranslator $contentTranslator,
+        private readonly MediaTranslator $mediaTranslator,
     ) {
     }
 
@@ -206,6 +208,9 @@ class BlockExtension
             $block->getData(),
             $this->registry->getTranslatable((string) $block->getKind()),
         );
+
+        // The medias' own texts, which live on the row and not in the data just translated: a card's title and text, a picture's caption and its alternative. Laid on the entities themselves, unmapped and read by the getters alone, so the templates below go on saying "media.label" (see Media::setTranslated)
+        $this->mediaTranslator->apply($block->getMedias());
 
         return $this->twig->render(
             $this->registry->getTemplate($block->getKind()),
