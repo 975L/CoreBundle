@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.26.5
+
+The language fragment nobody has included since 2018 goes
+
+### UiBundle
+
+- `templates/fragments/navbarLanguagesDropdownMenu.html.twig` is removed, nothing having included it since 2018 (10/09/2026)
+- It read a `languagesAlt` variable nothing sets any more, and was written against Bootstrap 3's `data-toggle` dropdowns (10/09/2026)
+- The bar's language menu is SiteBundle's `General:Languages` component (10/09/2026)
+
 ## v1.26.4
 
 A label's grey is mixed out of the palette instead of stated
