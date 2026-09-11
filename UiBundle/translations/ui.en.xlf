@@ -2950,6 +2950,14 @@
                 <source>label.media_multi_upload_help</source>
                 <target>Select several files at once to add them all in one go</target>
             </trans-unit>
+            <trans-unit id="WhoZIwy">
+                <source>label.members_only</source>
+                <target>Signed-in members only</target>
+            </trans-unit>
+            <trans-unit id="uIxUFaH">
+                <source>label.members_only_help</source>
+                <target>The file leaves its public address: only signed-in visitors can open it, and no thumbnail is made of it. No effect on anything but a PDF.</target>
+            </trans-unit>
             <trans-unit id="rfS8Ak_">
                 <source>label.mobile</source>
                 <target>Mobile</target>

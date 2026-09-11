@@ -11,8 +11,8 @@
 namespace c975L\UiBundle\Listener;
 
 use c975L\UiBundle\Contract\VichImageResizableInterface;
-use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Storage\PrivateDirectory;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -43,8 +43,8 @@ class VichPdfThumbnailListener
     {
         $entity = $event->getObject();
 
-        // No thumbnail for private files, which are a plain download link (e.g. ShopBundle)
-        if ($entity instanceof VichPrivateFileInterface) {
+        // No thumbnail for private files: a plain download link (e.g. ShopBundle), or a document reserved to members whose first page nobody else is meant to read
+        if (null !== PrivateDirectory::resolve($entity)) {
             return;
         }
 

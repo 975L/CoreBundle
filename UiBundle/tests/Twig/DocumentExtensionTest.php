@@ -73,6 +73,16 @@ class DocumentExtensionTest extends TestCase
         $this->assertNull($extension->getThumbnailPath($this->createMedia('document.pdf')));
     }
 
+    // No thumbnail is made for a document reserved to members, and one left over from before the box was ticked must not show its first page either
+    public function testGetThumbnailPathReturnsNullForADocumentReservedToMembers(): void
+    {
+        touch($this->projectDir . '/public/document.webp');
+
+        $media = $this->createMedia('document.pdf')->setMembersOnly(true);
+
+        $this->assertNull(new DocumentExtension($this->projectDir)->getThumbnailPath($media));
+    }
+
     public function testGetFunctionsRegistersDocumentThumbnailPathFunction(): void
     {
         $extension = new DocumentExtension($this->projectDir);

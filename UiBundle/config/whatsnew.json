@@ -16,6 +16,16 @@
                 "en": "On a site offering several languages, the guided project on forms now takes you back into the form you have just created and points at its language tabs, instead of describing them from the list.",
                 "fr": "Sur un site proposé en plusieurs langues, le projet guidé des formulaires vous ramène désormais dans le formulaire que vous venez de créer et vous montre ses onglets de langue, au lieu de les décrire depuis la liste.",
                 "es": "En un sitio ofrecido en varios idiomas, el proyecto guiado de los formularios le devuelve ahora al formulario que acaba de crear y le señala sus pestañas de idioma, en lugar de describirlas desde la lista."
+            },
+            {
+                "en": "A PDF can now be reserved to signed-in members: tick the box when you upload it, or on its media screen, and a visitor who is not signed in is asked to sign in before opening it.",
+                "fr": "Un PDF peut désormais être réservé aux membres connectés : cochez la case en le déposant, ou sur sa fiche média, et un visiteur non connecté est invité à se connecter avant de l'ouvrir.",
+                "es": "Un PDF puede reservarse ahora a los miembros conectados: marque la casilla al subirlo, o en su ficha de medio, y a un visitante no conectado se le pide que inicie sesión antes de abrirlo."
+            },
+            {
+                "en": "Your pages no longer break once the account of someone who edited a block or uploaded a picture is deleted.",
+                "fr": "Vos pages ne cassent plus lorsque le compte d'une personne ayant modifié un block ou déposé une image est supprimé.",
+                "es": "Sus páginas ya no se rompen cuando se elimina la cuenta de alguien que editó un bloque o subió una imagen."
             }
         ]
     },

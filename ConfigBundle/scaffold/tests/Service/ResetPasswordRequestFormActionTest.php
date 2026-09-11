@@ -104,7 +104,7 @@ class ResetPasswordRequestFormActionTest extends TestCase
         );
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('must keep a field named "email"');
+        $this->expectExceptionMessageIsOrContains('must keep a field named "email"');
 
         $action->handle(new Form(), ['unexpected' => 'someone@example.test']);
     }

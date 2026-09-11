@@ -155,7 +155,7 @@ class NestedFileSystemStorageTest extends TestCase
         $storage = $this->createStorage();
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot remove file');
+        $this->expectExceptionMessageIsOrContains('Cannot remove file');
         $storage->publicDoRemove($this->createMapping(), null, 'missing.txt');
     }
 

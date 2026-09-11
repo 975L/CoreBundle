@@ -11,7 +11,8 @@
 namespace c975L\UiBundle\Listener;
 
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
-use c975L\UiBundle\Contract\VichPrivateFileInterface;
+use c975L\UiBundle\Entity\Media;
+use c975L\UiBundle\Storage\PrivateDirectory;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
@@ -27,6 +28,8 @@ use Vich\UploaderBundle\Mapping\PropertyMappingFactoryInterface;
 #[AsDoctrineListener(event: Events::postFlush)]
 class MediaFileRemoveListener
 {
+    private const string PUBLIC_DIRECTORY = 'public';
+
     /** @var string[] */
     private array $pendingRemovals = [];
 
@@ -40,7 +43,8 @@ class MediaFileRemoveListener
     public function preUpdate(PreUpdateEventArgs $args): void
     {
         $entity = $args->getObject();
-        if (!$entity instanceof VichPrivateFileInterface) {
+        $directory = $this->replacedFileDirectory($entity, $args);
+        if (null === $directory) {
             return;
         }
 
@@ -51,7 +55,7 @@ class MediaFileRemoveListener
             return;
         }
 
-        $this->queue($entity, $mapping->getFileName($entity));
+        $this->queue($directory, $mapping->getFileName($entity));
     }
 
     public function preRemove(PreRemoveEventArgs $args): void
@@ -62,18 +66,26 @@ class MediaFileRemoveListener
         }
 
         // Reads the field actually configured as fileNameProperty on the entity's own mapping (e.g. "name" for VichMediaTrait users, "filename" for UiBundle's own Media/GalleryPhoto) instead of assuming a fixed getName()/getFilename() accessor, which differs per entity
-        $this->queue($entity, $this->propertyMappingFactory->fromField($entity, 'file')?->getFileName($entity));
+        $this->queue(PrivateDirectory::resolve($entity) ?? self::PUBLIC_DIRECTORY, $this->propertyMappingFactory->fromField($entity, 'file')?->getFileName($entity));
     }
 
-    private function queue(object $entity, ?string $name): void
+    // Where the file being replaced sits, which the entity alone may no longer say: a media whose "members only" box changes in the same submit as its upload already carries the new flag, while its old file is still where the old flag put it. The name is still the old file's at this priority, so isPdf() reads the file being replaced
+    private function replacedFileDirectory(object $entity, PreUpdateEventArgs $args): ?string
+    {
+        if ($entity instanceof Media && $args->hasChangedField('membersOnly')) {
+            return $args->getOldValue('membersOnly') && $entity->isPdf() ? Media::MEMBERS_ONLY_DIRECTORY : null;
+        }
+
+        return PrivateDirectory::resolve($entity);
+    }
+
+    private function queue(string $directory, ?string $name): void
     {
         if (null === $name || '' === $name) {
             return;
         }
 
-        // A private file (e.g. a paid download) was moved out of public/ into its own directory by VichImageResizeListener::moveFileToPrivate() - it must be looked up there, not under public/
-        $directory = $entity instanceof VichPrivateFileInterface ? $entity->getPrivateDirectory() : 'public';
-
+        // A private file (a paid download, a media reserved to members) was moved out of public/ by VichImageResizeListener::moveFileToPrivate() or MediaMembersOnlyListener - it must be looked up there, not under public/
         $this->pendingRemovals[] = $this->kernel->getProjectDir() . '/' . $directory . '/' . $name;
     }
 

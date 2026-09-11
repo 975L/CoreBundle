@@ -172,22 +172,24 @@ class MediaUploadTypeTest extends TestCase
         }
     }
 
-    // A PDF (e.g. document_download) gets no image metadata at all, but does get "name" - an admin-typed value UiMediaNamer slugifies into the stored filename instead of the default "block-{kind}-{id}"
-    public function testBuildFormAddsNameFieldForPdfAcceptOnly(): void
+    // A PDF (e.g. document_download) gets no image metadata at all, but does get "name" - an admin-typed value UiMediaNamer slugifies into the stored filename instead of the default "block-{kind}-{id}" - and the "members only" switch
+    public function testBuildFormAddsNameAndMembersOnlyFieldsForPdfAcceptOnly(): void
     {
         $added = $this->buildFieldNames('application/pdf', null);
 
         $this->assertArrayHasKey('name', $added);
+        $this->assertArrayHasKey('membersOnly', $added);
         foreach (['cssClasses', 'alt', 'label', 'width', 'height', 'above', 'credits', 'rightsReserved'] as $field) {
             $this->assertArrayNotHasKey($field, $added, "\"$field\" should not be added for a PDF upload");
         }
     }
 
-    public function testBuildFormSkipsNameFieldForImageAccept(): void
+    public function testBuildFormSkipsNameAndMembersOnlyFieldsForImageAccept(): void
     {
         $added = $this->buildFieldNames('image/*', null);
 
         $this->assertArrayNotHasKey('name', $added);
+        $this->assertArrayNotHasKey('membersOnly', $added);
     }
 
     // "card" context (the Card block's teaser image, see templates/blocks/Card.html.twig) only ever reads the file itself and its cssClasses - none of the other display metadata applies to it

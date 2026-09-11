@@ -28,6 +28,9 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
 {
     private const int IMAGE_WIDTH = 800;
 
+    // Where a media reserved to members is moved, relative to the project root - the directory ShopBundle's paid downloads already live in, which the backup archives next to public/
+    public const string MEMBERS_ONLY_DIRECTORY = 'private';
+
     // Site-wide graphics, not attached to a Block - fixed filename at the root of public/ (see getVichMediaPath), one row per role enforced at the application level (see isSingletonRole)
     public const ROLE_FAVICON = 'favicon';
     public const ROLE_APPLE_TOUCH_ICON = 'apple-touch-icon';
@@ -134,6 +137,10 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
     #[ORM\Column(options: ['default' => false])]
     private bool $rightsReserved = false;
 
+    // Reserved to signed-in visitors: the file leaves public/ for MEMBERS_ONLY_DIRECTORY and is only ever served by MediaController, behind MediaVoter
+    #[ORM\Column(options: ['default' => false])]
+    private bool $membersOnly = false;
+
     // Per-media outbound link/caption pair, exposed by MediaUploadType's "portfolio_grid" context (see PortfolioGridType) - a project card's title reuses the existing $label field instead
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $url = null;
@@ -152,6 +159,16 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
 
     // Transient, never persisted - set by SiteBundle's BlockDataImporter when a Sync import's archive already carries a pre-generated PDF thumbnail, so VichPdfThumbnailListener can copy it as-is instead of re-running Ghostscript, unavailable on some hosts
     private ?string $importedThumbnailPath = null;
+
+    // Leaves "user" out of a serialized media, for the same reason as Block::__serialize(): the site graphics are cached whole (see MediaExtension::preloadSingletonRoles()), and so are the medias of a cached block, where serialize() would load the uploader's User row - or throw once that account was gone. It comes back null
+    /** @return array<string, mixed> */
+    public function __serialize(): array
+    {
+        $data = (array) $this;
+        unset($data["\0" . self::class . "\0user"]);
+
+        return $data;
+    }
 
     public function getId(): ?int
     {
@@ -384,6 +401,25 @@ class Media implements VichImageResizableInterface, VichMediaNamableInterface
         $this->rightsReserved = $rightsReserved ?? false;
 
         return $this;
+    }
+
+    // A PDF only: an image carries -thumb/-highres siblings a move would leave behind in public/, so the flag is ignored on any other file
+    public function isMembersOnly(): bool
+    {
+        return $this->membersOnly && $this->isPdf();
+    }
+
+    public function setMembersOnly(?bool $membersOnly): self
+    {
+        $this->membersOnly = $membersOnly ?? false;
+
+        return $this;
+    }
+
+    // Read off the stored name, as every other PDF lookup of this bundle is (see MediaRepository::findPdfs())
+    public function isPdf(): bool
+    {
+        return str_ends_with(strtolower((string) $this->filename), '.pdf');
     }
 
     public function getUrl(): ?string

@@ -109,4 +109,30 @@ class VichPdfThumbnailListenerTest extends TestCase
 
         $this->assertFileDoesNotExist($this->projectDir . '/public/doc.webp');
     }
+
+    // Not even a thumbnail of a document reserved to members: its first page is what the reservation is for. The imported thumbnail is what would otherwise be copied with no Ghostscript needed
+    public function testOnPostUploadMakesNoThumbnailForADocumentReservedToMembers(): void
+    {
+        $pdfPath = $this->projectDir . '/public/doc.pdf';
+        file_put_contents($pdfPath, '%PDF-1.4');
+
+        $importedThumbnailPath = $this->projectDir . '/imported-thumbnail.webp';
+        file_put_contents($importedThumbnailPath, 'fake-webp-bytes');
+
+        $media = new Media();
+        $media->setFilename('doc.pdf');
+        $media->setFile(new File($pdfPath));
+        $media->setImportedThumbnailPath($importedThumbnailPath);
+        $media->setMembersOnly(true);
+
+        $parameterBag = $this->createStub(ParameterBagInterface::class);
+        $parameterBag->method('get')->willReturn($this->projectDir);
+
+        $listener = new VichPdfThumbnailListener($parameterBag);
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $this->assertFileDoesNotExist($this->projectDir . '/public/doc.webp');
+
+        unlink($importedThumbnailPath);
+    }
 }

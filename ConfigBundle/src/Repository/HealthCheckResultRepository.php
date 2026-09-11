@@ -28,7 +28,7 @@ class HealthCheckResultRepository extends ServiceEntityRepository
     public function findLatestPerUrlAndKind(): array
     {
         $rows = $this->createQueryBuilder('h')
-            ->orderBy('h.checkedAt', 'DESC')
+            ->orderBy('h.checkedAt', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -50,7 +50,7 @@ class HealthCheckResultRepository extends ServiceEntityRepository
         $rows = $this->createQueryBuilder('h')
             ->andWhere('h.url = :url')
             ->setParameter('url', $url)
-            ->orderBy('h.checkedAt', 'DESC')
+            ->orderBy('h.checkedAt', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -76,8 +76,8 @@ class HealthCheckResultRepository extends ServiceEntityRepository
         $rows = $this->createQueryBuilder('h')
             ->andWhere('h.url IN (:urls)')
             ->setParameter('urls', $urls)
-            ->orderBy('h.checkedAt', 'DESC')
-            ->addOrderBy('h.id', 'DESC')
+            ->orderBy('h.checkedAt', \SortDirection::Descending)
+            ->addOrderBy('h.id', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -97,8 +97,8 @@ class HealthCheckResultRepository extends ServiceEntityRepository
             ->andWhere('h.kind = :kind')
             ->setParameter('url', $url)
             ->setParameter('kind', $kind)
-            ->orderBy('h.checkedAt', 'DESC')
-            ->addOrderBy('h.id', 'DESC')
+            ->orderBy('h.checkedAt', \SortDirection::Descending)
+            ->addOrderBy('h.id', \SortDirection::Descending)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
@@ -111,8 +111,8 @@ class HealthCheckResultRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('h')
             ->andWhere('h.kind = :kind')
             ->setParameter('kind', $kind)
-            ->orderBy('h.checkedAt', 'DESC')
-            ->addOrderBy('h.id', 'DESC')
+            ->orderBy('h.checkedAt', \SortDirection::Descending)
+            ->addOrderBy('h.id', \SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -127,8 +127,8 @@ class HealthCheckResultRepository extends ServiceEntityRepository
             ->andWhere('h.checkedAt >= :since')
             ->setParameter('kind', $kind)
             ->setParameter('since', $since)
-            ->orderBy('h.checkedAt', 'DESC')
-            ->addOrderBy('h.id', 'DESC')
+            ->orderBy('h.checkedAt', \SortDirection::Descending)
+            ->addOrderBy('h.id', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }
@@ -196,7 +196,7 @@ class HealthCheckResultRepository extends ServiceEntityRepository
     {
         $rows = $this->createQueryBuilder('h')
             ->select('h.url', 'h.kind', 'h.status', 'h.checkedAt')
-            ->orderBy('h.checkedAt', 'ASC')
+            ->orderBy('h.checkedAt', \SortDirection::Ascending)
             ->getQuery()
             ->getArrayResult();
 

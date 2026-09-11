@@ -84,7 +84,7 @@ A development machine's `vendor/` symlinks the sibling repositories, which expos
 bin/ci.sh
 ```
 
-The quality tools themselves are not dependencies of the bundle: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the six versions it ran with — Lizard excepted, pinned in both because its counting changed between releases and one release alone matches the thresholds Codacy reads — a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
+The quality tools themselves are not dependencies of the bundle — PHPStan aside, which `require-dev` carries for its deprecation rules: the CI installs them with `setup-php`, which always takes the latest release, where a development machine keeps whatever it installed the day it installed it. `bin/ci.sh` installs them fresh too, and prints the six versions it ran with — Lizard excepted, pinned in both because its counting changed between releases and one release alone matches the thresholds Codacy reads — a rule removed upstream since is otherwise still enforced here, and a rule added since is missed.
 
 ## Migrating from `c975l/config-bundle` / `c975l/ui-bundle`
 

@@ -34,7 +34,7 @@ class ReviewRepository extends ServiceEntityRepository
     public function findForDisplay(?string $source = null, ?int $limit = null): array
     {
         $queryBuilder = $this->publishedQueryBuilder()
-            ->orderBy('r.publishedAt', 'DESC')
+            ->orderBy('r.publishedAt', \SortDirection::Descending)
         ;
 
         if (null !== $source) {
@@ -62,7 +62,7 @@ class ReviewRepository extends ServiceEntityRepository
             ->andWhere('r.ownerId = :ownerId')
             ->setParameter('ownerType', $ownerType)
             ->setParameter('ownerId', $ownerId)
-            ->orderBy('r.publishedAt', 'DESC')
+            ->orderBy('r.publishedAt', \SortDirection::Descending)
         ;
 
         if (null !== $limit) {

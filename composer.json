@@ -24,7 +24,7 @@
     ],
     "require": {
         "php": ">=8.4",
-        "doctrine/orm": "^3.6",
+        "doctrine/orm": "^3.7",
         "dompdf/dompdf": "^3.1",
         "dragonmantank/cron-expression": "^3.6",
         "easycorp/easyadmin-bundle": "^5.1",
@@ -63,6 +63,8 @@
     "require-dev": {
         "chrome-php/chrome": "^1.16",
         "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "phpstan/phpstan": "^2.2",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpunit/phpunit": "^13.2",
         "symfony/browser-kit": "^8.0",
         "symfony/css-selector": "^8.0",

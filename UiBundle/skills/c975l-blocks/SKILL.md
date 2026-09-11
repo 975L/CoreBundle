@@ -25,7 +25,7 @@ class Product implements HasBlocksInterface
 
     #[ORM\ManyToMany(targetEntity: Block::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'shop_product_block')]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     private Collection $blocks;
 }
 ```

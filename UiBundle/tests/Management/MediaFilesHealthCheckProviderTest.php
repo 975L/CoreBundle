@@ -139,6 +139,18 @@ class MediaFilesHealthCheckProviderTest extends TestCase
         $this->assertSame('Logo', $rows[0]['label']);
     }
 
+    // Moved out of public/ on purpose, and looked for where it went rather than reported missing
+    public function testADocumentReservedToMembersIsFoundWhereItWasMoved(): void
+    {
+        $media = $this->createMedia('medias/site/tree.pdf', name: 'Tree')->setMembersOnly(true);
+        new Filesystem()->dumpFile($this->projectDir . '/private/medias/site/tree.pdf', 'file');
+
+        $rows = $this->createProvider([[$media, false]])->runChecks();
+
+        $this->assertCount(1, $rows);
+        $this->assertSame(HealthCheckResult::STATUS_OK, $rows[0]['status']);
+    }
+
     // A file gone from a font leaves the site rendering its fallback, which no error anywhere reports either
     public function testAFontFileIsCheckedToo(): void
     {

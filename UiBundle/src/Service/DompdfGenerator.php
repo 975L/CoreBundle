@@ -70,7 +70,6 @@ class DompdfGenerator implements PdfGeneratorInterface
         // Off, and not because of what a template of ours would do: this bundle draws documents out of content an admin typed, and an engine executing PHP inside markup is a remote-code hole with an editor at one end
         $engine->setIsPhpEnabled(false);
 
-        $engine->setIsHtml5ParserEnabled(true);
         $engine->setDefaultFont('DejaVu Sans');
 
         return $engine;

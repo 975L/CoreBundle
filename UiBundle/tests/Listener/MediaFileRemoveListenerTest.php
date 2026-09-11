@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Listener;
 
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Contract\VichPrivateFileInterface;
+use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\MediaFileRemoveListener;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -71,7 +72,7 @@ class MediaFileRemoveListenerTest extends TestCase
         $metadataReader = new MetadataReader(
             new MetadataFactory(new AttributeDriver(new AttributeReader(), []), \Metadata\ClassHierarchyMetadata::class, false)
         );
-        $resolver = new PropertyMappingResolver([], [], ['test' => []]);
+        $resolver = new PropertyMappingResolver([], [], ['test' => [], 'block_media' => []]);
 
         return new MediaFileRemoveListener($kernel, new PropertyMappingFactory($metadataReader, $resolver));
     }
@@ -235,6 +236,39 @@ class MediaFileRemoveListenerTest extends TestCase
         $listener->postFlush($this->createPostFlushEventArgs());
 
         $this->assertFileExists($this->projectDir . '/public/medias/site/logo.webp');
+    }
+
+    // A media reserved to members was moved out of public/ (see Media::MEMBERS_ONLY_DIRECTORY) - its file is removed from there
+    public function testPreRemoveDeletesAMediaReservedToMembersFromItsDirectory(): void
+    {
+        mkdir($this->projectDir . '/private/medias/site', 0777, true);
+        file_put_contents($this->projectDir . '/private/medias/site/tree.pdf', 'content');
+
+        $media = new Media()->setFilename('medias/site/tree.pdf')->setMembersOnly(true);
+
+        $listener = $this->createListener();
+        $listener->preRemove($this->createEventArgs($media));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileDoesNotExist($this->projectDir . '/private/medias/site/tree.pdf');
+    }
+
+    // Unticked in the same submit as a new upload: the entity already says public, while the file being replaced is still where the old flag put it
+    public function testPreUpdateFindsTheReplacedFileWhereTheOldFlagPutIt(): void
+    {
+        mkdir($this->projectDir . '/private/medias/site', 0777, true);
+        file_put_contents($this->projectDir . '/private/medias/site/tree.pdf', 'content');
+        file_put_contents($this->projectDir . '/new-upload.pdf', 'content');
+
+        $media = new Media()->setFilename('medias/site/tree.pdf')->setMembersOnly(false);
+        $media->setFile(new File($this->projectDir . '/new-upload.pdf'));
+        $changeSet = ['membersOnly' => [true, false]];
+
+        $listener = $this->createListener();
+        $listener->preUpdate(new PreUpdateEventArgs($media, $this->createStub(EntityManagerInterface::class), $changeSet));
+        $listener->postFlush($this->createPostFlushEventArgs());
+
+        $this->assertFileDoesNotExist($this->projectDir . '/private/medias/site/tree.pdf');
     }
 }
 

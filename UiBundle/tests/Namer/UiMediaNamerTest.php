@@ -66,7 +66,7 @@ class UiMediaNamerTest extends TestCase
         $namer = new UiMediaNamer(new AsciiSlugger());
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('must implement VichMediaNamableInterface');
+        $this->expectExceptionMessageIsOrContains('must implement VichMediaNamableInterface');
         $namer->name(new \stdClass(), $this->createMapping());
     }
 
@@ -77,7 +77,7 @@ class UiMediaNamerTest extends TestCase
         $media->setFile(new File($this->sandboxDir . '/missing.png', false));
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('File not found');
+        $this->expectExceptionMessageIsOrContains('File not found');
         $namer->name($media, $this->createMapping());
     }
 

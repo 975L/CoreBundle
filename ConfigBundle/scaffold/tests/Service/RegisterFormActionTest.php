@@ -122,7 +122,7 @@ class RegisterFormActionTest extends TestCase
         $action = $this->createAction($this->createStub(UserRepository::class), $userRegistrar);
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('must keep a field named "plainPassword"');
+        $this->expectExceptionMessageIsOrContains('must keep a field named "plainPassword"');
 
         $action->handle(new Form(), ['email' => 'new@example.test']);
     }

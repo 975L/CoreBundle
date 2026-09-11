@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Controller;
 
 use c975L\UiBundle\Controller\FormController;
+use c975L\UiBundle\Controller\MediaController;
 use c975L\UiBundle\Controller\ReviewController;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -26,6 +27,7 @@ class RoutingTest extends TestCase
     {
         yield 'form submit' => [FormController::class, 'ui_form_submit', 'submit'];
         yield 'review new' => [ReviewController::class, 'ui_review_new', 'new'];
+        yield 'media file' => [MediaController::class, MediaController::ROUTE, 'open'];
     }
 
     /**
@@ -79,12 +81,23 @@ class RoutingTest extends TestCase
         $this->assertTrue($cache->mustRevalidate);
     }
 
+    // Neither under /medias/ nor ending in .pdf: a site's web server answers those paths itself when no file sits there, and the request would never reach the controller. Numeric only, so nothing else is ever taken for a media id
+    public function testMediaRouteStaysOutOfTheWebServersStaticPaths(): void
+    {
+        $route = new AttributeRouteControllerLoader()->load(MediaController::class)->get(MediaController::ROUTE);
+
+        $this->assertNotNull($route);
+        $this->assertSame('/media/{id}', $route->getPath());
+        $this->assertSame('\d+', $route->getRequirement('id'));
+    }
+
     /**
      * @return iterable<string, array{class-string}>
      */
     public static function controllers(): iterable
     {
         yield 'FormController' => [FormController::class];
+        yield 'MediaController' => [MediaController::class];
         yield 'ReviewController' => [ReviewController::class];
     }
 }

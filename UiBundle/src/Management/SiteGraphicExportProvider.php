@@ -35,8 +35,8 @@ class SiteGraphicExportProvider implements ExportProviderInterface
     {
         $graphics = $this->mediaRepository->createQueryBuilder('m')
             ->where('m.role IS NOT NULL')
-            ->orderBy('m.role', 'ASC')
-            ->addOrderBy('m.id', 'ASC')
+            ->orderBy('m.role', \SortDirection::Ascending)
+            ->addOrderBy('m.id', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 

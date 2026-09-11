@@ -71,8 +71,8 @@ class PdfThumbnailHealthCheckProvider implements HealthCheckExhaustiveInterface
         foreach ($medias as $media) {
             $filename = (string) $media->getFilename();
 
-            // A row with no filename is a fixture or a placeholder media, never a document a visitor can reach
-            if ('' === $filename) {
+            // A row with no filename is a fixture or a placeholder media, never a document a visitor can reach - and a document reserved to members is given no thumbnail on purpose (see VichPdfThumbnailListener)
+            if ('' === $filename || $media->isMembersOnly()) {
                 continue;
             }
 

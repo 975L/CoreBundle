@@ -43,7 +43,7 @@ class MediaExtension
         return $this->requestCache[$role];
     }
 
-    // Site-wide singleton roles (logo, favicon...) are a small, fixed set (see Media::getSingletonRoles()), read on every page and barely ever changed - cached across requests (invalidated by BlockCacheInvalidationListener whenever a singleton-role Media is saved/removed), on top of the per-request memoization above so a hit still costs zero queries. Caching the Media entities directly is safe here: these rows are never attached to a Block (see Media::$block's own comment) so the only other relation (owning $user) never gets resolved by anything rendering site_media()/site_random_media(), and stays an untouched, harmless lazy reference through the cache round-trip
+    // Site-wide singleton roles (logo, favicon...) are a small, fixed set (see Media::getSingletonRoles()), read on every page and barely ever changed - cached across requests (invalidated by BlockCacheInvalidationListener whenever a singleton-role Media is saved/removed), on top of the per-request memoization above so a hit still costs zero queries. Caching the Media entities directly is safe here: these rows are never attached to a Block (see Media::$block's own comment), and the only other relation (owning $user) is left out by Media::__serialize() - serialize() would otherwise load it, and throw on every page once that account was deleted
     private function preloadSingletonRoles(): void
     {
         if ($this->singletonRolesPreloaded) {

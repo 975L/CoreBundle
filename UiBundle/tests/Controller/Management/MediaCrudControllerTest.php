@@ -33,6 +33,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MediaCrudControllerTest extends TestCase
 {
+    use ControllerContainerTestTrait;
+
     private function createController(string $projectDir = '/tmp', bool $mayEditSiteGraphics = true, ?MediaUsageRegistry $mediaUsageRegistry = null): MediaCrudController
     {
         $translator = $this->createStub(TranslatorInterface::class);
@@ -190,11 +192,11 @@ class MediaCrudControllerTest extends TestCase
         $this->assertFalse(new \ReflectionMethod($controller, 'isUsed')->invoke($controller, $this->mediaWithId(1)));
     }
 
-    private function fileFieldImageUri(MediaCrudController $controller): \Closure
+    private function fileFieldOption(string $option, MediaCrudController $controller): \Closure
     {
         foreach ($controller->configureFields('new') as $field) {
             if ('file' === $field->getAsDto()->getProperty()) {
-                return $field->getAsDto()->getFormTypeOptions()['image_uri'];
+                return $field->getAsDto()->getFormTypeOptions()[$option];
             }
         }
 
@@ -203,7 +205,7 @@ class MediaCrudControllerTest extends TestCase
 
     public function testFileFieldImageUriKeepsOriginalUriForNonPdf(): void
     {
-        $imageUri = $this->fileFieldImageUri($this->createController());
+        $imageUri = $this->fileFieldOption('image_uri', $this->createController());
 
         $this->assertSame(
             'photo.jpg',
@@ -213,7 +215,7 @@ class MediaCrudControllerTest extends TestCase
 
     public function testFileFieldImageUriReturnsNullWhenOriginalUriIsNull(): void
     {
-        $imageUri = $this->fileFieldImageUri($this->createController());
+        $imageUri = $this->fileFieldOption('image_uri', $this->createController());
 
         $this->assertNull($imageUri(new Media()->setMimeType('application/pdf'), null));
     }
@@ -225,7 +227,7 @@ class MediaCrudControllerTest extends TestCase
         file_put_contents($projectDir . '/public/documents/report.webp', '');
 
         try {
-            $imageUri = $this->fileFieldImageUri($this->createController($projectDir));
+            $imageUri = $this->fileFieldOption('image_uri', $this->createController($projectDir));
 
             $this->assertSame(
                 'documents/report.webp',
@@ -241,11 +243,30 @@ class MediaCrudControllerTest extends TestCase
 
     public function testFileFieldImageUriKeepsOriginalUriWhenNoWebpThumbnailExists(): void
     {
-        $imageUri = $this->fileFieldImageUri($this->createController(sys_get_temp_dir() . '/' . uniqid('ui-media-crud-test-')));
+        $imageUri = $this->fileFieldOption('image_uri', $this->createController(sys_get_temp_dir() . '/' . uniqid('ui-media-crud-test-')));
 
         $this->assertSame(
             'documents/report.pdf',
             $imageUri(new Media()->setMimeType('application/pdf'), 'documents/report.pdf')
         );
+    }
+
+    // No thumbnail is made for a document reserved to members, and its own address is not public/'s any more
+    public function testFileFieldImageUriIsNullForADocumentReservedToMembers(): void
+    {
+        $imageUri = $this->fileFieldOption('image_uri', $this->createController());
+
+        $this->assertNull($imageUri(new Media()->setMimeType('application/pdf')->setFilename('documents/report.pdf')->setMembersOnly(true), 'documents/report.pdf'));
+    }
+
+    // public/ no longer holds a document reserved to members: the screen links it through the route a member opens it from
+    public function testFileFieldDownloadUriGoesThroughTheRouteForADocumentReservedToMembersOnly(): void
+    {
+        $controller = $this->createController();
+        $controller->setContainer($this->createContainer(['router' => $this->createRouter('/media/34')]));
+        $downloadUri = $this->fileFieldOption('download_uri', $controller);
+
+        $this->assertSame('/media/34', $downloadUri(new Media()->setFilename('documents/report.pdf')->setMembersOnly(true), '/documents/report.pdf'));
+        $this->assertSame('/documents/report.pdf', $downloadUri(new Media()->setFilename('documents/report.pdf'), '/documents/report.pdf'));
     }
 }

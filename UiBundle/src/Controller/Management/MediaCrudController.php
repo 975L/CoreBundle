@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Controller\Management;
 
 use c975L\ConfigBundle\Management\EasyAdminActionHelper;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Controller\MediaController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\ImageClassChoiceType;
 use c975L\UiBundle\Form\MediaUsagesType;
@@ -223,12 +224,20 @@ class MediaCrudController extends AbstractCrudController
                 ->setFormTypeOptions([
                     'required' => false,
                     'allow_delete' => true,
-                    'download_uri' => true,
+                    // A document reserved to members is no longer under public/: the link goes through the route a member opens it from
+                    'download_uri' => fn (Media $media, ?string $uri): ?string => $media->isMembersOnly()
+                        ? $this->generateUrl(MediaController::ROUTE, ['id' => $media->getId()])
+                        : $uri,
                     'asset_helper' => true,
                     // VichImageType defaults image_uri to the uploaded file itself, which is fine for actual images but renders a dead <img> for a PDF - swap it for the .webp thumbnail (see VichPdfThumbnailListener) when one exists, same convention already used by DocumentExtension::getThumbnailPath() for the public block rendering
                     'image_uri' => function (Media $media, ?string $originalUri): ?string {
                         if (null === $originalUri || 'application/pdf' !== $media->getMimeType()) {
                             return $originalUri;
+                        }
+
+                        // No thumbnail is made for a document reserved to members, and its own address is not public/'s any more
+                        if ($media->isMembersOnly()) {
+                            return null;
                         }
 
                         $webpPath = VichPdfThumbnailListener::toWebpPath($originalUri);
@@ -288,6 +297,12 @@ class MediaCrudController extends AbstractCrudController
 
             BooleanField::new('rightsReserved')
                 ->setLabel(t('label.rights_reserved', [], 'ui'))
+                ->hideOnIndex(),
+
+            // Same switch as MediaUploadType's - Media::isMembersOnly() ignores it on anything but a PDF
+            BooleanField::new('membersOnly')
+                ->setLabel(t('label.members_only', [], 'ui'))
+                ->setHelp(t('label.members_only_help', [], 'ui'))
                 ->hideOnIndex(),
         ];
     }

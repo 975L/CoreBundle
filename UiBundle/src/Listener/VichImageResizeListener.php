@@ -13,13 +13,13 @@ namespace c975L\UiBundle\Listener;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMultiSizeImageInterface;
 use c975L\UiBundle\Contract\VichOriginalKeepableInterface;
-use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Contract\VichWatermarkableInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Model\Watermark;
 use c975L\UiBundle\Service\ImageDimensionsReader;
 use c975L\UiBundle\Service\ImageWatermarker;
 use c975L\UiBundle\Service\SvgRasterizer;
+use c975L\UiBundle\Storage\PrivateDirectory;
 use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
@@ -102,8 +102,10 @@ class VichImageResizeListener
             return;
         }
 
-        if ($entity instanceof VichPrivateFileInterface) {
-            $this->moveFileToPrivate($entity, $filename, $absolutePath);
+        // A paid download, or a document reserved to members, leaves public/ before anyone can fetch it from there
+        $privateDirectory = PrivateDirectory::resolve($entity);
+        if (null !== $privateDirectory) {
+            $this->moveFileToPrivate($privateDirectory, $filename, $absolutePath);
         }
     }
 
@@ -345,9 +347,9 @@ class VichImageResizeListener
         $entity->setOriginalFilename($originalFilename);
     }
 
-    private function moveFileToPrivate(VichPrivateFileInterface $entity, string $filename, string $publicPath): void
+    private function moveFileToPrivate(string $privateDirectory, string $filename, string $publicPath): void
     {
-        $privatePath = $this->parameterBag->get('kernel.project_dir') . '/' . $entity->getPrivateDirectory() . '/' . $filename;
+        $privatePath = $this->parameterBag->get('kernel.project_dir') . '/' . $privateDirectory . '/' . $filename;
 
         $this->filesystem->mkdir(dirname($privatePath), 0755);
         $this->filesystem->copy($publicPath, $privatePath, true);

@@ -28,8 +28,8 @@ class FontRepository extends ServiceEntityRepository
     public function findAllOrdered(): array
     {
         return $this->createQueryBuilder('f')
-            ->orderBy('f.name', 'ASC')
-            ->addOrderBy('f.weight', 'ASC')
+            ->orderBy('f.name', \SortDirection::Ascending)
+            ->addOrderBy('f.weight', \SortDirection::Ascending)
             ->getQuery()
             ->getResult()
         ;
@@ -41,8 +41,8 @@ class FontRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('f')
             ->where('f.filename IS NOT NULL AND f.filename != :empty')
             ->setParameter('empty', '')
-            ->orderBy('f.name', 'ASC')
-            ->addOrderBy('f.weight', 'ASC')
+            ->orderBy('f.name', \SortDirection::Ascending)
+            ->addOrderBy('f.weight', \SortDirection::Ascending)
             ->getQuery()
             ->getResult()
         ;

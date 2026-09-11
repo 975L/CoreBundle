@@ -55,14 +55,14 @@ class Form implements \Stringable
     private bool $outputsFirst = false;
 
     #[ORM\OneToMany(mappedBy: 'form', targetEntity: FormField::class, cascade: ['persist'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     // The rows added in the screen are checked one by one, an empty one coming back as a form error rather than reaching the database
     #[Assert\Valid]
     private Collection $fields;
 
     // Owning at least one turns this Form into a calculator (see isCalculator()) - the order matters, an expression only ever seeing the outputs declared before it
     #[ORM\OneToMany(mappedBy: 'form', targetEntity: FormOutput::class, cascade: ['persist'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     private Collection $outputs;
 
     public function __construct()

@@ -46,7 +46,7 @@ class ConfigRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->select('c.slug')
-            ->orderBy('c.slug', 'ASC')
+            ->orderBy('c.slug', \SortDirection::Ascending)
             ->getQuery()
             ->getSingleColumnResult();
     }
@@ -57,7 +57,7 @@ class ConfigRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->where('c.severity IS NOT NULL')
             ->andWhere("c.value IS NULL OR c.value = ''")
-            ->orderBy('c.label', 'ASC')
+            ->orderBy('c.label', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -85,7 +85,7 @@ class ConfigRepository extends ServiceEntityRepository
             ->where('c.isSensitive = :sensitive')
             ->andWhere("c.value IS NOT NULL AND c.value != ''")
             ->setParameter('sensitive', true)
-            ->orderBy('c.label', 'ASC')
+            ->orderBy('c.label', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -96,7 +96,7 @@ class ConfigRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->where('c.group = :group')
             ->setParameter('group', $group)
-            ->orderBy('c.label', 'ASC')
+            ->orderBy('c.label', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -107,7 +107,7 @@ class ConfigRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->where('c.slug LIKE :prefix')
             ->setParameter('prefix', $prefix . '%')
-            ->orderBy('c.label', 'ASC')
+            ->orderBy('c.label', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -121,7 +121,7 @@ class ConfigRepository extends ServiceEntityRepository
             ->andWhere('c.isSensitive = :isSensitive')
             ->setParameter('isSensitive', $isSensitive)
             ->groupBy('c.group')
-            ->orderBy('c.group', 'ASC')
+            ->orderBy('c.group', \SortDirection::Ascending)
         ;
 
         if (!$includeRestricted) {

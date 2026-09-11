@@ -26,7 +26,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 ## Contents
 
 - **Blocks** — [attaching to an entity](#attaching-blocks-to-an-entity) · [built-in kinds](#built-in-block-kinds) · [container kinds](#container-kinds-blocks-made-of-other-blocks) · [registering a custom kind](#registering-a-custom-block-kind) · [setting a block aside](#setting-a-block-aside) · [block gallery](#block-gallery) · [moving between collections](#moving-a-block-between-collections) · [anchors](#anchors-in-page-navigation) · [colored backgrounds](#colored-backgrounds) · [render cache](#block-render-cache)
-- **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails) · [upload progress](#showing-the-progress-of-a-form-that-posts-files)
+- **Media** — [Media Library](#media-library) · [satellite media entities](#satellite-media-entities) · [site-wide media](#site-wide-media-favicon-logo-og-image) · [PDF thumbnails](#pdf-thumbnails) · [PDFs reserved to members](#pdfs-reserved-to-members) · [upload progress](#showing-the-progress-of-a-form-that-posts-files)
 - **Page shell** — [the page layout](#the-page-layout)
 - **Styling** — [automatic CSS injection](#automatic-css-injection) · [no inline styles](#no-inline-styles) · [same, for EasyAdmin pages](#automatic-css-injection-for-easyadmin-management-pages) · [fonts](#fonts) · [font picker](#font-picker) · [reusable Twig components](#reusable-twig-components) · [generic Twig filters and functions](#generic-twig-filters-and-functions)
 - **Forms, emails, AI** — [Forms](#forms) · [reCAPTCHA](#recaptcha) · [email builder](#email-builder) · [AI Assistant](#ai-assistant)
@@ -60,6 +60,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Reusable drag-and-drop sortable scripts for any EasyAdmin `CollectionField` and for the rows of any EasyAdmin index, plus the touch-capable drag gesture behind them (`assets/js/pointer-sort.js`) on its own, for a bundle sorting something that is neither
 - Font-family provider contract (`FontProviderInterface`/`FontRegistry`) plus a generic `FontChoiceType` select, reused by ConfigBundle's font-kind config fields
 - Reusable building blocks for a satellite bundle's own Vich-uploaded media entity (`VichMediaTrait`, `MediaFileRemoveListener`) and for serving private files (`PrivateFileResponseFactory`), downloaded as an attachment or drawn inline in the page behind a paywall
+- A PDF reserved to signed-in members in one tick: its file leaves `public/`, and `media_url()` links it through a route that sends an anonymous visitor to the login form
 - Shared plumbing every satellite bundle needs without needing SiteBundle: unique slugs, block edit URLs, sortable row attributes, generated-stylesheet writing, Vich upload options, block cache invalidation, block export/import
 - Visitor ratings for anything at all - a book, a photo, an article - one widget, one table, no mapping on the rated entity, and a scale of 1 turning the whole thing into a "like"
 - Visitor reviews on those same terms - a written opinion held back until it is read, a score feeding the very average the stars feed, a "verified" badge a bundle has to vouch for, and the reviews a platform exports sitting beside them
@@ -241,7 +242,7 @@ class Page implements HasBlocksInterface
 
     #[ORM\ManyToMany(targetEntity: Block::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'site_page_block')]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     private Collection $blocks;
 
     public function __construct()
@@ -2589,6 +2590,7 @@ When a `.pdf` file is uploaded through VichUploader on **any entity** (no interf
 - **Requires Ghostscript** (`gs`) installed on the server. If missing, the thumbnail generation silently fails — the PDF upload itself is unaffected.
 - **Requires `exec()`** to be enabled. On hosts where it's disabled, thumbnail generation is skipped the same way — the PDF upload itself is unaffected.
 - **Skipped for private files** — entities implementing `VichPrivateFileInterface` (e.g. a paid download in a shop) are not thumbnailed, since there's no public preview use case for them.
+- **Skipped for a document reserved to members** — a `Media` whose `membersOnly` box is ticked gets no thumbnail, and one left from before is removed: its first page is what the reservation is for (see [PDFs reserved to members](#pdfs-reserved-to-members)).
 - **Thumbnail width** defaults to `400px`, or reuses `getImageWidth()` if the entity also implements `VichImageResizableInterface`.
 
 No configuration needed — handled by `VichPdfThumbnailListener`, auto-registered like the rest of the bundle's services.
@@ -2614,6 +2616,16 @@ class BookPdfDocumentSource implements PdfDocumentSourceInterface
 `filename` is the path the file is served under, relative to `public/` and exactly as the row stores it - the same string the `.webp` is derived from, so a source reporting anything else has the check look at a file the site never asks for. `label` names the document on the dashboard, empty falling back to the filename, and `editUrl` is `null` for a document no back-office screen opens. The rows are read at run time, once per check, and land beside the library's own under the same `pdf-thumbnail` kind.
 
 By default an uploaded PDF is stored under an auto-generated name (`block-{kind}-{id}-{uniqid}.pdf`). Filling in the **File name** field (`Media::$name`, shown for `application/pdf` uploads) overrides this: `UiMediaNamer` slugifies it into the stored filename instead (e.g. "Rapport annuel" → `rapport-annuel-xxx.pdf`). It's distinct from **Caption** (`Media::$label`, a display string), which isn't filesystem-safe.
+
+## PDFs reserved to members
+
+Ticking **Signed-in members only** (`Media::$membersOnly`, offered beside **File name** on a PDF upload and on the media screen) takes a document out of the web server's reach: its file moves from `public/` to `private/` (`Media::MEMBERS_ONLY_DIRECTORY`), and `Controller\MediaController` serves it inline on `/media/{id}` (route `ui_media_file`) once `Security\Voter\MediaVoter` (`MediaVoter::VIEW`) has let the visitor through.
+
+- **Any signed-in visitor**, no role asked: a family site hands one shared account around. An anonymous one is refused, which the site's `main` firewall turns into its login form, bringing the visitor back once signed in - nothing to add to `access_control`.
+- **Link it with `media_url()`**, never `vich_uploader_asset()`, which names a file `public/` no longer holds - the `document_download` block already does. A public media answers 404 on that route, its one address being the web server's own.
+- **Ticked or unticked without a new upload**, `Listener\MediaMembersOnlyListener` moves the stored file across on `postFlush`, so a flush that throws leaves it where its row still says it is; an upload lands where the flag says on its own.
+- **A PDF only**: `Media::isMembersOnly()` ignores the flag on an image, whose `-thumb`/`-highres` siblings a move would leave behind in `public/`.
+- `Storage\PrivateDirectory::resolve()` is what every listener moving, deleting or thumbnailing a file asks, and where `MediaFilesHealthCheckProvider` looks the file up - a paid download (`VichPrivateFileInterface`) and a reserved media answering the same way.
 
 ---
 
@@ -2776,7 +2788,7 @@ yield [
 ];
 ```
 
-That is what a file served by a controller rather than by the web server needs (see `Contract\VichPrivateFileInterface`): ShopBundle's digital items are moved to `private/` after upload, and looking for them under `public/` would report every one of them missing. The row's identity stays the public url whatever directory holds the file — it is what the exhaustive purge retires a row by, and a private file has no address of its own to show instead.
+That is what a file served by a controller rather than by the web server needs (see `Contract\VichPrivateFileInterface`): ShopBundle's digital items are moved to `private/` after upload, and looking for them under `public/` would report every one of them missing. This bundle's own `Media` rows yield `PrivateDirectory::resolve()` there, for a [PDF reserved to members](#pdfs-reserved-to-members). The row's identity stays the public url whatever directory holds the file — it is what the exhaustive purge retires a row by, and a private file has no address of its own to show instead.
 
 Only the file a row *names* is looked for, never one derived from it: a thumbnail is rebuilt from the stored image (see [Three sizes of one image](#three-sizes-of-one-image)), where a named file gone is one nothing can bring back. SiteBundle covers its collection items this way, GalleryBundle its photographs and their self-hosted videos, ShopBundle its product pictures and digital items, BookBundle its covers and press files, CrowdfundingBundle its campaigns.
 

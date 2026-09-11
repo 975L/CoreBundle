@@ -1,5 +1,41 @@
 # ChangeLog
 
+## v1.29.0
+
+A PDF can be reserved to signed-in members
+
+### The package
+
+- **`doctrine/orm` moves from `^3.6` to `^3.7`**, which deprecates `'ASC'`/`'DESC'` in favor of `\SortDirection` (11/09/2026)
+- `\SortDirection` comes from `symfony/polyfill-php86`, which ORM 3.7 requires itself (11/09/2026)
+- `phpunit.xml.dist` sets `DOCTRINE_DEPRECATIONS=trigger`, so the suite fails on Doctrine's deprecations (11/09/2026)
+- `phpstan/phpstan` and `phpstan/phpstan-deprecation-rules` join `require-dev` (11/09/2026)
+- Both PHPStan configs include the deprecation rules (11/09/2026)
+- The CI and `bin/ci.sh` no longer install PHPStan on their own (11/09/2026)
+- Tests call `expectExceptionMessageIsOrContains()`, PHPUnit deprecating `expectExceptionMessage()` (11/09/2026)
+
+### ConfigBundle
+
+- `ConfigRepository` and `HealthCheckResultRepository` order by `\SortDirection` (11/09/2026)
+
+### UiBundle
+
+- **A PDF media can be reserved to signed-in members** through a new `membersOnly` switch on the upload form and the media screen (11/09/2026) [DB-Migration]
+- Its file leaves `public/` for `private/`, served by `MediaController` on `/media/{id}` behind `MediaVoter` (11/09/2026)
+- `MediaMembersOnlyListener` moves the stored file when the box changes without a new upload (11/09/2026)
+- `MediaFileRemoveListener` finds a replaced file where the old flag put it (11/09/2026)
+- No thumbnail is made of such a document, and a leftover one is removed (11/09/2026)
+- The media screen links such a document through its route, with no thumbnail (11/09/2026)
+- The flag is ignored on an image, whose size variants would stay in `public/` (11/09/2026)
+- `PrivateDirectory::resolve()` tells the file listeners and the media files check where a file lives (11/09/2026)
+- New `media_url()` Twig function, used by the `document_download` block instead of `vich_uploader_asset()` (11/09/2026)
+- **A cached `Block` or `Media` no longer loads its user**: `__serialize()` leaves it out, which threw once that account was deleted (11/09/2026)
+- `FavoriteRepository`, `FontRepository`, `MediaRepository`, `ReviewRepository` and `SiteGraphicExportProvider` order by `\SortDirection` (11/09/2026)
+- `#[ORM\OrderBy]` on `Block`, `EmailTemplate` and `Form` takes `\SortDirection` (11/09/2026)
+- The README and the `c975l-blocks` skill show the same attribute (11/09/2026)
+- `DompdfGenerator` no longer calls the deprecated `setIsHtml5ParserEnabled()` (11/09/2026)
+- The README and the `c975l-media` skill document the PDFs reserved to members (11/09/2026)
+
 ## v1.28.2
 
 The status report carries each error row's checker messages

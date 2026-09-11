@@ -51,7 +51,7 @@ class Block implements \Stringable
     private ?UserInterface $user = null;
 
     #[ORM\OneToMany(mappedBy: 'block', targetEntity: Media::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     private Collection $medias;
 
     // Only set on a slot of a "container" kind (e.g. flex_columns) - see BlockRegistry::isContainer()
@@ -60,7 +60,7 @@ class Block implements \Stringable
 
     // A container kind's own nested Block rows, each a full block (own kind/form/medias) - see BlockType::addSlotsSubForm()
     #[ORM\OneToMany(mappedBy: 'parentBlock', targetEntity: self::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     private Collection $slots;
 
     // Translated label of the kind, resolved by BlockLabelListener on postLoad (not persisted)
@@ -82,6 +82,16 @@ class Block implements \Stringable
         }
 
         return '(#' . $this->position . ') ' . $kindLabel;
+    }
+
+    // Leaves "user" out of a serialized block: blocks go into the cache whole (see SiteBundle's MenuExtension, SocialBundle's ShareButtonsExtension), and serialize() initializes a lazy relation - which put the editor's User row in the cache, or threw an EntityNotFoundException on every page once that account was gone. Keyed on self::class, the class declaring the private property, so a site's subclass keeps it working; it comes back null, no cached rendering reading it
+    /** @return array<string, mixed> */
+    public function __serialize(): array
+    {
+        $data = (array) $this;
+        unset($data["\0" . self::class . "\0user"]);
+
+        return $data;
     }
 
     public function getLabel(): ?string

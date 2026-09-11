@@ -2950,6 +2950,14 @@
                 <source>label.media_multi_upload_help</source>
                 <target>Seleccione varios archivos para añadirlos todos de una vez</target>
             </trans-unit>
+            <trans-unit id="WhoZIwy">
+                <source>label.members_only</source>
+                <target>Solo para miembros conectados</target>
+            </trans-unit>
+            <trans-unit id="uIxUFaH">
+                <source>label.members_only_help</source>
+                <target>El archivo deja su dirección pública: solo los visitantes conectados pueden abrirlo y no se genera ninguna miniatura. Sin efecto en un archivo que no sea PDF.</target>
+            </trans-unit>
             <trans-unit id="rfS8Ak_">
                 <source>label.mobile</source>
                 <target>Móvil</target>

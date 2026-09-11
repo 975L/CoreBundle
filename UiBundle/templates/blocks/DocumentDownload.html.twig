@@ -5,8 +5,8 @@
 <div class="document-downloads">
     {% for media in medias %}
         {% set thumbnailPath = document_thumbnail_path(media) %}
-        {# No "download" attribute: it would deny the browser's own native PDF preview #}
-        <a class="document-download" href="{{ vich_uploader_asset(media) }}" target="_blank" rel="noopener">
+        {# No "download" attribute: it would deny the browser's own native PDF preview. media_url() rather than vich_uploader_asset(): a document reserved to members is served by its own route, public/ no longer holding it #}
+        <a class="document-download" href="{{ media_url(media) }}" target="_blank" rel="noopener">
             {% if thumbnailPath %}
                 {# Decorative, the link's label already naming the document; aria-hidden doubles the empty alt so checkers don't read it as missing #}
                 <img class="document-download__thumb" src="{{ asset(thumbnailPath) }}" alt="" aria-hidden="true" loading="lazy">

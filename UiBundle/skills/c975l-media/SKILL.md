@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, Image:Zoom, imageZoom, lightbox, see_high_resolution, enlarge_image, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui, MediaTranslator, ui_media, setTranslated, getUntranslated, translate a caption, translate an alt."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, PDFs reserved to signed-in members, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: membersOnly, isMembersOnly, members only, reserved to members, MEMBERS_ONLY_DIRECTORY, MediaController, ui_media_file, MediaVoter, C975L_VIEW_MEDIA, media_url, PrivateDirectory, MediaMembersOnlyListener, __serialize, cached media, PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, thumbnail, highres, Image:Zoom, imageZoom, lightbox, see_high_resolution, enlarge_image, VichPdfThumbnailListener, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui, MediaTranslator, ui_media, setTranslated, getUntranslated, translate a caption, translate an alt."
 ---
 
 # c975L UiBundle — media and uploads
@@ -10,7 +10,7 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`, `assets/js/image-zoom.js`, `templates/components/Image/Zoom.html.twig`
+`src/Entity/Media.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Storage/PrivateDirectory.php`, `src/Controller/MediaController.php`, `src/Security/Voter/MediaVoter.php`, `src/Listener/MediaMembersOnlyListener.php`, `src/Twig/MediaUrlExtension.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`, `assets/js/image-zoom.js`, `templates/components/Image/Zoom.html.twig`
 
 **Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets`, `c975l-js-testing` in this same bundle, and `c975l-operations` in ConfigBundle beside it.
 
@@ -22,6 +22,8 @@ description: "Use this skill when handling uploads or images in a Symfony applic
   page, read through `site_media('logo-on-dark')`: a site whose logo carries both grounds uploads none,
   and the dashboard never asks for it.
   Managed from the Media library and the Site graphics screens, exported and imported with the rest.
+  Cached whole, like a `Block`, it **comes back with `getUser()` null**: `__serialize()` leaves the user
+  out, which serializing would otherwise load, or throw on once that account was deleted.
 - **A media entity of your own**, when a satellite bundle needs its own table (a gallery photo, a
   product picture). Use `Entity\Trait\VichMediaTrait` for the id/position/name/size/file/updatedAt/user
   fields: **no Doctrine relation to this bundle's `Media`, and therefore no dependency between two
@@ -102,6 +104,23 @@ everything written is webp, a format saved without EXIF, so nothing downstream r
   and change its disposition afterwards.** The access check is still yours — PaymentBundle's
   `BasketRepository::hasPaidFor()` when a purchase is what gates it.
 
+## A PDF reserved to members
+
+The shared `Media` needs no controller of yours for this: its `membersOnly` switch, on a PDF upload and
+on the media screen, moves the file from `public/` to `Media::MEMBERS_ONLY_DIRECTORY` (`private`), and
+`Controller\MediaController` serves it inline on the `ui_media_file` route (`/media/{id}`) behind
+`Security\Voter\MediaVoter`. **Any signed-in visitor** passes, no role asked; an anonymous one is sent to
+the login form by the site's `main` firewall and brought back once signed in.
+
+- **Link it with `media_url()`**: the web server's address for a public media, the route for a reserved
+  one. `vich_uploader_asset()` names a file `public/` no longer holds.
+- **A PDF only** — `Media::isMembersOnly()` ignores the flag on an image, whose `-thumb`/`-highres`
+  siblings a move would leave behind.
+- Ticked or unticked without a new upload, `Listener\MediaMembersOnlyListener` moves the stored file on
+  `postFlush`. No thumbnail is made of such a document, and a leftover one is removed.
+- `Storage\PrivateDirectory::resolve()` answers where a file lives for a `VichPrivateFileInterface` entity
+  and a reserved `Media` alike — ask it rather than testing either case yourself.
+
 ## Checking the files are still there
 
 A file is uploaded on the server that serves it and never travels with a deployment, so one that goes
@@ -113,7 +132,8 @@ and `Font` rows.
 
 A row is looked for under `public/` unless it yields a **`directory`** of its own, which is what a file
 served by a controller needs — ShopBundle's digital items are moved under `private/` once uploaded (see
-`VichPrivateFileInterface`), and every one of them would otherwise be reported missing. The row's
+`VichPrivateFileInterface`), and every one of them would otherwise be reported missing; this bundle's
+own rows yield `PrivateDirectory::resolve()` there, for a PDF reserved to members. The row's
 identity stays the public url whatever directory holds the file, the exhaustive purge retiring a row by
 that value.
 
@@ -263,6 +283,12 @@ template is shipped to sites running either engine.
 - **Do not build a filename from what the browser sent.**
 - **Do not serve a private file directly**, and do not skip the access check because the factory
   built the response.
+- **Do not link a `Media` that may be a PDF with `vich_uploader_asset()`** — `media_url()` answers the
+  route a member opens a reserved one from.
+- **Do not write a controller or an `access_control` rule for a PDF reserved to members** —
+  `MediaController` and `MediaVoter` already guard it.
+- **Do not override `__serialize()` on a `Block` or `Media` subclass without leaving the user out** —
+  a cached row would load it again, and throw once that account is deleted.
 - **Do not forget to remove your own derivatives** when a row is deleted — nothing does it for you.
 - **Do not upload the site logo or favicon as an entity of your own**; they are `Media` roles.
 - **Do not read `getLabel()`/`getAlt()`/`getDescription()` on a form screen** — they answer the

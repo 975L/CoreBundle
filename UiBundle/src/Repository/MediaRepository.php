@@ -41,7 +41,7 @@ class MediaRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('m')
             ->where('m.filename LIKE :pdfExtension')
             ->setParameter('pdfExtension', '%.pdf')
-            ->orderBy('m.filename', 'ASC')
+            ->orderBy('m.filename', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -54,7 +54,7 @@ class MediaRepository extends ServiceEntityRepository
             ->orWhere('m.filename LIKE :svgExtension')
             ->setParameter('svgMimeType', 'image/svg%')
             ->setParameter('svgExtension', '%.svg')
-            ->orderBy('m.filename', 'ASC')
+            ->orderBy('m.filename', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }
@@ -83,7 +83,7 @@ class MediaRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('m')
             ->where('m.filename IS NOT NULL AND m.filename != :empty')
             ->setParameter('empty', '')
-            ->orderBy('m.filename', 'ASC')
+            ->orderBy('m.filename', \SortDirection::Ascending)
             ->getQuery()
             ->getResult()
         ;

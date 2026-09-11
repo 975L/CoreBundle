@@ -122,4 +122,25 @@ class MediaTest extends TestCase
         $this->assertNull($media->getIntrinsicWidth());
         $this->assertNull($media->getIntrinsicHeight());
     }
+
+    // Read off the stored name, whatever case its extension was typed in
+    public function testIsPdfReadsTheStoredExtensionWhateverItsCase(): void
+    {
+        $this->assertTrue(new Media()->setFilename('medias/site/Report.PDF')->isPdf());
+        $this->assertFalse(new Media()->setFilename('medias/site/photo.webp')->isPdf());
+        $this->assertFalse(new Media()->isPdf());
+    }
+
+    // An image carries -thumb/-highres siblings a move would leave behind in public/, so the flag only holds on a PDF
+    public function testIsMembersOnlyHoldsOnAPdfOnly(): void
+    {
+        $this->assertTrue(new Media()->setFilename('tree.pdf')->setMembersOnly(true)->isMembersOnly());
+        $this->assertFalse(new Media()->setFilename('photo.webp')->setMembersOnly(true)->isMembersOnly());
+    }
+
+    // A form handing null unticks the box
+    public function testSetMembersOnlyTakesNullForFalse(): void
+    {
+        $this->assertFalse(new Media()->setFilename('tree.pdf')->setMembersOnly(true)->setMembersOnly(null)->isMembersOnly());
+    }
 }

@@ -17,6 +17,7 @@ use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Repository\FontRepository;
 use c975L\UiBundle\Repository\MediaRepository;
+use c975L\UiBundle\Storage\PrivateDirectory;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -53,6 +54,8 @@ class MediaFilesHealthCheckProvider extends AbstractDeclaredFilesHealthCheckProv
                 // The role is what names a site graphic on its own screen, an admin-typed name being asked for block medias only
                 'label' => (string) ($media->getName() ?: $media->getRole()),
                 'editUrl' => $this->editUrl($this->controllerFor($media), $media->getId()),
+                // A document reserved to members is looked for where it was moved, rather than reported missing from public/
+                'directory' => PrivateDirectory::resolve($media) ?? self::PUBLIC_DIRECTORY,
             ];
         }
 

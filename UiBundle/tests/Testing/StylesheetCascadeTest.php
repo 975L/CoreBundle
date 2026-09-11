@@ -63,7 +63,7 @@ class StylesheetCascadeTest extends TestCase
     public function testFromFilesThrowsWhenTheStylesheetIsMissing(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('the sass has not been compiled');
+        $this->expectExceptionMessageIsOrContains('the sass has not been compiled');
 
         StylesheetCascade::fromFiles($this->directory . '/never-compiled.css');
     }

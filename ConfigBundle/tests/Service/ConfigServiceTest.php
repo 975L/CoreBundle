@@ -552,7 +552,7 @@ class ConfigServiceTest extends TestCase
         $this->declarationFiles[] = $file;
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage($file);
+        $this->expectExceptionMessageIsOrContains($file);
 
         $this->createService($this->createRepositoryIndexedBySlug($this->createConfig('site-name', 'My Site')))
             ->loadDefaultConfig($file);

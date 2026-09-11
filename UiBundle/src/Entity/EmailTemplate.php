@@ -52,7 +52,7 @@ class EmailTemplate implements \Stringable
     private array $attachments = [];
 
     #[ORM\OneToMany(mappedBy: 'emailTemplate', targetEntity: EmailBlock::class, cascade: ['persist'], orphanRemoval: true)]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     private Collection $blocks;
 
     public function __construct()

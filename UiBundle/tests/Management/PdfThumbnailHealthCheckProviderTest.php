@@ -113,6 +113,31 @@ class PdfThumbnailHealthCheckProviderTest extends TestCase
         $this->assertSame([], $this->createProvider([])->runChecks());
     }
 
+    // No thumbnail is made for a document reserved to members on purpose: its absence is no warning to act on
+    public function testADocumentReservedToMembersIsNotReportedForItsMissingThumbnail(): void
+    {
+        $media = new Media()->setFilename('tree.pdf')->setMembersOnly(true);
+
+        $mediaRepository = $this->createStub(MediaRepository::class);
+        $mediaRepository->method('findPdfs')->willReturn([$media]);
+
+        $environmentProbe = $this->createStub(EnvironmentProbe::class);
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturn('https://example.com');
+
+        $provider = new PdfThumbnailHealthCheckProvider(
+            $mediaRepository,
+            new PdfDocumentRegistry(),
+            $environmentProbe,
+            $configService,
+            $this->createStub(AdminUrlGeneratorInterface::class),
+            $this->createStub(TranslatorInterface::class),
+            $this->projectDir,
+        );
+
+        $this->assertSame([], $provider->runChecks());
+    }
+
     // The OK row is what lets a fixed media go back to green: results are kept per url and kind, so dropping it would leave the old warning standing forever
     public function testAPdfWithItsThumbnailStillGetsItsRow(): void
     {

@@ -310,7 +310,7 @@ class BlockRegistryPassTest extends TestCase
         ]);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('block.broken');
+        $this->expectExceptionMessageIsOrContains('block.broken');
 
         new BlockRegistryPass()->process($container);
     }

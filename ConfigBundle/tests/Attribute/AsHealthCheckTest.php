@@ -30,7 +30,7 @@ class AsHealthCheckTest extends TestCase
     public function testAnUnknownFrequencyIsRefused(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid health check frequency "daily"');
+        $this->expectExceptionMessageIsOrContains('Invalid health check frequency "daily"');
 
         new AsHealthCheck('daily');
     }

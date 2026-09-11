@@ -173,6 +173,22 @@ class VichImageResizeListenerTest extends TestCase
         $this->assertStringContainsString('<svg', (string) file_get_contents($svgPath));
     }
 
+    // A document reserved to members leaves public/ before anyone can fetch it from there, as a paid download does
+    public function testOnPostUploadMovesADocumentReservedToMembersOutOfPublic(): void
+    {
+        mkdir($this->projectDir . '/public/medias/site', 0777, true);
+        $pdfPath = $this->projectDir . '/public/medias/site/tree.pdf';
+        file_put_contents($pdfPath, '%PDF-1.4');
+
+        $media = new Media()->setFilename('medias/site/tree.pdf')->setMembersOnly(true);
+        $media->setFile(new File($pdfPath));
+
+        $this->createListener()->onPostUpload(new Event($media, $this->createMapping()));
+
+        $this->assertFileDoesNotExist($pdfPath);
+        $this->assertFileExists($this->projectDir . '/private/medias/site/tree.pdf');
+    }
+
     // The thumbnail holds the whole image, its longest side capped at getThumbnailSize(): what a grid shows in a square is settled in CSS, and a file cropped square here could never give the cut pixels back
     public function testOnPostUploadThumbnailsAMultiSizeImageWithoutCroppingIt(): void
     {

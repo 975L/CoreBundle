@@ -43,8 +43,8 @@ class FavoriteRepository extends ServiceEntityRepository
             ->select('f.ownerType AS ownerType, f.ownerId AS ownerId')
             ->andWhere('f.holder = :holder')
             ->setParameter('holder', $holder)
-            ->orderBy('f.createdAt', 'DESC')
-            ->addOrderBy('f.id', 'DESC')
+            ->orderBy('f.createdAt', \SortDirection::Descending)
+            ->addOrderBy('f.id', \SortDirection::Descending)
             ->getQuery()
             ->getArrayResult()
         ;

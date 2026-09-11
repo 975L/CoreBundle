@@ -125,11 +125,19 @@ class MediaUploadType extends AbstractType
 
         // Lets the admin give a PDF a readable name (e.g. "Rapport annuel") - UiMediaNamer slugifies it into the stored/physical filename instead of the default "block-document_download-{id}". Distinct from "label" (a display caption, not filesystem-safe) - kept out of the $flags['image'] block above since it has no meaning for those kinds.
         if ($flags['pdf']) {
-            $builder->add('name', TextType::class, [
-                'label' => 'label.file_name',
-                'help' => 'label.file_name_help',
-                'required' => false,
-            ]);
+            $builder
+                ->add('name', TextType::class, [
+                    'label' => 'label.file_name',
+                    'help' => 'label.file_name_help',
+                    'required' => false,
+                ])
+                // Takes the file out of public/, served to signed-in visitors only (see MediaController) - ignored on anything but a PDF, see Media::isMembersOnly()
+                ->add('membersOnly', CheckboxType::class, [
+                    'label' => 'label.members_only',
+                    'help' => 'label.members_only_help',
+                    'required' => false,
+                    'label_attr' => ['class' => 'checkbox-switch'],
+                ]);
         }
     }
 
