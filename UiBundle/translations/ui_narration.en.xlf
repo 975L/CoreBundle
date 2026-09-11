@@ -250,6 +250,10 @@
                 <source>narration.guided_step_ui_media_done</source>
                 <target>One picture, one row: what you have just written follows it into every page and every block already using it. The form also lists where it is used, so you know before deleting one. A picture that looks gone is usually just attached to a binned page: the gallery has a link showing those too.</target>
             </trans-unit>
+            <trans-unit id="T0AzoMP">
+                <source>narration.guided_step_ui_media_members_only</source>
+                <target>If this media is a PDF, you can keep it for signed-in members: tick this box and it leaves its public address, other visitors seeing a lock in place of its first page. On an image, the box changes nothing.</target>
+            </trans-unit>
             <trans-unit id="OK1vLdo">
                 <source>narration.guided_step_ui_media_open</source>
                 <target>The panel takes you to the media library. Every image of the site is here, whether it was uploaded from a page, from a block or among the site graphics.</target>

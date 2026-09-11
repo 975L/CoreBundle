@@ -2585,12 +2585,12 @@ and CJEU C-49/11 on the hyperlink). A file in the customer's mailbox is one.
 
 ## PDF thumbnails
 
-When a `.pdf` file is uploaded through VichUploader on **any entity** (no interface required), the bundle automatically generates a `.webp` thumbnail of the first page next to it (`document.pdf` → `document.webp` - the extension is replaced, not appended), via Ghostscript + Imagine/GD.
+When a `.pdf` file is uploaded through VichUploader on **any entity** (no interface required), the bundle automatically generates a `.webp` thumbnail of the first page next to it (`document.pdf` → `document.webp` - the extension is replaced whatever its case, not appended), via Ghostscript + Imagine/GD.
 
 - **Requires Ghostscript** (`gs`) installed on the server. If missing, the thumbnail generation silently fails — the PDF upload itself is unaffected.
 - **Requires `exec()`** to be enabled. On hosts where it's disabled, thumbnail generation is skipped the same way — the PDF upload itself is unaffected.
 - **Skipped for private files** — entities implementing `VichPrivateFileInterface` (e.g. a paid download in a shop) are not thumbnailed, since there's no public preview use case for them.
-- **Skipped for a document reserved to members** — a `Media` whose `membersOnly` box is ticked gets no thumbnail, and one left from before is removed: its first page is what the reservation is for (see [PDFs reserved to members](#pdfs-reserved-to-members)).
+- **Kept private for a document reserved to members** — a `Media` whose `membersOnly` box is ticked gets its thumbnail next to it under `private/`, never under `public/`, where its first page would be readable by anyone (see [PDFs reserved to members](#pdfs-reserved-to-members)). The listener runs at priority `-10`, after `VichImageResizeListener` has moved the PDF there.
 - **Thumbnail width** defaults to `400px`, or reuses `getImageWidth()` if the entity also implements `VichImageResizableInterface`.
 
 No configuration needed — handled by `VichPdfThumbnailListener`, auto-registered like the rest of the bundle's services.
@@ -2623,7 +2623,8 @@ Ticking **Signed-in members only** (`Media::$membersOnly`, offered beside **File
 
 - **Any signed-in visitor**, no role asked: a family site hands one shared account around. An anonymous one is refused, which the site's `main` firewall turns into its login form, bringing the visitor back once signed in - nothing to add to `access_control`.
 - **Link it with `media_url()`**, never `vich_uploader_asset()`, which names a file `public/` no longer holds - the `document_download` block already does. A public media answers 404 on that route, its one address being the web server's own.
-- **Ticked or unticked without a new upload**, `Listener\MediaMembersOnlyListener` moves the stored file across on `postFlush`, so a flush that throws leaves it where its row still says it is; an upload lands where the flag says on its own.
+- **Ticked or unticked without a new upload**, `Listener\MediaMembersOnlyListener` moves the stored file and its thumbnail across on `postFlush`, so a flush that throws leaves them where the row still says they are; an upload lands where the flag says on its own.
+- **Its thumbnail**, on `/media/{id}/thumbnail` (route `ui_media_thumbnail`, `MediaController::THUMBNAIL_ROUTE`): the `.webp` to a visitor `MediaVoter` lets through, `public/images/document-locked.svg` to anybody else, never refused - an `<img>` sent to the login form shows a broken picture. The lock is sent `no-store` with no `Last-Modified`, the same url answering with the thumbnail once signed in. Name it with `document_thumbnail_url()`, which the `document_download` block and the media library call: the public address of a public document's thumbnail, that route for a reserved one, `null` when there is none on disk. Only the disk is read, never the visitor, so a cached block stays right for everyone - keep `/media` out of `access_control`.
 - **A PDF only**: `Media::isMembersOnly()` ignores the flag on an image, whose `-thumb`/`-highres` siblings a move would leave behind in `public/`.
 - `Storage\PrivateDirectory::resolve()` is what every listener moving, deleting or thumbnailing a file asks, and where `MediaFilesHealthCheckProvider` looks the file up - a paid download (`VichPrivateFileInterface`) and a reserved media answering the same way.
 

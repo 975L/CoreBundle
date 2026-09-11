@@ -250,6 +250,10 @@
                 <source>narration.guided_step_ui_media_done</source>
                 <target>Une image, une seule fiche : ce que vous venez d'écrire la suit dans toutes les pages et tous les blocks qui l'utilisent déjà. La fiche liste aussi où elle sert, pour le savoir avant d'en supprimer une. Une image qui semble disparue n'est le plus souvent qu'attachée à une page en corbeille : la galerie a un lien pour afficher celles-là aussi.</target>
             </trans-unit>
+            <trans-unit id="T0AzoMP">
+                <source>narration.guided_step_ui_media_members_only</source>
+                <target>Si ce média est un PDF, vous pouvez le réserver aux membres connectés : cochez cette case et il quitte son adresse publique, les autres visiteurs voyant un cadenas à la place de sa première page. Sur une image, la case ne change rien.</target>
+            </trans-unit>
             <trans-unit id="OK1vLdo">
                 <source>narration.guided_step_ui_media_open</source>
                 <target>Le panneau vous emmène sur la bibliothèque de médias. Toutes les images du site sont là, qu'elles aient été téléversées depuis une page, depuis un block ou parmi les graphiques du site.</target>

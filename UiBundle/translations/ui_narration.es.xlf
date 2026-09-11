@@ -250,6 +250,10 @@
                 <source>narration.guided_step_ui_media_done</source>
                 <target>Una imagen, una sola ficha: lo que acaba de escribir la acompaña en todas las páginas y todos los bloques que ya la utilizan. La ficha también indica dónde se usa, para saberlo antes de eliminar alguna. Una imagen que parece desaparecida casi siempre solo está adjunta a una página en la papelera: la galería tiene un enlace para mostrar también esas.</target>
             </trans-unit>
+            <trans-unit id="T0AzoMP">
+                <source>narration.guided_step_ui_media_members_only</source>
+                <target>Si este medio es un PDF, puede reservarlo a los miembros conectados: marque esta casilla y deja su dirección pública, los demás visitantes ven un candado en lugar de su primera página. En una imagen, la casilla no cambia nada.</target>
+            </trans-unit>
             <trans-unit id="OK1vLdo">
                 <source>narration.guided_step_ui_media_open</source>
                 <target>El panel le lleva a la biblioteca de medios. Todas las imágenes del sitio están ahí, tanto si se subieron desde una página, desde un bloque o entre los gráficos del sitio.</target>

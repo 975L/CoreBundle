@@ -20,6 +20,7 @@ use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
+use c975L\UiBundle\Twig\DocumentExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
@@ -69,6 +70,7 @@ class MediaCrudController extends AbstractCrudController
         private readonly MediaRepository $mediaRepository,
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
+        private readonly DocumentExtension $documentExtension,
     ) {
     }
 
@@ -235,9 +237,9 @@ class MediaCrudController extends AbstractCrudController
                             return $originalUri;
                         }
 
-                        // No thumbnail is made for a document reserved to members, and its own address is not public/'s any more
+                        // A document reserved to members keeps its thumbnail next to it outside public/, reached through the route serving it to a signed-in visitor - the same answer the block gets
                         if ($media->isMembersOnly()) {
-                            return null;
+                            return $this->documentExtension->getThumbnailUrl($media);
                         }
 
                         $webpPath = VichPdfThumbnailListener::toWebpPath($originalUri);

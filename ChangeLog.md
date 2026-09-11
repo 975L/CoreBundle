@@ -1,5 +1,21 @@
 # ChangeLog
 
+## v1.29.3
+
+A reserved PDF shows members its thumbnail and others a lock
+
+### UiBundle
+
+- A PDF reserved to members gets its thumbnail next to it under `private/` (11/09/2026)
+- `MediaMembersOnlyListener` moves the thumbnail along with its PDF (11/09/2026)
+- `ui_media_thumbnail` route serves that thumbnail to members and `document-locked.svg` to anybody else (11/09/2026)
+- `document_thumbnail_url()` Twig function, used by the `document_download` block and the media library (11/09/2026)
+- `PdfThumbnailHealthCheckProvider` looks a reserved document's thumbnail up under `private/` (11/09/2026)
+- `VichPdfThumbnailListener::toWebpPath()` ignores the extension's case (11/09/2026)
+- The `ui-media` guided project gains a step on the members-only box (11/09/2026)
+- `BlockRemovalListener` skips uninitialized owner proxies instead of loading them (11/09/2026)
+- A reference to a deleted owner no longer aborts the flush (11/09/2026)
+
 ## v1.29.2
 
 A block group's link buttons sit together

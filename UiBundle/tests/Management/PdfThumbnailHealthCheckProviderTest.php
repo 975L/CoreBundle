@@ -19,6 +19,7 @@ use c975L\UiBundle\Management\PdfThumbnailHealthCheckProvider;
 use c975L\UiBundle\Registry\PdfDocumentRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -113,9 +114,20 @@ class PdfThumbnailHealthCheckProviderTest extends TestCase
         $this->assertSame([], $this->createProvider([])->runChecks());
     }
 
-    // No thumbnail is made for a document reserved to members on purpose: its absence is no warning to act on
-    public function testADocumentReservedToMembersIsNotReportedForItsMissingThumbnail(): void
+    // A document reserved to members has its thumbnail next to it under private/, read there rather than under public/ - where a leftover one would otherwise pass for it
+    /** @return array<string, array{string, string}> */
+    public static function reservedThumbnailProvider(): array
     {
+        return [
+            'kept under private/' => ['private', HealthCheckResult::STATUS_OK],
+            'left under public/' => ['public', HealthCheckResult::STATUS_WARNING],
+        ];
+    }
+
+    #[DataProvider('reservedThumbnailProvider')]
+    public function testADocumentReservedToMembersHasItsThumbnailLookedUpUnderPrivate(string $directory, string $status): void
+    {
+        new Filesystem()->dumpFile($this->projectDir . '/' . $directory . '/tree.webp', 'webp');
         $media = new Media()->setFilename('tree.pdf')->setMembersOnly(true);
 
         $mediaRepository = $this->createStub(MediaRepository::class);
@@ -135,7 +147,10 @@ class PdfThumbnailHealthCheckProviderTest extends TestCase
             $this->projectDir,
         );
 
-        $this->assertSame([], $provider->runChecks());
+        $rows = $provider->runChecks();
+
+        $this->assertCount(1, $rows);
+        $this->assertSame($status, $rows[0]['status']);
     }
 
     // The OK row is what lets a fixed media go back to green: results are kept per url and kind, so dropping it would leave the old warning standing forever

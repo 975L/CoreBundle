@@ -270,6 +270,10 @@
                 <source>description.guided_step_ui_media_done</source>
                 <target>Une image, une seule fiche : ce que vous venez d'écrire la suit dans toutes les pages et tous les blocks qui l'utilisent déjà. La fiche liste aussi où elle sert, pour savoir avant d'en supprimer une. Une image qui semble disparue n'est le plus souvent qu'attachée à une page en corbeille : la galerie a un lien pour afficher celles-là aussi.</target>
             </trans-unit>
+            <trans-unit id="wxQy_rS">
+                <source>description.guided_step_ui_media_members_only</source>
+                <target>Pour un PDF seulement : cochée, le document quitte son adresse publique et seuls les visiteurs connectés peuvent l'ouvrir, les autres voyant un cadenas à la place de sa miniature. Une image n'en tient pas compte.</target>
+            </trans-unit>
             <trans-unit id=".imAjIX">
                 <source>description.guided_step_ui_media_open</source>
                 <target>Toutes les images du site sont là, qu'elles aient été téléversées depuis une page, un block ou les graphiques du site.</target>
@@ -2430,6 +2434,10 @@
                 <source>label.guided_step_ui_media_done</source>
                 <target>Partout à la fois</target>
             </trans-unit>
+            <trans-unit id="FCIpZ_q">
+                <source>label.guided_step_ui_media_members_only</source>
+                <target>Réserver un PDF aux membres</target>
+            </trans-unit>
             <trans-unit id="r.hPN1d">
                 <source>label.guided_step_ui_media_open</source>
                 <target>Ouvrir la bibliothèque de médias</target>
@@ -2956,7 +2964,7 @@
             </trans-unit>
             <trans-unit id="uIxUFaH">
                 <source>label.members_only_help</source>
-                <target>Le fichier quitte son adresse publique : seuls les visiteurs connectés peuvent l'ouvrir, et aucune miniature n'en est tirée. Sans effet sur un autre fichier qu'un PDF.</target>
+                <target>Le fichier quitte son adresse publique : seuls les visiteurs connectés peuvent l'ouvrir et voir sa miniature, les autres voient un cadenas. Sans effet sur un autre fichier qu'un PDF.</target>
             </trans-unit>
             <trans-unit id="rfS8Ak_">
                 <source>label.mobile</source>

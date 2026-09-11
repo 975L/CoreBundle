@@ -270,6 +270,10 @@
                 <source>description.guided_step_ui_media_done</source>
                 <target>Una imagen, una sola ficha: lo que acaba de escribir la acompaña en todas las páginas y todos los blocks que ya la utilizan. La ficha también indica dónde se usa, para saberlo antes de eliminar alguna. Una imagen que parece desaparecida casi siempre solo está adjunta a una página en la papelera: la galería tiene un enlace para mostrar también esas.</target>
             </trans-unit>
+            <trans-unit id="wxQy_rS">
+                <source>description.guided_step_ui_media_members_only</source>
+                <target>Solo para un PDF: marcada, el documento deja su dirección pública y solo los visitantes conectados pueden abrirlo, los demás ven un candado en lugar de su miniatura. Una imagen no la tiene en cuenta.</target>
+            </trans-unit>
             <trans-unit id=".imAjIX">
                 <source>description.guided_step_ui_media_open</source>
                 <target>Todas las imágenes del sitio están aquí, tanto si se subieron desde una página, un block o los gráficos del sitio.</target>
@@ -2430,6 +2434,10 @@
                 <source>label.guided_step_ui_media_done</source>
                 <target>En todas partes a la vez</target>
             </trans-unit>
+            <trans-unit id="FCIpZ_q">
+                <source>label.guided_step_ui_media_members_only</source>
+                <target>Reservar un PDF a los miembros</target>
+            </trans-unit>
             <trans-unit id="r.hPN1d">
                 <source>label.guided_step_ui_media_open</source>
                 <target>Abrir la biblioteca de medios</target>
@@ -2956,7 +2964,7 @@
             </trans-unit>
             <trans-unit id="uIxUFaH">
                 <source>label.members_only_help</source>
-                <target>El archivo deja su dirección pública: solo los visitantes conectados pueden abrirlo y no se genera ninguna miniatura. Sin efecto en un archivo que no sea PDF.</target>
+                <target>El archivo deja su dirección pública: solo los visitantes conectados pueden abrirlo y ver su miniatura, los demás ven un candado. Sin efecto en un archivo que no sea PDF.</target>
             </trans-unit>
             <trans-unit id="rfS8Ak_">
                 <source>label.mobile</source>

@@ -50,7 +50,8 @@ class MediaMembersOnlyListenerTest extends TestCase
         return new Media()->setFilename($filename)->setMembersOnly($membersOnly);
     }
 
-    public function testTickingTheBoxTakesTheDocumentOutOfPublicAndDropsItsThumbnail(): void
+    // The thumbnail goes along, a member still seeing it through MediaController::thumbnail() while nobody else can read its first page
+    public function testTickingTheBoxTakesTheDocumentAndItsThumbnailOutOfPublic(): void
     {
         $this->put('public/medias/site/tree.pdf');
         $this->put('public/medias/site/tree.webp');
@@ -62,18 +63,35 @@ class MediaMembersOnlyListenerTest extends TestCase
         $this->assertFileDoesNotExist($this->projectDir . '/public/medias/site/tree.pdf');
         $this->assertFileDoesNotExist($this->projectDir . '/public/medias/site/tree.webp');
         $this->assertFileExists($this->projectDir . '/private/medias/site/tree.pdf');
+        $this->assertFileExists($this->projectDir . '/private/medias/site/tree.webp');
     }
 
-    public function testUntickingTheBoxBringsTheDocumentBackToPublic(): void
+    public function testUntickingTheBoxBringsTheDocumentAndItsThumbnailBackToPublic(): void
     {
         $this->put('private/medias/site/tree.pdf');
+        $this->put('private/medias/site/tree.webp');
 
         $listener = new MediaMembersOnlyListener($this->projectDir);
         $listener->preUpdate($this->createUpdateEventArgs($this->createMedia('medias/site/tree.pdf', false)));
         $listener->postFlush();
 
         $this->assertFileDoesNotExist($this->projectDir . '/private/medias/site/tree.pdf');
+        $this->assertFileDoesNotExist($this->projectDir . '/private/medias/site/tree.webp');
         $this->assertFileExists($this->projectDir . '/public/medias/site/tree.pdf');
+        $this->assertFileExists($this->projectDir . '/public/medias/site/tree.webp');
+    }
+
+    // A document with no thumbnail (Ghostscript missing on the host) moves all the same
+    public function testADocumentWithoutAThumbnailStillMoves(): void
+    {
+        $this->put('public/medias/site/tree.pdf');
+
+        $listener = new MediaMembersOnlyListener($this->projectDir);
+        $listener->preUpdate($this->createUpdateEventArgs($this->createMedia('medias/site/tree.pdf', true)));
+        $listener->postFlush();
+
+        $this->assertFileExists($this->projectDir . '/private/medias/site/tree.pdf');
+        $this->assertFileDoesNotExist($this->projectDir . '/private/medias/site/tree.webp');
     }
 
     // A flush that throws leaves the file where its row still says it is

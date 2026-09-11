@@ -17,7 +17,7 @@ use Doctrine\ORM\Events;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 
-// Moves a stored PDF between public/ and Media::MEMBERS_ONLY_DIRECTORY when its "members only" box is ticked or unticked without a new upload - an upload lands where the flag says on its own (see VichImageResizeListener), a file already on disk has nobody else to take it across. Deferred to postFlush like MediaFileRemoveListener, so a flush that throws leaves the file where its row still says it is
+// Moves a stored PDF, and its thumbnail with it, between public/ and Media::MEMBERS_ONLY_DIRECTORY when its "members only" box is ticked or unticked without a new upload - an upload lands where the flag says on its own (see VichImageResizeListener), a file already on disk has nobody else to take it across. Deferred to postFlush like MediaFileRemoveListener, so a flush that throws leaves the file where its row still says it is
 #[AsDoctrineListener(event: Events::preUpdate)]
 #[AsDoctrineListener(event: Events::postFlush)]
 class MediaMembersOnlyListener
@@ -26,9 +26,6 @@ class MediaMembersOnlyListener
 
     /** @var list<array{from: string, to: string}> */
     private array $pendingMoves = [];
-
-    /** @var list<string> */
-    private array $pendingRemovals = [];
 
     private readonly Filesystem $filesystem;
 
@@ -47,16 +44,12 @@ class MediaMembersOnlyListener
         }
 
         $filename = (string) $media->getFilename();
-        $membersOnly = $media->isMembersOnly();
+        $from = $media->isMembersOnly() ? self::PUBLIC_DIRECTORY : Media::MEMBERS_ONLY_DIRECTORY;
+        $to = $media->isMembersOnly() ? Media::MEMBERS_ONLY_DIRECTORY : self::PUBLIC_DIRECTORY;
 
-        $this->pendingMoves[] = [
-            'from' => $this->path($membersOnly ? self::PUBLIC_DIRECTORY : Media::MEMBERS_ONLY_DIRECTORY, $filename),
-            'to' => $this->path($membersOnly ? Media::MEMBERS_ONLY_DIRECTORY : self::PUBLIC_DIRECTORY, $filename),
-        ];
-
-        // The first page stays readable by anyone as long as its thumbnail does, and none is made for a document reserved to members (see VichPdfThumbnailListener)
-        if ($membersOnly) {
-            $this->pendingRemovals[] = $this->path(self::PUBLIC_DIRECTORY, VichPdfThumbnailListener::toWebpPath($filename));
+        // The thumbnail goes along: left under public/, its first page would stay readable by anyone, and a member still sees it through MediaController::thumbnail()
+        foreach ([$filename, VichPdfThumbnailListener::toWebpPath($filename)] as $file) {
+            $this->pendingMoves[] = ['from' => $this->path($from, $file), 'to' => $this->path($to, $file)];
         }
     }
 
@@ -69,10 +62,7 @@ class MediaMembersOnlyListener
             }
         }
 
-        $this->filesystem->remove($this->pendingRemovals);
-
         $this->pendingMoves = [];
-        $this->pendingRemovals = [];
     }
 
     private function path(string $directory, string $filename): string

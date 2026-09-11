@@ -54,6 +54,25 @@ class BlockRemovalListenerTest extends TestCase
         new BlockRemovalListener()->preFlush(new PreFlushEventArgs($em));
     }
 
+    // A reference Doctrine never loaded must stay unloaded: loading it throws when its row is gone, and that exception aborts the whole flush
+    public function testPreFlushSkipsOwnersThatWereNeverLoaded(): void
+    {
+        $owner = $this->createMock(HasBlocksTraitStub::class);
+        $owner->expects($this->never())->method('popPendingBlockRemovals');
+
+        $unitOfWork = $this->createStub(UnitOfWork::class);
+        $unitOfWork->method('getIdentityMap')->willReturn([
+            HasBlocksTraitStub::class => [1 => $owner],
+        ]);
+        $unitOfWork->method('isUninitializedObject')->willReturn(true);
+
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->method('getUnitOfWork')->willReturn($unitOfWork);
+        $em->expects($this->never())->method('remove');
+
+        new BlockRemovalListener()->preFlush(new PreFlushEventArgs($em));
+    }
+
     public function testPreFlushRemovesNothingWhenNoBlockIsPending(): void
     {
         $owner = new HasBlocksTraitStub();

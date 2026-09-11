@@ -158,6 +158,13 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '#Media_credits',
                 ],
                 [
+                    // Drawn on every media's form, honoured on a PDF alone (see Media::isMembersOnly()) - the step says so rather than let an image's editor tick it for nothing
+                    'label' => 'label.guided_step_ui_media_members_only',
+                    'description' => 'description.guided_step_ui_media_members_only',
+                    'narration' => 'narration.guided_step_ui_media_members_only',
+                    'highlight' => '#Media_membersOnly',
+                ],
+                [
                     'label' => 'label.guided_step_ui_media_save',
                     'narration' => 'narration.guided_step_ui_media_save',
                     'highlight' => '.action-saveAndReturn',

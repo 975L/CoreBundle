@@ -14,6 +14,7 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Mapping\PropertyMapping;
@@ -30,9 +31,7 @@ class VichPdfThumbnailListenerTest extends TestCase
 
     protected function tearDown(): void
     {
-        array_map(unlink(...), glob($this->projectDir . '/public/*'));
-        rmdir($this->projectDir . '/public');
-        rmdir($this->projectDir);
+        new Filesystem()->remove($this->projectDir);
     }
 
     private function createMapping(): PropertyMapping
@@ -41,6 +40,13 @@ class VichPdfThumbnailListenerTest extends TestCase
         $mapping->setMapping(['upload_destination' => $this->projectDir . '/public', 'uri_prefix' => '']);
 
         return $mapping;
+    }
+
+    // Regression: the namer keeps the extension as the browser sends it, and a case-sensitive replace left a ".PDF" thumbnail path equal to the document's own
+    public function testToWebpPathIgnoresTheCaseOfTheExtension(): void
+    {
+        $this->assertSame('medias/Rapport.webp', VichPdfThumbnailListener::toWebpPath('medias/Rapport.PDF'));
+        $this->assertSame('medias/pdf.files/doc.webp', VichPdfThumbnailListener::toWebpPath('medias/pdf.files/doc.pdf'));
     }
 
     // Regression: exec() is disabled on managed hosts, which used to crash the whole import
@@ -110,10 +116,11 @@ class VichPdfThumbnailListenerTest extends TestCase
         $this->assertFileDoesNotExist($this->projectDir . '/public/doc.webp');
     }
 
-    // Not even a thumbnail of a document reserved to members: its first page is what the reservation is for. The imported thumbnail is what would otherwise be copied with no Ghostscript needed
-    public function testOnPostUploadMakesNoThumbnailForADocumentReservedToMembers(): void
+    // A document reserved to members has already left public/ when this runs (VichImageResizeListener goes first): its thumbnail is made next to it, never under public/ where its first page would be readable by anyone. The imported thumbnail stands for the generation, with no Ghostscript needed
+    public function testOnPostUploadKeepsTheThumbnailOfADocumentReservedToMembersNextToIt(): void
     {
-        $pdfPath = $this->projectDir . '/public/doc.pdf';
+        mkdir($this->projectDir . '/private', 0777, true);
+        $pdfPath = $this->projectDir . '/private/doc.pdf';
         file_put_contents($pdfPath, '%PDF-1.4');
 
         $importedThumbnailPath = $this->projectDir . '/imported-thumbnail.webp';
@@ -131,8 +138,7 @@ class VichPdfThumbnailListenerTest extends TestCase
         $listener = new VichPdfThumbnailListener($parameterBag);
         $listener->onPostUpload(new Event($media, $this->createMapping()));
 
+        $this->assertFileExists($this->projectDir . '/private/doc.webp');
         $this->assertFileDoesNotExist($this->projectDir . '/public/doc.webp');
-
-        unlink($importedThumbnailPath);
     }
 }

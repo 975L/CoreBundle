@@ -270,6 +270,10 @@
                 <source>description.guided_step_ui_media_done</source>
                 <target>One picture, one row: what you have just written follows it into every page and every block already using it. The form also lists where it is used, so you know before deleting one. A picture that looks gone is usually just attached to a binned page: the gallery has a link showing those too.</target>
             </trans-unit>
+            <trans-unit id="wxQy_rS">
+                <source>description.guided_step_ui_media_members_only</source>
+                <target>For a PDF only: ticked, the document leaves its public address and only signed-in visitors can open it, anybody else seeing a lock in place of its thumbnail. An image ignores it.</target>
+            </trans-unit>
             <trans-unit id=".imAjIX">
                 <source>description.guided_step_ui_media_open</source>
                 <target>Every image of the site is here, whether it was uploaded from a page, a block or the site graphics.</target>
@@ -2430,6 +2434,10 @@
                 <source>label.guided_step_ui_media_done</source>
                 <target>Everywhere at once</target>
             </trans-unit>
+            <trans-unit id="FCIpZ_q">
+                <source>label.guided_step_ui_media_members_only</source>
+                <target>Reserve a PDF to members</target>
+            </trans-unit>
             <trans-unit id="r.hPN1d">
                 <source>label.guided_step_ui_media_open</source>
                 <target>Open the media library</target>
@@ -2956,7 +2964,7 @@
             </trans-unit>
             <trans-unit id="uIxUFaH">
                 <source>label.members_only_help</source>
-                <target>The file leaves its public address: only signed-in visitors can open it, and no thumbnail is made of it. No effect on anything but a PDF.</target>
+                <target>The file leaves its public address: only signed-in visitors can open it and see its thumbnail, anybody else sees a lock. No effect on anything but a PDF.</target>
             </trans-unit>
             <trans-unit id="rfS8Ak_">
                 <source>label.mobile</source>

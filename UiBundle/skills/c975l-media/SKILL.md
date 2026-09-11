@@ -116,8 +116,12 @@ the login form by the site's `main` firewall and brought back once signed in.
   one. `vich_uploader_asset()` names a file `public/` no longer holds.
 - **A PDF only** — `Media::isMembersOnly()` ignores the flag on an image, whose `-thumb`/`-highres`
   siblings a move would leave behind.
-- Ticked or unticked without a new upload, `Listener\MediaMembersOnlyListener` moves the stored file on
-  `postFlush`. No thumbnail is made of such a document, and a leftover one is removed.
+- Ticked or unticked without a new upload, `Listener\MediaMembersOnlyListener` moves the stored file and
+  its thumbnail on `postFlush`. The thumbnail is kept next to the PDF under `private/`.
+- **Show its thumbnail with `document_thumbnail_url()`**, never a path of your own: for a reserved document
+  it names `ui_media_thumbnail` (`/media/{id}/thumbnail`), which answers a member with the `.webp` and
+  anybody else with a lock (`no-store`). The choice is the route's, so a cached block stays right for every
+  visitor — do not branch on `is_granted()` in a cached template, and keep `/media` out of `access_control`.
 - `Storage\PrivateDirectory::resolve()` answers where a file lives for a `VichPrivateFileInterface` entity
   and a reserved `Media` alike — ask it rather than testing either case yourself.
 

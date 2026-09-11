@@ -18,6 +18,7 @@ use c975L\UiBundle\Registry\MediaUsageRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
 use c975L\UiBundle\Service\ImageDimensionsReader;
 use c975L\UiBundle\Service\MediaDimensionsFiller;
+use c975L\UiBundle\Twig\DocumentExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\EntityCollection;
@@ -28,14 +29,16 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MediaCrudControllerTest extends TestCase
 {
     use ControllerContainerTestTrait;
 
-    private function createController(string $projectDir = '/tmp', bool $mayEditSiteGraphics = true, ?MediaUsageRegistry $mediaUsageRegistry = null): MediaCrudController
+    private function createController(string $projectDir = '/tmp', bool $mayEditSiteGraphics = true, ?MediaUsageRegistry $mediaUsageRegistry = null, ?UrlGeneratorInterface $urlGenerator = null): MediaCrudController
     {
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
@@ -61,7 +64,8 @@ class MediaCrudControllerTest extends TestCase
             $security,
             $mediaUsageRegistry ?? new MediaUsageRegistry(),
             $this->createStub(MediaRepository::class),
-            $projectDir
+            $projectDir,
+            new DocumentExtension($projectDir, $urlGenerator ?? $this->createStub(UrlGeneratorInterface::class), new Packages()),
         );
     }
 
@@ -251,12 +255,26 @@ class MediaCrudControllerTest extends TestCase
         );
     }
 
-    // No thumbnail is made for a document reserved to members, and its own address is not public/'s any more
-    public function testFileFieldImageUriIsNullForADocumentReservedToMembers(): void
+    // A document reserved to members keeps its thumbnail under private/, previewed through the route serving it to a member - and nothing at all while none is on disk
+    public function testFileFieldImageUriGoesThroughTheThumbnailRouteForADocumentReservedToMembers(): void
     {
-        $imageUri = $this->fileFieldOption('image_uri', $this->createController());
+        $projectDir = sys_get_temp_dir() . '/' . uniqid('ui-media-crud-test-');
+        $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('/media/34/thumbnail');
+        $imageUri = $this->fileFieldOption('image_uri', $this->createController($projectDir, urlGenerator: $urlGenerator));
 
-        $this->assertNull($imageUri(new Media()->setMimeType('application/pdf')->setFilename('documents/report.pdf')->setMembersOnly(true), 'documents/report.pdf'));
+        $media = new Media()->setMimeType('application/pdf')->setFilename('documents/report.pdf')->setMembersOnly(true);
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, 34);
+
+        try {
+            $this->assertNull($imageUri($media, 'documents/report.pdf'));
+
+            new Filesystem()->dumpFile($projectDir . '/' . Media::MEMBERS_ONLY_DIRECTORY . '/documents/report.webp', '');
+
+            $this->assertSame('/media/34/thumbnail', $imageUri($media, 'documents/report.pdf'));
+        } finally {
+            new Filesystem()->remove($projectDir);
+        }
     }
 
     // public/ no longer holds a document reserved to members: the screen links it through the route a member opens it from

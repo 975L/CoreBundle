@@ -85,4 +85,46 @@ class MediaControllerTest extends TestCase
 
         $this->createController(true)->open($this->createMedia(true));
     }
+
+    // The thumbnail kept next to the document, to who may open it
+    public function testASignedInVisitorSeesTheThumbnail(): void
+    {
+        file_put_contents($this->projectDir . '/private/medias/site/tree.webp', 'webp');
+
+        $response = $this->createController(true)->thumbnail($this->createMedia(true));
+
+        $this->assertInstanceOf(BinaryFileResponse::class, $response);
+        $this->assertSame($this->projectDir . '/private/medias/site/tree.webp', $response->getFile()->getPathname());
+        $this->assertTrue($response->headers->hasCacheControlDirective('private'));
+    }
+
+    // Anybody else gets the lock rather than a refusal - an <img> sent to the login form shows a broken picture - and the lock is never kept, the same url answering with the thumbnail once signed in
+    public function testAVisitorWhoIsNotSignedInSeesALock(): void
+    {
+        file_put_contents($this->projectDir . '/private/medias/site/tree.webp', 'webp');
+
+        $response = $this->createController(false)->thumbnail($this->createMedia(true));
+
+        $this->assertInstanceOf(BinaryFileResponse::class, $response);
+        $this->assertSame('image/svg+xml', $response->headers->get('Content-Type'));
+        $this->assertStringEndsWith('document-locked.svg', $response->getFile()->getPathname());
+        $this->assertFileExists($response->getFile()->getPathname());
+        $this->assertTrue($response->headers->hasCacheControlDirective('no-store'));
+        $this->assertNull($response->getLastModified());
+    }
+
+    // A public document's thumbnail keeps its public address
+    public function testAPublicMediaHasNoThumbnailHere(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->createController(true)->thumbnail($this->createMedia(false));
+    }
+
+    public function testAThumbnailMissingFromDiskIsNotFound(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->createController(true)->thumbnail($this->createMedia(true));
+    }
 }

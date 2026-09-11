@@ -22,13 +22,19 @@ class BlockRemovalListener
     public function preFlush(PreFlushEventArgs $args): void
     {
         $em = $args->getObjectManager();
+        $unitOfWork = $em->getUnitOfWork();
 
-        foreach ($em->getUnitOfWork()->getIdentityMap() as $className => $entities) {
+        foreach ($unitOfWork->getIdentityMap() as $className => $entities) {
             if (!is_a($className, HasBlocksInterface::class, true)) {
                 continue;
             }
 
             foreach ($entities as $entity) {
+                // A never-loaded owner has no pending removal, and loading it throws when its row is gone, aborting the whole flush
+                if ($unitOfWork->isUninitializedObject($entity)) {
+                    continue;
+                }
+
                 foreach ($entity->popPendingBlockRemovals() as $block) {
                     $em->remove($block);
                 }

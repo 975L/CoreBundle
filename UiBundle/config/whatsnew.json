@@ -3,6 +3,26 @@
         "date": "2026-09-11",
         "description": [
             {
+                "en": "A PDF reserved to signed-in members now shows them its first page on its download card, and a lock to everyone else.",
+                "fr": "Un PDF réservé aux membres connectés leur montre désormais sa première page sur sa carte de téléchargement, et un cadenas à tous les autres.",
+                "es": "Un PDF reservado a los miembros conectados les muestra ahora su primera página en su tarjeta de descarga, y un candado a todos los demás."
+            },
+            {
+                "en": "A PDF whose name ends in capitals (.PDF) no longer has its file replaced by its preview image.",
+                "fr": "Un PDF dont le nom se termine en majuscules (.PDF) n'est plus remplacé par son image d'aperçu.",
+                "es": "Un PDF cuyo nombre termina en mayúsculas (.PDF) ya no se sustituye por su imagen de vista previa."
+            },
+            {
+                "en": "The guided project on the media library now explains the box that reserves a PDF to signed-in members.",
+                "fr": "Le projet guidé de la bibliothèque de médias explique désormais la case qui réserve un PDF aux membres connectés.",
+                "es": "El proyecto guiado de la biblioteca de medios explica ahora la casilla que reserva un PDF a los miembros conectados."
+            },
+            {
+                "en": "Saving in the back office no longer fails when the content being saved still refers to an item that has since been deleted.",
+                "fr": "L'enregistrement dans le back-office n'échoue plus lorsque le contenu enregistré fait encore référence à un élément supprimé depuis.",
+                "es": "Guardar en el back office ya no falla cuando el contenido guardado sigue haciendo referencia a un elemento eliminado desde entonces."
+            },
+            {
                 "en": "A link inside a page now follows another page the moment it is translated or its translation removed, instead of pointing at its former language until the site's cache is emptied.",
                 "fr": "Un lien à l'intérieur d'une page suit désormais une autre page dès qu'elle est traduite ou que sa traduction est retirée, au lieu de pointer vers son ancienne langue jusqu'au vidage du cache du site.",
                 "es": "Un enlace dentro de una página sigue ahora a otra página en cuanto se traduce o se retira su traducción, en lugar de apuntar a su idioma anterior hasta que se vacía la caché del sitio."

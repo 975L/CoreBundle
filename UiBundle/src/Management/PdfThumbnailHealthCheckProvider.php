@@ -19,6 +19,7 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use c975L\UiBundle\Registry\PdfDocumentRegistry;
 use c975L\UiBundle\Repository\MediaRepository;
+use c975L\UiBundle\Storage\PrivateDirectory;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -71,16 +72,16 @@ class PdfThumbnailHealthCheckProvider implements HealthCheckExhaustiveInterface
         foreach ($medias as $media) {
             $filename = (string) $media->getFilename();
 
-            // A row with no filename is a fixture or a placeholder media, never a document a visitor can reach - and a document reserved to members is given no thumbnail on purpose (see VichPdfThumbnailListener)
-            if ('' === $filename || $media->isMembersOnly()) {
+            // A row with no filename is a fixture or a placeholder media, never a document a visitor can reach
+            if ('' === $filename) {
                 continue;
             }
 
-            // The very path DocumentExtension looks for when rendering the block, through the listener's own method - anything else here would report on a file the site never asks for
+            // The very path DocumentExtension looks for when rendering the block, through the listener's own method - anything else here would report on a file the site never asks for. Under private/ for a document reserved to members, whose thumbnail is kept next to it
             $thumbnail = VichPdfThumbnailListener::toWebpPath($filename);
 
             // The OK row is what lets a fixed media go back to green: results are kept per url and kind, so dropping it would leave the previous warning standing for good
-            if (file_exists($this->projectDir . '/public/' . $thumbnail)) {
+            if (file_exists($this->projectDir . '/' . (PrivateDirectory::resolve($media) ?? 'public') . '/' . $thumbnail)) {
                 $rows[] = $this->row($media, $siteUrl, HealthCheckResult::STATUS_OK, 'label.health_check_pdf_thumbnail_ok');
 
                 continue;

@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Listener;
 
 use c975L\UiBundle\Contract\VichImageResizableInterface;
+use c975L\UiBundle\Contract\VichPrivateFileInterface;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Storage\PrivateDirectory;
 use Imagine\Gd\Imagine;
@@ -20,17 +21,18 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Filesystem\Filesystem;
 use Vich\UploaderBundle\Event\Event;
 
-#[AsEventListener(event: 'vich_uploader.post_upload', method: 'onPostUpload')]
+// After VichImageResizeListener (priority 0), which takes a document reserved to members out of public/ first: the PDF is then read where it ended up, and its thumbnail written next to it instead of being left behind under public/
+#[AsEventListener(event: 'vich_uploader.post_upload', method: 'onPostUpload', priority: -10)]
 class VichPdfThumbnailListener
 {
     private const int THUMBNAIL_WIDTH = 400;
 
     private readonly Filesystem $filesystem;
 
-    // Single source of truth for the pdf -> webp naming convention this listener writes to - DocumentExtension::getThumbnailPath() reads it back through this same method, so the two never drift apart
+    // Single source of truth for the pdf -> webp naming convention this listener writes to - DocumentExtension reads it back through this same method, so the two never drift apart. Case-insensitive and anchored, a scan uploaded as ".PDF" otherwise getting its thumbnail written over itself
     public static function toWebpPath(string $pdfPath): string
     {
-        return str_replace('.pdf', '.webp', $pdfPath);
+        return (string) preg_replace('/\.pdf$/i', '.webp', $pdfPath);
     }
 
     public function __construct(
@@ -43,8 +45,8 @@ class VichPdfThumbnailListener
     {
         $entity = $event->getObject();
 
-        // No thumbnail for private files: a plain download link (e.g. ShopBundle), or a document reserved to members whose first page nobody else is meant to read
-        if (null !== PrivateDirectory::resolve($entity)) {
+        // No thumbnail for a private download (e.g. ShopBundle's paid files), which has no preview to show. A document reserved to members does get one, kept next to it outside public/ and only ever handed to who may open the document (see MediaController::thumbnail())
+        if ($entity instanceof VichPrivateFileInterface) {
             return;
         }
 
@@ -58,7 +60,7 @@ class VichPdfThumbnailListener
 
         $mapping = $event->getMapping();
         $filename = $mapping->getFileName($entity);
-        $pdfPath = $this->parameterBag->get('kernel.project_dir') . '/public/' . $filename;
+        $pdfPath = $this->parameterBag->get('kernel.project_dir') . '/' . (PrivateDirectory::resolve($entity) ?? 'public') . '/' . $filename;
 
         if (!$this->filesystem->exists($pdfPath)) {
             return;
