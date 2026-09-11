@@ -1,0 +1,14 @@
+{# The language a row is being written in. Nothing at all on a site declaring a single one, which is every c975L site until it says otherwise (see ContentLocaleScreen) #}
+{% if content_locales|default([]) is not empty %}
+    <ul class="nav nav-pills mb-3" data-content-locales>
+        {# Each language named in its own, the way the back office's own language menu names them #}
+        <li class="nav-item">
+            <a class="nav-link{{ content_locale is null ? ' active' : '' }}" href="{{ content_urls[''] }}">{{ content_default_locale|language_name }}</a>
+        </li>
+        {% for locale in content_locales %}
+            <li class="nav-item">
+                <a class="nav-link{{ locale == content_locale ? ' active' : '' }}" href="{{ content_urls[locale] }}">{{ locale|language_name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

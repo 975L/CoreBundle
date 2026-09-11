@@ -67,8 +67,8 @@ class LinkableRouteRegistry
         $this->routes = [];
         foreach ($this->providers as $provider) {
             foreach ($provider->getLinkableRoutes() as $key => $entry) {
-                // Filled in once here so every consumer reads the same shape, the common case being a key that is itself a route name with nothing to fill (see LinkableRouteProviderInterface)
-                $this->routes[$key] = $entry + ['route' => $key, 'params' => [], 'translation_domain' => false];
+                // Filled in once here so every consumer reads the same shape, the common case being a key that is itself a route name with nothing to fill (see LinkableRouteProviderInterface). "locales" at null rather than at the site's own languages: it says the provider did not answer, which is not the same as answering "every one of them" - and only the provider knows whether its route has a localised twin at all
+                $this->routes[$key] = $entry + ['route' => $key, 'params' => [], 'translation_domain' => false, 'locales' => null];
             }
         }
 

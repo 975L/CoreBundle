@@ -222,9 +222,13 @@
                 <source>description.guided_step_ui_form_place</source>
                 <target>Añada un bloque de formulario a una página y elija el que acaba de crear.</target>
             </trans-unit>
+            <trans-unit id="ImmGgBO">
+                <source>description.guided_step_ui_form_reopen</source>
+                <target>Al guardar ha vuelto a la lista. Vuelva a abrir el formulario: los demás idiomas se escriben desde su pantalla de edición.</target>
+            </trans-unit>
             <trans-unit id="9zih8su">
                 <source>description.guided_step_ui_form_translate</source>
-                <target>Vuelva a abrir el formulario: en un sitio que ofrece varios idiomas, hay un selector justo encima. Elija uno y escriba en él las etiquetas y los textos de ayuda; los campos se componen una sola vez, en el idioma en que se escribió el formulario.</target>
+                <target>Elija un idioma en las pestañas de la parte superior del formulario y escriba en él las etiquetas y los textos de ayuda; los campos se componen una sola vez, en el idioma en que se escribió el formulario.</target>
             </trans-unit>
             <trans-unit id="UUhHZlk">
                 <source>description.guided_step_ui_legal_model_apply</source>
@@ -2373,6 +2377,10 @@
             <trans-unit id="SDXqkqS">
                 <source>label.guided_step_ui_form_place</source>
                 <target>Colocarlo en una página</target>
+            </trans-unit>
+            <trans-unit id="9lv27oy">
+                <source>label.guided_step_ui_form_reopen</source>
+                <target>Vuelva a abrirlo para los otros idiomas</target>
             </trans-unit>
             <trans-unit id="GAmp352">
                 <source>label.guided_step_ui_form_save</source>

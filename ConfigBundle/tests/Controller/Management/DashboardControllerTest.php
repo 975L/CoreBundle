@@ -148,6 +148,23 @@ class DashboardControllerTest extends TestCase
         );
     }
 
+    // The back office's own floor, read by LocaleListener and MaintenanceListener rather than spelt again in each
+    public function testTheDashboardPathItselfIsAManagementPath(): void
+    {
+        $this->assertSame('/management', DashboardController::ROUTE_PATH);
+        $this->assertTrue(DashboardController::isManagementPath('/management'));
+        $this->assertTrue(DashboardController::isManagementPath('/management/config'));
+    }
+
+    // The frontier the constant alone does not draw: a front route starting with the same string is no part of the back office, and would otherwise answer in its language and stay served while the site is down
+    public function testAFrontRouteMerelyStartingWithTheSameStringIsNotOne(): void
+    {
+        $this->assertFalse(DashboardController::isManagementPath('/management-de-projet'));
+        $this->assertFalse(DashboardController::isManagementPath('/managementary'));
+        $this->assertFalse(DashboardController::isManagementPath('/pages/management'));
+        $this->assertFalse(DashboardController::isManagementPath('/'));
+    }
+
     // The no-regression contract: a site that has not declared several languages keeps the back office it always had
     public function testASiteWithOneLocaleShowsNoLanguageMenu(): void
     {

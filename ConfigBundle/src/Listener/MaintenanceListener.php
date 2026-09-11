@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Listener;
 
+use c975L\ConfigBundle\Controller\Management\DashboardController;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -71,7 +72,7 @@ class MaintenanceListener
         $path = $request->getPathInfo();
 
         // /management and /login stay reachable so an admin can always log in and lift maintenance
-        if (str_starts_with($path, '/management') || str_starts_with($path, '/login')) {
+        if (DashboardController::isManagementPath($path) || str_starts_with($path, '/login')) {
             return true;
         }
 

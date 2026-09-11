@@ -51,6 +51,43 @@ class BlockFocusUrlTest extends TestCase
         $this->assertSame('/management?focusBlock=7', $url);
     }
 
+    // The extra query parameters the owning bundle adds to its own edit screen, the language a page is read in among them
+    public function testBuildCarriesTheExtraParametersTheOwningBundleNames(): void
+    {
+        $urlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);
+        $urlGenerator->method('unsetAll')->willReturnSelf();
+        $urlGenerator->method('setController')->willReturnSelf();
+        $urlGenerator->method('setAction')->willReturnSelf();
+        $urlGenerator->method('setEntityId')->willReturnSelf();
+
+        $set = [];
+        $urlGenerator->expects($this->exactly(2))->method('set')->willReturnCallback(function (string $name, mixed $value) use ($urlGenerator, &$set) {
+            $set[$name] = $value;
+
+            return $urlGenerator;
+        });
+        $urlGenerator->method('generateUrl')->willReturn('/management?contenu=en&focusBlock=7');
+
+        $url = BlockFocusUrl::build($urlGenerator, 'App\\Controller\\PageCrudController', 42, $this->block(7), ['contenu' => 'en']);
+
+        $this->assertSame(['focusBlock' => 7, 'contenu' => 'en'], $set);
+        $this->assertSame('/management?contenu=en&focusBlock=7', $url);
+    }
+
+    // Nothing given, nothing added: the signature grew without the calls that predate it changing
+    public function testBuildAddsNothingWhenNoExtraParameterIsGiven(): void
+    {
+        $urlGenerator = $this->createMock(AdminUrlGeneratorInterface::class);
+        $urlGenerator->method('unsetAll')->willReturnSelf();
+        $urlGenerator->method('setController')->willReturnSelf();
+        $urlGenerator->method('setAction')->willReturnSelf();
+        $urlGenerator->method('setEntityId')->willReturnSelf();
+        $urlGenerator->expects($this->never())->method('set');
+        $urlGenerator->method('generateUrl')->willReturn('/management?crudAction=edit');
+
+        $this->assertSame('/management?crudAction=edit', BlockFocusUrl::build($urlGenerator, 'App\\Controller\\PageCrudController', 42, null, []));
+    }
+
     // A Block whose id is only ever set by Doctrine
     private function block(int $id): Block
     {

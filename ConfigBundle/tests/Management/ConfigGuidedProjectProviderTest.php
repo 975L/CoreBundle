@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 
 use c975L\ConfigBundle\Management\ConfigGuidedProjectProvider;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use PHPUnit\Framework\TestCase;
@@ -44,30 +45,84 @@ class ConfigGuidedProjectProviderTest extends TestCase
         return $generator;
     }
 
-    private function createProvider(array &$routes = []): ConfigGuidedProjectProvider
+    // Multilingual unless told otherwise, so every step the provider can walk is there for the assertions below to read
+    private function createProvider(array &$routes = [], bool $multilingual = true): ConfigGuidedProjectProvider
     {
         // Answers each role key with itself, so a project's own gate is readable back in the assertions
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnArgument(0);
 
-        return new ConfigGuidedProjectProvider($this->createAdminUrlGenerator(), $configService, $this->createUrlGenerator($routes));
+        return new ConfigGuidedProjectProvider($this->createAdminUrlGenerator(), $configService, $this->createUrlGenerator($routes), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'));
     }
 
-    // The "Traduire" action is drawn on one entry of one drawer (ConfigTranslator::TRANSLATABLE), so a step highlighting it lights nothing up wherever the visitor walked - which is what a guided tour must never do
-    public function testTheSettingsProjectWalksNoTranslateStep(): void
+    // The language tabs of the edit screen, and never the "Traduire" action of a drawer entry (ConfigTranslator::TRANSLATABLE), which is drawn on one entry of one drawer and would light nothing up wherever the visitor walked
+    public function testTheSettingsProjectSaysHowASettingIsWrittenInAnotherLanguage(): void
     {
-        $this->assertNotContains('label.guided_step_config_settings_translate', $this->settingsStepLabels());
+        $this->assertContains('label.guided_step_config_settings_translate', $this->settingsStepLabels());
+        $this->assertSame('[data-content-locales]', $this->settingsStep('label.guided_step_config_settings_translate')['highlight']);
+    }
+
+    // Read from the edit screen the value was just written on, so the tabs it points at are on the screen the visitor is standing on
+    public function testTheTranslateStepIsWalkedBeforeTheSettingIsSaved(): void
+    {
+        $labels = $this->settingsStepLabels();
+
+        $this->assertLessThan(
+            array_search('label.guided_step_config_settings_save', $labels, true),
+            array_search('label.guided_step_config_settings_translate', $labels, true),
+        );
+    }
+
+    // A tab reloads the screen and nothing warns of what is left unsaved, so the value just typed is saved on the button keeping the form open right before a language is picked
+    public function testTheSettingIsSavedWithoutLeavingBeforeALanguageIsPicked(): void
+    {
+        $this->assertSame('.action-saveAndContinue', $this->settingsStep('label.guided_step_config_settings_save_stay')['highlight']);
+        $this->assertSame(
+            ['label.guided_step_config_settings_value', 'label.guided_step_config_settings_save_stay', 'label.guided_step_config_settings_translate'],
+            \array_slice($this->settingsStepLabels(), 3, 3),
+        );
+    }
+
+    // On a site declaring a single language no tab is ever drawn, and neither step walking them is offered
+    public function testASingleLanguageSiteWalksNoLanguageStep(): void
+    {
+        $labels = $this->settingsStepLabels(false);
+
+        $this->assertNotContains('label.guided_step_config_settings_save_stay', $labels);
+        $this->assertNotContains('label.guided_step_config_settings_translate', $labels);
+        $this->assertContains('label.guided_step_config_settings_save', $labels);
+    }
+
+    // One step of the "config-settings" project, by its label
+    /** @return array<string, mixed> */
+    private function settingsStep(string $label): array
+    {
+        foreach ($this->settingsSteps() as $step) {
+            if ($label === $step['label']) {
+                return $step;
+            }
+        }
+
+        self::fail(sprintf('The "config-settings" guided project walks no "%s" step.', $label));
     }
 
     /**
      * @return list<string>
      */
-    private function settingsStepLabels(): array
+    private function settingsStepLabels(bool $multilingual = true): array
+    {
+        return array_column($this->settingsSteps($multilingual), 'label');
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function settingsSteps(bool $multilingual = true): array
     {
         $routes = [];
-        foreach ($this->createProvider($routes)->getGuidedProjects() as $project) {
+        foreach ($this->createProvider($routes, $multilingual)->getGuidedProjects() as $project) {
             if ('config-settings' === $project['slug']) {
-                return array_column($project['steps'], 'label');
+                return $project['steps'];
             }
         }
 

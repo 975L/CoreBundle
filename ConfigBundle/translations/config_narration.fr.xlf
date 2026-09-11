@@ -98,6 +98,14 @@
                 <source>narration.guided_step_config_settings_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
             </trans-unit>
+            <trans-unit id="g0CmdpY">
+                <source>narration.guided_step_config_settings_save_stay</source>
+                <target>Avant de changer de langue, enregistrez avec le bouton qui garde le formulaire ouvert : changer de langue recharge l'écran, et une valeur non enregistrée serait perdue.</target>
+            </trans-unit>
+            <trans-unit id="sJiuedR">
+                <source>narration.guided_step_config_settings_translate</source>
+                <target>En haut du formulaire, choisissez une langue dans les onglets, puis écrivez la valeur dans cette langue. Le nom du réglage ne change pas : seul ce qu'il dit change.</target>
+            </trans-unit>
             <trans-unit id="5y4RUl6">
                 <source>narration.guided_step_config_settings_value</source>
                 <target>Saisissez la valeur dans le champ du formulaire. Une entrée marquée sensible est chiffrée en base et n'est jamais réaffichée en clair.</target>

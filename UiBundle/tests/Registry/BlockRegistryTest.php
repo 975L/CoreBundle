@@ -653,4 +653,24 @@ class BlockRegistryTest extends TestCase
 
         $this->assertSame(['label.category_legal[ui]', 'label.category_custom[ui]'], array_keys($grouped));
     }
+
+    // A repeated text is declared beside the plain keys, "cards[].title", and read apart: getTranslatable() has six callers that know nothing of collections
+    public function testACollectionIsReadApartFromThePlainKeys(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register('section_features', 'label', 'ui', 'Form', 'tpl.twig', translatable: ['eyebrow', 'title', 'cards[].title', 'cards[].text']);
+
+        $this->assertSame(['eyebrow', 'title'], $registry->getTranslatable('section_features'));
+        $this->assertSame(['cards' => ['title', 'text']], $registry->getTranslatableCollections('section_features'));
+    }
+
+    // A kind declaring no repeated text answers an empty map, not a null anything has to guard
+    public function testAKindWithoutCollectionsAnswersAnEmptyMap(): void
+    {
+        $registry = new BlockRegistry($this->createTranslator());
+        $registry->register('card', 'label', 'ui', 'Form', 'tpl.twig', translatable: ['title']);
+
+        $this->assertSame([], $registry->getTranslatableCollections('card'));
+        $this->assertSame([], $registry->getTranslatableCollections('nothing_registered'));
+    }
 }

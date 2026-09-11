@@ -17,6 +17,7 @@ use c975L\ConfigBundle\Management\LinkableRouteProvider;
 use c975L\ConfigBundle\Management\MenuProvider;
 use c975L\ConfigBundle\Management\SocialMenuProvider;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
 use c975L\UiBundle\Repository\FormRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -30,7 +31,7 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
             new MenuProvider($this->createConfigService()),
             new ConfigShortcutProvider($this->createTranslator(), $this->createConfigService(), $this->createStub(FormRepository::class)),
             new ConfigEssentialActionProvider($this->createConfigService(), $this->adminUrlGenerator()),
-            new ConfigGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator()),
+            new ConfigGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), new SiteLocales(['fr', 'en'], 'fr')),
             new SocialMenuProvider($this->createConfigService()),
             new LinkableRouteProvider(),
         ];

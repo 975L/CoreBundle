@@ -13,6 +13,7 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
+use c975L\UiBundle\Registry\InternalLinkLocalizerRegistry;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\BlockCacheTagResolver;
 use c975L\UiBundle\Service\BlockRenderContext;
@@ -44,6 +45,8 @@ class BlockExtension
         private readonly BlockRenderContext $renderContext,
         private readonly ContentTranslator $contentTranslator,
         private readonly MediaTranslator $mediaTranslator,
+        // Empty on a site whose screens have no language of their own, which leaves every link exactly as it was stored
+        private readonly ?InternalLinkLocalizerRegistry $linkLocalizers = null,
     ) {
     }
 
@@ -72,8 +75,8 @@ class BlockExtension
             --$this->renderDepth;
         }
 
-        // A slot's html is stored verbatim in its container's cache entry, so the marker stays put until the outermost render - the only one that happens on every request, and the only one whose nonce is the one of the response being built
-        return 0 === $this->renderDepth ? $this->applyNonce($html) : $html;
+        // A slot's html is stored verbatim in its container's cache entry, so the marker and the links stay put until the outermost render - the only one that happens on every request, and the only one whose nonce and language are the ones of the response being built
+        return 0 === $this->renderDepth ? $this->localizeLinks($this->applyNonce($html)) : $html;
     }
 
     // The entrance effect belongs to the block, not to the place it happens to be rendered from - hence here rather than in components/Blocks/Block.html.twig, which only ever wraps the blocks of a page's own run. A slot of a container kind (a card in a "section_cards", a block in a "flex_column", a video in a "video_grid") goes through render_block() straight, so its animation was stored, offered on the edit screen, and read by nothing at all.
@@ -202,11 +205,15 @@ class BlockExtension
     private function doRender(Block $block): string
     {
         // Laid over the values stored in the database, never in their place: a field nobody translated keeps the text it was written in, and the block templates never hear about any of this
+        $kind = (string) $block->getKind();
+        $data = $block->getData();
+
         $data = $this->contentTranslator->translate(
             Translation::OWNER_BLOCK,
             $block->getId(),
-            $block->getData(),
-            $this->registry->getTranslatable((string) $block->getKind()),
+            $data,
+            // The repeated texts too - a FAQ's questions, a grid's cards - named one entry at a time off the data itself (see ContentTranslator::expand)
+            ContentTranslator::expand($data, $this->registry->getTranslatable($kind), $this->registry->getTranslatableCollections($kind)),
         );
 
         // The medias' own texts, which live on the row and not in the data just translated: a card's title and text, a picture's caption and its alternative. Laid on the entities themselves, unmapped and read by the getters alone, so the templates below go on saying "media.label" (see Media::setTranslated)
@@ -216,6 +223,12 @@ class BlockExtension
             $this->registry->getTemplate($block->getKind()),
             ['block' => $block, 'anchor_id' => $this->buildAnchorId($data['anchor'] ?? null, $block->getId())] + $data
         );
+    }
+
+    // The links of the rendered html, read in the language the page is being read in: a call to action, a card's target, a word linked inside a rich text, a portfolio card's own url. Outside the cache like the nonce, and for the same reason: where a link leads depends on what another page says in that language and on the url the visitor asked for, neither of which this block's entry is keyed or tagged on (see InternalLinkLocalizerInterface)
+    private function localizeLinks(string $html): string
+    {
+        return $this->linkLocalizers?->localize($html) ?? $html;
     }
 
     // Computed once here instead of every "Page sections" adapter template repeating its own "{{ anchor ~ '-' ~ block.id }}" - the trailing block id keeps two blocks of the same kind (or the same title/anchor reused elsewhere) on the same page from colliding on the same HTML id

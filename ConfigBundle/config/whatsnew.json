@@ -1,5 +1,30 @@
 [
     {
+        "date": "2026-09-11",
+        "description": [
+            {
+                "en": "On a site offering several languages, the guided project on the settings now has you save your value before you switch language, so what you just typed is no longer lost when the tabs reload the screen. On a site in a single language, it no longer mentions tabs that aren't there.",
+                "fr": "Sur un site proposé en plusieurs langues, le projet guidé des réglages vous fait désormais enregistrer la valeur avant de changer de langue, de sorte que ce que vous venez de saisir n'est plus perdu quand les onglets rechargent l'écran. Sur un site en une seule langue, il ne parle plus d'onglets absents.",
+                "es": "En un sitio ofrecido en varios idiomas, el proyecto guiado de los ajustes le hace ahora guardar el valor antes de cambiar de idioma, de modo que lo que acaba de escribir ya no se pierde cuando las pestañas recargan la pantalla. En un sitio de un solo idioma, ya no menciona pestañas que no existen."
+            }
+        ]
+    },
+    {
+        "date": "2026-09-10",
+        "description": [
+            {
+                "en": "The guided project on the settings now shows how a named setting is said in another language: the language tabs above it are pointed out before you save, instead of being left for you to find.",
+                "fr": "Le projet guidé des réglages montre désormais comment un réglage nommé se dit dans une autre langue : les onglets de langue au-dessus de lui vous sont indiqués avant l'enregistrement, au lieu d'être laissés à votre découverte.",
+                "es": "El proyecto guiado de los ajustes muestra ahora cómo se dice un ajuste con nombre en otro idioma: las pestañas de idioma situadas encima se le señalan antes de guardar, en lugar de dejarle descubrirlas."
+            },
+            {
+                "en": "The back office now keeps a language of its own. Reading your site in English no longer changes the language of the screens you work on: pick a flag on the front and only the site follows, the back office staying in the language you chose for it.",
+                "fr": "Le back-office garde désormais sa propre langue. Lire votre site en anglais ne change plus la langue des écrans sur lesquels vous travaillez : choisissez un drapeau côté site et seul le site suit, le back-office restant dans la langue que vous lui avez choisie.",
+                "es": "El back office conserva ahora un idioma propio. Leer su sitio en inglés ya no cambia el idioma de las pantallas en las que trabaja: elija una bandera en el sitio y solo el sitio la sigue, mientras que el back office se queda en el idioma que usted eligió para él."
+            }
+        ]
+    },
+    {
         "date": "2026-09-09",
         "description": [
             {

@@ -182,6 +182,14 @@
                 <source>description.guided_step_config_settings_open</source>
                 <target>Todos los ajustes del sitio están aquí, agrupados por tema: ninguno se escribe en un archivo.</target>
             </trans-unit>
+            <trans-unit id="GAjaysK">
+                <source>description.guided_step_config_settings_save_stay</source>
+                <target>Cambiar de idioma recarga la pantalla: lo que no se haya guardado se perdería.</target>
+            </trans-unit>
+            <trans-unit id="tbWt3Ve">
+                <source>description.guided_step_config_settings_translate</source>
+                <target>Un ajuste que un idioma puede cambiar lleva un selector encima: elija un idioma y escriba ahí el valor. El nombre del ajuste nunca cambia, sólo lo que dice.</target>
+            </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
                 <target>Una entrada marcada como sensible se cifra en la base de datos y nunca vuelve a mostrarse en claro.</target>
@@ -885,6 +893,14 @@
             <trans-unit id="XBS3oAU">
                 <source>label.guided_step_config_settings_save</source>
                 <target>Guardar</target>
+            </trans-unit>
+            <trans-unit id="Yb8P6co">
+                <source>label.guided_step_config_settings_save_stay</source>
+                <target>Guardar sin salir</target>
+            </trans-unit>
+            <trans-unit id="jkrEHgr">
+                <source>label.guided_step_config_settings_translate</source>
+                <target>Escribirlo en otro idioma</target>
             </trans-unit>
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>

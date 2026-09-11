@@ -100,7 +100,7 @@ Two nuances that get lost:
   when it is **spoken** rather than read, a full sentence naming where to look and what to do. It is
   read by the films of the back office and drawn nowhere; without one, the label and the description
   stand in. It resolves in a domain of its own — the item's `translation_domain` suffixed `_narration`
-  (`site` reads `site_narration`) — and is written in French and English alone.
+  (`site` reads `site_narration`) — and is written in every language the bundle speaks.
 - `whatsnew.json` is a marketing thread for non-developer users — no `version`, no `bundle` field,
   describe a benefit. The developer changelog is `ChangeLog.md`.
 

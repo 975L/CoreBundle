@@ -161,7 +161,7 @@ class BlockKindSwitchTest extends TestCase
     private function router(): UrlGeneratorInterface
     {
         $router = $this->createStub(UrlGeneratorInterface::class);
-        $router->method('generate')->willReturn('/ui/block/data-form');
+        $router->method('generate')->willReturn('/management/ui/block/data-form');
 
         return $router;
     }

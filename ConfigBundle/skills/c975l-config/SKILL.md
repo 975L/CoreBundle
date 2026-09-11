@@ -1,6 +1,6 @@
 ---
 name: c975l-config
-description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector."
+description: "Use this skill for any configuration question in a Symfony application built on the c975L ecosystem — where a setting belongs, how to declare one, how to read it, and why .env and container parameters are the wrong answer here. Covers config/configs.json, ConfigServiceInterface, how a group drawer is named and labelled, sensitive and restricted values, severities, the vault key, the loading and pruning commands, and maintenance mode. Triggers on: configs.json, ConfigServiceInterface, ConfigService, config(), configParam(), c975l:config:load-all, c975l:config:set, c975l:config:get, c975l:config:prune, c975l:config:encrypt-sensitive, C975L_VAULT_KEY, sensitive, restricted, severity, ConfigAlertProvider, findSensitiveWithValue, site-maintenance, ConfigTranslator, ConfigTranslator::TRANSLATABLE, site_config owner, translate a setting, .env, parameters.yaml, TreeBuilder, ConfigGroupLabelResolver, label.group_, SiteLocales, enabled_locales, LocaleListener, default_locale, translation.yaml, multilingual, isMultilingual, setLocales, language selector, locales_pattern, LocalizedRouteNegotiator, isTranslated, redirectToAskedLanguage, vary, LocalizedUrlGenerator, localized_path, screen_languages, ContentLocaleScreen, contenu, _content_locale_tabs, InternalLinkLocalizerInterface, SESSION_KEY_MANAGEMENT, isManagementPath, ROUTE_PATH, back office language."
 ---
 
 # c975L ConfigBundle — configuration
@@ -10,7 +10,7 @@ description: "Use this skill for any configuration question in a Symfony applica
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\` · **Twig namespace:** `@c975LConfig` · **Translation domains:** `config`, `site_config`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Config.php`, `src/Service/ConfigService.php`, `src/Service/ConfigServiceInterface.php`, `src/Command/ConfigLoadAllCommand.php`, `src/Command/ConfigSetCommand.php`, `src/Command/ConfigPruneCommand.php`, `src/Command/EncryptSensitiveCommand.php`, `src/Controller/Management/`, `src/Service/SiteLocales.php`, `src/Listener/LocaleListener.php`, `config/configs.json`
+`src/Entity/Config.php`, `src/Service/ConfigService.php`, `src/Service/ConfigServiceInterface.php`, `src/Command/ConfigLoadAllCommand.php`, `src/Command/ConfigSetCommand.php`, `src/Command/ConfigPruneCommand.php`, `src/Command/EncryptSensitiveCommand.php`, `src/Controller/Management/`, `src/Service/SiteLocales.php`, `src/Listener/LocaleListener.php`, `src/Service/LocalizedRouteNegotiator.php`, `src/Service/LocalizedUrlGenerator.php`, `src/Management/ContentLocaleScreen.php`, `config/configs.json`
 
 **Related skills:** `c975l-management`, `c975l-users`, `c975l-operations` in this same bundle, and `c975l-blocks`, `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets`, `c975l-js-testing` in UiBundle beside it.
 
@@ -166,6 +166,59 @@ listener is what keeps the choice — for the front office too.
 not just the new ones. It is unrelated to the interface translations (`messages.fr.xlf`), which keep
 working through Symfony's translator whether or not the list exists. Translating *content* is
 UiBundle's — see `c975l-blocks`.
+
+**The back office keeps a language of its own.** `LocaleListener` reads the front's choice under
+`SESSION_KEY` (Symfony's `_locale`) and the back office's under `SESSION_KEY_MANAGEMENT`: one key for
+both had the whole back office change language behind an editor the moment they clicked a flag on the
+front, reading the site in English being a choice about the content and not about the screens they
+work on. Which of the two answers is decided by
+`Controller\Management\DashboardController::isManagementPath()`, reading the single
+`DashboardController::ROUTE_PATH` — never `str_starts_with($path, '/management')` spelt again, which
+takes a front route named `/management-de-projet` for a back-office one. `MaintenanceListener` reads
+the same method, so that front route goes down with the site.
+
+## Answering both `/shop` and `/en/shop`
+
+**The language a site is written in keeps its bare urls**, byte for byte — a sitemap, an hreflang group
+and every stored link point at them. Each other language gets a url of its own beside them, the
+requirement filled by `%c975l_config.locales_pattern%`, which holds the declared languages **besides**
+the writing one and matches nothing at all while there are none:
+
+```php
+#[Route('/{_locale}/shop', name: 'shop_index_localized', requirements: ['_locale' => '%c975l_config.locales_pattern%'], methods: ['GET'])]
+#[Route('/shop', name: 'shop_index', methods: ['GET'])]
+```
+
+`Service\LocalizedRouteNegotiator` holds the three rules such a pair needs, the languages being passed
+in rather than read off an entity — a page is translated beside itself, a book is a row per language,
+a product is something else again:
+
+- **`isTranslated()`** — refuse a localised url the thing says nothing in, or it answers the writing
+  language's words under another language's address: duplicate content under a lying hreflang.
+- **`redirectToAskedLanguage()`** — move a visitor who asked for another language, and only one they
+  actually asked for: the browser's announcement, the query the language menu lands in, or the choice
+  `LocaleListener` kept in session. Announcing none, they stay, a crawler having no business being
+  moved off the url it requested.
+- **`vary()`** — a bare url varies on what the browser announced; a localised one says its language in
+  itself and varies on nothing.
+
+`Service\LocalizedUrlGenerator` is the other half, so a link follows the language being read rather
+than sending the visitor back into the writing language at the first click: `path()` takes the
+localised twin where the target answers in that language, and `screenLanguages()` (the
+`screen_languages()` Twig function) offers the screen being read in each language, as bare urls
+carrying `?_locale=xx`. A stored link is
+`c975L\UiBundle\Contract\InternalLinkLocalizerInterface`, and a menu item says its own languages through the
+`locales` key of a linkable route.
+
+## Opening the same edit screen on another language
+
+`Management\ContentLocaleScreen` holds what a row translated beside itself needs, so a CRUD controller
+declares what is translatable and nothing else: `locale()` reads the language being written off the
+`?contenu=xx` url, `addParameters()` feeds the tabs, `stageOnSubmit()` hands what was typed over on
+POST_SUBMIT so it is written on the flush that saves the row, and `action()` is the button opening the
+first language screen. The tabs themselves are the shared
+`@c975LConfig/management/_content_locale_tabs.html.twig` — included, never copied, its variables
+defaulted because a screen with nothing to translate declares none of them.
 
 ## Maintenance mode
 

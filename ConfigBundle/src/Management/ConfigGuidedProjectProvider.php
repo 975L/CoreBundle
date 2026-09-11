@@ -14,6 +14,7 @@ use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
 use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -25,6 +26,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly ConfigServiceInterface $configService,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly SiteLocales $siteLocales,
     ) {
     }
 
@@ -101,6 +103,62 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
     // Where every setting of every bundle lives, which is the first thing to find on a back office one doesn't know
     private function settingsProject(): array
     {
+        $steps = [
+            [
+                'label' => 'label.guided_step_config_settings_open',
+                'description' => 'description.guided_step_config_settings_open',
+                'narration' => 'narration.guided_step_config_settings_open',
+                'url' => $this->indexUrl(ConfigCrudController::class),
+            ],
+            [
+                'label' => 'label.guided_step_config_settings_group',
+                'description' => 'description.guided_step_config_settings_group',
+                'narration' => 'narration.guided_step_config_settings_group',
+                // The group links carry a marker of their own: the screen holds one tbody per band, whose first row is a heading with no link at all, and the "empty entries" row above them is a state rather than a group (see config_crud_groups.html.twig)
+                'highlight' => '[data-config-group-link]',
+            ],
+            [
+                'label' => 'label.guided_step_config_settings_entry',
+                'description' => 'description.guided_step_config_settings_entry',
+                'narration' => 'narration.guided_step_config_settings_entry',
+                'highlight' => '.action-edit',
+            ],
+            [
+                'label' => 'label.guided_step_config_settings_value',
+                'description' => 'description.guided_step_config_settings_value',
+                'narration' => 'narration.guided_step_config_settings_value',
+                'highlight' => '#Config_value',
+            ],
+        ];
+
+        // The language tabs are drawn on a site declaring several languages alone (see ConfigCrudController::addContentLocaleParameters), so anywhere else the two steps walking them would speak of nothing on the screen
+        if ($this->siteLocales->isMultilingual()) {
+            $steps[] = [
+                // A tab is a plain link reloading the screen, and nothing warns of what is left unsaved: the value just typed survives only if saved first, on the button keeping the form open
+                'label' => 'label.guided_step_config_settings_save_stay',
+                'description' => 'description.guided_step_config_settings_save_stay',
+                'narration' => 'narration.guided_step_config_settings_save_stay',
+                'highlight' => '.action-saveAndContinue',
+            ];
+            $steps[] = [
+                'label' => 'label.guided_step_config_settings_translate',
+                'description' => 'description.guided_step_config_settings_translate',
+                'narration' => 'narration.guided_step_config_settings_translate',
+                'highlight' => '[data-content-locales]',
+            ];
+        }
+
+        $steps[] = [
+            'label' => 'label.guided_step_config_settings_save',
+            'narration' => 'narration.guided_step_config_settings_save',
+            'highlight' => '.action-saveAndReturn',
+        ];
+        $steps[] = [
+            'label' => 'label.guided_step_config_settings_alerts',
+            'description' => 'description.guided_step_config_settings_alerts',
+            'narration' => 'narration.guided_step_config_settings_alerts',
+        ];
+
         return [
             'slug' => 'config-settings',
             'label' => 'label.guided_project_config_settings',
@@ -109,43 +167,7 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'order' => 1010,
             // The bar ConfigCrudController sets on its own index and edit
             'role' => $this->configService->get('site-role-admin'),
-            'steps' => [
-                [
-                    'label' => 'label.guided_step_config_settings_open',
-                    'description' => 'description.guided_step_config_settings_open',
-                    'narration' => 'narration.guided_step_config_settings_open',
-                    'url' => $this->indexUrl(ConfigCrudController::class),
-                ],
-                [
-                    'label' => 'label.guided_step_config_settings_group',
-                    'description' => 'description.guided_step_config_settings_group',
-                    'narration' => 'narration.guided_step_config_settings_group',
-                    // The group links carry a marker of their own: the screen holds one tbody per band, whose first row is a heading with no link at all, and the "empty entries" row above them is a state rather than a group (see config_crud_groups.html.twig)
-                    'highlight' => '[data-config-group-link]',
-                ],
-                [
-                    'label' => 'label.guided_step_config_settings_entry',
-                    'description' => 'description.guided_step_config_settings_entry',
-                    'narration' => 'narration.guided_step_config_settings_entry',
-                    'highlight' => '.action-edit',
-                ],
-                [
-                    'label' => 'label.guided_step_config_settings_value',
-                    'description' => 'description.guided_step_config_settings_value',
-                    'narration' => 'narration.guided_step_config_settings_value',
-                    'highlight' => '#Config_value',
-                ],
-                [
-                    'label' => 'label.guided_step_config_settings_save',
-                    'narration' => 'narration.guided_step_config_settings_save',
-                    'highlight' => '.action-saveAndReturn',
-                ],
-                [
-                    'label' => 'label.guided_step_config_settings_alerts',
-                    'description' => 'description.guided_step_config_settings_alerts',
-                    'narration' => 'narration.guided_step_config_settings_alerts',
-                ],
-            ],
+            'steps' => $steps,
         ];
     }
 

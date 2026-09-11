@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\ConfigBundle\Test\ManagementTargetsTestCase;
 use c975L\UiBundle\Management\LinkableRouteProvider;
 use c975L\UiBundle\Management\MenuProvider;
@@ -35,7 +36,7 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         return [
             new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService()),
             new UiShortcutProvider($this->createTranslator(), $this->createConfigService()),
-            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService()),
+            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr')),
             new LinkableRouteProvider(),
         ];
     }

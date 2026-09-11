@@ -24,9 +24,9 @@ class LocaleListenerTest extends TestCase
     /**
      * @param array<string, string> $headers "accept-language" and the like, as a browser sends them
      */
-    private function createEvent(array $headers = [], ?string $chosen = null, ?string $routeLocale = null, ?string $asked = null): RequestEvent
+    private function createEvent(array $headers = [], ?string $chosen = null, ?string $routeLocale = null, ?string $asked = null, string $path = '/', ?string $sessionKey = null): RequestEvent
     {
-        $request = new Request();
+        $request = Request::create($path);
         if (null !== $asked) {
             $request->query->set('_locale', $asked);
         }
@@ -41,7 +41,7 @@ class LocaleListenerTest extends TestCase
 
         if (null !== $chosen) {
             $session = new Session(new MockArraySessionStorage());
-            $session->set(LocaleListener::SESSION_KEY, $chosen);
+            $session->set($sessionKey ?? LocaleListener::SESSION_KEY, $chosen);
             $request->setSession($session);
             // What "hasPreviousSession()" asks for: a session opened before this request, not a fresh one
             $request->cookies->set($session->getName(), $session->getId());
@@ -58,6 +58,48 @@ class LocaleListenerTest extends TestCase
     private function siteLocales(array $locales): SiteLocales
     {
         return new SiteLocales($locales, $locales[0] ?? 'en');
+    }
+
+    // Reading the site in English is a choice about the content, not about the screens an editor works on: one key for both had the whole back office change language behind them the moment they clicked a flag on the front
+    public function testTheFrontChoiceIsNotAnsweredWithInTheBackOffice(): void
+    {
+        $event = $this->createEvent(['accept-language' => 'fr'], 'en', path: '/management/collection');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+
+        $this->assertSame('fr', $event->getRequest()->getLocale());
+    }
+
+    // The back office keeps a choice of its own, made with EasyAdmin's own selector, and answers in it
+    public function testTheBackOfficeAnswersInItsOwnChoice(): void
+    {
+        $event = $this->createEvent(['accept-language' => 'fr'], 'en', path: '/management/collection', sessionKey: LocaleListener::SESSION_KEY_MANAGEMENT);
+
+        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+
+        $this->assertSame('en', $event->getRequest()->getLocale());
+    }
+
+    // A front page whose path merely starts with the back office's is a front page: read as management it would answer in the back office's language, and a flag clicked on it would change the language of the whole back office
+    public function testAFrontPathMerelyStartingWithTheBackOfficesIsAnsweredFromTheFront(): void
+    {
+        $event = $this->createEvent(['accept-language' => 'fr'], 'en', path: '/management-de-projet');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+
+        $this->assertSame('en', $event->getRequest()->getLocale());
+    }
+
+    // And a language picked in the back office is kept there, leaving the front reading what it was reading
+    public function testALanguagePickedInTheBackOfficeIsKeptUnderItsOwnKey(): void
+    {
+        $event = $this->createEvent(asked: 'en', chosen: 'fr', path: '/management/collection');
+
+        new LocaleListener($this->siteLocales(['fr', 'en']))($event);
+
+        $session = $event->getRequest()->getSession();
+        $this->assertSame('en', $session->get(LocaleListener::SESSION_KEY_MANAGEMENT));
+        $this->assertSame('fr', $session->get(LocaleListener::SESSION_KEY));
     }
 
     // The no-regression contract: as long as a site declares a single language - which every existing site does - none of this happens

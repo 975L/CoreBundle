@@ -198,13 +198,17 @@
                 <source>narration.guided_step_ui_form_place</source>
                 <target>Il ne reste qu'à le poser dans une page : ajoutez-y un block de formulaire, et choisissez celui que vous venez de créer.</target>
             </trans-unit>
+            <trans-unit id="FfJ6x.M">
+                <source>narration.guided_step_ui_form_reopen</source>
+                <target>L'enregistrement vous a ramené à la liste. Rouvrez le formulaire que vous venez de créer : c'est depuis son écran d'édition que s'écrivent les autres langues.</target>
+            </trans-unit>
             <trans-unit id="JE.beBm">
                 <source>narration.guided_step_ui_form_save</source>
                 <target>Enregistrez avec le bouton en bas du formulaire.</target>
             </trans-unit>
             <trans-unit id="MHIvS60">
                 <source>narration.guided_step_ui_form_translate</source>
-                <target>Rouvrez le formulaire : sur un site qui propose plusieurs langues, un sélecteur se trouve juste au-dessus. Choisissez-en une, et écrivez-y les libellés et les textes d'aide - les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
+                <target>En haut du formulaire, choisissez une langue dans les onglets, puis écrivez-y les libellés et les textes d'aide. Les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
             </trans-unit>
             <trans-unit id="aPBTIn6">
                 <source>narration.guided_step_ui_legal_model_apply</source>

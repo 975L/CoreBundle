@@ -111,10 +111,25 @@ class c975LConfigBundle extends AbstractBundle
     {
         $containerConfigurator->import('../config/services.yaml');
 
+        $this->declareLocalesPattern($containerBuilder);
+
         // CookieNonceGenerator implements a NelmioSecurityBundle interface, so its class isn't loadable without that bundle. The package requires it now (UiBundle's layout calls csp_nonce()), the guard staying as the cheap way not to depend on that being true forever
         if (interface_exists(NonceGeneratorInterface::class)) {
             $containerConfigurator->import('../config/services_nelmio.yaml');
         }
+    }
+
+    // What a localised url accepts between its slashes: "en|es" on a site declaring these beside the one it is written in, the writing language left out so it keeps the bare urls the sitemaps and the hreflang groups declare, and nothing left - a single-language site - giving a pattern matching nothing, so the localised routes exist without ever answering. Declared here rather than by each bundle owning such routes: SiteBundle had it first, and ShopBundle, which requires this bundle and not that one, needs the very same string
+    private function declareLocalesPattern(ContainerBuilder $containerBuilder): void
+    {
+        $locales = $containerBuilder->hasParameter('kernel.enabled_locales') ? (array) $containerBuilder->getParameter('kernel.enabled_locales') : [];
+        $defaultLocale = $containerBuilder->hasParameter('kernel.default_locale') ? (string) $containerBuilder->getParameter('kernel.default_locale') : '';
+        $locales = array_values(array_filter(array_map(strval(...), $locales), static fn (string $locale) => $locale !== $defaultLocale));
+
+        $containerBuilder->setParameter(
+            'c975l_config.locales_pattern',
+            [] === $locales ? '(?!)' : implode('|', $locales),
+        );
     }
 
     #[\Override]

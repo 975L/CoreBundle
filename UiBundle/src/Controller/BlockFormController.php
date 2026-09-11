@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Controller;
 
+use c975L\ConfigBundle\Controller\Management\DashboardController;
 use c975L\UiBundle\Form\BlockType;
 use c975L\UiBundle\Form\MediaUploadType;
 use c975L\UiBundle\Registry\BlockRegistry;
@@ -30,7 +31,8 @@ class BlockFormController extends AbstractController
     ) {
     }
 
-    #[Route('/ui/block/data-form', name: 'ui_block_data_form', methods: ['GET', 'POST'])]
+    // Under the back office's own path, the sub-form being a piece of its edit screen: answered in the language the back office speaks (see LocaleListener) and behind the access_control rule a site puts on that path
+    #[Route(DashboardController::ROUTE_PATH . '/ui/block/data-form', name: 'ui_block_data_form', methods: ['GET', 'POST'])]
     public function dataForm(Request $request): Response
     {
         $kind = (string) $request->query->get('k', '');

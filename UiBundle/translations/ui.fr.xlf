@@ -222,9 +222,13 @@
                 <source>description.guided_step_ui_form_place</source>
                 <target>Ajoutez un block de formulaire à une page, et choisissez celui que vous venez de créer.</target>
             </trans-unit>
+            <trans-unit id="ImmGgBO">
+                <source>description.guided_step_ui_form_reopen</source>
+                <target>L'enregistrement vous a ramené à la liste. Rouvrez le formulaire : les autres langues s'écrivent depuis son écran d'édition.</target>
+            </trans-unit>
             <trans-unit id="9zih8su">
                 <source>description.guided_step_ui_form_translate</source>
-                <target>Rouvrez le formulaire : sur un site qui propose plusieurs langues, un sélecteur se trouve juste au-dessus. Choisissez-en une, et écrivez-y les libellés et les textes d'aide - les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
+                <target>Choisissez une langue dans les onglets en haut du formulaire, et écrivez-y les libellés et les textes d'aide - les champs, eux, se composent une seule fois, dans la langue où le formulaire a été écrit.</target>
             </trans-unit>
             <trans-unit id="UUhHZlk">
                 <source>description.guided_step_ui_legal_model_apply</source>
@@ -2373,6 +2377,10 @@
             <trans-unit id="SDXqkqS">
                 <source>label.guided_step_ui_form_place</source>
                 <target>Le poser dans une page</target>
+            </trans-unit>
+            <trans-unit id="9lv27oy">
+                <source>label.guided_step_ui_form_reopen</source>
+                <target>Rouvrez-le pour les autres langues</target>
             </trans-unit>
             <trans-unit id="GAmp352">
                 <source>label.guided_step_ui_form_save</source>

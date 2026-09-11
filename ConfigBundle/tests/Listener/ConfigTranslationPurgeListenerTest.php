@@ -17,6 +17,7 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Repository\TranslationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostRemoveEventArgs;
+use Doctrine\ORM\Event\PreRemoveEventArgs;
 use PHPUnit\Framework\TestCase;
 
 class ConfigTranslationPurgeListenerTest extends TestCase
@@ -30,7 +31,7 @@ class ConfigTranslationPurgeListenerTest extends TestCase
             ->with(ConfigTranslator::OWNER, 42)
             ->willReturn(2);
 
-        new ConfigTranslationPurgeListener($repository)->postRemove($this->createEventArgs($this->createConfig(42)));
+        $this->remove($repository, $this->createConfig(42));
     }
 
     // A block is UiBundle's own listener's business, and would otherwise be purged twice under two owner types
@@ -39,7 +40,7 @@ class ConfigTranslationPurgeListenerTest extends TestCase
         $repository = $this->createMock(TranslationRepository::class);
         $repository->expects($this->never())->method('deleteByOwner');
 
-        new ConfigTranslationPurgeListener($repository)->postRemove($this->createEventArgs(new Block()->setKind('text')));
+        $this->remove($repository, new Block()->setKind('text'));
     }
 
     // A setting that was never persisted has no id to delete rows by, and every row would answer to "null"
@@ -48,12 +49,27 @@ class ConfigTranslationPurgeListenerTest extends TestCase
         $repository = $this->createMock(TranslationRepository::class);
         $repository->expects($this->never())->method('deleteByOwner');
 
-        new ConfigTranslationPurgeListener($repository)->postRemove($this->createEventArgs($this->createConfig(null)));
+        $this->remove($repository, $this->createConfig(null));
     }
 
-    private function createEventArgs(object $entity): PostRemoveEventArgs
+    // postRemove alone has no id left to go on, whatever the row still says: that is the very state Doctrine hands it
+    public function testPostRemoveWithoutPreRemoveDeletesNothing(): void
     {
-        return new PostRemoveEventArgs($entity, $this->createStub(EntityManagerInterface::class));
+        $repository = $this->createMock(TranslationRepository::class);
+        $repository->expects($this->never())->method('deleteByOwner');
+
+        new ConfigTranslationPurgeListener($repository)->postRemove(new PostRemoveEventArgs($this->createConfig(42), $this->createStub(EntityManagerInterface::class)));
+    }
+
+    // What Doctrine does with a removal: preRemove while the row still has its id, which it hands back to null before postRemove
+    private function remove(TranslationRepository $repository, object $entity): void
+    {
+        $listener = new ConfigTranslationPurgeListener($repository);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+
+        $listener->preRemove(new PreRemoveEventArgs($entity, $entityManager));
+        new \ReflectionProperty($entity, 'id')->setValue($entity, null);
+        $listener->postRemove(new PostRemoveEventArgs($entity, $entityManager));
     }
 
     private function createConfig(?int $id): Config

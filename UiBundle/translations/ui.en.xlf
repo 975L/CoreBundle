@@ -222,9 +222,13 @@
                 <source>description.guided_step_ui_form_place</source>
                 <target>Add a form block to a page, and pick the one you have just created.</target>
             </trans-unit>
+            <trans-unit id="ImmGgBO">
+                <source>description.guided_step_ui_form_reopen</source>
+                <target>Saving brought you back to the list. Reopen the form: the other languages are written from its edit screen.</target>
+            </trans-unit>
             <trans-unit id="9zih8su">
                 <source>description.guided_step_ui_form_translate</source>
-                <target>Open the form again: on a site offering several languages, a selector sits above it. Pick one, and write the labels and the help texts in it - the fields themselves are composed once, in the language the form was written in.</target>
+                <target>Pick a language in the tabs at the top of the form, and write the labels and the help texts in it - the fields themselves are composed once, in the language the form was written in.</target>
             </trans-unit>
             <trans-unit id="UUhHZlk">
                 <source>description.guided_step_ui_legal_model_apply</source>
@@ -2373,6 +2377,10 @@
             <trans-unit id="SDXqkqS">
                 <source>label.guided_step_ui_form_place</source>
                 <target>Drop it into a page</target>
+            </trans-unit>
+            <trans-unit id="9lv27oy">
+                <source>label.guided_step_ui_form_reopen</source>
+                <target>Reopen it for the other languages</target>
             </trans-unit>
             <trans-unit id="GAmp352">
                 <source>label.guided_step_ui_form_save</source>

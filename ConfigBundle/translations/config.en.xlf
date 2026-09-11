@@ -182,6 +182,14 @@
                 <source>description.guided_step_config_settings_open</source>
                 <target>Every setting of the site lives here, grouped by subject — none of them is to be written in a file.</target>
             </trans-unit>
+            <trans-unit id="GAjaysK">
+                <source>description.guided_step_config_settings_save_stay</source>
+                <target>Switching language reloads the screen: anything not saved would be lost.</target>
+            </trans-unit>
+            <trans-unit id="tbWt3Ve">
+                <source>description.guided_step_config_settings_translate</source>
+                <target>A setting a language can change carries a selector above it: pick a language, and write the value in it. What the setting is called never changes - only what it says.</target>
+            </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
                 <target>An entry marked sensitive is encrypted in the database and never shown in clear again.</target>
@@ -885,6 +893,14 @@
             <trans-unit id="XBS3oAU">
                 <source>label.guided_step_config_settings_save</source>
                 <target>Save</target>
+            </trans-unit>
+            <trans-unit id="Yb8P6co">
+                <source>label.guided_step_config_settings_save_stay</source>
+                <target>Save without leaving</target>
+            </trans-unit>
+            <trans-unit id="jkrEHgr">
+                <source>label.guided_step_config_settings_translate</source>
+                <target>Write it in another language</target>
             </trans-unit>
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>

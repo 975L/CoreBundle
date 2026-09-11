@@ -126,12 +126,8 @@ class ContentTranslator
         }
     }
 
+    // The values given, with whatever this owner has been translated to laid over them: a merge and not a resolution, a field nobody translated keeping the text it was written in rather than showing a hole
     /**
-     * The values given, with whatever this owner has been translated to laid over them.
-     *
-     * A merge, not a resolution: a field nobody translated keeps the text it was written in, so a half-translated
-     * page reads in two languages rather than showing holes - and the templates never hear about any of this.
-     *
      * @param array<string, mixed> $values
      * @param list<string>         $fields the keys a translation may cover, an empty list meaning none
      *
@@ -149,12 +145,79 @@ class ContentTranslator
 
         foreach ($this->loaded[$ownerType][$locale][$ownerId] ?? [] as $field => $value) {
             // An empty translation never overwrites the original text, being an entry opened then left blank
-            if (\in_array($field, $fields, true) && null !== $value && '' !== $value) {
-                $values[$field] = $value;
+            if (!\in_array($field, $fields, true) || null === $value || '' === $value) {
+                continue;
             }
+
+            self::layOver($values, $field, $value);
         }
 
         return $values;
+    }
+
+    // Every field a translation may cover of this very data: the plain keys, plus one name per entry the collections actually hold. Read off the data rather than declared, which is what keeps a deleted card - with nothing left to say in any language - out
+    /**
+     * @param array<string, mixed>        $data
+     * @param list<string>                $fields      the kind's plain translatable keys
+     * @param array<string, list<string>> $collections collection key => the fields of one entry (see BlockRegistry::getTranslatableCollections)
+     *
+     * @return list<string>
+     */
+    public static function expand(array $data, array $fields, array $collections): array
+    {
+        foreach ($collections as $collection => $keys) {
+            if (!\is_array($data[$collection] ?? null)) {
+                continue;
+            }
+
+            foreach (array_keys($data[$collection]) as $index) {
+                foreach ($keys as $key) {
+                    $fields[] = $collection . '.' . $index . '.' . $key;
+                }
+            }
+        }
+
+        return $fields;
+    }
+
+    // One value of the data under a name expand() gave, "cards.0.title" reaching into the collection the block holds as json - null for an entry the data no longer has
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function read(array $data, string $field): mixed
+    {
+        $value = $data;
+
+        foreach (explode('.', $field) as $step) {
+            if (!\is_array($value) || !\array_key_exists($step, $value)) {
+                return null;
+            }
+
+            $value = $value[$step];
+        }
+
+        return $value;
+    }
+
+    // Lays one value over the data, "cards.0.title" reaching into the collection the block holds as json: an entry the source no longer has is never brought back, or a deleted card would reappear in one language alone (see BlockType, which purges those rows when the source moves)
+    /**
+     * @param array<string, mixed> $values
+     */
+    private static function layOver(array &$values, string $field, string $value): void
+    {
+        $path = explode('.', $field);
+
+        if (1 === \count($path)) {
+            $values[$field] = $value;
+
+            return;
+        }
+
+        [$collection, $index, $key] = $path + [null, null, null];
+
+        if (null !== $key && isset($values[$collection][$index]) && \is_array($values[$collection][$index])) {
+            $values[$collection][$index][$key] = $value;
+        }
     }
 
     /**
@@ -205,20 +268,17 @@ class ContentTranslator
             return false;
         }
 
-        $plain = static fn (string $text): string => trim((string) preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($text), \ENT_QUOTES | \ENT_HTML5)));
-
-        return $plain($value) === $plain($prompt);
+        return self::plain($value) === self::plain($prompt);
     }
 
-    /**
-     * What a form has just been given, kept until the flush that saves its owner goes through.
-     *
-     * A form cannot write these itself: its POST_SUBMIT fires before the root form is validated, so a store() there
-     * would persist a submission that is about to be refused. TranslationWriteListener drains this on postFlush -
-     * the flush being the owner's own save, which a failed validation never reaches.
-     *
-     * @param array<string, string|null> $values field => value
-     */
+    // The words a text says, whatever the markup carrying them: entities decoded, tags dropped, runs of space squeezed - the one comparison every source/translation check here is made on
+    public static function plain(string $text): string
+    {
+        return trim((string) preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($text), \ENT_QUOTES | \ENT_HTML5)));
+    }
+
+    // What a form has just been given, kept until the flush that saves its owner goes through: a POST_SUBMIT store() would persist a submission about to be refused, so TranslationWriteListener drains this on postFlush instead
+    /** @param array<string, string|null> $values field => value */
     public function stage(string $ownerType, int $ownerId, string $locale, array $values): void
     {
         $this->pending[] = [$ownerType, $ownerId, $locale, $values];
@@ -247,14 +307,8 @@ class ContentTranslator
         return $this->isActive() ? $this->repository->findByOwner($ownerType, $ownerId) : [];
     }
 
-    /**
-     * What one owner says in one language, read through the same cache the rendering fills.
-     *
-     * A language screen asks this once per block: going through preload() above, the whole tree costs the one query
-     * its root already ran rather than one apiece - and nothing at all on the way back, the cache still holding it.
-     *
-     * @return array<string, string|null> field => value
-     */
+    // What one owner says in one language, read through the same cache the rendering fills: a language screen asks this once per block, and the whole tree costs the one query preload() already ran rather than one apiece
+    /** @return array<string, string|null> field => value */
     public function values(string $ownerType, int $ownerId, string $locale): array
     {
         $this->preload($ownerType, [$ownerId], $locale);

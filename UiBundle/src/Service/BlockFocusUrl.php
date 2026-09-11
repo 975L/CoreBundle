@@ -17,7 +17,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 // Builds an EasyAdmin edit URL for a Block's owner, optionally jumping straight to that block's own row - what every bundle attaching blocks to an entity (see HasBlocksInterface) needs to point back at them. Static and stateless rather than the trait this used to be in SiteBundle: a trait shared across bundles is only ever analysed against the users living in the same package
 class BlockFocusUrl
 {
-    public static function build(AdminUrlGeneratorInterface $adminUrlGenerator, string $crudControllerFqcn, ?int $entityId, ?Block $block = null): string
+    // $extra carries the query parameters the owning bundle adds to its edit screen - the language a page is being read in, say, which only that bundle names
+    /** @param array<string, string|int> $extra */
+    public static function build(AdminUrlGeneratorInterface $adminUrlGenerator, string $crudControllerFqcn, ?int $entityId, ?Block $block = null, array $extra = []): string
     {
         $urlGenerator = $adminUrlGenerator
             ->unsetAll()
@@ -27,6 +29,10 @@ class BlockFocusUrl
 
         if (null !== $block) {
             $urlGenerator->set('focusBlock', $block->getId());
+        }
+
+        foreach ($extra as $name => $value) {
+            $urlGenerator->set($name, $value);
         }
 
         return $urlGenerator->generateUrl();

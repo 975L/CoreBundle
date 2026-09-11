@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="es" datatype="plaintext" original="config_narration.es.xlf">
+        <body>
+            <trans-unit id="R7d7CYz">
+                <source>narration.config</source>
+                <target>«Configuración» abre todos los ajustes del sitio, agrupados por tema. Cada uno se modifica desde su propia página; los valores sensibles permanecen cifrados en la base de datos, incluso cuando la pantalla se los muestra en claro.</target>
+            </trans-unit>
+            <trans-unit id="CjZepAN">
+                <source>narration.content_import</source>
+                <target>«Importar contenido» recoge un archivo exportado desde otro sitio, por ejemplo páginas llevadas con sus bloques y sus imágenes.</target>
+            </trans-unit>
+            <trans-unit id="wxnPT.p">
+                <source>narration.guided_step_config_health_check_again</source>
+                <target>Una vez hechas sus correcciones, vuelva a lanzar el control: la curva de tendencia, en la parte superior de la página, muestra si el sitio mejora.</target>
+            </trans-unit>
+            <trans-unit id="mjJnyUV">
+                <source>narration.guided_step_config_health_check_fix</source>
+                <target>Trate un error cada vez. Cada fila con error lleva el consejo del bundle que la produjo: por ahí hay que empezar, no por la lista entera.</target>
+            </trans-unit>
+            <trans-unit id="8_kAglj">
+                <source>narration.guided_step_config_health_check_open</source>
+                <target>El panel le lleva al estado de salud. Páginas no encontradas, redirecciones, cabeceras de seguridad, certificado, sitemaps, validación W3C: su sitio se revisa a fondo, visto desde fuera.</target>
+            </trans-unit>
+            <trans-unit id="YOwl5TZ">
+                <source>narration.guided_step_config_health_check_read</source>
+                <target>Lea la tabla de resultados: una fila por url y por familia. Filtre por estado para quedarse solo con lo que falla.</target>
+            </trans-unit>
+            <trans-unit id="fYsT8a0">
+                <source>narration.guided_step_config_health_check_run</source>
+                <target>Lance el control con el botón situado en la parte superior de la página. Se pone en cola una tarea por familia de comprobaciones: la página no espera nada, los resultados llegan poco a poco.</target>
+            </trans-unit>
+            <trans-unit id="CibE15s">
+                <source>narration.guided_step_config_maintenance_check</source>
+                <target>Compruebe lo que ven sus visitantes: abra el sitio en una ventana de navegación privada, es exactamente lo que tienen delante.</target>
+            </trans-unit>
+            <trans-unit id="bGWMIU3">
+                <source>narration.guided_step_config_maintenance_disable</source>
+                <target>Haga clic en el mismo acceso directo, cuya etiqueta ha cambiado: vuelve a poner el sitio en línea.</target>
+            </trans-unit>
+            <trans-unit id="Cu_DaBS">
+                <source>narration.guided_step_config_maintenance_done</source>
+                <target>Ahora ya lo sabe: el cambio está a un clic. Nada le obliga a avisar con antelación por una intervención de unos minutos.</target>
+            </trans-unit>
+            <trans-unit id="Vbk0ouS">
+                <source>narration.guided_step_config_maintenance_enable</source>
+                <target>Haga clic en el acceso directo de mantenimiento: sus visitantes reciben enseguida la página de mantenimiento, mientras que usted, conectado, sigue viendo el sitio.</target>
+            </trans-unit>
+            <trans-unit id="nYZwnfu">
+                <source>narration.guided_step_config_maintenance_open</source>
+                <target>El panel le devuelve al tablero. Sus accesos directos son acciones inmediatas, sin pantalla intermedia.</target>
+            </trans-unit>
+            <trans-unit id="59LPu8b">
+                <source>narration.guided_step_config_not_found_create</source>
+                <target>En esa fila, haga clic en el botón que crea la redirección: abre un formulario con la ruta rota ya rellenada.</target>
+            </trans-unit>
+            <trans-unit id="75YQjtn">
+                <source>narration.guided_step_config_not_found_done</source>
+                <target>El enlace vuelve a responder: esa ruta lleva a la página elegida, tanto para un visitante como para un buscador. La fila permanece en la lista mientras algo siga tocándola.</target>
+            </trans-unit>
+            <trans-unit id="nD1m.i7">
+                <source>narration.guided_step_config_not_found_from</source>
+                <target>El primer campo ya está relleno. Nada que escribir: es la ruta que le mostró la lista, copiada tal cual.</target>
+            </trans-unit>
+            <trans-unit id="_1uk958">
+                <source>narration.guided_step_config_not_found_open</source>
+                <target>Empecemos por las páginas no encontradas. En la columna de la izquierda, bajo «Avanzado», el panel le lleva a su lista. Estas filas las escriben las propias peticiones, nunca se añaden a mano.</target>
+            </trans-unit>
+            <trans-unit id="oomn1I3">
+                <source>narration.guided_step_config_not_found_row</source>
+                <target>Lea la primera fila: la ruta visitada más recientemente va primero. Su número de visitas dice cuánto tráfico se pierde, y la columna interna dice si el enlace roto está en sus propias páginas. Ese se corrige editando la página, no con una redirección.</target>
+            </trans-unit>
+            <trans-unit id=".QoEjor">
+                <source>narration.guided_step_config_not_found_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="7l4ApyP">
+                <source>narration.guided_step_config_not_found_to</source>
+                <target>En el campo siguiente, diga adónde debe llevar esa ruta a partir de ahora. Es la única decisión que le queda.</target>
+            </trans-unit>
+            <trans-unit id="TnV5eu0">
+                <source>narration.guided_step_config_settings_alerts</source>
+                <target>Vea lo que hace con ello el tablero: las entradas esenciales que quedan vacías aparecen ahí como alertas, hasta que se rellenan.</target>
+            </trans-unit>
+            <trans-unit id="eDf_oz0">
+                <source>narration.guided_step_config_settings_entry</source>
+                <target>Abra una entrada con el botón de modificación, al final de su fila. Cada entrada la declara el bundle que la usa, que fija su etiqueta, su tipo y su grupo.</target>
+            </trans-unit>
+            <trans-unit id="tYy0SvG">
+                <source>narration.guided_step_config_settings_group</source>
+                <target>Elija un grupo en la lista. Identidad, correos, avisos legales, seguridad: cada uno reúne las entradas de un mismo tema.</target>
+            </trans-unit>
+            <trans-unit id="9_lFHaB">
+                <source>narration.guided_step_config_settings_open</source>
+                <target>El panel le lleva a la configuración del sitio. Todos los ajustes viven aquí, agrupados por tema: ninguno hay que escribirlo en un archivo.</target>
+            </trans-unit>
+            <trans-unit id="Nmyq_ZH">
+                <source>narration.guided_step_config_settings_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="g0CmdpY">
+                <source>narration.guided_step_config_settings_save_stay</source>
+                <target>Antes de cambiar de idioma, guarde con el botón que mantiene abierto el formulario: el cambio recarga la pantalla y un valor no guardado se perdería.</target>
+            </trans-unit>
+            <trans-unit id="sJiuedR">
+                <source>narration.guided_step_config_settings_translate</source>
+                <target>En la parte superior del formulario, elija un idioma en las pestañas y escriba el valor en ese idioma. El nombre del ajuste no cambia: sólo cambia lo que dice.</target>
+            </trans-unit>
+            <trans-unit id="5y4RUl6">
+                <source>narration.guided_step_config_settings_value</source>
+                <target>Introduzca el valor en el campo del formulario. Una entrada marcada como sensible se cifra en la base de datos y nunca vuelve a mostrarse en claro.</target>
+            </trans-unit>
+            <trans-unit id="UguEqcj">
+                <source>narration.guided_step_config_url_metadata_done</source>
+                <target>Vea lo que eso cambia: el control de calidad de los contenidos deja de señalar esta url, y un enlace hacia ella lleva ahora un título en lugar de una dirección desnuda.</target>
+            </trans-unit>
+            <trans-unit id="KlRi7ZC">
+                <source>narration.guided_step_config_url_metadata_edit</source>
+                <target>Elija una url que describir y ábrala con el botón de modificación. Las filas las declaran los bundles que sirven esas direcciones: ninguna se añade a mano, solo lo que dicen le corresponde a usted.</target>
+            </trans-unit>
+            <trans-unit id="oRtK0u1">
+                <source>narration.guided_step_config_url_metadata_image</source>
+                <target>Añada la imagen para compartir. Sin ella, una red social recurre a la imagen por defecto del sitio, que describe el sitio y nunca esta dirección en concreto.</target>
+            </trans-unit>
+            <trans-unit id="9Tq6Ji4">
+                <source>narration.guided_step_config_url_metadata_open</source>
+                <target>El panel le lleva a las descripciones de urls: una fila por cada dirección servida por un listado y no por un contenido propio, como un índice de blog, una galería o una página de búsqueda.</target>
+            </trans-unit>
+            <trans-unit id="6cZyyM8">
+                <source>narration.guided_step_config_url_metadata_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
+            </trans-unit>
+            <trans-unit id="BYohRCV">
+                <source>narration.guided_step_config_url_metadata_summary</source>
+                <target>Escriba después el resumen, dos frases como máximo: es lo que aparece bajo el título en un resultado de búsqueda, y junto al enlace cuando se comparte la página.</target>
+            </trans-unit>
+            <trans-unit id="OlELs4x">
+                <source>narration.guided_step_config_url_metadata_title</source>
+                <target>Escriba el título en el primer campo. Es la línea que un buscador muestra encima de la dirección, y la que lleva la pestaña del navegador.</target>
+            </trans-unit>
+            <trans-unit id="2nHgm8X">
+                <source>narration.health_check</source>
+                <target>«Estado de salud» revisa el sitio a fondo visto desde fuera: rendimiento, accesibilidad, errores de consola, página por página, bajo demanda o periódicamente.</target>
+            </trans-unit>
+            <trans-unit id="Dgj9o_a">
+                <source>narration.not_founds</source>
+                <target>«Enlaces rotos» recoge las direcciones que ya no existen y a las que alguien ha llegado siguiendo un enlace. Solo se registran las peticiones que vienen de un enlace, nunca los intentos de intrusión.</target>
+            </trans-unit>
+            <trans-unit id="S3k1pWH">
+                <source>narration.redirects</source>
+                <target>«Redirecciones» lleva los envíos de una dirección a otra. Compruebe siempre las dos direcciones: un error rompe un enlace, o hace que el visitante dé vueltas en círculo.</target>
+            </trans-unit>
+            <trans-unit id="7UEVTAj">
+                <source>narration.site_link</source>
+                <target>El último enlace abre el sitio mismo en una nueva pestaña, tal como lo ven sus visitantes.</target>
+            </trans-unit>
+            <trans-unit id="lRnR3Ht">
+                <source>narration.url_metadata</source>
+                <target>«Descripciones de urls» lleva el título y el resumen de las páginas que ninguna ficha describe: los listados, los listados filtrados, las páginas herramienta. Una página respaldada por una ficha, un producto o una foto ya dice lo que es y no tiene nada que hacer aquí.</target>
+            </trans-unit>
+            <trans-unit id="ryA9n4C">
+                <source>narration.users</source>
+                <target>«Usuarios» lista las cuentas del sitio. Puede cambiar ahí los roles de una persona: el cambio surte efecto enseguida sobre sus derechos de acceso al back-office.</target>
+            </trans-unit>
+            <trans-unit id="JVTtJoh">
+                <source>narration.whatsnew</source>
+                <target>«Novedades» cuenta lo que ha cambiado recientemente en este tablero y en todos los bundles instalados.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

@@ -44,6 +44,8 @@ class ScaffoldThemeTest extends TestCase
         '--bs-secondary-bg',
         '--bs-secondary-color',
         '--bs-tertiary-bg',
+        '--bs-warning-bg-subtle',
+        '--bs-warning-border-subtle',
         '--c975l-button-color',
         '--c975l-button-color-dark-mode',
         '--c975l-button-icon-invert',
@@ -61,6 +63,7 @@ class ScaffoldThemeTest extends TestCase
         '--c975l-font-family-accent',
         '--c975l-font-family-body',
         '--c975l-font-family-title',
+        '--form-fieldset-border-color',
     ];
 
     // Set inside the rules of each variant - .section--bg-* for the flats, .card--accent-* for the twelve card hues - so one value in :root would collapse every variant into a single look (the scaffold's own header says as much). A design retunes the tokens those rules point at instead: --section-bg-* for the flats, --block-accent-* for the hues, both of which the scaffold does offer. --rating-icon-on is the narrowest of the lot: one per glyph the rating offers (.rating--star, --heart, --thumbs-up, --face-smile), the color belonging to the sign rather than to the site - a value in :root would paint a heart and a star alike again, which is the whole point of it. A site wanting one accent back on every glyph sets --rating-on, which the scaffold does offer and which wins over all four. --card-accent-color and --card-accent-invert are narrower still: only the four light hues (orange, yellow, lime, teal) set them, the eight others falling back on .card-header's own var() defaults. A site retuning one of those eight towards a light hue restates them in its own .card--accent-* rule - see the "Card accents" section of the README. --flip-card-ratio is the same shape one step further: only the eight .flip-card-ratio-* classes set it, one per shape an editor picks per card, and a card left on "free" declares none at all - a value in :root would give every flip card on the site one shape, which is the field's whole point undone. --block-radius and --block-shadow are that same shape again, one per step of the "rounded corners" and "shadow" fields (.block-radius-* / .block-shadow-*): the scale behind them is what a design retunes, and the scaffold does offer it as --block-radius-* / --block-shadow-*
@@ -162,12 +165,8 @@ class ScaffoldThemeTest extends TestCase
         ));
     }
 
-    /**
-     * The tokens the bundle declares, read off the compiled stylesheet rather than the sass so the test
-     * sees what a browser sees. They sit in "@layer ui-defaults", which any unlayered :root overrides.
-     *
-     * @return array<string, string>
-     */
+    // The tokens the bundle declares, read off the compiled stylesheet rather than the sass so the test sees what a browser sees: they sit in "@layer ui-defaults", which any unlayered :root overrides
+    /** @return array<string, string> */
     private function compiledRoot(): array
     {
         $css = (string) file_get_contents(dirname(__DIR__, 2) . '/public/css/styles.css');

@@ -39,9 +39,18 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[AdminDashboard(routePath: '/management', routeName: 'management')]
+#[AdminDashboard(routePath: DashboardController::ROUTE_PATH, routeName: 'management')]
 class DashboardController extends AbstractDashboardController
 {
+    // Where the whole back office lives - read by everything that has to tell a management request from a front one (see LocaleListener, MaintenanceListener) rather than spelt again in each
+    public const string ROUTE_PATH = '/management';
+
+    // The frontier the constant alone does not draw: a front route named "/management-de-projet" starts with it and is no part of the back office, and read as one it would answer in the back office's language and stay served while the site is down
+    public static function isManagementPath(string $path): bool
+    {
+        return self::ROUTE_PATH === $path || str_starts_with($path, self::ROUTE_PATH . '/');
+    }
+
     // 20 services injected, past the sixteen phpmd.xml.dist calls the limit: owed a grouping of its own, not silenced for good
     /** @SuppressWarnings(PHPMD.ExcessiveParameterList) */
     public function __construct(

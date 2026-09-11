@@ -23,6 +23,7 @@ use c975L\UiBundle\Service\MediaTranslator;
 use c975L\UiBundle\Service\TranslationFormContext;
 use c975L\UiBundle\Service\VideoPosterImporter;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PostSetDataEvent;
 use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -51,6 +52,10 @@ class BlockType extends AbstractType
 
     // How a language screen names the sub-form carrying one media's texts. A name of its own, never "medias": that collection has a choreography of its own around add/remove and file uploads (see onPreSubmit), which a translation has no business crossing
     private const string MEDIA_TRANSLATION_PREFIX = 'mediaTranslation_';
+
+    // The repeated texts each block held before this submission, by block id: a translation names the place it sits at ("cards.0.title"), so a card that moved would leave its own on whatever card took its index. Read in PRE_SUBMIT, where the form still holds the row as it was
+    /** @var array<int, array<string, string|null>> */
+    private array $sourceBeforeSubmit = [];
 
     // The proof that the screen really rendered those sub-forms, on the pattern SLOTS_RENDERED already sets. A child a theme never rendered is submitted as null all the same, which reads exactly like a field an editor emptied on purpose - and stored, it would take away on every save what the language screen or the translation pass had written. Nothing is staged unless this comes back
     private const string MEDIA_TRANSLATIONS_RENDERED = 'mediaTranslationsRendered';
@@ -89,6 +94,11 @@ class BlockType extends AbstractType
 
         // Load the sub-form `data` dynamically according to the block kind
         $builder->addEventListener(FormEvents::PRE_SET_DATA, fn (PreSetDataEvent $event) => $this->onPreSetData($event, $options['context'], $options['translation_locale']));
+
+        // Filter the collections of a language screen again, once Symfony has given "data" its own data: that is when a collection builds its entries (ResizeFormListener, on POST_SET_DATA), and an unmapped sub-form is given its data by the mapper this event follows - so whatever was taken off an entry beforehand is put back moments later
+        if (null !== $options['translation_locale']) {
+            $builder->addEventListener(FormEvents::POST_SET_DATA, fn (PostSetDataEvent $event) => $this->keepTranslatableCollections($event));
+        }
 
         // Re-add the sub-form `data` BEFORE Symfony maps submitted values (PRE_SUBMIT), so the correct FormType is in place when the mapping happens.
         $builder->addEventListener(FormEvents::PRE_SUBMIT, fn (FormEvent $event) => $this->onPreSubmit($event, $options['translation_locale']));
@@ -149,22 +159,24 @@ class BlockType extends AbstractType
             return;
         }
 
-        $block = $event->getForm()->getData();
+        // Narrowed once: a brand new collection entry has no block behind it yet, and every step below reads it the same way
+        $data = $event->getForm()->getData();
+        $block = $data instanceof Block ? $data : null;
 
         // Already cached by the render that put this form on screen, save for a block the submission itself brings in
-        if (null !== $translationLocale && $block instanceof Block) {
+        if (null !== $translationLocale && null !== $block) {
             $this->contentTranslator?->preloadBlocks([$block], $translationLocale);
         }
 
-        $this->addDataSubForm($event->getForm(), $kind, $block instanceof Block ? $block : null, $translationLocale);
+        $this->addDataSubForm($event->getForm(), $kind, $block, $translationLocale);
 
         // Picking another kind swaps the "data" sub-form client-side (see block.js) and nothing else: whatever the previous kind rendered around it - the per-image metadata of its medias, its slots - is still in the DOM and still posted. A key no field claims fails the whole form with "This form should not contain extra fields", which is why switching a kind used to take two saves, the browser having re-rendered the form for the new kind on the failed one, losing whatever was typed in between. What the new kind cannot receive is dropped from the submission below, here rather than client-side so a submission that never went through the picker is covered too
-        $previousKind = $block instanceof Block ? $block->getKind() : null;
+        $previousKind = $block?->getKind();
         $kindChanged = null !== $previousKind && $previousKind !== $kind;
 
-        // Left alone exactly as they were left out of the render above: re-adding the media sub-form against a submission that never carried one has CollectionType's resize listener read it as "every row removed", and the block's files go with them at flush
+        // Everything a language screen has no part in: its medias were left out of the render, and the snapshot below belongs to the screen the block is written on
         if (null === $translationLocale) {
-            $this->applySubmittedMedias($event, $kind, $kindChanged);
+            $this->applySubmittedWritingScreen($event, $kind, $block, $kindChanged);
         }
 
         $this->applySubmittedContainer($event, $kind, $kindChanged, $translationLocale);
@@ -174,6 +186,17 @@ class BlockType extends AbstractType
         if (null === $translationLocale) {
             $event->getForm()->remove('animation');
             $this->addAnimationField($event->getForm());
+        }
+    }
+
+    // What only the screen a block is written on does with a submission: re-adding the media sub-form against a submission that never carried one has CollectionType's resize listener read it as "every row removed", and the block's files go with them at flush
+    private function applySubmittedWritingScreen(FormEvent $event, string $kind, ?Block $block, bool $kindChanged): void
+    {
+        $this->applySubmittedMedias($event, $kind, $kindChanged);
+
+        // Snapshot before anything is mapped, for the purge that runs once the new data is in (see purgeMovedCollectionTranslations)
+        if (null !== $block && null !== $block->getId()) {
+            $this->sourceBeforeSubmit[$block->getId()] = $this->collectionTexts($kind, $block->getData());
         }
     }
 
@@ -271,7 +294,70 @@ class BlockType extends AbstractType
             return;
         }
 
+        $this->purgeMovedCollectionTranslations($block);
+
         $this->videoPosterImporter?->importIfRequested($block);
+    }
+
+    // Drops the translations of a repeated text the source no longer says at that place: the text the site is written in is the msgid, and when it moves its translation goes with it - the rule untouched() applies to a single field
+    private function purgeMovedCollectionTranslations(Block $block): void
+    {
+        $id = $block->getId();
+        $before = null === $id ? null : ($this->sourceBeforeSubmit[$id] ?? null);
+
+        if (null === $id || null === $before || null === $this->contentTranslator) {
+            return;
+        }
+
+        unset($this->sourceBeforeSubmit[$id]);
+
+        $gone = $this->movedFields($before, $this->collectionTexts((string) $block->getKind(), $block->getData()));
+
+        foreach ([] === $gone ? [] : $this->contentTranslator->getTranslatableLocales() as $locale) {
+            $this->contentTranslator->stage(Translation::OWNER_BLOCK, $id, $locale, $gone);
+        }
+    }
+
+    // The places the source no longer says what it said, staged as nothing: compared on the words alone, as every other source/translation comparison here is, a raw !== reading a card nobody touched as a rewritten one
+    /**
+     * @param array<string, string|null> $before
+     * @param array<string, string|null> $after
+     *
+     * @return array<string, null>
+     */
+    private function movedFields(array $before, array $after): array
+    {
+        $plain = static fn (?string $text): ?string => null === $text ? null : ContentTranslator::plain($text);
+
+        $gone = [];
+        foreach ($before as $field => $text) {
+            if ($plain($after[$field] ?? null) !== $plain($text)) {
+                $gone[$field] = null;
+            }
+        }
+
+        return $gone;
+    }
+
+    // The repeated texts of a block's data, flat: "cards.0.title" => the words it holds
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, string|null>
+     */
+    private function collectionTexts(string $kind, array $data): array
+    {
+        $texts = [];
+
+        foreach ($this->registry->getTranslatableCollections($kind) as $collection => $keys) {
+            foreach (is_array($data[$collection] ?? null) ? $data[$collection] : [] as $index => $entry) {
+                foreach (is_array($entry) ? $keys : [] as $key) {
+                    $texts[$collection . '.' . $index . '.' . $key] = is_string($entry[$key] ?? null) ? $entry[$key] : null;
+                }
+            }
+        }
+
+        return $texts;
     }
 
     // Hands what was just written over to ContentTranslator, which keeps it until the flush that saves the block
@@ -288,9 +374,10 @@ class BlockType extends AbstractType
             return;
         }
 
+        $kind = (string) $block->getKind();
         $original = $block->getData();
         $values = [];
-        foreach ($this->registry->getTranslatable((string) $block->getKind()) as $field) {
+        foreach ($this->registry->getTranslatable($kind) as $field) {
             if (!array_key_exists($field, $submitted)) {
                 continue;
             }
@@ -299,9 +386,38 @@ class BlockType extends AbstractType
             $values[$field] = ContentTranslator::untouched($value, $original[$field] ?? null) ? null : $value;
         }
 
+        $values += $this->stagedCollectionValues($kind, $original, $submitted);
+
         if ([] !== $values) {
             $this->contentTranslator->stage(Translation::OWNER_BLOCK, $id, $locale, $values);
         }
+    }
+
+    // The repeated texts a language screen just wrote, flattened one entry at a time and only for the entries the source still holds: the screen is unmapped, so a card added there writes nothing anyway, and a row named after it would sit in the table for good
+    /**
+     * @param array<string, mixed> $original
+     * @param array<string, mixed> $submitted
+     *
+     * @return array<string, string|null>
+     */
+    private function stagedCollectionValues(string $kind, array $original, array $submitted): array
+    {
+        $values = [];
+
+        foreach ($this->registry->getTranslatableCollections($kind) as $collection => $keys) {
+            foreach (is_array($original[$collection] ?? null) ? $original[$collection] : [] as $index => $entry) {
+                foreach (is_array($entry) ? $keys : [] as $key) {
+                    if (!array_key_exists($key, $submitted[$collection][$index] ?? [])) {
+                        continue;
+                    }
+
+                    $value = $submitted[$collection][$index][$key];
+                    $values[$collection . '.' . $index . '.' . $key] = ContentTranslator::untouched($value, $entry[$key] ?? null) ? null : $value;
+                }
+            }
+        }
+
+        return $values;
     }
 
     // One sub-form per media the block hangs, each carrying that media's own texts in the language being written, named by the media's id rather than gathered in a collection: nothing is added or removed here - a media is put on a block once, in the language it was composed in - so there is no resize listener to satisfy and reading the submission back is a lookup rather than a walk
@@ -378,13 +494,40 @@ class BlockType extends AbstractType
         $stored = $this->contentTranslator?->values(Translation::OWNER_BLOCK, (int) $block->getId(), $locale) ?? [];
 
         foreach ($this->registry->getTranslatable($kind) as $field) {
-            $translated = $stored[$field] ?? null;
-            $original[$field] = null !== $translated && '' !== $translated
-                ? $translated
-                : ContentTranslator::prompt($original[$field] ?? null);
+            $original[$field] = $this->promptValue($stored[$field] ?? null, $original[$field] ?? null);
+        }
+
+        return $this->promptCollections($kind, $original, $stored);
+    }
+
+    // The same, entry by entry: a card's title opens on what that language says of that card, or on its own words between brackets
+    /**
+     * @param array<string, mixed>       $original
+     * @param array<string, string|null> $stored
+     *
+     * @return array<string, mixed>
+     */
+    private function promptCollections(string $kind, array $original, array $stored): array
+    {
+        foreach ($this->registry->getTranslatableCollections($kind) as $collection => $keys) {
+            if (!is_array($original[$collection] ?? null)) {
+                continue;
+            }
+
+            foreach ($original[$collection] as $index => $entry) {
+                foreach (is_array($entry) ? $keys : [] as $key) {
+                    $original[$collection][$index][$key] = $this->promptValue($stored[$collection . '.' . $index . '.' . $key] ?? null, $entry[$key] ?? null);
+                }
+            }
         }
 
         return $original;
+    }
+
+    // What that language already says, or the source text between brackets where it says nothing yet
+    private function promptValue(mixed $translated, mixed $source): ?string
+    {
+        return is_string($translated) && '' !== $translated ? $translated : ContentTranslator::prompt($source);
     }
 
     // "slots" absent from the submission means one of two very different things: the editor removed the last slot - an HTML form cannot represent an empty array, only an absent key, same as "medias" - or this form never carried the collection at all. A kind just switched to a container client-side, a body PHP truncated at max_input_vars, a DOM something rewrote: all three arrive as that same absent key. Read as the first, the second deletes every slot, cascaded and orphan-removed, with nothing left to say it ever happened - which is how a live page lost the cards of a section_cards block. The marker is what tells the two apart. The submitted collection itself counts as its own proof: an edit page opened before the marker existed still carries its slots, and must go on saving rather than fail as an extra field. "Neither", and a body PHP cut short, both mean nothing submitted says what the editor removed.
@@ -525,15 +668,81 @@ class BlockType extends AbstractType
         }
     }
 
+    // The other half of keepTranslatableFields, run late: a collection's entries do not exist when "data" is added, and are rebuilt from scratch every time it is given its data, so the entries are pruned here rather than there
+    private function keepTranslatableCollections(PostSetDataEvent $event): void
+    {
+        $block = $event->getData();
+        $form = $event->getForm();
+
+        if (!$block instanceof Block || !$form->has('data')) {
+            return;
+        }
+
+        $kind = (string) $block->getKind();
+        $data = $form->get('data');
+
+        foreach ($this->registry->getTranslatableCollections($kind) as $collection => $keys) {
+            if ($data->has($collection)) {
+                $this->keepTranslatableEntries($data->get($collection), $keys);
+            }
+        }
+    }
+
     // A language screen offers what a language can change and nothing else: a colour, a link target or an image has one value for the whole site, and rendering it here would invite an editor to set it per language, which nothing would then read
     private function keepTranslatableFields(FormInterface $data, string $kind): void
     {
         $translatable = $this->registry->getTranslatable($kind);
+        $collections = $this->registry->getTranslatableCollections($kind);
+
+        // Locked before that read, while the collections still hold no entry: their size is what a language screen must not change, and rebuilding one afterwards would throw away the entries just built
+        foreach (array_keys($collections) as $collection) {
+            if ($data->has($collection)) {
+                $this->lockCollectionSize($data, $collection);
+            }
+        }
+
+        // Read once, for the side effect: a collection's entries are built by its resize listener when the form holding it is given its data, and a sub-form added with a "data" option is only given it the first time it is read - lazily, at render. Without this the entries below do not exist yet, nothing is taken off them, and every field of every card comes back on submission as one the form never declared, which invalidates the whole page and writes nothing
+        if ([] !== $collections) {
+            $data->getData();
+        }
 
         // Named first, then removed: taking children off the form being walked skips every other one
         foreach (array_keys($data->all()) as $name) {
+            if (isset($collections[$name])) {
+                $this->keepTranslatableEntries($data->get($name), $collections[$name]);
+
+                continue;
+            }
+
             if (!in_array($name, $translatable, true)) {
                 $data->remove($name);
+            }
+        }
+    }
+
+    // A language screen offers neither Add nor Delete: a card taken away there would be taken away from every language, and one added is dropped without a word, the sub-form being unmapped. Rebuilt rather than reconfigured, a form's options being read-only once it is built
+    private function lockCollectionSize(FormInterface $data, string $name): void
+    {
+        $collection = $data->get($name);
+        $config = $collection->getConfig();
+
+        $data->add($name, $config->getType()->getInnerType()::class, [
+            ...$config->getOptions(),
+            'allow_add' => false,
+            'allow_delete' => false,
+            'prototype' => false,
+        ]);
+    }
+
+    // The same rule one level down, for a collection a kind declares repeated texts in: each entry keeps its prose and loses the rest, an icon or a pair of coordinates saying the same thing in every language. The entries themselves are left alone here, their number being locked above
+    /** @param list<string> $keys */
+    private function keepTranslatableEntries(FormInterface $collection, array $keys): void
+    {
+        foreach ($collection as $entry) {
+            foreach (array_keys($entry->all()) as $name) {
+                if (!in_array($name, $keys, true)) {
+                    $entry->remove($name);
+                }
             }
         }
     }

@@ -24,8 +24,10 @@ use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSetDataEvent;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormConfigInterface;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\ResolvedFormTypeInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -36,7 +38,7 @@ class BlockTypeTest extends TestCase
     private function createRouter(): UrlGeneratorInterface
     {
         $router = $this->createStub(UrlGeneratorInterface::class);
-        $router->method('generate')->willReturn('/ui/block/data-form');
+        $router->method('generate')->willReturn('/management/ui/block/data-form');
 
         return $router;
     }
@@ -588,6 +590,100 @@ class BlockTypeTest extends TestCase
         $this->dispatchTranslationPostSubmit($translator, $block, ['content' => '<div>[</div><p>Bienvenue</p><div>]</div>']);
     }
 
+    // A rich text editor hands back what it was given re-serialised: compared raw, a card nobody touched reads as a rewritten one, and one save with no change at all takes away every translation the block holds
+    public function testACardWhoseTextComesBackReSerialisedKeepsItsTranslations(): void
+    {
+        $translator = $this->createMock(ContentTranslator::class);
+        $translator->expects($this->never())->method('stage');
+
+        $this->invokePurge($translator, ['cards.0.title' => 'Hello world'], [['title' => '<p>Hello&nbsp;world</p>']]);
+    }
+
+    // The rule the purge is there for: the words sitting at that place are no longer the ones that were translated, so the translation goes with them
+    public function testACardWhoseTextWasRewrittenDropsItsTranslations(): void
+    {
+        $translator = $this->createMock(ContentTranslator::class);
+        $translator->method('getTranslatableLocales')->willReturn(['es']);
+        $translator->expects($this->once())->method('stage')->with(Translation::OWNER_BLOCK, 7, 'es', ['cards.0.title' => null]);
+
+        $this->invokePurge($translator, ['cards.0.title' => 'Hello world'], [['title' => 'Goodbye world']]);
+    }
+
+    // Fires the purge on a block whose cards held $before and now hold $cards
+    private function invokePurge(ContentTranslator $translator, array $before, array $cards): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('getTranslatableCollections')->willReturn(['cards' => ['title']]);
+
+        $type = new BlockType($registry, $this->createRouter(), null, null, $translator);
+        new \ReflectionProperty(BlockType::class, 'sourceBeforeSubmit')->setValue($type, [7 => $before]);
+
+        new \ReflectionMethod(BlockType::class, 'purgeMovedCollectionTranslations')
+            ->invoke($type, $this->createBlockWithId(7, ['cards' => $cards]));
+    }
+
+    // Add and Delete would each offer what nothing can carry out: an entry added on a language screen is accepted, then dropped without a word, the sub-form being unmapped and only the entries of the source ever staged
+    public function testALanguageScreenLocksTheSizeOfItsTranslatableCollections(): void
+    {
+        $rebuilt = $this->lockedCollectionOptions();
+
+        $this->assertFalse($rebuilt['allow_add'], 'A card added on a language screen would be dropped without a word.');
+        $this->assertFalse($rebuilt['allow_delete'], 'A card taken away from a language screen would be taken away from every language.');
+        $this->assertFalse($rebuilt['prototype'], 'A prototype cloned here would carry the icon and the link the screen has just taken off every entry.');
+    }
+
+    // Everything else the kind declared about its collection is carried over, the rebuild being about its size alone
+    public function testTheRebuiltCollectionKeepsTheOptionsTheKindDeclared(): void
+    {
+        $this->assertSame('cards', $this->lockedCollectionOptions()['entry_options']['context']);
+    }
+
+    // The options "data"'s collection is rebuilt with when a language screen prunes its fields
+    private function lockedCollectionOptions(): array
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('getTranslatable')->willReturn([]);
+        $registry->method('getTranslatableCollections')->willReturn(['cards' => ['title']]);
+
+        $config = $this->createStub(FormConfigInterface::class);
+        $config->method('getOptions')->willReturn([
+            'entry_type' => 'FaqEntryType',
+            'entry_options' => ['context' => 'cards'],
+            'allow_add' => true,
+            'allow_delete' => true,
+            'prototype' => true,
+        ]);
+        $config->method('getType')->willReturn($this->resolvedCollectionType());
+
+        $collection = $this->createStub(FormInterface::class);
+        $collection->method('getConfig')->willReturn($config);
+
+        $rebuilt = [];
+        $data = $this->createStub(FormInterface::class);
+        $data->method('has')->willReturn(true);
+        $data->method('get')->willReturn($collection);
+        $data->method('all')->willReturn([]);
+        $data->method('add')->willReturnCallback(function (string $name, ?string $fieldType = null, array $fieldOptions = []) use (&$rebuilt, $data) {
+            $rebuilt = $fieldOptions;
+
+            return $data;
+        });
+
+        new \ReflectionMethod(BlockType::class, 'keepTranslatableFields')
+            ->invoke(new BlockType($registry, $this->createRouter()), $data, 'faq');
+
+        return $rebuilt;
+    }
+
+    // The resolved type a CollectionType child reports, which the rebuild reads its class from rather than naming one
+    private function resolvedCollectionType(): ResolvedFormTypeInterface
+    {
+        $resolved = $this->createStub(ResolvedFormTypeInterface::class);
+        $resolved->method('getInnerType')->willReturn(new CollectionType());
+
+        return $resolved;
+    }
+
     private function createBlockWithId(int $id, array $data): Block
     {
         $block = new Block();
@@ -653,6 +749,37 @@ class BlockTypeTest extends TestCase
         foreach ($listeners[FormEvents::POST_SUBMIT] as $listener) {
             $listener(new PostSubmitEvent($form, $block));
         }
+    }
+
+    // A collection builds its entries on POST_SET_DATA, and an unmapped sub-form is given its data by the mapper that event follows: pruned any earlier, the entries are rebuilt whole moments later, and every field of every card comes back on submission as one the form never declared
+    public function testALanguageScreenPrunesItsCollectionsOnceTheDataIsSet(): void
+    {
+        $this->assertArrayHasKey(FormEvents::POST_SET_DATA, $this->listenersFor('es'));
+    }
+
+    // The no-regression contract: nothing is pruned on the screen the block was written on, where every field of a card is the editor's to change
+    public function testAnOrdinaryScreenRegistersNoSuchListener(): void
+    {
+        $this->assertArrayNotHasKey(FormEvents::POST_SET_DATA, $this->listenersFor(null));
+    }
+
+    // The listeners BlockType registers for a given language screen, by event
+    /** @return array<string, list<callable>> */
+    private function listenersFor(?string $translationLocale): array
+    {
+        $listeners = [];
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturnSelf();
+        $builder->method('addEventListener')->willReturnCallback(function (string $event, callable $listener) use (&$listeners, $builder) {
+            $listeners[$event][] = $listener;
+
+            return $builder;
+        });
+
+        new BlockType($this->createStub(BlockRegistry::class), $this->createRouter())
+            ->buildForm($builder, ['context' => null, 'translation_locale' => $translationLocale]);
+
+        return $listeners;
     }
 
     // A slot rendered without the language would edit itself mapped, and what an editor writes in another language would land on the text the site was written in - one level down from the block the screen was opened on

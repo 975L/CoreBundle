@@ -1139,6 +1139,10 @@ That server-side check is what allows `assets/js/mobile-file-accept.js` (loaded 
 
 `translatable` lists the keys of the kind's own `data` another language may cover, read back with `BlockRegistry::getTranslatable()`. Nothing declared means nothing translatable, which is what every kind means until it says otherwise: there's **no discovery from the form type**, a text field holding a css class or an icon name having no business being offered for translation. It only ever does anything on a site declaring several languages (see "Translating a block's content" below).
 
+A key written `cards[].title` names a **repeated text** instead: a kind holding a whole collection as json - a FAQ's questions and answers, a grid's cards, the steps of a process, the points of a map - has prose a visitor reads like any other, and `BlockRegistry::getTranslatableCollections()` reads those back as `collection => the fields of one entry`. What is translated is one field of one entry, so a translation names it by its place (`cards.0.title`), read off the data rather than declared: a card deleted in the language the site is written in has nothing left to say in any other, and its rows go with it.
+
+On a language screen such a collection is rendered with its entries and **without Add or Delete**: a page is composed once, in the language it was written in, and a card taken away there would be taken away from every language at once.
+
 **Un-registering a kind** is safe: a `Block` row outlives the tag that declared it, and `render_block()` skips a kind that is no longer registered rather than letting the registry throw. Dropping the tag - or uninstalling the bundle that declared it - blanks those blocks out of the pages holding them instead of taking the pages down with them. The rows themselves are left alone, so re-adding the tag brings them back.
 
 ---
@@ -1264,6 +1268,8 @@ class BookingDemoFixtureProvider implements DemoFixtureProviderInterface
 A bundle declares only what it owns, so a demo instance is seeded by the bundles it installs and by nothing else - which is what lets a demo be run one bundle at a time. A bundle offering both a showcase and a dataset is expected to build its entities once and hand them to the two.
 
 **This package ships no command to load that dataset, and no table to track it.** Loading it means emptying and rewriting rows in a real database, which is a demo site's business alone - so it lives in the demo application, next to the placeholder media only that site holds. Every other site installing this bundle gets the contract, the registry and nothing that writes.
+
+**`Service\DemoFixtureTranslator` seeds that dataset in every language the site declares**, taken from the very catalogues it was seeded from: a sample catalog holds translation keys rather than prose, and the same key read in another language is that row's translation - already written, proofread and shipped with the bundle. A provider calls `stage($entity, $ownerType, $domain, $keys)` as it builds each row, naming which catalogue key each translatable field was written from, then yields `translations()` through `DemoFixtureLinkerInterface` once the loader's first flush has given those rows their identifiers. A catalogue saying nothing in a language writes nothing, an untranslated row being what a reader already sees. The service is **not shared**: what one bundle stages is never yielded by another's linker, which would record those rows under the wrong bundle and take them back with it at the next `--bundle=xxx --unload`.
 
 A demo application reads `Registry\DemoFixtureRegistry` and does the rest its own way. The one thing worth copying from ours: **never empty a table.** A demo site keeps its own content - its pages, its menus, the showcase itself - in the very tables the dataset lands in, so record each row as it is persisted and take back only those.
 
@@ -1635,6 +1641,23 @@ What such a form writes is **staged rather than stored**: a form's POST_SUBMIT f
 
 On the language screen each media the block hangs gets a sub-form of its own (`Form\MediaTranslationType`, one per row rather than a collection, since nothing is added or removed there), carrying `data-media-translation` for a guided step to point at. A media saying nothing in any of the three is left off the screen entirely. On the front, `MediaTranslator::apply()` lays what the language says over the row through `Media::setTranslated()` - unmapped, read by the getters alone, so the twenty-odd templates saying `media.label` never hear about any of this, and Doctrine's changeset never writes the overlay back. A page reads its blocks, their slots and all their medias in two queries.
 
+**A block's own links follow the language being read.** A card's target, a call to action, a word linked inside a rich text, a portfolio card's own url: the html a block renders is offered to `Registry\InternalLinkLocalizerRegistry`, which chains the registered `Contract\InternalLinkLocalizerInterface` - each bundle rewriting the paths it owns and giving everything else back untouched. Offered the rendered html rather than the keys named "url", a link being as often a word inside a rich text as a field of its own, and outside the render cache like the nonce: where a link leads depends on what another page says in that language and on the url the visitor asked for, neither of which a block's entry is keyed or tagged on. A site with none registered - one declaring a single language, above all - leaves every link exactly as it was stored.
+
+```php
+use c975L\UiBundle\Contract\InternalLinkLocalizerInterface;
+
+class PageLinkLocalizer implements InternalLinkLocalizerInterface
+{
+    // Auto-discovered, no tag to write (see InternalLinkLocalizerPass)
+    public function localize(string $value): string
+    {
+        // "/pages/nos-ateliers" read in English becomes "/en/pages/nos-ateliers"; anything this bundle doesn't recognise comes back as it came
+    }
+}
+```
+
+The registry is chained rather than first-wins, a rich text holding links of several bundles at once. A link a template *generates* for a route of its own is ConfigBundle's `localized_path()`, see its readme.
+
 The render cache is already keyed by locale, and `BlockCacheInvalidationListener` watches `Translation` too - a row of another table otherwise touching no block, whose render in that language would go on being served as it stands. A media's translation names the media rather than the block, so the listener reads the media back to find the block whose entry went stale; `TranslationPurgeListener` takes a media's rows away with the media, orphan-removed from its block's collection the same way a form field is.
 
 ---
@@ -1871,7 +1894,7 @@ A site that never customized anything reports nothing at all — it simply keeps
 
 ## Generic Twig filters and functions
 
-Seven general-purpose helpers, none of them tied to blocks or media - they live here rather than in SiteBundle (where they started) so an app running on ConfigBundle + UiBundle alone still has them.
+Eight general-purpose helpers, none of them tied to blocks or media - they live here rather than in SiteBundle (where they started) so an app running on ConfigBundle + UiBundle alone still has them.
 
 | Helper | Role |
 | --- | --- |
@@ -1881,6 +1904,7 @@ Seven general-purpose helpers, none of them tied to blocks or media - they live 
 | `route_exists(name)` | Whether a route of that name is declared - what a shared template needs before linking to a route only some installs declare |
 | `template_exists(path)` | Whether `templates/<path>` exists in the app, for an override a bundle offers but doesn't ship |
 | `asset_exists(path)` | Whether `public/<path>` or `assets/<path>` exists, same idea for an optional image/stylesheet |
+| `\|language_name` | A language named in its own words the way a menu entry or a tab names it - `'es'\|language_name` gives "Español". Twig's own `locale_name` gives what Intl holds ("español", lowercase, which is how the word reads inside a sentence and reads as a mistake standing alone on a tab); only the first letter is touched, so "English" is untouched and a script without case comes back as it came |
 | `ui_can_hold_flash()` | Whether this visitor can hold a flash at all - reading `app.flashes` starts the session and carries no guard of its own, so a template printing flashes wraps that reading in this one (the bundle's own `layout.html.twig` and `Form` component do) |
 
 ## Reusable Twig components
@@ -3160,7 +3184,7 @@ A set of small, dependency-free helpers every c975L bundle attaching blocks or u
 | Helper | Role |
 | --- | --- |
 | `Service\UniqueSlug::build($slugger, $base, $collides)` | Normalizes a raw slug and appends `-2`, `-3`… until `$collides()` reports the candidate free. The scope uniqueness is checked against stays the caller's business (site-wide for a page, per-group for a collection item); only the suffixing is fixed here |
-| `Service\BlockFocusUrl::build($adminUrlGenerator, $crudFqcn, $entityId, $block)` | The EasyAdmin edit URL of a block's owner, optionally jumping straight to that block's own row (`focusBlock`) |
+| `Service\BlockFocusUrl::build($adminUrlGenerator, $crudFqcn, $entityId, $block, $extra)` | The EasyAdmin edit URL of a block's owner, optionally jumping straight to that block's own row (`focusBlock`). `$extra` carries the query parameters the owning bundle adds to that screen - the language a page is being read in, say, which only that bundle names |
 | `Service\BlockMoveRowAttrBuilder::build($ownerType, $ownerId)` | The `row_attr` array `ea-sortable.js` reads to drag a saved block into a container - URL, CSRF token and failure label included. A service, not a trait: no caller has to know the route id. Returns `[]` for an unsaved entity, so the sortable simply doesn't arm itself |
 | `Service\BuildFileWriter::write($projectDir, $filename, $contents)` | The one way a listener drops a generated stylesheet into `public/bundles/build/`. Written to a temp file then `rename()`d, so a request reading it mid-rewrite never gets half a stylesheet |
 | `Form\VichImageOptions::default($maxSize, $required)` | The five Vich image-upload options (`allow_delete`, `download_uri`, `asset_helper`, the `File` size constraint…), for both an EasyAdmin `setFormTypeOptions()` and a plain `FormBuilder::add()` |
@@ -3179,6 +3203,15 @@ A content export carries the blocks alone, never the `Form`/`EmailTemplate` a `f
 ### Forcing a download
 
 **`Controller\DownloadController`** (route `download_file`, `/download/{file}`) adds a `Content-Disposition: attachment` on top of a file the web server already serves from `public/` - what a "download this PDF" link needs. It is deliberately **not** merged with `Service\PrivateFileResponseFactory`, which serves the digital items bought through ShopBundle/CrowdfundingBundle from outside `public/` and keeps its own access checks.
+
+The same controller carries `asset_file` (`/asset/{file}`), the other half of the pair: the same file **opened in the browser** rather than saved (`Content-Disposition: inline`) - what a scanned deed, a photograph or a pdf book is looked at through. Its route takes any file name, so the action opens a media or a pdf and nothing else, read off the file's content: an `.htaccess`, an `index.php` or a `.user.ini` sitting in `public/` answers a 404. It is what a site puts behind an `access_control` rule to reserve its own files:
+
+```yaml
+    access_control:
+        - { path: ^/asset, roles: ROLE_USER }
+```
+
+Two differences with `download_file`, both deliberate. Its requirement takes any file name, spaces, accents and parentheses included - the files a site displays this way are named by whoever scanned them - so the action itself refuses any path holding a `..` segment, read off the path as it was asked for rather than off `realpath()`, which would turn a medias directory symlinked under `public/` into a 404. And its response is `private`, carrying `AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER` so the hour it is cached for survives a request with a session - a file served from behind a firewall is the visitor's own, never an intermediary's to hold.
 
 ---
 

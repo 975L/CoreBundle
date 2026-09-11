@@ -50,7 +50,7 @@ class LinkableRouteRegistryTest extends TestCase
         $this->assertTrue($registry->has('contact_index'));
         $this->assertTrue($registry->has('shop_index'));
         $this->assertSame(
-            ['label' => 'label.contact', 'translation_domain' => 'contact', 'route' => 'contact_index', 'params' => []],
+            ['label' => 'label.contact', 'translation_domain' => 'contact', 'route' => 'contact_index', 'params' => [], 'locales' => null],
             $registry->get('contact_index')
         );
     }
@@ -70,9 +70,21 @@ class LinkableRouteRegistryTest extends TestCase
         $registry = $this->createRegistry([$providerA, $providerB]);
 
         $this->assertSame([
-            'route-a' => ['label' => 'a', 'route' => 'route-a', 'params' => [], 'translation_domain' => false],
-            'route-b' => ['label' => 'b', 'route' => 'route-b', 'params' => [], 'translation_domain' => false],
+            'route-a' => ['label' => 'a', 'route' => 'route-a', 'params' => [], 'translation_domain' => false, 'locales' => null],
+            'route-b' => ['label' => 'b', 'route' => 'route-b', 'params' => [], 'translation_domain' => false, 'locales' => null],
         ], $registry->all());
+    }
+
+    // A menu item is written in the language being read only where its target answers in it, and an entry saying nothing is not the same as one answering "every language": the null is what tells MenuExtension to try the localised twin and fall back on it (see SiteBundle's MenuExtension::routeUrl())
+    public function testAnEntryKeepsTheLanguagesItDeclaresAndIsNullWhenItDeclaresNone(): void
+    {
+        $registry = $this->createRegistry([$this->createProvider([
+            'shop_index' => ['label' => 'label.shop', 'translation_domain' => 'shop', 'locales' => ['fr', 'en']],
+            'contact_index' => ['label' => 'label.contact', 'translation_domain' => 'contact'],
+        ])]);
+
+        $this->assertSame(['fr', 'en'], $registry->get('shop_index')['locales']);
+        $this->assertNull($registry->get('contact_index')['locales']);
     }
 
     // An entry standing for one row of a bundle's own data keys itself on that row and names what to generate its url with, its key not being a route name at all
@@ -90,6 +102,7 @@ class LinkableRouteRegistryTest extends TestCase
             'translation_domain' => false,
             'route' => 'gallery_category',
             'params' => ['category' => 'paysages'],
+            'locales' => null,
         ], $registry->get('gallery_category.12'));
     }
 

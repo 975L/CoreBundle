@@ -98,6 +98,14 @@
                 <source>narration.guided_step_config_settings_save</source>
                 <target>Save with the button at the bottom of the form.</target>
             </trans-unit>
+            <trans-unit id="g0CmdpY">
+                <source>narration.guided_step_config_settings_save_stay</source>
+                <target>Before switching language, save with the button that keeps the form open: switching reloads the screen, and a value not saved would be lost.</target>
+            </trans-unit>
+            <trans-unit id="sJiuedR">
+                <source>narration.guided_step_config_settings_translate</source>
+                <target>At the top of the form, pick a language in the tabs, then write the value in that language. The setting's name stays the same: only what it says changes.</target>
+            </trans-unit>
             <trans-unit id="5y4RUl6">
                 <source>narration.guided_step_config_settings_value</source>
                 <target>Fill the value in the form field. An entry marked sensitive is encrypted in the database and never shown in clear again.</target>

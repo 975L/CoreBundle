@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Management;
 
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
 use c975L\UiBundle\Controller\Management\FontCrudController;
@@ -36,6 +37,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         // The legal documents screen is a plain controller carrying an #[AdminRoute], not a CRUD one, so its url comes from the router rather than from EasyAdmin's generator
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly ReviewService $reviewService,
+        private readonly SiteLocales $siteLocales,
     ) {
     }
 
@@ -336,6 +338,65 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
     // A form is built here field by field, then dropped into a page through a block of its own
     private function formProject(): array
     {
+        $steps = [
+            [
+                'label' => 'label.guided_step_ui_form_open',
+                'description' => 'description.guided_step_ui_form_open',
+                'narration' => 'narration.guided_step_ui_form_open',
+                'url' => $this->indexUrl(FormCrudController::class),
+            ],
+            [
+                'label' => 'label.guided_step_ui_form_new',
+                'narration' => 'narration.guided_step_ui_form_new',
+                'highlight' => '.action-new',
+            ],
+            [
+                'label' => 'label.guided_step_ui_form_name',
+                'description' => 'description.guided_step_ui_form_name',
+                'narration' => 'narration.guided_step_ui_form_name',
+                'highlight' => '#Form_name',
+            ],
+            [
+                'label' => 'label.guided_step_ui_form_action',
+                'description' => 'description.guided_step_ui_form_action',
+                'narration' => 'narration.guided_step_ui_form_action',
+                'highlight' => '#Form_action',
+            ],
+            [
+                'label' => 'label.guided_step_ui_form_fields',
+                'description' => 'description.guided_step_ui_form_fields',
+                'narration' => 'narration.guided_step_ui_form_fields',
+                'highlight' => '[data-form-field-template-catalog-url]',
+            ],
+            [
+                'label' => 'label.guided_step_ui_form_save',
+                'narration' => 'narration.guided_step_ui_form_save',
+                'highlight' => '.action-saveAndReturn',
+            ],
+        ];
+
+        // The language tabs sit on the edit screen, drawn on a site declaring several languages alone (see form_crud_edit.html.twig), and saving a new form returned to the index - so the parcours sends the admin back into it first, as the calculator's does for its formulas
+        if ($this->siteLocales->isMultilingual()) {
+            $steps[] = [
+                'label' => 'label.guided_step_ui_form_reopen',
+                'description' => 'description.guided_step_ui_form_reopen',
+                'narration' => 'narration.guided_step_ui_form_reopen',
+                'highlight' => '.action-edit',
+            ];
+            $steps[] = [
+                'label' => 'label.guided_step_ui_form_translate',
+                'description' => 'description.guided_step_ui_form_translate',
+                'narration' => 'narration.guided_step_ui_form_translate',
+                'highlight' => '[data-content-locales]',
+            ];
+        }
+
+        $steps[] = [
+            'label' => 'label.guided_step_ui_form_place',
+            'description' => 'description.guided_step_ui_form_place',
+            'narration' => 'narration.guided_step_ui_form_place',
+        ];
+
         return [
             'slug' => 'ui-form',
             'label' => 'label.guided_project_ui_form',
@@ -344,53 +405,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'order' => 3050,
             // FormCrudController is admin-only, an action key being what a form does once submitted - an editor offered this parcours would get a 403 on its very first step
             'role' => $this->configService->get('site-role-admin'),
-            'steps' => [
-                [
-                    'label' => 'label.guided_step_ui_form_open',
-                    'description' => 'description.guided_step_ui_form_open',
-                    'narration' => 'narration.guided_step_ui_form_open',
-                    'url' => $this->indexUrl(FormCrudController::class),
-                ],
-                [
-                    'label' => 'label.guided_step_ui_form_new',
-                    'narration' => 'narration.guided_step_ui_form_new',
-                    'highlight' => '.action-new',
-                ],
-                [
-                    'label' => 'label.guided_step_ui_form_name',
-                    'description' => 'description.guided_step_ui_form_name',
-                    'narration' => 'narration.guided_step_ui_form_name',
-                    'highlight' => '#Form_name',
-                ],
-                [
-                    'label' => 'label.guided_step_ui_form_action',
-                    'description' => 'description.guided_step_ui_form_action',
-                    'narration' => 'narration.guided_step_ui_form_action',
-                    'highlight' => '#Form_action',
-                ],
-                [
-                    'label' => 'label.guided_step_ui_form_fields',
-                    'description' => 'description.guided_step_ui_form_fields',
-                    'narration' => 'narration.guided_step_ui_form_fields',
-                    'highlight' => '[data-form-field-template-catalog-url]',
-                ],
-                [
-                    'label' => 'label.guided_step_ui_form_save',
-                    'narration' => 'narration.guided_step_ui_form_save',
-                    'highlight' => '.action-saveAndReturn',
-                ],
-                [
-                    // No highlight and none possible: the selector sits on the edit screen (drawn only on a site declaring several languages, see form_crud_edit.html.twig) while this step is read from the index the save above returned to
-                    'label' => 'label.guided_step_ui_form_translate',
-                    'description' => 'description.guided_step_ui_form_translate',
-                    'narration' => 'narration.guided_step_ui_form_translate',
-                ],
-                [
-                    'label' => 'label.guided_step_ui_form_place',
-                    'description' => 'description.guided_step_ui_form_place',
-                    'narration' => 'narration.guided_step_ui_form_place',
-                ],
-            ],
+            'steps' => $steps,
         ];
     }
 

@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Management;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
@@ -71,9 +72,49 @@ class UiGuidedProjectProviderTest extends TestCase
         return $generator;
     }
 
-    private function createProvider(array &$controllers = [], array &$routes = []): UiGuidedProjectProvider
+    // Multilingual unless told otherwise, so every step the provider can walk is there for the assertions below to read
+    private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true): UiGuidedProjectProvider
     {
-        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService());
+        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'));
+    }
+
+    // The tabs are on the edit screen and saving a new form returned to the index, so the parcours reopens the form before pointing at them - as the calculator's reopens it for its formulas
+    public function testTheFormProjectReopensTheFormBeforePointingAtTheLanguageTabs(): void
+    {
+        $steps = array_column($this->formSteps(true), null, 'label');
+
+        $this->assertSame('.action-edit', $steps['label.guided_step_ui_form_reopen']['highlight']);
+        $this->assertSame('[data-content-locales]', $steps['label.guided_step_ui_form_translate']['highlight']);
+        $this->assertSame(
+            ['label.guided_step_ui_form_save', 'label.guided_step_ui_form_reopen', 'label.guided_step_ui_form_translate'],
+            \array_slice(array_keys($steps), 5, 3),
+        );
+    }
+
+    // On a site declaring a single language no tab is ever drawn, and neither step walking to them is offered
+    public function testASingleLanguageSiteWalksNoLanguageStepOfTheFormProject(): void
+    {
+        $labels = array_column($this->formSteps(false), 'label');
+
+        $this->assertNotContains('label.guided_step_ui_form_reopen', $labels);
+        $this->assertNotContains('label.guided_step_ui_form_translate', $labels);
+        $this->assertContains('label.guided_step_ui_form_place', $labels);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function formSteps(bool $multilingual): array
+    {
+        $controllers = [];
+        $routes = [];
+        foreach ($this->createProvider($controllers, $routes, $multilingual)->getGuidedProjects() as $project) {
+            if ('ui-form' === $project['slug']) {
+                return $project['steps'];
+            }
+        }
+
+        self::fail('The "ui-form" guided project was not found.');
     }
 
     // The 3000 block GuidedProjectProviderInterface reserves this bundle, at the step of 10 it states

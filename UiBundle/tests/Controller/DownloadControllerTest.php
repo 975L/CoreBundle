@@ -12,17 +12,22 @@ namespace c975L\UiBundle\Tests\Controller;
 
 use c975L\UiBundle\Controller\DownloadController;
 use c975L\UiBundle\Tests\Controller\Management\ControllerContainerTestTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ContainerBag;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\EventListener\AbstractSessionListener;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DownloadControllerTest extends TestCase
 {
     use ControllerContainerTestTrait;
+
+    // The first bytes of a real jpeg: the asset route reads what a file holds, not what it is named
+    private const string JPEG = "\xFF\xD8\xFF\xE0\x00\x10JFIF\x00";
 
     private string $projectDir;
 
@@ -83,6 +88,82 @@ class DownloadControllerTest extends TestCase
             $response->headers->get('Content-Disposition')
         );
         $this->assertStringContainsString('brochure.pdf', $response->headers->get('Content-Disposition'));
+    }
+
+    // The other half of the pair: the same file, opened in the browser instead of saved - what a scanned deed or a pdf book is looked at through
+    public function testAssetFileServesTheFileInlineAndKeepsItPrivate(): void
+    {
+        file_put_contents($this->projectDir . '/public/medias/acte.jpg', self::JPEG);
+
+        $response = $this->createController()->assetFile('medias/acte.jpg');
+
+        $this->assertStringStartsWith(
+            ResponseHeaderBag::DISPOSITION_INLINE,
+            $response->headers->get('Content-Disposition')
+        );
+        // Private, and carrying the header that keeps AbstractSessionListener from taking the hour back to zero on a request with a session
+        $this->assertTrue($response->headers->hasCacheControlDirective('private'));
+        $this->assertSame(3600, $response->getMaxAge());
+        $this->assertTrue($response->headers->has(AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER));
+    }
+
+    // A download is offered on a page anybody reads: marking it private would only stop a shared cache from doing its work
+    public function testDownloadFileIsNotMarkedPrivate(): void
+    {
+        file_put_contents($this->projectDir . '/public/medias/brochure.pdf', '%PDF-1.4');
+
+        $response = $this->createController()->downloadFile('medias/brochure.pdf');
+
+        $this->assertFalse($response->headers->hasCacheControlDirective('private'));
+    }
+
+    // The asset route takes any file name - spaces, accents, parentheses, whatever the scanner wrote - so it is the action itself that refuses to climb out of public/
+    public function testAssetFileRefusesToClimbOutOfPublic(): void
+    {
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->createController()->assetFile('medias/../../.env');
+    }
+
+    // A file the web server itself refuses to serve - an Apache rule, a PHP source, a PHP ini - is no business of a route opening scans and photographs
+    #[DataProvider('unviewableFiles')]
+    public function testAssetFileRefusesWhatIsNeitherAMediaNorAPdf(string $name, string $content): void
+    {
+        file_put_contents($this->projectDir . '/public/' . $name, $content);
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->createController()->assetFile($name);
+    }
+
+    // What a site's public/ really holds beside its medias
+    public static function unviewableFiles(): iterable
+    {
+        yield 'an Apache rule' => ['.htaccess', "RewriteEngine On\nRewriteRule ^ index.php [L]\n"];
+        yield 'a PHP source' => ['index.php', "<?php\n\nrequire dirname(__DIR__) . '/vendor/autoload.php';\n"];
+        yield 'a PHP ini' => ['.user.ini', "memory_limit = 512M\n"];
+    }
+
+    // A pdf book is exactly what the route exists to open
+    public function testAssetFileOpensAPdf(): void
+    {
+        file_put_contents($this->projectDir . '/public/medias/livre.pdf', "%PDF-1.4\n");
+
+        $response = $this->createController()->assetFile('medias/livre.pdf');
+
+        $this->assertInstanceOf(BinaryFileResponse::class, $response);
+    }
+
+    // A directory mounted elsewhere and symlinked under public/ still answers: the guard reads the path as it was asked for, not the one the link resolves to
+    public function testAssetFileFollowsASymlinkedDirectory(): void
+    {
+        mkdir($this->projectDir . '/elsewhere', 0777, true);
+        file_put_contents($this->projectDir . '/elsewhere/photo.jpg', self::JPEG);
+        symlink($this->projectDir . '/elsewhere', $this->projectDir . '/public/photos');
+
+        $response = $this->createController()->assetFile('photos/photo.jpg');
+
+        $this->assertInstanceOf(BinaryFileResponse::class, $response);
     }
 
     public function testDownloadFileThrowsNotFoundForAMissingFile(): void

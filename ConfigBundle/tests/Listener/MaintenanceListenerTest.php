@@ -85,6 +85,17 @@ class MaintenanceListenerTest extends TestCase
         $this->assertFalse($loginEvent->hasResponse());
     }
 
+    // The exemption stops at the segment: a front page named after the back office is a front page, and it goes down with the rest of the site
+    public function testAFrontPathMerelyStartingWithTheBackOfficesIsClosedDuringMaintenance(): void
+    {
+        $listener = $this->createListener($this->createConfigService(['site-maintenance' => true]));
+
+        $event = $this->createRequestEvent('/management-de-projet');
+        $listener->onKernelRequest($event);
+
+        $this->assertTrue($event->hasResponse());
+    }
+
     // /m used to be exempt, as the shortcut to the back-office; the route is gone, so the path is now closed like any other public one
     public function testShortcutPathIsClosedDuringMaintenance(): void
     {

@@ -16,7 +16,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 // Merges the guided projects contributed by every GuidedProjectProvider, sorted by "order" - a deliberate sequence (create a page, then add a block to it, then put it in a menu), not the alphabetical merge MenuBuilder/AlertBuilder use, same as EssentialActionBuilder. Labels and descriptions are resolved here rather than left to the template: the panel walking a project through is JavaScript (see assets/js/guided-project.js), fed by GuidedProjectController's JSON, and there is no translator on that side
 class GuidedProjectBuilder
 {
-    // Narrations live in a domain of their own, beside the project's: they are only ever spoken, they are written in French and English alone where the rest of a bundle also speaks Spanish, and a catalogue holding a key one locale lacks is what XlfRebuild refuses. Same suffix in OnboardingStepBuilder, the tour's narrations being written the same way
+    // Narrations live in a domain of their own, beside the project's: they are only ever spoken and never drawn, written in every language the bundle around them speaks. Same suffix in OnboardingStepBuilder, the tour's narrations being written the same way
     public const string NARRATION_DOMAIN_SUFFIX = '_narration';
 
     public function __construct(

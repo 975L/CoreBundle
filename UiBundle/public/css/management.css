@@ -1419,6 +1419,11 @@
   color: var(--bs-secondary-color, #6c757d);
 }
 
+.form-fieldset.fieldset-all-languages {
+  background-color: var(--bs-warning-bg-subtle, #fff3cd);
+  box-shadow: inset 0 0 0 1px var(--form-fieldset-border-color, #dee2e6), inset 4px 0 0 0 var(--bs-warning-border-subtle, #ffe69c);
+}
+
 /* UPLOAD PROGRESS (assets/js/upload-progress.js) - the bar shown while a form posts its files */
 .upload-progress {
   margin: 20px 0;

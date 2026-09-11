@@ -198,13 +198,17 @@
                 <source>narration.guided_step_ui_form_place</source>
                 <target>All that is left is to drop it into a page: add a form block there, and pick the one you have just created.</target>
             </trans-unit>
+            <trans-unit id="FfJ6x.M">
+                <source>narration.guided_step_ui_form_reopen</source>
+                <target>Saving brought you back to the list. Reopen the form you have just created: the other languages are written from its edit screen.</target>
+            </trans-unit>
             <trans-unit id="JE.beBm">
                 <source>narration.guided_step_ui_form_save</source>
                 <target>Save with the button at the bottom of the form.</target>
             </trans-unit>
             <trans-unit id="MHIvS60">
                 <source>narration.guided_step_ui_form_translate</source>
-                <target>Open the form again: on a site offering several languages, a selector sits above it. Pick one, and write the labels and the help texts in it - the fields themselves are composed once, in the language the form was written in.</target>
+                <target>At the top of the form, pick a language in the tabs, then write the labels and the help texts in it. The fields themselves are composed once, in the language the form was written in.</target>
             </trans-unit>
             <trans-unit id="aPBTIn6">
                 <source>narration.guided_step_ui_legal_model_apply</source>

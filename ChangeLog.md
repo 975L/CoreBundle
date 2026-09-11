@@ -1,5 +1,91 @@
 # ChangeLog
 
+## v1.28.0
+
+A site says its content, its urls and its links in every language
+
+### UiBundle
+
+- **The repeated texts a block holds as json are translatable**, declared as `cards[].title` beside the plain keys (10/09/2026)
+- Five kinds say so: a FAQ's questions and answers, a features grid's cards, a process's steps, a feature bar's items, a map point's label and text (10/09/2026)
+- `BlockRegistry::getTranslatableCollections()` reads them apart, `getTranslatable()` keeping the contract its six callers know (10/09/2026)
+- `ContentTranslator::expand()` names one field per entry the data really holds, so an entry deleted in the writing language is never brought back in another (10/09/2026)
+- A language screen renders those collections with their prose alone - an icon, a link, a pair of coordinates say the same thing everywhere (10/09/2026)
+- A card reordered, removed or rewritten in the writing language drops its translations rather than leaving them on whatever took its place (10/09/2026)
+- Compared on the words alone, so a rich text editor's re-serialisation is not read as a rewrite - saving a block without changing a thing kept every translation (10/09/2026)
+- **A language screen offers neither Add nor Delete on such a collection**: a card added there was accepted and then dropped without a word, and one removed would have been removed from every language (10/09/2026)
+- Those collections are pruned on `POST_SET_DATA`, a collection building its entries only once `data` has been given its own (10/09/2026)
+- **The group of fields acting on every language is painted apart** in the back-office, `.form-fieldset.fieldset-all-languages` in `sass/management/_form-fields.scss` (10/09/2026)
+- `BlockFocusUrl::build()` takes the extra query parameters the owning bundle adds to an edit screen - the language a page is being read in, which only that bundle names (10/09/2026)
+- **A hero rotating through several medias states each one's `alt`**, where the layout used to print `alt="" aria-hidden="true"` on all of them whatever the field held (10/09/2026)
+- The rule is the one the single image beside it already followed: a media left without an alt stays decorative, so a hero whose medias carry none renders exactly as before (10/09/2026)
+- **A block's sub-form is loaded from under `/management`**, `ui_block_data_form` keeping its name: it came back in the front's language once the back office kept one of its own, and sat outside the rule a site puts on its back office (11/09/2026)
+- The form parcours reopens the form before pointing at its language tabs, and only on a site declaring several languages (11/09/2026)
+- `ContentTranslator::read()` reads a value under a name `expand()` gave, what SiteBundle's menu screen and its health check both need (11/09/2026)
+- **`TranslationPurgeListener` purges for real**, the id read on `preRemove`: Doctrine nulls it before `postRemove`, so a removed row always left its translations behind (11/09/2026)
+
+### UiBundle - internal links follow the language being read
+
+- **A link stored in a block is read in the language the page around it is read in**, `InternalLinkLocalizerInterface` and its registry letting each bundle rewrite the urls it owns (10/09/2026)
+- Applied to the html a block renders rather than to the keys named "url": a link is as often a word inside a rich text as a field of its own, and a portfolio card's target is read off a row rather than off the data (11/09/2026)
+- Outside the render cache, at the outermost render like the nonce: an entry keyed on the block alone went on sending a visitor to the old language of a page that had since gained or lost one (11/09/2026)
+- Chained rather than first-wins, a rich text holding links of several bundles at once (10/09/2026)
+- A site with no localizer registered - one declaring a single language above all - leaves every link exactly as it was stored (10/09/2026)
+
+### ConfigBundle
+
+- **The back office keeps a language of its own**, `LocaleListener::SESSION_KEY_MANAGEMENT` beside the front's (10/09/2026)
+- One key for both had the back office change language behind an editor the moment they clicked a flag on the front (10/09/2026)
+- `DashboardController::ROUTE_PATH` names the back office once, read by `LocaleListener` and `MaintenanceListener` rather than spelt again in each (10/09/2026)
+- `DashboardController::isManagementPath()` draws the frontier the constant alone did not, a front route named `/management-de-projet` staying a front route (10/09/2026)
+- **The settings parcours saves the value before a language tab is picked**, a tab reloading the screen with nothing warning of what is left unsaved (11/09/2026)
+- Its language steps are offered on a site declaring several languages alone, `ConfigGuidedProjectProvider` reading `SiteLocales` (11/09/2026)
+- **`ConfigTranslationPurgeListener` purges for real**, the id read on `preRemove`: Doctrine nulls it before `postRemove`, so a pruned setting always left its translations behind (11/09/2026)
+
+### ConfigBundle - what a bundle needs to answer both "/shop" and "/en/shop"
+
+- **`c975l_config.locales_pattern` moved here from SiteBundle**: ShopBundle requires this bundle and not that one, and needs the very same string in its own route requirements (10/09/2026)
+- **`LocalizedRouteNegotiator` holds the three rules a controller answering both urls needs**: refuse a language the thing says nothing in, move a visitor who asked for one, vary a bare url on `Accept-Language` (10/09/2026)
+- The languages are passed in rather than read off an entity, what a page, a book and a product have in common being the list and not how it is arrived at (10/09/2026)
+- **A linkable route says in `locales` which languages it answers in**, so a menu item pointing at one is written in the language being read only where that language really answers (10/09/2026)
+- Left out, the entry is localised whenever a twin exists, the `null` the registry fills in saying the provider did not answer (10/09/2026)
+- **`localized_path()` reads a template's own links in the language being read**, the one thing an InternalLinkLocalizer cannot reach (10/09/2026)
+- A sort link, a filter and a "see the basket" button all say `path('shop_index')`, and on "/en/shop" every one of them sent the visitor back into the writing language (10/09/2026)
+- `LocalizedUrlGenerator` holds that rule once: try the localised twin, fall back on the bare url (10/09/2026)
+- It takes the languages the target answers in, so a row not translated yet keeps its bare url rather than being written as one that 404s (10/09/2026)
+- **`screen_languages()` is the language menu of a screen with no `Page` behind it**: a shop listing, a product sheet, a basket had no way to say they answer in every language (10/09/2026)
+- Each url is the bare one carrying `?_locale=xx`, never the localised url itself: it is the query `LocaleListener` reads to keep the choice for the rest of the visit (10/09/2026)
+- A screen answered in one language alone - a back-office url, an endpoint, a token url - offers nothing, and so does a single-language site (10/09/2026)
+- **`ContentLocaleScreen` is the plumbing behind "the same edit screen, opened on another language"**: the `?contenu=xx` parameter, the tabs, and the hand-over of what was typed (10/09/2026)
+- `@c975LConfig/management/_content_locale_tabs.html.twig` renders those tabs, and nothing at all on a site declaring a single language (10/09/2026)
+- The settings and the forms screens draw their tabs through that partial rather than each carrying a copy, `data-content-locales` replacing `data-config-content-locales` (10/09/2026)
+- The `config-settings` guided project says how a named setting is written in another language, a step it walked past until now (10/09/2026)
+- Held here rather than in each CRUD controller: a product, a category, a campaign and a page all open their language screen the same way, and only what is written on it differs (10/09/2026)
+- The settings and the forms screens are its only callers so far, a CRUD carrying page-specific extras being the natural next step (10/09/2026)
+
+### UiBundle - a language is named as a label names it, and a demo dataset speaks every language the site declares
+
+- **`language_name` says a language in its own words the way a menu entry does**, where Twig's `locale_name` gives Intl's lowercase form, right inside a sentence and wrong alone on a tab (10/09/2026)
+- Only the first letter is touched, so "English" is untouched and a script without case is given back as it came (10/09/2026)
+- The language menu and both language-screen tab strips read it; the sentences that name a language inside them - "Translate into %language%" - keep `locale_name`, which is right there (10/09/2026)
+- **`section_cards` and `flex_columns` say their eyebrow and their title are translatable**, where they said nothing at all: both take them from `AbstractSectionHeadContainerType`, and an inherited field was as invisible to the declaration as to whoever wrote it (10/09/2026)
+- **Every language file of a domain is checked against the one the bundle is written in**, `CatalogueCompletenessCase` catching the three ways a catalogue drifts: a key added without its translations, a translation left blank, a key renamed on one side only - Symfony's own fallback makes all three silent, which is what lets them live for months (10/09/2026)
+- It is what keeps the promise this ecosystem makes about languages: adding one is adding its file, and nothing else (10/09/2026)
+- **`DemoFixtureTranslator` seeds a demo dataset in every language the site declares**, taken from the very catalogues it was seeded from (10/09/2026)
+- A sample catalog holds translation keys rather than prose, and the same key read in another language is that row's translation - already written, proofread and shipped with the bundle (10/09/2026)
+- Two passes, a translation naming its owner by identifier: a provider stages its rows as it builds them and yields them through `DemoFixtureLinkerInterface` once the first pass is flushed (10/09/2026)
+- A catalogue saying nothing in a language writes nothing: an untranslated row is what a reader already sees (10/09/2026)
+- Not shared, so what one bundle stages is never yielded by another's linker - which would record those rows under the wrong bundle and take them back with it (10/09/2026)
+- It takes what the provider wrapped the words in, so a block holding its prose as `<div>...</div>` stores its translation the same way - the same words outside their box read as another text to whatever compares the two (10/09/2026)
+
+### UiBundle - a file served from behind a firewall opens in the browser
+
+- **`asset_file` (`/asset/{file}`) joins `download_file`** on `DownloadController`: the same file from `public/`, opened in place rather than saved, behind whatever `access_control` rule the site sets (10/09/2026)
+- It opens a media or a pdf and nothing else, read off the content: an `.htaccess`, an `index.php` or a `.user.ini` the web server itself refuses answers a 404 (11/09/2026)
+- Comes from the private genealogy site, which had written it for itself after SiteBundle 7 dropped the route it used to carry (10/09/2026)
+- Its requirement takes any file name, so the action refuses any path holding a `..` segment, read off the path as asked for rather than off `realpath()` (10/09/2026)
+- Its response is `private` and carries `AbstractSessionListener::NO_AUTO_CACHE_CONTROL_HEADER`, so its hour survives a request with a session; `download_file` keeps its public caching untouched (10/09/2026)
+
 ## v1.27.0
 
 The texts a media carries are translated like any other prose

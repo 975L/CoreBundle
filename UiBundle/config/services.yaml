@@ -14,6 +14,10 @@ services:
         # Map/ excluded: an enum, read statically for the same reason - the container refuses to instantiate one
         exclude: '../src/{DependencyInjection,Entity,Field,Map,Maker,Model,Testing,Video}'
 
+    # Not shared: each provider staging its rows gets an instance of its own, so a linker never yields what another bundle staged - those rows would be recorded under the wrong bundle, and taken back with it (see DemoFixtureTranslator)
+    c975L\UiBundle\Service\DemoFixtureTranslator:
+        shared: false
+
     # Three classes implement PdfGeneratorInterface - the two engines and the service picking between them - so the contract has to say which one a caller gets. It is the picker: which engine draws a document is decided per site from "ui-pdf-engine", and nothing calling for a PDF has to know there are two (see PdfGenerator)
     c975L\UiBundle\Contract\PdfGeneratorInterface: '@c975L\UiBundle\Service\PdfGenerator'
 
@@ -272,7 +276,7 @@ services:
               label: "label.block_map"
               description: "label.block_map_description"
               form: c975L\UiBundle\Form\Block\MapType
-              translatable: 'title'
+              translatable: 'title, points[].label, points[].text'
               template: '@c975LUi/blocks/Map.html.twig'
               category: 'label.category_media'
               priority: 80
@@ -435,7 +439,7 @@ services:
               label: "label.block_feature_bar"
               description: "label.block_feature_bar_description"
               form: c975L\UiBundle\Form\Block\FeatureBarType
-              translatable: 'eyebrow, title'
+              translatable: 'eyebrow, title, items[].title, items[].text'
               template: '@c975LUi/blocks/FeatureBar.html.twig'
               category: 'label.category_sections'
               priority: 90
@@ -450,7 +454,7 @@ services:
               label: "label.block_section_features"
               description: "label.block_section_features_description"
               form: c975L\UiBundle\Form\Block\SectionFeaturesType
-              translatable: 'eyebrow, title'
+              translatable: 'eyebrow, title, cards[].title, cards[].text'
               template: '@c975LUi/blocks/SectionFeatures.html.twig'
               category: 'label.category_sections'
               priority: 80
@@ -466,6 +470,7 @@ services:
               label: "label.block_flex_columns"
               description: "label.block_flex_columns_description"
               form: c975L\UiBundle\Form\Block\FlexColumnsType
+              translatable: 'eyebrow, title'
               template: '@c975LUi/blocks/FlexColumns.html.twig'
               category: 'label.category_sections'
               priority: 75
@@ -538,6 +543,7 @@ services:
               label: "label.block_section_cards"
               description: "label.block_section_cards_description"
               form: c975L\UiBundle\Form\Block\SectionCardsType
+              translatable: 'eyebrow, title'
               template: '@c975LUi/blocks/SectionCards.html.twig'
               category: 'label.category_sections'
               priority: 79
@@ -568,7 +574,7 @@ services:
               label: "label.block_process_steps"
               description: "label.block_process_steps_description"
               form: c975L\UiBundle\Form\Block\ProcessStepsType
-              translatable: 'eyebrow, title'
+              translatable: 'eyebrow, title, steps[].title, steps[].text'
               template: '@c975LUi/blocks/ProcessSteps.html.twig'
               category: 'label.category_sections'
               priority: 60
@@ -694,7 +700,7 @@ services:
               label: "label.block_faq"
               description: "label.block_faq_description"
               form: c975L\UiBundle\Form\Block\FaqType
-              translatable: 'title'
+              translatable: 'title, items[].question, items[].answer'
               template: '@c975LUi/blocks/Faq.html.twig'
               category: 'label.category_sections'
               priority: 55

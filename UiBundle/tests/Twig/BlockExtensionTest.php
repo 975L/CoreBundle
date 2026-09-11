@@ -10,10 +10,12 @@
 
 namespace c975L\UiBundle\Tests\Twig;
 
+use c975L\UiBundle\Contract\InternalLinkLocalizerInterface;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Registry\BlockCacheTagRegistry;
 use c975L\UiBundle\Registry\BlockEditUrlRegistry;
 use c975L\UiBundle\Registry\BlockRegistry;
+use c975L\UiBundle\Registry\InternalLinkLocalizerRegistry;
 use c975L\UiBundle\Service\BlockCacheInvalidator;
 use c975L\UiBundle\Service\BlockCacheTagResolver;
 use c975L\UiBundle\Service\BlockRenderContext;
@@ -78,6 +80,46 @@ class BlockExtensionTest extends TestCase
 
         $this->assertSame('<p>rendered</p>', $extension->renderBlock($block));
         $this->assertFalse($saved, 'A vetoed block would otherwise be stored under its own key and served to everyone afterwards.');
+    }
+
+    // The html the block renders is offered to the localizers - a link of its own and one inside a rich text alike - so a kind naming its link "target" rather than "url" is covered without saying so anywhere
+    public function testTheLinksOfTheRenderedBlockAreReadInTheLanguageBeingRead(): void
+    {
+        $extension = $this->extensionLocalizing($this->createStub(TagAwareCacheInterface::class), 'voir <a href="/pages/nos-ateliers">nos ateliers</a>');
+
+        $this->assertSame('voir <a href="/en/pages/nos-ateliers">nos ateliers</a>', $extension->renderBlock($this->createBlock('text_section', null)));
+    }
+
+    // The entry keeps each link as stored and a hit is read in the language of the request serving it: another page gaining or losing that language invalidates nothing of this block's
+    public function testTheLinksOfACachedEntryAreReadOnTheHitToo(): void
+    {
+        $cache = $this->createMock(TagAwareCacheInterface::class);
+        $cache->expects($this->once())->method('get')->willReturn('<a href="/pages/nos-ateliers">nos ateliers</a>');
+
+        $extension = $this->extensionLocalizing($cache, '');
+
+        $this->assertSame('<a href="/en/pages/nos-ateliers">nos ateliers</a>', $extension->renderBlock($this->createBlock('text_section', 42)));
+    }
+
+    // A block rendering the given html, read by a localizer moving every page link to English
+    private function extensionLocalizing(TagAwareCacheInterface $cache, string $rendered): BlockExtension
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('has')->willReturn(true);
+        $registry->method('getTemplate')->willReturn('block.html.twig');
+
+        $twig = $this->createStub(Environment::class);
+        $twig->method('render')->willReturn($rendered);
+
+        $localizers = new InternalLinkLocalizerRegistry();
+        $localizers->addProvider(new class implements InternalLinkLocalizerInterface {
+            public function localize(string $value): string
+            {
+                return str_replace('"/pages/', '"/en/pages/', $value);
+            }
+        });
+
+        return new BlockExtension($registry, $twig, $cache, new RequestStack([Request::create('/')]), $this->createStub(BlockCacheTagResolver::class), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext(), $this->createContentTranslator(), $this->createMediaTranslator(), $localizers);
     }
 
     // What the translator does on a single-language site, which is the case of every test here: it hands the values back as they are

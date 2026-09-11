@@ -69,15 +69,40 @@ class HeroMediaLayoutTest extends TestCase
         $this->assertStringNotContainsString('hero__media', $html);
     }
 
+    // A hero rotating through works of its own is content: each media states its own alternative rather than the blanket aria-hidden the layout used to print
+    public function testEachMediaCarriesItsOwnAlt(): void
+    {
+        $html = $this->render([], [
+            (object) ['alt' => 'Portrait au graphite', 'intrinsicWidth' => 160, 'intrinsicHeight' => 160],
+            (object) ['alt' => 'Tigre au graphite', 'intrinsicWidth' => 160, 'intrinsicHeight' => 160],
+        ]);
+
+        $this->assertStringContainsString('alt="Portrait au graphite"', $html);
+        $this->assertStringContainsString('alt="Tigre au graphite"', $html);
+        $this->assertStringNotContainsString('aria-hidden', $html);
+    }
+
+    // Every hero stored before the field was filled: an empty alt still doubles as aria-hidden, so checkers read it as decorative rather than as a missing alternative
+    public function testAMediaLeftWithoutAnAltStaysDecorative(): void
+    {
+        $html = $this->render([], [
+            (object) ['alt' => 'Portrait au graphite', 'intrinsicWidth' => 160, 'intrinsicHeight' => 160],
+            (object) ['alt' => null, 'intrinsicWidth' => 160, 'intrinsicHeight' => 160],
+        ]);
+
+        $this->assertStringContainsString('alt="" aria-hidden="true"', $html);
+        $this->assertSame(1, substr_count($html, 'aria-hidden'));
+    }
+
     // Twig resolves these at compile time, so they must exist even when never reached
-    private function render(array $context): string
+    private function render(array $context, ?array $medias = null): string
     {
         $twig = new Environment(new FilesystemLoader(dirname(__DIR__, 2) . '/templates'));
         $twig->addFilter(new TwigFilter('trix_inline', static fn (?string $value): string => (string) $value, ['is_safe' => ['html']]));
         $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => (bool) $value));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (mixed $media): string => '/media/logo.webp'));
 
-        $medias = array_fill(0, 3, (object) ['intrinsicWidth' => 160, 'intrinsicHeight' => 160]);
+        $medias ??= array_fill(0, 3, (object) ['alt' => 'Une œuvre', 'intrinsicWidth' => 160, 'intrinsicHeight' => 160]);
 
         return $twig->render('components/Hero/Hero.html.twig', $context + ['title' => 'Un titre', 'medias' => $medias]);
     }

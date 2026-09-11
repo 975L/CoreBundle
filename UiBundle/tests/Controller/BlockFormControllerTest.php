@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Controller;
 
+use c975L\ConfigBundle\Controller\Management\DashboardController;
 use c975L\UiBundle\Controller\BlockFormController;
 use c975L\UiBundle\Registry\BlockRegistry;
 use c975L\UiBundle\Tests\Controller\Management\ControllerContainerTestTrait;
@@ -24,6 +25,7 @@ use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Validator\Validation;
 use Twig\Environment;
@@ -253,7 +255,7 @@ class BlockFormControllerTest extends TestCase
         $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted, $clearMissing));
         $controller->setContainer($this->createContainerWithTwig());
 
-        $controller->dataForm(Request::create('/ui/block/data-form?k=slider', 'POST', [
+        $controller->dataForm(Request::create('/management/ui/block/data-form?k=slider', 'POST', [
             'data' => ['duration' => '5', 'ratio' => '16-9'],
         ]));
 
@@ -289,7 +291,7 @@ class BlockFormControllerTest extends TestCase
         $controller = new BlockFormController($registry, $this->createFormFactoryCapturingSubmittedData($submitted));
         $controller->setContainer($this->createContainerWithTwig());
 
-        $controller->dataForm(Request::create('/ui/block/data-form?k=slider', 'POST', [
+        $controller->dataForm(Request::create('/management/ui/block/data-form?k=slider', 'POST', [
             'data' => ['id' => 'slider-f49f0e20', 'duration' => '5'],
         ]));
 
@@ -306,7 +308,7 @@ class BlockFormControllerTest extends TestCase
         $controller = new BlockFormController($registry, $this->createRealFormFactory());
         $controller->setContainer($this->createContainerWithTwig());
 
-        $response = $controller->dataForm(Request::create('/ui/block/data-form?k=menu_link', 'POST', [
+        $response = $controller->dataForm(Request::create('/management/ui/block/data-form?k=menu_link', 'POST', [
             'data' => ['label' => 'Contact', 'primary' => '1'],
         ]));
 
@@ -330,11 +332,20 @@ class BlockFormControllerTest extends TestCase
         $controller = new BlockFormController($registry, $this->createRealFormFactory());
         $controller->setContainer($this->createContainer(['twig' => $twig]));
 
-        $controller->dataForm(Request::create('/ui/block/data-form?k=menu_link', 'POST', [
+        $controller->dataForm(Request::create('/management/ui/block/data-form?k=menu_link', 'POST', [
             'data' => ['label' => 'Contact', 'primary' => '1'],
         ]));
 
         $this->assertSame('Contact', $view['data']['label']->vars['value']);
         $this->assertTrue($view['data']['primary']->vars['checked']);
+    }
+
+    // The sub-form is a piece of the edit screen, so its path is the back office's: read in the language the back office speaks and kept behind the access_control rule a site puts on it
+    public function testTheRouteLivesUnderTheBackOffice(): void
+    {
+        $route = new \ReflectionMethod(BlockFormController::class, 'dataForm')->getAttributes(Route::class)[0]->newInstance();
+
+        $this->assertIsString($route->path);
+        $this->assertTrue(DashboardController::isManagementPath($route->path));
     }
 }

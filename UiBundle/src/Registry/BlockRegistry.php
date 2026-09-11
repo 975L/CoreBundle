@@ -100,18 +100,34 @@ class BlockRegistry
         ];
     }
 
-    /**
-     * The keys of this kind's own data a translation may cover, declared one by one in its "ui.block" tag.
-     *
-     * Nothing declared means nothing translatable, which is what every kind means until it says otherwise: there is
-     * no discovery from the form type, a text field holding a css class or an icon name having no business being
-     * offered for translation.
-     *
-     * @return list<string>
-     */
+    // The keys of this kind's own data a translation may cover, declared one by one in its "ui.block" tag: nothing declared means nothing translatable, there being no discovery from the form type - a text field holding a css class has no business being offered for translation
+    /** @return list<string> */
     public function getTranslatable(string $kind): array
     {
-        return $this->has($kind) ? $this->get($kind)['translatable'] ?? [] : [];
+        return array_values(array_filter(
+            $this->has($kind) ? $this->get($kind)['translatable'] ?? [] : [],
+            static fn (string $field): bool => !str_contains($field, '[]'),
+        ));
+    }
+
+    // The repeated texts of this kind, declared as "cards[].title" beside the plain keys above: a block holds whole collections as json, and what is translated there is one field of one entry, named by its place ("cards.0.title")
+    /** @return array<string, list<string>> collection key => the fields of one entry a translation may cover */
+    public function getTranslatableCollections(string $kind): array
+    {
+        $collections = [];
+
+        foreach ($this->has($kind) ? $this->get($kind)['translatable'] ?? [] : [] as $declared) {
+            if (!str_contains($declared, '[]')) {
+                continue;
+            }
+
+            [$collection, $field] = explode('[].', $declared, 2) + [null, null];
+            if (null !== $collection && null !== $field && '' !== $field) {
+                $collections[$collection][] = $field;
+            }
+        }
+
+        return $collections;
     }
 
     // Gets the translated label of a block kind (falls back to the raw label if untranslated)
@@ -265,12 +281,8 @@ class BlockRegistry
         return !($isContainerOnlyOnOptIn && $config['container'] && !in_array($context, $config['contexts'], true));
     }
 
-    /**
-     * Every context a registered container builds its slots with, i.e. the union of the "slot_context" tag
-     * attributes - the contexts where a container is only offered if it opted into that exact one.
-     *
-     * @return list<string>
-     */
+    // Every context a registered container builds its slots with, the union of the "slot_context" tag attributes: there, a container is only offered if it opted into that exact one
+    /** @return list<string> */
     private function slotContexts(): array
     {
         return array_values(array_unique(array_column(

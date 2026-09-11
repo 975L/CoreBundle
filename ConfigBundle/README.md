@@ -29,7 +29,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
 - **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled)
 - **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Sessions cleanup](#sessions-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows) · [Deprecations](#deprecations--reading-the-log-monolog-isolates)
-- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
+- **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [localised routes](#answering-both-shop-and-enshop) · [language screens](#opening-the-same-edit-screen-on-another-language) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
 - **For coding agents** — [AI agent skills](#ai-agent-skills)
 
 ## Features
@@ -1013,6 +1013,16 @@ foreach ($this->categoryRepository->findAllOrdered() as $category) {
 
 Keying on the id is what makes a renamed row keep its menu items: the slug and the title are both read again at each render, and the url is generated, never stored. Providers are only walked when the registry is actually read, so listing rows this way costs a query on the pages that render such a link, none on the others.
 
+### Saying which languages an entry answers in
+
+A route your bundle answers both bare and localised (`/shop` and `/{_locale}/shop`, see *Answering both `/shop` and `/en/shop`*) is written in the language the visitor is reading in, so a menu item never sends them back into the writing language at the first click. Add `locales` to say where that holds:
+
+```php
+'locales' => $this->translatedLocales->forCategory($category),
+```
+
+Leave it out and the item is localised whenever a localised twin exists, which is what a route saying the same thing in every language wants. Name it as soon as the twin exists but does not answer everywhere — a row not translated yet has a localised url that matches and answers 404, and without `locales` the menu would point straight at it.
+
 ## Contributing importmap entries from other bundles
 
 If your bundle ships its own Stimulus controller for the `/management` dashboard (or any other AssetMapper entry the consuming app needs in its `importmap.php`), implement `ImportmapProviderInterface` — no manual service tagging needed, same `TaggedInterfacePass` mechanism as `MenuProviderInterface` above.
@@ -1077,8 +1087,75 @@ That one line turns on the whole set: the language selector in the back office (
 
 `Service\SiteLocales` is the one place anything asks what a site offers — `all()` and `isMultilingual()`. It always holds the default locale whether or not the list names it, and drops any code the Intl catalogue doesn't know, a typo otherwise taking down every back-office page through EasyAdmin's `Locale::new()`. `Listener\LocaleListener` (priority 20) then sets each request's language from the `_locale` query parameter, then the session, then what the browser asks for — a route carrying its own `_locale` attribute winning over all three.
 
+**The back office keeps a language of its own.** `LocaleListener` reads the front's choice under `SESSION_KEY` (Symfony's own `_locale`) and the back office's under `SESSION_KEY_MANAGEMENT` — one key for both had the whole back office change language behind an editor the moment they clicked a flag on the front, where reading the site in English is a choice about the *content*, not about the screens they work on. Which of the two a request is answered from is decided by `Controller\Management\DashboardController::isManagementPath()`, reading the single `DashboardController::ROUTE_PATH` constant: it draws the frontier the constant alone does not, a front route named `/management-de-projet` starting with the same string and being no part of the back office — so it is answered in the front's language, and goes down with the site during a maintenance (`MaintenanceListener` reads the same method).
+
 > [!NOTE]
 > `enabled_locales` **restricts**: on a site already serving several languages, list every one of them, not just the ones you're adding. It's unrelated to the interface translations (`messages.fr.xlf`), which keep working through Symfony's translator whether or not this list exists.
+
+## Opening the same edit screen on another language
+
+A row whose content is translated beside itself — a page, a product, a named setting — is written on **the same edit screen opened on another language**, and `Management\ContentLocaleScreen` holds the four things such a screen needs, so a CRUD controller declares what is translatable and nothing else:
+
+```php
+// The language being written, read off the url the tabs link to ("?contenu=en"), null on the writing language's own screen
+$locale = $this->contentLocaleScreen->locale($this->siteLocales->translatable());
+
+// The tabs at the top of the screen: the languages offered, the one being written, and where each opens this very row
+$this->contentLocaleScreen->addParameters($responseParameters, self::class, $entityId, $this->siteLocales->translatable(), $locale);
+
+// What was typed, handed over on POST_SUBMIT so it is written on the flush that saves the row and never before it
+$this->contentLocaleScreen->stageOnSubmit($builder, $locale, $fields, $stage);
+
+// The action opening the first language screen, shown only where the site declares more than one
+$this->contentLocaleScreen->action('translate', $label, 'fa fa-language', $this->siteLocales->translatable());
+```
+
+The tabs themselves are drawn by `@c975LConfig/management/_content_locale_tabs.html.twig`, included by every edit template rather than copied into each:
+
+```twig
+{{ include('@c975LConfig/management/_content_locale_tabs.html.twig', {
+    content_locales: my_content_locales|default([]),
+    content_locale: my_content_locale|default(null),
+    content_default_locale: my_default_locale|default(null),
+    content_urls: my_content_urls|default({}),
+}) }}
+```
+
+The `|default()` are what a screen with nothing to translate hands over: those variables are simply absent there, and an include under `strict_variables` would raise rather than draw nothing. The bar carries `data-content-locales`, which is what a guided step points at.
+
+## Answering both `/shop` and `/en/shop`
+
+The language a site is written in keeps its bare urls, byte for byte — they are the ones a sitemap and an hreflang group declare, and every link already stored points at them. The other languages get a url of their own beside each, `%c975l_config.locales_pattern%` filling the requirement:
+
+```php
+#[Route('/{_locale}/shop', name: 'shop_index_localized', requirements: ['_locale' => '%c975l_config.locales_pattern%'], methods: ['GET'])]
+#[Route('/shop', name: 'shop_index', methods: ['GET'])]
+public function index(Request $request): Response
+```
+
+The pattern holds the languages the site declares **besides** the one it is written in, and matches nothing at all while there are none — so a single-language site only ever answers on the bare route, and `/fr/shop` on a shop written in French answers 404 rather than duplicating it.
+
+`Service\LocalizedRouteNegotiator` holds the three rules such a pair needs, and the languages are passed in rather than read off an entity — a page is translated beside itself, a book is a row per language, a product is something else again:
+
+```php
+// 1. Refuse a localised url the thing says nothing in: it would be the writing language's words under another language's address
+if (!$this->negotiator->isTranslated($request, $locales)) {
+    throw $this->createNotFoundException();
+}
+
+// 2. Move a visitor who asked for another language - their browser, the language menu, or the choice they made earlier
+$askedLanguage = $this->negotiator->redirectToAskedLanguage($request, $locales, 'shop_index');
+if (null !== $askedLanguage) {
+    return $this->negotiator->vary($request, $askedLanguage);
+}
+
+// 3. Tell the caches a bare url varies on what the browser announced; a localised one says its language in itself and varies on nothing
+return $this->negotiator->vary($request, $this->render(...));
+```
+
+A row not translated yet keeps its localised route: it matches and answers 404, which is what it should answer while serving it would only buy duplicate content under a lying hreflang. Hold the whole rule in one service of your own (`ShopTranslatedLocales`, `CrowdfundingTranslatedLocales`), and translating the content turns the urls on by itself.
+
+The links have to follow, or a visitor is sent back into the writing language at the first click. Implement `c975L\UiBundle\Contract\InternalLinkLocalizerInterface` for your own paths — a block's rich text and its cards are run through every registered one — and declare `locales` on your linkable routes so a menu item is written the same way.
 
 ## Contributing a sitemap from other bundles
 

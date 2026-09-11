@@ -20,13 +20,22 @@ use c975L\UiBundle\Listener\TranslationPurgeListener;
 use c975L\UiBundle\Repository\TranslationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostRemoveEventArgs;
+use Doctrine\ORM\Event\PreRemoveEventArgs;
 use PHPUnit\Framework\TestCase;
 
 class TranslationPurgeListenerTest extends TestCase
 {
-    private function createEvent(object $entity): PostRemoveEventArgs
+    // What Doctrine does with a removal: preRemove while the row still has its id, which it hands back to null before postRemove
+    private function remove(TranslationRepository $repository, object $entity): void
     {
-        return new PostRemoveEventArgs($entity, $this->createStub(EntityManagerInterface::class));
+        $listener = new TranslationPurgeListener($repository);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+
+        $listener->preRemove(new PreRemoveEventArgs($entity, $entityManager));
+        if (property_exists($entity, 'id')) {
+            new \ReflectionProperty($entity, 'id')->setValue($entity, null);
+        }
+        $listener->postRemove(new PostRemoveEventArgs($entity, $entityManager));
     }
 
     private function createBlock(?int $id): Block
@@ -48,7 +57,7 @@ class TranslationPurgeListenerTest extends TestCase
             ->method('deleteByOwner')
             ->with(Translation::OWNER_BLOCK, 7);
 
-        new TranslationPurgeListener($repository)->postRemove($this->createEvent($this->createBlock(7)));
+        $this->remove($repository, $this->createBlock(7));
     }
 
     // postRemove fires for every entity of the flush, and this one only answers for the four that carry translations
@@ -57,7 +66,7 @@ class TranslationPurgeListenerTest extends TestCase
         $repository = $this->createMock(TranslationRepository::class);
         $repository->expects($this->never())->method('deleteByOwner');
 
-        new TranslationPurgeListener($repository)->postRemove($this->createEvent(new Favorite()));
+        $this->remove($repository, new Favorite());
     }
 
     // A card taken off its grid is orphan-removed the same way a form field is, and the title and text it was given in each language have to go with it (see MediaTranslator)
@@ -71,7 +80,7 @@ class TranslationPurgeListenerTest extends TestCase
             ->method('deleteByOwner')
             ->with(Translation::OWNER_MEDIA, 21);
 
-        new TranslationPurgeListener($repository)->postRemove($this->createEvent($media));
+        $this->remove($repository, $media);
     }
 
     // Taken out of its form's collection, a field is deleted by Doctrine's orphanRemoval - a removal like any other, and its translations have to go the same way
@@ -85,7 +94,7 @@ class TranslationPurgeListenerTest extends TestCase
             ->method('deleteByOwner')
             ->with(Translation::OWNER_FORM_FIELD, 12);
 
-        new TranslationPurgeListener($repository)->postRemove($this->createEvent($field));
+        $this->remove($repository, $field);
     }
 
     // Named apart from the fields, so a result's own words are the ones taken away
@@ -99,7 +108,7 @@ class TranslationPurgeListenerTest extends TestCase
             ->method('deleteByOwner')
             ->with(Translation::OWNER_FORM_OUTPUT, 12);
 
-        new TranslationPurgeListener($repository)->postRemove($this->createEvent($output));
+        $this->remove($repository, $output);
     }
 
     // A block that was never persisted owns no row keyed on an id it does not have
@@ -108,6 +117,15 @@ class TranslationPurgeListenerTest extends TestCase
         $repository = $this->createMock(TranslationRepository::class);
         $repository->expects($this->never())->method('deleteByOwner');
 
-        new TranslationPurgeListener($repository)->postRemove($this->createEvent($this->createBlock(null)));
+        $this->remove($repository, $this->createBlock(null));
+    }
+
+    // postRemove alone has no id left to go on, whatever the row still says: that is the very state Doctrine hands it
+    public function testPostRemoveWithoutPreRemoveDeletesNothing(): void
+    {
+        $repository = $this->createMock(TranslationRepository::class);
+        $repository->expects($this->never())->method('deleteByOwner');
+
+        new TranslationPurgeListener($repository)->postRemove(new PostRemoveEventArgs($this->createBlock(7), $this->createStub(EntityManagerInterface::class)));
     }
 }

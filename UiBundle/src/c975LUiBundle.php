@@ -30,6 +30,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\FormBlockDependencyProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormPageUrlProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\FormThemeRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\GalleryShowcaseProviderPass;
+use c975L\UiBundle\DependencyInjection\Compiler\InternalLinkLocalizerPass;
 use c975L\UiBundle\DependencyInjection\Compiler\MediaUsageProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\PdfDocumentSourcePass;
 use c975L\UiBundle\DependencyInjection\Compiler\PlaceholderMediaProviderPass;
@@ -79,6 +80,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new BlockLocationProviderPass());
         $container->addCompilerPass(new EmailLayoutProviderPass());
         $container->addCompilerPass(new EmailAttachmentProviderPass());
+        $container->addCompilerPass(new InternalLinkLocalizerPass());
         $container->addCompilerPass(new FontProviderPass());
         $container->addCompilerPass(new FormThemeRegistryPass());
         $container->addCompilerPass(new FormActionProviderPass());

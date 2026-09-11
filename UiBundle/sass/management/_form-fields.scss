@@ -81,3 +81,11 @@
     letter-spacing: .04em;
     color: var(--bs-secondary-color, #6c757d);
 }
+
+// The group of fields a language screen cannot claim as its own: what it holds belongs to the row, so writing it while reading the site in English writes it in every language at once (see SiteBundle's PageCrudController::configureFields). Tinted and ruled down the side rather than merely legended: the group is reproduced identically on each language screen, and what tells them apart is the untinted group below it - a difference that has to be seen before the first keystroke, not read. The rule is drawn inside the box rather than added as a border, EasyAdmin drawing the outline of a fieldset the same way (an inset shadow): a real border would widen the group by 4px and step it out of line with the one below. Both tints are Bootstrap's own subtle warning pair, which EasyAdmin's theme redefines in dark mode, so the group follows the back-office rather than staying pale on a dark screen
+.form-fieldset.fieldset-all-languages {
+    background-color: var(--bs-warning-bg-subtle, #fff3cd);
+    box-shadow:
+        inset 0 0 0 1px var(--form-fieldset-border-color, #dee2e6),
+        inset 4px 0 0 0 var(--bs-warning-border-subtle, #ffe69c);
+}

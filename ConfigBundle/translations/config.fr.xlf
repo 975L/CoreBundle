@@ -182,6 +182,14 @@
                 <source>description.guided_step_config_settings_open</source>
                 <target>Tous les réglages du site vivent ici, groupés par sujet — aucun n'est à écrire dans un fichier.</target>
             </trans-unit>
+            <trans-unit id="GAjaysK">
+                <source>description.guided_step_config_settings_save_stay</source>
+                <target>Changer de langue recharge l'écran : ce qui n'est pas enregistré serait perdu.</target>
+            </trans-unit>
+            <trans-unit id="tbWt3Ve">
+                <source>description.guided_step_config_settings_translate</source>
+                <target>Un réglage qu'une langue peut changer porte un sélecteur au-dessus de lui : choisissez une langue, et écrivez-y la valeur. Le nom du réglage, lui, ne change jamais - seul ce qu'il dit change.</target>
+            </trans-unit>
             <trans-unit id="qd4IzF2">
                 <source>description.guided_step_config_settings_value</source>
                 <target>Une entrée marquée sensible est chiffrée en base et n'est jamais réaffichée en clair.</target>
@@ -885,6 +893,14 @@
             <trans-unit id="XBS3oAU">
                 <source>label.guided_step_config_settings_save</source>
                 <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="Yb8P6co">
+                <source>label.guided_step_config_settings_save_stay</source>
+                <target>Enregistrer sans quitter</target>
+            </trans-unit>
+            <trans-unit id="jkrEHgr">
+                <source>label.guided_step_config_settings_translate</source>
+                <target>L'écrire dans une autre langue</target>
             </trans-unit>
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>
