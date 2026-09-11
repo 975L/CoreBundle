@@ -26,6 +26,12 @@ class StatusReportBuilder
     // Caps the error rows carried by one report. A site with hundreds of broken pages would otherwise send a payload sized by its content rather than by its state - the counts stay exact, only the list is cut, and issuesTruncated says so rather than letting a receiver read a short list as "that's all of them"
     private const int MAX_ISSUES = 20;
 
+    // Checker messages carried per error row: five say what to fix, the rest being more of the same on a page whoever fixes it is about to open anyway
+    private const int MAX_ERRORS_PER_ISSUE = 5;
+
+    // A validator names the cause in its first words: a longer message is cut rather than dropped, the same figure PageSpeedInsightsClient keeps of Google's
+    private const int MAX_ERROR_LENGTH = 200;
+
     public function __construct(
         private readonly iterable $statusProviders,
         private readonly ConfigServiceInterface $configService,
@@ -96,7 +102,7 @@ class StatusReportBuilder
         return $dependencies;
     }
 
-    // What the last health check run found, as counts plus the rows in error. HealthCheckResult::$details is left out on purpose: it holds the checkers' raw payloads, which is what makes a row actionable but also what makes it big and occasionally revealing - the receiver gets to know where it hurts, the site keeps why
+    // What the last health check run found, as counts plus the rows in error. HealthCheckResult::$details stays behind: it holds the checkers' raw payloads, big and occasionally revealing. Only its "errors" list travels, capped - a validator's sentences about a public page, neither big nor secret, and what turns a mailed row into something fixable from the mail rather than a count sending its reader to the site
     private function getChecks(): ?array
     {
         try {
@@ -123,6 +129,7 @@ class StatusReportBuilder
                     'kind' => $row->getKind(),
                     'url' => $row->getUrl(),
                     'summary' => $row->getSummary(),
+                    'errors' => $this->getErrors($row),
                 ];
             }
         }
@@ -133,6 +140,17 @@ class StatusReportBuilder
             'issues' => \array_slice($issues, 0, self::MAX_ISSUES),
             'issuesTruncated' => \count($issues) > self::MAX_ISSUES,
         ];
+    }
+
+    // The checker's own messages when it lists them under "errors", as the W3C checks do - strings only, capped in number and in length, never the rest of the payload. An added key: a receiver reading a site not updated yet simply finds none
+    private function getErrors(HealthCheckResult $row): array
+    {
+        $errors = array_values(array_filter((array) (($row->getDetails() ?? [])['errors'] ?? []), is_string(...)));
+
+        return array_map(
+            static fn (string $error): string => mb_substr($error, 0, self::MAX_ERROR_LENGTH),
+            \array_slice($errors, 0, self::MAX_ERRORS_PER_ISSUE),
+        );
     }
 
     // What the installed bundles chose to add, one section per provider (see StatusProviderInterface). A provider that throws must not cost the whole report: the site would then look silent to a receiver, which reads as a much worse problem than the one section that failed

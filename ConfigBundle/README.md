@@ -2335,7 +2335,7 @@ What the report holds:
     "checks": {
         "counts": {"ok": 42, "warning": 3, "error": 1, "skipped": 0},
         "lastRunAt": "2026-08-01T03:00:00+02:00",
-        "issues": [{"kind": "ssl", "url": "https://example.com", "summary": "..."}],
+        "issues": [{"kind": "w3c-html", "url": "https://example.com/", "summary": "1 erreur(s), 0 avertissement(s)", "errors": ["line 267: Attribute “aria-expanded” not allowed on element “input” at this point."]}],
         "issuesTruncated": false
     },
     "extra": {
@@ -2350,7 +2350,7 @@ What the report holds:
 }
 ```
 
-The report's deliberate limits. `packages` lists the installed **bundles** rather than the whole dependency tree, Symfony's own excluded since the `symfony` field already carries their version — whether a bundle is a direct requirement or came along with another one doesn't change what runs. `issues` carries the rows **in error** only, without their `HealthCheckResult::$details`: the receiver learns *where* it hurts and links back to the site to learn *why*, so the payload stays small and holds nothing revealing — a site merely in warning is a site to improve, and its `counts` still say so. And it is capped at 20 rows, `issuesTruncated` saying so — the counts stay exact either way, so a short list is never mistaken for a complete one.
+The report's deliberate limits. `packages` lists the installed **bundles** rather than the whole dependency tree, Symfony's own excluded since the `symfony` field already carries their version — whether a bundle is a direct requirement or came along with another one doesn't change what runs. `issues` carries the rows **in error** only, without their `HealthCheckResult::$details`: the payload stays small and holds nothing revealing — a site merely in warning is a site to improve, and its `counts` still say so. The one part of the details that does travel is the checker's own `errors` list, when it keeps one (the W3C checks do): five messages at most, 200 characters each, never the warnings nor the raw payload. Those sentences about a public page are what lets a receiver say *why* it hurts, in words that can be pasted to whoever fixes it; a row whose checker keeps no such list sends `"errors": []`, and a site not updated yet sends no key at all. And it is capped at 20 rows, `issuesTruncated` saying so — the counts stay exact either way, so a short list is never mistaken for a complete one.
 
 **The two package lists answer two different questions**, which is why the second one is not the first one made longer. `packages` is the human list — which bundles run where, compared across sites by whoever maintains them. `dependencies` is the machine list: **everything** installed with a version, platform entries aside, so a receiver can look the site up against a vulnerability database — a CVE lands on Doctrine, Dompdf or Twig as readily as on a bundle, and none of those is a `symfony-bundle`. That lookup stays the receiver's to make: a console holding thirty sites' lists resolves them all in a single call to the advisory API, where thirty sites checking themselves would each call out on a schedule to learn what one lookup already knows — and `composer audit` in the CI, which answers the same question from the code, only answers it on the days someone pushes.
 

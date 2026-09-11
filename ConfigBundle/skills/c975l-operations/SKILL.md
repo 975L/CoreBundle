@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, BATCH_SIZE, HealthCheckErrorRow, STATUS_WARNING, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, issuesTruncated, checker errors, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, BATCH_SIZE, HealthCheckErrorRow, STATUS_WARNING, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -246,6 +246,13 @@ against a vulnerability database — the lookup is the receiver's, never the sit
 since that second list appeared: a receiver reads it to tell a site that omits the section from one
 that has nothing in it.
 
+`checks.issues` lists the rows **in error** only, capped at 20 (`issuesTruncated` says so), each as
+`kind`, `url`, `summary` and `errors`. `HealthCheckResult::$details` stays on the site, save the
+checker's own `errors` list when it keeps one (the W3C checks do): five strings at most, 200
+characters each — enough for a receiver to say what to fix without opening the site. A checker whose
+messages should travel stores them as a list of strings under `details['errors']`; warnings and raw
+payloads never leave. A site not updated yet sends no `errors` key, so a receiver treats it as optional.
+
 A bundle adds to its `extra` section with `StatusProviderInterface`. **The criterion is strict: a
 figure calling for no action is not reported.** The report is read across a dozen sites at once; a
 "number of blocks" decides nothing and buries what matters.
@@ -290,6 +297,8 @@ both sides: a message quoting a template's path must not hand out `templates/com
   the subscriber never queries for one.
 - **Do not store what an url says in code**, nor declare a url's sentences from a provider.
 - **Do not run a health check from a controller.**
+- **Do not store anything but a checker's own messages under `details['errors']`** — that list is the
+  one part of a row's details `/status/report` sends over the network.
 - **Do not call external links on every run**, and do not retry a `403`/`429`/`999` in `GET`.
 - **Do not claim a page conforms to the RGAA from the `accessibility` rows alone** — they answer
   eight criteria of 106, and never the ones a browser engine measures.

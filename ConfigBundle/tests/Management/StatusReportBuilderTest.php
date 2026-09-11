@@ -20,14 +20,14 @@ use PHPUnit\Framework\TestCase;
 class StatusReportBuilderTest extends TestCase
 {
     // One health check row, only the fields the report reads being set
-    private function row(string $status, string $kind = 'ssl', string $url = 'https://example.com', string $checkedAt = '2026-08-01 03:00:00'): HealthCheckResult
+    private function row(string $status, string $kind = 'ssl', string $url = 'https://example.com', string $checkedAt = '2026-08-01 03:00:00', array $details = ['raw' => 'payload that must not travel']): HealthCheckResult
     {
         return new HealthCheckResult()
             ->setKind($kind)
             ->setUrl($url)
             ->setStatus($status)
             ->setSummary('summary')
-            ->setDetails(['raw' => 'payload that must not travel'])
+            ->setDetails($details)
             ->setCheckedAt(new \DateTimeImmutable($checkedAt));
     }
 
@@ -113,12 +113,26 @@ class StatusReportBuilderTest extends TestCase
         $this->assertFalse($checks['issuesTruncated']);
     }
 
-    // The checkers' raw payloads are what makes a row big and occasionally revealing: the receiver learns where it hurts, the site keeps why
+    // The checkers' raw payloads are what makes a row big and occasionally revealing: none of it travels, a payload without an "errors" list sending no message at all
     public function testIssuesLeaveTheDetailsBehind(): void
     {
         $checks = $this->createBuilder([$this->row(HealthCheckResult::STATUS_ERROR)])->build()['checks'];
 
-        $this->assertSame(['kind', 'url', 'summary'], array_keys($checks['issues'][0]));
+        $this->assertSame(['kind', 'url', 'summary', 'errors'], array_keys($checks['issues'][0]));
+        $this->assertSame([], $checks['issues'][0]['errors']);
+    }
+
+    // What makes a mailed row fixable from the mail: the validator's own sentences, capped in number and length, and nothing else of the payload
+    public function testIssuesCarryTheCheckersOwnErrorsCutShort(): void
+    {
+        $details = [
+            'errors' => [str_repeat('a', 300), 42, 'line 2', 'line 3', 'line 4', 'line 5', 'line 6'],
+            'benignWarnings' => ['line 3: vendor extension'],
+        ];
+
+        $errors = $this->createBuilder([$this->row(HealthCheckResult::STATUS_ERROR, details: $details)])->build()['checks']['issues'][0]['errors'];
+
+        $this->assertSame([str_repeat('a', 200), 'line 2', 'line 3', 'line 4', 'line 5'], $errors);
     }
 
     // A site with hundreds of broken pages must send a payload sized by its state, not by its content - and say that the list was cut

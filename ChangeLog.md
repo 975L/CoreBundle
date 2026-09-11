@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.28.2
+
+The status report carries each error row's checker messages
+
+### ConfigBundle
+
+- **`/status/report` carries each error row's checker messages** under a new `errors` key (11/09/2026)
+- Only `details.errors` travels, five messages at most, 200 characters each (11/09/2026)
+- Warnings, benign lists and raw payloads stay on the site (11/09/2026)
+- A site not updated yet sends no `errors` key, so existing receivers keep working (11/09/2026)
+- `StatusReportBuilderTest` covers the cap, the cut and the payload left behind (11/09/2026)
+
 ## v1.28.1
 
 Customized scaffold files are reported once per change
