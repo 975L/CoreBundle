@@ -14,7 +14,7 @@ use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\Process;
 
-// Answers the one question "c975l:scaffold:install" leaves open when it reports a customized file: whether the scaffold has changed since the version this site started from. Both stories end in the same warning today - a file the site rewrote on purpose and a file whose upstream moved on without it - and a developer coming back to it months later cannot tell them apart without hunting the bundle's history by hand
+// Answers the one question "c975l:scaffold:install" leaves open when it reports a customized file: what the scaffold gained since the version this site started from, and whether this site still lacks it. That warning only names files whose scaffold changed since their recorded base, but a change already carried over by hand reads exactly like one still missing, and a developer coming back to it months later cannot tell them apart without hunting the bundle's history by hand
 class ScaffoldDiffer
 {
     // The versions of one file the history is walked back through, past which a base older than the site's whole scaffold era is not worth the processes it would cost
@@ -27,21 +27,8 @@ class ScaffoldDiffer
     ) {
     }
 
-    /**
-     * Every file "c975l:scaffold:install" would leave untouched, each weighed against the version it was delivered from.
-     * 'upstream' is the whole point: empty means there is nothing left to carry over - the scaffold never moved since,
-     * or what it gained has already been reported here by hand - so the divergence is this site's own work and the
-     * warning is noise. A diff means the bundle gained something this site is still missing.
-     * A base that could not be recovered leaves 'upstream' null and 'fallback' holding the plain local-vs-scaffold diff,
-     * which is all any of this could say before the manifest existed.
-     * $bundleSources are directories holding git clones of the bundles (a clone itself, or a directory of them), used
-     * when the site's own history cannot answer - see baseFromBundles().
-     *
-     * 'unmatched' carries the given paths no scaffold file answered to, a typo reading exactly like a site with
-     * nothing to report otherwise.
-     *
-     * @return array{files: list<array{file: string, source: string, base: ?string, upstream: ?string, fallback: ?string}>, unmatched: list<string>}
-     */
+    // Every file "c975l:scaffold:install" reports, weighed against the version it was delivered from: an empty 'upstream' means what the scaffold gained is already here and the file can be acknowledged, a diff is what this site still lacks, and a null one a base no history gave back, 'fallback' then holding the plain local-vs-scaffold diff. $bundleSources are the git clones searched when the site's own history cannot answer (see baseFromBundles()), 'unmatched' the given paths no scaffold file answered to
+    /** @return array{files: list<array{file: string, source: string, base: ?string, upstream: ?string, fallback: ?string}>, unmatched: list<string>} */
     public function diff(array $paths = [], array $bundleSources = []): array
     {
         $result = $this->scaffoldInstaller->install($paths, true);
@@ -82,11 +69,6 @@ class ScaffoldDiffer
     // One divergence, told from its base when one can be recovered and from the two files alone otherwise
     private function weigh(string $file, string $source, ?string $hash, array $repositories): array
     {
-        // The recorded hash being the source's own, there is nothing to look up and nothing to compare: the bundles still ship the version this site started from (or the one it acknowledged), so whatever the file holds is its own doing
-        if (null !== $hash && $hash === hash_file('sha256', $this->absolutePath($source))) {
-            return ['file' => $file, 'source' => $source, 'base' => 'the version recorded here', 'upstream' => '', 'fallback' => null];
-        }
-
         $base = null === $hash ? null : $this->base($file, $source, $hash, $repositories);
 
         if (null === $base) {

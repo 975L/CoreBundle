@@ -47,13 +47,13 @@ class ScaffoldInstallCommand extends Command
             return;
         }
 
-        $io->warning(sprintf('%d file(s) left untouched, this site having customized them since they were installed.', count($diverged)));
+        $io->warning(sprintf('%d file(s) left untouched: this site customized them, and their scaffold has changed since.', count($diverged)));
         $io->listing(array_map(
             static fn (string $file, string $source): string => $file . "\n  ← " . $source,
             array_keys($diverged),
             $diverged
         ));
-        $io->text('Compare each with its source to carry over what the new scaffold changed, or re-run with --force (narrowed by --path=…) to take the new version and find yours back in existingFiles/.');
+        $io->text('Run "c975l:scaffold:diff" to see what each one still lacks, then carry it over or turn it down with --acknowledge (they are not reported again until the scaffold changes anew), or re-run this with --force (narrowed by --path=…) to take the new version and find yours back in existingFiles/.');
         $io->newLine();
     }
 

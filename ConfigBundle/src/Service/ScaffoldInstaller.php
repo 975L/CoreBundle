@@ -37,7 +37,7 @@ class ScaffoldInstaller
     ) {
     }
 
-    // Copies scaffold/{src,templates,tests,translations,assets} from every installed c975L bundle into the project - a target already identical to the scaffold source is left untouched (no backup, no copy), so re-running this on an unmodified project is a no-op. A target that differs is decided by MANIFEST_FILE rather than overwritten on sight: still bit-for-bit what was last delivered here means the site never touched it and the scaffold moved on, so it is refreshed silently; anything else is the site's own work, is left exactly as it is, and comes back under 'diverged' for the caller to report. $force takes the old behaviour back for those - overwrite, after backing the file up into existingFiles/<same relative path>.old - which is what a site adopting a new scaffold wholesale wants, ideally narrowed by $paths. 'assets' stays outside all of it: once a target exists there it is the app's own editable file, whatever its content (see themeImportReminder()). The withdrawn files each bundle declares in REMOVED_FILE are deleted under the same rule, see remove(). $paths restricts the run to the relative paths given ('src/Scheduler', or a single file), $dryRun reports what would happen without writing anything. The returned 'unmatched' lists the given paths no scaffold file answered to, a run restricted to nothing at all being indistinguishable from an up-to-date site otherwise
+    // Copies scaffold/{src,templates,tests,translations,assets} from every installed c975L bundle into the project - a target already identical to the scaffold source is left untouched (no backup, no copy), so re-running this on an unmodified project is a no-op. A target that differs is decided by MANIFEST_FILE rather than overwritten on sight: still bit-for-bit what was last delivered here means the site never touched it and the scaffold moved on, so it is refreshed silently; anything else is the site's own work, is left exactly as it is, and comes back under 'diverged' for the caller to report - unless the scaffold still ships the base recorded for it, in which case there is nothing to report (see weighExisting()). $force takes the old behaviour back for those - overwrite, after backing the file up into existingFiles/<same relative path>.old - which is what a site adopting a new scaffold wholesale wants, ideally narrowed by $paths. 'assets' stays outside all of it: once a target exists there it is the app's own editable file, whatever its content (see themeImportReminder()). The withdrawn files each bundle declares in REMOVED_FILE are deleted under the same rule, see remove(). $paths restricts the run to the relative paths given ('src/Scheduler', or a single file), $dryRun reports what would happen without writing anything. The returned 'unmatched' lists the given paths no scaffold file answered to, a run restricted to nothing at all being indistinguishable from an up-to-date site otherwise
     public function install(array $paths = [], bool $dryRun = false, bool $force = false): array
     {
         $manifest = $this->readManifest();
@@ -111,6 +111,11 @@ class ScaffoldInstaller
                 return;
             }
 
+            // Counted nowhere: a customized file is not up to date, and there is nothing new in it to report either
+            if ('kept' === $verdict) {
+                return;
+            }
+
             if ('diverged' === $verdict) {
                 $result['diverged'][$relativePath] = $this->relativeToProject($file->getPathname());
 
@@ -161,7 +166,12 @@ class ScaffoldInstaller
             return 'overwrite';
         }
 
-        return $force ? 'backup' : 'diverged';
+        if ($force) {
+            return 'backup';
+        }
+
+        // The site's own work on a scaffold that has not changed since the base recorded here - as delivered, or as acknowledged by "c975l:scaffold:diff --acknowledge": nothing to carry over, so nothing to report, and the warning a site gets on every update only names what the bundles changed after that
+        return ($manifest[$relativePath] ?? null) === $sourceHash ? 'kept' : 'diverged';
     }
 
     // The files the bundles declare as withdrawn, taken off the app unless it has made them its own

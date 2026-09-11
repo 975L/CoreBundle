@@ -174,6 +174,38 @@ class ScaffoldInstallerTest extends TestCase
         $this->assertDirectoryDoesNotExist($this->projectDir . '/existingFiles');
     }
 
+    // The warning a site got on every update for a template it redesigned once: the scaffold still ships the base recorded here, so there is nothing to carry over and nothing to say - and --force still takes it
+    public function testInstallStaysSilentOnACustomizedFileTheScaffoldHasNotMovedFrom(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['templates/security/login.html.twig' => 'recorded-base']);
+        $this->addProjectFile('templates/security/login.html.twig', 'my-own-console');
+        $this->recordAsDelivered('templates/security/login.html.twig', 'recorded-base');
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $result = $installer->install();
+
+        $this->assertSame(['copied' => 0, 'backedUp' => 0, 'skipped' => 0], $this->counts($result));
+        $this->assertSame([], $result['diverged']);
+        $this->assertSame('my-own-console', file_get_contents($this->projectDir . '/templates/security/login.html.twig'));
+        $this->assertSame(['copied' => 1, 'backedUp' => 1, 'skipped' => 0], $this->counts($installer->install([], false, true)));
+    }
+
+    // What acknowledge() records is a base like any other: install() stops reporting the file, until the scaffold changes anew
+    public function testInstallStaysSilentOnAnAcknowledgedFileUntilTheScaffoldChangesAnew(): void
+    {
+        $this->addScaffoldBundle('site-bundle', ['src/Foo.php' => 'upstream']);
+        $this->addProjectFile('src/Foo.php', 'mine');
+        $this->recordAsDelivered('src/Foo.php', 'what-was-delivered');
+        $installer = new ScaffoldInstaller($this->bundleLocator(), $this->projectDir);
+
+        $installer->acknowledge();
+
+        $this->assertSame([], $installer->install()['diverged']);
+        file_put_contents($this->projectDir . '/vendor/c975l/site-bundle/scaffold/src/Foo.php', 'upstream-again');
+        $this->assertSame(['src/Foo.php'], array_keys($installer->install()['diverged']));
+        $this->assertSame('mine', file_get_contents($this->projectDir . '/src/Foo.php'));
+    }
+
     // Still bit-for-bit what was delivered means the site never touched it and only the scaffold moved on: refreshed in place, and no backup of a file the bundle can reproduce
     public function testInstallSilentlyRefreshesAnUntouchedFileTheScaffoldHasMovedOn(): void
     {

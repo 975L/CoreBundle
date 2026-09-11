@@ -130,20 +130,21 @@ Among the tests it installs, `tests/Deploy/DeployWorkflowTest.php` is the one lo
 | The target is | What happens |
 | --- | --- |
 | still bit-for-bit what was delivered | only the scaffold moved on: refreshed silently, no backup needed for a file the bundle can reproduce |
-| anything else | your own work: left exactly as it is, and named in the output next to the scaffold source to compare it against |
+| anything else, the scaffold still shipping the version recorded for it | your own work, with nothing new to carry over: left exactly as it is, and not reported |
+| anything else, the scaffold having changed since | your own work: left exactly as it is, and named in the output next to the scaffold source to compare it against |
 
-So upgrading a bundle brings the boilerplate along and hands you the short list of files whose upgrade only you can do — typically `templates/security/login.html.twig` once a site has given it a design. `--force` takes the new version anyway, backing yours up to `existingFiles/<same path>.old`; narrow it with `--path` rather than adopting a whole scaffold blind.
+So upgrading a bundle brings the boilerplate along and hands you the short list of files whose upgrade only you can do, and only when there is an upgrade to do — typically `templates/security/login.html.twig` once a site has given it a design. `--force` takes the new version anyway, backing yours up to `existingFiles/<same path>.old`; narrow it with `--path` rather than adopting a whole scaffold blind.
 
 A site predating the manifest has nothing to do: every file still identical to its source is recorded on the way past, and only what already differs is reported the first time.
 
-**Which of those files still matter: `c975l:scaffold:diff`.** That warning says a file differs, never whether the scaffold has changed since — a template you rewrote on purpose and one whose upstream moved on without you read exactly alike, and a few months later nobody remembers which is which:
+**Which of those files still matter: `c975l:scaffold:diff`.** That warning says the scaffold changed since, never whether you already have that change — a line you carried over by hand and one still missing read exactly alike, and a few months later nobody remembers which is which:
 
 ```bash
 php bin/console c975l:scaffold:diff
 php bin/console c975l:scaffold:diff --bundle-sources=/path/to/your/bundle/clones
 ```
 
-It writes nothing, so it belongs at the tail of an update script, and it answers file by file: *nothing to carry over* when the scaffold has not moved since the version this site started from, or the diff of exactly what the bundle gained since — the part this site is still missing. What you wrote yourself is never shown: you know it, and `git log` on the file says it better. A hunk you have carried over by hand drops out of the report from then on, looked for wherever it landed rather than where the scaffold has it — a customized file rarely has room for it at the same place, and a warning that survives its own answer is noise again.
+It writes nothing, so it belongs at the tail of an update script, and it answers file by file: *nothing to carry over* when everything the scaffold gained is already in the file, or the diff of exactly what the bundle gained since — the part this site is still missing. What you wrote yourself is never shown: you know it, and `git log` on the file says it better. A hunk you have carried over by hand drops out of the report from then on, looked for wherever it landed rather than where the scaffold has it — a customized file rarely has room for it at the same place, and a warning that survives its own answer is noise again.
 
 **Turning an offer down for good.** A site can have read what the scaffold gained and want none of it — a login console with a single seat, offered the OAuth buttons. Say so once, and it stops being raised:
 
@@ -151,7 +152,7 @@ It writes nothing, so it belongs at the tail of an update script, and it answers
 php bin/console c975l:scaffold:diff --path=templates/security/login.html.twig --acknowledge
 ```
 
-No file is touched: the current source becomes the recorded base in `.c975l-scaffold.json`, so only what the bundle changes *after* this comes back. Commit the manifest — and an acknowledgement made too fast comes back with a `git checkout` on it. A `--path` no scaffold file answers to fails rather than reporting nothing to acknowledge: a typo, or a path given as it stands in the bundle (`scaffold/src/…`), otherwise reads exactly like a site with nothing customized.
+No file is touched: the current source becomes the recorded base in `.c975l-scaffold.json`, so only what the bundle changes *after* this comes back, in `c975l:scaffold:install`'s warning as much as here. Commit the manifest — and an acknowledgement made too fast comes back with a `git checkout` on it. A `--path` no scaffold file answers to fails rather than reporting nothing to acknowledge: a typo, or a path given as it stands in the bundle (`scaffold/src/…`), otherwise reads exactly like a site with nothing customized.
 
 That answer rests on the version this site was delivered, and `.c975l-scaffold.json` holds its hash rather than its content, so it is looked for in two histories: the site's own, where the file was committed as it landed, then the bundle clones `--bundle-sources` points at (a clone, or a directory holding several). The second is the rule rather than the exception — an update script committing the delivery and the customization in one go leaves no commit holding the delivered version alone. Neither history answering, the command falls back on the plain local-vs-scaffold diff and says so, which is all any of this could tell before the manifest existed.
 

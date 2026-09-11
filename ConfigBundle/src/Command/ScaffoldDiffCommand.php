@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// The follow-up to "c975l:scaffold:install" reporting customized files: it names them, this one says which of them still matter. A file the site rewrote and a file whose upstream moved on read exactly alike in that warning, and the difference is the only thing worth acting on - see ScaffoldDiffer. Writes nothing, so it is safe to run on every update.
+// The follow-up to "c975l:scaffold:install" reporting customized files: it names the ones whose scaffold changed since, this one says whether that change is still missing here. A change carried over by hand and one still waiting read exactly alike in that warning, and the difference is the only thing worth acting on - see ScaffoldDiffer. Writes nothing without --acknowledge, so it is safe to run on every update.
 #[AsCommand(
     name: 'c975l:scaffold:diff',
     description: 'Tells the scaffold files this site customized on purpose from the ones whose scaffold has changed since'
@@ -70,7 +70,7 @@ class ScaffoldDiffCommand extends Command
         }
 
         if ('' === $file['upstream']) {
-            $io->text(sprintf('<info>Nothing to carry over</info> - the scaffold has not changed since %s, so this file holds this site\'s own work only.', $file['base']));
+            $io->text(sprintf('<info>Nothing to carry over</info> - what the scaffold gained since %s is already here, so this file holds this site\'s own work only. Run with --acknowledge --path=%s to stop it being reported.', $file['base'], $file['file']));
             $io->newLine();
 
             return;

@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.28.1
+
+Customized scaffold files are reported once per change
+
+### ConfigBundle
+
+- **`c975l:scaffold:install` no longer reports a customized file whose scaffold still ships its recorded base** (11/09/2026)
+- `c975l:scaffold:diff --acknowledge` silences that warning too, not only the diff (11/09/2026)
+- `--force` still takes such a file, backing it up into `existingFiles/` (11/09/2026)
+- The warning points at `c975l:scaffold:diff` and `--acknowledge` (11/09/2026)
+- `c975l:scaffold:diff` no longer lists the files whose scaffold never moved (11/09/2026)
+
 ## v1.28.0
 
 A site says its content, its urls and its links in every language

@@ -109,8 +109,8 @@ class ScaffoldDifferTest extends TestCase
         new Process(['git', '-c', 'user.email=test@example.com', '-c', 'user.name=test', 'commit', '-q', '-m', 'delivery'], $repository)->mustRun();
     }
 
-    // The nominal reading, and the cheap one: what was recorded here is what the bundles still ship, so no history is walked at all and the warning this site gets on every update has nothing behind it
-    public function testAFileTheScaffoldNeverMovedOnHasNothingToCarryOver(): void
+    // The nominal reading, and the cheap one: what was recorded here is what the bundles still ship, so no history is walked at all and the file is not even listed
+    public function testAFileTheScaffoldNeverMovedOnIsNotListed(): void
     {
         $this->addScaffoldFile('src/Foo.php', 'delivered');
         $this->recordAsDelivered('src/Foo.php', 'delivered');
@@ -118,11 +118,7 @@ class ScaffoldDifferTest extends TestCase
 
         $result = $this->differ()->diff();
 
-        $this->assertCount(1, $result['files']);
-        $this->assertSame('src/Foo.php', $result['files'][0]['file']);
-        $this->assertSame('the version recorded here', $result['files'][0]['base']);
-        $this->assertSame('', $result['files'][0]['upstream']);
-        $this->assertNull($result['files'][0]['fallback']);
+        $this->assertSame([], $result['files']);
     }
 
     // The version delivered is not the current one, and the site's own history still holds it - a customization committed after the delivery it came with
@@ -223,7 +219,7 @@ class ScaffoldDifferTest extends TestCase
         $this->assertSame(['src/Foo.php'], $acknowledged['files']);
         $this->assertSame("mine\n", file_get_contents($this->projectDir . '/src/Foo.php'));
         $this->assertSame(hash('sha256', "delivered\nadded upstream\n"), json_decode((string) file_get_contents($this->projectDir . '/.c975l-scaffold.json'), true)['src/Foo.php']);
-        $this->assertSame('', $differ->diff()['files'][0]['upstream']);
+        $this->assertSame([], $differ->diff()['files']);
     }
 
     // What the bundle changes after an acknowledgement is a new offer, and is reported like any other
