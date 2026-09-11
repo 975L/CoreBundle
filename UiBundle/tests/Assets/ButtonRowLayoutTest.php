@@ -38,6 +38,17 @@ class ButtonRowLayoutTest extends TestCase
         );
     }
 
+    // The same for the "block_group" kind, whose buttons are its slots: a row of links composed in the back office sits together rather than spread across the page
+    #[DataProvider('stylesheetProvider')]
+    public function testABlockGroupTakesTheAutoMarginsOffItsButtons(string $file): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/\.blocks-group>\.btn\{[^}]*margin-inline:0/',
+            $this->normalize($file),
+            sprintf('"%s" leaves the auto margins on the buttons of a ".blocks-group", which spreads them across its whole width instead of grouping them.', $file)
+        );
+    }
+
     // The bare selector is what a row outweighs with one class of its own; a pseudo-class on it wins over that row for as long as the pointer is on the button
     #[DataProvider('stylesheetProvider')]
     public function testTheLinkButtonsLayoutIsStatedWithoutAPseudoClass(string $file): void

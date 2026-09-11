@@ -11,6 +11,11 @@
     gap: var(--blocks-group-gap, 0.5rem 1.5rem);
 }
 
+// A link button centers itself with "margin: 0 auto", auto margins a flex row turns into free space - the buttons of a group spread across its whole width instead of sitting together. Only the horizontal ones go, the group being spaced by its own gap (same rule as .flex-center, see _alignments.scss)
+.blocks-group > .btn {
+    margin-inline: 0;
+}
+
 .blocks-group--column {
     flex-direction: column;
 }

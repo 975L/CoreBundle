@@ -414,6 +414,10 @@
   gap: var(--blocks-group-gap, 0.5rem 1.5rem);
 }
 
+.blocks-group > .btn {
+  margin-inline: 0;
+}
+
 .blocks-group--column {
   flex-direction: column;
 }

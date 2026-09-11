@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.29.2
+
+A block group's link buttons sit together
+
+### UiBundle
+
+- `.blocks-group > .btn` drops the horizontal auto margins, so a group's inline buttons no longer spread across its width (11/09/2026)
+- `ButtonRowLayoutTest` checks that rule in both compiled sheets (11/09/2026)
+
 ## v1.29.1
 
 A --primary fill writes a primary button's ink
