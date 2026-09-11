@@ -26,6 +26,11 @@
                 "en": "Your pages no longer break once the account of someone who edited a block or uploaded a picture is deleted.",
                 "fr": "Vos pages ne cassent plus lorsque le compte d'une personne ayant modifié un block ou déposé une image est supprimé.",
                 "es": "Sus páginas ya no se rompen cuando se elimina la cuenta de alguien que editó un bloque o subió una imagen."
+            },
+            {
+                "en": "Card headers and the current page number of a list stay readable when your site's main color is a pale one, in light and dark mode alike.",
+                "fr": "Les en-têtes de cartes et le numéro de la page courante d'une liste restent lisibles lorsque la couleur principale de votre site est claire, en mode clair comme en mode sombre.",
+                "es": "Los encabezados de las tarjetas y el número de la página actual de una lista siguen siendo legibles cuando el color principal de su sitio es claro, tanto en modo claro como en modo oscuro."
             }
         ]
     },

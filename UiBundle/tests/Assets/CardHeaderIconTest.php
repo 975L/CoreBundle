@@ -30,7 +30,7 @@ class CardHeaderIconTest extends TestCase
     public function testTheIconIsWhitenedByTheStylesheet(string $file): void
     {
         $this->assertMatchesRegularExpression(
-            '/\.card-header\.icon\{[^}]*filter:brightness\(0\)invert\(var\(--card-accent-invert,1\)\)/',
+            '/\.card-header\.icon\{[^}]*filter:brightness\(0\)invert\(var\(--card-accent-invert,var\(--button-icon-invert,1\)\)\)/',
             $this->normalize($file),
             sprintf('"%s" no longer flattens then inverts ".card-header .icon", so the icon paints its own fill on the header\'s color.', $file)
         );

@@ -243,6 +243,8 @@ every bundle that copies it.
   `.block-editable`** on both ends — both are `display: contents`.
 - **Do not write text, an outline or a rule with `--primary`** — that is the fill; ink is
   `--primary-ink`.
+- **Do not write `#fff` or `var(--white)` on a `--primary` fill** — a primary may be pale; write
+  `var(--button-color)` and invert icons with `--button-icon-invert`.
 - **Do not set colors or fonts in a theme file** — they belong to the admin.
 - **Do not put a second `@layer` in this bundle's stylesheets.**
 - **Do not ship an empty theme file** "for later".

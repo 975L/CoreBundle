@@ -57,21 +57,21 @@ class DarkGroundInkTest extends TestCase
         );
     }
 
-    // A card's header band and the paginator's current chip are painted with a hue in both modes too - the band's own ink is refined per hue through --card-accent-color, which CardAccentTest locks
+    // A card's header band and the paginator's current chip are --primary fills, which may be pale: they take a primary button's ink, derived from that color and swapped with it in dark mode, never var(--white) - the band's own ink is refined per hue through --card-accent-color, which CardAccentTest locks
     #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
-    public function testTheColoredChipsWriteAStatedWhite(string $file): void
+    public function testThePrimaryChipsWriteTheInkOfTheirPrimary(string $file): void
     {
         $css = $this->normalize($file);
 
         $this->assertMatchesRegularExpression(
-            '/\.card-header,h2\.card-header\{[^}]*color:var\(--card-accent-color,#fff\)/',
+            '/\.card-header,h2\.card-header\{[^}]*color:var\(--card-accent-color,var\(--button-color\)\)/',
             $css,
-            sprintf('"%s" has a card header read a swappable token, which dark mode turns near-black on its own hue.', $file)
+            sprintf('"%s" has a card header ignore the ink read off --primary, which is unreadable on a pale primary.', $file)
         );
         $this->assertMatchesRegularExpression(
-            '/\.current\{background-color:var\(--primary\);color:#fff/',
+            '/\.current\{background-color:var\(--primary\);color:var\(--button-color\)/',
             $css,
-            sprintf('"%s" has the current page number read a swappable token, which dark mode turns near-black on the chip.', $file)
+            sprintf('"%s" has the current page number ignore the ink read off --primary, which is unreadable on a pale primary.', $file)
         );
     }
 

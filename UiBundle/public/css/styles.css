@@ -866,34 +866,50 @@ button.btn {
 
 .card--accent-red {
   --card-accent: var(--block-accent-red);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-green {
   --card-accent: var(--block-accent-green);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-cyan {
   --card-accent: var(--block-accent-cyan);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-blue {
   --card-accent: var(--block-accent-blue);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-indigo {
   --card-accent: var(--block-accent-indigo);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-violet {
   --card-accent: var(--block-accent-violet);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-pink {
   --card-accent: var(--block-accent-pink);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-grey {
   --card-accent: var(--block-accent-grey);
+  --card-accent-color: #fff;
+  --card-accent-invert: 1;
 }
 
 .card--accent-orange {
@@ -934,7 +950,7 @@ h2.card-header {
   font-size: var(--card-title-size);
   text-align: start;
   background-color: var(--card-accent, var(--primary));
-  color: var(--card-accent-color, #fff);
+  color: var(--card-accent-color, var(--button-color));
   border-bottom: 1px solid var(--card-accent, var(--input-border-color));
   padding: 0.5em 1em;
   margin: 0;
@@ -956,7 +972,7 @@ h2.card-header {
 }
 
 .card-header .icon {
-  filter: brightness(0) invert(var(--card-accent-invert, 1));
+  filter: brightness(0) invert(var(--card-accent-invert, var(--button-icon-invert, 1)));
 }
 
 .card-header a,
@@ -5135,7 +5151,7 @@ span {
 
 .current {
   background-color: var(--primary);
-  color: #fff;
+  color: var(--button-color);
 }
 
 .pagination-next,

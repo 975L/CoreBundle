@@ -43,36 +43,49 @@ $radius: var(--block-radius, var(--radius-card));
     box-shadow: var(--block-shadow, none);
 }
 
-// The twelve hues BlockAccentChoiceType offers. Each only points --card-accent at its own token (see sass/_tokens.scss) and paints nothing itself: the header band and the card's outline below are what show the accent, so a thirteenth hue is one line and nothing else.
-// A site retunes a hue from its own theme.css without the stored value - a color name, not a meaning - ever changing with it.
-// Written out rather than looped over the twelve names: an interpolated var(--block-accent-#{$hue}) reads as no token at all to anything grepping these sources, this bundle's own TokenDefaultsTest included
+// The twelve hues BlockAccentChoiceType offers, each pointing --card-accent at its own token (see sass/_tokens.scss) and painting nothing itself, so a thirteenth hue is one line and a site retunes one from its theme.css without the stored color name changing. Written out rather than looped: an interpolated var(--block-accent-#{$hue}) reads as no token to anything grepping these sources, TokenDefaultsTest included. The eight below are dark enough for white text, stated rather than left to ".card-header"'s fallback - the ink read off --primary, dark on a pale primary - and as fixed values, not var(--white), which dark mode swaps for a near-black while the hue stays put
 .card--accent-red {
     --card-accent: var(--block-accent-red);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 .card--accent-green {
     --card-accent: var(--block-accent-green);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 .card--accent-cyan {
     --card-accent: var(--block-accent-cyan);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 .card--accent-blue {
     --card-accent: var(--block-accent-blue);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 .card--accent-indigo {
     --card-accent: var(--block-accent-indigo);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 .card--accent-violet {
     --card-accent: var(--block-accent-violet);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 .card--accent-pink {
     --card-accent: var(--block-accent-pink);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 .card--accent-grey {
     --card-accent: var(--block-accent-grey);
+    --card-accent-color: #fff;
+    --card-accent-invert: 1;
 }
 
-// The four light enough that the white above would fall under the 4.5:1 WCAG AA asks of the header's title - yellow worst at 2.2:1. They carry dark text instead, and stop the icon's inversion with it.
-// Fixed values, not var(--black): --black is swapped for a near-white in dark mode (SiteBundle's sass/_theme-dark.scss) while the hue itself, a plain hex, stays put - the pair has to move together
+// The four light enough that white text would fall under the 4.5:1 WCAG AA asks of the header's title - yellow worst at 2.2:1 - so they carry dark text and stop the icon's inversion with it. Fixed values, not var(--black), which dark mode swaps for a near-white (SiteBundle's sass/_theme-dark.scss) while the hue, a plain hex, stays put
 .card--accent-orange {
     --card-accent: var(--block-accent-orange);
     --card-accent-color: #000;
@@ -114,8 +127,8 @@ h2.card-header {
     font-size: var(--card-title-size);
     text-align: start;
     background-color: var(--card-accent, var(--primary));
-    // White stated, not read from --white: the band is one of the twelve accents in both color modes, and dark mode swaps that token with --black (SiteBundle's sass/_theme-dark.scss), which turned every header near-black on its own hue. The four light hues still darken their own title through --card-accent-color, which is the way to give a band another ink
-    color: var(--card-accent-color, #fff);
+    // An unaccented band is a --primary fill, so its ink is the one a primary button's label reads (--button-color, derived from that very color by ThemeVariablesCssListener and swapped with it in dark mode): a stated white disappeared on a pale primary. Never var(--white), which dark mode swaps with --black whatever the fill. The twelve hues state their own ink through --card-accent-color
+    color: var(--card-accent-color, var(--button-color));
     // Same hue as the band above it, so the separator disappears into it - a grey line under an accented band would cut the card's own outline in two. It stays visible on an unaccented card, where the band is --primary and the outline is the neutral border it has always been
     border-bottom: 1px solid var(--card-accent, var(--input-border-color));
     padding: 0.5em 1em;
@@ -139,10 +152,9 @@ h2.card-header {
     opacity: var(--card-header-aside-opacity);
 }
 
-// An icon is an <img>, so it paints the SVG file's own fill - black - instead of inheriting the header's color like the title next to it does. Whitened here rather than by a "white" class on the markup, so every card gets it, whichever template built the icon (see the ".white" utility in _images.scss).
-// "brightness(0)" flattens it to black first; the inversion after is what turns that black white, so the four light hues above switch the icon with their title by setting the amount to 0 rather than 1
+// An icon is an <img> painting its SVG's own black fill rather than the header's color, so it is treated here for every card, whichever template built it (see the ".white" utility in _images.scss). "brightness(0)" flattens it to black and the inversion turns it white, so each hue switches the icon with its title through --card-accent-invert, and an unaccented band follows a primary button's icon through --button-icon-invert
 .card-header .icon {
-    filter: brightness(0) invert(var(--card-accent-invert, 1));
+    filter: brightness(0) invert(var(--card-accent-invert, var(--button-icon-invert, 1)));
 }
 
 // Title link: the theme's "*" and "a:hover" match it directly and beat inheritance, hence restated here

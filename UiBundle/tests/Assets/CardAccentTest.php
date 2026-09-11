@@ -19,6 +19,9 @@ class CardAccentTest extends TestCase
     // White falls under 4.5:1 on these four, so they carry dark text and stop the icon's inversion with it
     private const array DARK_TEXT_HUES = ['orange', 'yellow', 'lime', 'teal'];
 
+    // Dark enough for white, stated so they never inherit the header's fallback, the ink of a primary that may be pale
+    private const array WHITE_TEXT_HUES = ['red', 'green', 'cyan', 'blue', 'indigo', 'violet', 'pink', 'grey'];
+
     /**
      * @return array<string, array{string}>
      */
@@ -56,9 +59,9 @@ class CardAccentTest extends TestCase
             sprintf('"%s" no longer has the header band read --card-accent, so an accented card is headed with --primary.', $file)
         );
         $this->assertMatchesRegularExpression(
-            '/\.card-header,h2\.card-header\{[^}]*color:var\(--card-accent-color,#fff\)/',
+            '/\.card-header,h2\.card-header\{[^}]*color:var\(--card-accent-color,var\(--button-color\)\)/',
             $css,
-            sprintf('"%s" writes a fixed color on the header band, which the four light hues cannot darken.', $file)
+            sprintf('"%s" no longer writes the header band in a primary button\'s ink, so an unaccented band on a pale primary loses its title.', $file)
         );
     }
 
@@ -106,6 +109,25 @@ class CardAccentTest extends TestCase
                 sprintf('/\.card--accent-%s\{[^}]*--card-accent-invert:0/', $hue),
                 $css,
                 sprintf('"%s" still inverts the icon of a "%s" header, whose title is dark.', $file, $hue)
+            );
+        }
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('stylesheetProvider')]
+    public function testTheDarkHuesStateWhiteTextAndAnInvertedIcon(string $file): void
+    {
+        $css = $this->normalize($file);
+
+        foreach (self::WHITE_TEXT_HUES as $hue) {
+            $this->assertMatchesRegularExpression(
+                sprintf('/\.card--accent-%s\{[^}]*--card-accent-color:#fff/', $hue),
+                $css,
+                sprintf('"%s" leaves the "%s" header on the primary\'s ink, which is dark on a site with a pale primary.', $file, $hue)
+            );
+            $this->assertMatchesRegularExpression(
+                sprintf('/\.card--accent-%s\{[^}]*--card-accent-invert:1/', $hue),
+                $css,
+                sprintf('"%s" leaves the icon of a "%s" header on the primary\'s inversion, which is off on a site with a pale primary.', $file, $hue)
             );
         }
     }

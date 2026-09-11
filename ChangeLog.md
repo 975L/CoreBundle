@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.29.1
+
+A --primary fill writes a primary button's ink
+
+### UiBundle
+
+- An unaccented card's header band writes `var(--button-color)` in place of a stated `#fff` (11/09/2026)
+- Its icon follows `--button-icon-invert` the same way (11/09/2026)
+- The paginator's current page chip writes `var(--button-color)` in place of a stated `#fff` (11/09/2026)
+- The eight dark accent hues state `--card-accent-color: #fff` and `--card-accent-invert: 1` themselves (11/09/2026)
+
 ## v1.29.0
 
 A PDF can be reserved to signed-in members

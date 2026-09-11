@@ -15,10 +15,10 @@
     padding: 0.5em 1em;
 }
 
-// White stated, not read from --white: the page in hand is a --primary chip in both color modes, and dark mode swaps that token with --black (SiteBundle's sass/_theme-dark.scss), which left the one number a visitor looks for written in near-black on it
+// The page in hand is a --primary chip, so its number takes a primary button's ink (--button-color, derived from that color and swapped with it in dark mode): a stated white disappeared on a pale primary, and var(--white) is swapped with --black by dark mode whatever the fill
 .current {
     background-color: var(--primary);
-    color: #fff;
+    color: var(--button-color);
 }
 
 .pagination-next,
