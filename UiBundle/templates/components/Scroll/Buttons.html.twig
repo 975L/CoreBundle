@@ -1,6 +1,11 @@
 {# <twig:c975LUi:Scroll:Buttons/> #}
 {# The two buttons a long page is walked with, pulling to its top and to its bottom. They are ordinary anchors, working without javascript: the layout rendering them carries an "id=top" on its body and a "span id=bottom" as its last element (see @c975LUi/layout.html.twig), which is what they point at #}
+{# The arrow is an inline svg rather than an image file: painted in "currentColor", it follows "--back-pull-color" instead of staying the black a png is drawn in, and it costs no request #}
 <div data-controller="scrollButtons">
-    <a href="#top" class="backTop" aria-label="{{ 'label.top'|trans({}, 'ui') }}" data-scrollButtons-target="top">{{ 'label.top'|trans({}, 'ui') }}</a>
-    <a href="#bottom" class="pullDown" aria-label="{{ 'label.bottom'|trans({}, 'ui') }}" data-scrollButtons-target="bottom"></a>
+    <a href="#top" class="backTop" aria-label="{{ 'label.top'|trans({}, 'ui') }}" data-scrollButtons-target="top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+    </a>
+    <a href="#bottom" class="pullDown" aria-label="{{ 'label.bottom'|trans({}, 'ui') }}" data-scrollButtons-target="bottom">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14"/><path d="M5 12l7 7 7-7"/></svg>
+    </a>
 </div>

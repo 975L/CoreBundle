@@ -569,7 +569,6 @@ class BlockType extends AbstractType
     }
 
     // Drops from each submitted row whatever key the collection's entry form does not declare - see the kind-change note in PRE_SUBMIT. Read off the collection's own prototype, built from the very entry type (and options) every row is built from, so no list of field names has to be kept in sync here
-    /** @SuppressWarnings(PHPMD.UnusedLocalVariable) The foreach below wants the key alone, and PHP has no key-only form */
     private function dropForeignEntryKeys(array $entries, FormInterface $collection): array
     {
         $prototype = $collection->getConfig()->getAttribute('prototype', null);

@@ -1,5 +1,35 @@
 # ChangeLog
 
+## v1.30.1
+
+A page's two scroll buttons share one corner, and a test suite is no longer refused by its own limit
+
+### The package
+
+- **PHP Mess Detector is gone from the gate**, its PDepend parser reading neither `new Foo()->method()` nor 6% of the files (12/09/2026)
+- `phpmd.xml.dist`, the `mess` script and the tool in the CI go with it (12/09/2026)
+- Its `export-ignore` line and the `.phpmd-report.log` ignore go too (12/09/2026)
+- The 11 `@SuppressWarnings(PHPMD.*)` markers are removed, five docblocks becoming a plain comment (12/09/2026)
+- `var_dump`, `print_r`, `exit`, `die` and `eval` move into `phpcs.xml.dist`, the only findings it alone caught (12/09/2026)
+- Both PHPStan configs drop the `phpDoc.parseError` exception those markers needed (12/09/2026)
+- `rector.php` no longer skips `UiBundle/src/Testing/JsCase.php`, the exclusion having been PDepend's (12/09/2026)
+
+### ConfigBundle
+
+- The front limiter takes the `no_limit` policy under `test` (12/09/2026)
+- The listener stays wired there, only the refusal disappearing (12/09/2026)
+
+### UiBundle
+
+- The four limiters the bundle prepends take the `no_limit` policy under `test` (12/09/2026)
+- `a.pullDown` moves to the bottom-right corner, stacked under `a.backTop` (12/09/2026)
+- `--back-pull-color`, `--back-pull-opacity` and `--back-pull-size` retune the two buttons (12/09/2026)
+- `--back-pull-background-color-hover` defaults to `#9c9fa3` rather than `#90ee90` (12/09/2026)
+- The arrow is an inline svg painted in `currentColor`, and the two `public/images/*.png` are gone (12/09/2026)
+- The resting opacity is `0.7`, the arrow reaching 3:1 against its own disc (12/09/2026)
+- `:focus-visible` lifts the dimming as `:hover` does (12/09/2026)
+- The buttons are laid out with `display: flex`, centring the arrow (12/09/2026)
+
 ## v1.30.0
 
 A site refuses a caller asking for too much, and stops counting its own probes

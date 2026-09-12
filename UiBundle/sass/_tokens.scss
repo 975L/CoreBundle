@@ -18,7 +18,10 @@
         --audio-sticky-background: var(--background);
         // The two buttons pulling to the top and to the bottom of the page (sass/_scroll-buttons.scss), which a long page is walked with
         --back-pull-background-color: #bababa;
-        --back-pull-background-color-hover: #90ee90;
+        --back-pull-background-color-hover: #9c9fa3;
+        --back-pull-color: #333;
+        --back-pull-opacity: 0.7;
+        --back-pull-size: 44px;
         --background: var(--c975l-color-background, #fff);
         // The three steps the banner's "height" field offers, on top of the "automatic" default it keeps for itself - the 200px floor sass/_banner-title.scss sets. Each raises that floor and none of them caps anything: a banner grows past its step rather than cropping a title that needs the room. Steps and not a length, for the reason the corners and the shadow above are: a free value puts arbitrary CSS in the database
         --banner-title-height-large: 520px;

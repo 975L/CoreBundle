@@ -138,6 +138,21 @@ class c975LConfigBundleTest extends TestCase
         $this->assertSame(['adapter' => 'cache.adapter.filesystem'], $framework['cache']['pools']['c975l.rate_limiter']);
     }
 
+    // A functional suite drives its whole run from one address, so the ceiling meant for a scraper would answer 429 to the tests themselves
+    public function testPrependExtensionLiftsTheFrontLimiterCeilingInTheTestEnvironment(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.environment', 'test');
+
+        new c975LConfigBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $limiter = $container->getExtensionConfig('framework')[0]['rate_limiter']['c975l_front_request'];
+        $this->assertSame('no_limit', $limiter['policy']);
+        // The store and the numbers stay declared, so the only thing "test" changes is whether a request is ever refused
+        $this->assertSame(60, $limiter['limit']);
+        $this->assertSame('c975l.rate_limiter', $limiter['cache_pool']);
+    }
+
     // What lets every c975L entity relate to Contract\UserInterface while Doctrine actually joins the application's own User
     public function testPrependExtensionMapsTheUserInterfaceOntoTheApplicationUserEntity(): void
     {

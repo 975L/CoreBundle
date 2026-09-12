@@ -2,30 +2,41 @@
 a.pullDown,
 a.backTop {
     display: none;
-    width: 60px;
-    height: 60px;
-    text-indent: -9999px;
+    align-items: center;
+    justify-content: center;
+    width: var(--back-pull-size);
+    height: var(--back-pull-size);
     position: fixed;
+    right: 25px;
     z-index: 999;
+    border-radius: 50%;
+    color: var(--back-pull-color);
+    background-color: var(--back-pull-background-color);
+    // Dimmed with a filter rather than with "opacity": the "fade-in" class the controller adds animates the opacity up to 1 and fills forwards, which beats any opacity declared here - that is how the 0.6 this rule used to carry never applied. A filter is another property, one no animation of this bundle touches, and it dims the arrow with the disc
+    filter: opacity(var(--back-pull-opacity));
+    transition: filter 0.2s ease, background-color 0.2s ease;
     // Stepping over whatever a bundle fixes to the bottom of the viewport - a basket bar, a cookie banner - which publishes its own height in the token, the corner staying at 25px when nothing does
     bottom: calc(25px + var(--bottom-bar-height, 0px));
-    border-radius: 30px;
-    opacity: 0.6;
 }
 
+// Stacked over the one pulling down rather than sitting in the opposite corner: the bottom-left corner is the one a cookie banner and a basket bar land in, and only this side is offset by the token above
 a.backTop {
-    right: 25px;
-    background: var(--back-pull-background-color) url('/bundles/c975lui/images/up-arrow.png') no-repeat center 40%;
+    bottom: calc(25px + var(--back-pull-size) + 8px + var(--bottom-bar-height, 0px));
 }
 
-a.pullDown {
-    left: 25px;
-    background: var(--back-pull-background-color) url('/bundles/c975lui/images/down-arrow.png') no-repeat center 40%;
+// The arrow is an inline svg painted in "currentColor" rather than an image file, so it follows the token above instead of staying the black its png was drawn in - a dark theme included
+a.pullDown svg,
+a.backTop svg {
+    width: calc(var(--back-pull-size) * 0.45);
+    height: calc(var(--back-pull-size) * 0.45);
 }
 
 a:hover.backTop,
-a:hover.pullDown {
+a:hover.pullDown,
+a:focus-visible.backTop,
+a:focus-visible.pullDown {
     background-color: var(--back-pull-background-color-hover);
+    filter: none;
 }
 
 // Laid out by the classes the controller toggles rather than by an inline style, which a nonced style-src drops. A button carrying neither is one the page has not shown yet, and it stays out of the flow
@@ -33,7 +44,7 @@ a.backTop.fade-in,
 a.pullDown.fade-in,
 a.backTop.fade-out,
 a.pullDown.fade-out {
-    display: block;
+    display: flex;
 }
 
 // The fading out leaves it transparent but still there: nothing is clickable in that corner once it is gone

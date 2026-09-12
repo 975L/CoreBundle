@@ -110,7 +110,6 @@ class JsCaseGuardTest extends JsCase
     }
 
     // The saved statics written back, name by name
-    // Held in a variable here and in readShared() rather than called on the new directly: PDepend, which phpmd reads this file through, stops parsing at that token and then analyses nothing in the file at all
     /** @param array<string, mixed> $state */
     private function putBack(array $state): void
     {

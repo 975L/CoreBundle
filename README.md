@@ -72,7 +72,7 @@ The nine checks the CI runs live in `composer.json` alone, as one list:
 composer qa
 ```
 
-`composer run -l` names what each one covers, and each is callable on its own (`composer audit-deps`, `cs`, `fixer`, `stan`, `stan-scaffold`, `rector`, `lizard`, `test`, `mess`). The workflow calls those same scripts, so a check is never declared twice.
+`composer run -l` names what each one covers, and each is callable on its own (`composer audit-deps`, `cs`, `fixer`, `stan`, `stan-scaffold`, `rector`, `lizard`, `test`). The workflow calls those same scripts, so a check is never declared twice.
 
 `audit-deps` is `composer audit`: it matches the resolved dependencies against the Packagist security advisories, which is where a known CVE in a dependency gets caught — before the push, not once a site has deployed it. Abandoned packages are reported without failing the run.
 

@@ -82,7 +82,7 @@ class VichPdfThumbnailListener
         $this->generateThumbnail($pdfPath, $width);
     }
 
-    /** @SuppressWarnings(PHPMD.UnusedLocalVariable) exec() takes $output before $returnVar, so the one that is read costs the one that is not */
+    // exec() takes $output before $returnVar, so the one that is read costs the one that is not
     private function generateThumbnail(string $pdfPath, int $width): void
     {
         // exec() is disabled on some hosts: no thumbnail rather than a crash

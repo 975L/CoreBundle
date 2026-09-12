@@ -30,7 +30,6 @@ class ConfigShortcutProvider implements ShortcutProviderInterface
     }
 
     // A declaration of shortcuts, one entry each: its length says how many the dashboard offers
-    /** @SuppressWarnings(PHPMD.ExcessiveMethodLength) */
     public function getShortcuts(): array
     {
         $maintenanceEnabled = (bool) $this->configService->get('site-maintenance');

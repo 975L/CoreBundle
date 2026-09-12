@@ -16,7 +16,10 @@
     --alert-warning-background: #f9dba7;
     --audio-sticky-background: var(--background);
     --back-pull-background-color: #bababa;
-    --back-pull-background-color-hover: #90ee90;
+    --back-pull-background-color-hover: #9c9fa3;
+    --back-pull-color: #333;
+    --back-pull-opacity: 0.7;
+    --back-pull-size: 44px;
     --background: var(--c975l-color-background, #fff);
     --banner-title-height-large: 520px;
     --banner-title-height-medium: 360px;
@@ -4292,36 +4295,44 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-animation, .bl
 a.pullDown,
 a.backTop {
   display: none;
-  width: 60px;
-  height: 60px;
-  text-indent: -9999px;
+  align-items: center;
+  justify-content: center;
+  width: var(--back-pull-size);
+  height: var(--back-pull-size);
   position: fixed;
+  right: 25px;
   z-index: 999;
+  border-radius: 50%;
+  color: var(--back-pull-color);
+  background-color: var(--back-pull-background-color);
+  filter: opacity(var(--back-pull-opacity));
+  transition: filter 0.2s ease, background-color 0.2s ease;
   bottom: calc(25px + var(--bottom-bar-height, 0px));
-  border-radius: 30px;
-  opacity: 0.6;
 }
 
 a.backTop {
-  right: 25px;
-  background: var(--back-pull-background-color) url("/bundles/c975lui/images/up-arrow.png") no-repeat center 40%;
+  bottom: calc(25px + var(--back-pull-size) + 8px + var(--bottom-bar-height, 0px));
 }
 
-a.pullDown {
-  left: 25px;
-  background: var(--back-pull-background-color) url("/bundles/c975lui/images/down-arrow.png") no-repeat center 40%;
+a.pullDown svg,
+a.backTop svg {
+  width: calc(var(--back-pull-size) * 0.45);
+  height: calc(var(--back-pull-size) * 0.45);
 }
 
 a:hover.backTop,
-a:hover.pullDown {
+a:hover.pullDown,
+a:focus-visible.backTop,
+a:focus-visible.pullDown {
   background-color: var(--back-pull-background-color-hover);
+  filter: none;
 }
 
 a.backTop.fade-in,
 a.pullDown.fade-in,
 a.backTop.fade-out,
 a.pullDown.fade-out {
-  display: block;
+  display: flex;
 }
 
 a.backTop.fade-out,

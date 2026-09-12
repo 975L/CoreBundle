@@ -55,8 +55,7 @@ class BlockRegistry
     {
     }
 
-    // 19 scalars, past the sixteen phpmd.xml.dist calls the limit: what a "ui.block" tag declares, owed a value object of its own
-    /** @SuppressWarnings(PHPMD.ExcessiveParameterList) */
+    // 19 scalars, well past what a constructor should ask for: what a "ui.block" tag declares, owed a value object of its own
     public function register(
         string $kind,
         string $label,

@@ -399,8 +399,7 @@ abstract class JsCase extends TestCase
     private static function launch(int $attempts = 2): Browser
     {
         try {
-            // Parenthesised on purpose: PDepend, which phpmd reads this file through now that it lives in src/, cannot parse the parentheses-less form
-            return (new BrowserFactory(self::CHROME))->createBrowser([
+            return new BrowserFactory(self::CHROME)->createBrowser([
                 'headless' => true,
                 // Same reason as LayoutAuditor: the sandbox refuses to start for the user a CI image runs as
                 'noSandbox' => true,

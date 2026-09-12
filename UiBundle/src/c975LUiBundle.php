@@ -90,6 +90,9 @@ class c975LUiBundle extends AbstractBundle
 
     public function prependExtension(ContainerConfigurator $configurator, ContainerBuilder $container): void
     {
+        // The ceilings below are lifted under "test", for the reason ConfigBundle's own comment states: a functional suite drives its whole run from one address, and these four are twenty times tighter than the front limiter - a site posting two reviews in one scenario would answer 429 to itself. hasParameter() guards the bundle's own tests, which prepend onto a bare ContainerBuilder holding no kernel parameter at all
+        $testEnvironment = $container->hasParameter('kernel.environment') && 'test' === $container->getParameter('kernel.environment');
+
         $container->prependExtensionConfig('framework', [
             'asset_mapper' => [
                 'paths' => [
@@ -99,25 +102,25 @@ class c975LUiBundle extends AbstractBundle
             // The limiter every generic Form shares, declared here rather than left to the consuming app: a Form built in the back office has no dedicated service of its own to bind a named limiter to, and FormController takes "@?limiter.ui_form" optionally, so a site that never declared it served its public forms - registration and password reset among them - with no limit at all, and nothing said so. An app declaring its own "ui_form" still decides, its config being merged over this one. Unguarded on purpose: symfony/rate-limiter is a hard dependency of this package, and an app that strips it anyway must fail on an unknown "rate_limiter" key rather than quietly lose the protection again
             'rate_limiter' => [
                 'ui_form' => [
-                    'policy' => 'sliding_window',
+                    'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
                     'limit' => 5,
                     'interval' => '10 minutes',
                 ],
                 // The public vote route (see RatingController), declared here for the same reason: it is served by this bundle and no site wires anything for it. Roomier than the form's - correcting a score, then rating the next book, is ordinary browsing, whereas five contact e-mails in ten minutes is not
                 'ui_rating' => [
-                    'policy' => 'sliding_window',
+                    'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
                     'limit' => 30,
                     'interval' => '10 minutes',
                 ],
                 // The wishlist's own routes (see FavoriteController), declared for the same reason. Roomier still than the vote's: putting five things aside, then coming back to the list, is one page of ordinary browsing
                 'ui_favorite' => [
-                    'policy' => 'sliding_window',
+                    'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
                     'limit' => 60,
                     'interval' => '10 minutes',
                 ],
                 // The public review form (see ReviewController), declared for the same reason. Far tighter than the three above: writing a review is a rare, deliberate act, and three an hour from one caller is already more than anyone has to say
                 'ui_review' => [
-                    'policy' => 'sliding_window',
+                    'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
                     'limit' => 3,
                     'interval' => '1 hour',
                 ],

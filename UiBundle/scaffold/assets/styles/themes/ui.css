@@ -204,7 +204,10 @@
 
     /* The two buttons pulling to the top and to the bottom of the page, which a long page is walked with. */
     /* --back-pull-background-color: #bababa; */
-    /* --back-pull-background-color-hover: #90ee90; */
+    /* --back-pull-background-color-hover: #9c9fa3; */
+    /* --back-pull-color: #333; */
+    /* --back-pull-opacity: 0.7; */
+    /* --back-pull-size: 44px; */
 
     /* The player of an <audio> given sticky="true" - a bar coming to rest against the bottom of the
        column it accompanies. It hides what slides under it, so it cannot be transparent. */

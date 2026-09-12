@@ -16,6 +16,11 @@
                 "en": "A row of items pulled from a source, and a band sending visitors elsewhere, can now be painted as a full-width coloured band - light grey, your own colour, or dark - without being wrapped in anything.",
                 "fr": "Une rangée d'éléments tirés d'une source, et une bande qui envoie le visiteur ailleurs, peuvent désormais être peintes en bandeau coloré pleine largeur - gris clair, votre couleur, ou sombre - sans avoir à être enveloppées dans quoi que ce soit.",
                 "es": "Una fila de elementos extraídos de una fuente, y una banda que envía al visitante a otro lugar, pueden ahora pintarse como una franja de color a todo lo ancho - gris claro, su propio color u oscuro - sin tener que envolverlas en nada."
+            },
+            {
+                "en": "The two buttons walking a long page to its top and to its bottom now sit together in the same corner, follow your site's colours and stay readable instead of nearly disappearing.",
+                "fr": "Les deux boutons qui parcourent une longue page jusqu'à son haut et jusqu'à son bas sont désormais réunis dans le même coin, suivent les couleurs de votre site et restent lisibles au lieu de presque disparaître.",
+                "es": "Los dos botones que recorren una página larga hasta su parte superior e inferior están ahora juntos en la misma esquina, siguen los colores de su sitio y se mantienen legibles en lugar de casi desaparecer."
             }
         ]
     },

@@ -45,6 +45,9 @@ class c975LConfigBundle extends AbstractBundle
 {
     public function prependExtension(ContainerConfigurator $containerConfigurator, ContainerBuilder $container): void
     {
+        // The ceiling is lifted under "test": a functional suite drives its whole run from one address and meets the sixtieth request where a visitor never would, so a site's tests would answer 429 to each other rather than to a scraper. The listener stays wired and still consumes, only nothing is ever refused - what a refusal does is covered by RateLimitListenerTest, which builds its own limiter. hasParameter() guards the bundle's own tests, which prepend onto a bare ContainerBuilder holding no kernel parameter at all
+        $testEnvironment = $container->hasParameter('kernel.environment') && 'test' === $container->getParameter('kernel.environment');
+
         // First what ConfigBundle asks of the framework itself, none of which the 18 sites installing it should have to declare
         $container->prependExtensionConfig('framework', [
             // The JS/CSS it ships (the onboarding tour, see assets/controllers-admin.js) - mirrors UiBundle's own asset_mapper path registration
@@ -64,7 +67,7 @@ class c975LConfigBundle extends AbstractBundle
             // 60 requests per 10 seconds, sliding: a page and the handful of dynamic sub-requests it pulls stay well under, while a catalogue scraper - the one measured ran at 13 req/s - is cut at its sixtieth. A per-minute ceiling loose enough for a human never catches a burst that is over in 16 seconds. Declared here rather than asked of the 18 sites installing the bundle, exactly as UiBundle declares its own; an application naming "c975l_front_request" itself still decides, its config being merged over this one
             'rate_limiter' => [
                 'c975l_front_request' => [
-                    'policy' => 'sliding_window',
+                    'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
                     'limit' => 60,
                     'interval' => '10 seconds',
                     'cache_pool' => 'c975l.rate_limiter',

@@ -51,8 +51,7 @@ class DashboardController extends AbstractDashboardController
         return self::ROUTE_PATH === $path || str_starts_with($path, self::ROUTE_PATH . '/');
     }
 
-    // 20 services injected, past the sixteen phpmd.xml.dist calls the limit: owed a grouping of its own, not silenced for good
-    /** @SuppressWarnings(PHPMD.ExcessiveParameterList) */
+    // 20 services injected, well past what a constructor should ask for: owed a grouping of its own, not silenced for good
     public function __construct(
         private readonly MenuBuilder $menuBuilder,
         private readonly WhatsNewBuilder $whatsNewBuilder,

@@ -1564,6 +1564,8 @@ framework:
 
 Your own config is merged over the prepended one, so it is what applies.
 
+**Under `test`, nothing is refused**: the limiter is prepended with `policy: no_limit` there. A functional suite drives its whole run from one address and meets the sixtieth request where a visitor never would, so a site's own tests would answer 429 to each other rather than to a scraper. The listener stays wired and still consumes — only the refusal disappears, never the path a request runs through.
+
 ## Redirects
 
 A url that changed needs a redirect whether it was a page's or a product's, and the rows answer **before the router** — so they live here rather than in whichever bundle happens to serve the content.

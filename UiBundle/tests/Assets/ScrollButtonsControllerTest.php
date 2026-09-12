@@ -19,6 +19,7 @@ class ScrollButtonsControllerTest extends TestCase
     private const string BARREL = 'assets/controllers.js';
     private const string COMPONENT = 'templates/components/Scroll/Buttons.html.twig';
     private const string STYLESHEET = 'public/css/styles.css';
+    private const string TOKENS = 'sass/_tokens.scss';
     private const string IDENTIFIER = 'scrollButtons';
 
     // Lazily registered like the other page-kind controllers, the barrel only loading what the document asks for
@@ -84,8 +85,43 @@ class ScrollButtonsControllerTest extends TestCase
     {
         $stylesheet = $this->read(self::STYLESHEET);
 
-        $this->assertMatchesRegularExpression('/a\.backTop\.fade-in[^{]*\{[^}]*display: block/s', $stylesheet);
+        $this->assertMatchesRegularExpression('/a\.backTop\.fade-in[^{]*\{[^}]*display: flex/s', $stylesheet);
         $this->assertMatchesRegularExpression('/a\.backTop\.fade-out[^{]*\{[^}]*pointer-events: none/s', $stylesheet);
+    }
+
+    // The pair shares the bottom-right corner, the one pulling up stacked over the other: the bottom-left is where a cookie banner and a basket bar land, and only this side is offset by --bottom-bar-height
+    public function testBothButtonsSitInTheBottomRightCorner(): void
+    {
+        $stylesheet = $this->read(self::STYLESHEET);
+
+        $this->assertMatchesRegularExpression('/a\.pullDown,\s*\na\.backTop \{[^}]*right: 25px/s', $stylesheet);
+        $this->assertMatchesRegularExpression('/a\.backTop \{[^}]*bottom: calc\(25px \+ var\(--back-pull-size\)/s', $stylesheet);
+        $this->assertStringNotContainsString('left: 25px', $stylesheet, 'A button is back in the bottom-left corner, which a cookie banner and a basket bar already hold.');
+    }
+
+    // 0.7 and not lower: the filter dims the arrow with its disc, and below that the pair falls under the 3:1 WCAG 1.4.11 asks of an interface element - a hover lifting it rescues no touch screen
+    public function testTheRestingOpacityStaysAboveTheContrastThreshold(): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/--back-pull-opacity: 0\.7;/',
+            $this->read(self::TOKENS),
+            'The resting opacity moved: below 0.7 the arrow no longer reaches 3:1 against its own disc.'
+        );
+
+        $this->assertMatchesRegularExpression('/a\.pullDown,\s*\na\.backTop \{[^}]*filter: opacity\(var\(--back-pull-opacity\)\)/s', $this->read(self::STYLESHEET));
+    }
+
+    // The arrow follows --back-pull-color instead of staying the black a png was drawn in, and the two files it used to be are deleted: an unresolvable url() fails the compilation of every bundle stylesheet at once
+    public function testTheArrowIsAnInlineSvgAndNoPngIsNamedAnyMore(): void
+    {
+        $component = $this->read(self::COMPONENT);
+
+        $this->assertStringContainsString('stroke="currentColor"', $component);
+        $this->assertStringNotContainsString('up-arrow.png', $component);
+        $this->assertStringNotContainsString('down-arrow.png', $component);
+        $this->assertStringNotContainsString('up-arrow.png', $this->read(self::STYLESHEET));
+        $this->assertFileDoesNotExist(\dirname(__DIR__, 2) . '/public/images/up-arrow.png');
+        $this->assertFileDoesNotExist(\dirname(__DIR__, 2) . '/public/images/down-arrow.png');
     }
 
     private function read(string $relativePath): string

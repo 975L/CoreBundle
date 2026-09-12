@@ -99,6 +99,25 @@ class c975LUiBundleTest extends TestCase
         $this->assertSame('10 minutes', $limiter['interval']);
     }
 
+    // The four ceilings are far tighter than the front limiter's, so a suite posting two reviews from one address would answer 429 to itself rather than to a scraper
+    public function testPrependExtensionLiftsTheRateLimiterCeilingsInTheTestEnvironment(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.environment', 'test');
+
+        new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $limiters = $container->getExtensionConfig('framework')[0]['rate_limiter'];
+
+        foreach (['ui_form', 'ui_rating', 'ui_favorite', 'ui_review'] as $name) {
+            $this->assertSame('no_limit', $limiters[$name]['policy'], sprintf('The "%s" limiter still refuses under test.', $name));
+        }
+
+        // The numbers stay declared, so the only thing "test" changes is whether a request is ever refused
+        $this->assertSame(5, $limiters['ui_form']['limit']);
+        $this->assertSame('1 hour', $limiters['ui_review']['interval']);
+    }
+
     // Each name is the contract with a controller's own "@?limiter.*" argument - a rename on either side silently restores the hole these defaults close
     public function testTheRateLimitersAreNamedAfterTheServicesTheControllersAskFor(): void
     {

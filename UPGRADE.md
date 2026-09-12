@@ -1,5 +1,22 @@
 # UPGRADE
 
+## v1.30.1
+
+**`UiBundle/public/images/up-arrow.png` and `down-arrow.png` are deleted.** The two scroll buttons draw their
+arrow as an inline `<svg>` painted in `currentColor`, which follows `--back-pull-color` where a png stayed the
+black it was drawn in. A stylesheet of your own naming either file - `/bundles/c975lui/images/up-arrow.png` -
+now resolves to nothing, and under AssetMapper a `url()` it cannot resolve fails the compilation of every
+bundle stylesheet at once. Drop the rule, or vendor the image beside your own sheet.
+
+**`a.pullDown` moves from the bottom-left corner to the bottom-right**, stacked under `a.backTop` rather than
+facing it: the bottom-left is where a cookie banner and a basket bar land, and only the right side is offset by
+`--bottom-bar-height`. Anything of your own fixed to the bottom-right corner of a page now shares it with both
+buttons - move it left, or push the buttons with `--back-pull-size` and that token.
+
+**Three new tokens rule the pair** (`--back-pull-color`, `--back-pull-opacity`, `--back-pull-size`), and the
+existing `--back-pull-background-color-hover` now defaults to `#9c9fa3` rather than `#90ee90`. A theme file
+overriding the old hover green keeps deciding; one that never named it inherits the grey.
+
 ## v1.25.0
 
 **`vich/uploader-bundle` is now required in `^3.0`.** The two majors cannot be supported side by side: this bundle
