@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-// Roles with a fixed icon spec (favicon, apple-touch-icon) end up stored under their own .ico/.png name whatever was uploaded (see UiMediaNamer), the conversion happening after the fact in VichImageResizeListener - so anything that conversion can't handle has to be refused here, at the door, or it would be stored as SVG markup under an .ico name, i.e. a file no browser can read
+// Roles with a fixed icon spec (favicon, apple-touch-icon) and the og-image end up stored under their own .ico/.png/.webp name whatever was uploaded (see UiMediaNamer), the conversion happening after the fact in VichImageResizeListener - so anything that conversion can't handle has to be refused here, at the door, or it would be stored as SVG markup under an .ico name, i.e. a file no browser can read
 class FixedIconFormatValidator extends ConstraintValidator
 {
     // Read directly by GD, which the icon pipeline runs on
@@ -38,7 +38,7 @@ class FixedIconFormatValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, FixedIconFormat::class);
         }
 
-        if (!$value instanceof Media || null === $value->getFixedIconSpec() || null === $value->getFile()) {
+        if (!$value instanceof Media || !$value->rasterizesSvg() || null === $value->getFile()) {
             return;
         }
 

@@ -60,7 +60,60 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             $projects[] = $this->reviewProject();
         }
 
+        $projects[] = $this->mediaAddProject();
+
         return $projects;
+    }
+
+    // The library also takes an image of its own, one no page has uploaded yet - where the gallery the "ui-media" project reads gets filled from
+    private function mediaAddProject(): array
+    {
+        return [
+            'slug' => 'ui-media-add',
+            'label' => 'label.guided_project_ui_media_add',
+            'description' => 'description.guided_project_ui_media_add',
+            'translation_domain' => 'ui',
+            // Appended after the review one rather than slipped beside "ui-media", the ten above keeping their orders
+            'order' => 3110,
+            // The bar MediaCrudController sets on Action::NEW, the same as on the rest of the library
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_media_add_open',
+                    'description' => 'description.guided_step_ui_media_add_open',
+                    'narration' => 'narration.guided_step_ui_media_add_open',
+                    'url' => $this->indexUrl(MediaCrudController::class),
+                ],
+                [
+                    // The gallery replaces the table alone (see media_index.html.twig), EasyAdmin's page actions staying above it
+                    'label' => 'label.guided_step_ui_media_add_new',
+                    'narration' => 'narration.guided_step_ui_media_add_new',
+                    'highlight' => '.action-new',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_add_file',
+                    'description' => 'description.guided_step_ui_media_add_file',
+                    'narration' => 'narration.guided_step_ui_media_add_file',
+                    'highlight' => 'input[type="file"]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_add_alt',
+                    'description' => 'description.guided_step_ui_media_add_alt',
+                    'narration' => 'narration.guided_step_ui_media_add_alt',
+                    'highlight' => '#Media_alt',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_add_save',
+                    'narration' => 'narration.guided_step_ui_media_add_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_media_add_done',
+                    'description' => 'description.guided_step_ui_media_add_done',
+                    'narration' => 'narration.guided_step_ui_media_add_done',
+                ],
+            ],
+        ];
     }
 
     // The one screen where a review becomes readable, or does not - a site collecting reviews nobody publishes shows none, and nothing says why
@@ -71,7 +124,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
             'label' => 'label.guided_project_ui_review',
             'description' => 'description.guided_project_ui_review',
             'translation_domain' => 'ui',
-            // Last of the ten, the walk-through being appended after the nine above
+            // After the nine above, the walk-through being appended to them
             'order' => 3100,
             'role' => $this->configService->get('site-role-editor'),
             'steps' => [

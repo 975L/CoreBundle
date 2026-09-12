@@ -1,6 +1,6 @@
 ---
 name: c975l-users
-description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, ROLE_SUPER_ADMIN, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
+description: "Use this skill when working on accounts, roles or access control in a Symfony application built on the c975L ecosystem — the User contract, the site-role-* settings, ROLE_SUPER_ADMIN and restricted configs, previewing a lower role, registration and its anti-spam layers, password reset, login throttling and back-office access. Triggers on: UserInterface contract, UserCrudController, site-role-admin, site-role-editor, site-role-contributor, ROLE_CONTRIBUTOR, ROLE_SUPER_ADMIN, RolePreview, role preview, View as, RolePreviewRoleVoter, RolePreviewRoleVoterPass, RolePreviewBanner, user-roles-available, UserManagementVoter, BackOfficeAccessVoter, C975L_ACCESS_BACK_OFFICE, EmailVerifier, UserRegistrar, PasswordResetter, isEnabled, isVerified, UserChecker, sendEmailConfirmation, resend confirmation, confirmation cooldown, EmailVerifier::COOLDOWN, delete a user, unverified account, ON DELETE SET NULL, login_throttling, access_control, register form, reset_password_request, honeypot, DnsEmail, user-creation-notification."
 ---
 
 # c975L ConfigBundle — users, roles and access
@@ -10,7 +10,7 @@ description: "Use this skill when working on accounts, roles or access control i
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `scaffold/src/`
+`src/Contract/UserInterface.php`, `src/Controller/Management/UserCrudController.php`, `src/Controller/RolePreviewController.php`, `src/Security/`, `src/Service/UserRegistrar.php`, `src/Service/EmailVerifier.php`, `src/Service/PasswordResetter.php`, `src/Service/UserFormSeeder.php`, `src/EventSubscriber/LoginRequestSubscriber.php`, `src/Command/UserCreateCommand.php`, `scaffold/src/`
 
 **Related skills:** `c975l-config`, `c975l-management` in this same bundle, and `c975l-forms-emails` in UiBundle beside it.
 
@@ -31,7 +31,8 @@ There is **no `role_hierarchy`**: each role is granted explicitly, so `ROLE_ADMI
 | --- | --- |
 | `site-role-admin` | the site's own settings, the User screen, the health check, the failed messages |
 | `site-role-editor` | content screens — pages, menus, galleries, the front-office edit buttons |
-| `user-roles-available` | the roles (`json`) the User form offers |
+| `site-role-contributor` | the back-office floor alone, each screen deciding whether a contributor gets in |
+| `user-roles-available` | the roles (`json`) the User form offers — `ROLE_ADMIN`, `ROLE_EDITOR` and `ROLE_CONTRIBUTOR` by default |
 
 Both `site-role-admin` and `user-roles-available` are `restricted`: they gate the whole admin and
 decide which roles exist, so a plain `ROLE_ADMIN` must never reach them.
@@ -45,8 +46,8 @@ yet to write.
 ### The back-office floor
 
 Standing in the back office at all is one voter attribute, **`BackOfficeAccessVoter::ACCESS`**
-(`C975L_ACCESS_BACK_OFFICE`), granting on any of `site-role-editor`, `site-role-admin` or
-`ROLE_SUPER_ADMIN` held outright. An attribute and not one of the two settings, for the very reason
+(`C975L_ACCESS_BACK_OFFICE`), granting on any of `site-role-contributor`, `site-role-editor`,
+`site-role-admin` or `ROLE_SUPER_ADMIN` held outright. An attribute and not one of the two settings, for the very reason
 above: with no hierarchy, `denyAccessUnlessGranted($configService->get('site-role-editor'))` would
 lock out an account holding only the admin role — the very account the dashboard is meant for.
 
@@ -72,6 +73,21 @@ would have demoted them on save without either of them seeing it.
 
 Any config flagged `restricted: true` is invisible below `ROLE_SUPER_ADMIN` — index, edit form and
 every export.
+
+### Role preview
+
+An account looks at the site through any level below its own — admin, editor, contributor, member —
+from the "View as" section `DashboardController::configureUserMenu()` adds to EasyAdmin's user menu,
+with no second account. **Only the session remembers the level** (`RolePreview`): the token keeps its
+real roles, and `RolePreviewRoleVoter`, standing in for Symfony's role voter, hands the previewed role
+to every `isGranted()`, `#[IsGranted]`, EasyAdmin permission and `access_control` rule.
+`RolePreviewRoleVoterPass` picks which of Symfony's two role voters it decorates, so a site declaring a
+`role_hierarchy` still compiles, its hierarchy applied to the previewed roles.
+
+The stored level is checked against the account's real roles on every read, never trusted as is.
+`<twig:c975LConfig:Security:RolePreviewBanner />` shows it with the way back: UiBundle's layout renders
+it, and the back office appends it to every page. Previewing as a member leaves the back office, which
+is why `RolePreviewController` lives outside `/management`.
 
 ## Registration and password reset
 
@@ -154,6 +170,8 @@ the registration itself.
 - **Do not type a property against `App\Entity\User`** from a bundle. Use the contract.
 - **Do not add a `role_hierarchy`** expecting `ROLE_ADMIN` to imply `ROLE_EDITOR`.
 - **Do not list `ROLE_SUPER_ADMIN` in `user-roles-available`.**
+- **Do not reduce the token's roles to preview a level** — the firewall writes it back to the session
+  as the real one. Go through `RolePreview`.
 - **Do not check `ROLE_ADMIN` in a controller** — read `site-role-admin` or `site-role-editor`.
 - **Do not gate a screen open to the whole back office on `site-role-editor`** — use
   `BackOfficeAccessVoter::ACCESS`, or an admin-only account is turned away.

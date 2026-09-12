@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests;
 use c975L\ConfigBundle\c975LConfigBundle;
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\DependencyInjection\Compiler\DeclaredUrlsHealthCheckPass;
+use c975L\ConfigBundle\DependencyInjection\Compiler\RolePreviewRoleVoterPass;
 use c975L\ConfigBundle\DependencyInjection\Compiler\TaggedInterfacePass;
 use c975L\ConfigBundle\EventSubscriber\CspNonceCookieSubscriber;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
@@ -95,6 +96,21 @@ class c975LConfigBundleTest extends TestCase
         $passes = array_filter(
             $container->getCompilerPassConfig()->getBeforeOptimizationPasses(),
             static fn (object $pass) => $pass instanceof DeclaredUrlsHealthCheckPass
+        );
+
+        $this->assertCount(1, $passes);
+    }
+
+    // The role voter RolePreviewRoleVoter stands in for depends on the site's role_hierarchy, so the choice is left to a pass rather than to a fixed #[AsDecorator]
+    public function testBuildRegistersTheRolePreviewRoleVoterPass(): void
+    {
+        $container = new ContainerBuilder();
+
+        new c975LConfigBundle()->build($container);
+
+        $passes = array_filter(
+            $container->getCompilerPassConfig()->getBeforeOptimizationPasses(),
+            static fn (object $pass) => $pass instanceof RolePreviewRoleVoterPass
         );
 
         $this->assertCount(1, $passes);

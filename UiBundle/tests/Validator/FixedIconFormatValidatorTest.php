@@ -79,6 +79,19 @@ class FixedIconFormatValidatorTest extends ConstraintValidatorTestCase
         $this->assertNoViolation();
     }
 
+    // The og-image is rasterized like an icon, so an SVG the server can't render is refused for it too
+    public function testAnUnrenderableSvgIsRefusedForTheOgImage(): void
+    {
+        $media = $this->createMedia(Media::ROLE_OG_IMAGE, 'og-image.svg', '<svg xmlns="http://www.w3.org/2000/svg"><circle cx="50"');
+
+        $this->validator->validate($media, new FixedIconFormat());
+
+        $this->buildViolation('label.fixed_icon_invalid_format')
+            ->setParameter('%formats%', SvgRasterizer::isSupported() ? 'PNG, JPG, GIF, WEBP, SVG' : 'PNG, JPG, GIF, WEBP')
+            ->atPath('property.path.file')
+            ->assertRaised();
+    }
+
     public function testARasterUploadIsAccepted(): void
     {
         $this->validator->validate($this->createMedia(Media::ROLE_FAVICON, 'favicon.png', $this->createPng()), new FixedIconFormat());

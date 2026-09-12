@@ -84,9 +84,9 @@ class VichImageResizeListener
         if ($isImage && $entity instanceof VichImageResizableInterface) {
             $spec = $entity instanceof Media ? $entity->getFixedIconSpec() : null;
 
-            // An icon role uploaded as SVG is rasterized in place first, and goes on through the very same pipeline as any raster upload. The stored file carries the role's own extension by then (see UiMediaNamer), whatever was uploaded, so only its content can tell - which is exactly what rasterizeInPlace() looks at, leaving the file untouched for everything that is not an SVG it can handle
-            if (null !== $spec) {
-                $this->svgRasterizer->rasterizeInPlace($absolutePath);
+            // An icon role or the og-image uploaded as SVG is rasterized in place first, and goes on through the very same pipeline as any raster upload. The stored file carries the role's own extension by then (see UiMediaNamer), whatever was uploaded, so only its content can tell - which is exactly what rasterizeInPlace() looks at, leaving the file untouched for everything that is not an SVG it can handle. The og-image is rendered at its own stored width, the icons' 512px falling short of it
+            if ($entity instanceof Media && $entity->rasterizesSvg()) {
+                $this->svgRasterizer->rasterizeInPlace($absolutePath, null !== $spec ? SvgRasterizer::RENDER_SIZE : $entity->getImageWidth());
             }
 
             // A file GD can't decode (an svg no rasterizer could handle, or the already-converted .ico a content_import roundtrip re-feeds as a fresh upload) is left exactly as uploaded - only its dimensions are recorded below

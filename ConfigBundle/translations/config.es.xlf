@@ -94,6 +94,10 @@
                 <source>description.guided_project_config_not_found</source>
                 <target>El sitio anota cada ruta que un visitante pidió sin encontrarla. Esa lista es lo que dice qué enlace, aquí o en otro sitio, sigue apuntando a una página que se ha movido.</target>
             </trans-unit>
+            <trans-unit id="cVYWaeZ">
+                <source>description.guided_project_config_role_preview</source>
+                <target>Comprobar lo que ve un nivel inferior, sin una segunda cuenta.</target>
+            </trans-unit>
             <trans-unit id="kwjx7gS">
                 <source>description.guided_project_config_settings</source>
                 <target>Encontrar un ajuste, modificarlo y entender qué hace el panel con él</target>
@@ -101,6 +105,10 @@
             <trans-unit id="SvaL.3Z">
                 <source>description.guided_project_config_url_metadata</source>
                 <target>Dar un título, un resumen y una imagen para compartir a las páginas que ninguno de sus contenidos lleva.</target>
+            </trans-unit>
+            <trans-unit id="xi28kgp">
+                <source>description.guided_project_config_user_role</source>
+                <target>Decidir lo que una cuenta puede hacer en el back-office: colaborador, editor o administrador.</target>
             </trans-unit>
             <trans-unit id="w22XwFU">
                 <source>description.guided_step_config_health_check_again</source>
@@ -166,6 +174,22 @@
                 <source>description.guided_step_config_not_found_to</source>
                 <target>La página que lo sustituye. La única decisión que queda.</target>
             </trans-unit>
+            <trans-unit id="66maK2p">
+                <source>description.guided_step_config_role_preview_banner</source>
+                <target>La barra lateral, las pantallas y los proyectos guiados son ahora los de ese nivel. Un aviso lo recuerda en cada página.</target>
+            </trans-unit>
+            <trans-unit id="WzKTBja">
+                <source>description.guided_step_config_role_preview_done</source>
+                <target>Use el enlace del aviso, o el de su menú.</target>
+            </trans-unit>
+            <trans-unit id="IGVYKG0">
+                <source>description.guided_step_config_role_preview_menu</source>
+                <target>Abra su menú y elija una de sus entradas «Ver como».</target>
+            </trans-unit>
+            <trans-unit id="LX1nN.Y">
+                <source>description.guided_step_config_role_preview_open</source>
+                <target>Una vista previa se inicia desde cualquier pantalla del back-office.</target>
+            </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
                 <target>Las entradas esenciales que quedan vacías aparecen como alertas en el panel, hasta que se rellenan.</target>
@@ -208,7 +232,7 @@
             </trans-unit>
             <trans-unit id="g3fx2V0">
                 <source>description.guided_step_config_url_metadata_image</source>
-                <target>Sin ella, una red social recurre a la imagen por defecto del sitio, que describe el sitio y nunca esta url en concreto.</target>
+                <target>Sin ella, una red social recurre a la imagen por defecto del sitio, que describe el sitio y nunca esta url en concreto. Un SVG se convierte a webp.</target>
             </trans-unit>
             <trans-unit id="bUrnAxC">
                 <source>description.guided_step_config_url_metadata_open</source>
@@ -221,6 +245,18 @@
             <trans-unit id="GFKzUI0">
                 <source>description.guided_step_config_url_metadata_title</source>
                 <target>Es la línea que un buscador muestra encima de la url, y la que lleva la pestaña del navegador.</target>
+            </trans-unit>
+            <trans-unit id="zZfuwmE">
+                <source>description.guided_step_config_user_role_done</source>
+                <target>Compruebe lo que ve ahora con «Ver como», desde su propio menú.</target>
+            </trans-unit>
+            <trans-unit id="xgmiLet">
+                <source>description.guided_step_config_user_role_open</source>
+                <target>Todas las cuentas registradas en el sitio, miembros incluidos.</target>
+            </trans-unit>
+            <trans-unit id="z0Gbe2l">
+                <source>description.guided_step_config_user_role_roles</source>
+                <target>Cada rol se asigna por separado: un administrador que también edita el contenido necesita además el rol de editor. Sin ningún rol, la cuenta sigue siendo un simple miembro.</target>
             </trans-unit>
             <trans-unit id="sXfnWsf">
                 <source>description.health_check</source>
@@ -770,6 +806,10 @@
                 <source>label.guided_project_config_not_found</source>
                 <target>Convertir un enlace roto en una redirección</target>
             </trans-unit>
+            <trans-unit id="hhhb8xQ">
+                <source>label.guided_project_config_role_preview</source>
+                <target>Ver el back-office con otro rol</target>
+            </trans-unit>
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
                 <target>Ajustar la configuración del sitio</target>
@@ -777,6 +817,10 @@
             <trans-unit id="iJUtTyq">
                 <source>label.guided_project_config_url_metadata</source>
                 <target>Hacer que una página de listado hable por sí misma</target>
+            </trans-unit>
+            <trans-unit id="Qg9lboT">
+                <source>label.guided_project_config_user_role</source>
+                <target>Asignar sus roles a una cuenta</target>
             </trans-unit>
             <trans-unit id="bw6vzfK">
                 <source>label.guided_project_done</source>
@@ -882,6 +926,22 @@
                 <source>label.guided_step_config_not_found_to</source>
                 <target>Decir adónde lleva</target>
             </trans-unit>
+            <trans-unit id=".k4QzIY">
+                <source>label.guided_step_config_role_preview_banner</source>
+                <target>El back-office de ese nivel</target>
+            </trans-unit>
+            <trans-unit id="6pZ9x9D">
+                <source>label.guided_step_config_role_preview_done</source>
+                <target>Volver a su rol</target>
+            </trans-unit>
+            <trans-unit id="YvjR3Ni">
+                <source>label.guided_step_config_role_preview_menu</source>
+                <target>Elegir un nivel inferior al suyo</target>
+            </trans-unit>
+            <trans-unit id="LYE6TH7">
+                <source>label.guided_step_config_role_preview_open</source>
+                <target>Abrir el panel</target>
+            </trans-unit>
             <trans-unit id="yK2RVv_">
                 <source>label.guided_step_config_settings_alerts</source>
                 <target>Qué hace el panel con ello</target>
@@ -945,6 +1005,26 @@
             <trans-unit id="2BqVoTR">
                 <source>label.guided_step_config_url_metadata_title</source>
                 <target>Escribir el título</target>
+            </trans-unit>
+            <trans-unit id="vxKkoqU">
+                <source>label.guided_step_config_user_role_done</source>
+                <target>La cuenta tiene sus roles</target>
+            </trans-unit>
+            <trans-unit id="C0XRZXl">
+                <source>label.guided_step_config_user_role_edit</source>
+                <target>Editar una cuenta</target>
+            </trans-unit>
+            <trans-unit id="ev3Pec3">
+                <source>label.guided_step_config_user_role_open</source>
+                <target>Abrir las cuentas</target>
+            </trans-unit>
+            <trans-unit id="LdQp1GF">
+                <source>label.guided_step_config_user_role_roles</source>
+                <target>Elegir sus roles</target>
+            </trans-unit>
+            <trans-unit id="ZW_W1ys">
+                <source>label.guided_step_config_user_role_save</source>
+                <target>Guardar</target>
             </trans-unit>
             <trans-unit id="RXDF6wx">
                 <source>label.health_check</source>
@@ -1889,6 +1969,38 @@
             <trans-unit id="pvYiOoS">
                 <source>label.reset_password</source>
                 <target>Restablecer tu contraseña</target>
+            </trans-unit>
+            <trans-unit id="7hs9fSK">
+                <source>label.role_preview</source>
+                <target>Ver como</target>
+            </trans-unit>
+            <trans-unit id="UO9y7s8">
+                <source>label.role_preview_active</source>
+                <target>Está viendo el sitio como %level%.</target>
+            </trans-unit>
+            <trans-unit id="JsMA1cN">
+                <source>label.role_preview_as</source>
+                <target>Ver como %level%</target>
+            </trans-unit>
+            <trans-unit id="fhQ.zQP">
+                <source>label.role_preview_level_admin</source>
+                <target>administrador</target>
+            </trans-unit>
+            <trans-unit id="BIrnit4">
+                <source>label.role_preview_level_contributor</source>
+                <target>colaborador</target>
+            </trans-unit>
+            <trans-unit id="wcBFICu">
+                <source>label.role_preview_level_editor</source>
+                <target>editor</target>
+            </trans-unit>
+            <trans-unit id="tZZPtv0">
+                <source>label.role_preview_level_member</source>
+                <target>miembro</target>
+            </trans-unit>
+            <trans-unit id="Ey4JBzV">
+                <source>label.role_preview_stop</source>
+                <target>Volver a mi rol</target>
             </trans-unit>
             <trans-unit id="0PZB8zr">
                 <source>label.roles</source>

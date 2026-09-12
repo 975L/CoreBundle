@@ -32,10 +32,10 @@ class BackOfficeAccessVoter extends Voter
         return self::ACCESS === $attribute;
     }
 
-    // Any of the three: the editor bar is the base role of the back office, the admin one sits above it for the site's own settings, and ROLE_SUPER_ADMIN above that - each held outright rather than inherited
+    // Any of the four: the contributor bar opens the floor alone, each screen deciding whether it lets a contributor in; the editor bar is the base role of the back office, the admin one sits above it for the site's own settings, and ROLE_SUPER_ADMIN above that - each held outright rather than inherited
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
-        foreach (['site-role-editor', 'site-role-admin'] as $slug) {
+        foreach (['site-role-contributor', 'site-role-editor', 'site-role-admin'] as $slug) {
             $role = (string) $this->configService->get($slug);
 
             if ('' !== $role && $this->security->isGranted($role)) {

@@ -10,17 +10,22 @@
 
 namespace c975L\UiBundle\Tests\Management;
 
+use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\BlockDataImporter;
 use c975L\UiBundle\Registry\FormBlockDependencyRegistry;
+use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class BlockDataImporterTest extends TestCase
 {
     public function testBuildBlocksReturnsEmptyArrayForNoBlocksData(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([], null);
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildBlocks([], null);
 
         $this->assertSame([], $blocks);
     }
@@ -38,7 +43,7 @@ class BlockDataImporterTest extends TestCase
             ->method('ensureDependenciesExist')
             ->with(['kind' => 'form', 'position' => 1, 'data' => ['name' => 'contact'], 'animation' => 'fade-in']);
 
-        $blocks = new BlockDataImporter($em, $defaultPagesImporter)->buildBlocks([
+        $blocks = new BlockDataImporter($em, $defaultPagesImporter, $this->createStub(ValidatorInterface::class))->buildBlocks([
             ['kind' => 'form', 'position' => 1, 'data' => ['name' => 'contact'], 'animation' => 'fade-in'],
         ], null);
 
@@ -54,7 +59,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildBlocksRestoresABlockAsHidden(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildBlocks([
             ['kind' => 'text', 'position' => 0, 'hidden' => true],
         ], null);
 
@@ -65,7 +70,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildBlocksLandsAnArchiveWithoutTheFlagVisible(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildBlocks([
             ['kind' => 'text', 'position' => 0],
         ], null);
 
@@ -75,7 +80,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildBlocksRecursesIntoNestedContainerSlotsTwoLevelsDeep(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([[
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildBlocks([[
             'kind' => 'flex_columns',
             'position' => 0,
             'data' => [],
@@ -103,7 +108,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildBlocksAttachesMediaBuiltFromEachBlocksMediasEntry(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildBlocks([[
+        $blocks = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildBlocks([[
             'kind' => 'image',
             'position' => 0,
             'data' => [],
@@ -128,7 +133,7 @@ class BlockDataImporterTest extends TestCase
         file_put_contents($filesDir . '/files/photo.jpg', 'fake-image-bytes');
 
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildMedia([
             'role' => 'illustration',
             'alt' => 'A photo',
             'position' => 0,
@@ -149,7 +154,7 @@ class BlockDataImporterTest extends TestCase
     public function testBuildMediaDoesNotSetFileWhenFilesDirIsNull(): void
     {
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildMedia([
             'role' => 'illustration',
             'originalFilename' => 'photo.jpg',
             'file' => 'files/photo.jpg',
@@ -166,7 +171,7 @@ class BlockDataImporterTest extends TestCase
         file_put_contents($filesDir . '/files/photo.webp', 'fake-webp-bytes');
 
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildMedia([
             'role' => 'illustration',
             'originalFilename' => 'photo.pdf',
             'file' => 'files/photo.pdf',
@@ -188,7 +193,7 @@ class BlockDataImporterTest extends TestCase
         file_put_contents($filesDir . '/files/photo.jpg', 'fake-image-bytes');
 
         $em = $this->createStub(EntityManagerInterface::class);
-        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class))->buildMedia([
+        $media = new BlockDataImporter($em, $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class))->buildMedia([
             'role' => 'illustration',
             'originalFilename' => 'photo.jpg',
             'file' => 'files/photo.jpg',
@@ -199,5 +204,29 @@ class BlockDataImporterTest extends TestCase
         unlink($filesDir . '/files/photo.jpg');
         rmdir($filesDir . '/files');
         rmdir($filesDir);
+    }
+
+    // Marked before FixedIconFormat runs on it: the validator lets through, unchecked, any media that is not an og-image
+    public function testBuildOgImageMarksTheMediaBeforeValidatingIt(): void
+    {
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator->expects($this->once())
+            ->method('validate')
+            ->with($this->callback(static fn (Media $media): bool => $media->isOgImage()), $this->isInstanceOf(FixedIconFormat::class))
+            ->willReturn(new ConstraintViolationList());
+
+        $ogImage = new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $validator)->buildOgImage(['alt' => 'Share'], null);
+
+        $this->assertNotNull($ogImage);
+        $this->assertTrue($ogImage->isOgImage());
+    }
+
+    // A file the SVG conversion can't handle is refused, the caller keeping the image it already has
+    public function testBuildOgImageRefusesAFileTheConversionCannotHandle(): void
+    {
+        $validator = $this->createStub(ValidatorInterface::class);
+        $validator->method('validate')->willReturn(new ConstraintViolationList([new ConstraintViolation('refused', null, [], null, 'file', null)]));
+
+        $this->assertNull(new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $validator)->buildOgImage(['alt' => 'Share'], null));
     }
 }

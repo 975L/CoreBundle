@@ -168,8 +168,10 @@ export default class extends Controller {
         }
 
         // The rule is mutated through the CSSOM rather than rewritten: this runs on every scroll event, and rewriting textContent would re-parse the sheet each time. The <style> element stays the same one, so the nonce still covers it
-        // The block's right edge; CSS translateX(-100%) right-aligns the button on it
-        this.positionRule.style.setProperty("top", `${Math.max(rect.top, 0) + 8}px`);
+        // The block's right edge; CSS translateX(-100%) right-aligns the button on it. Clamped below the fixed header rather than the viewport's edge: on a block taller than the screen the button otherwise sat over the navbar, where nobody looks for it - same token and default as the scroll-margin-top rules (see _map.scss), read as pixels
+        const offset = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--scroll-offset"));
+        const headerOffset = Number.isNaN(offset) ? 80 : offset;
+        this.positionRule.style.setProperty("top", `${Math.max(rect.top, headerOffset) + 8}px`);
         this.positionRule.style.setProperty("left", `${rect.right - 8}px`);
     }
 }

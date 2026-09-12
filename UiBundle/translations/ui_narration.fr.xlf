@@ -238,6 +238,30 @@
                 <source>narration.guided_step_ui_legal_model_unit</source>
                 <target>Chaque carte est une section. Donnez-lui votre propre titre, réécrivez son texte, ou cochez la case qui la masque sur la page publiée.</target>
             </trans-unit>
+            <trans-unit id="9AgZZLS">
+                <source>narration.guided_step_ui_media_add_alt</source>
+                <target>Décrivez en une phrase ce que montre l'image. Ce texte est lu aux visiteurs qui ne la voient pas, et aux moteurs de recherche.</target>
+            </trans-unit>
+            <trans-unit id="M2zFvfj">
+                <source>narration.guided_step_ui_media_add_done</source>
+                <target>L'image est maintenant dans la bibliothèque, et n'importe quel block peut la choisir depuis son champ image.</target>
+            </trans-unit>
+            <trans-unit id="VwGKNzq">
+                <source>narration.guided_step_ui_media_add_file</source>
+                <target>Choisissez le fichier sur votre ordinateur : une photo ou une illustration.</target>
+            </trans-unit>
+            <trans-unit id="GJ0bidh">
+                <source>narration.guided_step_ui_media_add_new</source>
+                <target>Cliquez sur le bouton d'ajout, en haut à droite de la bibliothèque.</target>
+            </trans-unit>
+            <trans-unit id="6ndIi5Z">
+                <source>narration.guided_step_ui_media_add_open</source>
+                <target>Le panneau vous emmène sur la bibliothèque de médias, où une image s'ajoute sans passer par une page.</target>
+            </trans-unit>
+            <trans-unit id="E5fiaHl">
+                <source>narration.guided_step_ui_media_add_save</source>
+                <target>Enregistrez l'image avec le bouton en bas du formulaire.</target>
+            </trans-unit>
             <trans-unit id="7aAQu1I">
                 <source>narration.guided_step_ui_media_alt</source>
                 <target>Écrivez le texte alternatif : ce que montre l'image, en une phrase. Il est lu par les lecteurs d'écran et s'affiche quand l'image ne se charge pas.</target>
@@ -256,7 +280,7 @@
             </trans-unit>
             <trans-unit id="OK1vLdo">
                 <source>narration.guided_step_ui_media_open</source>
-                <target>Le panneau vous emmène sur la bibliothèque de médias. Toutes les images du site sont là, qu'elles aient été téléversées depuis une page, depuis un block ou parmi les graphiques du site.</target>
+                <target>Le panneau vous emmène sur la bibliothèque de médias. Toutes les images du site sont là, qu'elles aient été téléversées depuis une page, depuis un block, parmi les graphiques du site ou ajoutées directement ici.</target>
             </trans-unit>
             <trans-unit id=".ftPqIg">
                 <source>narration.guided_step_ui_media_pick</source>
@@ -300,7 +324,7 @@
             </trans-unit>
             <trans-unit id="H8qip51">
                 <source>narration.guided_step_ui_site_graphic_file</source>
-                <target>Choisissez le fichier. Le rôle étant déjà fixé, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert.</target>
+                <target>Choisissez le fichier. Le rôle étant déjà fixé, il ne reste que l'image : elle est renommée à l'enregistrement et conservée à l'adresse fixe où le site la sert. Un SVG est accepté et converti pour le favicon, l'icône Apple Touch et l'image Open Graph.</target>
             </trans-unit>
             <trans-unit id="9dmAOkA">
                 <source>narration.guided_step_ui_site_graphic_open</source>

@@ -3,6 +3,26 @@
         "date": "2026-09-12",
         "description": [
             {
+                "en": "Your site's share image, and the one a page or an address has of its own, can now be an SVG: it is turned automatically into a picture every social network can show.",
+                "fr": "L'image de partage de votre site, et celle propre à une page ou à une adresse, peut désormais être un SVG : elle est automatiquement convertie en une image que tous les réseaux sociaux savent afficher.",
+                "es": "La imagen para compartir de su sitio, y la propia de una página o de una dirección, puede ahora ser un SVG: se convierte automáticamente en una imagen que todas las redes sociales saben mostrar."
+            },
+            {
+                "en": "Editors can now add an image straight into the media library, and a guided project shows how.",
+                "fr": "Les éditeurs peuvent désormais ajouter une image directement dans la médiathèque, et un projet guidé montre comment faire.",
+                "es": "Los editores pueden ahora añadir una imagen directamente en la mediateca, y un proyecto guiado muestra cómo hacerlo."
+            },
+            {
+                "en": "On a page showing one of your own records, the edit button now takes you straight to its form in the back office.",
+                "fr": "Sur une page qui présente l'une de vos fiches, le bouton de modification vous emmène désormais directement vers son formulaire dans le back-office.",
+                "es": "En una página que muestra una de sus fichas, el botón de edición le lleva ahora directamente a su formulario en el back-office."
+            },
+            {
+                "en": "The edit button of a block taller than the screen no longer hides under the top menu.",
+                "fr": "Le bouton de modification d'un bloc plus haut que l'écran ne se cache plus sous le menu du haut.",
+                "es": "El botón de edición de un bloque más alto que la pantalla ya no se oculta bajo el menú superior."
+            },
+            {
                 "en": "A map whose places are of several sorts can now draw each one with an image of its own, telling a monument from a memorial stone at a glance.",
                 "fr": "Une carte dont les lieux sont de plusieurs sortes peut désormais dessiner chacun avec une image qui lui est propre, distinguant un monument d'une stèle au premier coup d'œil.",
                 "es": "Un mapa cuyos lugares son de varios tipos puede ahora dibujar cada uno con una imagen propia, distinguiendo un monumento de una estela de un vistazo."

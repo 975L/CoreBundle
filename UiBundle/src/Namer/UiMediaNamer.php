@@ -49,14 +49,19 @@ class UiMediaNamer implements NamerInterface
 
         // Singleton site-wide graphics (favicon, apple-touch-icon, og-image, logo) need a fixed, predictable filename at the root of public/ - no uniqid (would break the well-known URL)
         if ($object instanceof Media && $object->isSingletonRole()) {
-            // Roles with a fixed icon spec (favicon, apple-touch-icon) always end up in that exact format, whatever the uploaded file was - see VichImageResizeListener, which converts it after upload. Other singleton roles (og-image, logo) are resized and forced to webp just like in-content block images (see VichImageResizeListener::processImage), so the extension must match that
+            // Roles with a fixed icon spec (favicon, apple-touch-icon) always end up in that exact format, whatever the uploaded file was - see VichImageResizeListener, which converts it after upload. Other singleton roles (og-image, logo) are resized and forced to webp just like in-content block images (see VichImageResizeListener::processImage), so the extension must match that. The og-image is webp even for an SVG upload, rasterized before that same conversion - a logo SVG stays SVG
             $spec = $object->getFixedIconSpec();
-            $extension = null !== $spec ? $spec['format'] : $this->determineExtension($file);
+            $extension = match (true) {
+                null !== $spec => $spec['format'],
+                $object->isOgImage() => 'webp',
+                default => $this->determineExtension($file),
+            };
 
             return $object->getVichMediaPath() . '.' . $extension;
         }
 
-        $extension = $this->determineExtension($file);
+        // A Page's or a UrlMetadata's own og-image is rasterized like the site-wide one, so an SVG upload is named webp here too
+        $extension = $object instanceof Media && $object->isOgImage() ? 'webp' : $this->determineExtension($file);
         $basePath = $object instanceof Media ? $this->resolveBasePath($object) : $object->getVichMediaPath();
 
         return $basePath . '-' . uniqid() . '.' . $extension;

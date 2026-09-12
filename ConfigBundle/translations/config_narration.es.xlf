@@ -78,6 +78,22 @@
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>En el campo siguiente, diga adónde debe llevar esa ruta a partir de ahora. Es la única decisión que le queda.</target>
             </trans-unit>
+            <trans-unit id="nuohv_S">
+                <source>narration.guided_step_config_role_preview_banner</source>
+                <target>El back-office es ahora el de ese nivel: su barra lateral, sus pantallas y sus proyectos guiados. El aviso en la parte inferior de la página lo recuerda.</target>
+            </trans-unit>
+            <trans-unit id=".nmqzNL">
+                <source>narration.guided_step_config_role_preview_done</source>
+                <target>Para volver a su propio rol, use el enlace del aviso, o el de su menú.</target>
+            </trans-unit>
+            <trans-unit id="Bq8DMmE">
+                <source>narration.guided_step_config_role_preview_menu</source>
+                <target>Abra su menú, arriba a la derecha, y elija Ver como, seguido de un nivel inferior al suyo.</target>
+            </trans-unit>
+            <trans-unit id="f8uhAaw">
+                <source>narration.guided_step_config_role_preview_open</source>
+                <target>El panel le devuelve a la pantalla de inicio del back-office. Una vista previa se inicia desde cualquier pantalla.</target>
+            </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>
                 <target>Vea lo que hace con ello el tablero: las entradas esenciales que quedan vacías aparecen ahí como alertas, hasta que se rellenan.</target>
@@ -124,7 +140,7 @@
             </trans-unit>
             <trans-unit id="oRtK0u1">
                 <source>narration.guided_step_config_url_metadata_image</source>
-                <target>Añada la imagen para compartir. Sin ella, una red social recurre a la imagen por defecto del sitio, que describe el sitio y nunca esta dirección en concreto.</target>
+                <target>Añada la imagen para compartir. Sin ella, una red social recurre a la imagen por defecto del sitio, que describe el sitio y nunca esta dirección en concreto. Un SVG se convierte a webp.</target>
             </trans-unit>
             <trans-unit id="9Tq6Ji4">
                 <source>narration.guided_step_config_url_metadata_open</source>
@@ -141,6 +157,26 @@
             <trans-unit id="OlELs4x">
                 <source>narration.guided_step_config_url_metadata_title</source>
                 <target>Escriba el título en el primer campo. Es la línea que un buscador muestra encima de la dirección, y la que lleva la pestaña del navegador.</target>
+            </trans-unit>
+            <trans-unit id="qS8mZ.2">
+                <source>narration.guided_step_config_user_role_done</source>
+                <target>La cuenta tiene ahora sus roles. Para comprobar lo que ve, use Ver como, desde su propio menú.</target>
+            </trans-unit>
+            <trans-unit id="r1R7RaX">
+                <source>narration.guided_step_config_user_role_edit</source>
+                <target>Haga clic en el botón de edición de la cuenta cuyos roles quiere cambiar.</target>
+            </trans-unit>
+            <trans-unit id="0sTfaOH">
+                <source>narration.guided_step_config_user_role_open</source>
+                <target>El panel le lleva a la lista de cuentas: todas las cuentas registradas en el sitio, miembros incluidos.</target>
+            </trans-unit>
+            <trans-unit id="5oXMPap">
+                <source>narration.guided_step_config_user_role_roles</source>
+                <target>Elija sus roles en este campo. Cada rol se asigna por separado: un administrador que también edita el contenido necesita además el rol de editor.</target>
+            </trans-unit>
+            <trans-unit id="nPCJBCG">
+                <source>narration.guided_step_config_user_role_save</source>
+                <target>Guarde con el botón situado en la parte inferior del formulario.</target>
             </trans-unit>
             <trans-unit id="2nHgm8X">
                 <source>narration.health_check</source>

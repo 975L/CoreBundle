@@ -14,7 +14,7 @@ namespace c975L\UiBundle\Service;
 class SvgRasterizer
 {
     // Rendered well above any target size (48px favicon, 114px apple-touch-icon), the icon pipeline then downscaling it with its own filtering - rasterizing straight at the target size leaves ImageMagick's scaler alone in charge, and it is visibly rougher at icon sizes
-    private const int RENDER_SIZE = 512;
+    public const int RENDER_SIZE = 512;
 
     // The density one SVG user unit is one pixel at - the rendering density is scaled from it so the output lands on RENDER_SIZE whatever size the document declares
     private const int BASE_DENSITY = 96;
@@ -29,9 +29,9 @@ class SvgRasterizer
     }
 
     // Replaces the file by its PNG rendering, transparency kept. Answers false - leaving the file untouched - for anything that is not an SVG this can actually rasterize, so callers can hand it any upload and keep their existing handling for the rest
-    public function rasterizeInPlace(string $absolutePath): bool
+    public function rasterizeInPlace(string $absolutePath, int $size = self::RENDER_SIZE): bool
     {
-        $rendered = $this->rasterize($absolutePath);
+        $rendered = $this->rasterize($absolutePath, $size);
 
         return null !== $rendered && false !== file_put_contents($absolutePath, $rendered);
     }
@@ -43,7 +43,7 @@ class SvgRasterizer
     }
 
     // Null for anything that is not an SVG this can turn into pixels - callers hand it any upload and keep their own handling for the rest
-    private function rasterize(string $absolutePath): ?string
+    private function rasterize(string $absolutePath, int $size = self::RENDER_SIZE): ?string
     {
         // Long enough a slice to clear an xml declaration, a doctype and an editor's comment header before the root tag - a document whose root tag doesn't even fit in there is left to the caller's own handling rather than rendered on a guess
         $head = (string) file_get_contents($absolutePath, false, null, 0, 8192);
@@ -53,7 +53,7 @@ class SvgRasterizer
         }
 
         try {
-            return $this->render($absolutePath, $this->declaredWidth($rootTag[0]));
+            return $this->render($absolutePath, $this->declaredWidth($rootTag[0]), $size);
         } catch (\Throwable) {
             // A malformed or unsupported SVG (ImageMagick's internal renderer chokes on a good deal of real-world markup) must not take the whole upload down
             return null;
@@ -61,10 +61,10 @@ class SvgRasterizer
     }
 
     // An SVG renders at its declared size times density/BASE_DENSITY, so the density is what is set to land on RENDER_SIZE - anything else (rendering at the target size, or upscaling a default-size rendering) hands the icon pipeline a blurry source
-    private function render(string $absolutePath, ?float $declaredWidth): string
+    private function render(string $absolutePath, ?float $declaredWidth, int $size): string
     {
         $width = $declaredWidth ?? self::DEFAULT_WIDTH;
-        $density = (int) ceil(self::BASE_DENSITY * self::RENDER_SIZE / $width);
+        $density = (int) ceil(self::BASE_DENSITY * $size / $width);
 
         $imagick = new \Imagick();
         $imagick->setBackgroundColor(new \ImagickPixel('transparent'));
@@ -79,7 +79,7 @@ class SvgRasterizer
 
         // png32 rather than png: an icon is centered on a transparent square right after (see VichImageResizeListener::processFixedIcon), and a palette PNG would lose the alpha channel both that padding and the .ico wrapper need
         $imagick->setImageFormat('png32');
-        $imagick->thumbnailImage(self::RENDER_SIZE, self::RENDER_SIZE, true);
+        $imagick->thumbnailImage($size, 0);
         $blob = $imagick->getImageBlob();
         $imagick->clear();
 

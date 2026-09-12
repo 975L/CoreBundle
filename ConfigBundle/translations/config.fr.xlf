@@ -94,6 +94,10 @@
                 <source>description.guided_project_config_not_found</source>
                 <target>Le site note chaque chemin demandé par un visiteur sans être trouvé. Cette liste est ce qui dit quel lien, ici ou sur un autre site, pointe encore vers une page qui a bougé.</target>
             </trans-unit>
+            <trans-unit id="cVYWaeZ">
+                <source>description.guided_project_config_role_preview</source>
+                <target>Vérifier ce que voit un niveau inférieur, sans second compte.</target>
+            </trans-unit>
             <trans-unit id="kwjx7gS">
                 <source>description.guided_project_config_settings</source>
                 <target>Trouver un réglage, le modifier, et comprendre ce que le tableau de bord en fait</target>
@@ -101,6 +105,10 @@
             <trans-unit id="SvaL.3Z">
                 <source>description.guided_project_config_url_metadata</source>
                 <target>Donner un titre, un résumé et une image de partage aux pages qu'aucun de vos contenus ne porte.</target>
+            </trans-unit>
+            <trans-unit id="xi28kgp">
+                <source>description.guided_project_config_user_role</source>
+                <target>Décider de ce qu'un compte peut faire dans le back-office : contributeur, éditeur ou administrateur.</target>
             </trans-unit>
             <trans-unit id="w22XwFU">
                 <source>description.guided_step_config_health_check_again</source>
@@ -166,6 +174,22 @@
                 <source>description.guided_step_config_not_found_to</source>
                 <target>La page qui le remplace. La seule décision qui reste.</target>
             </trans-unit>
+            <trans-unit id="66maK2p">
+                <source>description.guided_step_config_role_preview_banner</source>
+                <target>La barre latérale, les écrans et les projets guidés sont maintenant ceux de ce niveau. Un bandeau le rappelle sur chaque page.</target>
+            </trans-unit>
+            <trans-unit id="WzKTBja">
+                <source>description.guided_step_config_role_preview_done</source>
+                <target>Utilisez le lien du bandeau, ou celui de votre menu.</target>
+            </trans-unit>
+            <trans-unit id="IGVYKG0">
+                <source>description.guided_step_config_role_preview_menu</source>
+                <target>Ouvrez votre menu et choisissez l'une de ses entrées « Voir en tant que ».</target>
+            </trans-unit>
+            <trans-unit id="LX1nN.Y">
+                <source>description.guided_step_config_role_preview_open</source>
+                <target>Un aperçu se lance depuis n'importe quel écran du back-office.</target>
+            </trans-unit>
             <trans-unit id="3BtYhFM">
                 <source>description.guided_step_config_settings_alerts</source>
                 <target>Les entrées essentielles restées vides remontent en alertes sur le tableau de bord, jusqu'à ce qu'elles soient remplies.</target>
@@ -208,7 +232,7 @@
             </trans-unit>
             <trans-unit id="g3fx2V0">
                 <source>description.guided_step_config_url_metadata_image</source>
-                <target>Sans elle, un réseau social se rabat sur l'image par défaut du site — qui décrit le site, jamais cette url en particulier.</target>
+                <target>Sans elle, un réseau social se rabat sur l'image par défaut du site — qui décrit le site, jamais cette url en particulier. Un SVG est converti en webp.</target>
             </trans-unit>
             <trans-unit id="bUrnAxC">
                 <source>description.guided_step_config_url_metadata_open</source>
@@ -221,6 +245,18 @@
             <trans-unit id="GFKzUI0">
                 <source>description.guided_step_config_url_metadata_title</source>
                 <target>C'est la ligne qu'un moteur de recherche affiche au-dessus de l'url, et celle que porte l'onglet du navigateur.</target>
+            </trans-unit>
+            <trans-unit id="zZfuwmE">
+                <source>description.guided_step_config_user_role_done</source>
+                <target>Vérifiez ce qu'il voit désormais avec « Voir en tant que », depuis votre propre menu.</target>
+            </trans-unit>
+            <trans-unit id="xgmiLet">
+                <source>description.guided_step_config_user_role_open</source>
+                <target>Tous les comptes inscrits sur le site, membres compris.</target>
+            </trans-unit>
+            <trans-unit id="z0Gbe2l">
+                <source>description.guided_step_config_user_role_roles</source>
+                <target>Chaque rôle se donne à part : un administrateur qui modifie aussi le contenu a besoin du rôle éditeur en plus. Sans aucun rôle, le compte reste un simple membre.</target>
             </trans-unit>
             <trans-unit id="sXfnWsf">
                 <source>description.health_check</source>
@@ -770,6 +806,10 @@
                 <source>label.guided_project_config_not_found</source>
                 <target>Transformer un lien mort en redirection</target>
             </trans-unit>
+            <trans-unit id="hhhb8xQ">
+                <source>label.guided_project_config_role_preview</source>
+                <target>Voir le back-office avec un autre rôle</target>
+            </trans-unit>
             <trans-unit id="8QVNypE">
                 <source>label.guided_project_config_settings</source>
                 <target>Régler la configuration du site</target>
@@ -777,6 +817,10 @@
             <trans-unit id="iJUtTyq">
                 <source>label.guided_project_config_url_metadata</source>
                 <target>Faire parler une page de liste</target>
+            </trans-unit>
+            <trans-unit id="Qg9lboT">
+                <source>label.guided_project_config_user_role</source>
+                <target>Donner ses rôles à un compte</target>
             </trans-unit>
             <trans-unit id="bw6vzfK">
                 <source>label.guided_project_done</source>
@@ -882,6 +926,22 @@
                 <source>label.guided_step_config_not_found_to</source>
                 <target>Dire où il mène</target>
             </trans-unit>
+            <trans-unit id=".k4QzIY">
+                <source>label.guided_step_config_role_preview_banner</source>
+                <target>Le back-office de ce niveau</target>
+            </trans-unit>
+            <trans-unit id="6pZ9x9D">
+                <source>label.guided_step_config_role_preview_done</source>
+                <target>Revenir à votre rôle</target>
+            </trans-unit>
+            <trans-unit id="YvjR3Ni">
+                <source>label.guided_step_config_role_preview_menu</source>
+                <target>Choisir un niveau sous le vôtre</target>
+            </trans-unit>
+            <trans-unit id="LYE6TH7">
+                <source>label.guided_step_config_role_preview_open</source>
+                <target>Ouvrir le tableau de bord</target>
+            </trans-unit>
             <trans-unit id="yK2RVv_">
                 <source>label.guided_step_config_settings_alerts</source>
                 <target>Ce que le tableau de bord en fait</target>
@@ -945,6 +1005,26 @@
             <trans-unit id="2BqVoTR">
                 <source>label.guided_step_config_url_metadata_title</source>
                 <target>Écrire le titre</target>
+            </trans-unit>
+            <trans-unit id="vxKkoqU">
+                <source>label.guided_step_config_user_role_done</source>
+                <target>Le compte a ses rôles</target>
+            </trans-unit>
+            <trans-unit id="C0XRZXl">
+                <source>label.guided_step_config_user_role_edit</source>
+                <target>Modifier un compte</target>
+            </trans-unit>
+            <trans-unit id="ev3Pec3">
+                <source>label.guided_step_config_user_role_open</source>
+                <target>Ouvrir les comptes</target>
+            </trans-unit>
+            <trans-unit id="LdQp1GF">
+                <source>label.guided_step_config_user_role_roles</source>
+                <target>Choisir ses rôles</target>
+            </trans-unit>
+            <trans-unit id="ZW_W1ys">
+                <source>label.guided_step_config_user_role_save</source>
+                <target>Enregistrer</target>
             </trans-unit>
             <trans-unit id="RXDF6wx">
                 <source>label.health_check</source>
@@ -1889,6 +1969,38 @@
             <trans-unit id="pvYiOoS">
                 <source>label.reset_password</source>
                 <target>Réinitialiser votre mot de passe</target>
+            </trans-unit>
+            <trans-unit id="7hs9fSK">
+                <source>label.role_preview</source>
+                <target>Voir en tant que</target>
+            </trans-unit>
+            <trans-unit id="UO9y7s8">
+                <source>label.role_preview_active</source>
+                <target>Vous voyez le site en tant que %level%.</target>
+            </trans-unit>
+            <trans-unit id="JsMA1cN">
+                <source>label.role_preview_as</source>
+                <target>Voir en tant que %level%</target>
+            </trans-unit>
+            <trans-unit id="fhQ.zQP">
+                <source>label.role_preview_level_admin</source>
+                <target>administrateur</target>
+            </trans-unit>
+            <trans-unit id="BIrnit4">
+                <source>label.role_preview_level_contributor</source>
+                <target>contributeur</target>
+            </trans-unit>
+            <trans-unit id="wcBFICu">
+                <source>label.role_preview_level_editor</source>
+                <target>éditeur</target>
+            </trans-unit>
+            <trans-unit id="tZZPtv0">
+                <source>label.role_preview_level_member</source>
+                <target>membre</target>
+            </trans-unit>
+            <trans-unit id="Ey4JBzV">
+                <source>label.role_preview_stop</source>
+                <target>Revenir à mon rôle</target>
             </trans-unit>
             <trans-unit id="0PZB8zr">
                 <source>label.roles</source>

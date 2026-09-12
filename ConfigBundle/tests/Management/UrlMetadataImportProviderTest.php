@@ -13,6 +13,7 @@ namespace c975L\ConfigBundle\Tests\Management;
 use c975L\ConfigBundle\Entity\UrlMetadata;
 use c975L\ConfigBundle\Management\UrlMetadataImportProvider;
 use c975L\ConfigBundle\Repository\UrlMetadataRepository;
+use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Management\BlockDataImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +23,7 @@ class UrlMetadataImportProviderTest extends TestCase
     /** @var list<object> */
     private array $persisted = [];
 
-    private function createProvider(?UrlMetadata $existing = null): UrlMetadataImportProvider
+    private function createProvider(?UrlMetadata $existing = null, ?BlockDataImporter $blockDataImporter = null): UrlMetadataImportProvider
     {
         $this->persisted = [];
 
@@ -34,7 +35,21 @@ class UrlMetadataImportProviderTest extends TestCase
         $repository = $this->createStub(UrlMetadataRepository::class);
         $repository->method('findOneByPath')->willReturn($existing);
 
-        return new UrlMetadataImportProvider($this->createStub(BlockDataImporter::class), $em, $repository);
+        return new UrlMetadataImportProvider($blockDataImporter ?? $this->createStub(BlockDataImporter::class), $em, $repository);
+    }
+
+    // A share image the SVG conversion refuses would be stored as markup under a .webp name, so the row keeps the one it has
+    public function testAnOgImageTheConversionRefusesKeepsTheCurrentOne(): void
+    {
+        $current = new Media();
+        $existing = new UrlMetadata()->setPath('/animaux')->setOgImage($current);
+
+        $blockDataImporter = $this->createStub(BlockDataImporter::class);
+        $blockDataImporter->method('buildOgImage')->willReturn(null);
+
+        $this->createProvider($existing, $blockDataImporter)->import([['path' => '/animaux', 'ogImage' => ['file' => 'files/og-image.svg']]]);
+
+        $this->assertSame($current, $existing->getOgImage());
     }
 
     public function testSupportsImportOnlyMatchesSiteUrlMetadataKind(): void

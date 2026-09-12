@@ -234,6 +234,10 @@
                 <source>description.site_role_admin</source>
                 <target>Rôle requis pour la configuration, ex. ROLE_ADMIN (par défaut)</target>
             </trans-unit>
+            <trans-unit id="MuxwOYh">
+                <source>description.site_role_contributor</source>
+                <target>Rôle ouvrant le back-office sans rien d'autre, ex. ROLE_CONTRIBUTOR (par défaut) : chaque écran décide s'il accepte les contributeurs</target>
+            </trans-unit>
             <trans-unit id="drEaqSN">
                 <source>description.site_role_editor</source>
                 <target>Rôle requis pour les actions d'éditeur, ex. ROLE_EDITOR (par défaut)</target>
@@ -497,6 +501,10 @@
             <trans-unit id="z_rPP2B">
                 <source>label.site_role_admin</source>
                 <target>Rôle Admin du site</target>
+            </trans-unit>
+            <trans-unit id="DPiBcie">
+                <source>label.site_role_contributor</source>
+                <target>Rôle Contributeur du site</target>
             </trans-unit>
             <trans-unit id="OH9i9I8">
                 <source>label.site_role_editor</source>

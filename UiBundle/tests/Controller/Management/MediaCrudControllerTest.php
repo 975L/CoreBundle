@@ -86,13 +86,12 @@ class MediaCrudControllerTest extends TestCase
         $this->assertSame('480', $media->getHeight());
     }
 
-    // Creating a Media with no Block (e.g. for a bundle showcase) is reserved to super admins - regular admins keep adding media the normal way, through a Block's own form
-    public function testConfigureActionsRestrictsNewToSuperAdmin(): void
+    // Adding an image takes the library's own role, the editor the "ui-media" guided project is shown to having to be able to add the image it picks
+    public function testConfigureActionsGivesNewTheLibraryRole(): void
     {
-        $controller = $this->createController();
+        $permissions = $this->configureActions($this->createController())->getAsDto(null)->getActionPermissions();
 
-        $permissions = $this->configureActions($controller)->getAsDto(null)->getActionPermissions();
-        $this->assertSame('ROLE_SUPER_ADMIN', $permissions[Action::NEW]);
+        $this->assertSame($permissions[Action::INDEX], $permissions[Action::NEW]);
     }
 
     // Lets the admin back out of a create/edit without saving

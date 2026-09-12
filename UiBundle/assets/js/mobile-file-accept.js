@@ -18,7 +18,7 @@ document.addEventListener('pointerdown', event => {
     // A tap can land on the input itself or on the label that opens it - HTMLLabelElement.control resolves both the "for" attribute and the wrapping form
     const target = event.target.closest?.('input[type="file"][accept], label');
     const input = target?.control ?? target;
-    if (!input || 'file' !== input.type || !input.hasAttribute('accept')) return;
+    if ('file' !== input?.type || !input.hasAttribute('accept')) return;
 
     const types = input.getAttribute('accept').split(',').map(type => type.trim()).filter(Boolean);
     if (!types.every(type => MEDIA_ONLY.test(type))) return;

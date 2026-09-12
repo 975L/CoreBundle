@@ -122,8 +122,8 @@ class UiGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review'], array_column($projects, 'slug'));
-        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add'], array_column($projects, 'slug'));
+        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110], array_column($projects, 'order'));
     }
 
     // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's own block is the 3000 GuidedProjectProviderInterface reserves it
@@ -153,6 +153,7 @@ class UiGuidedProjectProviderTest extends TestCase
             'ui-email-template' => 'ROLE_ADMIN',
             'ui-font' => 'ROLE_EDITOR',
             'ui-review' => 'ROLE_EDITOR',
+            'ui-media-add' => 'ROLE_EDITOR',
         ];
 
         foreach ($this->createProvider()->getGuidedProjects() as $project) {
@@ -207,7 +208,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController'],
+            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController', 'MediaCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }

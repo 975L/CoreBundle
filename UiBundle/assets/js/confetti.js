@@ -15,7 +15,7 @@ export default class extends Controller {
 
     connect() {
         // Nothing is downloaded at all for a visitor asking for less animation: the library already keeps quiet on its own (disableForReducedMotion below), but it was fetched anyway to do nothing
-        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
             return;
         }
 

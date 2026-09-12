@@ -272,6 +272,11 @@ a.ea-sidebar-item-link[target="_blank"]::after {
     z-index: 1900;
 }
 
+// Between the guided-project panel (1900) and the tour (2000): on a narrow screen the panel would otherwise cover the way back to one's own role
+.role-preview-banner.position-fixed {
+    z-index: 1950;
+}
+
 .guided-project-panel h3 {
     margin: .25rem 0 .5rem;
     font-size: 1.05rem;

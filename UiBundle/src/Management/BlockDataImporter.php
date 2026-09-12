@@ -13,7 +13,9 @@ namespace c975L\UiBundle\Management;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Registry\FormBlockDependencyRegistry;
+use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
 // Shared Block/Media rebuild for every Sync import carrying a Block collection (Page, Menu) - mirrors BlockDataExporter on the way in
@@ -39,6 +41,7 @@ class BlockDataImporter
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly FormBlockDependencyRegistry $formBlockDependencyRegistry,
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
@@ -120,5 +123,13 @@ class BlockDataImporter
         }
 
         return $media;
+    }
+
+    // The share image a Page or a UrlMetadata owns alone, marked before OgImageType's own FixedIconFormat check runs on it - null when the conversion can't handle the file, the caller then keeping the image it already has rather than one stored as SVG markup under a .webp name
+    public function buildOgImage(array $mediaData, ?string $filesDir): ?Media
+    {
+        $ogImage = $this->buildMedia($mediaData, $filesDir)->markAsOgImage();
+
+        return 0 === count($this->validator->validate($ogImage, new FixedIconFormat())) ? $ogImage : null;
     }
 }

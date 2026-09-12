@@ -79,7 +79,7 @@ class MediaCrudController extends AbstractCrudController
         return Media::class;
     }
 
-    // The same dynamic role as every other c975L CRUD, read from the config rather than hardcoded as it used to be: index() already reads "site-role-editor" off this very service for its own gallery, so the standalone-UiBundle argument the old constant carried stopped holding the day that line was written. Browsing the library and fixing an alt text is editing content; creating a Media with no Block of its own stays stricter, see Action::NEW in configureActions(), and deleting one is bounded by its usages, see delete()
+    // The same dynamic role as every other c975L CRUD, read from the config rather than hardcoded as it used to be: index() already reads "site-role-editor" off this very service for its own gallery, so the standalone-UiBundle argument the old constant carried stopped holding the day that line was written. Browsing the library, adding an image and fixing an alt text is editing content; deleting one is bounded by its usages, see delete()
     private function roleNeeded(): string
     {
         return (string) $this->configService->get('site-role-editor');
@@ -202,8 +202,8 @@ class MediaCrudController extends AbstractCrudController
                 $action->displayIf(static fn (Media $media): bool => null === $media->getRole()),
                 $this->translator->trans('action.delete', [], 'EasyAdminBundle'),
             ))
-            // Creating a Media with no Block (e.g. for a bundle showcase) is reserved to super admins - regular admins keep adding media the normal way, through a Block's own form
-            ->setPermission(Action::NEW, 'ROLE_SUPER_ADMIN')
+            // Same role as the rest of the library: an editor adds an image straight from here, which the "ui-media-add" guided project walks
+            ->setPermission(Action::NEW, $this->roleNeeded())
             // Same reason as in SiteGraphicCrudController: detail adds no information beyond what edit already shows, and it doesn't even display the file itself (only forms do). Every gallery thumbnail now opens a form - Edit here, or SiteGraphicCrudController's own for a role-carrying row (see index())
             ->disable(Action::DETAIL)
         ;

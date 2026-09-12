@@ -12,9 +12,13 @@ namespace c975L\UiBundle\Tests\Form;
 
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Form\OgImageType;
+use c975L\UiBundle\Validator\FixedIconFormat;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File as FileConstraint;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -79,5 +83,33 @@ class OgImageTypeTest extends TestCase
 
         $this->assertSame(Media::class, $options['data_class']);
         $this->assertSame('ui', $options['translation_domain']);
+    }
+
+    // Marked on submit, so the validation, the namer and the listener that follow all treat the upload as an og-image
+    public function testSubmitMarksTheMediaAsAnOgImage(): void
+    {
+        $listener = null;
+        $builder = $this->createStub(FormBuilderInterface::class);
+        $builder->method('add')->willReturn($builder);
+        $builder->method('addEventListener')->willReturnCallback(function (string $eventName, callable $callback) use (&$listener, $builder) {
+            $listener = FormEvents::SUBMIT === $eventName ? $callback : $listener;
+
+            return $builder;
+        });
+        new OgImageType()->buildForm($builder, []);
+
+        $media = new Media();
+        $listener(new FormEvent($this->createStub(FormInterface::class), $media));
+
+        $this->assertTrue($media->isOgImage());
+    }
+
+    // Neither Page nor UrlMetadata cascades validation into its og-image, so the SVG check has to be carried by the form itself
+    public function testConfigureOptionsValidatesTheUploadAsAnOgImage(): void
+    {
+        $resolver = new OptionsResolver();
+        new OgImageType()->configureOptions($resolver);
+
+        $this->assertInstanceOf(FixedIconFormat::class, $resolver->resolve()['constraints'][0]);
     }
 }

@@ -19,10 +19,10 @@ use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
 class BackOfficeAccessVoterTest extends TestCase
 {
-    // Each of the three bars opens the back office on its own: no role_hierarchy is shipped, so an account holding one of them holds nothing else
+    // Each of the four bars opens the back office on its own: no role_hierarchy is shipped, so an account holding one of them holds nothing else
     public function testEachBarOpensTheBackOfficeOnItsOwn(): void
     {
-        foreach (['ROLE_EDITOR', 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN'] as $role) {
+        foreach (['ROLE_CONTRIBUTOR', 'ROLE_EDITOR', 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN'] as $role) {
             $this->assertSame(
                 VoterInterface::ACCESS_GRANTED,
                 $this->vote([$role]),
@@ -42,7 +42,7 @@ class BackOfficeAccessVoterTest extends TestCase
         $this->assertSame(VoterInterface::ACCESS_DENIED, $this->vote(['ROLE_USER']));
     }
 
-    // A site that emptied one of the two role configs would otherwise have isGranted('') asked of it, which no voter answers usefully
+    // A site that emptied one of the role configs would otherwise have isGranted('') asked of it, which no voter answers usefully
     public function testAnUnsetRoleConfigIsSkippedRatherThanAsked(): void
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
@@ -69,7 +69,11 @@ class BackOfficeAccessVoterTest extends TestCase
     {
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(
-            static fn (string $slug) => 'site-role-editor' === $slug ? 'ROLE_EDITOR' : 'ROLE_ADMIN'
+            static fn (string $slug) => match ($slug) {
+                'site-role-contributor' => 'ROLE_CONTRIBUTOR',
+                'site-role-editor' => 'ROLE_EDITOR',
+                default => 'ROLE_ADMIN',
+            }
         );
 
         $security = $this->createStub(Security::class);

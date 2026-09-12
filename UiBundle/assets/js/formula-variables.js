@@ -86,7 +86,7 @@ export default class extends Controller {
     insert(name) {
         // A keyboard reaches the chip by tabbing to it, which does move the focus - hence the field remembered on the way in, rather than document.activeElement read here
         const input = this.focused;
-        if (!input || !input.isConnected) {
+        if (!input?.isConnected) {
             return;
         }
 

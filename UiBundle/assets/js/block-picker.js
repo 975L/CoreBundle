@@ -38,7 +38,7 @@ function thumb(kind) {
 // The label a chosen kind shows on its trigger, and the one the placeholder option carries while nothing is chosen
 function triggerLabel(select) {
     const chosen = select.options[select.selectedIndex];
-    if (!chosen || !chosen.value) return '';
+    if (!chosen?.value) return '';
 
     return chosen.dataset.label || chosen.textContent.trim();
 }

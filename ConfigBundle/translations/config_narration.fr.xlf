@@ -78,6 +78,22 @@
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>Dans le champ suivant, dites où ce chemin doit mener désormais. C'est la seule décision qui vous reste.</target>
             </trans-unit>
+            <trans-unit id="nuohv_S">
+                <source>narration.guided_step_config_role_preview_banner</source>
+                <target>Le back-office est maintenant celui de ce niveau : sa barre latérale, ses écrans et ses projets guidés. Le bandeau en bas de la page le rappelle.</target>
+            </trans-unit>
+            <trans-unit id=".nmqzNL">
+                <source>narration.guided_step_config_role_preview_done</source>
+                <target>Pour revenir à votre propre rôle, utilisez le lien du bandeau, ou celui de votre menu.</target>
+            </trans-unit>
+            <trans-unit id="Bq8DMmE">
+                <source>narration.guided_step_config_role_preview_menu</source>
+                <target>Ouvrez votre menu, en haut à droite, et choisissez Voir en tant que, suivi d'un niveau sous le vôtre.</target>
+            </trans-unit>
+            <trans-unit id="f8uhAaw">
+                <source>narration.guided_step_config_role_preview_open</source>
+                <target>Le panneau vous ramène au tableau de bord. Un aperçu se lance depuis n'importe quel écran du back-office.</target>
+            </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>
                 <target>Voyez ce que le tableau de bord en fait : les entrées essentielles restées vides y remontent en alertes, jusqu'à ce qu'elles soient remplies.</target>
@@ -124,7 +140,7 @@
             </trans-unit>
             <trans-unit id="oRtK0u1">
                 <source>narration.guided_step_config_url_metadata_image</source>
-                <target>Ajoutez l'image de partage. Sans elle, un réseau social se rabat sur l'image par défaut du site, qui décrit le site et jamais cette adresse en particulier.</target>
+                <target>Ajoutez l'image de partage. Sans elle, un réseau social se rabat sur l'image par défaut du site, qui décrit le site et jamais cette adresse en particulier. Un SVG est converti en webp.</target>
             </trans-unit>
             <trans-unit id="9Tq6Ji4">
                 <source>narration.guided_step_config_url_metadata_open</source>
@@ -141,6 +157,26 @@
             <trans-unit id="OlELs4x">
                 <source>narration.guided_step_config_url_metadata_title</source>
                 <target>Écrivez le titre dans le premier champ. C'est la ligne qu'un moteur de recherche affiche au-dessus de l'adresse, et celle que porte l'onglet du navigateur.</target>
+            </trans-unit>
+            <trans-unit id="qS8mZ.2">
+                <source>narration.guided_step_config_user_role_done</source>
+                <target>Le compte a maintenant ses rôles. Pour vérifier ce qu'il voit, utilisez Voir en tant que, depuis votre propre menu.</target>
+            </trans-unit>
+            <trans-unit id="r1R7RaX">
+                <source>narration.guided_step_config_user_role_edit</source>
+                <target>Cliquez sur le bouton de modification du compte dont vous voulez changer les rôles.</target>
+            </trans-unit>
+            <trans-unit id="0sTfaOH">
+                <source>narration.guided_step_config_user_role_open</source>
+                <target>Le panneau vous emmène sur la liste des comptes : tous les comptes inscrits sur le site, membres compris.</target>
+            </trans-unit>
+            <trans-unit id="5oXMPap">
+                <source>narration.guided_step_config_user_role_roles</source>
+                <target>Choisissez ses rôles dans ce champ. Chaque rôle se donne à part : un administrateur qui modifie aussi le contenu a besoin du rôle éditeur en plus.</target>
+            </trans-unit>
+            <trans-unit id="nPCJBCG">
+                <source>narration.guided_step_config_user_role_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
             </trans-unit>
             <trans-unit id="2nHgm8X">
                 <source>narration.health_check</source>

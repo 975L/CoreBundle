@@ -22,11 +22,22 @@
         "description": "description.site_role_editor"
     },
     {
+        "label": "label.site_role_contributor",
+        "slug": "site-role-contributor",
+        "sensitive": false,
+        "restricted": true,
+        "value": "ROLE_CONTRIBUTOR",
+        "kind": "text",
+        "group": "system",
+        "severity": "warning",
+        "description": "description.site_role_contributor"
+    },
+    {
         "label": "label.user_roles_available",
         "slug": "user-roles-available",
         "sensitive": false,
         "restricted": true,
-        "value": "[\"ROLE_ADMIN\", \"ROLE_EDITOR\"]",
+        "value": "[\"ROLE_ADMIN\", \"ROLE_EDITOR\", \"ROLE_CONTRIBUTOR\"]",
         "kind": "json",
         "group": "security",
         "severity": null,

@@ -62,6 +62,10 @@
                 <source>description.guided_project_ui_media</source>
                 <target>Dar a una imagen su texto alternativo y sus créditos, en la biblioteca donde acaba toda imagen del sitio, sea cual sea la pantalla que la subió</target>
             </trans-unit>
+            <trans-unit id="ub49lg8">
+                <source>description.guided_project_ui_media_add</source>
+                <target>Subir una imagen directamente a la biblioteca de medios, lista para elegirse desde cualquier block.</target>
+            </trans-unit>
             <trans-unit id="m0_DD2W">
                 <source>description.guided_project_ui_review</source>
                 <target>Publicar, descartar o responder a lo que han escrito sus lectores — y a lo que le han devuelto las plataformas.</target>
@@ -258,6 +262,22 @@
                 <source>description.guided_step_ui_legal_model_unit</source>
                 <target>Cada tarjeta es una sección: dele un título propio, reescriba su texto, o marque la casilla que la oculta en la página publicada</target>
             </trans-unit>
+            <trans-unit id="StO_cmk">
+                <source>description.guided_step_ui_media_add_alt</source>
+                <target>Lo que muestra la imagen, leído a los visitantes que no pueden verla y a los motores de búsqueda.</target>
+            </trans-unit>
+            <trans-unit id=".9t5hfZ">
+                <source>description.guided_step_ui_media_add_done</source>
+                <target>Elíjala desde el campo de imagen de cualquier block.</target>
+            </trans-unit>
+            <trans-unit id="cv9UG40">
+                <source>description.guided_step_ui_media_add_file</source>
+                <target>Una foto o una ilustración de su ordenador.</target>
+            </trans-unit>
+            <trans-unit id="B6VQA6l">
+                <source>description.guided_step_ui_media_add_open</source>
+                <target>Una imagen añadida aquí aún no pertenece a ninguna página: cualquier block puede elegirla después.</target>
+            </trans-unit>
             <trans-unit id="RDmEru5">
                 <source>description.guided_step_ui_media_alt</source>
                 <target>Lo que muestra la imagen, en una frase: lo leen los lectores de pantalla y se muestra cuando la imagen no carga.</target>
@@ -276,7 +296,7 @@
             </trans-unit>
             <trans-unit id=".imAjIX">
                 <source>description.guided_step_ui_media_open</source>
-                <target>Todas las imágenes del sitio están aquí, tanto si se subieron desde una página, un block o los gráficos del sitio.</target>
+                <target>Todas las imágenes del sitio están aquí, tanto si se subieron desde una página, un block, los gráficos del sitio o se añadieron directamente aquí.</target>
             </trans-unit>
             <trans-unit id="Q.J7GM.">
                 <source>description.guided_step_ui_media_pick</source>
@@ -312,7 +332,7 @@
             </trans-unit>
             <trans-unit id="C0Xr_VY">
                 <source>description.guided_step_ui_site_graphic_file</source>
-                <target>El rol ya está elegido, solo queda la imagen: al guardar se renombra y se conserva en la dirección fija desde la que el sitio la sirve.</target>
+                <target>El rol ya está elegido, solo queda la imagen: al guardar se renombra y se conserva en la dirección fija desde la que el sitio la sirve. Se acepta un SVG, convertido para el favicon, el icono Apple Touch y la imagen Open Graph.</target>
             </trans-unit>
             <trans-unit id="KKAGjbc">
                 <source>description.guided_step_ui_site_graphic_open</source>
@@ -2202,6 +2222,10 @@
                 <source>label.guided_project_ui_media</source>
                 <target>Corregir lo que una imagen dice de sí misma</target>
             </trans-unit>
+            <trans-unit id="Yo9eNu5">
+                <source>label.guided_project_ui_media_add</source>
+                <target>Añadir una imagen a la biblioteca</target>
+            </trans-unit>
             <trans-unit id="PyQTwnL">
                 <source>label.guided_project_ui_review</source>
                 <target>Moderar las opiniones</target>
@@ -2425,6 +2449,30 @@
             <trans-unit id="dt2sHcE">
                 <source>label.guided_step_ui_legal_model_unit</source>
                 <target>Ajustar una sección</target>
+            </trans-unit>
+            <trans-unit id="dfYwSHC">
+                <source>label.guided_step_ui_media_add_alt</source>
+                <target>Describir la imagen</target>
+            </trans-unit>
+            <trans-unit id="k3hRQjF">
+                <source>label.guided_step_ui_media_add_done</source>
+                <target>La imagen está en la biblioteca</target>
+            </trans-unit>
+            <trans-unit id="NY3bYVr">
+                <source>label.guided_step_ui_media_add_file</source>
+                <target>Elegir el archivo</target>
+            </trans-unit>
+            <trans-unit id="rNEuHcv">
+                <source>label.guided_step_ui_media_add_new</source>
+                <target>Añadir una imagen</target>
+            </trans-unit>
+            <trans-unit id="HgTw24w">
+                <source>label.guided_step_ui_media_add_open</source>
+                <target>Abrir la biblioteca de medios</target>
+            </trans-unit>
+            <trans-unit id="la5BRrk">
+                <source>label.guided_step_ui_media_add_save</source>
+                <target>Guardar la imagen</target>
             </trans-unit>
             <trans-unit id="p04wYUK">
                 <source>label.guided_step_ui_media_alt</source>
@@ -3568,7 +3616,7 @@
             </trans-unit>
             <trans-unit id="0pHTiGE">
                 <source>label.site_graphic_file_help</source>
-                <target>Redimensionado automático: favicon a 48×48 px (.ico), icono Apple Touch a 114×114 px (.png).</target>
+                <target>Redimensionado automático: favicon a 48×48 px (.ico), icono Apple Touch a 114×114 px (.png), imagen Open Graph a 600 px de ancho (.webp). Un SVG se convierte para estos tres roles.</target>
             </trans-unit>
             <trans-unit id="6.3yMVA">
                 <source>label.site_graphic_missing</source>

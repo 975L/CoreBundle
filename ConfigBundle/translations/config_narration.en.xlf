@@ -78,6 +78,22 @@
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>In the next field, say where that path should lead from now on. This is the only decision left to you.</target>
             </trans-unit>
+            <trans-unit id="nuohv_S">
+                <source>narration.guided_step_config_role_preview_banner</source>
+                <target>The back office is now the one of that level: its sidebar, its screens and its guided projects. The banner at the bottom of the page recalls it.</target>
+            </trans-unit>
+            <trans-unit id=".nmqzNL">
+                <source>narration.guided_step_config_role_preview_done</source>
+                <target>To come back to your own role, use the link of the banner, or the one of your menu.</target>
+            </trans-unit>
+            <trans-unit id="Bq8DMmE">
+                <source>narration.guided_step_config_role_preview_menu</source>
+                <target>Open your menu, at the top right, and choose View as, followed by a level below yours.</target>
+            </trans-unit>
+            <trans-unit id="f8uhAaw">
+                <source>narration.guided_step_config_role_preview_open</source>
+                <target>The panel takes you back to the dashboard. A preview can be started from any screen of the back office.</target>
+            </trans-unit>
             <trans-unit id="TnV5eu0">
                 <source>narration.guided_step_config_settings_alerts</source>
                 <target>See what the dashboard makes of it: essential entries left empty are raised there as alerts, until they get filled in.</target>
@@ -124,7 +140,7 @@
             </trans-unit>
             <trans-unit id="oRtK0u1">
                 <source>narration.guided_step_config_url_metadata_image</source>
-                <target>Add the share image. Without one, a social network falls back on the site's default image, which describes the site and never this particular address.</target>
+                <target>Add the share image. Without one, a social network falls back on the site's default image, which describes the site and never this particular address. An SVG is converted to webp.</target>
             </trans-unit>
             <trans-unit id="9Tq6Ji4">
                 <source>narration.guided_step_config_url_metadata_open</source>
@@ -141,6 +157,26 @@
             <trans-unit id="OlELs4x">
                 <source>narration.guided_step_config_url_metadata_title</source>
                 <target>Write the title in the first field. This is the line a search engine shows above the address, and the one a browser tab carries.</target>
+            </trans-unit>
+            <trans-unit id="qS8mZ.2">
+                <source>narration.guided_step_config_user_role_done</source>
+                <target>The account now has its roles. To check what it sees, use View as, from your own menu.</target>
+            </trans-unit>
+            <trans-unit id="r1R7RaX">
+                <source>narration.guided_step_config_user_role_edit</source>
+                <target>Click the edit button of the account whose roles you want to change.</target>
+            </trans-unit>
+            <trans-unit id="0sTfaOH">
+                <source>narration.guided_step_config_user_role_open</source>
+                <target>The panel takes you to the list of accounts: every account registered on the site, members included.</target>
+            </trans-unit>
+            <trans-unit id="5oXMPap">
+                <source>narration.guided_step_config_user_role_roles</source>
+                <target>Choose its roles in this field. Each role is granted on its own: an administrator who also edits the content needs the editor role as well.</target>
+            </trans-unit>
+            <trans-unit id="nPCJBCG">
+                <source>narration.guided_step_config_user_role_save</source>
+                <target>Save with the button at the bottom of the form.</target>
             </trans-unit>
             <trans-unit id="2nHgm8X">
                 <source>narration.health_check</source>

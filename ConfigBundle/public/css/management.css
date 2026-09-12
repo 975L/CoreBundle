@@ -256,6 +256,10 @@ a.ea-sidebar-item-link[target=_blank]::after {
   z-index: 1900;
 }
 
+.role-preview-banner.position-fixed {
+  z-index: 1950;
+}
+
 .guided-project-panel h3 {
   margin: 0.25rem 0 0.5rem;
   font-size: 1.05rem;

@@ -1,0 +1,8 @@
+{# Shown while an account looks at the site through a lower level (see RolePreview), so the way back never goes out of reach - the 403 page included, which extends the same layout. "fixed" pins it to the bottom of the back office, where it is appended after the page #}
+{% set level = role_preview_level() %}
+{% if level %}
+    <div class="alert alert-warning text-center role-preview-banner{{ fixed|default(false) ? ' position-fixed bottom-0 start-50 translate-middle-x mb-3 shadow' : '' }}" role="status">
+        {{ 'label.role_preview_active'|trans({'%level%': ('label.role_preview_level_' ~ level)|trans({}, 'config')}, 'config') }}
+        <a href="{{ path('config_role_preview_stop', {_token: csrf_token('role_preview')}) }}">{{ 'label.role_preview_stop'|trans({}, 'config') }}</a>
+    </div>
+{% endif %}

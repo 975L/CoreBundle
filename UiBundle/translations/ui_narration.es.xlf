@@ -238,6 +238,30 @@
                 <source>narration.guided_step_ui_legal_model_unit</source>
                 <target>Cada tarjeta es una sección. Dele su propio título, reescriba su texto, o marque la casilla que la oculta en la página publicada.</target>
             </trans-unit>
+            <trans-unit id="9AgZZLS">
+                <source>narration.guided_step_ui_media_add_alt</source>
+                <target>Describa en una frase lo que muestra la imagen. Este texto se lee a los visitantes que no pueden verla, y a los motores de búsqueda.</target>
+            </trans-unit>
+            <trans-unit id="M2zFvfj">
+                <source>narration.guided_step_ui_media_add_done</source>
+                <target>La imagen está ahora en la biblioteca, y cualquier bloque puede elegirla desde su campo de imagen.</target>
+            </trans-unit>
+            <trans-unit id="VwGKNzq">
+                <source>narration.guided_step_ui_media_add_file</source>
+                <target>Elija el archivo en su ordenador: una foto o una ilustración.</target>
+            </trans-unit>
+            <trans-unit id="GJ0bidh">
+                <source>narration.guided_step_ui_media_add_new</source>
+                <target>Haga clic en el botón de añadir, arriba a la derecha de la biblioteca.</target>
+            </trans-unit>
+            <trans-unit id="6ndIi5Z">
+                <source>narration.guided_step_ui_media_add_open</source>
+                <target>El panel le lleva a la biblioteca de medios, donde se añade una imagen sin pasar por una página.</target>
+            </trans-unit>
+            <trans-unit id="E5fiaHl">
+                <source>narration.guided_step_ui_media_add_save</source>
+                <target>Guarde la imagen con el botón en la parte inferior del formulario.</target>
+            </trans-unit>
             <trans-unit id="7aAQu1I">
                 <source>narration.guided_step_ui_media_alt</source>
                 <target>Escriba el texto alternativo: lo que muestra la imagen, en una frase. Lo leen los lectores de pantalla y se muestra cuando la imagen no carga.</target>
@@ -256,7 +280,7 @@
             </trans-unit>
             <trans-unit id="OK1vLdo">
                 <source>narration.guided_step_ui_media_open</source>
-                <target>El panel le lleva a la biblioteca de medios. Todas las imágenes del sitio están ahí, tanto si se subieron desde una página, desde un bloque o entre los gráficos del sitio.</target>
+                <target>El panel le lleva a la biblioteca de medios. Todas las imágenes del sitio están ahí, tanto si se subieron desde una página, desde un bloque, entre los gráficos del sitio o añadidas directamente aquí.</target>
             </trans-unit>
             <trans-unit id=".ftPqIg">
                 <source>narration.guided_step_ui_media_pick</source>
@@ -300,7 +324,7 @@
             </trans-unit>
             <trans-unit id="H8qip51">
                 <source>narration.guided_step_ui_site_graphic_file</source>
-                <target>Elija el archivo. Como el rol ya está fijado, solo queda la imagen: al guardar se renombra y se conserva en la dirección fija desde la que el sitio la sirve.</target>
+                <target>Elija el archivo. Como el rol ya está fijado, solo queda la imagen: al guardar se renombra y se conserva en la dirección fija desde la que el sitio la sirve. Se acepta un SVG, convertido para el favicon, el icono Apple Touch y la imagen Open Graph.</target>
             </trans-unit>
             <trans-unit id="9dmAOkA">
                 <source>narration.guided_step_ui_site_graphic_open</source>

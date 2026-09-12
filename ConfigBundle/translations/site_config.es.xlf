@@ -234,6 +234,10 @@
                 <source>description.site_role_admin</source>
                 <target>Rol requerido para la configuración, ej. ROLE_ADMIN (por defecto)</target>
             </trans-unit>
+            <trans-unit id="MuxwOYh">
+                <source>description.site_role_contributor</source>
+                <target>Rol que abre el back-office y nada más, ej. ROLE_CONTRIBUTOR (por defecto): cada pantalla decide si admite a los colaboradores</target>
+            </trans-unit>
             <trans-unit id="drEaqSN">
                 <source>description.site_role_editor</source>
                 <target>Rol requerido para las acciones de editor, ej. ROLE_EDITOR (por defecto)</target>
@@ -497,6 +501,10 @@
             <trans-unit id="z_rPP2B">
                 <source>label.site_role_admin</source>
                 <target>Rol de administrador del sitio</target>
+            </trans-unit>
+            <trans-unit id="DPiBcie">
+                <source>label.site_role_contributor</source>
+                <target>Rol de colaborador del sitio</target>
             </trans-unit>
             <trans-unit id="OH9i9I8">
                 <source>label.site_role_editor</source>

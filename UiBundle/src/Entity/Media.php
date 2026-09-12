@@ -161,6 +161,9 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     // Transient, never persisted - set by SiteBundle's BlockDataImporter when a Sync import's archive already carries a pre-generated PDF thumbnail, so VichPdfThumbnailListener can copy it as-is instead of re-running Ghostscript, unavailable on some hosts
     private ?string $importedThumbnailPath = null;
 
+    // Transient, never persisted - the share image a Page or a UrlMetadata owns alone carries role=null like a library media, so whatever builds it (OgImageType, the two import providers) says so here, before the upload is validated, named and converted
+    private bool $ownedOgImage = false;
+
     // Leaves "user" out of a serialized media, for the same reason as Block::__serialize(): the site graphics are cached whole (see MediaExtension::preloadSingletonRoles()), and so are the medias of a cached block, where serialize() would load the uploader's User row - or throw once that account was gone. It comes back null
     /** @return array<string, mixed> */
     public function __serialize(): array
@@ -497,10 +500,24 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
         return null !== $this->role ? (self::FIXED_ICON_SPECS[$this->role] ?? null) : null;
     }
 
-    // True only for the site-wide default og-image (role=og-image). A Page's own og-image override and a library Media added via MediaCrudController's New action (see MediaCrudController) share the exact same role=null/block=null state and are indistinguishable here - UiBundle has no visibility into a Page's own fields (see MediaUsageProviderInterface) - so neither gets the og-image-specific width override, only the true site-wide singleton does
+    // Roles whose SVG upload is rasterized before being stored (see VichImageResizeListener): the fixed icons, and the og-image no social network reads as SVG
+    public function rasterizesSvg(): bool
+    {
+        return null !== $this->getFixedIconSpec() || $this->isOgImage();
+    }
+
+    // The site-wide default og-image (role=og-image), or the share image a Page or a UrlMetadata owns alone once marked as such (see markAsOgImage()) - both get the og-image width and the SVG conversion
     public function isOgImage(): bool
     {
-        return self::ROLE_OG_IMAGE === $this->role;
+        return self::ROLE_OG_IMAGE === $this->role || $this->ownedOgImage;
+    }
+
+    // Called on the upload's way in only: the flag is not stored, a row read back from the database needing no conversion anymore
+    public function markAsOgImage(): self
+    {
+        $this->ownedOgImage = true;
+
+        return $this;
     }
 
     // Singleton roles (favicon, logo...) only, repeatable roles (error-image) share filename naming with block medias

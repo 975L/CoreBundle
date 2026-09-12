@@ -114,6 +114,33 @@ class UiMediaNamerTest extends TestCase
         $this->assertSame('og-image.webp', $namer->name($media, $this->createMapping()));
     }
 
+    // An SVG og-image is rasterized after upload (see VichImageResizeListener), so it is named webp too - unlike a logo, which stays SVG
+    public function testOgImageSingletonNamesAnSvgUploadWebp(): void
+    {
+        $namer = new UiMediaNamer(new AsciiSlugger());
+        $media = new Media();
+        $media->setRole(Media::ROLE_OG_IMAGE);
+        $media->setFile($this->createFile(
+            'upload.svg',
+            '<svg xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1"/></svg>'
+        ));
+
+        $this->assertSame('og-image.webp', $namer->name($media, $this->createMapping()));
+    }
+
+    // A Page's own og-image carries no role, but it is rasterized just the same (see OgImageType), so its SVG upload is named webp too
+    public function testOwnedOgImageNamesAnSvgUploadWebp(): void
+    {
+        $namer = new UiMediaNamer(new AsciiSlugger());
+        $media = new Media()->markAsOgImage();
+        $media->setFile($this->createFile(
+            'upload.svg',
+            '<svg xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1"/></svg>'
+        ));
+
+        $this->assertMatchesRegularExpression('#\.webp$#', $namer->name($media, $this->createMapping()));
+    }
+
     // Non-singleton medias (block content) get a unique suffix appended, and raster uploads convert to webp
     public function testBlockMediaAppendsUniqueSuffixAndConvertsToWebp(): void
     {

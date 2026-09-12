@@ -238,6 +238,30 @@
                 <source>narration.guided_step_ui_legal_model_unit</source>
                 <target>Each card is one section. Give it a title of your own, rewrite its text, or tick the box hiding it from the published page.</target>
             </trans-unit>
+            <trans-unit id="9AgZZLS">
+                <source>narration.guided_step_ui_media_add_alt</source>
+                <target>Describe in one sentence what the image shows. This text is read to visitors who cannot see it, and to search engines.</target>
+            </trans-unit>
+            <trans-unit id="M2zFvfj">
+                <source>narration.guided_step_ui_media_add_done</source>
+                <target>The image is now in the library, and any block can pick it from its image field.</target>
+            </trans-unit>
+            <trans-unit id="VwGKNzq">
+                <source>narration.guided_step_ui_media_add_file</source>
+                <target>Choose the file on your computer: a photo or an illustration.</target>
+            </trans-unit>
+            <trans-unit id="GJ0bidh">
+                <source>narration.guided_step_ui_media_add_new</source>
+                <target>Click the add button, at the top right of the library.</target>
+            </trans-unit>
+            <trans-unit id="6ndIi5Z">
+                <source>narration.guided_step_ui_media_add_open</source>
+                <target>The panel takes you to the media library, where an image can be added without going through a page.</target>
+            </trans-unit>
+            <trans-unit id="E5fiaHl">
+                <source>narration.guided_step_ui_media_add_save</source>
+                <target>Save the image with the button at the bottom of the form.</target>
+            </trans-unit>
             <trans-unit id="7aAQu1I">
                 <source>narration.guided_step_ui_media_alt</source>
                 <target>Write the alternative text: what the picture shows, in a sentence. It is read out by screen readers and shown when the image fails to load.</target>
@@ -256,7 +280,7 @@
             </trans-unit>
             <trans-unit id="OK1vLdo">
                 <source>narration.guided_step_ui_media_open</source>
-                <target>The panel takes you to the media library. Every image of the site is here, whether it was uploaded from a page, from a block or among the site graphics.</target>
+                <target>The panel takes you to the media library. Every image of the site is here, whether it was uploaded from a page, from a block, among the site graphics or added straight into this library.</target>
             </trans-unit>
             <trans-unit id=".ftPqIg">
                 <source>narration.guided_step_ui_media_pick</source>
@@ -300,7 +324,7 @@
             </trans-unit>
             <trans-unit id="H8qip51">
                 <source>narration.guided_step_ui_site_graphic_file</source>
-                <target>Choose the file. The role being already set, only the image is left: it is renamed on save and kept at the fixed address the site serves it from.</target>
+                <target>Choose the file. The role being already set, only the image is left: it is renamed on save and kept at the fixed address the site serves it from. An SVG is accepted and converted for the favicon, the Apple touch icon and the Open Graph image.</target>
             </trans-unit>
             <trans-unit id="9dmAOkA">
                 <source>narration.guided_step_ui_site_graphic_open</source>

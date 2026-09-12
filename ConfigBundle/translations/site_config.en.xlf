@@ -234,6 +234,10 @@
                 <source>description.site_role_admin</source>
                 <target>Role required for config access, e.g. ROLE_ADMIN (default)</target>
             </trans-unit>
+            <trans-unit id="MuxwOYh">
+                <source>description.site_role_contributor</source>
+                <target>Role opening the back office and nothing else, e.g. ROLE_CONTRIBUTOR (default): each screen decides whether it lets contributors in</target>
+            </trans-unit>
             <trans-unit id="drEaqSN">
                 <source>description.site_role_editor</source>
                 <target>Role required for editor actions, e.g. ROLE_EDITOR (default)</target>
@@ -497,6 +501,10 @@
             <trans-unit id="z_rPP2B">
                 <source>label.site_role_admin</source>
                 <target>Site Role Admin</target>
+            </trans-unit>
+            <trans-unit id="DPiBcie">
+                <source>label.site_role_contributor</source>
+                <target>Site Role Contributor</target>
             </trans-unit>
             <trans-unit id="OH9i9I8">
                 <source>label.site_role_editor</source>

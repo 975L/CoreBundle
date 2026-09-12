@@ -20,6 +20,7 @@ use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
+use c975L\ConfigBundle\Security\RolePreview;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
@@ -32,7 +33,11 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\User\InMemoryUser;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
@@ -58,14 +63,17 @@ class DashboardControllerTest extends TestCase
         $stylesheetManagementRegistry = $this->createStub(StylesheetManagementRegistry::class);
         $stylesheetManagementRegistry->method('all')->willReturn($managementStylesheets);
 
-        // Both bars are always set: configureMenuItems() passes the editor one straight to setPermission(), which rejects null, and index() reads them both
-        $configs += ['site-role-admin' => 'ROLE_ADMIN', 'site-role-editor' => 'ROLE_EDITOR'];
+        // Both bars are always set: configureMenuItems() passes the editor one straight to setPermission(), which rejects null, and index() reads them both. The contributor one completes the ladder the user menu offers
+        $configs += ['site-role-admin' => 'ROLE_ADMIN', 'site-role-editor' => 'ROLE_EDITOR', 'site-role-contributor' => 'ROLE_CONTRIBUTOR'];
         $configService = $this->createStub(ConfigServiceInterface::class);
         $configService->method('get')->willReturnCallback(fn (string $key) => $configs[$key] ?? null);
 
         // Echoes the key back, so a test can tell which label the menu item was built from
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnCallback(static fn (string $id): string => $id);
+
+        $csrfTokenManager = $this->createStub(CsrfTokenManagerInterface::class);
+        $csrfTokenManager->method('getToken')->willReturn(new CsrfToken('role_preview', 'token'));
 
         // Stands in for the real asset packages, which turn a logical path into its digested public URL
         $packages = $this->createStub(Packages::class);
@@ -94,6 +102,9 @@ class DashboardControllerTest extends TestCase
             $debug,
             $this->projectDir ?? sys_get_temp_dir(),
             new SiteLocales($enabledLocales, $enabledLocales[0] ?? 'fr'),
+            // No session on the request: no preview is ever on, as for most requests
+            new RolePreview($configService, new RequestStack()),
+            $csrfTokenManager,
         );
     }
 
@@ -210,6 +221,34 @@ class DashboardControllerTest extends TestCase
         $this->assertSame([], $editor['context']['essentialActionsProgress']);
         $this->assertSame([['slug' => 'site-name']], $admin['context']['essentialActions']);
         $this->assertSame(['done' => 1, 'total' => 3], $admin['context']['essentialActionsProgress']);
+    }
+
+    // The owner is offered every level below the top, one "view as" link each under their own section
+    public function testTheUserMenuOffersEveryLevelBelowTheOwner(): void
+    {
+        $this->assertSame(5, $this->userMenuItemCount(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR']) - $this->userMenuItemCount(['ROLE_USER']));
+    }
+
+    // An editor looks through the contributor and the member only
+    public function testTheUserMenuOffersAnEditorTheTwoLevelsBelow(): void
+    {
+        $this->assertSame(3, $this->userMenuItemCount(['ROLE_EDITOR']) - $this->userMenuItemCount(['ROLE_USER']));
+    }
+
+    // How many entries the user menu holds for an account carrying these roles
+    private function userMenuItemCount(array $roles): int
+    {
+        $controller = $this->createController(false, []);
+
+        $router = $this->createStub(UrlGeneratorInterface::class);
+        $router->method('generate')->willReturnCallback(static fn (string $name): string => '/' . $name);
+
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createStub(AuthorizationCheckerInterface::class),
+            'router' => $router,
+        ]));
+
+        return \count($controller->configureUserMenu(new InMemoryUser('account', null, $roles))->getAsDto()->getItems());
     }
 
     // Renders index() for a user granted exactly these attributes, and hands back the status and the variables the template was given

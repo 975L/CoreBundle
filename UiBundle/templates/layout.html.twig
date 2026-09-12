@@ -177,6 +177,9 @@
                         {% endif %}
                     {% endblock %}
 
+                    {# Outside any block for the same reason: the way back from a role preview must survive a theme's overrides, and the 403 page a preview leads to #}
+                    <twig:c975LConfig:Security:RolePreviewBanner />
+
                     {# Before the flashes and outside their block: what debug mode held back is shown whichever page follows the send, a theme overriding the block below taking nothing of this over #}
                     <twig:c975LUi:Email:DebugPreview />
 
@@ -216,6 +219,12 @@
             {# Both carry their own "is it enabled" guard, so nothing to check here. Rendered by the layout and not by a footer component, so a site overriding its footer keeps its tracking and its cookie banner #}
             <twig:c975LUi:Analytics:Matomo />
             <twig:c975LUi:Cookie:Consent />
+
+            {# The editor's pencil on every page, outside any render cache: a fiche or a listing cached for every visitor only carries neutral marks, which edit-pencils turns into the urls blockEditOverlay reads. Null for anyone but an editor, and not an element is written then. Here and not in the footer block, which a site layout replaces #}
+            {% set editPattern = entity_edit_pattern() %}
+            {% if editPattern %}
+                <div hidden data-controller="blockEditOverlay edit-pencils" data-edit-label="{{ 'label.edit'|trans({}, 'ui') }}" data-edit-pencils-pattern-value="{{ editPattern }}"></div>
+            {% endif %}
         {% endblock %}
         <span id="bottom"></span>
     </body>

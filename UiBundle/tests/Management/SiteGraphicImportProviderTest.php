@@ -15,9 +15,46 @@ use c975L\UiBundle\Management\SiteGraphicImportProvider;
 use c975L\UiBundle\Repository\MediaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SiteGraphicImportProviderTest extends TestCase
 {
+    // A validator answering with no violation, or with one when the file is to be refused
+    private function validator(bool $refuses = false): ValidatorInterface
+    {
+        $violations = new ConstraintViolationList($refuses ? [new ConstraintViolation('refused', null, [], null, 'file', null)] : []);
+        $validator = $this->createStub(ValidatorInterface::class);
+        $validator->method('validate')->willReturn($violations);
+
+        return $validator;
+    }
+
+    // A file the conversion can't handle is skipped before the existing row is touched, which keeps its current file
+    public function testImportSkipsAFileTheConversionCannotHandle(): void
+    {
+        $filesDir = $this->createFilesDir('files/og-image.svg', '<svg/>');
+        $existing = new Media()->setRole(Media::ROLE_OG_IMAGE);
+
+        $mediaRepository = $this->createStub(MediaRepository::class);
+        $mediaRepository->method('findOneByRole')->willReturn($existing);
+
+        $provider = new SiteGraphicImportProvider($this->createStub(EntityManagerInterface::class), $mediaRepository, $this->validator(true));
+
+        $result = $provider->import([[
+            'role' => Media::ROLE_OG_IMAGE,
+            'originalFilename' => 'og-image.svg',
+            'file' => 'files/og-image.svg',
+        ]], $filesDir);
+
+        $this->assertSame(['created' => 0, 'updated' => 0], $result);
+        $this->assertNull($existing->getFile());
+
+        new Filesystem()->remove($filesDir);
+    }
+
     private function createFilesDir(string $entryPath, string $content): string
     {
         $filesDir = sys_get_temp_dir() . '/site_graphic_import_test_' . bin2hex(random_bytes(4));
@@ -29,7 +66,7 @@ class SiteGraphicImportProviderTest extends TestCase
 
     public function testSupportsImportOnlyMatchesSiteGraphicKind(): void
     {
-        $provider = new SiteGraphicImportProvider($this->createStub(EntityManagerInterface::class), $this->createStub(MediaRepository::class));
+        $provider = new SiteGraphicImportProvider($this->createStub(EntityManagerInterface::class), $this->createStub(MediaRepository::class), $this->validator());
 
         $this->assertTrue($provider->supportsImport('site_graphic'));
         $this->assertFalse($provider->supportsImport('site_font'));
@@ -48,7 +85,7 @@ class SiteGraphicImportProviderTest extends TestCase
         $mediaRepository = $this->createStub(MediaRepository::class);
         $mediaRepository->method('findOneByRole')->willReturn(null);
 
-        $provider = new SiteGraphicImportProvider($em, $mediaRepository);
+        $provider = new SiteGraphicImportProvider($em, $mediaRepository, $this->validator());
 
         $result = $provider->import([[
             'role' => Media::ROLE_FAVICON,
@@ -72,7 +109,7 @@ class SiteGraphicImportProviderTest extends TestCase
         $mediaRepository = $this->createStub(MediaRepository::class);
         $mediaRepository->method('findOneByRole')->willReturn($existing);
 
-        $provider = new SiteGraphicImportProvider($this->createStub(EntityManagerInterface::class), $mediaRepository);
+        $provider = new SiteGraphicImportProvider($this->createStub(EntityManagerInterface::class), $mediaRepository, $this->validator());
 
         $result = $provider->import([[
             'role' => Media::ROLE_LOGO,
@@ -105,7 +142,7 @@ class SiteGraphicImportProviderTest extends TestCase
         $mediaRepository = $this->createStub(MediaRepository::class);
         $mediaRepository->method('findBy')->willReturn([$staleErrorImage]);
 
-        $provider = new SiteGraphicImportProvider($em, $mediaRepository);
+        $provider = new SiteGraphicImportProvider($em, $mediaRepository, $this->validator());
 
         $result = $provider->import([[
             'role' => Media::ROLE_ERROR_IMAGE,

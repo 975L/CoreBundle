@@ -1,0 +1,10 @@
+{# <twig:c975LUi:Edit:Entity entity="{{ resistant }}">…the fiche…</twig:c975LUi:Edit:Entity> - the way from an entity's public page to its back-office form. Wrapped the way a block is (see Blocks/Block.html.twig), so an editor meets one gesture everywhere. Put it around the render cache, never inside it: the fragment is the same for every visitor, and an edit url held inside it would be served to anonymous ones too. The overlay reading the url is mounted by the layout, which also turns the "data-edit-field" marks of the fiche into its form opened on that field (see edit-pencils.js) #}
+{% props entity %}
+{% set content %}{% block content %}{% endblock %}{% endset %}
+{% set editUrl = entity_edit_url(entity) %}
+{% if editUrl %}
+    {# "block-editable" is a display:contents wrapper: the page keeps its layout and the pencil measures the first element painted, which has to be the fiche's heading and not a <script> #}
+    <div class="block-editable" data-block-edit-url="{{ editUrl }}">{{ content }}</div>
+{% else %}
+    {{ content }}
+{% endif %}

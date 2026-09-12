@@ -70,6 +70,18 @@ class SvgRasterizerTest extends TestCase
         $this->assertGreaterThanOrEqual(256, getimagesize($path)[0]);
     }
 
+    // Bounded by the width alone: a portrait og-image fitted into a square came out at half the width it asked for, and processImage() never enlarges it back
+    public function testRasterizeInPlaceKeepsTheRequestedWidthForAPortraitSvg(): void
+    {
+        $this->skipWithoutImagick();
+
+        $path = $this->writeFile('portrait.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200"><rect width="100" height="200" fill="#35455f"/></svg>');
+
+        new SvgRasterizer()->rasterizeInPlace($path, 600);
+
+        $this->assertSame(600, getimagesize($path)[0]);
+    }
+
     // Regression: the size is read off the root tag alone. Matching the first width= anywhere in the markup picked up a child shape's own width instead, which both sized the rendering on that shape and hid the "declares no size at all" case ImageMagick refuses to read
     public function testRasterizeInPlaceIgnoresTheWidthOfAChildElement(): void
     {

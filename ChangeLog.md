@@ -1,5 +1,47 @@
 # ChangeLog
 
+## v1.30.3
+
+A back office seen through a lower role, and edit pencils on entities
+
+### ConfigBundle
+
+- `UrlMetadataImportProvider` builds an imported og-image with `BlockDataImporter::buildOgImage()`, keeping the current one when refused (12/09/2026)
+- A `site-role-contributor` setting, `ROLE_CONTRIBUTOR` by default, opens the back-office floor alone (12/09/2026)
+- `user-roles-available` offers `ROLE_CONTRIBUTOR` by default (12/09/2026)
+- `RolePreview` lets an account see the site as a lower level, from a "View as" section of the user menu (12/09/2026)
+- `RolePreviewRoleVoter` hands every `isGranted()` the previewed roles, through the site's `role_hierarchy` if any (12/09/2026)
+- `RolePreviewRoleVoterPass` decorates whichever role voter the security configuration kept (12/09/2026)
+- `RolePreviewController` starts and stops a preview through CSRF-checked links (12/09/2026)
+- The `Security:RolePreviewBanner` component shows the previewed level and the way back (12/09/2026)
+- The banner sits above the guided-project panel (12/09/2026)
+- `config-user-role` and `config-role-preview` guided projects, in the three locales (12/09/2026)
+- The `config-url-metadata` image step mentions the SVG conversion, description and narration (12/09/2026)
+
+### UiBundle
+
+- An SVG uploaded as the site-wide og-image is rasterized and stored as `og-image.webp` (12/09/2026)
+- `Media::rasterizesSvg()` covers the two fixed icons and the og-image (12/09/2026)
+- `FixedIconFormat` refuses an SVG og-image the server can't render (12/09/2026)
+- `SvgRasterizer::rasterizeInPlace()` takes the rendering width (12/09/2026)
+- A portrait SVG keeps the requested width instead of being fitted into a square (12/09/2026)
+- `Media::markAsOgImage()` gives a Page's or a URL's own og-image the og-image width and conversion (12/09/2026)
+- `OgImageType` marks its `Media` on submit and validates it with `FixedIconFormat` (12/09/2026)
+- `UiMediaNamer` names a marked og-image `.webp` (12/09/2026)
+- `SiteGraphicImportProvider` skips a file the conversion can't handle (12/09/2026)
+- The media library's New action takes `site-role-editor` instead of `ROLE_SUPER_ADMIN` (12/09/2026)
+- `label.site_graphic_file_help` names the og-image and the SVG conversion in the three locales (12/09/2026)
+- The `ui-site-graphic` file step mentions the SVG conversion, description and narration (12/09/2026)
+- The block edit button is clamped below `--scroll-offset` rather than the viewport top (12/09/2026)
+- `BlockDataImporter` takes a `ValidatorInterface` (12/09/2026) [BC-Break]
+- `BlockDataImporter::buildOgImage()` marks and validates an imported og-image, null when refused (12/09/2026)
+- `entity_edit_url()` and `entity_edit_pattern()` give an editor the back-office form of a public entity (12/09/2026)
+- The `Edit:Entity` component wraps a public fiche in the block edit pencil (12/09/2026)
+- The `edit-pencils` controller turns `data-edit-entity` and `data-edit-field` marks into edit urls (12/09/2026)
+- The layout mounts the entity pencils for editors, and the role preview banner (12/09/2026)
+- A `ui-media-add` guided project walks adding an image to the library, in the three locales (12/09/2026)
+- The `ui-media` opening step mentions an image added straight into the library (12/09/2026)
+
 ## v1.30.2
 
 A map lists its places in a picker, and a lone photo keeps its credit

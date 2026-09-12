@@ -10,6 +10,7 @@
 
 namespace c975L\ConfigBundle\Controller\Management;
 
+use c975L\ConfigBundle\Controller\RolePreviewController;
 use c975L\ConfigBundle\Management\AlertBuilder;
 use c975L\ConfigBundle\Management\DashboardWidgetBuilder;
 use c975L\ConfigBundle\Management\EssentialActionBuilder;
@@ -19,6 +20,7 @@ use c975L\ConfigBundle\Management\MenuBuilder;
 use c975L\ConfigBundle\Management\OnboardingStepBuilder;
 use c975L\ConfigBundle\Management\ShortcutBuilder;
 use c975L\ConfigBundle\Management\WhatsNewBuilder;
+use c975L\ConfigBundle\Security\RolePreview;
 use c975L\ConfigBundle\Security\Voter\BackOfficeAccessVoter;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
@@ -33,10 +35,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AdminDashboard(routePath: DashboardController::ROUTE_PATH, routeName: 'management')]
@@ -51,7 +56,7 @@ class DashboardController extends AbstractDashboardController
         return self::ROUTE_PATH === $path || str_starts_with($path, self::ROUTE_PATH . '/');
     }
 
-    // 20 services injected, well past what a constructor should ask for: owed a grouping of its own, not silenced for good
+    // 22 services injected, well past what a constructor should ask for: owed a grouping of its own, not silenced for good
     public function __construct(
         private readonly MenuBuilder $menuBuilder,
         private readonly WhatsNewBuilder $whatsNewBuilder,
@@ -75,6 +80,8 @@ class DashboardController extends AbstractDashboardController
         #[Autowire(param: 'kernel.project_dir')]
         private readonly string $projectDir,
         private readonly SiteLocales $siteLocales,
+        private readonly RolePreview $rolePreview,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
     ) {
     }
 
@@ -118,6 +125,26 @@ class DashboardController extends AbstractDashboardController
         return $this->siteLocales->isMultilingual() ? $dashboard->setLocales($this->siteLocales->all()) : $dashboard;
     }
 
+    // "View as" one entry per level below the account's own, and the way back while one is previewed (see RolePreview) - read off the user's real roles, isGranted() already answering for the previewed level
+    #[\Override]
+    public function configureUserMenu(UserInterface $user): UserMenu
+    {
+        $userMenu = parent::configureUserMenu($user);
+        $token = $this->csrfTokenManager->getToken(RolePreviewController::CSRF_ID)->getValue();
+
+        $items = [];
+        if (null !== $this->rolePreview->activeLevel($user->getRoles())) {
+            $items[] = MenuItem::linkToUrl($this->translator->trans('label.role_preview_stop', [], 'config'), 'fa fa-rotate-left', $this->generateUrl('config_role_preview_stop', ['_token' => $token]));
+        }
+
+        foreach (array_keys($this->rolePreview->availableLevels($user->getRoles())) as $level) {
+            $label = $this->translator->trans('label.role_preview_as', ['%level%' => $this->translator->trans('label.role_preview_level_' . $level, [], 'config')], 'config');
+            $items[] = MenuItem::linkToUrl($label, 'fa fa-eye', $this->generateUrl('config_role_preview_start', ['level' => $level, '_token' => $token]));
+        }
+
+        return [] === $items ? $userMenu : $userMenu->addMenuItems([MenuItem::section($this->translator->trans('label.role_preview', [], 'config')), ...$items]);
+    }
+
     // EasyAdmin renders every CRUD form with "{% form_theme form with ea.crud.formThemes only %}" (see vendor/easycorp/.../crud/edit.html.twig) - the "only" keyword means the app-wide twig.form_themes config is never consulted there, so bundle-contributed form themes (Trix editor, icon picker, "used in"...) have to be injected into the Crud config itself instead, here, the single place every CRUD controller's own configureCrud() inherits its default from (see FormThemeProviderInterface for the extension point bundles implement to reach this).
     #[\Override]
     public function configureCrud(): Crud
@@ -152,6 +179,11 @@ class DashboardController extends AbstractDashboardController
 
         // The guided-project panel has to survive the page loads a project walks the user through, so its mount element goes on every admin page, not just the dashboard - EasyAdmin renders this on all of them (see its layout.html.twig), which spares an override of that layout
         $assets->addHtmlContentToBody($this->guidedProjectMountBuilder->getHtml());
+
+        // The way back from a role preview, on every admin page the same way - the template checks the stored level against the account's roles itself
+        if (null !== $this->rolePreview->storedLevel()) {
+            $assets->addHtmlContentToBody($this->renderView('@c975LConfig/components/Security/RolePreviewBanner.html.twig', ['fixed' => true]));
+        }
 
         return $assets;
     }

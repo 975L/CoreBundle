@@ -11,6 +11,16 @@
                 "en": "The health check no longer trips over that protection: its own checks are recognised and let through, so a run stops reporting an outage the button itself had just caused.",
                 "fr": "Le bilan de santé ne se heurte plus à cette protection : ses propres contrôles sont reconnus et laissés passer, de sorte qu'un bilan ne signale plus une panne que le bouton venait lui-même de provoquer.",
                 "es": "El chequeo de salud ya no tropieza con esa protección: sus propias comprobaciones se reconocen y se dejan pasar, de modo que un chequeo ya no informa de una avería que el propio botón acababa de provocar."
+            },
+            {
+                "en": "You can now see the back office as a lower role would - an editor, a contributor or a plain member - straight from your menu and without a second account, a banner keeping the way back to your own role within reach. Two new guided projects show how, and how to give an account its roles.",
+                "fr": "Vous pouvez désormais voir le back-office comme le verrait un rôle inférieur - un éditeur, un contributeur ou un simple membre - directement depuis votre menu et sans second compte, un bandeau gardant le retour à votre propre rôle à portée de main. Deux nouveaux projets guidés montrent comment faire, et comment donner ses rôles à un compte.",
+                "es": "Ahora puede ver el back-office como lo vería un rol inferior - un editor, un colaborador o un simple miembro - directamente desde su menú y sin una segunda cuenta, con un aviso que mantiene a mano la vuelta a su propio rol. Dos nuevos proyectos guiados muestran cómo hacerlo, y cómo asignar sus roles a una cuenta."
+            },
+            {
+                "en": "A new contributor role opens the back office and nothing more, and can be given to an account from its form.",
+                "fr": "Un nouveau rôle contributeur ouvre le back-office sans rien d'autre, et se donne à un compte depuis sa fiche.",
+                "es": "Un nuevo rol de colaborador abre el back-office sin nada más, y se asigna a una cuenta desde su ficha."
             }
         ]
     },

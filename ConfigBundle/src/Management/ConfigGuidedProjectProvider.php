@@ -13,13 +13,14 @@ namespace c975L\ConfigBundle\Management;
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
 use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
+use c975L\ConfigBundle\Controller\Management\UserCrudController;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to an editor (see DashboardController::index()), and three of these five walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and four of these seven walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -38,6 +39,91 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->maintenanceProject(),
             $this->notFoundProject(),
             $this->urlMetadataProject(),
+            $this->userRoleProject(),
+            $this->rolePreviewProject(),
+        ];
+    }
+
+    // Each role is held on its own, no role_hierarchy being shipped - the one screen where an administrator decides what someone else may do in the back office
+    private function userRoleProject(): array
+    {
+        return [
+            'slug' => 'config-user-role',
+            'label' => 'label.guided_project_config_user_role',
+            'description' => 'description.guided_project_config_user_role',
+            'translation_domain' => 'config',
+            'order' => 1060,
+            // The bar UserCrudController sets on its own index and edit
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_user_role_open',
+                    'description' => 'description.guided_step_config_user_role_open',
+                    'narration' => 'narration.guided_step_config_user_role_open',
+                    'url' => $this->indexUrl(UserCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_config_user_role_edit',
+                    'narration' => 'narration.guided_step_config_user_role_edit',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    // A multiple ChoiceField named "roles", added by hand since EasyAdmin never auto-discovers a json column (see UserCrudController::configureFields())
+                    'label' => 'label.guided_step_config_user_role_roles',
+                    'description' => 'description.guided_step_config_user_role_roles',
+                    'narration' => 'narration.guided_step_config_user_role_roles',
+                    'highlight' => '#User_roles',
+                ],
+                [
+                    'label' => 'label.guided_step_config_user_role_save',
+                    'narration' => 'narration.guided_step_config_user_role_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_config_user_role_done',
+                    'description' => 'description.guided_step_config_user_role_done',
+                    'narration' => 'narration.guided_step_config_user_role_done',
+                ],
+            ],
+        ];
+    }
+
+    // "View as" lives in the user menu, outside the sidebar the onboarding tour walks, so nothing else ever shows it
+    private function rolePreviewProject(): array
+    {
+        return [
+            'slug' => 'config-role-preview',
+            'label' => 'label.guided_project_config_role_preview',
+            'description' => 'description.guided_project_config_role_preview',
+            'translation_domain' => 'config',
+            'order' => 1070,
+            // No role: every account standing in the back office has at least the member level below its own to look through (see RolePreview::availableLevels())
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_role_preview_open',
+                    'description' => 'description.guided_step_config_role_preview_open',
+                    'narration' => 'narration.guided_step_config_role_preview_open',
+                    'url' => $this->urlGenerator->generate('management'),
+                ],
+                [
+                    // EasyAdmin's own user menu button, where DashboardController::configureUserMenu() adds one "View as" entry per level below the account's
+                    'label' => 'label.guided_step_config_role_preview_menu',
+                    'description' => 'description.guided_step_config_role_preview_menu',
+                    'narration' => 'narration.guided_step_config_role_preview_menu',
+                    'highlight' => '.user-details',
+                ],
+                [
+                    'label' => 'label.guided_step_config_role_preview_banner',
+                    'description' => 'description.guided_step_config_role_preview_banner',
+                    'narration' => 'narration.guided_step_config_role_preview_banner',
+                    'highlight' => '.role-preview-banner',
+                ],
+                [
+                    'label' => 'label.guided_step_config_role_preview_done',
+                    'description' => 'description.guided_step_config_role_preview_done',
+                    'narration' => 'narration.guided_step_config_role_preview_done',
+                ],
+            ],
         ];
     }
 

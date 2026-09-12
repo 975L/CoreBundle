@@ -12,7 +12,7 @@ namespace c975L\UiBundle\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-// Class-level constraint on Media - only the roles carrying a fixed icon spec (favicon, apple-touch-icon) are concerned, and what they accept depends on what the server can rasterize, checked by FixedIconFormatValidator
+// Class-level constraint on Media - only the roles carrying a fixed icon spec (favicon, apple-touch-icon) and the og-image are concerned, and what they accept depends on what the server can rasterize, checked by FixedIconFormatValidator
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class FixedIconFormat extends Constraint
 {

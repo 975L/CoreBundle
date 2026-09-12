@@ -12,6 +12,7 @@ namespace c975L\ConfigBundle;
 
 use c975L\ConfigBundle\Contract\UserInterface;
 use c975L\ConfigBundle\DependencyInjection\Compiler\DeclaredUrlsHealthCheckPass;
+use c975L\ConfigBundle\DependencyInjection\Compiler\RolePreviewRoleVoterPass;
 use c975L\ConfigBundle\DependencyInjection\Compiler\TaggedInterfacePass;
 use c975L\ConfigBundle\EventSubscriber\CspNonceCookieSubscriber;
 use c975L\ConfigBundle\Management\AlertProviderInterface;
@@ -126,6 +127,9 @@ class c975LConfigBundle extends AbstractBundle
 
         // Not a TaggedInterfacePass: this one builds one health-check service per sitemap provider found, rather than tagging services that already exist
         $container->addCompilerPass(new DeclaredUrlsHealthCheckPass());
+
+        // Nor this one: which role voter RolePreviewRoleVoter decorates is only known once the security configuration is merged
+        $container->addCompilerPass(new RolePreviewRoleVoterPass());
     }
 
     public function loadExtension(array $config, ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder): void

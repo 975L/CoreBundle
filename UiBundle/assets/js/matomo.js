@@ -16,11 +16,11 @@ export default class extends Controller {
         _paq.push(["enableLinkTracking"]);
         (function() {
             // Trailing slashes stripped, "//matomo.js" defeating proxy cache de-duplication
-            var u = this.element.dataset.matomoUrl.replace(/\/+$/, "") + "/";
-            _paq.push(["setTrackerUrl", u + "matomo.php"]);
+            var u = `${this.element.dataset.matomoUrl.replace(/\/+$/, "")}/`;
+            _paq.push(["setTrackerUrl", `${u}matomo.php`]);
             _paq.push(["setSiteId", this.element.dataset.matomoId]);
             var d = document, g = d.createElement("script"), s = d.getElementsByTagName("script")[0];
-            g.type = "text/javascript"; g.async = true; g.src = u + "matomo.js"; s.parentNode.insertBefore(g, s);
+            g.type = "text/javascript"; g.async = true; g.src = `${u}matomo.js`; s.parentNode.insertBefore(g, s);
         }).bind(this)();
     }
 }

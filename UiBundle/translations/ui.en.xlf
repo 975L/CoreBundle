@@ -62,6 +62,10 @@
                 <source>description.guided_project_ui_media</source>
                 <target>Give an image its alternative text and its credits in the library where every picture of the site ends up, whatever screen uploaded it</target>
             </trans-unit>
+            <trans-unit id="ub49lg8">
+                <source>description.guided_project_ui_media_add</source>
+                <target>Upload an image straight into the media library, ready to be picked by any block.</target>
+            </trans-unit>
             <trans-unit id="m0_DD2W">
                 <source>description.guided_project_ui_review</source>
                 <target>Publish, turn down or answer what your readers wrote — and what the platforms sent back.</target>
@@ -258,6 +262,22 @@
                 <source>description.guided_step_ui_legal_model_unit</source>
                 <target>Each card is one section: give it a title of your own, rewrite its text, or tick the box that hides it from the published page</target>
             </trans-unit>
+            <trans-unit id="StO_cmk">
+                <source>description.guided_step_ui_media_add_alt</source>
+                <target>What the image shows, read to visitors who cannot see it and to search engines.</target>
+            </trans-unit>
+            <trans-unit id=".9t5hfZ">
+                <source>description.guided_step_ui_media_add_done</source>
+                <target>Pick it from the image field of any block.</target>
+            </trans-unit>
+            <trans-unit id="cv9UG40">
+                <source>description.guided_step_ui_media_add_file</source>
+                <target>A photo or an illustration from your computer.</target>
+            </trans-unit>
+            <trans-unit id="B6VQA6l">
+                <source>description.guided_step_ui_media_add_open</source>
+                <target>An image added here belongs to no page yet: any block can pick it afterwards.</target>
+            </trans-unit>
             <trans-unit id="RDmEru5">
                 <source>description.guided_step_ui_media_alt</source>
                 <target>What the picture shows, in a sentence: it is read out by screen readers and displayed when the image fails to load.</target>
@@ -276,7 +296,7 @@
             </trans-unit>
             <trans-unit id=".imAjIX">
                 <source>description.guided_step_ui_media_open</source>
-                <target>Every image of the site is here, whether it was uploaded from a page, a block or the site graphics.</target>
+                <target>Every image of the site is here, whether it was uploaded from a page, a block, the site graphics or added straight into this library.</target>
             </trans-unit>
             <trans-unit id="Q.J7GM.">
                 <source>description.guided_step_ui_media_pick</source>
@@ -312,7 +332,7 @@
             </trans-unit>
             <trans-unit id="C0Xr_VY">
                 <source>description.guided_step_ui_site_graphic_file</source>
-                <target>The role is already picked, only the image is left to choose: it is renamed on save and kept at the fixed address the site serves it from.</target>
+                <target>The role is already picked, only the image is left to choose: it is renamed on save and kept at the fixed address the site serves it from. An SVG is accepted and converted for the favicon, the Apple touch icon and the Open Graph image.</target>
             </trans-unit>
             <trans-unit id="KKAGjbc">
                 <source>description.guided_step_ui_site_graphic_open</source>
@@ -2202,6 +2222,10 @@
                 <source>label.guided_project_ui_media</source>
                 <target>Fix what a picture says about itself</target>
             </trans-unit>
+            <trans-unit id="Yo9eNu5">
+                <source>label.guided_project_ui_media_add</source>
+                <target>Add an image to the library</target>
+            </trans-unit>
             <trans-unit id="PyQTwnL">
                 <source>label.guided_project_ui_review</source>
                 <target>Moderate the reviews</target>
@@ -2425,6 +2449,30 @@
             <trans-unit id="dt2sHcE">
                 <source>label.guided_step_ui_legal_model_unit</source>
                 <target>Adjust a section</target>
+            </trans-unit>
+            <trans-unit id="dfYwSHC">
+                <source>label.guided_step_ui_media_add_alt</source>
+                <target>Describe the image</target>
+            </trans-unit>
+            <trans-unit id="k3hRQjF">
+                <source>label.guided_step_ui_media_add_done</source>
+                <target>The image is in the library</target>
+            </trans-unit>
+            <trans-unit id="NY3bYVr">
+                <source>label.guided_step_ui_media_add_file</source>
+                <target>Choose the file</target>
+            </trans-unit>
+            <trans-unit id="rNEuHcv">
+                <source>label.guided_step_ui_media_add_new</source>
+                <target>Add an image</target>
+            </trans-unit>
+            <trans-unit id="HgTw24w">
+                <source>label.guided_step_ui_media_add_open</source>
+                <target>Open the media library</target>
+            </trans-unit>
+            <trans-unit id="la5BRrk">
+                <source>label.guided_step_ui_media_add_save</source>
+                <target>Save the image</target>
             </trans-unit>
             <trans-unit id="p04wYUK">
                 <source>label.guided_step_ui_media_alt</source>
@@ -3568,7 +3616,7 @@
             </trans-unit>
             <trans-unit id="0pHTiGE">
                 <source>label.site_graphic_file_help</source>
-                <target>Auto-resized: favicon to 48×48 px (.ico), Apple touch icon to 114×114 px (.png).</target>
+                <target>Auto-resized: favicon to 48×48 px (.ico), Apple touch icon to 114×114 px (.png), Open Graph image to 600 px wide (.webp). An SVG is converted for these three roles.</target>
             </trans-unit>
             <trans-unit id="6.3yMVA">
                 <source>label.site_graphic_missing</source>

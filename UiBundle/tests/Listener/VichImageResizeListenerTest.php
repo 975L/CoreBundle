@@ -239,6 +239,30 @@ class VichImageResizeListenerTest extends TestCase
         $this->assertSame(114, $dimensions[1]);
     }
 
+    // No social network reads an SVG og:image, so it is stored as a webp at the og-image's own width, proportions kept
+    public function testOnPostUploadRasterizesAnSvgUploadedAsOgImage(): void
+    {
+        if (!SvgRasterizer::isSupported()) {
+            $this->markTestSkipped('ext-imagick with SVG support is needed to rasterize an SVG.');
+        }
+
+        $ogImagePath = $this->projectDir . '/public/og-image.webp';
+        file_put_contents($ogImagePath, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 100"><rect width="180" height="100" fill="#35455f"/></svg>');
+
+        $media = new Media();
+        $media->setRole(Media::ROLE_OG_IMAGE);
+        $media->setFilename('og-image.webp');
+        $media->setFile(new File($ogImagePath));
+
+        $listener = $this->createListener();
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $dimensions = getimagesize($ogImagePath);
+        $this->assertSame(IMAGETYPE_WEBP, $dimensions[2]);
+        $this->assertSame(600, $dimensions[0]);
+        $this->assertSame(333, $dimensions[1]);
+    }
+
     // An svg is never resized (GD can't decode it), but it still has to carry its dimensions
     public function testOnPostUploadStoresDimensionsOfAFileItDoesNotProcess(): void
     {

@@ -67,7 +67,7 @@ export function appendBlockField(params, name, el) {
 
 // The values the kind-specific sub-form holds right now, so switching a kind can post them along and get the new sub-form back pre-filled on the fields both kinds share (a title, a text...) instead of blank - what the old kind alone declared is dropped server-side, the form being submitted there with validation off. Matched on the exact "<block>[data]" prefix rather than on the enclosing ".block-data-form": a container renders its slots' own data forms inside its own, and those belong to the slots, not to this block.
 function currentDataPayload(selectElement) {
-    const prefix = selectElement.name.replace(/\[kind\]$/, '') + '[data]';
+    const prefix = `${selectElement.name.replace(/\[kind\]$/, '')}[data]`;
     const form = selectElement.closest('form');
     if (!form) return null;
 

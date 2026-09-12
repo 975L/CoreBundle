@@ -71,21 +71,27 @@ class UrlMetadataImportProvider implements ImportProviderInterface
         return ['created' => $created, 'updated' => $updated];
     }
 
-    // The ogImage is exclusively owned by this row (see UrlMetadata::$ogImage's cascade) and no listener orphan-removes it, so it is dropped by hand before a replacement is built - the same handling a Page's own gets (see SiteBundle's PageImportProvider)
+    // The ogImage is exclusively owned by this row (see UrlMetadata::$ogImage's cascade) and no listener orphan-removes it, so it is dropped by hand once its replacement is known - the same handling a Page's own gets (see SiteBundle's PageImportProvider)
     private function replaceOgImage(UrlMetadata $urlMetadata, ?array $ogImageData, ?string $filesDir): void
     {
+        $ogImage = null;
+        if (null !== $ogImageData) {
+            $ogImage = $this->blockDataImporter->buildOgImage($ogImageData, $filesDir);
+
+            // A file the SVG conversion can't handle leaves the current image in place
+            if (null === $ogImage) {
+                return;
+            }
+        }
+
         $existing = $urlMetadata->getOgImage();
         if (null !== $existing) {
-            $urlMetadata->setOgImage(null);
             $this->em->remove($existing);
         }
 
-        if (null === $ogImageData) {
-            return;
+        if (null !== $ogImage) {
+            $this->em->persist($ogImage);
         }
-
-        $ogImage = $this->blockDataImporter->buildMedia($ogImageData, $filesDir);
-        $this->em->persist($ogImage);
         $urlMetadata->setOgImage($ogImage);
     }
 }
