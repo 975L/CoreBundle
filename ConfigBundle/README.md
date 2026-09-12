@@ -28,7 +28,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - **Config entries** — [declare](#defining-config-entries-for-your-bundle) · [load](#loading-config-entries-into-the-database) · [prune](#pruning-entries-no-longer-declared) · [set from the CLI](#setting-values-from-the-command-line) · [encrypt](#encrypting-sensitive-values) · [read in PHP/Twig](#reading-config-values) · [timezone](#timezone)
 - **Dashboard** — [EasyAdmin interface](#easyadmin-interface) · [export for deployment](#deploying-to-production--export) · [ROLE_SUPER_ADMIN-only entries](#restricting-configs-to-role_super_admin) · [Export button in another CRUD](#adding-an-export-button-to-another-bundles-crud-controller)
 - **Users & access** — [scaffold and first account](#installing-the-scaffold-and-the-first-account) · [users and roles](#users) · [ROLE_SUPER_ADMIN configs](#restricting-configs-to-role_super_admin) · [disabling registration](#disabling-registration) · [registration anti-spam](#registration-anti-spam-protections) · [login throttling](#login-throttling) · [back-office access control](#back-office-access-control) · [account activation](#account-activation-isenabled)
-- **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Messenger cleanup](#messenger-cleanup) · [Sessions cleanup](#sessions-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows) · [Deprecations](#deprecations--reading-the-log-monolog-isolates)
+- **Site maintenance** — [Maintenance mode](#maintenance-mode) · [Rate limiting the front](#rate-limiting-the-front) · [Messenger cleanup](#messenger-cleanup) · [Sessions cleanup](#sessions-cleanup) · [Health check](#health-check) · [Backup](#backup) · [Spreading scheduled commands](#spreading-scheduled-commands-across-installs) · [Status report](#status-report--letting-another-system-read-what-this-site-runs) · [Dev profile](#dev-profile--automating-what-the-dev-toolbar-shows) · [Deprecations](#deprecations--reading-the-log-monolog-isolates)
 - **Extension points for other bundles** — [menu items](#contributing-menu-items-from-other-bundles) · [dashboard alerts](#contributing-dashboard-alerts-from-other-bundles) · [shortcuts](#contributing-dashboard-shortcuts-from-other-bundles) · [essential actions](#contributing-essential-actions-from-other-bundles) · [widgets](#contributing-dashboard-widgets-from-other-bundles) · [guided projects](#contributing-guided-projects-from-other-bundles) · [health check providers](#contributing-health-check-providers-from-other-bundles) and [advice](#contributing-health-check-advice-from-other-bundles) · [maintenance tasks](#contributing-maintenance-tasks-from-other-bundles) · [status data](#contributing-status-data-from-other-bundles) · [sitemaps](#contributing-a-sitemap-from-other-bundles) · [urls to describe](#contributing-urls-to-describe-from-other-bundles) · [importmap entries](#contributing-importmap-entries-from-other-bundles) · [import](#contributing-import-providers-from-other-bundles) and [export providers](#contributing-export-providers-from-other-bundles) · ["What's new" entries](#contributing-whats-new-entries-from-other-bundles) · [linkable routes](#contributing-linkable-routes-for-sitebundle-menus) · [localised routes](#answering-both-shop-and-enshop) · [language screens](#opening-the-same-edit-screen-on-another-language) · [dev profile paths](#contributing-dev-profile-paths-from-other-bundles) · [AI assistant procedures](#contributing-procedures-for-the-dashboard-ai-assistant)
 - **For coding agents** — [AI agent skills](#ai-agent-skills)
 
@@ -48,6 +48,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - Dashboard "Essential actions" checklist, a permanent quick-access entry point to the handful of settings every site needs
 - Dashboard widgets contributed by other bundles (e.g. UiBundle's Donovan card)
 - Dashboard "Guided tour" walking through every sidebar item that declares a `description`
+- Front rate limiting answering 429 past 60 requests per 10 seconds from one caller, the back office and this bundle's own health-check probes never counted
 - Dashboard "Guided projects" walking through a whole task across the admin screens it spans, extensible via `GuidedProjectProviderInterface`
 - "Health check" dashboard page (Lighthouse scores, security headers, W3C/accessibility checks...) with history, a trend chart, and CSV export, extensible via `HealthCheckProviderInterface`/`HealthCheckAdviceProviderInterface`
 - `c975l:config:backup`, dumping the database table by table and archiving `public/`+`private/`, with archive integrity verification, a retention window on the server, a dashboard alert when a backup stops running, and a weekly digest email for the sites whose dashboard you don't open daily
@@ -1539,6 +1540,30 @@ That page is served with **HTTP 503** and a `Retry-After` header, which is what 
 
 **Don't leave it on for more than a day or two.** Past that, search engines stop reading the 503 as temporary and start dropping the pages from their index. `MaintenanceAlertProvider` puts that on the dashboard: an `info` alert while the site is closed, turning to `danger` past two days, both dated from the moment the mode was switched on. For a closure that has to last, publishing a real home page answering `200` ("closed until…", contact details) keeps the site indexed where maintenance mode wouldn't.
 
+## Rate limiting the front
+
+Setting `site-rate-limit` to `true` — a `restricted` entry, on from the moment the bundle is installed — makes `RateLimitListener` count every public request and answer `429 Too Many Requests` past **60 requests in 10 seconds** from the same caller. It runs at `kernel.request` priority 200, above `SessionListener`, so a refused request is answered before a session (and its second database connection) is ever opened — which is the point, the burst this guards against being precisely the one that runs the connection budget out. The answer is plain text with a `Retry-After` and a `Cache-Control: no-store`, no template being renderable that early.
+
+What never counts: `/management` and the back office, `/login`, `/status/report`, Symfony's dev tools, `/assets/`, `/bundles/`, `/media/`, `/images/`, and this bundle's own health-check probes, recognised by the `User-Agent` `HealthCheck::USER_AGENT` sets on every client that probes a site. That string is published here, so it names a caller rather than proving one: anyone sending it walks past the limiter. Deliberate — the limiter answers bulk traffic, not somebody reading the source.
+
+A caller is one IP address, IPv6 counted on its `/64`: a single machine is routinely handed that whole block, and counting the full address would let one scraper walk through the ceiling as often as it cares to renumber itself.
+
+**If a reverse proxy sits in front of the site, tell Symfony about it** — `SYMFONY_TRUSTED_PROXIES` in `.env.local`. Without it `Request::getClientIp()` answers the proxy's address for every visitor, who then share a single budget of 60 requests per 10 seconds. Managed hosting usually hands the real address over untouched (the access log showing varied visitor addresses is how you tell), and nothing has to be declared then.
+
+The limiter and its store are prepended by the bundle, so there is nothing to add for either to apply — a filesystem cache pool of its own (`c975l.rate_limiter`), pinned to the filesystem so the counter never reaches the database even on a site whose `cache.app` lives there. Write this to decide otherwise:
+
+```yaml
+# config/packages/rate_limiter.yaml
+framework:
+    rate_limiter:
+        c975l_front_request:
+            policy: sliding_window
+            limit: 60
+            interval: '10 seconds'
+```
+
+Your own config is merged over the prepended one, so it is what applies.
+
 ## Redirects
 
 A url that changed needs a redirect whether it was a page's or a product's, and the rows answer **before the router** — so they live here rather than in whichever bundle happens to serve the content.
@@ -1639,6 +1664,8 @@ It only ever **creates**: a row already written is left untouched, and a row who
 ## Health check
 
 `/management/health-check` gives a technical health snapshot of the site — TLS certificate, security headers, server misconfiguration, `robots.txt`/sitemaps, redirect chains, deployment, and the content quality (title, meta description, `<h1>`, `alt` text, share tags, canonical url, `noindex`, broken links) of every url any installed bundle declares — without needing Node/Lighthouse-CLI or any other JS tooling: everything runs server-side over plain HTTP calls. `c975l/site-bundle` adds six page-level providers on top (Lighthouse scores, W3C markup validation, mixed content), see its own README.
+
+Every client probing a site on the console's behalf sends the same `User-Agent`, `c975L\ConfigBundle\Service\HealthCheck::USER_AGENT` — so a run is readable in an access log, a WAF operator can look the checker up and allow it, and the site's own [rate limiter](#rate-limiting-the-front) lets it through rather than reporting an outage the button just caused.
 
 This bundle's own providers:
 

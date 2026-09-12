@@ -23,7 +23,7 @@ class SecurityHeadersClient
     // Lowercased header name => first value. Reads headers only (no body buffering) - throws only on a real network/transport failure, not on a non-2xx status (a page returning e.g. a 404 still has headers worth checking)
     public function fetchHeaders(string $url): array
     {
-        $response = $this->httpClient->request('GET', $url, ['timeout' => 30, 'buffer' => false]);
+        $response = $this->httpClient->request('GET', $url, ['timeout' => 30, 'buffer' => false, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
 
         $headers = [];
         foreach ($response->getHeaders(false) as $name => $values) {

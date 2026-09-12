@@ -69,6 +69,46 @@ class MapExtensionTest extends TestCase
         $this->assertTrue($this->settings('google', '', true)['diagnostic']);
     }
 
+    // A point saved without coordinates has nowhere to be drawn, and Twig's own filter would keep the original keys - which encodes the payload as a JSON object the controller reads as no points at all
+    public function testAPlaceWithNoCoordinatesIsDroppedAndTheRestRenumbered(): void
+    {
+        $points = $this->points()->points([
+            ['label' => 'Annecy', 'latitude' => 45.8992, 'longitude' => 6.1294],
+            ['label' => 'Nowhere', 'latitude' => null, 'longitude' => null],
+            ['label' => 'Chamonix', 'latitude' => 45.9237, 'longitude' => 6.8694],
+        ]);
+
+        $this->assertSame([0, 1], array_keys($points), 'The kept places carry their original keys, so the payload encodes as a JSON object instead of an array.');
+        $this->assertSame('Chamonix', $points[1]['label']);
+    }
+
+    // The payload is written into an attribute anyone reads: how the editor placed the point is not what a visitor is shown
+    public function testOnlyWhatThePageDrawsWithReachesThePayload(): void
+    {
+        $points = $this->points()->points([
+            ['label' => 'Annecy', 'latitude' => 45.8992, 'longitude' => 6.1294, 'mode' => 'address', 'address' => '2 rue du Lac', 'geocodedAddress' => '2 rue du Lac, Annecy'],
+        ]);
+
+        $this->assertSame(['label', 'latitude', 'longitude'], array_keys($points[0]));
+    }
+
+    // A listing whose places are of several sorts is read by telling them apart, so a marker's own image is drawn and not dropped as editing metadata
+    public function testAPlaceKeepsTheImageItIsDrawnWith(): void
+    {
+        $points = $this->points()->points([
+            ['label' => 'Morette', 'latitude' => 45.8992, 'longitude' => 6.1294, 'icon' => '/images/monument.svg'],
+            ['label' => 'Glières', 'latitude' => 45.9237, 'longitude' => 6.8694],
+        ]);
+
+        $this->assertSame('/images/monument.svg', $points[0]['icon']);
+        $this->assertArrayNotHasKey('icon', $points[1], 'A place naming no image carries an empty one, where the map expects nothing at all and draws its own pin.');
+    }
+
+    private function points(): MapExtension
+    {
+        return new MapExtension($this->createStub(ConfigServiceInterface::class));
+    }
+
     private function settings(string $provider, string $apiKey, ?bool $granted = false): array
     {
         $configService = $this->createStub(ConfigServiceInterface::class);

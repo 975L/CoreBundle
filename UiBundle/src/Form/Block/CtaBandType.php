@@ -19,6 +19,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CtaBandType extends AbstractType
 {
+    use HasBackgroundFieldTrait;
+
     use HasCssClassesFieldTrait;
 
     use HasAnchorFieldTrait;
@@ -45,6 +47,9 @@ class CtaBandType extends AbstractType
             ->add('ctaUrl', TextType::class, [
                 'label' => 'label.url',
             ]);
+
+        // A band is a full-width section like any other, and the one most often meant to stand out from the page around it - the flat is what states that, where the class below states a scope the bundle cannot name
+        $this->addBackgroundField($builder);
 
         // A band sending the visitor to the other side of a site reads better in that side's own colors than in the ones around it - a scope class the site declares, which no list in the bundle could hold
         $this->addCssClassesField($builder);

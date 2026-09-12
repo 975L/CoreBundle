@@ -1,4 +1,4 @@
-{# Static usage: <twig:c975LUi:Collection:Grid items="{{ [...] }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [variant=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Collection:Grid items="{{ [...] }}" [eyebrow=""] [title=""] [linkLabel=""] [linkUrl=""] [variant=""] [background=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/Collection.html.twig #}
 {# Each "items" entry is already-rendered HTML; the "portfolio" variant borrows PortfolioGrid's grid so it matches a real one on the same page #}
 {% set isPortfolio = variant is defined and variant == 'portfolio' %}
@@ -12,7 +12,9 @@
 {# A headingless <section> is invalid HTML, and a head reduced to its link carries no heading #}
 {% set hasHeading = title or eyebrow %}
 {% set tag = hasHeading ? 'section' : 'div' %}
-<{{ tag }} class="collection-grid{{ isPortfolio ? ' collection-grid--portfolio' : '' }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
+{% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<{{ tag }} class="collection-grid{{ isPortfolio ? ' collection-grid--portfolio' : '' }}{{ background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         {% if hasHeading or (linkLabel and linkUrl) %}
             <div class="{{ isPortfolio ? 'portfolio-grid__head' : 'collection-grid__head' }}">

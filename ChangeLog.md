@@ -1,5 +1,37 @@
 # ChangeLog
 
+## v1.30.0
+
+A site refuses a caller asking for too much, and stops counting its own probes
+
+### ConfigBundle
+
+- `site-rate-limit` refuses a caller past 60 requests in 10 seconds, answered with a 429 and a `Retry-After` (12/09/2026)
+- `RateLimitListener` runs at priority 200, above the session, so a refusal costs no database connection (12/09/2026)
+- One budget per address, IPv6 counted on its `/64` (12/09/2026)
+- The back office, `/login`, `/status/report`, the dev tools and the asset paths never count (12/09/2026)
+- The limiter and its own filesystem cache pool are prepended by the bundle, an install declaring nothing (12/09/2026)
+- `Service\HealthCheck` holds the one `User-Agent` every client probing a site sends (12/09/2026)
+- Five probe clients that sent none now do, so a run is no longer counted against the site it measures (12/09/2026)
+- `HealthCheckUserAgentTest` sweeps `src/Service/` for a request issued without it (12/09/2026)
+- `HealthCheckRunProgress::isRunning()` refuses a second run queued by the same administrator (12/09/2026)
+- The `config-settings` guided project closes on what a system setting changes for the visitor (12/09/2026)
+
+### UiBundle
+
+- `collection` carries the optional `background` field, painting a row of items as a colored flat (12/09/2026)
+- `cta_band` carries it too, the band no longer having to be wrapped in a container to be set apart (12/09/2026)
+- `Collection:Grid` and `Cta:Band` pass the prop through to `.section--bg-*`, matched and never interpolated (12/09/2026)
+- Both pad their bottom edge when painted, the two kinds otherwise stating a top step only (12/09/2026)
+- Unset keeps meaning "no flat": every block of either kind saved before the field renders unchanged (12/09/2026)
+- `<twig:c975LUi:Map:Map>` draws a point carrying an `icon` url with that image, in both providers (12/09/2026)
+- `Contract\DrawableMediaInterface` declares what a component reads off a media to draw it, every value optional (12/09/2026)
+- `Media` implements it, unchanged - it already answered all seven (12/09/2026)
+- `DrawableMediaInterfaceTest` reads the three components back, so the contract and what they name cannot drift apart (12/09/2026)
+- A point naming no `icon` keeps the pin `sass/_map.scss` draws, unchanged (12/09/2026)
+- `MapExtension::points()` gains its own tests, which it had none of (12/09/2026)
+- `L.icon` declared in `config/vendor-assets.json`, the api this bundle calls on Leaflet (12/09/2026)
+
 ## v1.29.3
 
 A reserved PDF shows members its thumbnail and others a lock

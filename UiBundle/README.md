@@ -565,7 +565,7 @@ A list of places, each with a name, an optional text and an optional link, drawn
 
 **The app has nothing to install.** Leaflet is served by this bundle (`public/js/leaflet.js` and `public/css/leaflet.css`, BSD-2-Clause), appended on demand by the controller with the `asset()`-resolved urls the component passes it - the same self-hosting `cookie-consent.js` already does for its banner, and for the same two reasons: a consuming site gets a working map on the bundle's own update, and no third party receives the visitor's IP before anything is drawn. A page carrying no map downloads none of it. The stylesheet is waited for before the map is built: Leaflet reads the sizes its own rules give the panes as it builds, and a map built against an unstyled box lays its tiles out wrong.
 
-Leaflet's own marker is deliberately not used: the pin is a `divIcon` drawn by `sass/_map.scss`, which takes `--ui-map-pin-color` and follows the site's own palette instead of the library's fixed blue. **The three images the stylesheet itself names are vendored beside it** (`public/css/images/`), and they have to be: AssetMapper resolves a sheet's `url()` strictly, so one it cannot find fails the compilation of *every* bundle stylesheet at once - three 500s on a page, for one missing PNG. `MapControllerTest` reads the sheet's own `url()` calls back and checks each is both shipped and declared.
+Leaflet's own marker is deliberately not used: the pin is a `divIcon` drawn by `sass/_map.scss`, which takes `--ui-map-pin-color` and follows the site's own palette instead of the library's fixed blue. **A single place can be drawn with an image of its own** - `<twig:c975LUi:Map:Map>` reads an optional `icon` url on a point and draws that marker with it, in both providers, where a point naming none keeps the pin. It is for a listing whose places are of several sorts and whose map is read by telling them apart - a monument from a stele, a shop from a workshop; it is no field of the `map` block, whose editor places one sort of place at a time, but a key a bundle or an app building its own points passes through. **The three images the stylesheet itself names are vendored beside it** (`public/css/images/`), and they have to be: AssetMapper resolves a sheet's `url()` strictly, so one it cannot find fails the compilation of *every* bundle stylesheet at once - three 500s on a page, for one missing PNG. `MapControllerTest` reads the sheet's own `url()` calls back and checks each is both shipped and declared.
 
 **Updating a vendored library** is `config/vendor-assets.json` plus one script. That manifest is the only place saying which version of Leaflet, `vanilla-cookieconsent` or `canvas-confetti` this bundle ships, with the url each file is fetched back from:
 
@@ -830,7 +830,7 @@ No `services.yaml` entry is needed for `BlockAnchorSlugger` itself: it's autowir
 
 ## Colored backgrounds
 
-The `hero`, `feature_bar`, `text_section`, `flex_columns` and `section_cards` kinds carry an optional **Background** field, painting the section as a full-width flat: **light grey**, the site's **primary color**, or **dark**. It exists because a colored band can't be expressed as a token: a section painted with one has to invert everything it holds - title, muted text, eyebrow, dividers, translucent chips, and the primary CTA, which is itself a `--primary` flat and turns white-on-color over one.
+The `hero`, `feature_bar`, `text_section`, `collection`, `cta_band`, `flex_columns` and `section_cards` kinds carry an optional **Background** field, painting the section as a full-width flat: **light grey**, the site's **primary color**, or **dark**. It exists because a colored band can't be expressed as a token: a section painted with one has to invert everything it holds - title, muted text, eyebrow, dividers, translucent chips, and the primary CTA, which is itself a `--primary` flat and turns white-on-color over one.
 
 Each variant redefines a handful of custom properties, and every section rule reads them with its own neutral value as the fallback:
 
@@ -843,7 +843,7 @@ Each variant redefines a handful of custom properties, and every section rule re
 | `--section-border` | dividers and hairlines | `--border-color` |
 | `--section-overlay` | badges and translucent chips | `--surface-accent` |
 
-The two containers are painted the same way as the rest: a row of columns or of cards is a section too, which is what lets a design stack colored flats without wrapping the row in a section it would otherwise need. A section used as one of those columns drops the page gutters it would otherwise read a second time inside its own column, and the flat it may carry paints that column rather than breaking out of the row.
+The two containers are painted the same way as the rest: a row of columns or of cards is a section too, which is what lets a design stack colored flats without wrapping the row in a section it would otherwise need. A `collection` and a `cta_band` are painted for that same reason read from the other side: a row of items pulled from a source, and a band sending the visitor elsewhere, are both full-width sections that a design commonly sets apart from the run around them - and without the field on the kind itself, that meant wrapping either in a container it had nothing else to gain from. A section used as one of those columns drops the page gutters it would otherwise read a second time inside its own column, and the flat it may carry paints that column rather than breaking out of the row.
 
 A flat bleeds full-viewport-width past `--body-max-width`, else it paints a centered stripe between a full-width navbar and footer. That breakout is itself three tokens, each read with its own value as the fallback: `--section-flat-offset` (`50%`), `--section-flat-width` (`100vw`) and `--section-flat-margin-x` (`-50vw`) - `.hero--has-bg` reads the same three. A design framing its whole page inside `--body-max-width` (navbar and footer included, see SiteBundle's `--navbar-width`/`--footer-width`) sets them to `auto`/`auto`/`0` in its `theme.css`, and the flats paint their own box like any other section.
 
@@ -2638,6 +2638,21 @@ Implement `Contract\VichMediaNamableInterface::getVichMediaPath(): string` on th
 
 - `UiMediaNamer` (Vich's naming strategy) already requires it for any entity going through it.
 - `Listener\MediaFileRemoveListener` deletes the underlying file from `public/` whenever such an entity is removed - a generic Doctrine listener, auto-registered, that needs no per-entity listener of your own. On an entity that is also `Contract\VichPrivateFileInterface`, it takes the replacement path too: the file having been moved out of `public/`, Vich's own `delete_on_update` looks for it where the mapping says and finds nothing, so the one a new upload replaces would otherwise stay on disk for good. Deletions happen on `postFlush`, so a flush that throws never removes a file its row still points at.
+
+### Handing it to the components
+
+The `Vich*` contracts above say how a file is stored, named and resized. **`Contract\DrawableMediaInterface` says what a component reads off it to draw it**, so an entity of your own can be passed straight to `<twig:c975LUi:Slider:Slider media="{{ book.images }}"/>`, `<twig:c975LUi:ImageCompare:ImageCompare>` or `<twig:c975LUi:Text:Section>` instead of the templates being read to find out what they expect:
+
+| Method | What the component does with it |
+| --- | --- |
+| `getAlt(): ?string` | what the image is described as to whoever cannot see it - a component naming a `fallbackAlt` of its own uses that one when this is null |
+| `getMimeType(): ?string` | tells an image from a video on one list of media; a null one is drawn as an image |
+| `getLabel(): ?string` | the caption drawn under the media |
+| `getWidth(): ?string` / `getHeight(): ?string` | written into the tag's attributes, so the page reserves the room before the file arrives |
+| `getCssClasses(): array` | the classes the site's own stylesheet styles this media with |
+| `isAbove(): bool` | loaded eagerly and fetched first rather than lazily |
+
+**Every value is optional**: a media answering `null`, `[]` and `false` to all of them still draws - the alternative text falls back on the caller's, the sizes are left to the stylesheet, the caption and the classes are simply not written. Implementing this says the entity *can* be drawn, not that it carries anything in particular, so an entity with nothing but a file to show declares the getters and returns null from them. UiBundle's own `Media` implements it, and `DrawableMediaInterfaceTest` reads those three components back to check that what they name is what the interface declares, in both directions - a property a component starts reading without it being here is guesswork again, and one declared here and read nowhere is an entity made to answer for nothing.
 
 For a **private** download (e.g. a paid file in a shop) instead of a public one, also implement `Contract\VichPrivateFileInterface` (see [PDF thumbnails](#pdf-thumbnails) above) and use `Service\PrivateFileResponseFactory::createDownloadResponse(string $absoluteFilePath, string $downloadFilename): ?BinaryFileResponse` from your own controller to build the attachment response (`null` if the file is missing) - it only builds the response, access control (checking the current user actually purchased/owns the file) stays your controller's job.
 

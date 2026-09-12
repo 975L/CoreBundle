@@ -122,6 +122,13 @@ class HealthCheckController extends AbstractController
         $this->denyAccessUnlessGranted($this->configService->get('site-role-admin'));
 
         if ($this->isCsrfTokenValid(self::RUN_ROUTE, $request->request->get('_token'))) {
+            // One run at a time per administrator: each kind fans out over every url the site declares, and a second run queued on top of the first doubles that load on the very sites being measured - enough, on a shared host, to make the checks report an outage this button caused. The impatient double-click is what this catches, and it is the case that actually happens; HealthCheckRunProgress keeps its state in the session, so two administrators clicking within the same minute do still stack their runs. A shared lock would close that too, at the price of one left hanging whenever a worker dies mid-run
+            if ($this->healthCheckRunProgress->isRunning()) {
+                $this->addFlash('warning', $this->translator->trans('flash.health_check_already_running', [], 'config'));
+
+                return $this->redirectToRoute('management_health_check_index');
+            }
+
             $kinds = $this->healthCheckRunner->getKinds();
 
             // Before the first dispatch, never after: a worker already listening records its first kind while this loop is still running, and a sync transport runs every job inside dispatch() itself - started afterwards, the run would be following a moment its own results already predate, and could never be seen finishing

@@ -9,6 +9,7 @@
         "api": [
             "tileLayer",
             "divIcon",
+            "icon",
             "featureGroup",
             "bindPopup",
             "fitBounds",

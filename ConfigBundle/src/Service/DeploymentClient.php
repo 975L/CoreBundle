@@ -24,7 +24,7 @@ class DeploymentClient
     // @return array{statusCode: int, location: ?string}
     public function fetchWithoutRedirect(string $url): array
     {
-        $response = $this->httpClient->request('GET', $url, ['timeout' => 15, 'max_redirects' => 0]);
+        $response = $this->httpClient->request('GET', $url, ['timeout' => 15, 'max_redirects' => 0, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
 
         return ['statusCode' => $response->getStatusCode(), 'location' => $response->getHeaders(false)['location'][0] ?? null];
     }
@@ -33,7 +33,7 @@ class DeploymentClient
     // @return array{statusCode: int, content: string}
     public function fetch(string $url): array
     {
-        $response = $this->httpClient->request('GET', $url, ['timeout' => 15]);
+        $response = $this->httpClient->request('GET', $url, ['timeout' => 15, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
 
         return ['statusCode' => $response->getStatusCode(), 'content' => $response->getContent(false)];
     }

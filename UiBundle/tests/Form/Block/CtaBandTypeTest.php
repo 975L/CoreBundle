@@ -38,7 +38,7 @@ class CtaBandTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['title', 'text', 'ctaLabel', 'ctaUrl', 'anchor', 'cssClasses'] as $field) {
+        foreach (['title', 'text', 'ctaLabel', 'ctaUrl', 'anchor', 'cssClasses', 'background'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the CtaBand form");
         }
     }
@@ -50,6 +50,16 @@ class CtaBandTypeTest extends TestCase
 
         $this->assertSame('label.css_classes_free', $added['cssClasses']['label']);
         $this->assertFalse($added['cssClasses']['required']);
+    }
+
+    // A band is a section like any other, and the one most often meant to stand out from the page around it - unset keeps meaning "no flat", so every band saved before the field keeps rendering as it did
+    public function testItOffersTheThreeFlatsAndNoneByDefault(): void
+    {
+        $added = $this->buildAddedFields();
+
+        $this->assertSame(['label.section_background_muted' => 'muted', 'label.section_background_primary' => 'primary', 'label.section_background_dark' => 'dark'], $added['background']['choices']);
+        $this->assertSame('label.section_background_none', $added['background']['placeholder']);
+        $this->assertFalse($added['background']['required']);
     }
 
     public function testConfigureOptionsDefaultsToNullDataClassAndUiTranslationDomain(): void

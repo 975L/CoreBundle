@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, issuesTruncated, checker errors, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, BATCH_SIZE, HealthCheckErrorRow, STATUS_WARNING, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, issuesTruncated, checker errors, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, BATCH_SIZE, HealthCheckErrorRow, STATUS_WARNING, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter, site-rate-limit, RateLimitListener, c975l_front_request, HealthCheck::USER_AGENT, isProbe, 429, Too Many Requests, SYMFONY_TRUSTED_PROXIES, trusted_proxies, getClientIp, rate limiting."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -285,8 +285,36 @@ package or parent namespace. `PACKAGE_PATTERN` reads a package as the two segmen
 both sides: a message quoting a template's path must not hand out `templates/components` or
 `-header/menu` as a package and drag in every file naming that directory.
 
+## Rate limiting the front
+
+`site-rate-limit` (a `restricted` entry, shipped `true`) makes `Listener\RateLimitListener` answer
+**429 past 60 requests in 10 seconds** from one caller. It runs at `kernel.request` **priority 200**,
+above `SessionListener`, so a refusal costs no session and no second database connection — which is
+the whole point, the burst it guards against being the one that runs the connection budget out.
+
+**A caller is an IP address, IPv6 counted on its `/64`** (`clientKey()`): a machine is routinely
+handed that whole block, and counting the full address lets one scraper renumber itself through the
+ceiling. The limiter (`c975l_front_request`) and its filesystem pool (`c975l.rate_limiter`) are
+prepended by `c975LConfigBundle::prependExtension()`, so an install declares nothing; an application
+naming either in its own config decides instead, prepended config being merged under it.
+
+**Never counted**: `/management` (`DashboardController::isManagementPath()`), `/login`,
+`/status/report`, `/_wdt`, `/_profiler`, `/_error`, `/_fragment`, `/assets/`, `/bundles/`, `/media/`,
+`/images/`, and this bundle's own probes, recognised by `Service\HealthCheck::isProbe()` reading the
+`User-Agent` `HealthCheck::USER_AGENT` sets. The string is published, so it names a caller without
+proving one — deliberate, the limiter answering bulk traffic rather than somebody reading the source.
+
+**Behind a reverse proxy, the site needs `SYMFONY_TRUSTED_PROXIES`**: without it `getClientIp()`
+answers the proxy's address for every visitor, who then share a single budget. Managed hosting
+usually hands the real address over untouched, and nothing has to be declared.
+
 ## Do not
 
+- **Do not issue an HTTP call to a probed site without `HealthCheck::USER_AGENT`** — a client that
+  sends none is counted by the front limiter, which turns a run into 429s the button itself caused
+  and reads a probed `/.env` as exposed. `HealthCheckUserAgentTest` sweeps `src/Service/` for it.
+- **Do not exempt the limiter on anything a caller controls other than that agent**, and do not read
+  `X-Forwarded-For` yourself: trusting a header nothing declared is the bypass, not the guard.
 - **Do not log broken links through Monolog** — its prod handler excludes 404 on purpose. The
   `Referer` guard is what keeps the table about links and not about scanners.
 

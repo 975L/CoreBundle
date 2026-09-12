@@ -2418,6 +2418,11 @@ main :is(.blocks, .block-animation, .block-editable) > :is(.block-section,
   padding-bottom: var(--section-space-tight, clamp(24px, 4vw, 48px));
 }
 
+.collection-grid:is(.section--bg-muted, .section--bg-primary, .section--bg-dark),
+.cta-band:is(.section--bg-muted, .section--bg-primary, .section--bg-dark) {
+  padding-bottom: var(--section-space, clamp(48px, 8vw, 84px));
+}
+
 .flex-columns__col > .section-features-section,
 .flex-columns__col > .section-cards-section,
 .flex-columns__col > .expertise-banner,

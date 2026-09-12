@@ -24,7 +24,7 @@ class SeoFilesClient
     // @return array{statusCode: int, content: string, lastModified: ?\DateTimeImmutable}
     public function fetch(string $url): array
     {
-        $response = $this->httpClient->request('GET', $url, ['timeout' => 15]);
+        $response = $this->httpClient->request('GET', $url, ['timeout' => 15, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
 
         return [
             'statusCode' => $response->getStatusCode(),

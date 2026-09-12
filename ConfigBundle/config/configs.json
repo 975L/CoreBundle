@@ -44,6 +44,17 @@
         "description": "description.site_maintenance"
     },
     {
+        "label": "label.site_rate_limit",
+        "slug": "site-rate-limit",
+        "sensitive": false,
+        "restricted": true,
+        "value": "true",
+        "kind": "bool",
+        "group": "system",
+        "severity": null,
+        "description": "description.site_rate_limit"
+    },
+    {
         "label": "label.site_maintenance_hash",
         "slug": "site-maintenance-hash",
         "sensitive": false,

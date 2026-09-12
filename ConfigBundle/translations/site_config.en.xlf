@@ -226,6 +226,10 @@
                 <source>description.site_producer</source>
                 <target>Producer/developer of the site, shown in the legal notice (HTML allowed)</target>
             </trans-unit>
+            <trans-unit id="ZcDcLWY">
+                <source>description.site_rate_limit</source>
+                <target>Answers 429 to bursts coming from one address (IPv6 counted on its /64): 60 requests per 10 seconds. Guards the database connection budget, which a scraping burst exhausts. The monitoring console's own probes are not counted.</target>
+            </trans-unit>
             <trans-unit id="b8NL53A">
                 <source>description.site_role_admin</source>
                 <target>Role required for config access, e.g. ROLE_ADMIN (default)</target>
@@ -485,6 +489,10 @@
             <trans-unit id="5YTsC_J">
                 <source>label.site_producer</source>
                 <target>Site Producer</target>
+            </trans-unit>
+            <trans-unit id="9nIcPE9">
+                <source>label.site_rate_limit</source>
+                <target>Rate limiting</target>
             </trans-unit>
             <trans-unit id="z_rPP2B">
                 <source>label.site_role_admin</source>

@@ -122,6 +122,22 @@ class c975LConfigBundleTest extends TestCase
         $this->assertSame(\dirname(__DIR__) . '/assets', realpath(array_key_first($paths)));
     }
 
+    // The front limiter and its store, prepended so the 18 sites installing the bundle declare neither - RateLimitListener takes "@limiter.c975l_front_request", which only exists if this names it
+    public function testPrependExtensionDeclaresTheFrontLimiterAndItsOwnStore(): void
+    {
+        $container = new ContainerBuilder();
+
+        new c975LConfigBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
+
+        $framework = $container->getExtensionConfig('framework')[0];
+        $this->assertSame(
+            ['policy' => 'sliding_window', 'limit' => 60, 'interval' => '10 seconds', 'cache_pool' => 'c975l.rate_limiter'],
+            $framework['rate_limiter']['c975l_front_request'],
+        );
+        // Pinned to the filesystem rather than left to cache.app: sparing the database a connection under a burst is the entire reason the limiter exists
+        $this->assertSame(['adapter' => 'cache.adapter.filesystem'], $framework['cache']['pools']['c975l.rate_limiter']);
+    }
+
     // What lets every c975L entity relate to Contract\UserInterface while Doctrine actually joins the application's own User
     public function testPrependExtensionMapsTheUserInterfaceOntoTheApplicationUserEntity(): void
     {

@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-12",
+        "description": [
+            {
+                "en": "Your site now turns away a visitor asking for far more pages than anyone reads - the load a scraper puts on it no longer slows the site down for everybody else. It is on from the start and can be switched off from the settings, where the guided project now ends by pointing out that some settings change what the visitor gets rather than what you see.",
+                "fr": "Votre site éconduit désormais un visiteur qui demande bien plus de pages que personne n'en lit - la charge d'un aspirateur de contenu ne ralentit plus le site pour tous les autres. C'est actif dès le départ et cela se désactive depuis les réglages, où le projet guidé se termine désormais en signalant que certains réglages changent ce que reçoit le visiteur plutôt que ce que vous voyez.",
+                "es": "Su sitio rechaza ahora a un visitante que pide muchas más páginas de las que nadie lee: la carga de un aspirador de contenidos ya no ralentiza el sitio para los demás. Está activo desde el principio y se desactiva desde los ajustes, donde el proyecto guiado termina ahora señalando que algunos ajustes cambian lo que recibe el visitante en lugar de lo que usted ve."
+            },
+            {
+                "en": "The health check no longer trips over that protection: its own checks are recognised and let through, so a run stops reporting an outage the button itself had just caused.",
+                "fr": "Le bilan de santé ne se heurte plus à cette protection : ses propres contrôles sont reconnus et laissés passer, de sorte qu'un bilan ne signale plus une panne que le bouton venait lui-même de provoquer.",
+                "es": "El chequeo de salud ya no tropieza con esa protección: sus propias comprobaciones se reconocen y se dejan pasar, de modo que un chequeo ya no informa de una avería que el propio botón acababa de provocar."
+            }
+        ]
+    },
+    {
         "date": "2026-09-11",
         "description": [
             {

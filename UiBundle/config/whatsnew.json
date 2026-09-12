@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-09-12",
+        "description": [
+            {
+                "en": "A map whose places are of several sorts can now draw each one with an image of its own, telling a monument from a memorial stone at a glance.",
+                "fr": "Une carte dont les lieux sont de plusieurs sortes peut désormais dessiner chacun avec une image qui lui est propre, distinguant un monument d'une stèle au premier coup d'œil.",
+                "es": "Un mapa cuyos lugares son de varios tipos puede ahora dibujar cada uno con una imagen propia, distinguiendo un monumento de una estela de un vistazo."
+            },
+            {
+                "en": "A site showing its own photos in a slider no longer has to guess what the slider expects of them.",
+                "fr": "Un site qui montre ses propres photos dans un carrousel n'a plus à deviner ce que le carrousel attend d'elles.",
+                "es": "Un sitio que muestra sus propias fotos en un carrusel ya no tiene que adivinar qué espera el carrusel de ellas."
+            },
+            {
+                "en": "A row of items pulled from a source, and a band sending visitors elsewhere, can now be painted as a full-width coloured band - light grey, your own colour, or dark - without being wrapped in anything.",
+                "fr": "Une rangée d'éléments tirés d'une source, et une bande qui envoie le visiteur ailleurs, peuvent désormais être peintes en bandeau coloré pleine largeur - gris clair, votre couleur, ou sombre - sans avoir à être enveloppées dans quoi que ce soit.",
+                "es": "Una fila de elementos extraídos de una fuente, y una banda que envía al visitante a otro lugar, pueden ahora pintarse como una franja de color a todo lo ancho - gris claro, su propio color u oscuro - sin tener que envolverlas en nada."
+            }
+        ]
+    },
+    {
         "date": "2026-09-11",
         "description": [
             {

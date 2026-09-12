@@ -39,9 +39,6 @@ class ContentQualityClient
     // The subset of INCONCLUSIVE_STATUSES that describes a client being filtered or rate limited rather than a method being refused - the difference decides whether a second, heavier GET is worth firing at that host (see LINK_FILTERED): a 405/501 is a url that serves perfectly well in GET, a 403/429/999 is a host asking to be left alone
     public const FILTERED_STATUSES = [403, 429, 999];
 
-    // Identifies the checker honestly (a WAF operator can look it up and allow it) while keeping the "Mozilla/5.0 (compatible; ...)" shape crawlers have used since Googlebot, which far fewer filters reject outright than a bare library default. Sites that still answer 403 are reported as inconclusive, not as broken - see INCONCLUSIVE_STATUSES
-    private const string LINK_CHECK_USER_AGENT = 'Mozilla/5.0 (compatible; c975LHealthCheck/1.0; +https://github.com/975L/SiteBundle)';
-
     public function __construct(
         private readonly HttpClientInterface $httpClient,
     ) {
@@ -50,7 +47,7 @@ class ContentQualityClient
     // Fires the request and returns immediately without waiting for a response - Symfony's HttpClient transports multiplex every in-flight response, so a caller analyzing many pages/links (ContentQualityHealthCheckProvider) can request()/requestLinkCheck() all of them up front and read()/readLinkCheck() them afterwards to run them concurrently instead of paying each timeout serially
     public function request(string $url): ResponseInterface
     {
-        return $this->httpClient->request('GET', $url, ['timeout' => 30]);
+        return $this->httpClient->request('GET', $url, ['timeout' => 30, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
     }
 
     // Blocks until the given in-flight response completes and parses it - $url is the same one passed to request(), needed again here to resolve links against its own host. Returns ['title' => string, 'description' => string, 'hasDescription' => bool, 'hasH1' => bool, 'imagesWithoutAlt' => string[] (each offending img's src), 'socialTags' => array<string, string>, 'canonical' => string ('' when the page declares none), 'robots' => string[] (the indexing directives it carries), 'internalLinks' => string[] (deduped, absolute, same-host only), 'externalLinks' => string[] (same, other hosts), 'linkTexts' => array<string, string> (each link's anchor text)]
@@ -90,13 +87,13 @@ class ContentQualityClient
     // A HEAD request is enough to know if a link resolves
     public function requestLinkCheck(string $url): ResponseInterface
     {
-        return $this->httpClient->request('HEAD', $url, ['timeout' => 15, 'headers' => ['User-Agent' => self::LINK_CHECK_USER_AGENT]]);
+        return $this->httpClient->request('HEAD', $url, ['timeout' => 15, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
     }
 
     // Second pass for a link the HEAD didn't settle - a fair share of servers answer 405/501 to HEAD, or drop it altogether, on urls that serve perfectly well in GET, and a client-side routed url (a share intent, a single-page app) answers a plain 404 to it
     public function requestLinkCheckFallback(string $url): ResponseInterface
     {
-        return $this->httpClient->request('GET', $url, ['timeout' => 15, 'headers' => ['User-Agent' => self::LINK_CHECK_USER_AGENT]]);
+        return $this->httpClient->request('GET', $url, ['timeout' => 15, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
     }
 
     // Only a conclusive >= 400 answer means broken. A transport failure (DNS, timeout, connection refused) yields LINK_UNKNOWN, and so does anything in INCONCLUSIVE_STATUSES or TRANSIENT_STATUSES, which describe how the server treats this client, or the hour it was called at, rather than whether the url exists - all worth a requestLinkCheckFallback() retry before anything is called broken, as is a HEAD answering >= 400, which the callers here retry too

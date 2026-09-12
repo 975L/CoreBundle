@@ -32,7 +32,7 @@ class UrlStatusChecker
     {
         try {
             return $this->httpClient->request('HEAD', $url, [
-                'headers' => ['User-Agent' => 'Mozilla/5.0 (compatible; c975l-health-check)'],
+                'headers' => ['User-Agent' => HealthCheck::USER_AGENT],
                 'timeout' => 15,
             ])->getStatusCode();
         } catch (\Throwable) {

@@ -70,9 +70,19 @@ class CollectionTypeTest extends TestCase
     {
         $added = $this->buildAddedFields(new CollectionSourceRegistry());
 
-        foreach (['source', 'limit', 'title', 'anchor', 'variant', 'level'] as $field) {
+        foreach (['source', 'limit', 'title', 'anchor', 'variant', 'level', 'background'] as $field) {
             $this->assertArrayHasKey($field, $added, "\"$field\" should be added to the Collection form");
         }
+    }
+
+    // A row of items is a full-width section like any other - unset keeps meaning "no flat", so every collection saved before the field keeps rendering as it did
+    public function testItOffersTheThreeFlatsAndNoneByDefault(): void
+    {
+        $added = $this->buildAddedFields(new CollectionSourceRegistry());
+
+        $this->assertSame(['label.section_background_muted' => 'muted', 'label.section_background_primary' => 'primary', 'label.section_background_dark' => 'dark'], $added['background']['choices']);
+        $this->assertSame('label.section_background_none', $added['background']['placeholder']);
+        $this->assertFalse($added['background']['required']);
     }
 
     public function testVariantChoicesOfferCardCompactPortfolioAndPortrait(): void

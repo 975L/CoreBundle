@@ -226,6 +226,10 @@
                 <source>description.site_producer</source>
                 <target>Productor/desarrollador del sitio, mostrado en el aviso legal (HTML permitido)</target>
             </trans-unit>
+            <trans-unit id="ZcDcLWY">
+                <source>description.site_rate_limit</source>
+                <target>Responde 429 a las ráfagas procedentes de una misma dirección (IPv6 contada en su /64): 60 peticiones por cada 10 segundos. Protege el número de conexiones a la base de datos, que una ráfaga de rastreo agota. Las sondas de la consola de supervisión no se cuentan.</target>
+            </trans-unit>
             <trans-unit id="b8NL53A">
                 <source>description.site_role_admin</source>
                 <target>Rol requerido para la configuración, ej. ROLE_ADMIN (por defecto)</target>
@@ -485,6 +489,10 @@
             <trans-unit id="5YTsC_J">
                 <source>label.site_producer</source>
                 <target>Productor del sitio</target>
+            </trans-unit>
+            <trans-unit id="9nIcPE9">
+                <source>label.site_rate_limit</source>
+                <target>Limitación de velocidad</target>
             </trans-unit>
             <trans-unit id="z_rPP2B">
                 <source>label.site_role_admin</source>

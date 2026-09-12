@@ -136,6 +136,12 @@ services:
         tags:
             - { name: 'ui.admin_script' }
 
+    # The limiter and its store are declared by c975LConfigBundle::prependExtension(), which lets the framework build both - only the binding is left here, "limiter.<name>" being the service id framework.rate_limiter registers
+    c975L\ConfigBundle\Listener\RateLimitListener:
+        arguments:
+            $frontRequestLimiter: '@limiter.c975l_front_request'
+
+
 # Wiring for c975l:dev-profile:run, kept under when@dev on purpose: its classes are all marked #[When('dev')], and an entry in the block above would put them back in every environment, prod included, where the "profiler" service doesn't exist. _defaults has to be repeated, a when@ block being parsed as its own root
 when@dev:
     services:

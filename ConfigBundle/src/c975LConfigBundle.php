@@ -45,11 +45,29 @@ class c975LConfigBundle extends AbstractBundle
 {
     public function prependExtension(ContainerConfigurator $containerConfigurator, ContainerBuilder $container): void
     {
-        // First JS/CSS ConfigBundle ships itself (the onboarding tour, see assets/controllers-admin.js) - mirrors UiBundle's own asset_mapper path registration
+        // First what ConfigBundle asks of the framework itself, none of which the 18 sites installing it should have to declare
         $container->prependExtensionConfig('framework', [
+            // The JS/CSS it ships (the onboarding tour, see assets/controllers-admin.js) - mirrors UiBundle's own asset_mapper path registration
             'asset_mapper' => [
                 'paths' => [
                     __DIR__ . '/../assets' => '@c975l/config-bundle',
+                ],
+            ],
+            // The store the front limiter counts in, pinned to the filesystem rather than left to cache.app: sparing the database a connection under a burst is the entire reason this exists, so a site whose application cache runs on PDO must not drag the counter there with it. Declared as a pool and not built by hand, which is what makes it a real cache.pool - visited by cache:pool:prune, where a hand-built adapter accumulates expired counter files nobody ever removes. It lives under the cache directory and is therefore emptied by cache:clear: harmless for a ten-second window, a deployment at worst letting one burst through
+            'cache' => [
+                'pools' => [
+                    'c975l.rate_limiter' => [
+                        'adapter' => 'cache.adapter.filesystem',
+                    ],
+                ],
+            ],
+            // 60 requests per 10 seconds, sliding: a page and the handful of dynamic sub-requests it pulls stay well under, while a catalogue scraper - the one measured ran at 13 req/s - is cut at its sixtieth. A per-minute ceiling loose enough for a human never catches a burst that is over in 16 seconds. Declared here rather than asked of the 18 sites installing the bundle, exactly as UiBundle declares its own; an application naming "c975l_front_request" itself still decides, its config being merged over this one
+            'rate_limiter' => [
+                'c975l_front_request' => [
+                    'policy' => 'sliding_window',
+                    'limit' => 60,
+                    'interval' => '10 seconds',
+                    'cache_pool' => 'c975l.rate_limiter',
                 ],
             ],
         ]);

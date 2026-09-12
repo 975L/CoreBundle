@@ -129,6 +129,21 @@ class MapBehaviourTest extends JsCase
         $this->assertSame('Le lac', $shapes['text'], 'The text an editor wrote for a place never reaches its popup.');
     }
 
+    // A listing whose places are of several sorts is read by telling them apart: the one naming an image is drawn with it, and the one naming none keeps the pin the stylesheet draws
+    public function testAPlaceNamingItsOwnImageIsDrawnWithItAndTheOthersKeepThePin(): void
+    {
+        $drawn = $this->map(
+            'return {
+                 images: [...root.querySelectorAll(".leaflet-marker-icon img, img.leaflet-marker-icon")].map((i) => i.getAttribute("src")),
+                 pins: root.querySelectorAll(".ui-map__pin").length,
+             };',
+            ['points' => '[{"label":"Morette","latitude":45.8992,"longitude":6.1294,"icon":"/images/monument.svg"},{"label":"Glières","latitude":45.9237,"longitude":6.8694}]']
+        );
+
+        $this->assertSame(['/images/monument.svg'], $drawn['images'], 'The place naming its own image was not drawn with it.');
+        $this->assertSame(1, $drawn['pins'], 'The place naming no image did not keep the bundle\'s own pin.');
+    }
+
     // The failure this whole arrangement is built around: a Google map must not appear before the visitor has been asked
     public function testAGoogleMapIsNeverDrawnBeforeConsentIsGiven(): void
     {

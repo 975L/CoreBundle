@@ -194,6 +194,10 @@
                 <source>description.guided_step_config_settings_value</source>
                 <target>Una entrada marcada como sensible se cifra en la base de datos y nunca vuelve a mostrarse en claro.</target>
             </trans-unit>
+            <trans-unit id="SIl.Gx9">
+                <source>description.guided_step_config_settings_visitor</source>
+                <target>Algunas entradas del grupo «sistema» no cambian nada en la pantalla de administración: cambian lo que el sitio responde a un visitante. La limitación de peticiones es una de ellas, y está activa desde la instalación.</target>
+            </trans-unit>
             <trans-unit id="ig3vWoA">
                 <source>description.guided_step_config_url_metadata_done</source>
                 <target>El control de calidad de los contenidos deja de señalar esta url, y un enlace hacia ella lleva ahora un título en lugar de una dirección desnuda.</target>
@@ -333,6 +337,10 @@
             <trans-unit id="irAKSdg">
                 <source>flash.content_import_unsupported_kind</source>
                 <target>Aún no hay ningún proveedor de importación registrado para «%kind%»</target>
+            </trans-unit>
+            <trans-unit id="cZp7sGW">
+                <source>flash.health_check_already_running</source>
+                <target>Ya hay una comprobación en curso. Espere a que termine antes de iniciar otra.</target>
             </trans-unit>
             <trans-unit id="VM4hYMi">
                 <source>flash.health_check_queued</source>
@@ -905,6 +913,10 @@
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>
                 <target>Introducir el valor</target>
+            </trans-unit>
+            <trans-unit id="bfvB4fL">
+                <source>label.guided_step_config_settings_visitor</source>
+                <target>Lo que llega al visitante</target>
             </trans-unit>
             <trans-unit id="ApkY5XD">
                 <source>label.guided_step_config_url_metadata_done</source>

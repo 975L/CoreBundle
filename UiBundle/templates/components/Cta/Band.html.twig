@@ -1,6 +1,8 @@
-{# Static usage: <twig:c975LUi:Cta:Band title="..." ctaLabel="..." ctaUrl="..." [text=""] [id=""]/> #}
+{# Static usage: <twig:c975LUi:Cta:Band title="..." ctaLabel="..." ctaUrl="..." [text=""] [background=""] [id=""]/> #}
 {# Dynamic usage (Block system): see templates/blocks/CtaBand.html.twig #}
-<section class="cta-band"{% if id is defined and id %} id="{{ id }}"{% endif %}>
+{# Matched, not interpolated: the value comes from stored block data and must not write any class name #}
+{% set background = background|default('') in ['muted', 'primary', 'dark'] ? ' section--bg-' ~ background : '' %}
+<section class="cta-band{{ background }}"{% if id is defined and id %} id="{{ id }}"{% endif %}>
     <div class="section-wrap">
         <div class="cta-band__inner">
             <h2 class="cta-band__title">{{ title }}</h2>

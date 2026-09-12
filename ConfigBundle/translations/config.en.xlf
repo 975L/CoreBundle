@@ -194,6 +194,10 @@
                 <source>description.guided_step_config_settings_value</source>
                 <target>An entry marked sensitive is encrypted in the database and never shown in clear again.</target>
             </trans-unit>
+            <trans-unit id="SIl.Gx9">
+                <source>description.guided_step_config_settings_visitor</source>
+                <target>Some entries in the "system" group change nothing on the admin screen: they change what the site answers a visitor. Rate limiting is one of them, and it is on from the day the bundle is installed.</target>
+            </trans-unit>
             <trans-unit id="ig3vWoA">
                 <source>description.guided_step_config_url_metadata_done</source>
                 <target>The content quality health check stops reporting this url, and a link to it now carries a title instead of a bare address.</target>
@@ -333,6 +337,10 @@
             <trans-unit id="irAKSdg">
                 <source>flash.content_import_unsupported_kind</source>
                 <target>No import provider is registered yet for "%kind%"</target>
+            </trans-unit>
+            <trans-unit id="cZp7sGW">
+                <source>flash.health_check_already_running</source>
+                <target>A run is already in progress. Wait for it to finish before starting another.</target>
             </trans-unit>
             <trans-unit id="VM4hYMi">
                 <source>flash.health_check_queued</source>
@@ -905,6 +913,10 @@
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>
                 <target>Fill the value in</target>
+            </trans-unit>
+            <trans-unit id="bfvB4fL">
+                <source>label.guided_step_config_settings_visitor</source>
+                <target>What reaches the visitor</target>
             </trans-unit>
             <trans-unit id="ApkY5XD">
                 <source>label.guided_step_config_url_metadata_done</source>

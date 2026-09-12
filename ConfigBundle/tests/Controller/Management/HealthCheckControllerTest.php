@@ -521,6 +521,47 @@ class HealthCheckControllerTest extends TestCase
         $this->assertSame('/management', $response->getTargetUrl());
     }
 
+    // A run still going is not queued over: each kind fans out over every url the site declares, and a second run doubles that load on the very sites being measured. It guards the same administrator's impatient double-click, the progress being followed in their session
+    public function testRunQueuesNothingWhileTheSameAdministratorHasARunGoing(): void
+    {
+        $healthCheckRunner = $this->createStub(HealthCheckRunner::class);
+        $healthCheckRunner->method('getKinds')->willReturn(['pagespeed', 'w3c']);
+
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects($this->never())->method('dispatch');
+
+        $healthCheckRunProgress = $this->createMock(HealthCheckRunProgress::class);
+        $healthCheckRunProgress->method('isRunning')->willReturn(true);
+        $healthCheckRunProgress->expects($this->never())->method('start');
+
+        $controller = new HealthCheckController(
+            $this->createStub(HealthCheckResultRepository::class),
+            $healthCheckRunner,
+            $this->createAlertBuilder(),
+            $this->createAdviceBuilder(),
+            $this->createReportBuilder(),
+            $this->createTableExporter(),
+            $this->createTrendChartBuilder(),
+            $this->createConfigService(),
+            $this->createTranslator(),
+            $messageBus,
+            $healthCheckRunProgress,
+            $this->createManager(),
+        );
+        [$requestStack, $session] = $this->createRequestStackWithSession();
+        $controller->setContainer($this->createContainer([
+            'security.authorization_checker' => $this->createAuthorizationChecker(true),
+            'security.csrf.token_manager' => $this->createCsrfTokenManager(true),
+            'router' => $this->createRouter(),
+            'request_stack' => $requestStack,
+        ]));
+
+        $response = $controller->run(new Request([], ['_token' => 'valid-token']));
+
+        $this->assertSame(['flash.health_check_already_running'], $session->getFlashBag()->get('warning'));
+        $this->assertSame('/management', $response->getTargetUrl());
+    }
+
     // Before the first dispatch, and never after: a sync transport (the readme's fallback) runs every job inside dispatch() itself, and an async worker already listening records its first kind while this loop is still running - started afterwards, the run would be following a moment its own results already predate, and would sit at 0 until it timed out
     public function testRunStartsFollowingTheRunBeforeQueueingTheFirstJob(): void
     {

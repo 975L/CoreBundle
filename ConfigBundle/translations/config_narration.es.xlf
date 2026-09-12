@@ -110,6 +110,10 @@
                 <source>narration.guided_step_config_settings_value</source>
                 <target>Introduzca el valor en el campo del formulario. Una entrada marcada como sensible se cifra en la base de datos y nunca vuelve a mostrarse en claro.</target>
             </trans-unit>
+            <trans-unit id="2MzkpO5">
+                <source>narration.guided_step_config_settings_visitor</source>
+                <target>No todo se decide en esta pantalla: algunas entradas del grupo «sistema» cambian lo que el sitio responde a un visitante. La limitación de peticiones rechaza a quien pide demasiadas páginas seguidas, y está activa desde la instalación.</target>
+            </trans-unit>
             <trans-unit id="UguEqcj">
                 <source>narration.guided_step_config_url_metadata_done</source>
                 <target>Vea lo que eso cambia: el control de calidad de los contenidos deja de señalar esta url, y un enlace hacia ella lleva ahora un título en lugar de una dirección desnuda.</target>

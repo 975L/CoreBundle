@@ -194,6 +194,10 @@
                 <source>description.guided_step_config_settings_value</source>
                 <target>Une entrée marquée sensible est chiffrée en base et n'est jamais réaffichée en clair.</target>
             </trans-unit>
+            <trans-unit id="SIl.Gx9">
+                <source>description.guided_step_config_settings_visitor</source>
+                <target>Certains réglages du groupe « système » ne changent rien à l'écran d'administration : ils changent ce que le site répond au visiteur. La limitation de débit en est une, et elle est active dès l'installation.</target>
+            </trans-unit>
             <trans-unit id="ig3vWoA">
                 <source>description.guided_step_config_url_metadata_done</source>
                 <target>Le contrôle de qualité des contenus cesse de signaler cette url, et un lien vers elle porte désormais un titre plutôt qu'une adresse nue.</target>
@@ -333,6 +337,10 @@
             <trans-unit id="irAKSdg">
                 <source>flash.content_import_unsupported_kind</source>
                 <target>Aucun fournisseur d'import n'est encore enregistré pour « %kind% »</target>
+            </trans-unit>
+            <trans-unit id="cZp7sGW">
+                <source>flash.health_check_already_running</source>
+                <target>Un contrôle est déjà en cours. Attendez qu'il se termine avant d'en lancer un autre.</target>
             </trans-unit>
             <trans-unit id="VM4hYMi">
                 <source>flash.health_check_queued</source>
@@ -905,6 +913,10 @@
             <trans-unit id="1pezZfR">
                 <source>label.guided_step_config_settings_value</source>
                 <target>Saisir la valeur</target>
+            </trans-unit>
+            <trans-unit id="bfvB4fL">
+                <source>label.guided_step_config_settings_visitor</source>
+                <target>Ce qui atteint le visiteur</target>
             </trans-unit>
             <trans-unit id="ApkY5XD">
                 <source>label.guided_step_config_url_metadata_done</source>

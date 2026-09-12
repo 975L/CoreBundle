@@ -158,6 +158,12 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             'description' => 'description.guided_step_config_settings_alerts',
             'narration' => 'narration.guided_step_config_settings_alerts',
         ];
+        // Closes on the one thing this screen never shows: an entry of the "system" group whose effect lands on the visitor rather than on the administrator reading it. No url and no highlight - it names no entry in particular, the project teaching how to reach any of the eighty rather than what each one does
+        $steps[] = [
+            'label' => 'label.guided_step_config_settings_visitor',
+            'description' => 'description.guided_step_config_settings_visitor',
+            'narration' => 'narration.guided_step_config_settings_visitor',
+        ];
 
         return [
             'slug' => 'config-settings',

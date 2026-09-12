@@ -23,6 +23,17 @@ const BOUNDS_PADDING = 32;
 // Only drawn once the box is about to enter the viewport: a map is a tile server (or ~500 kB of Google JavaScript) that a visitor scrolling past the section never needed
 const ROOT_MARGIN = "200px";
 
+// The side of a marker, shared by the pin sass/_map.scss draws and by an image a point names itself, so the two sorts sit at the same size on one map
+const PIN_SIZE = 24;
+
+// A point's own image, anchored the way the pin is: on its tip, with the popup opening above it
+const ICON = (L, url) => L.icon({
+    iconUrl: url,
+    iconSize: [PIN_SIZE, PIN_SIZE],
+    iconAnchor: [PIN_SIZE / 2, PIN_SIZE],
+    popupAnchor: [0, -PIN_SIZE],
+});
+
 // Draws the places a "map" block holds, over OpenStreetMap tiles or over Google's API, the site having said which in "ui-map-provider" (see MapProvider and Twig's ui_map_settings()). Nothing here is required for the block to hold: the list of places is rendered server-side and stays on screen under the map, which is also the only version of it a screen reader and a keyboard can work through
 export default class extends Controller {
     static targets = ["canvas", "list", "consent", "diagnostic"];
@@ -168,9 +179,11 @@ export default class extends Controller {
         L.tileLayer(this.tileUrlValue, { attribution: this.attributionValue }).addTo(map);
 
         // A divIcon and not Leaflet's default marker: the pin is drawn by sass/_map.scss, so it takes --ui-map-pin-color and follows the site's own palette rather than staying the library's blue. It also spares the two images only L.Icon.Default asks for, which the stylesheet never names and nothing therefore vendors (see config/vendor-assets.json)
-        const icon = L.divIcon({ className: "ui-map__pin", iconSize: [24, 24], iconAnchor: [12, 24], popupAnchor: [0, -24] });
+        const pin = L.divIcon({ className: "ui-map__pin", iconSize: [PIN_SIZE, PIN_SIZE], iconAnchor: [PIN_SIZE / 2, PIN_SIZE], popupAnchor: [0, -PIN_SIZE] });
+
+        // A point naming its own image is drawn with it, at the pin's size and anchored the same way, so a map mixing sorts of places reads as such; every other point keeps the pin above, shared by all of them
         const markers = this.pointsValue.map((point) => L
-            .marker([point.latitude, point.longitude], { icon, title: point.label })
+            .marker([point.latitude, point.longitude], { icon: point.icon ? ICON(L, point.icon) : pin, title: point.label })
             .bindPopup(this.popup(point))
             .addTo(map));
 
@@ -195,7 +208,13 @@ export default class extends Controller {
 
         for (const point of this.pointsValue) {
             const position = { lat: Number(point.latitude), lng: Number(point.longitude) };
-            const marker = new google.maps.Marker({ position, map, title: point.label });
+            // Same contract as the Leaflet branch above: a point's own image where it names one, Google's default marker otherwise
+            const marker = new google.maps.Marker({
+                position,
+                map,
+                title: point.label,
+                ...(point.icon ? { icon: { url: point.icon, scaledSize: new google.maps.Size(PIN_SIZE, PIN_SIZE) } } : {}),
+            });
             marker.addListener("click", () => {
                 infoWindow.setContent(this.popup(point));
                 infoWindow.open(map, marker);

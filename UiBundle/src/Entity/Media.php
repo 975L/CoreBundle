@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Entity;
 
 use c975L\ConfigBundle\Contract\UserInterface;
+use c975L\UiBundle\Contract\DrawableMediaInterface;
 use c975L\UiBundle\Contract\VichImageResizableInterface;
 use c975L\UiBundle\Contract\VichMediaNamableInterface;
 use c975L\UiBundle\Repository\MediaRepository;
@@ -24,7 +25,7 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Table(name: 'site_media')]
 #[Vich\Uploadable]
 #[FixedIconFormat]
-class Media implements VichImageResizableInterface, VichMediaNamableInterface
+class Media implements DrawableMediaInterface, VichImageResizableInterface, VichMediaNamableInterface
 {
     private const int IMAGE_WIDTH = 800;
 

@@ -1,4 +1,5 @@
-{# <twig:c975LUi:Map:Map points="[{label, latitude, longitude, text, url}]" [title="optional title"] [id="anchor"] [height="medium"] [zoom="13"]/> #}
+{# <twig:c975LUi:Map:Map points="[{label, latitude, longitude, text, url, icon}]" [title="optional title"] [id="anchor"] [height="medium"] [zoom="13"]/> #}
+{# "icon" is optional, the url of the image that one marker is drawn with - for a listing whose places are of several sorts and whose map is read by telling them apart; a point naming none keeps the bundle's own pin #}
 {# The list of places is the content, and the map is what the browser makes of it: a visitor with no JavaScript, a browser that never got the library, or a Google map left without its key all keep the addresses and their links, which is also what a crawler reads #}
 {% set settings = ui_map_settings() %}
 {# Filtered and renumbered in PHP (see MapExtension::points): a point with no coordinates has nowhere to be drawn, and Twig's own filter would keep the original keys - which encodes the payload as a JSON object the controller reads as no points at all #}

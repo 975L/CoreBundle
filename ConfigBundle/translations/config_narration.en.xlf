@@ -110,6 +110,10 @@
                 <source>narration.guided_step_config_settings_value</source>
                 <target>Fill the value in the form field. An entry marked sensitive is encrypted in the database and never shown in clear again.</target>
             </trans-unit>
+            <trans-unit id="2MzkpO5">
+                <source>narration.guided_step_config_settings_visitor</source>
+                <target>Not everything is settled on this screen: some entries in the "system" group change what the site answers a visitor. Rate limiting refuses the one asking for too many pages in a row, and it is on from the day the bundle is installed.</target>
+            </trans-unit>
             <trans-unit id="UguEqcj">
                 <source>narration.guided_step_config_url_metadata_done</source>
                 <target>See what it changes: the content quality health check stops reporting this url, and a link to it now carries a title instead of a bare address.</target>

@@ -18,8 +18,8 @@ use Twig\Attribute\AsTwigFunction;
 
 class MapExtension
 {
-    // What a marker and its bubble are built from, and all a page has any reason to publish
-    private const array DRAWN_KEYS = ['label', 'latitude', 'longitude', 'text', 'url'];
+    // What a marker and its bubble are built from, and all a page has any reason to publish. "icon" is the url of the image a single marker is drawn with, for a listing whose places are of several sorts and whose map is read by telling them apart - a monument from a stele, a shop from a workshop; a point naming none keeps the bundle's own pin, which is the usual case
+    private const array DRAWN_KEYS = ['label', 'latitude', 'longitude', 'text', 'url', 'icon'];
 
     public function __construct(
         private readonly ConfigServiceInterface $configService,

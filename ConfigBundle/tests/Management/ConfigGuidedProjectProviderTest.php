@@ -83,6 +83,19 @@ class ConfigGuidedProjectProviderTest extends TestCase
         );
     }
 
+    // The one effect this screen never shows: a "system" entry answering the visitor rather than the administrator reading it. Last on purpose, and on both kinds of site - it names no entry and points at nothing, so no tab of any language decides whether it is walked
+    public function testTheSettingsProjectClosesOnWhatReachesTheVisitor(): void
+    {
+        foreach ([true, false] as $multilingual) {
+            $labels = $this->settingsStepLabels($multilingual);
+            $this->assertSame('label.guided_step_config_settings_visitor', end($labels));
+        }
+
+        $step = $this->settingsStep('label.guided_step_config_settings_visitor');
+        $this->assertArrayNotHasKey('url', $step);
+        $this->assertArrayNotHasKey('highlight', $step);
+    }
+
     // On a site declaring a single language no tab is ever drawn, and neither step walking them is offered
     public function testASingleLanguageSiteWalksNoLanguageStep(): void
     {

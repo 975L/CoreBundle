@@ -155,6 +155,12 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
     padding-bottom: var(--section-space-tight, #{$section-space-tight});
 }
 
+// Same reading, at these two kinds' own step: they state a top padding only (see the shared rhythm above), which leaves their last row flush against the flat's bottom edge as soon as one is painted
+.collection-grid:is(.section--bg-muted, .section--bg-primary, .section--bg-dark),
+.cta-band:is(.section--bg-muted, .section--bg-primary, .section--bg-dark) {
+    padding-bottom: var(--section-space, #{$section-space});
+}
+
 // As a column slot the page-level top padding would misalign the column against its siblings
 .flex-columns__col > .section-features-section,
 .flex-columns__col > .section-cards-section,

@@ -41,7 +41,7 @@ class AccessibilityClient
     // Fires the request and returns immediately - a caller checking many urls requests them all up front and reads them afterwards, so the HttpClient transport runs them concurrently instead of paying each timeout serially (same as ContentQualityClient::request())
     public function request(string $url): ResponseInterface
     {
-        return $this->httpClient->request('GET', $url, ['timeout' => 30]);
+        return $this->httpClient->request('GET', $url, ['timeout' => 30, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
     }
 
     /**

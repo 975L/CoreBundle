@@ -226,6 +226,10 @@
                 <source>description.site_producer</source>
                 <target>Producteur/développeur du site, affiché dans les mentions légales (HTML autorisé)</target>
             </trans-unit>
+            <trans-unit id="ZcDcLWY">
+                <source>description.site_rate_limit</source>
+                <target>Refuse en 429 les rafales venant d'une même adresse (IPv6 comptée sur son /64) : 60 requêtes par tranche de 10 secondes. Protège le nombre de connexions à la base, qu'une rafale de moissonnage épuise. Les sondes de la console de surveillance ne sont pas comptées.</target>
+            </trans-unit>
             <trans-unit id="b8NL53A">
                 <source>description.site_role_admin</source>
                 <target>Rôle requis pour la configuration, ex. ROLE_ADMIN (par défaut)</target>
@@ -485,6 +489,10 @@
             <trans-unit id="5YTsC_J">
                 <source>label.site_producer</source>
                 <target>Producteur du site</target>
+            </trans-unit>
+            <trans-unit id="9nIcPE9">
+                <source>label.site_rate_limit</source>
+                <target>Limitation du débit</target>
             </trans-unit>
             <trans-unit id="z_rPP2B">
                 <source>label.site_role_admin</source>

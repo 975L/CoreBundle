@@ -105,6 +105,34 @@ class HealthCheckRunProgressTest extends TestCase
     }
 
     // The queued run is followed by the admin who started it and by no one else: a console command asking a provider for its rows has no session at all
+    // What the run button reads before queueing anything: a run still going is what refuses a second one over it
+    public function testIsRunningWhileQueuedKindsHaveYetToLand(): void
+    {
+        [$requestStack] = $this->createRequestStackWithSession();
+        $runProgress = new HealthCheckRunProgress($requestStack, $this->createRepository(['pagespeed']));
+        $runProgress->start(['pagespeed', 'w3c']);
+
+        $this->assertTrue($runProgress->isRunning());
+    }
+
+    // Read through poll(), so a run that has landed is dropped here rather than standing in the way of the next
+    public function testIsNotRunningOnceEveryQueuedKindHasLanded(): void
+    {
+        [$requestStack] = $this->createRequestStackWithSession();
+        $runProgress = new HealthCheckRunProgress($requestStack, $this->createRepository(['pagespeed', 'w3c']));
+        $runProgress->start(['pagespeed', 'w3c']);
+
+        $this->assertFalse($runProgress->isRunning());
+    }
+
+    // Nothing followed at all, which is the state the screen is in whenever the button is offered
+    public function testIsNotRunningWithNoRunFollowed(): void
+    {
+        [$requestStack] = $this->createRequestStackWithSession();
+
+        $this->assertFalse(new HealthCheckRunProgress($requestStack, $this->createRepository())->isRunning());
+    }
+
     public function testStartAndPollAreNoOpsWithoutASession(): void
     {
         $requestStack = new RequestStack([new Request()]);

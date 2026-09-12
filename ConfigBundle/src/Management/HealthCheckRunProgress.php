@@ -58,6 +58,14 @@ class HealthCheckRunProgress
         return ['done' => \count($done), 'total' => \count($run['kinds']), 'finished' => $finished, 'timedOut' => $timedOut];
     }
 
+    // Whether a run is still in flight, for the screen that refuses to queue a second one over it. Reads through poll(), so a run that has finished or timed out is dropped here rather than standing in the way of the next
+    public function isRunning(): bool
+    {
+        $run = $this->poll();
+
+        return null !== $run && false === $run['finished'];
+    }
+
     public function clear(): void
     {
         $this->session()?->remove(self::SESSION_KEY);

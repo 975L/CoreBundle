@@ -26,6 +26,8 @@ class CollectionType extends AbstractType
 {
     use HasAnchorFieldTrait;
 
+    use HasBackgroundFieldTrait;
+
     public function __construct(
         private readonly CollectionSourceRegistry $sourceRegistry,
         private readonly BlockAnchorSlugger $anchorSlugger,
@@ -107,6 +109,9 @@ class CollectionType extends AbstractType
                     'label.variant_portrait' => 'portrait',
                 ],
             ]);
+
+        // A row of items is a full-width section like any other: a source put forward on its own flat is what parts it from the run of blocks around it, without wrapping it in a container it has nothing else to gain from
+        $this->addBackgroundField($builder);
 
         // "Leave empty to show everything" says nothing about how many that is, and whoever types a limit is exactly the one who would like to know. Resolved here rather than above: the block's stored data - which names the source - only reaches this form when it is set, well after the fields are declared
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {

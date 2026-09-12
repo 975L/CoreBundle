@@ -26,7 +26,7 @@ class SecurityProbeClient
     // ['status' => int, 'headers' => lowercased name => list of values, 'body' => string]. Throws only on a real network/transport failure: every http status is a result here, 404 included - it is the answer proving a path is not served
     public function probe(string $url): array
     {
-        $response = $this->httpClient->request('GET', $url, ['timeout' => 15, 'max_redirects' => 0]);
+        $response = $this->httpClient->request('GET', $url, ['timeout' => 15, 'max_redirects' => 0, 'headers' => ['User-Agent' => HealthCheck::USER_AGENT]]);
 
         $headers = [];
         foreach ($response->getHeaders(false) as $name => $values) {

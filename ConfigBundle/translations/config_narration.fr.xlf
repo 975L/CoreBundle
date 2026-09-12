@@ -110,6 +110,10 @@
                 <source>narration.guided_step_config_settings_value</source>
                 <target>Saisissez la valeur dans le champ du formulaire. Une entrée marquée sensible est chiffrée en base et n'est jamais réaffichée en clair.</target>
             </trans-unit>
+            <trans-unit id="2MzkpO5">
+                <source>narration.guided_step_config_settings_visitor</source>
+                <target>Tout ne se joue pas sur cet écran : certains réglages du groupe « système » changent ce que le site répond au visiteur. La limitation de débit refuse celui qui demande trop de pages d'affilée, et elle est active dès l'installation.</target>
+            </trans-unit>
             <trans-unit id="UguEqcj">
                 <source>narration.guided_step_config_url_metadata_done</source>
                 <target>Voyez ce que cela change : le contrôle de qualité des contenus cesse de signaler cette url, et un lien vers elle porte désormais un titre plutôt qu'une adresse nue.</target>
