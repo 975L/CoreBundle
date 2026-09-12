@@ -2,8 +2,9 @@ import { startStimulusApp } from '@symfony/stimulus-bundle';
 import AnimateScrollController from './js/animate-scroll.js';
 import MenuController from './js/menu.js';
 
-// Front-end controllers, used on public pages Loaded as its own <script type="module"> tag (see importmap.php), starts its own Stimulus app
-const app = startStimulusApp();
+// Front-end controllers, loaded as their own module tag (see importmap.php), joining the one Stimulus application of the page: each startStimulusApp() call also registers everything controllers.json enables, so five barrels built "live" five times
+globalThis.c975lStimulusApp ??= startStimulusApp();
+const app = globalThis.c975lStimulusApp;
 app.register('animateScroll', AnimateScrollController);
 app.register('menu', MenuController);
 

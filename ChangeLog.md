@@ -1,5 +1,37 @@
 # ChangeLog
 
+## v1.30.2
+
+A map lists its places in a picker, and a lone photo keeps its credit
+
+### ConfigBundle
+
+- `controllers-admin.js` joins the page's one Stimulus application (12/09/2026)
+
+### UiBundle
+
+- `controllers.js` and `controllers-admin.js` join one Stimulus application per page, `live` no longer built once per barrel (12/09/2026)
+- A favicon or apple-touch-icon is fitted whole inside its square instead of being cropped (12/09/2026)
+- That padding is transparent on the favicon and opaque white on the apple-touch-icon (12/09/2026)
+- An undersized icon upload is carried to the role's full size (12/09/2026)
+- The map block takes a `list` option, `select` handing its places to a picker (12/09/2026)
+- Picking a place brings the map onto its marker and opens its popup, in both providers (12/09/2026)
+- The picker's first option frames every place again (12/09/2026)
+- A place picked before the library arrives is found once the map draws (12/09/2026)
+- The canvas and the picker take their room before the library loads, so the page no longer reflows (12/09/2026)
+- A map that never draws keeps the written-out list (12/09/2026)
+- The opening view is framed without animation, ending an uncaught `transitionend` error on leaving the page (12/09/2026)
+- `.ui-map` opens its own stacking context, Leaflet's controls no longer drawn over a sticky header (12/09/2026)
+- `.ui-map` takes `scroll-margin-top: var(--scroll-offset, 80px)` (12/09/2026)
+- A printed map block shows its written-out list rather than the picker (12/09/2026)
+- `--ui-map-select-background` and `--ui-map-select-color` join the scaffolded theme (12/09/2026)
+- `label.map_choose_place`, `label.map_list`, `label.map_list_full` and `label.map_list_select` in the three locales (12/09/2026)
+- The `Slider` draws a single media's credits and rights notice (12/09/2026)
+- `.slider-single-media` gives those mentions a box sized to the media (12/09/2026)
+- `DrawableMediaInterface` declares `getCredits()` and `isRightsReserved()` (12/09/2026) [BC-Break]
+- A kind a context no longer offers is warned about in that context's own terms, the columns wording kept for `flex_columns_slot` (12/09/2026)
+- `label.block_kind_legacy_context_help` and `label.slots_legacy_context_help` in the three locales (12/09/2026)
+
 ## v1.30.1
 
 A page's two scroll buttons share one corner, and a test suite is no longer refused by its own limit

@@ -16,6 +16,8 @@
     {% set mediaAlt = media.alt ?: fallbackAlt %}
     {% set slide = slides[0]|default(null) %}
     {% set isVideo = media.mimeType starts with 'video' %}
+    {# The credits and the rights mention are laid over the media, so a media shown on its own needs a containing block of its own: without one they would anchor to whatever positioned ancestor the page happens to carry. Sized to its content, so the band spans the media and not the column - a portrait scan in a wide column would otherwise wear a band twice its width #}
+    <div class="slider-single-media">
     {% if slide and (slide.title or slide.text) %}
         <div class="slider-single {{ class }}">
             {% set mediaTag %}
@@ -38,6 +40,14 @@
     {% else %}
         <twig:c975LUi:Image:Image imgSrc="{{ vich_uploader_asset(media) }}" alt="{{ mediaAlt }}" label="{{ media.label }}" class="{{ ('img-responsive img-rounded box-shadow ' ~ class ~ ' ' ~ media.cssClasses|join(' '))|trim }}" width="{{ media.width }}" height="{{ media.height }}" above="{{ media.above }}" />
     {% endif %}
+    {# The same two mentions the slides below carry: a media shown alone loses neither its credit nor its rights notice, which is what a license asking for attribution rests on #}
+    {% if media.rightsReserved %}
+        <p class="slider-rights-reserved">{{ "label.all_rights_reserved"|trans({}, "ui") }}</p>
+    {% endif %}
+    {% if media.credits %}
+        <p class="slider-credits">{{ "label.credits"|trans({}, "ui") }} : {{ media.credits }}</p>
+    {% endif %}
+    </div>
 {% elseif mediaList|length > 1 %}
     {# Named by aria-label rather than by a hidden heading: an <h3> under a page's <h1> skips level 2, a validation error on every page carrying a slider, for a title nobody reads - aria-label names the region just as well and leaves nothing in the outline #}
     <section id="{{ id }}" class="slider {{ layout == "freeflow" ? "slider-freeflow" : "" }} {{ ratio != "free" ? "slider-ratio-" ~ ratio : "" }} {{ class }}" aria-label="{{ label|default("Image slider") }}" data-controller="slider" data-slider-id="{{ id }}" data-slider-duration="{{ duration|default(0) }}">

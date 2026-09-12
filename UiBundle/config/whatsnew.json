@@ -21,6 +21,21 @@
                 "en": "The two buttons walking a long page to its top and to its bottom now sit together in the same corner, follow your site's colours and stay readable instead of nearly disappearing.",
                 "fr": "Les deux boutons qui parcourent une longue page jusqu'à son haut et jusqu'à son bas sont désormais réunis dans le même coin, suivent les couleurs de votre site et restent lisibles au lieu de presque disparaître.",
                 "es": "Los dos botones que recorren una página larga hasta su parte superior e inferior están ahora juntos en la misma esquina, siguen los colores de su sitio y se mantienen legibles en lugar de casi desaparecer."
+            },
+            {
+                "en": "A map holding dozens of places can now list them in a drop-down menu: pick one and the map goes straight to it.",
+                "fr": "Une carte qui compte des dizaines de lieux peut désormais les proposer dans un menu déroulant : choisissez-en un et la carte s'y rend aussitôt.",
+                "es": "Un mapa con decenas de lugares puede ahora mostrarlos en un menú desplegable: elija uno y el mapa va directamente a él."
+            },
+            {
+                "en": "A single photo now shows its credit and its rights notice, just like the photos of a gallery.",
+                "fr": "Une photo seule affiche désormais son crédit et sa mention de droits, comme les photos d'une galerie.",
+                "es": "Una foto sola muestra ahora su crédito y su aviso de derechos, igual que las fotos de una galería."
+            },
+            {
+                "en": "A logo wider than it is tall now keeps its whole drawing as the site icon, instead of losing both its sides.",
+                "fr": "Un logo plus large que haut garde désormais tout son dessin comme icône du site, au lieu de perdre ses deux côtés.",
+                "es": "Un logotipo más ancho que alto conserva ahora todo su dibujo como icono del sitio, en lugar de perder sus dos lados."
             }
         ]
     },

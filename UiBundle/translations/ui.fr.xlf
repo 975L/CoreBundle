@@ -1018,6 +1018,10 @@
                 <source>label.block_kind</source>
                 <target>Type de bloc</target>
             </trans-unit>
+            <trans-unit id="aX3gtT.">
+                <source>label.block_kind_legacy_context_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Ce type de block n'est plus proposé à cet emplacement : choisis-en un autre, ou déplace ce block là où il est encore offert.&lt;/span&gt;</target>
+            </trans-unit>
             <trans-unit id="CZn_467">
                 <source>label.block_kind_legacy_slot_help</source>
                 <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Ce block est placé directement comme colonne, ce qui n'est plus proposé : ajoute une Colonne à la rangée, fais-y glisser ce block, et tu pourras alors régler sa largeur.&lt;/span&gt;</target>
@@ -2818,6 +2822,10 @@
                 <source>label.map_accept</source>
                 <target>Afficher la carte</target>
             </trans-unit>
+            <trans-unit id="xOr3Dl8">
+                <source>label.map_choose_place</source>
+                <target>Choisir un lieu</target>
+            </trans-unit>
             <trans-unit id="s.r9DKV">
                 <source>label.map_consent_required</source>
                 <target>Cette carte est affichée par Google, qui dépose des cookies sur votre appareil.</target>
@@ -2865,6 +2873,18 @@
             <trans-unit id="AlQR0jc">
                 <source>label.map_height_small</source>
                 <target>Petite</target>
+            </trans-unit>
+            <trans-unit id="cHy8gIH">
+                <source>label.map_list</source>
+                <target>Liste des lieux</target>
+            </trans-unit>
+            <trans-unit id="3FTX_It">
+                <source>label.map_list_full</source>
+                <target>Liste complète</target>
+            </trans-unit>
+            <trans-unit id="vHRObYf">
+                <source>label.map_list_select</source>
+                <target>Menu déroulant</target>
             </trans-unit>
             <trans-unit id="5bI93CU">
                 <source>label.map_point_address</source>
@@ -3581,6 +3601,10 @@
             <trans-unit id="dVwFNwZ">
                 <source>label.slots_cards</source>
                 <target>Cartes</target>
+            </trans-unit>
+            <trans-unit id="Fa7C19W">
+                <source>label.slots_legacy_context_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ Ces blocks ne sont plus proposés à cet emplacement : %blocks%. Pour chacun, choisis un autre type, ou déplace-le là où il est encore offert.&lt;/span&gt;</target>
             </trans-unit>
             <trans-unit id="EcQhzh6">
                 <source>label.slots_legacy_kinds_help</source>

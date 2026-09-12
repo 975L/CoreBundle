@@ -77,7 +77,7 @@ class SvgRasterizer
 
         $imagick->readImage($absolutePath);
 
-        // png32 rather than png: an icon is cropped square right after, and a palette PNG would lose the alpha channel the .ico wrapper needs
+        // png32 rather than png: an icon is centered on a transparent square right after (see VichImageResizeListener::processFixedIcon), and a palette PNG would lose the alpha channel both that padding and the .ico wrapper need
         $imagick->setImageFormat('png32');
         $imagick->thumbnailImage(self::RENDER_SIZE, self::RENDER_SIZE, true);
         $blob = $imagick->getImageBlob();

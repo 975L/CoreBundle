@@ -38,7 +38,8 @@ moved out of `public/`.
 
 **`Contract\DrawableMediaInterface` is the other half**: the `Vich*` contracts say how a file is
 stored, named and resized, this one says what a component reads off it to draw it — `getAlt()`,
-`getMimeType()`, `getLabel()`, `getWidth()`/`getHeight()`, `getCssClasses()`, `isAbove()`. Implement
+`getMimeType()`, `getLabel()`, `getWidth()`/`getHeight()`, `getCssClasses()`, `isAbove()`,
+`getCredits()`, `isRightsReserved()` — the last two drawn over a single media as over a slide. Implement
 it and your own entity goes straight to `<twig:c975LUi:Slider:Slider>`, `ImageCompare` or
 `Text:Section` instead of the templates being read to find out what they expect. **Every value is
 optional** — an entity answering null, `[]` and `false` to all of them still draws — so implementing

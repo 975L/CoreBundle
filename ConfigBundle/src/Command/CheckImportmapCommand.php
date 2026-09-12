@@ -159,7 +159,7 @@ class CheckImportmapCommand extends Command
         return $added;
     }
 
-    // symfony/ux-chartjs' Flex recipe enables its chart controller eagerly in assets/controllers.json, which makes startStimulusApp() import chart.js on every front-end page and makes every admin Stimulus app register the controller a second time (see readme). Only warns - rewriting the app's controllers.json isn't this command's job
+    // symfony/ux-chartjs' Flex recipe enables its chart controller eagerly in assets/controllers.json, which makes startStimulusApp() import chart.js on every front-end page and makes the page's Stimulus app register the controller a second time (see readme). Only warns - rewriting the app's controllers.json isn't this command's job
     private function warnOnEagerChartjs(SymfonyStyle $io): void
     {
         $file = $this->projectDir . '/assets/controllers.json';

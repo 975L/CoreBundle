@@ -23,9 +23,18 @@ class MapTypeTest extends TestCase
     {
         $added = $this->buildAddedFields();
 
-        foreach (['anchor', 'title', 'height', 'zoom', 'points'] as $field) {
+        foreach (['anchor', 'title', 'height', 'zoom', 'list', 'points'] as $field) {
             $this->assertArrayHasKey($field, $added, sprintf('"%s" should be added to the Map form', $field));
         }
+    }
+
+    // The two values the component reads (see components/Map/Map.html.twig): a third one offered here would render neither the picker nor anything telling it apart from "full"
+    public function testTheListOffersTheWrittenOutListAndThePicker(): void
+    {
+        $this->assertSame(
+            ['label.map_list_full' => 'full', 'label.map_list_select' => 'select'],
+            $this->buildAddedFields()['list']['choices']
+        );
     }
 
     // An API key and a billing account are a site-wide decision, taken once in the settings - a field here would ask an editor composing a page to take it again on every map they place

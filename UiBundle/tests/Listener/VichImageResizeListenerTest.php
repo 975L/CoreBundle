@@ -130,6 +130,90 @@ class VichImageResizeListenerTest extends TestCase
         $this->assertSame(48, $dimensions[1]);
     }
 
+    // Regression: a fixed icon role cropped the upload square (OUTBOUND), so a logo wider than it is tall lost both its sides - it is now fitted whole inside the square, the apple-touch-icon's shorter side getting opaque white padding since iOS paints transparency black
+    public function testOnPostUploadPadsANonSquareUploadForAFixedIconRole(): void
+    {
+        // Named after the role's target format already, the namer having rewritten the extension before the upload landed (see UiMediaNamer)
+        $iconPath = $this->projectDir . '/public/apple-touch-icon.png';
+        $source = imagecreatetruecolor(200, 100);
+        imagefill($source, 0, 0, (int) imagecolorallocate($source, 230, 57, 70));
+        imagepng($source, $iconPath);
+
+        $media = new Media();
+        $media->setRole(Media::ROLE_APPLE_TOUCH_ICON);
+        $media->setFilename('apple-touch-icon.png');
+        $media->setFile(new File($iconPath));
+
+        $listener = $this->createListener();
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $dimensions = getimagesize($iconPath);
+        $this->assertSame(114, $dimensions[0]);
+        $this->assertSame(114, $dimensions[1]);
+
+        $stored = imagecreatefrompng($iconPath);
+        $this->assertNotFalse($stored);
+
+        // The padding above the drawing: opaque white (GD counts alpha from 0 opaque to 127 transparent), where a transparent one would be painted black on an iOS home screen
+        $padding = imagecolorsforindex($stored, imagecolorat($stored, 57, 2));
+        $this->assertSame(0, $padding['alpha']);
+        $this->assertSame([255, 255, 255], [$padding['red'], $padding['green'], $padding['blue']]);
+
+        // The drawing itself, untouched at the center of the square
+        $center = imagecolorsforindex($stored, imagecolorat($stored, 57, 57));
+        $this->assertSame(0, $center['alpha']);
+        $this->assertSame([230, 57, 70], [$center['red'], $center['green'], $center['blue']]);
+    }
+
+    // Regression: same crop, on the favicon role. GD can't decode the .ico back, but the container this bundle writes has a fixed layout (see wrapAsIco), so its pixels are read straight out of the bytes rather than through an image library
+    public function testOnPostUploadPadsANonSquareUploadForTheFaviconRole(): void
+    {
+        $iconPath = $this->projectDir . '/public/favicon.ico';
+        $source = imagecreatetruecolor(300, 100);
+        imagefill($source, 0, 0, (int) imagecolorallocate($source, 230, 57, 70));
+        imagepng($source, $iconPath);
+
+        $media = new Media();
+        $media->setRole(Media::ROLE_FAVICON);
+        $media->setFilename('favicon.ico');
+        $media->setFile(new File($iconPath));
+
+        $listener = $this->createListener();
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $ico = (string) file_get_contents($iconPath);
+
+        // A 300x100 upload fits the square as a 48x16 band, centered - so the top rows are padding and the middle ones the drawing
+        $this->assertSame(0, $this->icoAlphaAt($ico, 0, 0));
+        $this->assertSame(255, $this->icoAlphaAt($ico, 24, 24));
+    }
+
+    // The alpha byte of one pixel of an .ico written by wrapAsIco(): 6 bytes of header, a 16-byte directory entry and a 40-byte DIB header, then 48x48 BGRA pixels stored bottom-up
+    private function icoAlphaAt(string $ico, int $x, int $y): int
+    {
+        return ord($ico[62 + ((47 - $y) * 48 + $x) * 4 + 3]);
+    }
+
+    // Regression: fitting the upload inside the square never enlarges it, so a source smaller than the target used to hand wrapAsIco() an image narrower than the width its pixel loop reads - the canvas now carries the role's own size whatever was uploaded
+    public function testOnPostUploadCarriesAnUndersizedUploadToTheFixedIconSize(): void
+    {
+        $iconPath = $this->projectDir . '/public/favicon.ico';
+        imagepng(imagecreatetruecolor(20, 20), $iconPath);
+
+        $media = new Media();
+        $media->setRole(Media::ROLE_FAVICON);
+        $media->setFilename('favicon.ico');
+        $media->setFile(new File($iconPath));
+
+        $listener = $this->createListener();
+        $listener->onPostUpload(new Event($media, $this->createMapping()));
+
+        $dimensions = getimagesize($iconPath);
+        $this->assertSame(48, $dimensions[0]);
+        $this->assertSame(48, $dimensions[1]);
+        $this->assertSame(0, $this->icoAlphaAt((string) file_get_contents($iconPath), 0, 0));
+    }
+
     // An SVG uploaded as favicon/apple-touch-icon is rasterized upstream, then converted like any other upload - the stored file must be the role's own format, never the SVG the admin picked (see SvgRasterizer)
     public function testOnPostUploadRasterizesAnSvgUploadedForAFixedIconRole(): void
     {

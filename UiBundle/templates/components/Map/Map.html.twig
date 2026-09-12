@@ -1,4 +1,5 @@
-{# <twig:c975LUi:Map:Map points="[{label, latitude, longitude, text, url, icon}]" [title="optional title"] [id="anchor"] [height="medium"] [zoom="13"]/> #}
+{# <twig:c975LUi:Map:Map points="[{label, latitude, longitude, text, url, icon}]" [title="optional title"] [id="anchor"] [height="medium"] [zoom="13"] [list="full"]/> #}
+{# "list" says how the places read under the map: "full" writes them all out, "select" hands them to the browser's own picker, where a name is reached by typing its first letters - what a listing of dozens of places needs, the full list being a page of its own #}
 {# "icon" is optional, the url of the image that one marker is drawn with - for a listing whose places are of several sorts and whose map is read by telling them apart; a point naming none keeps the bundle's own pin #}
 {# The list of places is the content, and the map is what the browser makes of it: a visitor with no JavaScript, a browser that never got the library, or a Google map left without its key all keep the addresses and their links, which is also what a crawler reads #}
 {% set settings = ui_map_settings() %}
@@ -42,6 +43,15 @@
                 <p>{{ 'label.map_consent_required'|trans({}, 'ui') }}</p>
                 <button type="button" class="btn btn-primary" data-action="ui-map#accept">{{ 'label.map_accept'|trans({}, 'ui') }}</button>
             </div>
+            {# Every place in a one-line control, picking one bringing the map onto its marker: rendered hidden and revealed by the controller, the list below staying the content. The value is the place's rank among the points, the only thing that names a marker #}
+            {% if 'select' == list|default('full') %}
+                <select class="ui-map__select" data-ui-map-target="select" data-action="change->ui-map#locate" aria-label="{{ 'label.map_choose_place'|trans({}, 'ui') }}" hidden>
+                    <option value="">{{ 'label.map_choose_place'|trans({}, 'ui') }}</option>
+                    {% for point in points %}
+                        <option value="{{ loop.index0 }}">{{ point.label }}{% if point.text is defined and point.text %} - {{ point.text }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
             <ul class="ui-map__list" data-ui-map-target="list">
                 {% for point in points %}
                     <li class="ui-map__place">

@@ -360,6 +360,21 @@ class BlockTypeTest extends TestCase
         );
     }
 
+    // Everywhere but a flex row, the warning has to drop the "add a Column and drag it in" it ends on: a menu's group has no columns to offer
+    public function testAddSlotsSubFormWarnsInGenericTermsOutsideTheColumnsContext(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('getSlotContext')->willReturn('menu_slot');
+        $registry->method('has')->willReturn(true);
+        $registry->method('isAllowedInContext')->willReturn(false);
+
+        $added = $this->invokeAddSlotsSubForm($registry, $this->createContainer([
+            ['kind' => 'text_section', 'position' => 0, 'title' => null],
+        ]));
+
+        $this->assertSame('label.slots_legacy_context_help', $added['slots']['options']['help']);
+    }
+
     // A conforming container has nothing to warn about - no help at all, rather than an empty warning
     public function testAddSlotsSubFormAddsNoWarningWhenEverySlotIsAllowedInTheContext(): void
     {
@@ -443,6 +458,20 @@ class BlockTypeTest extends TestCase
 
         $this->assertSame(['Column' => 'flex_column', 'Text section' => 'text_section'], $added['kind']['choices']['Sections']);
         $this->assertSame('label.block_kind_legacy_slot_help', $added['kind']['help']);
+    }
+
+    // The same wording split on the kind picker: a navbar told to add a Column named a move its editor cannot make
+    public function testAKindTheContextNoLongerOffersIsWarnedAboutInGenericTermsOutsideTheColumnsContext(): void
+    {
+        $registry = $this->createStub(BlockRegistry::class);
+        $registry->method('groupedByCategory')->willReturn(['Navigation' => ['Link' => 'menu_link']]);
+        $registry->method('isAllowedInContext')->willReturn(false);
+        $registry->method('getCategory')->willReturn('Navigation');
+        $registry->method('getLabel')->willReturn('Group');
+
+        $added = $this->invokeAddKindField($registry, BlockRegistry::MENU_NAVBAR_CONTEXT, 'menu_group');
+
+        $this->assertSame('label.block_kind_legacy_context_help', $added['kind']['help']);
     }
 
     // Every other slot's list is left as the context built it, with no warning where there is nothing to warn

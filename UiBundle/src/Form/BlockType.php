@@ -616,7 +616,8 @@ class BlockType extends AbstractType
 
         $form->add('kind', ChoiceType::class, [
             'label' => 'label.block_kind',
-            'help' => $isLegacy ? 'label.block_kind_legacy_slot_help' : null,
+            // A kind no longer offered here says so in the terms of the place it sits in: only a flex row can be told to add a Column and drag the block into it, and that wording printed in a menu named a move its editor has no way to make
+            'help' => $isLegacy ? self::legacyKindHelp($context, 'label.block_kind_legacy_slot_help', 'label.block_kind_legacy_context_help') : null,
             // Both legacy-kind messages are warnings, not neutral field hints - the markup carrying that is in the translation, so each locale keeps a single string to review
             'help_html' => true,
             'choices' => $choices,
@@ -791,7 +792,7 @@ class BlockType extends AbstractType
 
         $form->add('slots', CollectionType::class, [
             'label' => 'section_cards' === $kind ? 'label.slots_cards' : 'label.slots',
-            'help' => [] === $legacySlots ? null : 'label.slots_legacy_kinds_help',
+            'help' => [] === $legacySlots ? null : self::legacyKindHelp($slotContext, 'label.slots_legacy_kinds_help', 'label.slots_legacy_context_help'),
             'help_html' => true,
             'help_translation_parameters' => ['%blocks%' => implode(', ', $legacySlots)],
             'entry_type' => self::class,
@@ -827,6 +828,12 @@ class BlockType extends AbstractType
         $request = $this->requestStack?->getCurrentRequest();
 
         return null !== $request && SubmissionIntegrity::isTruncated($request->request->all());
+    }
+
+    // Which of the two warnings a context gets: the columns one names the move that fixes it, and only holds where columns are what the slots are
+    private static function legacyKindHelp(?string $context, string $columnsKey, string $genericKey): string
+    {
+        return BlockRegistry::FLEX_COLUMNS_SLOT_CONTEXT === $context ? $columnsKey : $genericKey;
     }
 
     // Worded exactly as the accordion headers, so the warning names blocks the editor can actually find

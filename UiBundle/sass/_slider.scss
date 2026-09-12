@@ -23,6 +23,15 @@
     aspect-ratio: 16 / 9;
 }
 
+// The containing block of a media shown on its own: the credits and the rights mention are absolutely positioned, and a slide gets that box from .slider-item while a single media had none at all
+.slider-single-media {
+    position: relative;
+    // Shrunk to the media rather than spread over the column, so the band spans the image it credits
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+}
+
 // Single rich slide rendered outside the slider markup - same measure and same room as a multi-slide one
 .slider-single {
     position: relative;

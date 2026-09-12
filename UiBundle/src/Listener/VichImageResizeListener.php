@@ -24,6 +24,7 @@ use Imagine\Gd\Imagine;
 use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Palette\Color\ColorInterface;
+use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -252,19 +253,27 @@ class VichImageResizeListener
         return $highres;
     }
 
-    // Crops/resizes to the exact target size (fixed icon roles never keep the uploaded aspect ratio) and converts to the target format - .ico has no native GD/Imagine writer, so it's hand-wrapped around a raw bitmap
+    // Fits the upload (INSET) centered on a square of the role's exact size rather than cropping it, a wordmark losing both sides otherwise, then converts it - the canvas also carries an undersized upload to the full size wrapAsIco() reads, and .ico is hand-wrapped around a raw bitmap
     private function processFixedIcon(VichImageResizableInterface $entity, string $absolutePath, array $spec): void
     {
         $imagine = new Imagine();
         $thumbnail = $imagine->open($absolutePath)->thumbnail(
             new Box($spec['width'], $spec['height']),
-            ImageInterface::THUMBNAIL_OUTBOUND
+            ImageInterface::THUMBNAIL_INSET
         );
 
+        // The png is an apple-touch-icon, whose transparency iOS paints black: a wordmark would sit between two black bands on the home screen, so its padding is opaque white
+        $icon = $imagine->create(new Box($spec['width'], $spec['height']), new RGB()->color('#ffffff', 'ico' === $spec['format'] ? 0 : 100));
+        $thumbnailSize = $thumbnail->getSize();
+        $icon->paste($thumbnail, new Point(
+            (int) (($spec['width'] - $thumbnailSize->getWidth()) / 2),
+            (int) (($spec['height'] - $thumbnailSize->getHeight()) / 2)
+        ));
+
         if ('ico' === $spec['format']) {
-            file_put_contents($absolutePath, $this->wrapAsIco($thumbnail, $spec['width'], $spec['height']));
+            file_put_contents($absolutePath, $this->wrapAsIco($icon, $spec['width'], $spec['height']));
         } else {
-            $thumbnail->save($absolutePath, ['format' => $spec['format']]);
+            $icon->save($absolutePath, ['format' => $spec['format']]);
         }
 
         if (method_exists($entity, 'setSize')) {

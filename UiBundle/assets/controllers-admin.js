@@ -21,8 +21,9 @@ import './js/icon-picker.js';
 import './js/block-picker.js';
 import './js/mobile-file-accept.js';
 
-// Back-office controllers, used only in EasyAdmin Loaded as its own <script type="module"> tag (see importmap.php), starts its own Stimulus app
-const app = startStimulusApp();
+// Back-office controllers, used only in EasyAdmin and loaded as their own module tag (see importmap.php), joining the page's one Stimulus application - see controllers.js
+globalThis.c975lStimulusApp ??= startStimulusApp();
+const app = globalThis.c975lStimulusApp;
 app.register('aiAssistant', AiAssistantController);
 app.register('aiRephrase', AiRephraseController);
 app.register('block', BlockController);

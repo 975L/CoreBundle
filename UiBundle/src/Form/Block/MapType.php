@@ -51,6 +51,14 @@ class MapType extends AbstractType
                     'label.map_height_large' => 'large',
                 ],
             ])
+            // How the places read under the map: written out one under the other, or handed to the browser's own picker - a listing of dozens of them is a page of its own, and the picker reaches a name by its first letters
+            ->add('list', ChoiceType::class, [
+                'label' => 'label.map_list',
+                'choices' => [
+                    'label.map_list_full' => 'full',
+                    'label.map_list_select' => 'select',
+                ],
+            ])
             ->add('zoom', IntegerType::class, [
                 'label' => 'label.map_zoom',
                 'help' => 'label.map_zoom_help',

@@ -42,4 +42,10 @@ interface DrawableMediaInterface
 
     // Whether the media sits above the fold, which is what has it loaded eagerly and fetched first rather than lazily like every other
     public function isAbove(): bool;
+
+    // Who the media is to be credited to, drawn over it - a license asking for attribution is honoured by this getter and nothing else
+    public function getCredits(): ?string;
+
+    // Whether the media carries an "all rights reserved" mention, drawn over it the same way. Nullable, an entity leaving the checkbox untouched answering null rather than false
+    public function isRightsReserved(): ?bool;
 }

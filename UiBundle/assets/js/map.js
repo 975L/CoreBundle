@@ -34,9 +34,9 @@ const ICON = (L, url) => L.icon({
     popupAnchor: [0, -PIN_SIZE],
 });
 
-// Draws the places a "map" block holds, over OpenStreetMap tiles or over Google's API, the site having said which in "ui-map-provider" (see MapProvider and Twig's ui_map_settings()). Nothing here is required for the block to hold: the list of places is rendered server-side and stays on screen under the map, which is also the only version of it a screen reader and a keyboard can work through
+// Draws the places a "map" block holds, over OpenStreetMap tiles or over Google's API, the site having said which in "ui-map-provider" (see MapProvider and Twig's ui_map_settings()). Nothing here is required for the block to hold: the list of places is rendered server-side and stays on screen under the map, which is also the only version of it a screen reader and a keyboard can work through - unless the map was drawn and the block offered a picker to find a marker through, which is this controller's to reveal in the list's place (see offerPicker)
 export default class extends Controller {
-    static targets = ["canvas", "list", "consent", "diagnostic"];
+    static targets = ["canvas", "list", "consent", "diagnostic", "select"];
     static values = {
         provider: String,
         apiKey: String,
@@ -91,6 +91,62 @@ export default class extends Controller {
         this.map = null;
     }
 
+    // The room the map will take, taken before the library is asked for: revealed at the end of the load, the canvas and the dropped list reflowed the page under its reader - given back by restore() only if the library never arrives
+    reserve() {
+        this.canvasTarget.hidden = false;
+        this.offerPicker();
+    }
+
+    // The block as it was rendered, for a map that could not be drawn: the empty box goes, and the places are written out again rather than held behind a picker pointing at no marker
+    restore() {
+        this.canvasTarget.hidden = true;
+
+        if (!this.hasSelectTarget) {
+            return;
+        }
+
+        this.selectTarget.hidden = true;
+        this.listTarget.hidden = false;
+    }
+
+    // The places, handed to the browser's own picker instead of written out one under the other - dozens of them are a page of their own, and a name is reached there by typing its first letters. Never offered server-side: the picker points at a marker, so a visitor whose JavaScript never ran keeps the written-out list whole
+    offerPicker() {
+        if (!this.hasSelectTarget) {
+            return;
+        }
+
+        this.selectTarget.hidden = false;
+        this.listTarget.hidden = true;
+    }
+
+    // The place just picked, found on the map rather than opened, its popup carrying the link to the place's page. The first option names no place and takes the map back onto the whole listing
+    locate() {
+        if (!this.selectTarget.value) {
+            this.reframe?.();
+
+            return;
+        }
+
+        // Picked while the library is still on its way: kept, and played back by locateEarlyPick() once the markers exist
+        if (!this.locator) {
+            this.pendingPlace = Number(this.selectTarget.value);
+
+            return;
+        }
+
+        this.locator(Number(this.selectTarget.value));
+    }
+
+    // The place picked before the map was drawn, found now that it is - the picker is on screen from the start (see reserve), and a choice made in that window would otherwise be lost
+    locateEarlyPick() {
+        if (null === (this.pendingPlace ?? null)) {
+            return;
+        }
+
+        this.locator(this.pendingPlace);
+        this.pendingPlace = null;
+    }
+
     listen() {
         window.addEventListener("cc:onConsent", this.onConsent);
         window.addEventListener("cc:onChange", this.onConsent);
@@ -121,6 +177,8 @@ export default class extends Controller {
             return;
         }
 
+        this.reserve();
+
         if (!("IntersectionObserver" in window)) {
             this.draw();
 
@@ -136,15 +194,12 @@ export default class extends Controller {
         this.observer.observe(this.element);
     }
 
-    // A failure of any kind leaves the canvas hidden and the list of places on screen, which is the whole point of rendering that list server-side: a tile server refusing the request, a key Google turned down, a stylesheet that never arrived
+    // A failure of any kind gives the room back and puts the list of places on screen. The canvas is already visible when the library gets it (see reserve): both providers read its size as they build, and a display:none box paints a grey grid
     async draw() {
-        // Revealed before the library is handed the element, never after: both providers read the container's size as they build, and a display:none box is 0x0 - the map then paints a grey grid that only puts itself right on the next window resize
-        this.canvasTarget.hidden = false;
-
         try {
             this.map = "google" === this.providerValue ? await this.drawGoogle() : await this.drawLeaflet();
         } catch {
-            this.canvasTarget.hidden = true;
+            this.restore();
             await this.explain();
         }
     }
@@ -187,7 +242,25 @@ export default class extends Controller {
             .bindPopup(this.popup(point))
             .addTo(map));
 
-        this.frame(markers.length, () => map.fitBounds(L.featureGroup(markers).getBounds(), { padding: [BOUNDS_PADDING, BOUNDS_PADDING] }));
+        // Read once and not per fit: a group is what every marker reports its events to, and one built again on each reframe would leave each of them with a parent more to walk
+        const bounds = L.featureGroup(markers).getBounds();
+        const fit = (animate) => map.fitBounds(bounds, { padding: [BOUNDS_PADDING, BOUNDS_PADDING], animate });
+        // The opening view is never animated: a zoom still running when the page is left answers its transitionend on panes Leaflet already took down, an uncaught error
+        this.frame(markers.length, () => fit(false));
+
+        // The view the map opened on, framed on every marker again and the open popup closed - what the picker's first option goes back to, animated since the visitor asked for it
+        this.reframe = () => {
+            map.closePopup();
+            this.frame(markers.length, () => fit(true));
+        };
+
+        // Never zoomed back out: a map framed on the whole listing is closer than the block's own zoom, and a place picked from the menu would otherwise take the view further away than it already was
+        this.locator = (index) => {
+            const marker = markers[index];
+            map.setView(marker.getLatLng(), Math.max(map.getZoom(), this.zoomValue));
+            marker.openPopup();
+        };
+        this.locateEarlyPick();
 
         return map;
     }
@@ -205,6 +278,7 @@ export default class extends Controller {
         // One window reused by every marker: Google keeps each one it is given open, and a map of ten places would end up with ten popups stacked over it
         const infoWindow = new google.maps.InfoWindow();
         const bounds = new google.maps.LatLngBounds();
+        const markers = [];
 
         for (const point of this.pointsValue) {
             const position = { lat: Number(point.latitude), lng: Number(point.longitude) };
@@ -219,10 +293,28 @@ export default class extends Controller {
                 infoWindow.setContent(this.popup(point));
                 infoWindow.open(map, marker);
             });
+            markers.push(marker);
             bounds.extend(position);
         }
 
-        this.frame(this.pointsValue.length, () => map.fitBounds(bounds, BOUNDS_PADDING));
+        const fit = () => map.fitBounds(bounds, BOUNDS_PADDING);
+        this.frame(this.pointsValue.length, fit);
+
+        // Same contract as the Leaflet branch: the view the map opened on, and the window the place before it left open closed with it
+        this.reframe = () => {
+            infoWindow.close();
+            this.frame(this.pointsValue.length, fit);
+        };
+
+        // Same contract as the Leaflet branch: the view is brought onto the marker, never taken further away than it already was, and its own popup is opened
+        this.locator = (index) => {
+            const marker = markers[index];
+            map.setCenter(marker.getPosition());
+            map.setZoom(Math.max(map.getZoom(), this.zoomValue));
+            infoWindow.setContent(this.popup(this.pointsValue[index]));
+            infoWindow.open(map, marker);
+        };
+        this.locateEarlyPick();
 
         return map;
     }

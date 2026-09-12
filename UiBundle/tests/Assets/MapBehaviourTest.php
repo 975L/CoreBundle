@@ -206,6 +206,38 @@ class MapBehaviourTest extends JsCase
         $this->assertSame(2, $state['list'], 'A failure to draw took the places away with it.');
     }
 
+    // The room a map takes is taken before its library is asked for: revealed at the end of the load, the canvas and the list it replaces reflowed the page twice
+    public function testTheRoomTheMapWillTakeIsTakenBeforeItIsDrawn(): void
+    {
+        $reserved = $this->map(
+            'return {
+                 drawn: root.querySelector(".leaflet-container") !== null,
+                 canvas: root.querySelector("[data-ui-map-target=canvas]").hidden,
+                 picker: root.querySelector("[data-ui-map-target=select]").hidden,
+                 list: root.querySelector("[data-ui-map-target=list]").hidden,
+             }',
+            // Below the fold, so the block is scheduled but not drawn: what the page looks like in the window between the two
+            ['select' => true, 'below' => true]
+        );
+
+        $this->assertFalse($reserved['drawn'], 'The scenario drew the map it has to catch the page before.');
+        $this->assertFalse($reserved['canvas'], 'The canvas was still out of the flow, so the map grows the page when it draws.');
+        $this->assertFalse($reserved['picker'], 'The picker was still hidden, so it takes the list\'s place only once the map is drawn.');
+        $this->assertTrue($reserved['list'], 'The written-out list was still on screen, and the page loses its whole length when the map draws.');
+    }
+
+    // The picker points at markers, so a map that drew none takes it away again (see restore), the written-out list being all there is left to read
+    public function testAMapThatCouldNotBeDrawnKeepsTheListRatherThanThePicker(): void
+    {
+        $state = $this->map(
+            'return { picker: root.querySelector("[data-ui-map-target=select]").hidden, list: root.querySelector("[data-ui-map-target=list]").hidden };',
+            ['script' => 'http://127.0.0.1:1/leaflet.js', 'fresh' => true, 'select' => true]
+        );
+
+        $this->assertTrue($state['picker'], 'A picker was offered for markers that were never drawn.');
+        $this->assertFalse($state['list'], 'The list was hidden behind a picker that can find nothing.');
+    }
+
     // A block holding no place draws nothing at all rather than a map centred on nowhere
     public function testABlockWithNoPlaceDrawsNothing(): void
     {
@@ -275,7 +307,7 @@ class MapBehaviourTest extends JsCase
                  columnNumber: 0,
              }));
              window.scrollTo(0, 3000);
-             await new Promise((r) => setTimeout(r, 400));
+             await new Promise((r) => setTimeout(r, 1200));
 
              return root.querySelector("[data-ui-map-target=diagnostic]").textContent;',
             ['script' => 'http://127.0.0.1:1/leaflet.js', 'fresh' => true, 'diagnostic' => true, 'below' => true]
@@ -308,7 +340,7 @@ class MapBehaviourTest extends JsCase
                  columnNumber: 0,
              }));
              window.scrollTo(0, 3000);
-             await new Promise((r) => setTimeout(r, 400));
+             await new Promise((r) => setTimeout(r, 1200));
 
              return root.querySelector("[data-ui-map-target=diagnostic]").textContent;',
             ['script' => 'http://127.0.0.1:1/leaflet.js', 'fresh' => true, 'diagnostic' => true, 'below' => true]
@@ -339,6 +371,109 @@ class MapBehaviourTest extends JsCase
         $this->assertCount(1, $appended, 'A page with no policy was given a style element it has no use for.');
         $this->assertSame('SCRIPT', $appended[0]['tag']);
         $this->assertSame('', $appended[0]['nonce'], 'An empty nonce was written onto the loader.');
+    }
+
+    // A listing of dozens of places is a page of its own, so the block may hand them to the browser's own picker instead - which only holds where JavaScript runs, the written-out list being what everybody else reads
+    public function testThePickerTakesTheListOverWhereverItIsOffered(): void
+    {
+        $swapped = $this->map(
+            'return {
+                 picker: root.querySelector("[data-ui-map-target=select]").hidden,
+                 list: root.querySelector("[data-ui-map-target=list]").hidden,
+             }',
+            ['select' => true]
+        );
+
+        $this->assertFalse($swapped['picker'], 'The picker was left hidden.');
+        $this->assertTrue($swapped['list'], 'The list was left on screen under the picker.');
+    }
+
+    // What the picker is for: a marker among dozens, found on the map itself - the page is never left, and the popup it opens carries the link to the place's own page
+    public function testPickingAPlaceBringsTheMapOntoItsMarker(): void
+    {
+        $found = $this->map(
+            'const where = window.location.href;
+             const picker = root.querySelector("[data-ui-map-target=select]");
+             picker.value = "1";
+             picker.dispatchEvent(new Event("change", { bubbles: true }));
+             await new Promise((r) => setTimeout(r, 100));
+
+             const centre = window.__maps[0].getCenter();
+
+             return {
+                 latitude: Math.round(centre.lat * 1000) / 1000,
+                 popup: root.querySelector(".leaflet-popup-content .ui-map__popup")?.textContent ?? null,
+                 here: window.location.href === where,
+             }',
+            ['select' => true]
+        );
+
+        // The second of the two points the scenario maps, which the view was framed on both of before
+        $this->assertSame(45.924, $found['latitude'], 'The map was not brought onto the picked marker.');
+        $this->assertStringContainsString('Chamonix', (string) $found['popup'], 'The marker was not named by a popup of its own.');
+        $this->assertTrue($found['here'], 'Picking a place took the visitor off the page.');
+    }
+
+    // The picker is on screen before the library has arrived (see reserve): a place picked in that window is found once the map draws, rather than lost
+    public function testAPlacePickedBeforeTheMapIsDrawnIsFoundOnceItIs(): void
+    {
+        $found = $this->map(
+            'const picker = root.querySelector("[data-ui-map-target=select]");
+             picker.value = "1";
+             picker.dispatchEvent(new Event("change", { bubbles: true }));
+             const early = root.querySelector(".leaflet-container") === null;
+
+             window.scrollTo(0, 3000);
+             await new Promise((r) => setTimeout(r, 1200));
+             window.scrollTo(0, 0);
+
+             return {
+                 early: early,
+                 popup: root.querySelector(".leaflet-popup-content .ui-map__popup")?.textContent ?? null,
+             }',
+            ['select' => true, 'below' => true]
+        );
+
+        $this->assertTrue($found['early'], 'The scenario picked its place after the map was drawn, which is not the window it has to catch.');
+        $this->assertStringContainsString('Chamonix', (string) $found['popup'], 'A place picked before the map was drawn was lost once it was.');
+    }
+
+    // The picker's first option names no place: it is the way back out of the view a picked place zoomed in, which nothing else on the map offers
+    public function testPickingTheFirstOptionTakesTheMapBackOntoEveryPlace(): void
+    {
+        $back = $this->map(
+            'const map = window.__maps[0];
+             const read = () => ({ zoom: map.getZoom(), latitude: Math.round(map.getCenter().lat * 1000) / 1000 });
+             const pick = async (value) => {
+                 const picker = root.querySelector("[data-ui-map-target=select]");
+                 picker.value = value;
+                 picker.dispatchEvent(new Event("change", { bubbles: true }));
+                 await new Promise((r) => setTimeout(r, 600));
+             };
+
+             await new Promise((r) => setTimeout(r, 600));
+             const framed = read();
+             await pick("1");
+             const picked = read();
+             await pick("");
+
+             return { framed: framed, picked: picked, back: read(), popup: root.querySelector(".leaflet-popup") === null }',
+            ['select' => true]
+        );
+
+        // The two points the scenario maps, framed on both of them at once, then the second of them alone at the block's own zoom
+        $this->assertSame(['zoom' => 9, 'latitude' => 45.911], $back['framed'], 'The map did not open framed on both places.');
+        $this->assertSame(['zoom' => 11, 'latitude' => 45.924], $back['picked'], 'The map was not brought onto the picked marker.');
+        $this->assertSame($back['framed'], $back['back'], 'The map was not taken back onto both places.');
+        $this->assertTrue($back['popup'], 'The place picked before left its popup open over the whole map.');
+    }
+
+    // The same map without that option, and any map whose library never arrived: nothing is taken away from anybody, the places staying written out
+    public function testTheListIsLeftWholeWhereNoPickerIsOffered(): void
+    {
+        $kept = $this->map('return root.querySelector("[data-ui-map-target=list]").hidden');
+
+        $this->assertFalse($kept, 'The list was hidden although no picker was rendered to replace it.');
     }
 
     /**
@@ -392,6 +527,7 @@ class MapBehaviourTest extends JsCase
             'diagnostic' => false,
             'consent' => 'false',
             'head' => '',
+            'select' => false,
         ], $options);
 
         $points = $options['points'];
@@ -420,6 +556,7 @@ class MapBehaviourTest extends JsCase
                     <div data-ui-map-target="canvas" class="ui-map__canvas" hidden></div>
                     <div data-ui-map-target="consent" hidden><button type="button" data-action="ui-map#accept">Accepter</button></div>
                     %s
+                    %s
                     <ul data-ui-map-target="list">%s</ul>
                 </div>',
                 $banner,
@@ -429,6 +566,7 @@ class MapBehaviourTest extends JsCase
                 $options['needsConsent'],
                 htmlspecialchars($points, \ENT_QUOTES),
                 $options['diagnostic'] ? '<p class="ui-map__diagnostic" data-ui-map-target="diagnostic" hidden></p>' : '',
+                $options['select'] ? '<select class="ui-map__select" data-ui-map-target="select" data-action="change->ui-map#locate" hidden><option value="">Choisir un lieu</option><option value="0">Annecy</option><option value="1">Chamonix</option></select>' : '',
                 $items
             ),
             ['ui-map' => 'map'],

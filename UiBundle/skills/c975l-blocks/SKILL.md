@@ -280,6 +280,12 @@ server-side, each entry linking to the place on OpenStreetMap, and the map is dr
 what a visitor with no JavaScript, a browser that never got the library, and a Google key that was refused
 all keep — and the only version a keyboard and a screen reader can work through.
 
+**A long listing can go into a picker**: the block's `list` option (`list="select"` on
+`<twig:c975LUi:Map:Map>`, `full` by default) renders a hidden `<select>` that `assets/js/map.js`
+reveals in the list's place once the map is scheduled. Picking a place brings the map onto its marker,
+even when picked before the library arrived; a map that never draws, a visitor with no JavaScript and
+a printed page all keep the written-out list.
+
 **A single place can be drawn with an image of its own**: `<twig:c975LUi:Map:Map>` reads an optional
 `icon` url on a point and draws that marker with it, in both providers, a point naming none keeping
 the pin `sass/_map.scss` paints. It is for a listing whose places are of several sorts and is read by

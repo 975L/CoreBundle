@@ -1018,6 +1018,10 @@
                 <source>label.block_kind</source>
                 <target>Block Kind</target>
             </trans-unit>
+            <trans-unit id="aX3gtT.">
+                <source>label.block_kind_legacy_context_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ This kind of block is no longer offered here: pick another one, or move this block where it is still offered.&lt;/span&gt;</target>
+            </trans-unit>
             <trans-unit id="CZn_467">
                 <source>label.block_kind_legacy_slot_help</source>
                 <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ This block sits directly as a column, which is no longer offered: add a Column to the row, drag this block into it, and you will then be able to set its width.&lt;/span&gt;</target>
@@ -2818,6 +2822,10 @@
                 <source>label.map_accept</source>
                 <target>Show the map</target>
             </trans-unit>
+            <trans-unit id="xOr3Dl8">
+                <source>label.map_choose_place</source>
+                <target>Choose a place</target>
+            </trans-unit>
             <trans-unit id="s.r9DKV">
                 <source>label.map_consent_required</source>
                 <target>This map is drawn by Google, which writes cookies on your device.</target>
@@ -2865,6 +2873,18 @@
             <trans-unit id="AlQR0jc">
                 <source>label.map_height_small</source>
                 <target>Small</target>
+            </trans-unit>
+            <trans-unit id="cHy8gIH">
+                <source>label.map_list</source>
+                <target>List of places</target>
+            </trans-unit>
+            <trans-unit id="3FTX_It">
+                <source>label.map_list_full</source>
+                <target>Full list</target>
+            </trans-unit>
+            <trans-unit id="vHRObYf">
+                <source>label.map_list_select</source>
+                <target>Drop-down menu</target>
             </trans-unit>
             <trans-unit id="5bI93CU">
                 <source>label.map_point_address</source>
@@ -3581,6 +3601,10 @@
             <trans-unit id="dVwFNwZ">
                 <source>label.slots_cards</source>
                 <target>Cards</target>
+            </trans-unit>
+            <trans-unit id="Fa7C19W">
+                <source>label.slots_legacy_context_help</source>
+                <target>&lt;span class="alert alert-warning d-block p-2"&gt;⚠ These blocks are no longer offered here: %blocks%. For each one, pick another kind, or move it where it is still offered.&lt;/span&gt;</target>
             </trans-unit>
             <trans-unit id="EcQhzh6">
                 <source>label.slots_legacy_kinds_help</source>

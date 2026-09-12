@@ -50,6 +50,11 @@ layout never writing a `data-controller`. A controller listed in that file's `LA
 imported dynamically, so **`connect()` usually runs after the page's DOMContentLoaded**: read
 `document.readyState` rather than subscribing to an event already fired.
 
+**Every barrel joins one Stimulus application per page**: `globalThis.c975lStimulusApp ??= startStimulusApp()`,
+never a bare `startStimulusApp()` — each call also registers whatever `controllers.json` enables, so
+several barrels starting their own built `live` once per barrel. The site's own
+`assets/stimulus_bootstrap.js` takes that same line.
+
 An icon laid on the page itself is an `<img>`, which paints its file's own black and takes no
 `currentColor`: the ambience states the treatment in `--icon-filter`, `none` leaving a colored file
 alone. `.btn .icon` and `.card-header .icon` carry their own inversion and weigh more.

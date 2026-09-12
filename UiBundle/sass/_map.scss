@@ -2,6 +2,11 @@
 .ui-map {
     max-width: var(--reading-max-width, min(75ch, 90vw));
     margin: var(--ui-map-margin-block, 3em) auto;
+    // A stacking context of the block's own: Leaflet paints its controls at z-index 1000, the very height a sticky bar takes, and wins the tie by standing later in the page - its zoom buttons were drawn over the site's own header
+    position: relative;
+    z-index: 0;
+    // An anchored map comes to rest below that bar rather than under it, the offset every other anchor of the ecosystem reads (see _legal.scss and _toc.scss)
+    scroll-margin-top: var(--scroll-offset, 80px);
 }
 
 .ui-map__title {
@@ -47,7 +52,27 @@
     font-size: .9em;
 }
 
-// The places, rendered server-side and left on screen under the map: it is what a visitor with no map reads, and the only version of it a keyboard and a screen reader can work through
+// The places in one line, the browser's own picker revealed by the controller (see assets/js/map.js). The class is written twice on purpose: a coloured flat pushes its text colour onto everything it holds
+.ui-map .ui-map__select {
+    display: block;
+    width: 100%;
+    margin: 1em 0 0;
+    padding: .5em;
+    border: var(--ui-map-border, 1px solid var(--border-color));
+    border-radius: 8px;
+    background: var(--ui-map-select-background, var(--background, #fff));
+    color: var(--ui-map-select-color, var(--text, #000));
+    font-family: inherit;
+    font-size: 1em;
+}
+
+// The menu the browser opens is painted from the option's own pair, and a colour inherited from a dark flat would leave the names unreadable on it
+.ui-map .ui-map__select option {
+    background: var(--ui-map-select-background, var(--background, #fff));
+    color: var(--ui-map-select-color, var(--text, #000));
+}
+
+// The places, rendered server-side and left on screen under the map: it is what a visitor with no map reads, and the only version of it a keyboard and a screen reader can work through - a block offering the picker above hides this list once the controller has revealed it
 .ui-map__list {
     margin: 1em 0 0;
     padding: 0;
@@ -93,5 +118,16 @@
     p {
         margin: .25em 0 0;
         font-size: .9em;
+    }
+}
+
+// A picker prints as a closed menu naming no place, so paper gets the written-out list back - !important because Bootstrap's reboot hides [hidden] with it
+@media print {
+    .ui-map__list[hidden] {
+        display: block !important;
+    }
+
+    .ui-map .ui-map__select {
+        display: none !important;
     }
 }

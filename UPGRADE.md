@@ -1,5 +1,37 @@
 # UPGRADE
 
+## v1.30.2
+
+**`DrawableMediaInterface` declares two more getters: `getCredits(): ?string` and `isRightsReserved(): ?bool`.** The `Slider` component had always read both off a media, but only in its several-medias branch, and the contract never said so - which is why a fiche showing a single photograph published it with neither its credit nor its rights notice. It now draws them for one media too, so **any entity you hand to that component must answer both**. An entity crediting nobody returns null from them:
+
+```php
+public function getCredits(): ?string
+{
+    return $this->credits;
+}
+
+public function isRightsReserved(): ?bool
+{
+    return $this->rightsReserved;
+}
+```
+
+Nothing to change in your templates: the two mentions are drawn by the component, laid over the media as they already were in a gallery of several.
+
+**The bundles no longer start a Stimulus application of their own, and your `assets/stimulus_bootstrap.js`
+should stop starting one too.** Every call to `startStimulusApp()` starts an application AND registers whatever
+`controllers.json` enables, so a page loading the app's bootstrap plus four bundle barrels ran five applications
+and instantiated `live`, `chart` and `turbo-core` five times each - a Live Component answered five requests and
+morphed its results in five times over. The bundles now join one shared application; the app's own bootstrap is
+the file that usually creates it, so change its single line to:
+
+```js
+const app = (globalThis.c975lStimulusApp ??= startStimulusApp());
+```
+
+Leaving it untouched is not fatal - the page falls back to two applications instead of five - but a Live
+Component or a `controllers.json` controller is still built twice.
+
 ## v1.30.1
 
 **`UiBundle/public/images/up-arrow.png` and `down-arrow.png` are deleted.** The two scroll buttons draw their

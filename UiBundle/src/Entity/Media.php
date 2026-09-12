@@ -63,7 +63,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
         self::ROLE_APPLE_TOUCH_ICON => ['width' => 114, 'height' => 114, 'format' => 'png'],
     ];
 
-    // Roles resized to a max width (aspect ratio kept, unlike FIXED_ICON_SPECS) instead of the default IMAGE_WIDTH
+    // Roles resized to a max width (no square canvas, unlike FIXED_ICON_SPECS) instead of the default IMAGE_WIDTH
     private const array MAX_WIDTHS = [
         self::ROLE_LOGO => 600,
         self::ROLE_LOGO_ON_DARK => 600,
