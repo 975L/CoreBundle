@@ -1,6 +1,6 @@
 ---
 name: c975l-ui-assets
-description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, --label-color, EmailStylesheetTest, resolve_css_variables, CssVariableResolver, emails.css, text-muted, FontProviderInterface, font_preloads, FontFilenameParser, font filename, family name, variable font, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, --back-pull-size, --back-pull-opacity, --back-pull-color, backTop, pullDown, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, StylesheetProvider, block-thumbs.min.css, block-picker, :has(), nested :has, display contents, block-animation, block-editable, SectionRhythmTest."
+description: "Use this skill when a stylesheet, a script, a font or a design token is involved in a Symfony application built on the c975L ecosystem — how a bundle gets its CSS and JS onto the page without a link tag, how the theme tokens resolve, what the scaffolded theme files own, and which helpers a satellite bundle must reuse rather than rewrite. Triggers on: ui.stylesheet, ui.script, BundleStylesheetProviderInterface, BundleScriptProviderInterface, bundle_stylesheets, StylesheetCacheWarmer, site.css, site-theme.css, ThemeVariablesCssListener, theme_variables_css, tokens, --viewport-width, --card-width-compact, ui-defaults layer, ScaffoldThemeTest, scaffold themes, --primary-ink, PrimaryInkRoleTest, ink tokens, --input-placeholder-color, --label-color, EmailStylesheetTest, resolve_css_variables, CssVariableResolver, emails.css, text-muted, FontProviderInterface, font_preloads, FontFilenameParser, font filename, family name, variable font, importmap, handlers.js, UniqueSlug, BuildFileWriter, BlockFocusUrl, pointer-sort, sort-icon, ea-index-sort, infinite-scroll, scroll-buttons, --back-pull-size, --back-pull-opacity, --back-pull-color, backTop, pullDown, infiniteScroll, Paginator, Pagination, paginate, PAGE_PARAMETER, KnpPaginatorBundle, toc.js, --icon-filter, layout.html.twig, page layout, bodyClass, bodyClasses, bodyControllers, headingDisplayed, robots, alternates, hreflang, summarySocialNetwork, ogImage, ogImageAlt, csp-nonce, csp_nonce, format-detection, telephone=no, preconnect, site-preconnect, ui_can_hold_flash, flashes, block content, block container, block header, block footer, ignore_missing, Basket:Navbar, basket bar, PaymentBundle, StylesheetProvider, block-thumbs.min.css, block-picker, :has(), nested :has, display contents, block-animation, block-editable, SectionRhythmTest."
 ---
 
 # c975L UiBundle — stylesheets, scripts and tokens
@@ -106,6 +106,10 @@ one of them.
   and an include at render time, so a template calling a bundle's function answers 500 on every page of a site
   not installing it, whatever runtime guard wraps it. The share band is
   `include('@c975LSocial/shareButtons/default.html.twig', ignore_missing: true)` for exactly that reason.
+- **The basket bar is placed here, once for the whole site** - PaymentBundle's `Basket:Navbar` is
+  `include`d with `ignore_missing: true`, outside the `footer` block a site layout replaces, so a site
+  without PaymentBundle renders nothing and no site layout has to add it. It mounts the `basket` Stimulus
+  controller itself and stays hidden while the basket is empty.
 
 ## The token layers
 
@@ -264,3 +268,5 @@ every bundle that copies it.
   variable it already reads.
 - **Do not call an optional bundle's Twig function from a shared template** — `include` its fragment with
   `ignore_missing: true`. A call is resolved at compile time and 500s where that bundle is absent.
+- **Do not place `Basket:Navbar` in a site layout, a page or a block** — this shell includes it once, and
+  a second bar is never filled.

@@ -70,6 +70,7 @@ See it in action at [bundles.975l.com/pages/config-bundle](https://bundles.975l.
 - `c975l:deprecations:check`, grouping the deprecations Monolog logged and telling the ones your own code triggers from the ones a third-party package triggers on its own
 - The ecosystem's account layer: `User` CRUD, registration, email confirmation and password reset, on forms and emails seeded once and editable from the back-office afterwards
 - "Sign in with Google" on the login page, enabled by filling two config keys and nothing else — no new dependency, no migration, and extensible to other providers via `OAuthLoginProviderInterface`
+- `c975l:skills:install`, linking the agent skills every registered bundle ships into `.claude/skills/`, where a coding agent actually reads them
 - `c975l:scaffold:install`, installing every installed c975L bundle's scaffold files into the app and backing up whatever it would replace, `c975l:scaffold:diff` telling the files this app customized on purpose from the ones whose scaffold has moved on since, and `c975l:config:user-create` to bootstrap the first admin on an app with no site foundation
 
 ## Installation
@@ -2661,11 +2662,13 @@ vendor/c975l/core-bundle/ConfigBundle/skills/
 
 They are split by subject rather than shipped as one file so that an agent loads the one it needs. Each holds what an agent gets wrong when left to its own habits — that a setting is a `configs.json` entry and never a `.env` variable, that a contribution class needs no service tag but does need its folder scanned, that `ROLE_SUPER_ADMIN` is never listed in a config, that a sitemap is a generated file and not a route.
 
-Nothing is installed, nothing is copied into your project: the files sit in `vendor/` like any other part of the package and follow it at each `composer update`. A user of Claude Code wanting one to load by itself symlinks it into their own skills directory:
+Nothing is copied into your project: the files sit in `vendor/` like any other part of the package and follow it at each `composer update`. Agents read skills from `.claude/skills/` alone, though, so one command links them there:
 
 ```bash
-ln -s ../../vendor/c975l/core-bundle/ConfigBundle/skills/c975l-config .claude/skills/c975l-config
+php bin/console c975l:skills:install
 ```
+
+It links what **every registered bundle** ships under `skills/<name>/SKILL.md`, not this package alone: that layout is the [agentskills.io](https://agentskills.io) standard, and EasyAdmin 5.6 ships one of its own that way. Links rather than copies, so what an agent reads is always the version `composer update` last installed — nothing to refresh, nothing to check. A directory of your own carrying the name of a shipped skill is never touched, and the links of a skill no bundle ships anymore are deleted. Only `.claude/skills/` is written, not `.agents/skills/` nor the other agents' directories, and EasyAdmin's own `easyadmin:ai:install` then declines to overwrite the link this command made: run either one, not both.
 
 `Tests\SkillsTest` keeps them honest: every path, route, config slug, command, class member, Twig function, block kind and component they quote is checked against the sources, so renaming any of them fails the build rather than leaving an agent confidently wrong.
 

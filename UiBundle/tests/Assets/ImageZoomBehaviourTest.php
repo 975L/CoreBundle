@@ -19,21 +19,21 @@ use PHPUnit\Framework\Attributes\Group;
 class ImageZoomBehaviourTest extends JsCase
 {
     // The picture the page shows, the file the zoom opens, and the arrangement Zoom.html.twig lays them out in
-    private const string MARKUP = '<span class="image-zoom" data-controller="imageZoom">
+    private const string MARKUP = '<div class="image-zoom" data-controller="imageZoom">
             <a href="/medias/photo-highres.webp" class="image-zoom__link" data-action="imageZoom#open" aria-label="Voir en haute résolution">
                 <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Une photo">
             </a>
             <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close">
                 <img class="image-zoom__image" data-imageZoom-target="image" alt="Une photo">
             </dialog>
-        </span>';
+        </div>';
 
     // What a browser makes of the component written inside a <p>: <dialog> closes the paragraph implicitly, and both the dialog and everything after it are lifted out of the element carrying the controller
-    private const string MARKUP_HOISTED = '<span class="image-zoom" data-controller="imageZoom">
+    private const string MARKUP_HOISTED = '<div class="image-zoom" data-controller="imageZoom">
             <a href="/medias/photo-highres.webp" class="image-zoom__link" data-action="imageZoom#open" aria-label="Voir en haute résolution">
                 <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Une photo">
             </a>
-        </span>
+        </div>
         <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close">
             <img class="image-zoom__image" data-imageZoom-target="image" alt="Une photo">
         </dialog>';

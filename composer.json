@@ -53,6 +53,7 @@
         "symfony/twig-bundle": "^8.0",
         "symfony/ux-chartjs": "^3.3",
         "symfony/ux-twig-component": "^3.4",
+        "symfony/validator": "^8.0",
         "symfony/yaml": "^8.0",
         "symfonycasts/reset-password-bundle": "^1.25",
         "symfonycasts/verify-email-bundle": "^1.18",

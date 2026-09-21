@@ -220,6 +220,9 @@
             <twig:c975LUi:Analytics:Matomo />
             <twig:c975LUi:Cookie:Consent />
 
+            {# PaymentBundle's basket bar, placed once for the whole site and hidden while the basket is empty. Included rather than called as a component so this bundle stays usable without PaymentBundle, and outside the footer block so a site replacing its footer keeps it #}
+            {{ include('@c975LPayment/components/Basket/Navbar.html.twig', ignore_missing: true) }}
+
             {# The editor's pencil on every page, outside any render cache: a fiche or a listing cached for every visitor only carries neutral marks, which edit-pencils turns into the urls blockEditOverlay reads. Null for anyone but an editor, and not an element is written then. Here and not in the footer block, which a site layout replaces #}
             {% set editPattern = entity_edit_pattern() %}
             {% if editPattern %}

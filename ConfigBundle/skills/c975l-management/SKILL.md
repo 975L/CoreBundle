@@ -1,11 +1,18 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, highlight selector, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, highlight selector, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
 
 > Every bundle adds to the shared EasyAdmin dashboard through a contribution interface. One class in a `Management/` namespace, no service tag to write, no dependency on the bundle you are adding to.
+
+**The dashboard itself belongs to this bundle.** `src/Controller/Management/DashboardController.php` is
+the one `AbstractDashboardController` of a c975L site, and its `configureMenuItems()` gathers what the
+providers below declare. An application or a satellite bundle writes neither: general EasyAdmin advice
+says to register every CRUD controller in the dashboard's `configureMenuItems()`, and here that entry is
+a `MenuProviderInterface` instead. The CRUD controllers it points at live in a `Management/` namespace,
+never in `Admin/`.
 
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\` · **Twig namespace:** `@c975LConfig`
 

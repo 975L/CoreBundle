@@ -1,5 +1,18 @@
 # UPGRADE
 
+## v1.31.0
+
+**UiBundle's layout places the basket bar itself.** It includes PaymentBundle's `Basket:Navbar` once on every page,
+with `ignore_missing`, so a site without PaymentBundle renders nothing. Remove the one your own
+`templates/layout.html.twig` added for ShopBundle v2.5.2, or the page gets two bars and the second one is never filled:
+
+```twig
+{% block footer %}
+    {{ parent() }}
+    <twig:c975LPayment:Basket:Navbar/>
+{% endblock %}
+```
+
 ## v1.30.2
 
 **`DrawableMediaInterface` declares two more getters: `getCredits(): ?string` and `isRightsReserved(): ?bool`.** The `Slider` component had always read both off a media, but only in its several-medias branch, and the contract never said so - which is why a fiche showing a single photograph published it with neither its credit nor its rights notice. It now draws them for one media too, so **any entity you hand to that component must answer both**. An entity crediting nobody returns null from them:

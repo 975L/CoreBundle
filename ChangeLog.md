@@ -1,5 +1,30 @@
 # ChangeLog
 
+## v1.31.0
+
+Agent skills reach the project that installed them
+
+### The package
+
+- `symfony/validator` is required explicitly rather than relied on through another package (21/09/2026)
+
+### ConfigBundle
+
+- `c975l:skills:install` links the agent skills every registered bundle ships into `.claude/skills/` (21/09/2026)
+- `SkillsInstaller` links rather than copies (21/09/2026)
+- It reads the kernel's whole bundle list, picking up any bundle shipping `skills/<name>/SKILL.md` (21/09/2026)
+- A directory of the site's own carrying the name of a shipped skill is left untouched and reported (21/09/2026)
+- The links of a skill no bundle ships anymore are deleted (21/09/2026)
+- `c975l-management` states that the dashboard's `configureMenuItems()` belongs to this bundle, a contribution being a `MenuProviderInterface` (21/09/2026)
+- `c975l-operations` lists `c975l:skills:install` and rules out EasyAdmin's own installer beside it (21/09/2026)
+- `SkillsTest` also checks the `deprecations` and `skills` command names a skill quotes (21/09/2026)
+
+### UiBundle
+
+- **The layout places PaymentBundle's basket bar once on every page**, through an `include` with `ignore_missing`: no site layout has to add it anymore (21/09/2026) **See [UPGRADE.md](UPGRADE.md)**
+- The `Image:Zoom` wrapper is a `<div>` rather than a `<span>` (21/09/2026)
+- `c975l-ui-assets` states that the layout places the basket bar once (21/09/2026)
+
 ## v1.30.3
 
 A back office seen through a lower role, and edit pencils on entities

@@ -11,7 +11,7 @@
 
 {# The link and the dialog under one element carrying the controller: a Stimulus target is looked up inside its controller's own element, and a dialog left as the link's sibling would never be found. "display: contents" keeps the wrapper out of the layout, so the picture sits exactly where it would without the zoom #}
 {# Never place this component inside a <p>: <dialog> closes an open paragraph implicitly, and the browser hoists it out of the wrapper, leaving the controller with no target #}
-{% if zoomable %}<span class="image-zoom" data-controller="imageZoom">{% endif %}
+{% if zoomable %}<div class="image-zoom" data-controller="imageZoom">{% endif %}
     {# The markup is written out rather than delegated to c975LUi:Image:Link: that component lets nothing through onto the <a> itself, and both the Stimulus action and the class belong there #}
     {# A real link, pointing at the file: without javascript the high resolution stays reachable, and the zoom is operable from the keyboard for free #}
     {% if zoomable %}<a href="{{ asset(highres) }}" class="image-zoom__link" data-action="imageZoom#open" aria-label="{{ label }}">{% endif %}
@@ -25,4 +25,4 @@
     <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close">
         <img class="image-zoom__image" data-imageZoom-target="image" alt="{{ alt }}">
     </dialog>
-</span>{% endif %}
+</div>{% endif %}

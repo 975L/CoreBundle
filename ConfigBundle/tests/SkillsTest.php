@@ -20,7 +20,7 @@ class SkillsTest extends TestCase
 
     private const string NAME_PATTERN = '#^[a-z][a-z0-9]*(_[a-z0-9]+)+(\([^)]*\))?$#';
 
-    private const string COMMAND_PATTERN = '/c975l:(config|seo|sitemaps|url-metadata|health-check|status|dev-profile):[a-z-:]+/';
+    private const string COMMAND_PATTERN = '/c975l:(config|seo|sitemaps|url-metadata|health-check|status|dev-profile|deprecations|skills):[a-z-:]+/';
 
     private const string COMPONENT_PATTERN = '/<twig:c975LConfig:([A-Za-z:]+)/';
 

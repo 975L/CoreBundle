@@ -72,6 +72,16 @@ class OptionalBundleTemplateTest extends TestCase
         );
     }
 
+    // The basket bar is pulled from PaymentBundle's own template, once for the whole site: a site layout or a page placing it again leaves the second one unfilled
+    public function testLayoutIncludesTheBasketBarWithIgnoreMissing(): void
+    {
+        $this->assertMatchesRegularExpression(
+            '/include\(\s*\'@c975LPayment\/components\/Basket\/Navbar\.html\.twig\'\s*,\s*ignore_missing:\s*true\s*\)/',
+            (string) file_get_contents(dirname(__DIR__, 2) . '/templates/layout.html.twig'),
+            'layout.html.twig no longer includes PaymentBundle\'s basket bar, or no longer does it with "ignore_missing".'
+        );
+    }
+
     /**
      * @return string[]
      */
