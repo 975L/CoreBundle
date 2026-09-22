@@ -1655,7 +1655,7 @@ A visitor asks a question in the `ai_search` block and the site answers **from i
 | `ui-ai-assistant-site-base-uri` | **Required**, same shape as the rephrase's |
 | `ui-ai-assistant-site-model` | **Required**, no model hardcoded |
 | `ui-ai-assistant-site-retention-days` | Days a question nobody asked again is kept, 90 when empty or not positive |
-| `ui-ai-assistant-site-label` | The name the badge carries, `Donovan (AI)` when empty - a client's site names its own assistant |
+| `ui-ai-assistant-site-label` | The assistant's name on the badge, always followed by the `(AI)` mention; `Donovan` when empty - a client's site names its own assistant |
 
 **Nothing is shared between sites.** Each one indexes itself, holds its own passages and answers, and calls its provider directly with its own key - never through the shared dashboard backend. `AbstractAiProviderClient` is the one provider call the rephrase and the search share, each reading its own config prefix and counting its spend on its own `AiUsage` row (`feature`), so a failing search raises its own warning and never the rephrase's.
 

@@ -758,9 +758,13 @@
                 <source>label.ai_search_answers</source>
                 <target>AI search - Questions</target>
             </trans-unit>
+            <trans-unit id="Beih3ya">
+                <source>label.ai_search_assistant</source>
+                <target>Donovan</target>
+            </trans-unit>
             <trans-unit id="cUEYTnQ">
                 <source>label.ai_search_badge</source>
-                <target>Donovan (AI)</target>
+                <target>%name% (AI)</target>
             </trans-unit>
             <trans-unit id="SR7mrd1">
                 <source>label.ai_search_close</source>

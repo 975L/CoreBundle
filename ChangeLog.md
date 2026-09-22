@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.32.2
+
+The (AI) mention follows the name the site gave its assistant
+
+### UiBundle
+
+- `label.ai_search_badge` takes the assistant's name as `%name%`, the `(AI)` mention following it whatever the site named it (22/09/2026)
+- `label.ai_search_assistant` holds "Donovan", the name the badge carries when `ui-ai-assistant-site-label` is empty (22/09/2026)
+
 ## v1.32.1
 
 The site names its assistant, and its button takes its colour

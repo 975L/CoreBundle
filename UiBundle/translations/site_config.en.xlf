@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="JvRH__R">
                 <source>description.ai_assistant_site_label</source>
-                <target>Name shown on the search badge, empty to keep the default one</target>
+                <target>Name shown on the search badge, followed by the (AI) mention; empty, the assistant is called Donovan</target>
             </trans-unit>
             <trans-unit id="q_9MEfn">
                 <source>description.ai_assistant_site_model</source>

@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="JvRH__R">
                 <source>description.ai_assistant_site_label</source>
-                <target>Nom montré sur le badge de la recherche, vide pour garder celui par défaut</target>
+                <target>Nom montré sur le badge de la recherche, suivi de la mention (IA) ; vide, l'assistant s'appelle Donovan</target>
             </trans-unit>
             <trans-unit id="q_9MEfn">
                 <source>description.ai_assistant_site_model</source>
