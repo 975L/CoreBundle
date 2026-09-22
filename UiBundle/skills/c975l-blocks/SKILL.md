@@ -98,7 +98,8 @@ app. The block's own data is JSON in `Block::$data` — **no column, no migratio
   `BlockRegistry::getContexts()` reads that list back, a non-empty one telling a kind reachable only
   inside a parent from one offered everywhere.
 - `media_types`, `media_required`, `media_multi_upload` drive the media collection, `media_types`
-  being enforced on both the input's `accept` and a server-side `File` constraint.
+  being enforced on both the input's `accept` and a server-side `File` constraint. A PDF picked through
+  `media_multi_upload` gets its entry's `name` from its file (`MultiUploadMerger`).
 - **`translatable`** lists the keys of the kind's own data another language may cover, read back with
   `BlockRegistry::getTranslatable()` — see below. Nothing declared means nothing translatable, which
   is what every kind means until it says otherwise: **there is no discovery from the form type**, a

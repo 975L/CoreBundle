@@ -82,6 +82,17 @@
         "description": "description.ai_assistant_rephrase_model"
     },
     {
+        "label": "label.ui_ai_assistant_site_api_key",
+        "slug": "ui-ai-assistant-site-api-key",
+        "sensitive": true,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "ai",
+        "severity": null,
+        "description": "description.ai_assistant_site_api_key"
+    },
+    {
         "label": "label.email_debug",
         "slug": "email-debug",
         "sensitive": false,

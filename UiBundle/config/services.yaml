@@ -209,6 +209,7 @@ services:
               template: '@c975LUi/blocks/DocumentDownload.html.twig'
               category: 'label.category_elements'
               media_types: 'application/pdf'
+              media_multi_upload: true
               media_required: true
               media_help: 'label.document_download_media_help'
               priority: 50

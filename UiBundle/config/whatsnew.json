@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-22",
+        "description": [
+            {
+                "en": "A download block now takes several PDFs in one go, each card titled after its file.",
+                "fr": "Un bloc de téléchargement accepte désormais plusieurs PDF d'un coup, chaque carte portant le nom de son fichier.",
+                "es": "Un bloque de descarga acepta ahora varios PDF de una vez, cada tarjeta con el nombre de su archivo."
+            },
+            {
+                "en": "A very large PDF, such as a poster, no longer makes the page fail to save: its preview is made at a suitable size.",
+                "fr": "Un très grand PDF, comme une affiche, n'empêche plus l'enregistrement de la page : son aperçu est créé à une taille adaptée.",
+                "es": "Un PDF muy grande, como un cartel, ya no impide guardar la página: su vista previa se crea a un tamaño adecuado."
+            }
+        ]
+    },
+    {
         "date": "2026-09-12",
         "description": [
             {

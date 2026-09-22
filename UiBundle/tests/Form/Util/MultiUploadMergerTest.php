@@ -90,4 +90,13 @@ class MultiUploadMergerTest extends TestCase
 
         $this->assertSame($existing, $medias);
     }
+
+    // A PDF's entry is named after its file, which a "document_download" shows as the title of its card
+    public function testMergeNamesEachEntryAfterItsFileWhenAsked(): void
+    {
+        $file = $this->createUploadedFile('Arbre-Fiabilite.pdf');
+
+        $this->assertSame('Arbre-Fiabilite', MultiUploadMerger::merge([], [$file], true)[0]['name']);
+        $this->assertArrayNotHasKey('name', MultiUploadMerger::merge([], [$file])[0]);
+    }
 }

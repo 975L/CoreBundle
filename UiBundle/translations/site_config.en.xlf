@@ -34,6 +34,10 @@
                 <source>description.ai_assistant_rephrase_provider</source>
                 <target>AI provider for the rephrase button: anthropic, openai or euria</target>
             </trans-unit>
+            <trans-unit id="ChJQa4L">
+                <source>description.ai_assistant_site_api_key</source>
+                <target>LLM API key of the assistant answering about this site's own content, billed to its owner</target>
+            </trans-unit>
             <trans-unit id="NF06pAx">
                 <source>description.ai_rephrase_failure_alert</source>
                 <target>Check the configured AI rephrase provider and API key</target>
@@ -272,19 +276,23 @@
             </trans-unit>
             <trans-unit id="b01mpQ2">
                 <source>label.ui_ai_assistant_rephrase_api_key</source>
-                <target>Donovan (Site) - LLM API key</target>
+                <target>Donovan (Rephrasing) - LLM API key</target>
             </trans-unit>
             <trans-unit id="ipeseMe">
                 <source>label.ui_ai_assistant_rephrase_base_uri</source>
-                <target>Donovan (Site) - Base URI</target>
+                <target>Donovan (Rephrasing) - Base URI</target>
             </trans-unit>
             <trans-unit id="tfKSd09">
                 <source>label.ui_ai_assistant_rephrase_model</source>
-                <target>Donovan (Site) - LLM model</target>
+                <target>Donovan (Rephrasing) - LLM model</target>
             </trans-unit>
             <trans-unit id="nUpavak">
                 <source>label.ui_ai_assistant_rephrase_provider</source>
-                <target>Donovan (Site) - LLM provider</target>
+                <target>Donovan (Rephrasing) - LLM provider</target>
+            </trans-unit>
+            <trans-unit id="HJCE_6x">
+                <source>label.ui_ai_assistant_site_api_key</source>
+                <target>Donovan (Assistant) - LLM API key</target>
             </trans-unit>
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>

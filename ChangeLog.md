@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.31.1
+
+A poster-sized PDF saves again, and PDFs upload several at once
+
+### UiBundle
+
+- `ui-ai-assistant-site-api-key` is declared as a sensitive config row for the upcoming site assistant (22/09/2026)
+- The rephrasing config labels read `Donovan (Rephrasing)` rather than `Donovan (Site)` (22/09/2026)
+- A PDF's thumbnail is rendered at a resolution fitted to its page size instead of a fixed 300 dpi (22/09/2026)
+- A poster-sized PDF no longer runs GD out of memory on save (22/09/2026)
+- `document_download` takes several PDFs in one go, each card named after its file (22/09/2026)
+
 ## v1.31.0
 
 Agent skills reach the project that installed them

@@ -1140,7 +1140,7 @@ A few contexts are **exclusive** (`BlockRegistry::EXCLUSIVE_CONTEXTS`, currently
 
 `media_required: true` rejects saving a block of that kind when it has no attached media at all (enforced by `RequiredMediaValidator` on the `Block` entity itself, not by the form) — use it for a kind whose media isn't optional decoration but the whole point of the block (e.g. `banner_title`'s picture). Defaults to `false`; only meaningful alongside `media_types`.
 
-`media_multi_upload: true` adds a "select several files at once" input next to the usual one-file-per-row media collection, for a kind where editors routinely add many files at a time (e.g. `slider`, `article`) instead of clicking "Add" repeatedly. Each selected file becomes its own media entry, appended after the existing ones. Defaults to `false`; only meaningful alongside `media_types`.
+`media_multi_upload: true` adds a "select several files at once" input next to the usual one-file-per-row media collection, for a kind where editors routinely add many files at a time (e.g. `slider`, `article`, `document_download`) instead of clicking "Add" repeatedly. Each selected file becomes its own media entry, appended after the existing ones - a PDF's entry named after its file, which `document_download` shows as the title of its card. Defaults to `false`; only meaningful alongside `media_types`.
 
 `media_types` is enforced on **both** sides: it fills the upload input's `accept` attribute (a hint to the file dialog, nothing more) *and* a `File` constraint on the media's own file field (`MediaUploadType`), which is what actually turns a wrong-typed upload down — the multi-file input goes through the same constraint, its files being spliced into the media collection before mapping. The declared wildcards (`image/*`) are passed through as written; Symfony's `File` constraint matches them the same way the browser does.
 
@@ -1627,6 +1627,14 @@ A failed call (bad/revoked key, provider outage...) is recorded on the same row 
 `AiAlertProvider` also surfaces two low-key **info** alerts (not warnings - being off is the normal, intended state for a site not using either feature) whenever the dashboard assistant or the rephrase feature isn't fully configured yet (missing/false `*-enabled`, endpoint, token, provider or key) - a discovery nudge on top of the Config screen's own label/description, for an app operator actively rolling either feature out across several sites.
 
 Every one of these three alerts links to the AI Assistant page itself (`management_ui_ai_assistant_index`), not straight to the Config screen: the page is the actual "what do I do" landing spot. Each missing setup step links directly to *that* config row's edit page (`AiAssistantController::configLinks()`, one `AdminUrlGenerator` lookup per slug via `ConfigRepository`) rather than the raw config list - and for the rephrase key specifically, a short "where to get one" note per provider (Anthropic/OpenAI/Euria), same three-part structure for each (site → what to click → billing note), since the dashboard's own endpoint/token aren't self-service at all - they're whatever the backend's operator hands out, so that step just says to ask them instead.
+
+### Site assistant (key only)
+
+An assistant answering visitors about the site's own content is on its way. Its key is already declared so it can be put in place ahead of it:
+
+| Config slug | Purpose |
+| --- | --- |
+| `ui-ai-assistant-site-api-key` (sensitive) | The LLM key the assistant calls with, billed to whoever owns it - the site's admin puts it in place, same as the rephrasing key |
 
 ### On cost and abuse
 
@@ -2596,6 +2604,7 @@ and CJEU C-49/11 on the hyperlink). A file in the customer's mailbox is one.
 When a `.pdf` file is uploaded through VichUploader on **any entity** (no interface required), the bundle automatically generates a `.webp` thumbnail of the first page next to it (`document.pdf` → `document.webp` - the extension is replaced whatever its case, not appended), via Ghostscript + Imagine/GD.
 
 - **Requires Ghostscript** (`gs`) installed on the server. If missing, the thumbnail generation silently fails — the PDF upload itself is unaffected.
+- **Renders at a resolution fitted to the page** — twice the thumbnail's width, capped at 300 dpi and 25 Mpx, so a poster-sized page no longer runs GD out of memory. The page size is read by `pdfinfo` (poppler-utils); without it, the page is rendered at 72 dpi.
 - **Requires `exec()`** to be enabled. On hosts where it's disabled, thumbnail generation is skipped the same way — the PDF upload itself is unaffected.
 - **Skipped for private files** — entities implementing `VichPrivateFileInterface` (e.g. a paid download in a shop) are not thumbnailed, since there's no public preview use case for them.
 - **Kept private for a document reserved to members** — a `Media` whose `membersOnly` box is ticked gets its thumbnail next to it under `private/`, never under `public/`, where its first page would be readable by anyone (see [PDFs reserved to members](#pdfs-reserved-to-members)). The listener runs at priority `-10`, after `VichImageResizeListener` has moved the PDF there.

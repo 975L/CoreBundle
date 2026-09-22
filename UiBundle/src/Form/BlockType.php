@@ -860,7 +860,9 @@ class BlockType extends AbstractType
             return $submitted;
         }
 
-        $submitted['medias'] = MultiUploadMerger::merge($submitted['medias'] ?? [], $files);
+        // Only a PDF entry has a "name" field (see MediaUploadType::addBaseFields()), any other would reject it as an extra field
+        $withName = \in_array('application/pdf', $this->registry->getMediaTypes($kind), true);
+        $submitted['medias'] = MultiUploadMerger::merge($submitted['medias'] ?? [], $files, $withName);
 
         return $submitted;
     }

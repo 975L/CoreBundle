@@ -34,6 +34,10 @@
                 <source>description.ai_assistant_rephrase_provider</source>
                 <target>Proveedor de IA del botón de reformulación: anthropic, openai o euria</target>
             </trans-unit>
+            <trans-unit id="ChJQa4L">
+                <source>description.ai_assistant_site_api_key</source>
+                <target>Clave API LLM del asistente que responde sobre el contenido de este sitio, facturada a su titular</target>
+            </trans-unit>
             <trans-unit id="NF06pAx">
                 <source>description.ai_rephrase_failure_alert</source>
                 <target>Compruebe el proveedor y la clave API de reformulación configurados</target>
@@ -272,19 +276,23 @@
             </trans-unit>
             <trans-unit id="b01mpQ2">
                 <source>label.ui_ai_assistant_rephrase_api_key</source>
-                <target>Donovan (Sitio) - Clave API LLM</target>
+                <target>Donovan (Reformulación) - Clave API LLM</target>
             </trans-unit>
             <trans-unit id="ipeseMe">
                 <source>label.ui_ai_assistant_rephrase_base_uri</source>
-                <target>Donovan (Sitio) - URI base</target>
+                <target>Donovan (Reformulación) - URI base</target>
             </trans-unit>
             <trans-unit id="tfKSd09">
                 <source>label.ui_ai_assistant_rephrase_model</source>
-                <target>Donovan (Sitio) - Modelo LLM</target>
+                <target>Donovan (Reformulación) - Modelo LLM</target>
             </trans-unit>
             <trans-unit id="nUpavak">
                 <source>label.ui_ai_assistant_rephrase_provider</source>
-                <target>Donovan (Sitio) - Proveedor LLM</target>
+                <target>Donovan (Reformulación) - Proveedor LLM</target>
+            </trans-unit>
+            <trans-unit id="HJCE_6x">
+                <source>label.ui_ai_assistant_site_api_key</source>
+                <target>Donovan (Asistente) - Clave API LLM</target>
             </trans-unit>
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>

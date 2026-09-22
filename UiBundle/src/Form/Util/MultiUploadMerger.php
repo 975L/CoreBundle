@@ -19,7 +19,8 @@ final class MultiUploadMerger
     {
     }
 
-    public static function merge(array $medias, array $files): array
+    // $withName fills each entry's "name" from the file's own name, for the kinds whose entries carry one (a PDF's): a "document_download" shows it as the title of its card, which would otherwise be the block's label repeated on every card
+    public static function merge(array $medias, array $files, bool $withName = false): array
     {
         $position = count($medias);
         $nextKey = 0;
@@ -37,6 +38,9 @@ final class MultiUploadMerger
                 'file' => ['file' => $file],
                 'position' => (string) $position,
             ];
+            if ($withName) {
+                $medias[$nextKey]['name'] = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            }
             ++$nextKey;
             ++$position;
         }

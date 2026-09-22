@@ -27,6 +27,13 @@ class VichPdfThumbnailListener
 {
     private const int THUMBNAIL_WIDTH = 400;
 
+    private const int MAX_RESOLUTION = 300;
+
+    private const int FALLBACK_RESOLUTION = 72;
+
+    // About 100 MB once decoded by GD, well under a web memory_limit of a few hundred MB
+    private const int MAX_PIXELS = 25_000_000;
+
     private readonly Filesystem $filesystem;
 
     // Single source of truth for the pdf -> webp naming convention this listener writes to - DocumentExtension reads it back through this same method, so the two never drift apart. Case-insensitive and anchored, a scan uploaded as ".PDF" otherwise getting its thumbnail written over itself
@@ -82,6 +89,31 @@ class VichPdfThumbnailListener
         $this->generateThumbnail($pdfPath, $width);
     }
 
+    // The resolution the first page is rendered at: twice the thumbnail's width, never above 300 dpi nor above MAX_PIXELS. A fixed 300 dpi turned a poster-sized page (a family tree of 90 x 170 cm) into a 200 Mpx PNG that GD could not hold in memory, the fatal error taking the whole page save down with it
+    public static function resolution(float $pageWidth, float $pageHeight, int $width): int
+    {
+        $resolution = min(
+            self::MAX_RESOLUTION,
+            72 * $width * 2 / $pageWidth,
+            72 * sqrt(self::MAX_PIXELS / ($pageWidth * $pageHeight))
+        );
+
+        return max(1, (int) floor($resolution));
+    }
+
+    // Page size of the first page in points, read by pdfinfo (poppler-utils) - null when it is missing or unreadable
+    /** @return array{float, float}|null */
+    private function pageSize(string $pdfPath): ?array
+    {
+        exec(sprintf('pdfinfo -f 1 -l 1 %s 2>/dev/null', escapeshellarg($pdfPath)), $output, $returnVar);
+
+        if (0 !== $returnVar || 1 !== preg_match('/size:\s+([\d.]+) x ([\d.]+) pts/', implode("\n", $output), $matches) || 0.0 === (float) $matches[1] || 0.0 === (float) $matches[2]) {
+            return null;
+        }
+
+        return [(float) $matches[1], (float) $matches[2]];
+    }
+
     // exec() takes $output before $returnVar, so the one that is read costs the one that is not
     private function generateThumbnail(string $pdfPath, int $width): void
     {
@@ -93,10 +125,15 @@ class VichPdfThumbnailListener
         $webpPath = self::toWebpPath($pdfPath);
         $tmpPng = sys_get_temp_dir() . '/' . uniqid() . '.png';
 
+        // Without pdfinfo the page size is unknown: 72 dpi keeps even an A0 page around 8 Mpx
+        $pageSize = $this->pageSize($pdfPath);
+        $resolution = null !== $pageSize ? self::resolution($pageSize[0], $pageSize[1], $width) : self::FALLBACK_RESOLUTION;
+
         try {
             // Converts the PDF's first page to PNG through Ghostscript
             $cmd = sprintf(
-                'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r300 -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s 2>/dev/null',
+                'gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r%d -dFirstPage=1 -dLastPage=1 -sOutputFile=%s %s 2>/dev/null',
+                $resolution,
                 escapeshellarg($tmpPng),
                 escapeshellarg($pdfPath)
             );
