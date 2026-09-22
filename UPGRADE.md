@@ -1,5 +1,18 @@
 # UPGRADE
 
+## v1.32.0
+
+**A migration is needed**, for the site search's two tables and for the `feature` column `site_ai_usage` gains:
+
+```bash
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+```
+
+The generated migration drops `site_ai_usage`'s old unique index on `year_month` before creating the one on `feature` + `year_month`: write that `DROP INDEX` as `DROP INDEX IF EXISTS`, so a base where it never existed doesn't stop the deployment. The rows already there become the rephrase's, which is the column's default.
+
+The search stays off until its four entries are filled in (`ui-ai-assistant-site-provider`, `-api-key`, `-base-uri`, `-model`) and `php bin/console c975l:ui:ai-search:index` has run once. The block `Recherche IA` can then be added to a page.
+
 ## v1.31.0
 
 **UiBundle's layout places the basket bar itself.** It includes PaymentBundle's `Basket:Navbar` once on every page,

@@ -31,6 +31,11 @@ class LegalPlaceholderCacheListener
     // The settings a model reads without ever printing, which no placeholder list knows about: a model branching on one of them depends on it exactly as much as on a marker it substitutes, and a cached render that outlives the change says what the site stopped doing
     private const array CONDITION_SLUGS = [
         'site-has-accounts',
+        // What ai_search_configured() reads, on which the privacy policy describes the site search
+        'ui-ai-assistant-site-provider',
+        'ui-ai-assistant-site-api-key',
+        'ui-ai-assistant-site-base-uri',
+        'ui-ai-assistant-site-model',
     ];
 
     // The per-entity events only raise this flag: the back-office saves the whole config group at once, which would otherwise invalidate the same tag once per row, inside the transaction

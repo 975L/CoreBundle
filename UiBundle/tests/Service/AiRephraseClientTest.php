@@ -137,14 +137,19 @@ class AiRephraseClientTest extends TestCase
 
     public function testRephraseCallsAnthropicNativeApiAndRecordsUsage(): void
     {
+        $body = null;
         $httpClient = new MockHttpClient(
-            fn (string $method, string $url, array $options) => new MockResponse(
-                json_encode([
-                    'content' => [['text' => 'Rephrased text.']],
-                    'usage' => ['input_tokens' => 42, 'output_tokens' => 17],
-                ]),
-                ['http_code' => 200]
-            )
+            function (string $method, string $url, array $options) use (&$body) {
+                $body = json_decode($options['body'], true);
+
+                return new MockResponse(
+                    json_encode([
+                        'content' => [['text' => 'Rephrased text.']],
+                        'usage' => ['input_tokens' => 42, 'output_tokens' => 17],
+                    ]),
+                    ['http_code' => 200]
+                );
+            }
         );
 
         $usageTracker = $this->createMock(AiUsageTracker::class);
@@ -161,18 +166,25 @@ class AiRephraseClientTest extends TestCase
         );
 
         $this->assertSame('Rephrased text.', $client->rephrase('Some text.'));
+        $this->assertSame(2048, $body['max_tokens']);
     }
 
+    // No token ceiling on the OpenAI-compatible side: OpenAI's reasoning models refuse "max_tokens"
     public function testRephraseCallsOpenAiCompatibleApiAndRecordsUsage(): void
     {
+        $body = null;
         $httpClient = new MockHttpClient(
-            fn (string $method, string $url, array $options) => new MockResponse(
-                json_encode([
-                    'choices' => [['message' => ['content' => 'Rephrased text.']]],
-                    'usage' => ['prompt_tokens' => 30, 'completion_tokens' => 12],
-                ]),
-                ['http_code' => 200]
-            )
+            function (string $method, string $url, array $options) use (&$body) {
+                $body = json_decode($options['body'], true);
+
+                return new MockResponse(
+                    json_encode([
+                        'choices' => [['message' => ['content' => 'Rephrased text.']]],
+                        'usage' => ['prompt_tokens' => 30, 'completion_tokens' => 12],
+                    ]),
+                    ['http_code' => 200]
+                );
+            }
         );
 
         $usageTracker = $this->createMock(AiUsageTracker::class);
@@ -189,6 +201,7 @@ class AiRephraseClientTest extends TestCase
         );
 
         $this->assertSame('Rephrased text.', $client->rephrase('Some text.'));
+        $this->assertArrayNotHasKey('max_tokens', $body);
     }
 
     public function testRephraseCallsEuriaViaConfiguredBaseUri(): void

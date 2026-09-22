@@ -17,12 +17,22 @@ use c975L\UiBundle\Management\LinkableRouteProvider;
 use c975L\UiBundle\Management\MenuProvider;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
 use c975L\UiBundle\Management\UiShortcutProvider;
+use c975L\UiBundle\Service\AiSiteSearchClient;
 use c975L\UiBundle\Service\ReviewService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Every CRUD controller and route this bundle's management providers name, checked against what its controllers actually declare - see ConfigBundle's ManagementTargetsTestCase
 class ManagementTargetsTest extends ManagementTargetsTestCase
 {
+    // Configured, so the screen it adds is checked along with the others
+    private function createSiteSearchClient(): AiSiteSearchClient
+    {
+        $client = $this->createStub(AiSiteSearchClient::class);
+        $client->method('isEnabled')->willReturn(true);
+
+        return $client;
+    }
+
     private function createReviewService(bool $enabled = true): ReviewService
     {
         $reviewService = $this->createStub(ReviewService::class);
@@ -34,9 +44,9 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
     protected function managementProviders(): iterable
     {
         return [
-            new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService()),
+            new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient()),
             new UiShortcutProvider($this->createTranslator(), $this->createConfigService()),
-            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr')),
+            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr'), $this->createSiteSearchClient()),
             new LinkableRouteProvider(),
         ];
     }

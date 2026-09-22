@@ -1,0 +1,35 @@
+<?php
+
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace c975L\UiBundle\Twig;
+
+use c975L\UiBundle\Service\AiSiteSearch;
+use c975L\UiBundle\Service\AiSiteSearchClient;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+
+// Whether the "ai_search" block draws its field (read at render time, the block isn't cached), and whether the privacy policy describes the search - on its config alone, the only thing LegalPlaceholderCacheListener can invalidate a cached legal model on
+class AiSearchExtension extends AbstractExtension
+{
+    public function __construct(
+        private readonly AiSiteSearch $aiSiteSearch,
+        private readonly AiSiteSearchClient $aiSiteSearchClient,
+    ) {
+    }
+
+    #[\Override]
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('ai_search_enabled', $this->aiSiteSearch->isEnabled(...)),
+            new TwigFunction('ai_search_configured', $this->aiSiteSearchClient->isEnabled(...)),
+        ];
+    }
+}

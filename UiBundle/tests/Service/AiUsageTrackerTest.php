@@ -13,7 +13,9 @@ namespace c975L\UiBundle\Tests\Service;
 use c975L\UiBundle\Entity\AiUsage;
 use c975L\UiBundle\Repository\AiUsageRepository;
 use c975L\UiBundle\Service\AiUsageTracker;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
 
 class AiUsageTrackerTest extends TestCase
@@ -27,7 +29,7 @@ class AiUsageTrackerTest extends TestCase
         $entityManager->expects($this->once())->method('persist')->with($this->isInstanceOf(AiUsage::class));
         $entityManager->expects($this->once())->method('flush');
 
-        $tracker = new AiUsageTracker($entityManager, $repository);
+        $tracker = new AiUsageTracker($entityManager, $repository, $this->createStub(ManagerRegistry::class));
         $tracker->record(42, 17);
     }
 
@@ -43,7 +45,7 @@ class AiUsageTrackerTest extends TestCase
         $entityManager->expects($this->once())->method('persist')->with($existing);
         $entityManager->expects($this->once())->method('flush');
 
-        $tracker = new AiUsageTracker($entityManager, $repository);
+        $tracker = new AiUsageTracker($entityManager, $repository, $this->createStub(ManagerRegistry::class));
         $tracker->record(3, 2);
 
         $this->assertSame(13, $existing->getInputTokens());
@@ -58,7 +60,7 @@ class AiUsageTrackerTest extends TestCase
         $repository = $this->createStub(AiUsageRepository::class);
         $repository->method('findOneByYearMonth')->willReturn($usage);
 
-        $tracker = new AiUsageTracker($this->createStub(EntityManagerInterface::class), $repository);
+        $tracker = new AiUsageTracker($this->createStub(EntityManagerInterface::class), $repository, $this->createStub(ManagerRegistry::class));
 
         $this->assertSame($usage, $tracker->getCurrentMonth());
     }
@@ -79,7 +81,7 @@ class AiUsageTrackerTest extends TestCase
         ));
         $entityManager->expects($this->once())->method('flush');
 
-        $tracker = new AiUsageTracker($entityManager, $repository);
+        $tracker = new AiUsageTracker($entityManager, $repository, $this->createStub(ManagerRegistry::class));
         $tracker->recordFailure('HTTP 401 returned');
     }
 
@@ -91,10 +93,25 @@ class AiUsageTrackerTest extends TestCase
         $repository = $this->createStub(AiUsageRepository::class);
         $repository->method('findOneByYearMonth')->willReturn($existing);
 
-        $tracker = new AiUsageTracker($this->createStub(EntityManagerInterface::class), $repository);
+        $tracker = new AiUsageTracker($this->createStub(EntityManagerInterface::class), $repository, $this->createStub(ManagerRegistry::class));
         $tracker->record(5, 5);
 
         $this->assertNull($existing->getLastFailureAt());
         $this->assertNull($existing->getLastFailureMessage());
+    }
+
+    // Two first-requests-of-the-month racing on the month's row: the loser's count is dropped and the manager reset, the visitor's request goes on
+    public function testALostRaceOnTheMonthRowResetsTheManager(): void
+    {
+        $repository = $this->createStub(AiUsageRepository::class);
+        $repository->method('findOneByYearMonth')->willReturn(null);
+
+        $entityManager = $this->createStub(EntityManagerInterface::class);
+        $entityManager->method('flush')->willThrowException($this->createStub(UniqueConstraintViolationException::class));
+
+        $registry = $this->createMock(ManagerRegistry::class);
+        $registry->expects($this->once())->method('resetManager');
+
+        new AiUsageTracker($entityManager, $repository, $registry)->record(42, 17);
     }
 }

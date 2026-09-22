@@ -38,6 +38,22 @@
                 <source>description.ai_assistant_site_api_key</source>
                 <target>Clé API LLM de l'assistant qui répond sur le contenu de ce site, facturée à son titulaire</target>
             </trans-unit>
+            <trans-unit id="TuRhv3A">
+                <source>description.ai_assistant_site_base_uri</source>
+                <target>URL de base de l'API, obligatoire : l'URL complète de l'endpoint messages pour Anthropic, la base du produit pour une API compatible OpenAI (OpenAI, Euria)</target>
+            </trans-unit>
+            <trans-unit id="q_9MEfn">
+                <source>description.ai_assistant_site_model</source>
+                <target>Modèle de la recherche sur le site, obligatoire : une entrée vide laisse la fonctionnalité éteinte</target>
+            </trans-unit>
+            <trans-unit id="vzE2YaC">
+                <source>description.ai_assistant_site_provider</source>
+                <target>Fournisseur IA de la recherche sur le site : anthropic, openai ou euria</target>
+            </trans-unit>
+            <trans-unit id="7rGj8pw">
+                <source>description.ai_assistant_site_retention_days</source>
+                <target>Nombre de jours après lesquels une question que plus personne n'a posée est supprimée (90 par défaut) : un visiteur peut y avoir écrit une donnée personnelle</target>
+            </trans-unit>
             <trans-unit id="NF06pAx">
                 <source>description.ai_rephrase_failure_alert</source>
                 <target>Vérifiez le fournisseur et la clé API de reformulation configurés</target>
@@ -45,6 +61,10 @@
             <trans-unit id="BXljqwk">
                 <source>description.ai_rephrase_not_enabled</source>
                 <target>Renseignez fournisseur et clé API pour activer la reformulation</target>
+            </trans-unit>
+            <trans-unit id="bQILUAx">
+                <source>description.ai_site_search_failure_alert</source>
+                <target>Le dernier appel au fournisseur a échoué (clé révoquée, crédit épuisé, panne) : les visiteurs voient « recherche indisponible »</target>
             </trans-unit>
             <trans-unit id="sQ9y3iP">
                 <source>description.block_showcase_url</source>
@@ -186,6 +206,10 @@
                 <source>label.ai_rephrase_not_enabled</source>
                 <target>Fonction de reformulation IA non activée</target>
             </trans-unit>
+            <trans-unit id="ESErOms">
+                <source>label.ai_site_search_failure_alert</source>
+                <target>La recherche IA sur le site a échoué</target>
+            </trans-unit>
             <trans-unit id=".HY9J1w">
                 <source>label.email_debug</source>
                 <target>Email - Mode debug</target>
@@ -293,6 +317,22 @@
             <trans-unit id="HJCE_6x">
                 <source>label.ui_ai_assistant_site_api_key</source>
                 <target>Donovan (Assistant) - Clé API LLM</target>
+            </trans-unit>
+            <trans-unit id="RvptqLr">
+                <source>label.ui_ai_assistant_site_base_uri</source>
+                <target>Donovan (Assistant) - URI de base</target>
+            </trans-unit>
+            <trans-unit id="8Yse6Db">
+                <source>label.ui_ai_assistant_site_model</source>
+                <target>Donovan (Assistant) - Modèle LLM</target>
+            </trans-unit>
+            <trans-unit id="xXR0vFh">
+                <source>label.ui_ai_assistant_site_provider</source>
+                <target>Donovan (Assistant) - Fournisseur LLM</target>
+            </trans-unit>
+            <trans-unit id="esZzarD">
+                <source>label.ui_ai_assistant_site_retention_days</source>
+                <target>Donovan (Assistant) - Conservation des questions (jours)</target>
             </trans-unit>
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>

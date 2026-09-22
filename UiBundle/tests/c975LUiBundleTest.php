@@ -99,7 +99,7 @@ class c975LUiBundleTest extends TestCase
         $this->assertSame('10 minutes', $limiter['interval']);
     }
 
-    // The four ceilings are far tighter than the front limiter's, so a suite posting two reviews from one address would answer 429 to itself rather than to a scraper
+    // These ceilings are far tighter than the front limiter's, so a suite posting two reviews from one address would answer 429 to itself rather than to a scraper
     public function testPrependExtensionLiftsTheRateLimiterCeilingsInTheTestEnvironment(): void
     {
         $container = new ContainerBuilder();
@@ -109,7 +109,7 @@ class c975LUiBundleTest extends TestCase
 
         $limiters = $container->getExtensionConfig('framework')[0]['rate_limiter'];
 
-        foreach (['ui_form', 'ui_rating', 'ui_favorite', 'ui_review'] as $name) {
+        foreach (['ui_form', 'ui_rating', 'ui_favorite', 'ui_ai_search', 'ui_ai_search_site', 'ui_review'] as $name) {
             $this->assertSame('no_limit', $limiters[$name]['policy'], sprintf('The "%s" limiter still refuses under test.', $name));
         }
 
@@ -125,7 +125,7 @@ class c975LUiBundleTest extends TestCase
 
         new c975LUiBundle()->prependExtension($this->createStub(ContainerConfigurator::class), $container);
 
-        $this->assertSame(['ui_form', 'ui_rating', 'ui_favorite', 'ui_review'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
+        $this->assertSame(['ui_form', 'ui_rating', 'ui_favorite', 'ui_ai_search', 'ui_ai_search_site', 'ui_review'], array_keys($container->getExtensionConfig('framework')[0]['rate_limiter']));
 
         $services = file_get_contents(__DIR__ . '/../config/services.yaml');
         $this->assertStringContainsString(
@@ -142,6 +142,16 @@ class c975LUiBundleTest extends TestCase
             '@?limiter.ui_favorite',
             $services,
             'FavoriteController no longer asks for limiter.ui_favorite, which is the name prepended here.'
+        );
+        $this->assertStringContainsString(
+            '@?limiter.ui_ai_search',
+            $services,
+            'AiSearchController no longer asks for limiter.ui_ai_search, which is the name prepended here.'
+        );
+        $this->assertStringContainsString(
+            '@?limiter.ui_ai_search_site',
+            $services,
+            'AiSearchController no longer asks for limiter.ui_ai_search_site, which is the name prepended here.'
         );
     }
 

@@ -34,6 +34,14 @@
                 <source>description.guided_project_ui_ai_assistant</source>
                 <target>Mettre en place la clé de reformulation, puis l'essayer sur la zone de texte de l'écran avant d'appuyer sur ce bouton sous un vrai champ</target>
             </trans-unit>
+            <trans-unit id="0iKWb5V">
+                <source>description.guided_project_ui_ai_search_answers</source>
+                <target>Les questions des visiteurs restées sans réponse sont les pages qu'il vous reste à écrire.</target>
+            </trans-unit>
+            <trans-unit id="YVkHrM7">
+                <source>description.guided_project_ui_ai_search_setup</source>
+                <target>Brancher la recherche du site sur votre propre clé, pour que les visiteurs posent leurs questions à vos pages.</target>
+            </trans-unit>
             <trans-unit id="zRr_CZb">
                 <source>description.guided_project_ui_calculator</source>
                 <target>Un formulaire qui calcule au lieu d'être envoyé : des curseurs, des formules, un chiffre mis en avant.</target>
@@ -101,6 +109,42 @@
             <trans-unit id="yRkVSz0">
                 <source>description.guided_step_ui_ai_assistant_text</source>
                 <target>Cette zone de texte n'appartient à aucune page du site : ce qu'on y essaie est jeté, ce qui en fait l'endroit pour découvrir ce que donne la reformulation</target>
+            </trans-unit>
+            <trans-unit id="3j1B.Nm">
+                <source>description.guided_step_ui_ai_search_answers_detail</source>
+                <target>Le détail donne la question entière, la réponse et les pages dont elle est tirée.</target>
+            </trans-unit>
+            <trans-unit id="4K9UHx7">
+                <source>description.guided_step_ui_ai_search_answers_done</source>
+                <target>Une fois la page publiée, l'indexation de la nuit la lit, et la même question trouve sa réponse.</target>
+            </trans-unit>
+            <trans-unit id="Lg0AkA_">
+                <source>description.guided_step_ui_ai_search_answers_filter</source>
+                <target>Filtrez sur « Trouvé » : non. Ce sont les questions pour lesquelles aucune page du site n'avait de quoi répondre.</target>
+            </trans-unit>
+            <trans-unit id="3lbCugK">
+                <source>description.guided_step_ui_ai_search_answers_open</source>
+                <target>Chaque question y est gardée sans rien qui identifie le visiteur, avec la réponse donnée et le nombre de fois où elle a été posée.</target>
+            </trans-unit>
+            <trans-unit id="1Kz8Cro">
+                <source>description.guided_step_ui_ai_search_setup_entry</source>
+                <target>Commencez par le fournisseur : anthropic, openai ou euria. L'URI de base et le modèle sont ceux qu'il vous donne.</target>
+            </trans-unit>
+            <trans-unit id="eOVgofH">
+                <source>description.guided_step_ui_ai_search_setup_index</source>
+                <target>Chaque nuit, le site relit ses pages publiques pour y chercher les réponses. Tant que cette lecture n'a pas eu lieu une première fois, la recherche n'apparaît nulle part.</target>
+            </trans-unit>
+            <trans-unit id="5CS4VPq">
+                <source>description.guided_step_ui_ai_search_setup_open</source>
+                <target>Quatre entrées « Donovan (Assistant) » l'allument : fournisseur, clé API, URI de base et modèle. Toutes les quatre sont nécessaires : tant qu'une manque, la recherche reste éteinte.</target>
+            </trans-unit>
+            <trans-unit id="J7.qbf7">
+                <source>description.guided_step_ui_ai_search_setup_place</source>
+                <target>Une loupe apparaît alors dans la barre de navigation. Pour un champ de recherche au milieu d'une page, ajoutez-y le block « Recherche IA ».</target>
+            </trans-unit>
+            <trans-unit id="R8mhTUo">
+                <source>description.guided_step_ui_ai_search_setup_value</source>
+                <target>La clé API reste la vôtre : chaque question est facturée sur votre compte chez le fournisseur, dans la limite des plafonds du site.</target>
             </trans-unit>
             <trans-unit id="f.IANyC">
                 <source>description.guided_step_ui_calculator_fields</source>
@@ -706,6 +750,86 @@
                 <source>label.ai_rephrase_usage_this_month</source>
                 <target>Reformulation IA ce mois : %input% tokens entrée, %output% sortie.</target>
             </trans-unit>
+            <trans-unit id="6YKy5rQ">
+                <source>label.ai_search_answer</source>
+                <target>Réponse</target>
+            </trans-unit>
+            <trans-unit id="SF2ypOP">
+                <source>label.ai_search_answers</source>
+                <target>Recherche IA - Questions</target>
+            </trans-unit>
+            <trans-unit id="cUEYTnQ">
+                <source>label.ai_search_badge</source>
+                <target>IA</target>
+            </trans-unit>
+            <trans-unit id="SR7mrd1">
+                <source>label.ai_search_close</source>
+                <target>Fermer la recherche</target>
+            </trans-unit>
+            <trans-unit id="1RnaUNo">
+                <source>label.ai_search_error</source>
+                <target>La recherche est indisponible pour le moment, réessayez plus tard.</target>
+            </trans-unit>
+            <trans-unit id="S5Z.gZA">
+                <source>label.ai_search_found</source>
+                <target>Trouvé</target>
+            </trans-unit>
+            <trans-unit id="vTsLWDz">
+                <source>label.ai_search_hit_count</source>
+                <target>Posée</target>
+            </trans-unit>
+            <trans-unit id="lkULczC">
+                <source>label.ai_search_not_found</source>
+                <target>Je n'ai rien trouvé sur le site qui réponde à cette question.</target>
+            </trans-unit>
+            <trans-unit id="QUOz1.X">
+                <source>label.ai_search_notice</source>
+                <target>Réponse rédigée par une IA à partir des pages du site : elle peut se tromper, vérifiez sur les pages indiquées. Votre question est conservée, sans rien qui vous identifie, pour améliorer le site.</target>
+            </trans-unit>
+            <trans-unit id="sRc0Gam">
+                <source>label.ai_search_open</source>
+                <target>Poser une question au site</target>
+            </trans-unit>
+            <trans-unit id="4__lU5D">
+                <source>label.ai_search_placeholder</source>
+                <target>Texte indicatif du champ</target>
+            </trans-unit>
+            <trans-unit id="M6ntFQo">
+                <source>label.ai_search_placeholder_default</source>
+                <target>Posez votre question sur le site…</target>
+            </trans-unit>
+            <trans-unit id="PNtXlDZ">
+                <source>label.ai_search_placeholder_help</source>
+                <target>Laissé vide : « Posez votre question sur le site… »</target>
+            </trans-unit>
+            <trans-unit id="REKcO1G">
+                <source>label.ai_search_question</source>
+                <target>Votre question</target>
+            </trans-unit>
+            <trans-unit id="NXevoRX">
+                <source>label.ai_search_sources</source>
+                <target>Pages consultées</target>
+            </trans-unit>
+            <trans-unit id="b6OXwoZ">
+                <source>label.ai_search_submit</source>
+                <target>Demander</target>
+            </trans-unit>
+            <trans-unit id="hZdM_bb">
+                <source>label.ai_search_suggestions</source>
+                <target>Questions suggérées</target>
+            </trans-unit>
+            <trans-unit id="zmR80lq">
+                <source>label.ai_search_suggestions_help</source>
+                <target>Une question par ligne, quatre au plus : proposées sous le champ, un clic les pose</target>
+            </trans-unit>
+            <trans-unit id="Vc8pHwH">
+                <source>label.ai_search_throttled</source>
+                <target>Trop de questions d'un coup : revenez dans quelques minutes.</target>
+            </trans-unit>
+            <trans-unit id="lrMP_GG">
+                <source>label.ai_search_updated_at</source>
+                <target>Dernière fois</target>
+            </trans-unit>
             <trans-unit id="m_BJ5A2">
                 <source>label.ai_translate_button</source>
                 <target>Traduire avec %name%</target>
@@ -845,6 +969,14 @@
             <trans-unit id="3RQoM3j">
                 <source>label.before_label</source>
                 <target>Libellé Avant</target>
+            </trans-unit>
+            <trans-unit id="qIXhW58">
+                <source>label.block_ai_search</source>
+                <target>Recherche IA</target>
+            </trans-unit>
+            <trans-unit id="bMLtERv">
+                <source>label.block_ai_search_description</source>
+                <target>Un champ où le visiteur pose sa question : l'assistant répond à partir des pages du site et donne les liens vers celles qu'il a lues</target>
             </trans-unit>
             <trans-unit id="h3s2JeO">
                 <source>label.block_alert</source>
@@ -2194,6 +2326,14 @@
                 <source>label.guided_project_ui_ai_assistant</source>
                 <target>Faire reformuler un texte par Donovan</target>
             </trans-unit>
+            <trans-unit id="TxO7hhy">
+                <source>label.guided_project_ui_ai_search_answers</source>
+                <target>Lire ce que le site ne couvre pas</target>
+            </trans-unit>
+            <trans-unit id="keQolrh">
+                <source>label.guided_project_ui_ai_search_setup</source>
+                <target>Mettre en place la recherche IA</target>
+            </trans-unit>
             <trans-unit id="EsOjKAx">
                 <source>label.guided_project_ui_calculator</source>
                 <target>Construire un calculateur</target>
@@ -2261,6 +2401,46 @@
             <trans-unit id="eMrSX2A">
                 <source>label.guided_step_ui_ai_assistant_text</source>
                 <target>Coller un texte à reformuler</target>
+            </trans-unit>
+            <trans-unit id="cwgsYqy">
+                <source>label.guided_step_ui_ai_search_answers_detail</source>
+                <target>Lire une question</target>
+            </trans-unit>
+            <trans-unit id="Y.DFtzS">
+                <source>label.guided_step_ui_ai_search_answers_done</source>
+                <target>Écrire la page qui manque</target>
+            </trans-unit>
+            <trans-unit id="IHSGSXT">
+                <source>label.guided_step_ui_ai_search_answers_filter</source>
+                <target>Ne garder que les questions non trouvées</target>
+            </trans-unit>
+            <trans-unit id="JvQ._tL">
+                <source>label.guided_step_ui_ai_search_answers_open</source>
+                <target>Les questions posées au site</target>
+            </trans-unit>
+            <trans-unit id="WrlukCg">
+                <source>label.guided_step_ui_ai_search_setup_entry</source>
+                <target>Ouvrir une entrée</target>
+            </trans-unit>
+            <trans-unit id="RHQ7MjT">
+                <source>label.guided_step_ui_ai_search_setup_index</source>
+                <target>Attendre l'indexation de la nuit</target>
+            </trans-unit>
+            <trans-unit id="3Y4zYmQ">
+                <source>label.guided_step_ui_ai_search_setup_open</source>
+                <target>Le groupe IA des réglages</target>
+            </trans-unit>
+            <trans-unit id="oXzH0ZR">
+                <source>label.guided_step_ui_ai_search_setup_place</source>
+                <target>Où les visiteurs la trouvent</target>
+            </trans-unit>
+            <trans-unit id="JyFWPBu">
+                <source>label.guided_step_ui_ai_search_setup_save</source>
+                <target>Enregistrer, puis passer à l'entrée suivante</target>
+            </trans-unit>
+            <trans-unit id="l4R4AH2">
+                <source>label.guided_step_ui_ai_search_setup_value</source>
+                <target>Saisir la valeur</target>
             </trans-unit>
             <trans-unit id="xuMz59Y">
                 <source>label.guided_step_ui_calculator_fields</source>
@@ -2677,6 +2857,10 @@
             <trans-unit id="nbVcFMW">
                 <source>label.image_zoom_help</source>
                 <target>Un clic sur une image l'ouvre par-dessus la page. Sans effet sur une image qui porte déjà un lien.</target>
+            </trans-unit>
+            <trans-unit id="CXz2aot">
+                <source>label.info_ai_search_answers</source>
+                <target>Les questions posées par les visiteurs dans la recherche IA du site, et ce qu'elle a répondu. Filtrez sur « Trouvé » = non pour voir ce que le site ne couvre pas encore : c'est le contenu à écrire. Une question que plus personne ne pose est supprimée après le délai de conservation.</target>
             </trans-unit>
             <trans-unit id="wufmcmY">
                 <source>label.info_email_debug</source>

@@ -35,7 +35,10 @@ class AiAlertProviderTest extends TestCase
     private function createUsageTracker(?AiUsage $currentMonth = null): AiUsageTracker
     {
         $tracker = $this->createStub(AiUsageTracker::class);
-        $tracker->method('getCurrentMonth')->willReturn($currentMonth);
+        // Each feature reads its own row: the one given here is the one of its own feature
+        $tracker->method('getCurrentMonth')->willReturnCallback(
+            fn (string $feature = AiUsage::FEATURE_REPHRASE): ?AiUsage => $feature === $currentMonth?->getFeature() ? $currentMonth : null,
+        );
 
         return $tracker;
     }
@@ -149,6 +152,26 @@ class AiAlertProviderTest extends TestCase
         $this->assertSame('description.ai_rephrase_failure_alert', $alerts[0]['description']);
         $this->assertSame(Config::SEVERITY_WARNING, $alerts[0]['severity']);
         $this->assertSame('/management/ui/ai-assistant', $alerts[0]['url']);
+    }
+
+    public function testReturnsItsOwnWarningAlertWhenLastSiteSearchFailed(): void
+    {
+        $usage = new AiUsage()->setYearMonth('2026-07')->setFeature(AiUsage::FEATURE_SITE_SEARCH);
+        $usage->recordFailure('HTTP 401 returned');
+
+        $provider = new AiAlertProvider(
+            $this->createUsageTracker($usage),
+            $this->createAssistantClient(true),
+            $this->createRephraseClient(true),
+            $this->createConfigService(),
+            $this->createUrlGenerator(),
+        );
+
+        $alerts = $provider->getAlerts();
+
+        $this->assertCount(1, $alerts);
+        $this->assertSame('label.ai_site_search_failure_alert', $alerts[0]['label']);
+        $this->assertSame(Config::SEVERITY_WARNING, $alerts[0]['severity']);
     }
 
     public function testReturnsNoFailureAlertWhenLastAttemptSucceeded(): void

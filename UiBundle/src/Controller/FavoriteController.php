@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Controller;
 
 use c975L\UiBundle\Service\FavoriteService;
 use c975L\UiBundle\Service\RateLimiterGuard;
+use c975L\UiBundle\Service\SameOriginRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -102,7 +103,7 @@ class FavoriteController extends AbstractController
     private function refuse(Request $request): ?Response
     {
         // Same-origin only, and no session token: these routes must never make the server open a session, a Set-Cookie being exactly what would poison the shared cache the page sits in. A json body already sends any cross-origin caller through a CORS preflight they do not answer, and the origin check closes the plain form-post a browser would otherwise deliver without one
-        if ('json' !== $request->getContentTypeFormat() || !$this->isSameOrigin($request)) {
+        if (!SameOriginRequest::isSameOriginJson($request)) {
             return new JsonResponse(['error' => 'forbidden'], Response::HTTP_FORBIDDEN);
         }
 
@@ -128,20 +129,5 @@ class FavoriteController extends AbstractController
         $response->headers->set('Cache-Control', 'no-store, private');
 
         return $response;
-    }
-
-    // Origin when the browser sent one (it always does on a fetch), the referer's origin otherwise; neither means the request did not come from a page of this site, and is turned down
-    private function isSameOrigin(Request $request): bool
-    {
-        $expected = $request->getSchemeAndHttpHost();
-
-        $origin = $request->headers->get('Origin');
-        if (null !== $origin) {
-            return $origin === $expected;
-        }
-
-        $referer = $request->headers->get('Referer');
-
-        return null !== $referer && str_starts_with($referer, $expected . '/');
     }
 }

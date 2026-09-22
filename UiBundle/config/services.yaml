@@ -50,6 +50,12 @@ services:
         arguments:
             $favoriteLimiterFactory: '@?limiter.ui_favorite'
 
+    # Same reading for the site search, guarded twice since every question may cost the site's own key: per caller, and for the whole site
+    c975L\UiBundle\Controller\AiSearchController:
+        arguments:
+            $aiSearchLimiterFactory: '@?limiter.ui_ai_search'
+            $aiSearchSiteLimiterFactory: '@?limiter.ui_ai_search_site'
+
     # Same reading again for the public review form, which writes a row anyone can ask for
     c975L\UiBundle\Controller\ReviewController:
         arguments:
@@ -502,6 +508,21 @@ services:
 
     # The link to this bundle's own wishlist page, offered to whoever builds menus out of these blocks (SiteBundle's navbar and footer) rather than declared over there: the page, the heart and the count are this bundle's, so the item leading to them is too, and a menu simply lists what it is offered
     # "menu_navbar" is an exclusive context (see BlockRegistry::EXCLUSIVE_CONTEXTS): opting into it is what gets the item offered in a navbar at all, where only links are. "menu_slot" is not this bundle's own - it is the slot context of the "menu_group" a menu builds its lines with, named here so the item can be dropped into one
+    # The site search: a field asking the site's own LLM about the site's own pages (see AiSiteSearch). Not cached: it is drawn only while the search is on, which a config change decides without touching the block
+    ui.block.ai_search:
+        class: stdClass
+        tags:
+            - name: ui.block
+              kind: ai_search
+              label: "label.block_ai_search"
+              description: "label.block_ai_search_description"
+              form: c975L\UiBundle\Form\Block\AiSearchType
+              translatable: 'title, placeholder, suggestions'
+              template: '@c975LUi/blocks/AiSearch.html.twig'
+              category: 'label.category_elements'
+              pickable: true
+              cacheable: false
+
     ui.block.favorite_link:
         class: stdClass
         tags:

@@ -6,6 +6,10 @@
                 <source>narration.ai_assistant</source>
                 <target>«Donovan» es el asistente del back-office: pregúntele con sus propias palabras cómo funciona el sistema de bloques, y responde a partir de lo que los bundles instalados ofrecen realmente.</target>
             </trans-unit>
+            <trans-unit id="CqbNhqo">
+                <source>narration.ai_search_answers</source>
+                <target>«Búsqueda IA» enumera las preguntas que los visitantes hicieron al sitio. Las marcadas como no encontradas muestran lo que queda por escribir.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>«Vitrina de bloques» muestra todos los tipos de bloques disponibles, cada uno con una vista previa en directo: lo justo para elegir cuál colocar en una página.</target>
@@ -49,6 +53,46 @@
             <trans-unit id="veOfKCP">
                 <source>narration.guided_step_ui_ai_assistant_text</source>
                 <target>Pegue un texto que reformular en esta área. No pertenece a ninguna página del sitio: lo que se prueba en ella se descarta, lo que la convierte en el lugar para descubrir qué da la reformulación.</target>
+            </trans-unit>
+            <trans-unit id="jtAfN6l">
+                <source>narration.guided_step_ui_ai_search_answers_detail</source>
+                <target>Haga clic en el ojo de una pregunta para leer su respuesta y las páginas de las que viene.</target>
+            </trans-unit>
+            <trans-unit id="tbEBzcH">
+                <source>narration.guided_step_ui_ai_search_answers_done</source>
+                <target>Escriba la página que falta: tras la indexación nocturna, la misma pregunta encontrará su respuesta.</target>
+            </trans-unit>
+            <trans-unit id="MFQftfb">
+                <source>narration.guided_step_ui_ai_search_answers_filter</source>
+                <target>Haga clic en Filtros y elija Encontrado: no, para quedarse solo con las preguntas sin respuesta.</target>
+            </trans-unit>
+            <trans-unit id="d93tNlI">
+                <source>narration.guided_step_ui_ai_search_answers_open</source>
+                <target>Aquí están las preguntas hechas al sitio: cada una se guarda sin nada que identifique al visitante.</target>
+            </trans-unit>
+            <trans-unit id="cnvsxOI">
+                <source>narration.guided_step_ui_ai_search_setup_entry</source>
+                <target>Haga clic en el lápiz de una entrada, empezando por el proveedor: anthropic, openai o euria.</target>
+            </trans-unit>
+            <trans-unit id="_r6BuAy">
+                <source>narration.guided_step_ui_ai_search_setup_index</source>
+                <target>La noche siguiente, el sitio vuelve a leer sus páginas públicas: la búsqueda solo aparece tras esa primera lectura.</target>
+            </trans-unit>
+            <trans-unit id="4HX8SSk">
+                <source>narration.guided_step_ui_ai_search_setup_open</source>
+                <target>Aquí están los ajustes, abiertos en el grupo IA: cuatro entradas « Donovan (Asistente) », el proveedor, la clave API, la URI base y el modelo, encienden la búsqueda del sitio, y hacen falta las cuatro.</target>
+            </trans-unit>
+            <trans-unit id="TRy2chd">
+                <source>narration.guided_step_ui_ai_search_setup_place</source>
+                <target>Aparece entonces una lupa en la barra de navegación, y el bloque Búsqueda IA coloca el mismo campo en medio de una página.</target>
+            </trans-unit>
+            <trans-unit id="lC2xCwz">
+                <source>narration.guided_step_ui_ai_search_setup_save</source>
+                <target>Guarde y vuelva a empezar con la entrada siguiente, hasta que las cuatro estén rellenadas.</target>
+            </trans-unit>
+            <trans-unit id="4QHj1Mo">
+                <source>narration.guided_step_ui_ai_search_setup_value</source>
+                <target>Escriba su valor en este campo. La clave API sigue siendo suya: cada pregunta se factura en su cuenta del proveedor.</target>
             </trans-unit>
             <trans-unit id="OP28253">
                 <source>narration.guided_step_ui_calculator_fields</source>

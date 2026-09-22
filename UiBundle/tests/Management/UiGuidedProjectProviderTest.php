@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
+use c975L\UiBundle\Service\AiSiteSearchClient;
 use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -41,6 +42,7 @@ class UiGuidedProjectProviderTest extends TestCase
             return $generator;
         });
         $generator->method('setAction')->willReturnSelf();
+        $generator->method('set')->willReturnSelf();
         $generator->method('generateUrl')->willReturn('/management/x');
 
         return $generator;
@@ -72,10 +74,29 @@ class UiGuidedProjectProviderTest extends TestCase
         return $generator;
     }
 
-    // Multilingual unless told otherwise, so every step the provider can walk is there for the assertions below to read
-    private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true): UiGuidedProjectProvider
+    private function createSiteSearchClient(bool $enabled): AiSiteSearchClient
     {
-        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'));
+        $client = $this->createStub(AiSiteSearchClient::class);
+        $client->method('isEnabled')->willReturn($enabled);
+
+        return $client;
+    }
+
+    // Multilingual and with the site search configured unless told otherwise, so every step the provider can walk is there for the assertions below to read
+    private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true, bool $siteSearch = true): UiGuidedProjectProvider
+    {
+        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'), $this->createSiteSearchClient($siteSearch));
+    }
+
+    // No question is recorded before the search is configured, so the parcours reading them is not offered - the one setting it up is, whatever the state
+    public function testTheSearchAnswersProjectWaitsForTheSearchToBeConfigured(): void
+    {
+        $controllers = [];
+        $routes = [];
+        $slugs = array_column($this->createProvider($controllers, $routes, siteSearch: false)->getGuidedProjects(), 'slug');
+
+        $this->assertContains('ui-ai-search-setup', $slugs);
+        $this->assertNotContains('ui-ai-search-answers', $slugs);
     }
 
     // The tabs are on the edit screen and saving a new form returned to the index, so the parcours reopens the form before pointing at them - as the calculator's reopens it for its formulas
@@ -122,8 +143,8 @@ class UiGuidedProjectProviderTest extends TestCase
     {
         $projects = $this->createProvider()->getGuidedProjects();
 
-        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add'], array_column($projects, 'slug'));
-        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110], array_column($projects, 'order'));
+        $this->assertSame(['ui-media', 'ui-site-graphic', 'ui-legal-model', 'ui-ai-assistant', 'ui-form', 'ui-calculator', 'ui-form-field-template', 'ui-email-template', 'ui-font', 'ui-review', 'ui-media-add', 'ui-ai-search-setup', 'ui-ai-search-answers'], array_column($projects, 'slug'));
+        $this->assertSame([3010, 3020, 3030, 3040, 3050, 3060, 3070, 3080, 3090, 3100, 3110, 3120, 3130], array_column($projects, 'order'));
     }
 
     // Orders are merged across every bundle contributing projects, and two equal ones leave their sequence to the order the providers happen to be registered in - this bundle's own block is the 3000 GuidedProjectProviderInterface reserves it
@@ -154,6 +175,8 @@ class UiGuidedProjectProviderTest extends TestCase
             'ui-font' => 'ROLE_EDITOR',
             'ui-review' => 'ROLE_EDITOR',
             'ui-media-add' => 'ROLE_EDITOR',
+            'ui-ai-search-setup' => 'ROLE_ADMIN',
+            'ui-ai-search-answers' => 'ROLE_EDITOR',
         ];
 
         foreach ($this->createProvider()->getGuidedProjects() as $project) {
@@ -208,7 +231,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->createProvider($controllers)->getGuidedProjects();
 
         $this->assertSame(
-            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController', 'MediaCrudController'],
+            ['MediaCrudController', 'SiteGraphicCrudController', 'FormCrudController', 'FormCrudController', 'FormFieldTemplateCrudController', 'EmailTemplateCrudController', 'FontCrudController', 'ReviewCrudController', 'MediaCrudController', 'ConfigCrudController', 'AiSearchAnswerCrudController'],
             array_map(static fn (string $fqcn): string => basename(str_replace('\\', '/', $fqcn)), $controllers)
         );
     }

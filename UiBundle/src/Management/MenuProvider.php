@@ -13,6 +13,7 @@ namespace c975L\UiBundle\Management;
 use c975L\ConfigBundle\Management\MenuProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
+use c975L\UiBundle\Controller\Management\AiSearchAnswerCrudController;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
 use c975L\UiBundle\Controller\Management\FontCrudController;
 use c975L\UiBundle\Controller\Management\FormCrudController;
@@ -20,6 +21,7 @@ use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
+use c975L\UiBundle\Service\AiSiteSearchClient;
 use c975L\UiBundle\Service\ReviewService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -29,6 +31,7 @@ class MenuProvider implements MenuProviderInterface
         private readonly ConfigServiceInterface $configService,
         private readonly TranslatorInterface $translator,
         private readonly ReviewService $reviewService,
+        private readonly AiSiteSearchClient $aiSiteSearchClient,
     ) {
     }
 
@@ -110,6 +113,21 @@ class MenuProvider implements MenuProviderInterface
                 // The bar ReviewCrudController states on its own rows
                 'role' => $this->configService->get('site-role-editor'),
                 'description' => 'label.info_reviews',
+            ];
+        }
+
+        // Same reading as the reviews: only once the site search is configured, the screen listing what it was asked
+        if ($this->aiSiteSearchClient->isEnabled()) {
+            $menus['ai_search_answer'] = [
+                'controller' => AiSearchAnswerCrudController::class,
+                'label' => 'label.ai_search_answers',
+                'narration' => 'narration.ai_search_answers',
+                'translation_domain' => 'ui',
+                'icon' => 'fas fa-magnifying-glass',
+                'tier' => 'advanced',
+                // The bar AiSearchAnswerCrudController states on its own rows
+                'role' => $this->configService->get('site-role-editor'),
+                'description' => 'label.info_ai_search_answers',
             ];
         }
 

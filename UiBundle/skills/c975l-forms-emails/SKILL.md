@@ -130,8 +130,8 @@ email-typed field, `IsTrue` on every required checkbox, a rate limiter counting 
 an address (an IPv6 one by its /64), and reCAPTCHA v3 — a no-op unless `recaptcha3-site-key` and
 `recaptcha3-secret-key` are both filled in.
 
-**Under `test` no limiter of this bundle refuses anything** — `ui_form`, `ui_rating`, `ui_favorite`
-and `ui_review` are prepended with `policy: no_limit` there, so a site's own functional suite never
+**Under `test` no limiter of this bundle refuses anything** — `ui_form`, `ui_rating`, `ui_favorite`,
+`ui_ai_search`, `ui_ai_search_site` and `ui_review` are prepended with `policy: no_limit` there, so a site's own functional suite never
 meets a 429 it caused itself. The numbers stay declared and `RateLimiterGuard` stays wired: only the
 refusal disappears, and what a refusal does is tested against a limiter a test builds for itself.
 

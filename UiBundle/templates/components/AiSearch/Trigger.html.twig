@@ -1,0 +1,9 @@
+{# <twig:c975LUi:AiSearch:Trigger [class="..."]/> - the magnifier a navbar opens the site search with (see Dialog.html.twig, which the layout places). Nothing is written while the search is off, so a navbar calls it unconditionally #}
+{% if ai_search_enabled() %}
+    <button type="button" class="ai-search-trigger {{ class|default('') }}" data-ai-search-open aria-haspopup="dialog" title="{{ 'label.ai_search_open'|trans({}, 'ui') }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 2a8 8 0 0 1 6.32 12.9l5.39 5.4-1.41 1.4-5.4-5.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
+        <span class="sr-only">{{ 'label.ai_search_open'|trans({}, 'ui') }}</span>
+        {# The shortcut, read by a keyboard user and hidden on a phone, which has none #}
+        <kbd class="ai-search-trigger__shortcut" aria-hidden="true">Ctrl K</kbd>
+    </button>
+{% endif %}

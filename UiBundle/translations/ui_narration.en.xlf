@@ -6,6 +6,10 @@
                 <source>narration.ai_assistant</source>
                 <target>"Donovan" is the back office's own assistant: ask it how the block system works in plain words, and it answers from what the installed bundles actually ship.</target>
             </trans-unit>
+            <trans-unit id="CqbNhqo">
+                <source>narration.ai_search_answers</source>
+                <target>"AI search" lists the questions visitors asked the site. Those marked not found show what is left to write.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>"Block showcase" shows every available block kind, each with a live preview: enough to choose which one to put on a page.</target>
@@ -49,6 +53,46 @@
             <trans-unit id="veOfKCP">
                 <source>narration.guided_step_ui_ai_assistant_text</source>
                 <target>Paste a text to rephrase into this area. It belongs to no page of the site: whatever is tried in it is thrown away, which makes it the place to find out what the rephrasing gives.</target>
+            </trans-unit>
+            <trans-unit id="jtAfN6l">
+                <source>narration.guided_step_ui_ai_search_answers_detail</source>
+                <target>Click the eye of a question to read its answer and the pages it comes from.</target>
+            </trans-unit>
+            <trans-unit id="tbEBzcH">
+                <source>narration.guided_step_ui_ai_search_answers_done</source>
+                <target>Write the missing page: after the nightly indexing, the same question will find its answer.</target>
+            </trans-unit>
+            <trans-unit id="MFQftfb">
+                <source>narration.guided_step_ui_ai_search_answers_filter</source>
+                <target>Click Filters, then pick Found: no, to keep only the questions left unanswered.</target>
+            </trans-unit>
+            <trans-unit id="d93tNlI">
+                <source>narration.guided_step_ui_ai_search_answers_open</source>
+                <target>Here are the questions asked of the site: each one is kept with nothing identifying the visitor.</target>
+            </trans-unit>
+            <trans-unit id="cnvsxOI">
+                <source>narration.guided_step_ui_ai_search_setup_entry</source>
+                <target>Click the pencil of an entry, starting with the provider: anthropic, openai or euria.</target>
+            </trans-unit>
+            <trans-unit id="_r6BuAy">
+                <source>narration.guided_step_ui_ai_search_setup_index</source>
+                <target>The following night, the site reads its public pages again: the search only shows after that first reading.</target>
+            </trans-unit>
+            <trans-unit id="4HX8SSk">
+                <source>narration.guided_step_ui_ai_search_setup_open</source>
+                <target>Here are the settings, opened on the AI group: four "Donovan (Assistant)" entries, the provider, the API key, the base URI and the model, switch the site search on, and all four are needed.</target>
+            </trans-unit>
+            <trans-unit id="TRy2chd">
+                <source>narration.guided_step_ui_ai_search_setup_place</source>
+                <target>A magnifier then shows in the navigation bar, and the AI search block puts the same field in the middle of a page.</target>
+            </trans-unit>
+            <trans-unit id="lC2xCwz">
+                <source>narration.guided_step_ui_ai_search_setup_save</source>
+                <target>Save, then start again with the next entry, until all four are filled in.</target>
+            </trans-unit>
+            <trans-unit id="4QHj1Mo">
+                <source>narration.guided_step_ui_ai_search_setup_value</source>
+                <target>Type its value into this field. The API key stays yours: each question is billed to your account with the provider.</target>
             </trans-unit>
             <trans-unit id="OP28253">
                 <source>narration.guided_step_ui_calculator_fields</source>

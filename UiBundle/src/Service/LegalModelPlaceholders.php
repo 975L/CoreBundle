@@ -27,6 +27,8 @@ class LegalModelPlaceholders
     private const string RAW = 'raw';
     // Same, with newlines turned into <br> (multi-line postal addresses)
     private const string RAW_NL2BR = 'raw_nl2br';
+    // A number of days, read the way AiSiteSearch::retentionDays() applies it
+    private const string RETENTION_DAYS = 'retention_days';
 
     private const array VARS = [
         'site-name' => self::ESCAPE,
@@ -39,6 +41,8 @@ class LegalModelPlaceholders
         'site-producer' => self::RAW,
         'site-hosting-provider' => self::RAW_NL2BR,
         'site-dpo' => self::ESCAPE,
+        // How long the site search keeps a question, which the privacy policy states
+        'ui-ai-assistant-site-retention-days' => self::RETENTION_DAYS,
     ];
 
     // Set only for the duration of one withMarkers() call, which never spans a request boundary
@@ -58,7 +62,7 @@ class LegalModelPlaceholders
 
         return $this->markerMode
             ? '%' . $slug . '%'
-            : $this->format((string) $this->configService->get($slug), self::VARS[$slug]);
+            : $this->format($this->configService->get($slug), self::VARS[$slug]);
     }
 
     // Runs $render with the models writing markers rather than values
@@ -84,18 +88,19 @@ class LegalModelPlaceholders
     {
         $map = [];
         foreach (self::VARS as $slug => $format) {
-            $map['%' . $slug . '%'] = $this->format((string) $this->configService->get($slug), $format);
+            $map['%' . $slug . '%'] = $this->format($this->configService->get($slug), $format);
         }
 
         return strtr($html, $map);
     }
 
-    private function format(string $value, string $format): string
+    private function format(mixed $value, string $format): string
     {
         return match ($format) {
-            self::RAW => $value,
-            self::RAW_NL2BR => nl2br($value),
-            default => htmlspecialchars($value, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8'),
+            self::RAW => (string) $value,
+            self::RAW_NL2BR => nl2br((string) $value),
+            self::RETENTION_DAYS => (string) AiSiteSearch::retentionDays($value),
+            default => htmlspecialchars((string) $value, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8'),
         };
     }
 }

@@ -11,6 +11,7 @@
 namespace c975L\UiBundle\Tests\Service;
 
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
+use c975L\UiBundle\Service\AiSiteSearch;
 use c975L\UiBundle\Service\LegalModelPlaceholders;
 use PHPUnit\Framework\TestCase;
 
@@ -89,6 +90,13 @@ class LegalModelPlaceholdersTest extends TestCase
 
         $this->assertStringContainsString("Acme & Co<br />\n1 rue du Test", $html);
         $this->assertContains('site-address', $this->placeholders()->slugs());
+    }
+
+    // The retention the privacy policy states is the one the purge applies, an empty entry reading as the default
+    public function testAnEmptyRetentionPrintsTheDefaultThePurgeApplies(): void
+    {
+        $this->assertSame((string) AiSiteSearch::DEFAULT_RETENTION_DAYS, $this->placeholders()->value('ui-ai-assistant-site-retention-days'));
+        $this->assertSame('<p>' . AiSiteSearch::DEFAULT_RETENTION_DAYS . '</p>', $this->placeholders()->substitute('<p>%ui-ai-assistant-site-retention-days%</p>'));
     }
 
     public function testSlugsAreListedForTheCustomizationScreen(): void

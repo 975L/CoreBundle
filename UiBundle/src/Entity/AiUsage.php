@@ -13,19 +13,27 @@ namespace c975L\UiBundle\Entity;
 use c975L\UiBundle\Repository\AiUsageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-// Tracks the "rephrase" feature's token spend, one row per calendar month - AiRephraseClient calls the provider directly (no intermediary), so this is the only place that spend is ever visible. Aggregated at month granularity on purpose, not one row per request: a per-request log would tie a token count to a timestamp close enough to correlate with a specific edit, undermining the "nothing is persisted" promise for the rephrased content itself, even though the count alone reveals nothing about it
+// Tracks the token spend of each AI feature paid for by the site's own key (FEATURE_*), one row per feature and calendar month - AiRephraseClient calls the provider directly (no intermediary), so this is the only place that spend is ever visible. Aggregated at month granularity on purpose, not one row per request: a per-request log would tie a token count to a timestamp close enough to correlate with a specific edit, undermining the "nothing is persisted" promise for the rephrased content itself, even though the count alone reveals nothing about it
 #[ORM\Entity(repositoryClass: AiUsageRepository::class)]
 #[ORM\Table(name: 'site_ai_usage')]
+#[ORM\UniqueConstraint(name: 'uniq_ai_usage_feature_month', columns: ['feature', 'year_month'])]
 class AiUsage
 {
+    public const string FEATURE_REPHRASE = 'rephrase';
+    public const string FEATURE_SITE_SEARCH = 'site_search';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     // "YYYY-MM"; backtick-quoted because "year_month" is a reserved MariaDB keyword the ORM's INSERT wouldn't quote
-    #[ORM\Column(name: '`year_month`', length: 7, unique: true)]
+    #[ORM\Column(name: '`year_month`', length: 7)]
     private string $yearMonth;
+
+    // Each feature has its own row, so a failing site search never raises the rephrase alert nor mixes into its spend. Defaulted so the rows written before this column existed stay the rephrase's
+    #[ORM\Column(length: 20, options: ['default' => self::FEATURE_REPHRASE])]
+    private string $feature = self::FEATURE_REPHRASE;
 
     #[ORM\Column]
     private int $inputTokens = 0;
@@ -56,6 +64,18 @@ class AiUsage
     public function setYearMonth(string $yearMonth): static
     {
         $this->yearMonth = $yearMonth;
+
+        return $this;
+    }
+
+    public function getFeature(): string
+    {
+        return $this->feature;
+    }
+
+    public function setFeature(string $feature): static
+    {
+        $this->feature = $feature;
 
         return $this;
     }

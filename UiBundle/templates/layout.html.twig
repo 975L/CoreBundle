@@ -220,6 +220,9 @@
             <twig:c975LUi:Analytics:Matomo />
             <twig:c975LUi:Cookie:Consent />
 
+            {# The site search's dialog, placed once for the whole site and opened from the navbar's magnifier (see components/AiSearch/Trigger.html.twig). It carries its own "is it on" guard, and sits outside the footer block so a site replacing its footer keeps it #}
+            <twig:c975LUi:AiSearch:Dialog />
+
             {# PaymentBundle's basket bar, placed once for the whole site and hidden while the basket is empty. Included rather than called as a component so this bundle stays usable without PaymentBundle, and outside the footer block so a site replacing its footer keeps it #}
             {{ include('@c975LPayment/components/Basket/Navbar.html.twig', ignore_missing: true) }}
 

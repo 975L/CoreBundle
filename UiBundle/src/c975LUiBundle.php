@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle;
 
+use c975L\UiBundle\DependencyInjection\Compiler\AiSearchCardProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockCacheTagProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockEditUrlProviderPass;
 use c975L\UiBundle\DependencyInjection\Compiler\BlockFixtureProviderPass;
@@ -66,6 +67,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new CacheInvalidatorPass());
         $container->addCompilerPass(new CollectionSourceProviderPass());
         $container->addCompilerPass(new FavoriteItemProviderPass());
+        $container->addCompilerPass(new AiSearchCardProviderPass());
         $container->addCompilerPass(new GalleryShowcaseProviderPass());
         $container->addCompilerPass(new SameAsProviderPass());
         $container->addCompilerPass(new ReviewReplyPublisherPass());
@@ -117,6 +119,18 @@ class c975LUiBundle extends AbstractBundle
                     'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
                     'limit' => 60,
                     'interval' => '10 minutes',
+                ],
+                // The site search (see AiSearchController), per caller: a visitor asks a handful of questions, not one every ten seconds
+                'ui_ai_search' => [
+                    'policy' => $testEnvironment ? 'no_limit' : 'sliding_window',
+                    'limit' => 10,
+                    'interval' => '10 minutes',
+                ],
+                // And for the whole site, whatever the address: what bounds the bill of the site's own key when a crowd of addresses asks at once. A site expecting more raises it in its own config
+                'ui_ai_search_site' => [
+                    'policy' => $testEnvironment ? 'no_limit' : 'fixed_window',
+                    'limit' => 300,
+                    'interval' => '1 day',
                 ],
                 // The public review form (see ReviewController), declared for the same reason. Far tighter than the three above: writing a review is a rare, deliberate act, and three an hour from one caller is already more than anyone has to say
                 'ui_review' => [

@@ -1,0 +1,12 @@
+{# <twig:c975LUi:AiSearch:Dialog/> - the site search in a modal, placed once by the layout and opened by any [data-ai-search-open] (the navbar's magnifier, see Trigger.html.twig) or by Ctrl/Cmd+K. A <dialog> opened with showModal(): the browser keeps the focus inside, Escape closes it, and the page under it is inert #}
+{% if ai_search_enabled() %}
+    <dialog class="ai-search-dialog" aria-label="{{ 'label.ai_search_open'|trans({}, 'ui') }}"
+            data-controller="ui-ai-search-dialog"
+            data-action="click@document->ui-ai-search-dialog#openFrom keydown.ctrl+k@window->ui-ai-search-dialog#shortcut keydown.meta+k@window->ui-ai-search-dialog#shortcut click->ui-ai-search-dialog#backdrop">
+        {# method="dialog" closes it with no script at all #}
+        <form method="dialog" class="ai-search-dialog__close">
+            <button type="submit" aria-label="{{ 'label.ai_search_close'|trans({}, 'ui') }}">&times;</button>
+        </form>
+        {{ include('@c975LUi/ai_search/_search.html.twig', {fieldId: 'ai-search-dialog', title: null, placeholder: null, suggestions: null}) }}
+    </dialog>
+{% endif %}

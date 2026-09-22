@@ -1,0 +1,57 @@
+{# The site search itself, shared by the "ai_search" block and the dialog the layout opens from the navbar's magnifier (see components/AiSearch/Dialog.html.twig). Takes fieldId, and optionally title, placeholder, suggestions and anchor_id #}
+{% set suggestionList = (suggestions|default(''))|split("\n")|map(line => line|trim)|filter(line => line is not empty)|slice(0, 4) %}
+<section class="ai-search"{% if anchor_id|default(null) %} id="{{ anchor_id }}"{% endif %}
+         data-controller="ui-ai-search"
+         data-ui-ai-search-url-value="{{ path('ui_ai_search_ask') }}"
+         data-ui-ai-search-locale-value="{{ app.request.locale }}"
+         data-ui-ai-search-not-found-label-value="{{ 'label.ai_search_not_found'|trans({}, 'ui') }}"
+         data-ui-ai-search-error-label-value="{{ 'label.ai_search_error'|trans({}, 'ui') }}"
+         data-ui-ai-search-throttled-label-value="{{ 'label.ai_search_throttled'|trans({}, 'ui') }}">
+    <header class="ai-search__header">
+        {% if title|default('') %}
+            <h2 class="ai-search__title">{{ title }}</h2>
+        {% endif %}
+        {# Says at a glance what answers: a model, not a list of keyword matches #}
+        <span class="ai-search__badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2zm7 11l.95 2.55L22.5 16.5l-2.55.95L19 20l-.95-2.55L15.5 16.5l2.55-.95L19 13z"/></svg>
+            {{ 'label.ai_search_badge'|trans({}, 'ui') }}
+        </span>
+    </header>
+
+    {# No required/minlength/maxlength on the field: the form theme paints a field meeting them green, which a search box has no business being - the controller and the route check the length instead #}
+    <form class="ai-search__form" data-action="ui-ai-search#ask">
+        <label class="sr-only" for="{{ fieldId }}">{{ 'label.ai_search_question'|trans({}, 'ui') }}</label>
+        <svg class="ai-search__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 2a8 8 0 0 1 6.32 12.9l5.39 5.4-1.41 1.4-5.4-5.39A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
+        <input type="search" id="{{ fieldId }}" class="ai-search__question" data-ui-ai-search-target="question"
+               autocomplete="off"
+               placeholder="{{ placeholder|default('') ?: 'label.ai_search_placeholder_default'|trans({}, 'ui') }}">
+        <button type="submit" class="ai-search__submit" data-ui-ai-search-target="submit">{{ 'label.ai_search_submit'|trans({}, 'ui') }}</button>
+    </form>
+
+    {% if suggestionList is not empty %}
+        <ul class="ai-search__suggestions">
+            {% for suggestion in suggestionList %}
+                <li><button type="button" class="ai-search__suggestion" data-action="ui-ai-search#suggest" data-ui-ai-search-question-param="{{ suggestion }}">{{ suggestion }}</button></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {# The same sign as a live search's (components/Search/Busy.html.twig), switched by the controller rather than by data-loading, which only a LiveComponent answers #}
+    <p class="search-busy" data-ui-ai-search-target="busy" role="status">
+        <span class="search-busy__spinner" aria-hidden="true"></span>
+        {{ 'label.searching'|trans({}, 'ui') }}
+    </p>
+
+    <div class="ai-search__result" data-ui-ai-search-target="result" aria-live="polite" hidden>
+        <p class="ai-search__answer" data-ui-ai-search-target="answer"></p>
+        {# The pages a bundle draws as its own card - a product with its price and its basket button - rather than as a plain link #}
+        <div class="ai-search__cards" data-ui-ai-search-target="cards" hidden></div>
+        <div class="ai-search__sources-block" data-ui-ai-search-target="sourcesBlock" hidden>
+            <p class="ai-search__sources-title">{{ 'label.ai_search_sources'|trans({}, 'ui') }}</p>
+            <ul class="ai-search__sources" data-ui-ai-search-target="sources"></ul>
+        </div>
+    </div>
+
+    {# Said on the field itself: a visitor has to know the answer is written by a model, and may be wrong #}
+    <p class="ai-search__notice">{{ 'label.ai_search_notice'|trans({}, 'ui') }}</p>
+</section>

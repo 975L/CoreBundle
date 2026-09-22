@@ -1,0 +1,4 @@
+{# The site search as a block: a question sent to AiSearchController, answered from the site's own pages (see AiSiteSearch). Drawn only while the search is on, so a site whose key ran out or was never set shows no field that can only fail #}
+{% if ai_search_enabled() %}
+    {{ include('@c975LUi/ai_search/_search.html.twig', {fieldId: 'ai-search-' ~ block.id}) }}
+{% endif %}

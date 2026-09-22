@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, Edit:Entity, entity_edit_url, entity_edit_pattern, edit-pencils, data-edit-entity, data-edit-field, edit pencil, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, GoogleMapsLinkBuilder, google_maps_url, map block, MapProvider, MapType, MapPointType, MapGeocoder, MapGeocoderInterface, ui_map_settings, ui_map_points, vendor-assets.json, VendorAssetsTest, vendored library, ui-map-provider, ui-map-google-api-key, c975l_ui.map.img_origins, leaflet, OpenStreetMap, Google Maps, faq, FaqType, FaqItemType, FAQPage, details summary accordion, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, getTranslatableCollections, ContentTranslator::expand, ContentTranslator::read, repeated texts, cards[].title, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales, MediaTranslator, ui_media, MediaTranslationType, mediaTranslation_, mediaTranslationsRendered, setTranslated, getUntranslated, translate a media, translate a caption, data-media-translation, InternalLinkLocalizerInterface, InternalLinkLocalizerRegistry, InternalLinkLocalizerPass, localize a link, background, HasBackgroundFieldTrait, section-background, colored flat, marker icon, divIcon."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, Edit:Entity, entity_edit_url, entity_edit_pattern, edit-pencils, data-edit-entity, data-edit-field, edit pencil, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, GoogleMapsLinkBuilder, google_maps_url, map block, MapProvider, MapType, MapPointType, MapGeocoder, MapGeocoderInterface, ui_map_settings, ui_map_points, vendor-assets.json, VendorAssetsTest, vendored library, ui-map-provider, ui-map-google-api-key, c975l_ui.map.img_origins, leaflet, OpenStreetMap, Google Maps, faq, FaqType, FaqItemType, FAQPage, details summary accordion, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, getTranslatableCollections, ContentTranslator::expand, ContentTranslator::read, repeated texts, cards[].title, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales, MediaTranslator, ui_media, MediaTranslationType, mediaTranslation_, mediaTranslationsRendered, setTranslated, getUntranslated, translate a media, translate a caption, data-media-translation, InternalLinkLocalizerInterface, InternalLinkLocalizerRegistry, InternalLinkLocalizerPass, localize a link, ai_search, AiSiteSearch, AiSiteSearchClient, AiSearchIndexer, AiSearchPageReader, AiSearchChunk, AiSearchAnswer, AiSearchController, ui_ai_search_ask, ui_ai_search, ui_ai_search_site, c975l:ui:ai-search:index, data-ai-search-ignore, site search, AbstractAiProviderClient, SameOriginRequest, AiSearchAnswerCrudController, ai_search_configured, AiSearch:Dialog, AiSearch:Trigger, data-ai-search-open, booleanQuery, retentionDays, DEFAULT_RETENTION_DAYS, background, HasBackgroundFieldTrait, section-background, colored flat, marker icon, divIcon."
 ---
 
 # c975L UiBundle — blocks
@@ -498,6 +498,41 @@ The same terms as the ratings above, for a thing a visitor puts *aside*: `Entity
   listens to.
 - **Nothing cascades here either**: `FavoriteRepository::deleteForOwner()` / `deleteForOwners()`, on the
   permanent delete only.
+
+## Site search
+
+The `ai_search` block asks the site's own LLM about the site's own pages (see the readme's "Site
+search"). What matters when touching it:
+
+- **The index is the site read anonymously**: `AiSearchIndexer` fetches the *titled* sitemap urls over
+  http as `HealthCheck::USER_AGENT`, `AiSearchPageReader` keeps the `<main>` text. Mark anything a page
+  shows that must not answer questions with `data-ai-search-ignore`; never feed it from the database.
+- **No link the model writes reaches the page**: it names passage numbers, `AiSiteSearch` maps them back
+  to the index. Keep it that way, and keep the front writing with `textContent` only.
+- **The model is never called without passages**, and a question already asked against the same
+  `indexVersion` is served from `site_ai_search_answer`.
+- **Its spend has its own `AiUsage` row** (`AiUsage::FEATURE_SITE_SEARCH`): a provider call goes through
+  `AbstractAiProviderClient`, never a second copy of it. Only the Anthropic call carries `max_tokens`, which
+  it requires: OpenAI's reasoning models refuse that field.
+- `POST /ai-search` takes no CSRF token, like the vote: `SameOriginRequest` plus the `ui_ai_search` and
+  `ui_ai_search_site` limiters stand in its place. The block is not cacheable, drawn only while
+  `ai_search_enabled()`.
+- **Searched in the page's locale**: the block sends `app.request.locale` with the question, and
+  `AiSearchController` keeps it only if `SiteLocales::all()` holds it - the route carries no `_locale`.
+- **What was asked is read in `AiSearchAnswerCrudController`**, and the privacy policy describes the search
+  under `ai_search_configured()` - the config alone, where `ai_search_enabled()` also needs an index. Its
+  four config entries are in `LegalPlaceholderCacheListener`'s `CONDITION_SLUGS`, so a cached legal model
+  follows them.
+- **One reading of the retention**: `AiSiteSearch::retentionDays()` (90 when empty or not positive) is what
+  the purge applies and what `legal_var('ui-ai-assistant-site-retention-days')` prints. Never read the raw
+  entry elsewhere.
+- **The same question asked twice at once** loses on the unique `questionHash`: `AiSiteSearch` catches it
+  and resets the manager, as `AiUsageTracker` does on the month's row. A flush that failed closes the
+  entity manager, so a catch without `resetManager()` still ends in a 500.
+- **The layout already places it** (`AiSearch:Dialog`, opened by `AiSearch:Trigger` or Ctrl/Cmd+K): don't add
+  the block to a page just to offer the search. Search markup lives once, in `ai_search/_search.html.twig`.
+- **The index is rebuilt by `c975l:ui:ai-search:index`**, nightly through `UiMaintenanceTaskProvider`,
+  which purges the answers past their retention first, even on a site whose search is switched off.
 
 ## Exporting
 

@@ -34,6 +34,14 @@
                 <source>description.guided_project_ui_ai_assistant</source>
                 <target>Set up the rephrasing key, then try it out on the screen's own textarea before ever pressing that button under a real field</target>
             </trans-unit>
+            <trans-unit id="0iKWb5V">
+                <source>description.guided_project_ui_ai_search_answers</source>
+                <target>The visitors' questions left unanswered are the pages you still have to write.</target>
+            </trans-unit>
+            <trans-unit id="YVkHrM7">
+                <source>description.guided_project_ui_ai_search_setup</source>
+                <target>Plug the site search into your own key, so visitors can put their questions to your pages.</target>
+            </trans-unit>
             <trans-unit id="zRr_CZb">
                 <source>description.guided_project_ui_calculator</source>
                 <target>A form that computes instead of being sent: sliders, formulas, one figure held up.</target>
@@ -101,6 +109,42 @@
             <trans-unit id="yRkVSz0">
                 <source>description.guided_step_ui_ai_assistant_text</source>
                 <target>This textarea belongs to no page of the site: whatever is tried in it is thrown away, which is what makes it the place to find out what the rephrasing gives</target>
+            </trans-unit>
+            <trans-unit id="3j1B.Nm">
+                <source>description.guided_step_ui_ai_search_answers_detail</source>
+                <target>The detail gives the whole question, the answer and the pages it was drawn from.</target>
+            </trans-unit>
+            <trans-unit id="4K9UHx7">
+                <source>description.guided_step_ui_ai_search_answers_done</source>
+                <target>Once the page is published, the nightly indexing reads it, and the same question finds its answer.</target>
+            </trans-unit>
+            <trans-unit id="Lg0AkA_">
+                <source>description.guided_step_ui_ai_search_answers_filter</source>
+                <target>Filter on "Found": no. These are the questions no page of the site had anything to answer with.</target>
+            </trans-unit>
+            <trans-unit id="3lbCugK">
+                <source>description.guided_step_ui_ai_search_answers_open</source>
+                <target>Each question is kept here with nothing identifying the visitor, along with the answer given and how many times it was asked.</target>
+            </trans-unit>
+            <trans-unit id="1Kz8Cro">
+                <source>description.guided_step_ui_ai_search_setup_entry</source>
+                <target>Start with the provider: anthropic, openai or euria. The base URI and the model are the ones it gives you.</target>
+            </trans-unit>
+            <trans-unit id="eOVgofH">
+                <source>description.guided_step_ui_ai_search_setup_index</source>
+                <target>Every night the site reads its public pages again to find the answers in them. Until that reading has run once, the search shows nowhere.</target>
+            </trans-unit>
+            <trans-unit id="5CS4VPq">
+                <source>description.guided_step_ui_ai_search_setup_open</source>
+                <target>Four "Donovan (Assistant)" entries switch it on: provider, API key, base URI and model. All four are needed: while one is missing, the search stays off.</target>
+            </trans-unit>
+            <trans-unit id="J7.qbf7">
+                <source>description.guided_step_ui_ai_search_setup_place</source>
+                <target>A magnifier then shows in the navigation bar. For a search field in the middle of a page, add the "AI search" block to it.</target>
+            </trans-unit>
+            <trans-unit id="R8mhTUo">
+                <source>description.guided_step_ui_ai_search_setup_value</source>
+                <target>The API key stays yours: each question is billed to your account with the provider, within the site's ceilings.</target>
             </trans-unit>
             <trans-unit id="f.IANyC">
                 <source>description.guided_step_ui_calculator_fields</source>
@@ -706,6 +750,86 @@
                 <source>label.ai_rephrase_usage_this_month</source>
                 <target>AI rephrase this month: %input% input tokens, %output% output.</target>
             </trans-unit>
+            <trans-unit id="6YKy5rQ">
+                <source>label.ai_search_answer</source>
+                <target>Answer</target>
+            </trans-unit>
+            <trans-unit id="SF2ypOP">
+                <source>label.ai_search_answers</source>
+                <target>AI search - Questions</target>
+            </trans-unit>
+            <trans-unit id="cUEYTnQ">
+                <source>label.ai_search_badge</source>
+                <target>AI</target>
+            </trans-unit>
+            <trans-unit id="SR7mrd1">
+                <source>label.ai_search_close</source>
+                <target>Close the search</target>
+            </trans-unit>
+            <trans-unit id="1RnaUNo">
+                <source>label.ai_search_error</source>
+                <target>Search is unavailable right now, please try again later.</target>
+            </trans-unit>
+            <trans-unit id="S5Z.gZA">
+                <source>label.ai_search_found</source>
+                <target>Found</target>
+            </trans-unit>
+            <trans-unit id="vTsLWDz">
+                <source>label.ai_search_hit_count</source>
+                <target>Asked</target>
+            </trans-unit>
+            <trans-unit id="lkULczC">
+                <source>label.ai_search_not_found</source>
+                <target>I found nothing on the site answering this question.</target>
+            </trans-unit>
+            <trans-unit id="QUOz1.X">
+                <source>label.ai_search_notice</source>
+                <target>Answer written by an AI from the site's pages: it may be wrong, check the pages listed. Your question is kept, with nothing identifying you, to improve the site.</target>
+            </trans-unit>
+            <trans-unit id="sRc0Gam">
+                <source>label.ai_search_open</source>
+                <target>Ask the site a question</target>
+            </trans-unit>
+            <trans-unit id="4__lU5D">
+                <source>label.ai_search_placeholder</source>
+                <target>Field placeholder</target>
+            </trans-unit>
+            <trans-unit id="M6ntFQo">
+                <source>label.ai_search_placeholder_default</source>
+                <target>Ask your question about the site…</target>
+            </trans-unit>
+            <trans-unit id="PNtXlDZ">
+                <source>label.ai_search_placeholder_help</source>
+                <target>Left empty: "Ask your question about the site…"</target>
+            </trans-unit>
+            <trans-unit id="REKcO1G">
+                <source>label.ai_search_question</source>
+                <target>Your question</target>
+            </trans-unit>
+            <trans-unit id="NXevoRX">
+                <source>label.ai_search_sources</source>
+                <target>Pages read</target>
+            </trans-unit>
+            <trans-unit id="b6OXwoZ">
+                <source>label.ai_search_submit</source>
+                <target>Ask</target>
+            </trans-unit>
+            <trans-unit id="hZdM_bb">
+                <source>label.ai_search_suggestions</source>
+                <target>Suggested questions</target>
+            </trans-unit>
+            <trans-unit id="zmR80lq">
+                <source>label.ai_search_suggestions_help</source>
+                <target>One question per line, four at most: offered under the field, a click asks them</target>
+            </trans-unit>
+            <trans-unit id="Vc8pHwH">
+                <source>label.ai_search_throttled</source>
+                <target>Too many questions at once: come back in a few minutes.</target>
+            </trans-unit>
+            <trans-unit id="lrMP_GG">
+                <source>label.ai_search_updated_at</source>
+                <target>Last asked</target>
+            </trans-unit>
             <trans-unit id="m_BJ5A2">
                 <source>label.ai_translate_button</source>
                 <target>Translate with %name%</target>
@@ -845,6 +969,14 @@
             <trans-unit id="3RQoM3j">
                 <source>label.before_label</source>
                 <target>Before label</target>
+            </trans-unit>
+            <trans-unit id="qIXhW58">
+                <source>label.block_ai_search</source>
+                <target>AI search</target>
+            </trans-unit>
+            <trans-unit id="bMLtERv">
+                <source>label.block_ai_search_description</source>
+                <target>A field where visitors ask their question: the assistant answers from the site's own pages and links to the ones it read</target>
             </trans-unit>
             <trans-unit id="h3s2JeO">
                 <source>label.block_alert</source>
@@ -2194,6 +2326,14 @@
                 <source>label.guided_project_ui_ai_assistant</source>
                 <target>Have Donovan rephrase a text</target>
             </trans-unit>
+            <trans-unit id="TxO7hhy">
+                <source>label.guided_project_ui_ai_search_answers</source>
+                <target>Read what the site does not cover</target>
+            </trans-unit>
+            <trans-unit id="keQolrh">
+                <source>label.guided_project_ui_ai_search_setup</source>
+                <target>Set up the AI search</target>
+            </trans-unit>
             <trans-unit id="EsOjKAx">
                 <source>label.guided_project_ui_calculator</source>
                 <target>Build a calculator</target>
@@ -2261,6 +2401,46 @@
             <trans-unit id="eMrSX2A">
                 <source>label.guided_step_ui_ai_assistant_text</source>
                 <target>Paste a text to rephrase</target>
+            </trans-unit>
+            <trans-unit id="cwgsYqy">
+                <source>label.guided_step_ui_ai_search_answers_detail</source>
+                <target>Read a question</target>
+            </trans-unit>
+            <trans-unit id="Y.DFtzS">
+                <source>label.guided_step_ui_ai_search_answers_done</source>
+                <target>Write the missing page</target>
+            </trans-unit>
+            <trans-unit id="IHSGSXT">
+                <source>label.guided_step_ui_ai_search_answers_filter</source>
+                <target>Keep only the questions not found</target>
+            </trans-unit>
+            <trans-unit id="JvQ._tL">
+                <source>label.guided_step_ui_ai_search_answers_open</source>
+                <target>The questions asked of the site</target>
+            </trans-unit>
+            <trans-unit id="WrlukCg">
+                <source>label.guided_step_ui_ai_search_setup_entry</source>
+                <target>Open an entry</target>
+            </trans-unit>
+            <trans-unit id="RHQ7MjT">
+                <source>label.guided_step_ui_ai_search_setup_index</source>
+                <target>Wait for the nightly indexing</target>
+            </trans-unit>
+            <trans-unit id="3Y4zYmQ">
+                <source>label.guided_step_ui_ai_search_setup_open</source>
+                <target>The AI group of the settings</target>
+            </trans-unit>
+            <trans-unit id="oXzH0ZR">
+                <source>label.guided_step_ui_ai_search_setup_place</source>
+                <target>Where visitors find it</target>
+            </trans-unit>
+            <trans-unit id="JyFWPBu">
+                <source>label.guided_step_ui_ai_search_setup_save</source>
+                <target>Save, then move on to the next entry</target>
+            </trans-unit>
+            <trans-unit id="l4R4AH2">
+                <source>label.guided_step_ui_ai_search_setup_value</source>
+                <target>Enter the value</target>
             </trans-unit>
             <trans-unit id="xuMz59Y">
                 <source>label.guided_step_ui_calculator_fields</source>
@@ -2677,6 +2857,10 @@
             <trans-unit id="nbVcFMW">
                 <source>label.image_zoom_help</source>
                 <target>Clicking an image opens it over the page. No effect on an image that already carries a link.</target>
+            </trans-unit>
+            <trans-unit id="CXz2aot">
+                <source>label.info_ai_search_answers</source>
+                <target>The questions visitors asked the site's AI search, and what it answered. Filter on "Found" = no to see what the site does not cover yet: that is the content to write. A question nobody asks any more is deleted after the retention period.</target>
             </trans-unit>
             <trans-unit id="wufmcmY">
                 <source>label.info_email_debug</source>

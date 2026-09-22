@@ -3,6 +3,16 @@
         "date": "2026-09-22",
         "description": [
             {
+                "en": "A new \"AI search\" block lets visitors ask a question about the site: the assistant answers from the site's own pages and links to them.",
+                "fr": "Un nouveau bloc « Recherche IA » permet aux visiteurs de poser une question sur le site : l'assistant répond à partir des pages du site et donne les liens vers elles.",
+                "es": "Un nuevo bloque «Búsqueda IA» permite a los visitantes hacer una pregunta sobre el sitio: el asistente responde a partir de las páginas del sitio y enlaza a ellas."
+            },
+            {
+                "en": "Two guided projects show how to switch the AI search on, and how to read the questions it could not answer: the pages still to write.",
+                "fr": "Deux projets guidés montrent comment mettre en place la recherche IA, et comment lire les questions restées sans réponse : les pages qu'il reste à écrire.",
+                "es": "Dos proyectos guiados muestran cómo poner en marcha la búsqueda IA y cómo leer las preguntas que quedaron sin respuesta: las páginas que quedan por escribir."
+            },
+            {
                 "en": "A download block now takes several PDFs in one go, each card titled after its file.",
                 "fr": "Un bloc de téléchargement accepte désormais plusieurs PDF d'un coup, chaque carte portant le nom de son fichier.",
                 "es": "Un bloque de descarga acepta ahora varios PDF de una vez, cada tarjeta con el nombre de su archivo."

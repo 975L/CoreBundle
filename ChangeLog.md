@@ -1,5 +1,39 @@
 # ChangeLog
 
+## v1.32.0
+
+A visitor asks the site, and the site answers from its own pages
+
+### UiBundle
+
+- **An `ai_search` block lets a visitor ask a question about the site**, answered by the site's own LLM from the site's own pages, with links to the pages it read (22/09/2026) **See [UPGRADE.md](UPGRADE.md)**
+- `AiSearchIndexer` reads the titled urls of every sitemap provider as an anonymous visitor, and keeps their text as passages in `site_ai_search_chunk` (22/09/2026)
+- `AiSearchPageReader` keeps a page's `<main>` text, leaving out the menus, header, footer, forms and anything marked `data-ai-search-ignore` (22/09/2026)
+- The passages are found with a MariaDB `FULLTEXT` index, which needs no `VECTOR` type (22/09/2026)
+- `AiSiteSearch` serves a question already asked against the same index from `site_ai_search_answer`, and never calls the model when no passage is close (22/09/2026)
+- The links shown come from the index alone, the model only naming the passages it used (22/09/2026)
+- `AiSearchController` answers `POST /ai-search`, same-origin json only, limited per caller (`ui_ai_search`) and for the whole site (`ui_ai_search_site`) (22/09/2026)
+- `c975l:ui:ai-search:index` purges the answers past `ui-ai-assistant-site-retention-days`, even with the search off, then rebuilds the index, scheduled nightly by `UiMaintenanceTaskProvider` (22/09/2026)
+- `ui-ai-assistant-site-provider`, `-base-uri`, `-model` and `-retention-days` join the site assistant's key (22/09/2026)
+- `AbstractAiProviderClient` holds the provider call `AiRephraseClient` and `AiSiteSearchClient` share (22/09/2026)
+- `AiUsage` gains a `feature` column, each feature counting its spend and its failures on its own row (22/09/2026)
+- `AiAlertProvider` warns when the last site search failed (22/09/2026)
+- `SameOriginRequest` is the one same-origin check of the rating, favorite and site search routes (22/09/2026)
+- **The layout places the site search in a dialog on every page** once it is configured, opened by `AiSearch:Trigger` (SiteBundle's navbar carries it) or by Ctrl/Cmd+K - no block to add (22/09/2026)
+- `_search.html.twig` is the one search markup the block and the dialog share (22/09/2026)
+- A question is matched on the stems of its words (`AiSearchChunkRepository::booleanQuery()`, BOOLEAN MODE), "contacter" finding the "Contact" page (22/09/2026)
+- `AiSearchCardProviderInterface` lets a bundle draw a source as its own card (a product with its price and basket button), rendered live on each answer and taken out of the plain links (22/09/2026)
+- `c975l:content-loaded` has `controllers.js` register the lazy controllers of markup injected after the load (22/09/2026)
+- `LegalPlaceholderCacheListener` invalidates a rendered legal model when one of the four site search entries changes (22/09/2026)
+- The block offers up to four suggested questions, asked in one click, and shows its answer as a card with the pages it read (22/09/2026)
+- `AiSearchAnswerCrudController` lists what visitors asked, filterable on what found nothing, in the sidebar once the search is configured (22/09/2026)
+- The privacy policy model gains a "site search" section, shown once the search is configured, stating the retention (22/09/2026)
+- A question is searched in the locale of the page it was asked on, checked against the site's locales (22/09/2026)
+- `AiSiteSearch::retentionDays()` is the one reading of the retention, applied by the purge and printed by the privacy policy (22/09/2026)
+- The same question asked twice at once, or the month's first two AI calls, no longer answer 500 (22/09/2026)
+- `ui-ai-search-setup` and `ui-ai-search-answers` guided projects walk the search's settings and the questions it could not answer (22/09/2026)
+- `label.block_ai_search*` and `label.ai_search_*` in the three locales (22/09/2026)
+
 ## v1.31.1
 
 A poster-sized PDF saves again, and PDFs upload several at once

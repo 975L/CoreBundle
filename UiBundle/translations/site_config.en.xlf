@@ -38,6 +38,22 @@
                 <source>description.ai_assistant_site_api_key</source>
                 <target>LLM API key of the assistant answering about this site's own content, billed to its owner</target>
             </trans-unit>
+            <trans-unit id="TuRhv3A">
+                <source>description.ai_assistant_site_base_uri</source>
+                <target>API base URL, required: the full messages endpoint for Anthropic, the product base for an OpenAI-compatible API (OpenAI, Euria)</target>
+            </trans-unit>
+            <trans-unit id="q_9MEfn">
+                <source>description.ai_assistant_site_model</source>
+                <target>Model of the site search, required: an empty entry keeps the feature off</target>
+            </trans-unit>
+            <trans-unit id="vzE2YaC">
+                <source>description.ai_assistant_site_provider</source>
+                <target>AI provider of the site search: anthropic, openai or euria</target>
+            </trans-unit>
+            <trans-unit id="7rGj8pw">
+                <source>description.ai_assistant_site_retention_days</source>
+                <target>Days after which a question nobody asked again is deleted (90 by default): a visitor may have typed personal data into it</target>
+            </trans-unit>
             <trans-unit id="NF06pAx">
                 <source>description.ai_rephrase_failure_alert</source>
                 <target>Check the configured AI rephrase provider and API key</target>
@@ -45,6 +61,10 @@
             <trans-unit id="BXljqwk">
                 <source>description.ai_rephrase_not_enabled</source>
                 <target>Set a provider and API key to enable rephrasing</target>
+            </trans-unit>
+            <trans-unit id="bQILUAx">
+                <source>description.ai_site_search_failure_alert</source>
+                <target>The last call to the provider failed (revoked key, credit exhausted, outage): visitors see "search unavailable"</target>
             </trans-unit>
             <trans-unit id="sQ9y3iP">
                 <source>description.block_showcase_url</source>
@@ -186,6 +206,10 @@
                 <source>label.ai_rephrase_not_enabled</source>
                 <target>AI rephrase feature not enabled</target>
             </trans-unit>
+            <trans-unit id="ESErOms">
+                <source>label.ai_site_search_failure_alert</source>
+                <target>The site AI search failed</target>
+            </trans-unit>
             <trans-unit id=".HY9J1w">
                 <source>label.email_debug</source>
                 <target>Email - Debug mode</target>
@@ -293,6 +317,22 @@
             <trans-unit id="HJCE_6x">
                 <source>label.ui_ai_assistant_site_api_key</source>
                 <target>Donovan (Assistant) - LLM API key</target>
+            </trans-unit>
+            <trans-unit id="RvptqLr">
+                <source>label.ui_ai_assistant_site_base_uri</source>
+                <target>Donovan (Assistant) - Base URI</target>
+            </trans-unit>
+            <trans-unit id="8Yse6Db">
+                <source>label.ui_ai_assistant_site_model</source>
+                <target>Donovan (Assistant) - LLM model</target>
+            </trans-unit>
+            <trans-unit id="xXR0vFh">
+                <source>label.ui_ai_assistant_site_provider</source>
+                <target>Donovan (Assistant) - LLM provider</target>
+            </trans-unit>
+            <trans-unit id="esZzarD">
+                <source>label.ui_ai_assistant_site_retention_days</source>
+                <target>Donovan (Assistant) - Question retention (days)</target>
             </trans-unit>
             <trans-unit id="Je6f2_l">
                 <source>label.ui_block_showcase_url</source>

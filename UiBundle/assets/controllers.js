@@ -37,6 +37,9 @@ const LAZY_CONTROLLERS = {
     // Kebab-case identifier, same reason as cookie-consent above: every "data-ui-rating-*-value" binding is derived from it
     'ui-rating': () => import('./js/rating.js'),
     'ui-favorite': () => import('./js/favorite.js'),
+    // Kebab-case identifier, same reason as cookie-consent above: every "data-ui-ai-search-*-value" binding is derived from it
+    'ui-ai-search': () => import('./js/ai-search.js'),
+    'ui-ai-search-dialog': () => import('./js/ai-search-dialog.js'),
     'ui-review-form': () => import('./js/review-form.js'),
     'ui-favorite-count': () => import('./js/favorite-count.js'),
     'ui-favorites': () => import('./js/favorites.js'),
@@ -61,3 +64,6 @@ registerPresentControllers();
 
 // Turbo swaps the <body> without re-running this module, so a page reached by navigation would otherwise never get its own lazy controllers - a slider on page 2 would simply never start after landing on page 1 first
 document.addEventListener('turbo:load', registerPresentControllers);
+
+// Markup injected after the load (the cards a site search answer brings, see ai-search.js) says so, for the same reason
+document.addEventListener('c975l:content-loaded', registerPresentControllers);

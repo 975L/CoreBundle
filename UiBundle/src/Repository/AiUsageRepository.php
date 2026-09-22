@@ -24,8 +24,8 @@ class AiUsageRepository extends ServiceEntityRepository
         parent::__construct($registry, AiUsage::class);
     }
 
-    public function findOneByYearMonth(string $yearMonth): ?AiUsage
+    public function findOneByYearMonth(string $yearMonth, string $feature = AiUsage::FEATURE_REPHRASE): ?AiUsage
     {
-        return $this->findOneBy(['yearMonth' => $yearMonth]);
+        return $this->findOneBy(['yearMonth' => $yearMonth, 'feature' => $feature]);
     }
 }

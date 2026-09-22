@@ -177,6 +177,8 @@ class LegalModelTemplatesTest extends TestCase
         $twig->addFunction(new TwigFunction('legal_var', $placeholders->value(...), ['is_safe' => ['html']]));
         // A site holding accounts, which renders the fullest privacy policy there is: what a site without them drops is a subset of these units
         $twig->addFunction(new TwigFunction('config', static fn (string $slug): mixed => 'site-has-accounts' === $slug ? true : null));
+        // On, so the site search section the privacy policy holds is rendered and customized with the rest
+        $twig->addFunction(new TwigFunction('ai_search_configured', static fn (): bool => true));
         $twig->addFunction(new TwigFunction('site_legal_pages', static fn (): array => []));
         $twig->addFunction(new TwigFunction('path', static fn (): string => '/'));
         $twig->addFilter(new TwigFilter('trans', static fn (string $key): string => $key));

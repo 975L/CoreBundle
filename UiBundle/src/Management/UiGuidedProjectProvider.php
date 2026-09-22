@@ -10,10 +10,12 @@
 
 namespace c975L\UiBundle\Management;
 
+use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
 use c975L\ConfigBundle\Management\GuidedProjectProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
+use c975L\UiBundle\Controller\Management\AiSearchAnswerCrudController;
 use c975L\UiBundle\Controller\Management\EmailTemplateCrudController;
 use c975L\UiBundle\Controller\Management\FontCrudController;
 use c975L\UiBundle\Controller\Management\FormCrudController;
@@ -22,6 +24,7 @@ use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
+use c975L\UiBundle\Service\AiSiteSearchClient;
 use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
@@ -38,6 +41,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly ReviewService $reviewService,
         private readonly SiteLocales $siteLocales,
+        private readonly AiSiteSearchClient $aiSiteSearchClient,
     ) {
     }
 
@@ -61,8 +65,111 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         }
 
         $projects[] = $this->mediaAddProject();
+        $projects[] = $this->aiSearchSetupProject();
+
+        // Same gate as the screen it walks to (see MenuProvider): no question is recorded before the search is configured
+        if ($this->aiSiteSearchClient->isEnabled()) {
+            $projects[] = $this->aiSearchAnswersProject();
+        }
 
         return $projects;
+    }
+
+    // The site search is switched on by four settings and nothing else, then shows itself once the night has indexed the site - placing it inside a page being SiteBundle's parcours, the closing step only names it
+    private function aiSearchSetupProject(): array
+    {
+        return [
+            'slug' => 'ui-ai-search-setup',
+            'label' => 'label.guided_project_ui_ai_search_setup',
+            'description' => 'description.guided_project_ui_ai_search_setup',
+            'translation_domain' => 'ui',
+            'order' => 3120,
+            // The bar ConfigCrudController sets on its own index and edit
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_ai_search_setup_open',
+                    'description' => 'description.guided_step_ui_ai_search_setup_open',
+                    'narration' => 'narration.guided_step_ui_ai_search_setup_open',
+                    // Straight onto the "ai" group, sensitive entries shown: the api key is one, and hidden otherwise
+                    'url' => $this->adminUrlGenerator
+                        ->unsetAll()
+                        ->setController(ConfigCrudController::class)
+                        ->setAction(Action::INDEX)
+                        ->set('group', 'ai')
+                        ->set('showSensitive', 1)
+                        ->generateUrl(),
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_search_setup_entry',
+                    'description' => 'description.guided_step_ui_ai_search_setup_entry',
+                    'narration' => 'narration.guided_step_ui_ai_search_setup_entry',
+                    'highlight' => '.action-edit',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_search_setup_value',
+                    'description' => 'description.guided_step_ui_ai_search_setup_value',
+                    'narration' => 'narration.guided_step_ui_ai_search_setup_value',
+                    'highlight' => '#Config_value',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_search_setup_save',
+                    'narration' => 'narration.guided_step_ui_ai_search_setup_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    // The index is built by c975l:ui:ai-search:index, scheduled nightly (see UiMaintenanceTaskProvider): nothing shows before it has run once
+                    'label' => 'label.guided_step_ui_ai_search_setup_index',
+                    'description' => 'description.guided_step_ui_ai_search_setup_index',
+                    'narration' => 'narration.guided_step_ui_ai_search_setup_index',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_search_setup_place',
+                    'description' => 'description.guided_step_ui_ai_search_setup_place',
+                    'narration' => 'narration.guided_step_ui_ai_search_setup_place',
+                ],
+            ],
+        ];
+    }
+
+    // What visitors asked and the site found nothing for is the content it lacks - this screen is the only place it is written down
+    private function aiSearchAnswersProject(): array
+    {
+        return [
+            'slug' => 'ui-ai-search-answers',
+            'label' => 'label.guided_project_ui_ai_search_answers',
+            'description' => 'description.guided_project_ui_ai_search_answers',
+            'translation_domain' => 'ui',
+            'order' => 3130,
+            // The bar AiSearchAnswerCrudController sets on its own index and detail
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_ui_ai_search_answers_open',
+                    'description' => 'description.guided_step_ui_ai_search_answers_open',
+                    'narration' => 'narration.guided_step_ui_ai_search_answers_open',
+                    'url' => $this->indexUrl(AiSearchAnswerCrudController::class),
+                ],
+                [
+                    // EasyAdmin's filters button, which names no action of its own: ".action-filters" is its wrapper's class, not an action
+                    'label' => 'label.guided_step_ui_ai_search_answers_filter',
+                    'description' => 'description.guided_step_ui_ai_search_answers_filter',
+                    'narration' => 'narration.guided_step_ui_ai_search_answers_filter',
+                    'highlight' => '[data-bs-target="#modal-filters"]',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_search_answers_detail',
+                    'description' => 'description.guided_step_ui_ai_search_answers_detail',
+                    'narration' => 'narration.guided_step_ui_ai_search_answers_detail',
+                    'highlight' => '.action-detail',
+                ],
+                [
+                    'label' => 'label.guided_step_ui_ai_search_answers_done',
+                    'description' => 'description.guided_step_ui_ai_search_answers_done',
+                    'narration' => 'narration.guided_step_ui_ai_search_answers_done',
+                ],
+            ],
+        ];
     }
 
     // The library also takes an image of its own, one no page has uploaded yet - where the gallery the "ui-media" project reads gets filled from

@@ -1,0 +1,346 @@
+/*
+ * (c) 2026: 975L <contact@975l.com>
+ * (c) 2026: Laurent Marquet <laurent.marquet@laposte.net>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+// The site search block (blocks/AiSearch.html.twig). Built on the theme's own tokens only, so each site paints it in its colors without a token of its own to set
+.ai-search {
+    max-width: 48rem;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-panel);
+    background: var(--surface-alt);
+    color: var(--text);
+}
+
+.ai-search__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.ai-search__title {
+    margin: 0;
+}
+
+.ai-search__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.2em 0.7em;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--button-color);
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+
+    svg {
+        width: 1em;
+        height: 1em;
+        fill: currentColor;
+    }
+}
+
+// One pill: the icon and the button sit inside the field's own border, which takes the focus ring for the three
+.ai-search .ai-search__form {
+    display: flex;
+    width: auto;
+    margin: 0;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.35rem 0.35rem 1rem;
+    border: 1px solid var(--input-border-color);
+    border-radius: 999px;
+    background: var(--input-background);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus-within {
+        border-color: var(--input-focus-border-color);
+        box-shadow: 0 0 0 0.2rem var(--input-focus-shadow-color);
+    }
+}
+
+.ai-search__icon {
+    flex: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: var(--input-placeholder-color);
+}
+
+// Scoped under .ai-search to outweigh the form theme's text inputs (display, width, height, margins, borders), which would otherwise draw a second box inside the pill
+.ai-search .ai-search__question {
+    display: block;
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: auto;
+    margin: 0;
+    padding: 0.5rem 0;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    color: var(--form-input-color);
+    font: inherit;
+
+    &::placeholder {
+        color: var(--input-placeholder-color);
+    }
+
+    // The pill draws the focus for the three, see .ai-search__form:focus-within
+    &:focus,
+    &:focus-visible {
+        border: 0;
+        outline: 0;
+        box-shadow: none;
+    }
+
+    // The browser's own clearing cross, a second button beside ours
+    &::-webkit-search-cancel-button {
+        appearance: none;
+    }
+}
+
+// Scoped for the same reason: a submit button of the form theme takes the whole width
+.ai-search .ai-search__submit {
+    flex: none;
+    width: auto;
+    margin: 0;
+    padding: 0.55rem 1.3rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--button-background-primary);
+    color: var(--button-color);
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover,
+    &:focus-visible {
+        background: var(--button-background-primary-dark);
+    }
+
+    &:disabled {
+        cursor: wait;
+        opacity: 0.6;
+    }
+}
+
+.ai-search__suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ai-search__suggestion {
+    padding: 0.3em 0.9em;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--background);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+
+    &:hover,
+    &:focus-visible {
+        border-color: var(--primary-ink);
+        color: var(--primary-ink);
+    }
+}
+
+// The answer as a card of its own, marked on its edge by the site's accent; faded in rather than popped
+.ai-search__result {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid var(--primary-ink);
+    border-radius: var(--radius-card);
+    background: var(--background);
+    box-shadow: var(--block-shadow-small);
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.ai-search__result--shown {
+    opacity: 1;
+    transform: none;
+}
+
+.ai-search__result--empty {
+    border-left-color: var(--border-color);
+    box-shadow: none;
+}
+
+.ai-search__answer {
+    margin: 0;
+    line-height: 1.6;
+}
+
+// A row of the site's own cards, as narrow as a card allows so two sit side by side on a phone
+.ai-search__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.ai-search__sources-block {
+    margin-top: 1rem;
+}
+
+.ai-search__sources-title {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.ai-search__sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ai-search__source {
+    display: flex;
+    flex-direction: column;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-btn);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 0.2s;
+
+    &:hover,
+    &:focus-visible {
+        border-color: var(--primary-ink);
+    }
+}
+
+.ai-search__source-title {
+    color: var(--link-color);
+    font-weight: bold;
+}
+
+.ai-search__source-path {
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+.ai-search__notice {
+    margin: 1rem 0 0;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+// The navbar's magnifier (components/AiSearch/Trigger.html.twig): the ink of the bar it sits in, the shortcut beside it on a screen wide enough to have a keyboard
+.ai-search-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-btn);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s;
+
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        fill: currentColor;
+    }
+
+    &:hover,
+    &:focus-visible {
+        border-color: currentColor;
+    }
+}
+
+.ai-search-trigger__shortcut {
+    padding: 0.05rem 0.35rem;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.7rem;
+    opacity: 0.6;
+
+    @media (max-width: 768px) {
+        display: none;
+    }
+}
+
+// The dialog the layout places (components/AiSearch/Dialog.html.twig): the search card itself, held near the top so the answer grows downwards, the page dimmed behind it
+.ai-search-dialog {
+    width: min(48rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 4rem);
+    margin: 3rem auto auto;
+    padding: 0;
+    overflow: auto;
+    border: 0;
+    border-radius: var(--radius-panel);
+    background: transparent;
+    color: var(--text);
+
+    &::backdrop {
+        background: rgb(0 0 0 / 50%);
+        backdrop-filter: blur(2px);
+    }
+
+    .ai-search {
+        margin: 0;
+        background: var(--background);
+    }
+}
+
+.ai-search-dialog .ai-search-dialog__close {
+    position: absolute;
+    width: auto;
+    margin: 0;
+    top: 0.5rem;
+    right: 0.75rem;
+    z-index: 1;
+
+    button {
+        width: auto;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        font-size: 1.75rem;
+        line-height: 1;
+        cursor: pointer;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ai-search__result {
+        transform: none;
+        transition: none;
+    }
+}

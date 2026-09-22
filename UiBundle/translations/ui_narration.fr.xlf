@@ -6,6 +6,10 @@
                 <source>narration.ai_assistant</source>
                 <target>« Donovan » est l'assistant du back-office : demandez-lui comment marche le système de blocks avec vos mots, il répond à partir de ce que les bundles installés proposent vraiment.</target>
             </trans-unit>
+            <trans-unit id="CqbNhqo">
+                <source>narration.ai_search_answers</source>
+                <target>« Recherche IA » liste les questions que les visiteurs ont posées au site. Celles marquées non trouvées montrent ce qu'il reste à écrire.</target>
+            </trans-unit>
             <trans-unit id="5ATKQD9">
                 <source>narration.block_showcase</source>
                 <target>« Vitrine des blocks » montre tous les types de blocks disponibles, chacun avec un aperçu en direct : de quoi choisir lequel poser sur une page.</target>
@@ -49,6 +53,46 @@
             <trans-unit id="veOfKCP">
                 <source>narration.guided_step_ui_ai_assistant_text</source>
                 <target>Collez un texte à reformuler dans cette zone. Elle n'appartient à aucune page du site : ce qu'on y essaie est jeté, ce qui en fait l'endroit pour découvrir ce que donne la reformulation.</target>
+            </trans-unit>
+            <trans-unit id="jtAfN6l">
+                <source>narration.guided_step_ui_ai_search_answers_detail</source>
+                <target>Cliquez sur l'œil d'une question pour lire sa réponse et les pages d'où elle vient.</target>
+            </trans-unit>
+            <trans-unit id="tbEBzcH">
+                <source>narration.guided_step_ui_ai_search_answers_done</source>
+                <target>Écrivez la page qui manque : après l'indexation de la nuit, la même question trouvera sa réponse.</target>
+            </trans-unit>
+            <trans-unit id="MFQftfb">
+                <source>narration.guided_step_ui_ai_search_answers_filter</source>
+                <target>Cliquez sur Filtres, puis choisissez Trouvé : non, pour ne garder que les questions restées sans réponse.</target>
+            </trans-unit>
+            <trans-unit id="d93tNlI">
+                <source>narration.guided_step_ui_ai_search_answers_open</source>
+                <target>Voici les questions posées au site : chacune y est gardée sans rien qui identifie le visiteur.</target>
+            </trans-unit>
+            <trans-unit id="cnvsxOI">
+                <source>narration.guided_step_ui_ai_search_setup_entry</source>
+                <target>Cliquez sur le crayon d'une entrée, en commençant par le fournisseur : anthropic, openai ou euria.</target>
+            </trans-unit>
+            <trans-unit id="_r6BuAy">
+                <source>narration.guided_step_ui_ai_search_setup_index</source>
+                <target>La nuit suivante, le site relit ses pages publiques : la recherche n'apparaît qu'après cette première lecture.</target>
+            </trans-unit>
+            <trans-unit id="4HX8SSk">
+                <source>narration.guided_step_ui_ai_search_setup_open</source>
+                <target>Voici les réglages, ouverts sur le groupe IA : quatre entrées « Donovan (Assistant) », le fournisseur, la clé API, l'URI de base et le modèle, allument la recherche du site, et il les faut toutes les quatre.</target>
+            </trans-unit>
+            <trans-unit id="TRy2chd">
+                <source>narration.guided_step_ui_ai_search_setup_place</source>
+                <target>Une loupe s'affiche alors dans la barre de navigation, et le block Recherche IA pose le même champ au milieu d'une page.</target>
+            </trans-unit>
+            <trans-unit id="lC2xCwz">
+                <source>narration.guided_step_ui_ai_search_setup_save</source>
+                <target>Enregistrez, puis recommencez avec l'entrée suivante, jusqu'à ce que les quatre soient remplies.</target>
+            </trans-unit>
+            <trans-unit id="4QHj1Mo">
+                <source>narration.guided_step_ui_ai_search_setup_value</source>
+                <target>Saisissez sa valeur dans ce champ. La clé API reste la vôtre : chaque question est facturée sur votre compte chez le fournisseur.</target>
             </trans-unit>
             <trans-unit id="OP28253">
                 <source>narration.guided_step_ui_calculator_fields</source>

@@ -12,45 +12,57 @@ namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Entity\AiUsage;
 use c975L\UiBundle\Repository\AiUsageRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
-// Rolls up the "rephrase" feature's token spend into one row per calendar month - see AiUsage. Low enough volume (an editor-triggered action, not a hot path) that a plain find-or-create is fine without guarding against the very unlikely race of two concurrent first-requests-of-the-month
+// Rolls up each AI feature's token spend into one row per feature and calendar month - see AiUsage. The feature defaults to the rephrase, the one caller this had before the site search. The site search being public, two first-requests-of-the-month may race on the month's row: the second one's count is dropped rather than failing the visitor's request
 class AiUsageTracker
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly AiUsageRepository $aiUsageRepository,
+        private readonly ManagerRegistry $managerRegistry,
     ) {
     }
 
-    public function record(int $inputTokens, int $outputTokens): void
+    public function record(int $inputTokens, int $outputTokens, string $feature = AiUsage::FEATURE_REPHRASE): void
     {
-        $usage = $this->findOrCreateCurrentMonth();
+        $usage = $this->findOrCreateCurrentMonth($feature);
         $usage->addUsage($inputTokens, $outputTokens);
 
-        $this->entityManager->persist($usage);
-        $this->entityManager->flush();
+        $this->save($usage);
     }
 
-    public function recordFailure(string $message): void
+    public function recordFailure(string $message, string $feature = AiUsage::FEATURE_REPHRASE): void
     {
-        $usage = $this->findOrCreateCurrentMonth();
+        $usage = $this->findOrCreateCurrentMonth($feature);
         $usage->recordFailure($message);
 
-        $this->entityManager->persist($usage);
-        $this->entityManager->flush();
+        $this->save($usage);
     }
 
-    private function findOrCreateCurrentMonth(): AiUsage
+    // A lost race on the month's row leaves the manager closed, reset so the rest of the request can still write
+    private function save(AiUsage $usage): void
+    {
+        try {
+            $this->entityManager->persist($usage);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException) {
+            $this->managerRegistry->resetManager();
+        }
+    }
+
+    private function findOrCreateCurrentMonth(string $feature): AiUsage
     {
         $yearMonth = new \DateTimeImmutable()->format('Y-m');
 
-        return $this->aiUsageRepository->findOneByYearMonth($yearMonth)
-            ?? new AiUsage()->setYearMonth($yearMonth);
+        return $this->aiUsageRepository->findOneByYearMonth($yearMonth, $feature)
+            ?? new AiUsage()->setYearMonth($yearMonth)->setFeature($feature);
     }
 
-    public function getCurrentMonth(): ?AiUsage
+    public function getCurrentMonth(string $feature = AiUsage::FEATURE_REPHRASE): ?AiUsage
     {
-        return $this->aiUsageRepository->findOneByYearMonth(new \DateTimeImmutable()->format('Y-m'));
+        return $this->aiUsageRepository->findOneByYearMonth(new \DateTimeImmutable()->format('Y-m'), $feature);
     }
 }

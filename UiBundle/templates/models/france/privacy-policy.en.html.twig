@@ -30,6 +30,16 @@
 		</div>
 	</section>
 
+	{# Only on a site whose search is configured: the questions it keeps are a processing a site without it does not do #}
+	{% if ai_search_configured() %}
+	<section data-legal-id="site-search">
+		<h2>Site search</h2>
+		<div>
+			The questions asked in the site search are sent, along with excerpts of the site's public pages, to the artificial intelligence provider that writes the answer. They are kept with nothing identifying you (no IP address, no account, no cookie), so the same answer is not paid for twice and to learn what the site does not cover yet. A question nobody asks any more is deleted after {{ legal_var('ui-ai-assistant-site-retention-days') }} days. Do not type personal data into it.
+		</div>
+	</section>
+	{% endif %}
+
 	{# A site with no accounts has neither account nor password to describe, and a text describing them describes processing that does not exist. A setting rather than a route or a form: the login exists everywhere for the administrator, the register form is seeded everywhere by c975l:user:create, and accounts outlive closed registrations - only the User entity would really answer, and it lives in the site's scaffold, out of a bundle's reach #}
 	{% if config('site-has-accounts') %}
 	<section data-legal-id="account">

@@ -15,11 +15,12 @@ use c975L\ConfigBundle\Management\AlertProviderInterface;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Contract\AiAssistantClientInterface;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
+use c975L\UiBundle\Entity\AiUsage;
 use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiUsageTracker;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// Two setup nudges keyed on the same isEnabled() the page itself reads, plus a warning while the last rephrase failed
+// Two setup nudges keyed on the same isEnabled() the page itself reads, plus a warning while the last rephrase - or the last site search - failed. The site search has no setup nudge: few sites use it, and one on every other dashboard would only be noise
 class AiAlertProvider implements AlertProviderInterface
 {
     public function __construct(
@@ -56,6 +57,16 @@ class AiAlertProvider implements AlertProviderInterface
             $alerts[] = $this->alert(
                 'label.ai_rephrase_failure_alert',
                 'description.ai_rephrase_failure_alert',
+                Config::SEVERITY_WARNING,
+            );
+        }
+
+        // Its own row (see AiUsage::FEATURE_SITE_SEARCH), so it never reads as a broken rephrase
+        $siteSearchUsage = $this->aiUsageTracker->getCurrentMonth(AiUsage::FEATURE_SITE_SEARCH);
+        if ($siteSearchUsage && $siteSearchUsage->getLastFailureAt()) {
+            $alerts[] = $this->alert(
+                'label.ai_site_search_failure_alert',
+                'description.ai_site_search_failure_alert',
                 Config::SEVERITY_WARNING,
             );
         }
