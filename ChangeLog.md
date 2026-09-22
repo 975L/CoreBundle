@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.32.1
+
+The site names its assistant, and its button takes its colour
+
+### UiBundle
+
+- **`ui-ai-assistant-site-label` names the assistant the search badge shows**, "Donovan (AI)" when a site named none (22/09/2026)
+- The search badge carries a robot rather than a spark (22/09/2026)
+- The search's button is painted with the site's own colour instead of the library's blue (22/09/2026)
+
 ## v1.32.0
 
 A visitor asks the site, and the site answers from its own pages

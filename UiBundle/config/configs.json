@@ -93,6 +93,17 @@
         "description": "description.ai_assistant_site_api_key"
     },
     {
+        "label": "label.ui_ai_assistant_site_label",
+        "slug": "ui-ai-assistant-site-label",
+        "sensitive": false,
+        "restricted": false,
+        "value": null,
+        "kind": "text",
+        "group": "ai",
+        "severity": null,
+        "description": "description.ai_assistant_site_label"
+    },
+    {
         "label": "label.ui_ai_assistant_site_provider",
         "slug": "ui-ai-assistant-site-provider",
         "sensitive": false,

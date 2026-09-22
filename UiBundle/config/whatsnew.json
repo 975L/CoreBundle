@@ -21,6 +21,16 @@
                 "en": "A very large PDF, such as a poster, no longer makes the page fail to save: its preview is made at a suitable size.",
                 "fr": "Un très grand PDF, comme une affiche, n'empêche plus l'enregistrement de la page : son aperçu est créé à une taille adaptée.",
                 "es": "Un PDF muy grande, como un cartel, ya no impide guardar la página: su vista previa se crea a un tamaño adecuado."
+            },
+            {
+                "en": "You can now give the assistant answering on your site the name of your choice, shown on the search badge.",
+                "fr": "Vous pouvez désormais donner à l'assistant qui répond sur votre site le nom de votre choix, affiché sur le badge de la recherche.",
+                "es": "Ahora puede dar al asistente que responde en su sitio el nombre que desee, mostrado en la insignia de la búsqueda."
+            },
+            {
+                "en": "The AI search button now takes your site's own colour instead of staying blue.",
+                "fr": "Le bouton de la recherche IA prend désormais la couleur de votre site au lieu de rester bleu.",
+                "es": "El botón de la búsqueda IA toma ahora el color propio de su sitio en lugar de quedarse azul."
             }
         ]
     },

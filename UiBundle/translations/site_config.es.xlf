@@ -42,6 +42,10 @@
                 <source>description.ai_assistant_site_base_uri</source>
                 <target>URL base de la API, obligatoria: el endpoint messages completo para Anthropic, la base del producto para una API compatible con OpenAI (OpenAI, Euria)</target>
             </trans-unit>
+            <trans-unit id="JvRH__R">
+                <source>description.ai_assistant_site_label</source>
+                <target>Nombre mostrado en la insignia de la búsqueda, vacío para conservar el predeterminado</target>
+            </trans-unit>
             <trans-unit id="q_9MEfn">
                 <source>description.ai_assistant_site_model</source>
                 <target>Modelo de la búsqueda en el sitio, obligatorio: una entrada vacía deja la función apagada</target>
@@ -321,6 +325,10 @@
             <trans-unit id="RvptqLr">
                 <source>label.ui_ai_assistant_site_base_uri</source>
                 <target>Donovan (Asistente) - URI base</target>
+            </trans-unit>
+            <trans-unit id="1g.Z4Lg">
+                <source>label.ui_ai_assistant_site_label</source>
+                <target>Donovan (Asistente) - Nombre mostrado</target>
             </trans-unit>
             <trans-unit id="8Yse6Db">
                 <source>label.ui_ai_assistant_site_model</source>

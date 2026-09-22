@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Twig;
 
+use c975L\ConfigBundle\Service\ConfigServiceInterface;
 use c975L\UiBundle\Service\AiSiteSearch;
 use c975L\UiBundle\Service\AiSiteSearchClient;
 use Twig\Extension\AbstractExtension;
@@ -21,6 +22,7 @@ class AiSearchExtension extends AbstractExtension
     public function __construct(
         private readonly AiSiteSearch $aiSiteSearch,
         private readonly AiSiteSearchClient $aiSiteSearchClient,
+        private readonly ConfigServiceInterface $configService,
     ) {
     }
 
@@ -30,6 +32,13 @@ class AiSearchExtension extends AbstractExtension
         return [
             new TwigFunction('ai_search_enabled', $this->aiSiteSearch->isEnabled(...)),
             new TwigFunction('ai_search_configured', $this->aiSiteSearchClient->isEnabled(...)),
+            new TwigFunction('ai_search_label', $this->label(...)),
         ];
+    }
+
+    // The name the badge carries, a site naming its assistant itself: "Donovan" is 975L's own, which a client's site has no reason to show. Empty, the template writes the translated default
+    private function label(): string
+    {
+        return trim((string) $this->configService->get('ui-ai-assistant-site-label'));
     }
 }

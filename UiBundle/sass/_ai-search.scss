@@ -118,7 +118,8 @@
     padding: 0.55rem 1.3rem;
     border: 0;
     border-radius: 999px;
-    background: var(--button-background-primary);
+    // The site's own colour and not --button-background-primary, the library's blue: this button sits beside .btn-primary ones everywhere, and a site that retuned its palette had this one alone staying blue
+    background: var(--primary);
     color: var(--button-color);
     font: inherit;
     font-weight: bold;
