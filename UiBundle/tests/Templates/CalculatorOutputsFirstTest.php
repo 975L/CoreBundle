@@ -40,22 +40,49 @@ class CalculatorOutputsFirstTest extends TestCase
         $this->assertStringNotContainsString('ui-calculator-outputs-first', $html);
     }
 
-    // Renders the calculator component against a Form carrying nothing but the switch under test
-    private function render(bool $outputsFirst): string
+    // Given no action, nothing is posted anywhere: a form element around it would let Enter submit the page it sits on
+    public function testACalculatorGivenNoActionIsNotAFormElement(): void
+    {
+        $html = $this->render(false);
+
+        $this->assertStringNotContainsString('<form', $html);
+        $this->assertStringNotContainsString('type="submit"', $html);
+    }
+
+    // Given an action, the same calculator is sent: a form element kept out of the grid, and the button under both columns
+    public function testACalculatorGivenAnActionIsSent(): void
+    {
+        $html = $this->render(false, 'send_email');
+
+        $this->assertStringContainsString('<form class="ui-calculator-form">', $html);
+        $this->assertStringContainsString('<div class="ui-calculator-submit">', $html);
+        $this->assertStringContainsString('type="submit"', $html);
+        $this->assertStringContainsString('</form>', $html);
+    }
+
+    // Renders the calculator component against a Form carrying nothing but the switch and the action under test
+    private function render(bool $outputsFirst, ?string $action = null): string
     {
         $form = new Form()
             ->setName('economies-e85')
             ->setOutputsFirst($outputsFirst)
+            ->setAction($action)
         ;
 
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
+        $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
+        $twig = new Environment($loader);
         $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
         $translator->addResource('array', ['text.calculator_estimate' => 'An estimate.'], 'en', 'ui');
         $twig->addExtension(new TranslationExtension($translator));
         // The form and routing layers play no part in the class this test varies
+        $twig->addFunction(new TwigFunction('form_start', static fn (mixed $view, array $variables = []): string => sprintf('<form class="%s">', $variables['attr']['class'] ?? ''), ['is_safe' => ['html']]));
         $twig->addFunction(new TwigFunction('form_widget', static fn (): string => '', ['is_safe' => ['html']]));
+        $twig->addFunction(new TwigFunction('form_end', static fn (): string => '</form>', ['is_safe' => ['html']]));
         $twig->addFunction(new TwigFunction('path', static fn (string $route, array $parameters = []): string => '/'));
+        $twig->addFunction(new TwigFunction('ui_can_hold_flash', static fn (): bool => false));
+        $twig->addFunction(new TwigFunction('config', static fn (string $slug): mixed => null));
         // The results' own words go through the translator, a site declaring a single language reading them as they were written
         $formTranslator = new FormTranslator();
         $twig->addFunction(new TwigFunction('ui_form_label', static fn (object $row): ?string => $formTranslator->getLabel($row)));

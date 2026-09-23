@@ -1,0 +1,9 @@
+{# Shared by Form.html.twig and a submittable Calculator.html.twig: what the action answered, read back after the redirect #}
+{# Only a visitor who can hold a flash reads the bag, reading app.flashes being enough to start a session #}
+{% if ui_can_hold_flash() %}
+    {% for label, messages in app.flashes(['success', 'danger', 'warning']) %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+{% endif %}

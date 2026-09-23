@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Entity\Form;
+use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -26,6 +27,8 @@ class SendEmailFormAction implements FormActionInterface
         private readonly EmailTemplateRepository $emailTemplateRepository,
         private readonly EmailTemplateRenderer $emailTemplateRenderer,
         private readonly TranslatorInterface $translator,
+        // Optional so a subclass or an app wiring this by hand keeps working - without it, a calculator's results are simply left out of the email
+        private readonly ?ExpressionEvaluator $expressionEvaluator = null,
     ) {
     }
 
@@ -92,18 +95,45 @@ class SendEmailFormAction implements FormActionInterface
         ];
     }
 
-    // A repeated label is disambiguated here, only "name" being unique, else one value would be lost
+    // What the email lists, label => value: each field as the visitor read it - a choice by its option's label, "A4" rather than the "1.6" a formula reads - then, for a calculator given this action, each visible result as the page showed it. A repeated label is disambiguated here, only "name" being unique, else one value would be lost
     private function labelledFields(Form $form, array $submittedData): array
     {
+        $pairs = [];
+        foreach ($form->getFields() as $field) {
+            $pairs[] = [(string) $field->getLabel(), $this->readableValue($field, $submittedData[$field->getName()] ?? null)];
+        }
+
+        if ($form->isCalculator() && null !== $this->expressionEvaluator) {
+            $results = $this->expressionEvaluator->compute($form, $submittedData);
+            foreach ($form->getVisibleOutputs() as $output) {
+                $pairs[] = [(string) $output->getLabel(), $results[(string) $output->getName()]['formatted'] ?? null];
+            }
+        }
+
         $labelled = [];
         $labelCounts = [];
-        foreach ($form->getFields() as $field) {
-            $label = (string) $field->getLabel();
+        foreach ($pairs as [$label, $value]) {
             $labelCounts[$label] = ($labelCounts[$label] ?? 0) + 1;
             $key = $labelCounts[$label] > 1 ? sprintf('%s (%d)', $label, $labelCounts[$label]) : $label;
-            $labelled[$key] = $submittedData[$field->getName()] ?? null;
+            $labelled[$key] = $value;
         }
 
         return $labelled;
+    }
+
+    // A choice's submitted value is what a formula reads, its label what the visitor picked - the value itself when no option matches it any more
+    private function readableValue(FormField $field, mixed $value): mixed
+    {
+        if (FormField::TYPE_CHOICE !== $field->getType() || null === $value) {
+            return $value;
+        }
+
+        foreach ($field->getOptions() as $option) {
+            if ((string) $option['value'] === (string) $value) {
+                return $option['label'];
+            }
+        }
+
+        return $value;
     }
 }

@@ -1,5 +1,8 @@
 {# Adapter for "collection" items only, never picklable nor persisted; "detailUrl"/"variant" are added by CollectionExtension::renderItems() #}
-{% if variant is defined and variant == 'portfolio' %}
+{# A source naming its own item template (see CollectionSourceProviderInterface) is drawn by it, with the item's whole data, instead of the built-in card #}
+{% if itemTemplate is defined and itemTemplate %}
+    {{ include(itemTemplate) }}
+{% elseif variant is defined and variant == 'portfolio' %}
     {# Reuses portfolio-grid's classes so a Collection can look like a PortfolioGrid with no override #}
     {% set href = detailUrl|default(null) ?: url|default(null) %}
     {# Only a link leaving the site opens a tab of its own: an item's "url" is just as legitimately a page of this very site (a real Page written for that one project, which wins over the shared detail page - see SiteBundle's PageController::display()), and sending the visitor out of their tab for it would be wrong #}

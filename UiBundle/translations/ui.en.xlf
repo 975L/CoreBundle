@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="zRr_CZb">
                 <source>description.guided_project_ui_calculator</source>
-                <target>A form that computes instead of being sent: sliders, formulas, one figure held up.</target>
+                <target>A form that computes: sliders, formulas, one figure held up - and, if you wish, sent along with its results.</target>
             </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="1Kz8Cro">
                 <source>description.guided_step_ui_ai_search_setup_entry</source>
-                <target>Start with the provider: anthropic, openai or euria. The base URI and the model are the ones it gives you.</target>
+                <target>Start with the provider: anthropic, openai or euria. The base URI and the model are the ones it gives you. You can also give the assistant a name, shown on the search badge.</target>
             </trans-unit>
             <trans-unit id="eOVgofH">
                 <source>description.guided_step_ui_ai_search_setup_index</source>
@@ -145,6 +145,10 @@
             <trans-unit id="R8mhTUo">
                 <source>description.guided_step_ui_ai_search_setup_value</source>
                 <target>The API key stays yours: each question is billed to your account with the provider, within the site's ceilings.</target>
+            </trans-unit>
+            <trans-unit id="r_pzF_x">
+                <source>description.guided_step_ui_calculator_action</source>
+                <target>Leave the action empty for a plain calculation; pick "send email" for the visitor to ask for a quote with their results.</target>
             </trans-unit>
             <trans-unit id="f.IANyC">
                 <source>description.guided_step_ui_calculator_fields</source>
@@ -164,7 +168,7 @@
             </trans-unit>
             <trans-unit id="Urf9i7v">
                 <source>description.guided_step_ui_calculator_open</source>
-                <target>A calculator is an ordinary form. Leave its action empty: it sends nothing.</target>
+                <target>A calculator is an ordinary form.</target>
             </trans-unit>
             <trans-unit id="SvSDo2P">
                 <source>description.guided_step_ui_calculator_outputs</source>
@@ -2446,6 +2450,10 @@
                 <source>label.guided_step_ui_ai_search_setup_value</source>
                 <target>Enter the value</target>
             </trans-unit>
+            <trans-unit id="zqz.Tph">
+                <source>label.guided_step_ui_calculator_action</source>
+                <target>Choose whether it is sent</target>
+            </trans-unit>
             <trans-unit id="xuMz59Y">
                 <source>label.guided_step_ui_calculator_fields</source>
                 <target>Add what the visitor sets</target>
@@ -3336,7 +3344,7 @@
             </trans-unit>
             <trans-unit id="AordYSb">
                 <source>label.outputs_help</source>
-                <target>Adding a result turns this form into a calculator: it computes and displays instead of being submitted. The available variables are listed here once the fields have been saved.</target>
+                <target>Adding a result turns this form into a calculator: it computes and displays; with no action it is never submitted, given one its results travel with the submission. The available variables are listed here once the fields have been saved.</target>
             </trans-unit>
             <trans-unit id="_dwvS9b">
                 <source>label.outputs_help_variables</source>

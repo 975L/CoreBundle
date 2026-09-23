@@ -13,13 +13,16 @@ namespace c975L\UiBundle\Tests\Twig;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Registry\CollectionSourceRegistry;
+use c975L\UiBundle\Service\BlockRenderContext;
 use c975L\UiBundle\Twig\BlockExtension;
 use c975L\UiBundle\Twig\CollectionRuntime;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Twig\Environment;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class CollectionRuntimeTest extends TestCase
 {
@@ -27,7 +30,7 @@ class CollectionRuntimeTest extends TestCase
         CollectionSourceRegistry $sourceRegistry,
         BlockExtension $blockExtension,
         ?Request $request = null,
-        ?Environment $twig = null,
+        ?TagAwareCacheInterface $cache = null,
     ): CollectionRuntime {
         $requestStack = new RequestStack();
         if (null !== $request) {
@@ -41,7 +44,7 @@ class CollectionRuntimeTest extends TestCase
                 : '/pages/' . $params['page']
         );
 
-        return new CollectionRuntime($sourceRegistry, $blockExtension, $requestStack, $twig ?? $this->createStub(Environment::class), $urlGenerator);
+        return new CollectionRuntime($sourceRegistry, $blockExtension, $requestStack, $urlGenerator, $cache ?? new TagAwareAdapter(new ArrayAdapter()), new BlockRenderContext());
     }
 
     // Each CollectionItem becomes a never-persisted "collection_item" Block, rendered through the exact same render_block() pipeline as a real, editor-placed block
@@ -132,6 +135,27 @@ class CollectionRuntimeTest extends TestCase
 
         $this->assertCount(5, $rendered);
         $this->assertCount(5, array_unique($rendered));
+    }
+
+    // The source is rendered once and kept under its own tags: every later visit draws from the stored html, and a save emptying the tag has the source read again
+    public function testARandomListIsRenderedOnceUntilTheSourceTagIsEmptied(): void
+    {
+        $sourceRegistry = $this->createMock(CollectionSourceRegistry::class);
+        $sourceRegistry->expects($this->exactly(2))->method('items')->with('guild.characters', null)
+            ->willReturn([new CollectionItem('Item 1', slug: 'item-1'), new CollectionItem('Item 2', slug: 'item-2')]);
+        $sourceRegistry->method('cacheTags')->willReturn(['guild_characters']);
+
+        $blockExtension = $this->createStub(BlockExtension::class);
+        $blockExtension->method('renderBlock')->willReturnCallback(static fn (Block $block): string => '<div>' . $block->getData()['title'] . '</div>');
+
+        $cache = new TagAwareAdapter(new ArrayAdapter());
+        $runtime = $this->createRuntime($sourceRegistry, $blockExtension, new Request(), $cache);
+
+        $this->assertCount(1, $runtime->renderItems('guild.characters', 1, null, null, 'random'));
+        $this->assertCount(2, $runtime->renderItems('guild.characters', null, null, null, 'random'));
+
+        $cache->invalidateTags(['guild_characters']);
+        $runtime->renderItems('guild.characters', 1, null, null, 'random');
     }
 
     // Anything but "random" is the source's own order, and the limit stays the source's business - the very query it runs
@@ -494,33 +518,45 @@ class CollectionRuntimeTest extends TestCase
         $this->assertNull($key);
     }
 
-    // A source drawing its items by a template of its own - a card this bundle never draws - hands its entity over in the item's "data", which the template reads under the name it expects
-    public function testASourceNamingATemplateHasItsItemsRenderedByIt(): void
+    // A source drawing its items by a template of its own - a card this bundle never draws - hands its entity over in the item's "data", which CollectionItem.html.twig passes on to the template it names. The item keeps its own entry all the same, the template being part of its key
+    public function testASourceNamingATemplateHasItsItemsRenderedByItAndCached(): void
     {
         $item = new CollectionItem(title: 'Château Hurlton', slug: 'chateau-hurlton', data: ['album' => 'the entity itself']);
 
         $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
         $sourceRegistry->method('items')->willReturn([$item]);
         $sourceRegistry->method('itemTemplate')->willReturn('components/Album/AlbumCard.html.twig');
-
-        $rendered = null;
-        $twig = $this->createStub(Environment::class);
-        $twig->method('render')->willReturnCallback(function (string $template, array $context) use (&$rendered) {
-            $rendered = [$template, $context];
-
-            return '<article class="album-card"></article>';
-        });
+        $sourceRegistry->method('cacheTags')->willReturn(['guild_albums']);
 
         $blockExtension = $this->createMock(BlockExtension::class);
-        $blockExtension->expects($this->never())->method('renderBlock');
+        $blockExtension->expects($this->once())->method('renderBlock')
+            ->with(
+                $this->callback(fn (Block $block): bool => 'components/Album/AlbumCard.html.twig' === $block->getData()['itemTemplate']
+                    && 'the entity itself' === $block->getData()['album']
+                    && 'Château Hurlton' === $block->getData()['title']),
+                $this->stringStartsWith('collection_item_'),
+                ['guild_albums']
+            )
+            ->willReturn('<article class="album-card"></article>');
 
-        $runtime = $this->createRuntime($sourceRegistry, $blockExtension, null, $twig);
-        $html = $runtime->renderItems('guild.albums', null, null);
+        $html = $this->createRuntime($sourceRegistry, $blockExtension)->renderItems('guild.albums', null, null);
 
         $this->assertSame(['<article class="album-card"></article>'], $html);
-        $this->assertSame('components/Album/AlbumCard.html.twig', $rendered[0]);
-        $this->assertSame('the entity itself', $rendered[1]['album']);
-        $this->assertSame('Château Hurlton', $rendered[1]['title']);
+    }
+
+    // A review has no page, hence no slug: its id names its entry instead
+    public function testAnItemWithNoSlugIsKeyedOnItsId(): void
+    {
+        $sourceRegistry = $this->createStub(CollectionSourceRegistry::class);
+        $sourceRegistry->method('items')->willReturn([new CollectionItem(title: 'Anne', data: ['id' => 12])]);
+        $sourceRegistry->method('cacheTags')->willReturn(['ui_reviews']);
+
+        $blockExtension = $this->createMock(BlockExtension::class);
+        $blockExtension->expects($this->once())->method('renderBlock')
+            ->with($this->anything(), $this->stringStartsWith('collection_item_'), ['ui_reviews'])
+            ->willReturn('');
+
+        $this->createRuntime($sourceRegistry, $blockExtension)->renderItems('ui.collection.reviews', null, null);
     }
 
     // The singular of renderItems(): "first" only ever needs the head of the source, which is what the limit says

@@ -13,9 +13,11 @@ namespace c975L\UiBundle\Twig;
 use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Model\CollectionItem;
 use c975L\UiBundle\Registry\CollectionSourceRegistry;
+use c975L\UiBundle\Service\BlockRenderContext;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Twig\Environment;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
 // Holds CollectionExtension's actual dependencies, split out so Twig only builds this (and the DB query behind CollectionSourceRegistry::addProvider()) the first time a template actually calls collection_render_items() - not eagerly for every request that merely builds the Twig environment (see CollectionExtension)
@@ -25,8 +27,9 @@ class CollectionRuntime implements RuntimeExtensionInterface
         private readonly CollectionSourceRegistry $sourceRegistry,
         private readonly BlockExtension $blockExtension,
         private readonly RequestStack $requestStack,
-        private readonly Environment $twig,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly TagAwareCacheInterface $cache,
+        private readonly BlockRenderContext $renderContext,
     ) {
     }
 
@@ -34,26 +37,44 @@ class CollectionRuntime implements RuntimeExtensionInterface
     // "$level" is the heading each item's title is drawn with, resolved by the calling block (see blocks/Collection.html.twig): the item knows what it says, only the page holding it knows how deep it sits
     public function renderItems(string $source, ?int $limit, ?string $detailPage, ?string $variant = null, ?string $order = null, ?string $level = null): array
     {
+        if ('random' === $order) {
+            return $this->renderRandomItems($source, $limit, $detailPage, $variant, $level);
+        }
+
         $rendered = [];
 
-        foreach ($this->pick($source, $limit, $order) as $item) {
+        foreach ($this->sourceRegistry->items($source, $limit) as $item) {
             $rendered[] = $this->renderItem($source, $item, $detailPage, $variant, $level);
         }
 
         return $rendered;
     }
 
-    // A random order has to see the whole source before it cuts: asking it for three items straight away would shuffle the same three on every visit, so the limit is applied after the draw and not by the source. Its block is rendered live for the same reason - see CollectionBlockCacheTagProvider; @return CollectionItem[]
-    private function pick(string $source, ?int $limit, ?string $order): array
+    // A random order has to see the whole source before it cuts: asking it for three items straight away would shuffle the same three on every visit. So the whole source is rendered once and kept, as html strings under the source's own tags, and the draw is made on that list at every render - the block itself staying live, see CollectionBlockCacheTagProvider. What the key holds is what the html varies with: the page the detail links are built from, the variant, the heading level and the language; @return string[]
+    private function renderRandomItems(string $source, ?int $limit, ?string $detailPage, ?string $variant, ?string $level): array
     {
-        if ('random' !== $order) {
-            return $this->sourceRegistry->items($source, $limit);
+        $cacheTags = $this->sourceRegistry->cacheTags($source);
+        $request = $this->requestStack->getCurrentRequest();
+        $render = fn (): array => array_map(fn (CollectionItem $item): string => $this->renderItem($source, $item, $detailPage, $variant, $level), $this->sourceRegistry->items($source, null));
+
+        // Same cases as BlockExtension::renderHtml(): a source that cannot say when it changes, an editor's preview, and a render outside any request
+        if ([] === $cacheTags || null === $request || $this->renderContext->isCacheDisabled()) {
+            $rendered = $render();
+        } else {
+            $key = 'collection_random_' . hash('xxh128', implode("\0", [
+                $source, (string) $detailPage, (string) $variant, (string) $level, $request->getLocale(),
+                (string) $request->attributes->get('_route'), (string) $request->attributes->get('page'),
+            ]));
+            $rendered = $this->cache->get($key, function (ItemInterface $item) use ($cacheTags, $render): array {
+                $item->tag($cacheTags);
+
+                return $render();
+            });
         }
 
-        $items = $this->sourceRegistry->items($source, null);
-        shuffle($items);
+        shuffle($rendered);
 
-        return null === $limit ? $items : array_slice($items, 0, $limit);
+        return null === $limit ? $rendered : array_slice($rendered, 0, $limit);
     }
 
     // The singular of renderItems(): one item of a source, picked by "first"/"last"/its own slug, for the "collection_entry" block - an album on a home page, a member put forward. Empty string when nothing answers (unknown source, empty source, slug that matches none), which the block renders as nothing at all rather than as a hole in the page
@@ -97,31 +118,39 @@ class CollectionRuntime implements RuntimeExtensionInterface
             $data['level'] = $level;
         }
 
+        // The source's own template, included by CollectionItem.html.twig in place of the built-in card: the item then goes through the same entry cache, keyed and tagged by what its source declared - only the html is stored, never the entity the template draws
         $template = $this->sourceRegistry->itemTemplate($source);
         if (null !== $template) {
-            // Rendered live, the caching being the named template's own business: it draws an entity this bundle knows nothing of, and is the only side that can say what invalidates it
-            return $this->twig->render($template, $data);
+            $data['itemTemplate'] = $template;
         }
 
         $cacheTags = $this->sourceRegistry->cacheTags($source);
 
         return $this->blockExtension->renderBlock(
             new Block()->setKind('collection_item')->setData($data),
-            $this->itemCacheKey($source, $item->slug, $variant, $detailUrl, $level, $cacheTags),
+            $this->itemCacheKey($source, $item->slug ?? $this->itemId($item), $variant, $detailUrl, $level, $cacheTags, $template),
             $cacheTags
         );
     }
 
+    // What names an item with no slug - a review, which has no page of its own - so it can still have its entry
+    private function itemId(CollectionItem $item): ?string
+    {
+        $id = $item->data['id'] ?? null;
+
+        return \is_int($id) || \is_string($id) ? 'id:' . $id : null;
+    }
+
     // The item's own identity rather than the block's, which is the whole point: one character's card is a single entry, hit by the "collection" block listing them on one page and by the one listing them on another. What the key holds is everything the html varies with - the source and the item's slug (the item's own data, invalidated by $cacheTags when it changes), the variant that picks its markup, and the two things the page holding the block decides: the detail url and the heading its titles are drawn with.
     // Null - i.e. render live, no entry - when the source declared no tag to invalidate on, or when the item has no slug to be named by; @param string[] $cacheTags
-    private function itemCacheKey(string $source, ?string $slug, ?string $variant, ?string $detailUrl, ?string $level, array $cacheTags): ?string
+    private function itemCacheKey(string $source, ?string $slug, ?string $variant, ?string $detailUrl, ?string $level, array $cacheTags, ?string $template = null): ?string
     {
         if ([] === $cacheTags || null === $slug) {
             return null;
         }
 
         // Hashed rather than assembled: a source key, a slug or a detail url all hold characters a cache key reserves ("/", ":", "@"), and the pool refuses the whole entry over one of them
-        return 'collection_item_' . hash('xxh128', implode("\0", [$source, $slug, (string) $variant, (string) $detailUrl, (string) $level]));
+        return 'collection_item_' . hash('xxh128', implode("\0", [$source, $slug, (string) $variant, (string) $detailUrl, (string) $level, (string) $template]));
     }
 
     // Only when the "collection" block author configured a detailPage AND this item's source hands back a slug: the item's title then links to /pages/{currentPage}/{itemSlug}, resolved back to the source's own "detail" callable by PageController::resolveCollectionDetail(). Tolerant on purpose, like the rest of this feature (see CollectionSourceRegistry::detail()) - anything missing (no detailPage, no slug, no current "page" route parameter) just yields no link, same as a source with no detail page at all. Reuses "page_preview" instead of "page_display" when the parent page itself is being previewed, so an editor can follow a detail link before the parent (or its detailPage) is published, without landing on a 404.

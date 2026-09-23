@@ -50,6 +50,22 @@
                 <source>narration.guided_step_config_maintenance_open</source>
                 <target>El panel le devuelve al tablero. Sus accesos directos son acciones inmediatas, sin pantalla intermedia.</target>
             </trans-unit>
+            <trans-unit id="xxzY7RU">
+                <source>narration.guided_step_config_messenger_failed_delete</source>
+                <target>Un mensaje que no merece reenviarse, un spam por ejemplo, se elimina con el botón rojo de su fila.</target>
+            </trans-unit>
+            <trans-unit id="RLUiSBP">
+                <source>narration.guided_step_config_messenger_failed_group</source>
+                <target>Arriba, la tabla agrupa los mensajes por error: una misma causa se elimina de una vez.</target>
+            </trans-unit>
+            <trans-unit id="Eh0DVqJ">
+                <source>narration.guided_step_config_messenger_failed_open</source>
+                <target>El panel le lleva a la pantalla a la que lleva la alerta del panel: cada fila dice a quién iba destinado el mensaje y por qué falló.</target>
+            </trans-unit>
+            <trans-unit id="wuNz6dq">
+                <source>narration.guided_step_config_messenger_failed_retry</source>
+                <target>Una vez corregida la causa, haga clic en Reintentar: el mensaje sale enseguida, y si vuelve a fallar, se muestra el nuevo error.</target>
+            </trans-unit>
             <trans-unit id="59LPu8b">
                 <source>narration.guided_step_config_not_found_create</source>
                 <target>En esa fila, haga clic en el botón que crea la redirección: abre un formulario con la ruta rota ya rellenada.</target>
@@ -77,6 +93,34 @@
             <trans-unit id="7l4ApyP">
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>En el campo siguiente, diga adónde debe llevar esa ruta a partir de ahora. Es la única decisión que le queda.</target>
+            </trans-unit>
+            <trans-unit id="doJKRHJ">
+                <source>narration.guided_step_config_redirect_done</source>
+                <target>La dirección antigua responde de nuevo. Una dirección exacta siempre prevalece sobre una carpeta, y entre las carpetas prevalece la más precisa.</target>
+            </trans-unit>
+            <trans-unit id="LuYhYI2">
+                <source>narration.guided_step_config_redirect_from</source>
+                <target>En el primer campo, escriba la dirección antigua con su barra inicial. Terminada en un asterisco, cubre toda la carpeta que hay debajo.</target>
+            </trans-unit>
+            <trans-unit id="NN2JyrW">
+                <source>narration.guided_step_config_redirect_new</source>
+                <target>Haga clic en el botón de creación, arriba a la derecha.</target>
+            </trans-unit>
+            <trans-unit id="9OWiVAx">
+                <source>narration.guided_step_config_redirect_open</source>
+                <target>El panel le lleva a la pantalla de las redirecciones: cada fila envía una dirección antigua hacia una nueva.</target>
+            </trans-unit>
+            <trans-unit id="LdfmbOv">
+                <source>narration.guided_step_config_redirect_permanent</source>
+                <target>Deje la casilla marcada si el cambio es definitivo: los motores de búsqueda retendrán la nueva dirección.</target>
+            </trans-unit>
+            <trans-unit id="nzaYhHl">
+                <source>narration.guided_step_config_redirect_save</source>
+                <target>Guarde con el botón al pie del formulario.</target>
+            </trans-unit>
+            <trans-unit id="PNSFsTA">
+                <source>narration.guided_step_config_redirect_to</source>
+                <target>En el campo siguiente, diga adónde lleva ahora: la página que la sustituye, en este sitio o en otro.</target>
             </trans-unit>
             <trans-unit id="nuohv_S">
                 <source>narration.guided_step_config_role_preview_banner</source>

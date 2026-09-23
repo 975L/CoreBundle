@@ -13,14 +13,25 @@ namespace c975L\UiBundle\Repository;
 use c975L\UiBundle\Entity\AiSearchChunk;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * @extends ServiceEntityRepository<AiSearchChunk>
  */
 class AiSearchChunkRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    // What currentVersion() is kept under, emptied by replaceAll() - the search asks it on every page, the index only changing when it is rebuilt
+    private const string VERSION_CACHE_KEY = 'ui_ai_search_index_version';
+
+    // Asked several times per page (the navbar's trigger, the footer's), read once
+    private ?string $version = null;
+    private bool $versionRead = false;
+
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly TagAwareCacheInterface $cache,
+    ) {
         parent::__construct($registry, AiSearchChunk::class);
     }
 
@@ -89,13 +100,26 @@ class AiSearchChunkRepository extends ServiceEntityRepository
     // The version the whole index was written with, null while nothing was ever indexed
     public function currentVersion(): ?string
     {
-        $version = $this->createQueryBuilder('c')
-            ->select('c.indexVersion')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        if ($this->versionRead) {
+            return $this->version;
+        }
 
-        return $version['indexVersion'] ?? null;
+        // An empty string stands for "never indexed", a null the pool could not tell from a miss
+        $version = $this->cache->get(self::VERSION_CACHE_KEY, function (ItemInterface $item): string {
+            $item->expiresAfter(null);
+
+            $row = $this->createQueryBuilder('c')
+                ->select('c.indexVersion')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getOneOrNullResult();
+
+            return (string) ($row['indexVersion'] ?? '');
+        });
+
+        $this->versionRead = true;
+
+        return $this->version = '' === $version ? null : $version;
     }
 
     // Swaps the whole index in one transaction, so a visitor asking during a rebuild reads the old one or the new one, never half of each. The chunks stay managed afterwards, which a run bounded by AiSearchIndexer::MAX_PAGES can afford
@@ -110,5 +134,8 @@ class AiSearchChunkRepository extends ServiceEntityRepository
             }
             $entityManager->flush();
         });
+
+        $this->cache->delete(self::VERSION_CACHE_KEY);
+        $this->versionRead = false;
     }
 }

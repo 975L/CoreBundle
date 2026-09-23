@@ -17,8 +17,11 @@ export default class extends Controller {
         }
     }
 
-    // The shortcut every documentation search answers, left alone while the dialog is already open
+    // The shortcut every documentation search answers, left alone while the dialog is already open - Chrome's autofill fires a plain Event named "keydown" that Stimulus lets through its key filter, hence the KeyboardEvent check
     shortcut(event) {
+        if (!(event instanceof KeyboardEvent)) {
+            return;
+        }
         event.preventDefault();
         if (!this.element.open) {
             this.open();

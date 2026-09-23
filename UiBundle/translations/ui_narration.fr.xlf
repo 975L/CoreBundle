@@ -94,6 +94,10 @@
                 <source>narration.guided_step_ui_ai_search_setup_value</source>
                 <target>Saisissez sa valeur dans ce champ. La clé API reste la vôtre : chaque question est facturée sur votre compte chez le fournisseur.</target>
             </trans-unit>
+            <trans-unit id="9klQ1Xs">
+                <source>narration.guided_step_ui_calculator_action</source>
+                <target>Choisissez ensuite s'il est envoyé : laissez l'action vide pour un simple calcul, ou choisissez « envoyer un email » pour que le visiteur demande un devis avec ses résultats.</target>
+            </trans-unit>
             <trans-unit id="OP28253">
                 <source>narration.guided_step_ui_calculator_fields</source>
                 <target>Ajoutez ce que le visiteur règle : un curseur pour un réglage, un nombre pour un prix. Remplissez le minimum, le maximum, le pas et la valeur par défaut, pour que le résultat s'affiche avant qu'on touche à quoi que ce soit.</target>
@@ -116,7 +120,7 @@
             </trans-unit>
             <trans-unit id="9Ln0WdI">
                 <source>narration.guided_step_ui_calculator_open</source>
-                <target>Un calculateur est un formulaire comme les autres. Le panneau vous emmène sur l'écran des formulaires ; laissez son action vide, il n'envoie rien.</target>
+                <target>Un calculateur est un formulaire comme les autres. Le panneau vous emmène sur l'écran des formulaires.</target>
             </trans-unit>
             <trans-unit id="sHJo_BJ">
                 <source>narration.guided_step_ui_calculator_outputs</source>

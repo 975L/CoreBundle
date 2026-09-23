@@ -13,6 +13,9 @@ export default class extends Controller {
 
     static values = { url: String };
 
+    // The only controls a formula can read (see ExpressionEvaluator) - a calculator given an action also carries a name, an email and a message, which must never ride the query string of a GET into the server's logs, nor send a request per keystroke typed in them
+    static COMPUTED = 'input[type="number"][name], input[type="range"][name], select[name]';
+
     // Long enough that dragging a slider sends a handful of requests rather than one per pixel, short enough to read as immediate
     static DEBOUNCE = 200;
 
@@ -21,6 +24,9 @@ export default class extends Controller {
         this.controller = null;
         this.readouts = new Map();
         this.onInput = (event) => {
+            if (!event.target.matches(this.constructor.COMPUTED)) {
+                return;
+            }
             this.readout(event.target);
             this.schedule();
         };
@@ -89,12 +95,11 @@ export default class extends Controller {
     // The field's own name, as the server knows it - the inputs are named "form_submission[prix-de-l-essence]", the evaluator is keyed by what sits inside the brackets
     parameters() {
         const parameters = new URLSearchParams();
-        this.element.querySelectorAll("input[name], select[name]").forEach((input) => {
+        this.element.querySelectorAll(this.constructor.COMPUTED).forEach((input) => {
             const name = input.name.match(/\[([^\]]+)\]$/);
-            if (!name || (input.type === "radio" && !input.checked)) {
-                return;
+            if (name) {
+                parameters.set(name[1], input.value);
             }
-            parameters.set(name[1], input.type === "checkbox" ? (input.checked ? "1" : "0") : input.value);
         });
 
         return parameters.toString();

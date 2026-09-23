@@ -27,10 +27,7 @@ class CollectionBlockCacheTagProvider implements BlockCacheTagProviderInterface
         return ['collection' => $this->resolve(...), 'collection_entry' => $this->resolve(...)];
     }
 
-    // Null, i.e. render this block live, in the two cases where a single entry per block would be wrong:
-    // - a source declaring no cache tag, which is a source saying it cannot tell when its items change
-    // - a block configured with a "detailPage", whose items then carry links built from the page currently being rendered (see CollectionRuntime::buildDetailUrl()): the same block reached under two routes would freeze one page's links into the other's html. Its items are still cached, their own key holding the detail url they were built with - so all that is given up here is the grid wrapper around them
-    // - a block drawing its items at random, which a cached entry would freeze into one single draw until the source itself changes, i.e. exactly what asking for a random order says it does not want. Its items keep their own entries all the same, each keyed on the item and not on the draw
+    // Null, i.e. render this block live, in the three cases where a single entry per block would be wrong: a source declaring no cache tag, saying it cannot tell when its items change; a "detailPage", whose item links are built from the page being rendered (see CollectionRuntime::buildDetailUrl()), the items themselves staying cached; a random order, which one entry would freeze into a single draw, the whole source's html being kept and drawn from at each render instead (see CollectionRuntime::renderRandomItems())
     private function resolve(Block $block): ?array
     {
         $data = $block->getData();

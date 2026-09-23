@@ -49,9 +49,9 @@ class BlockCacheInvalidationListener
 
     private function invalidate(object $entity, EntityManagerInterface $em): void
     {
-        // Singleton-role Media (logo, favicon...) is never attached to a Block, so it needs its own tag - see MediaExtension::preloadSingletonRoles()
-        if ($entity instanceof Media && $entity->isSingletonRole()) {
-            $this->cache->invalidateTags([MediaExtension::MEDIA_SINGLETONS_CACHE_TAG]);
+        // A media entering or leaving a role both go stale, and the role it had is gone from it by now - see MediaExtension::preloadSingletonRoles() and getRandomSiteMedia()
+        if ($entity instanceof Media) {
+            $this->cache->invalidateTags([MediaExtension::MEDIA_SINGLETONS_CACHE_TAG, MediaExtension::MEDIA_ROLES_CACHE_TAG]);
         }
 
         $block = match (true) {

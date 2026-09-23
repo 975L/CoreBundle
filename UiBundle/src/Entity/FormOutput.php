@@ -14,7 +14,7 @@ use c975L\UiBundle\Repository\FormOutputRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-// One computed result of a Form, turning it into a calculator: an arithmetic expression over the Form's own numeric fields and over the outputs declared before it, evaluated at each keystroke without anything being submitted or stored - see ExpressionEvaluator for the grammar, CalculatorController for the evaluation. A Form owning at least one of these is a calculator and has no action (see Form::isCalculator())
+// One computed result of a Form, turning it into a calculator: an arithmetic expression over the Form's own numeric fields and over the outputs declared before it, evaluated at each keystroke without anything being submitted or stored - see ExpressionEvaluator for the grammar, CalculatorController for the evaluation. A Form owning at least one of these is a calculator, submitted only when it is also given an action (see Form::isCalculator())
 #[ORM\Entity(repositoryClass: FormOutputRepository::class)]
 #[ORM\Table(name: 'site_form_output')]
 #[ORM\UniqueConstraint(name: 'form_output_unique', columns: ['form_id', 'name'])]

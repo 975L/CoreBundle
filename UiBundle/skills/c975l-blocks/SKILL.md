@@ -1,6 +1,6 @@
 ---
 name: c975l-blocks
-description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, Edit:Entity, entity_edit_url, entity_edit_pattern, edit-pencils, data-edit-entity, data-edit-field, edit pencil, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, GoogleMapsLinkBuilder, google_maps_url, map block, MapProvider, MapType, MapPointType, MapGeocoder, MapGeocoderInterface, ui_map_settings, ui_map_points, vendor-assets.json, VendorAssetsTest, vendored library, ui-map-provider, ui-map-google-api-key, c975l_ui.map.img_origins, leaflet, OpenStreetMap, Google Maps, faq, FaqType, FaqItemType, FAQPage, details summary accordion, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, getTranslatableCollections, ContentTranslator::expand, ContentTranslator::read, repeated texts, cards[].title, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales, MediaTranslator, ui_media, MediaTranslationType, mediaTranslation_, mediaTranslationsRendered, setTranslated, getUntranslated, translate a media, translate a caption, data-media-translation, InternalLinkLocalizerInterface, InternalLinkLocalizerRegistry, InternalLinkLocalizerPass, localize a link, ai_search, AiSiteSearch, AiSiteSearchClient, AiSearchIndexer, AiSearchPageReader, AiSearchChunk, AiSearchAnswer, AiSearchController, ui_ai_search_ask, ui_ai_search, ui_ai_search_site, c975l:ui:ai-search:index, data-ai-search-ignore, site search, AbstractAiProviderClient, SameOriginRequest, AiSearchAnswerCrudController, ai_search_configured, ai_search_label, ui-ai-assistant-site-label, AiSearch:Dialog, AiSearch:Trigger, data-ai-search-open, booleanQuery, retentionDays, DEFAULT_RETENTION_DAYS, background, HasBackgroundFieldTrait, section-background, colored flat, marker icon, divIcon."
+description: "Use this skill when working with page blocks in a Symfony application built on the c975L ecosystem — attaching a block collection to an entity, registering a custom block kind, containers and their slots, contexts, anchors, the render cache, the edit overlay, and the legal models. Covers what makes a kind cacheable, why a kind is a service tag rather than a class, and how blocks are exported. Triggers on: HasBlocksInterface, HasBlocksTrait, BlockRemovalListener, ui.block tag, render_block, BlockRegistry, getContexts, pickable, cacheable, contexts, block_group, flex_columns, anchor, hidden, Block::$hidden, isHidden, blockHide, set a block aside, hide a block, BlockCacheInvalidationListener, BlockCacheTagProviderInterface, render_owned_blocks, OwnedBlocksExtension, ownerTag, OwnedBlocksCacheListener, preloadTree, renderNested, owner's run cached whole, TwigCachePoolPass, twig.cache, cache.app.taggable, {% cache %}, twig/cache-extra, twig/extra-bundle, fragment cache, BlockOwnerResolverInterface, BlockEditUrlProviderInterface, Edit:Entity, entity_edit_url, entity_edit_pattern, edit-pencils, data-edit-entity, data-edit-field, edit pencil, contact_details, ContactSnippetBuilder, SameAsProviderInterface, sameAs, GoogleMapsLinkBuilder, google_maps_url, map block, MapProvider, MapType, MapPointType, MapGeocoder, MapGeocoderInterface, ui_map_settings, ui_map_points, vendor-assets.json, VendorAssetsTest, vendored library, ui-map-provider, ui-map-google-api-key, c975l_ui.map.img_origins, leaflet, OpenStreetMap, Google Maps, faq, FaqType, FaqItemType, FAQPage, details summary accordion, legal_model, c975l:ui:block:create, TrashableInterface, TrashableTrait, isDeleted, trash, soft delete, restore, Rating, RatingService, RatingRepository, deleteForOwners, ui_rating, ui_ratings, ui-rating-icon, ui-rating-scale, ui_rating_vote, compact, aggregate, RatingCacheListener, ui_rating_cache_tag, ui_rating_type_cache_tag, rating-vote--compact, RatingSnippetBuilder, AggregateRating, Review, ReviewService, ReviewRepository, ReviewStatus, ReviewCollectionSourceProvider, ReviewReplyPublisherInterface, ReviewReplyRegistry, ReviewVerifierInterface, ReviewVerifierRegistry, verified, ui_reviews, ui_reviews_enabled, ui_reviews_section, ui_review_url, ui-enable-reviews, ReviewShortcutController, ReviewTokenSigner, ReviewNotifier, ReviewAlertProvider, ui_review_new, moderation, avis, site-has-accounts, Favorite, FavoriteService, FavoriteRepository, FavoriteItemProviderInterface, FavoriteItemRegistry, ui_favorite_toggle, ui_favorite_list, wishlist, ui_can_hold_flash, label.rating_throttled, label.favorite_throttled, favorite-status, block-picker, ui-block-picker-trigger, ui-block-picker-on, ui-block-thumb, data-kind-row, Blocks:Thumb, block-thumbs, translatable, getTranslatable, getTranslatableCollections, ContentTranslator::expand, ContentTranslator::read, repeated texts, cards[].title, Translation, ContentTranslator, TranslationWriteListener, TranslationPurgeListener, TranslationFormContext, translation_locale, site_translation, translate a block, ai_translatable_locales, MediaTranslator, ui_media, MediaTranslationType, mediaTranslation_, mediaTranslationsRendered, setTranslated, getUntranslated, translate a media, translate a caption, data-media-translation, InternalLinkLocalizerInterface, InternalLinkLocalizerRegistry, InternalLinkLocalizerPass, localize a link, ai_search, AiSiteSearch, AiSiteSearchClient, AiSearchIndexer, AiSearchPageReader, AiSearchChunk, AiSearchAnswer, AiSearchController, ui_ai_search_ask, ui_ai_search, ui_ai_search_site, c975l:ui:ai-search:index, data-ai-search-ignore, site search, AbstractAiProviderClient, SameOriginRequest, AiSearchAnswerCrudController, ai_search_configured, ai_search_label, ui-ai-assistant-site-label, AiSearch:Dialog, AiSearch:Trigger, data-ai-search-open, booleanQuery, retentionDays, currentVersion, DEFAULT_RETENTION_DAYS, background, HasBackgroundFieldTrait, section-background, colored flat, marker icon, divIcon."
 ---
 
 # c975L UiBundle — blocks
@@ -10,7 +10,7 @@ description: "Use this skill when working with page blocks in a Symfony applicat
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi` · **Translation domain:** `ui`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Entity/Translation.php`, `src/Service/ContentTranslator.php`, `src/Repository/TranslationRepository.php`, `src/Listener/`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `src/Service/ReviewTokenSigner.php`, `src/Service/ReviewNotifier.php`, `src/Management/ReviewAlertProvider.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `assets/js/block-picker.js`, `sass/_block-thumbs.scss`, `config/services.yaml`
+`src/Entity/Block.php`, `src/Contract/HasBlocksInterface.php`, `src/Entity/Trait/HasBlocksTrait.php`, `src/Contract/TrashableInterface.php`, `src/Entity/Trait/TrashableTrait.php`, `src/Registry/BlockRegistry.php`, `src/Entity/Translation.php`, `src/Service/ContentTranslator.php`, `src/Repository/TranslationRepository.php`, `src/Listener/`, `src/Listener/OwnedBlocksCacheListener.php`, `src/Listener/RatingCacheListener.php`, `src/Twig/OwnedBlocksExtension.php`, `src/DependencyInjection/Compiler/TwigCachePoolPass.php`, `src/Form/Block/`, `src/Twig/`, `src/Management/BlockDataExporter.php`, `src/Management/BlockDataImporter.php`, `src/Entity/Rating.php`, `src/Service/RatingService.php`, `src/Repository/RatingRepository.php`, `src/Controller/RatingController.php`, `src/Service/RatingSnippetBuilder.php`, `src/Entity/Review.php`, `src/Enum/ReviewStatus.php`, `src/Service/ReviewService.php`, `src/Repository/ReviewRepository.php`, `src/Controller/ReviewController.php`, `src/Controller/Management/ReviewCrudController.php`, `src/Form/ReviewType.php`, `src/Service/ReviewCollectionSourceProvider.php`, `src/Contract/ReviewReplyPublisherInterface.php`, `src/Registry/ReviewReplyRegistry.php`, `src/Contract/ReviewVerifierInterface.php`, `src/Registry/ReviewVerifierRegistry.php`, `src/Service/ReviewTokenSigner.php`, `src/Service/ReviewNotifier.php`, `src/Management/ReviewAlertProvider.php`, `templates/review/`, `templates/collection/ReviewItem.html.twig`, `src/Entity/Favorite.php`, `src/Service/FavoriteService.php`, `src/Repository/FavoriteRepository.php`, `src/Controller/FavoriteController.php`, `src/Contract/FavoriteItemProviderInterface.php`, `src/Registry/FavoriteItemRegistry.php`, `templates/blocks/`, `templates/components/Blocks/`, `assets/js/block-picker.js`, `sass/_block-thumbs.scss`, `config/services.yaml`
 
 **Related skills:** `c975l-media`, `c975l-forms-emails`, `c975l-ui-assets`, `c975l-js-testing` in this same bundle, and `c975l-config`, `c975l-management` in ConfigBundle beside it.
 
@@ -151,6 +151,37 @@ template-only release is picked up.
 **When in doubt, `cacheable: false`** — the cost is one avoidable render, not a correctness bug. To
 keep a kind cacheable while reading outside data, implement `BlockCacheTagProviderInterface` and
 invalidate your own tag where that data changes.
+
+### An owner's whole run as one entry
+
+```twig
+{{ render_owned_blocks(product) }}
+```
+
+`render_owned_blocks()` (`Twig\OwnedBlocksExtension`) renders what `Blocks:Blocks` renders for any
+`HasBlocksInterface`, kept as **one** entry per owner and locale, so a hit reads neither the blocks,
+their medias nor their slots — the owner's own row is all the request loads.
+
+- Tagged with every block's `block_{id}` and kind tags, `blocks_all`, and
+  `OwnedBlocksExtension::ownerTag()` (`owned_blocks_<short class>_<id>`, nothing to declare).
+- **A block added, removed or moved** writes only the join table: `OwnedBlocksCacheListener` reads the
+  owner's collection off the unit of work and empties its tag after the flush. A block edited in place
+  reaches the entry through its own `block_{id}`.
+- **One block refusing the cache** (uncacheable kind, a resolver's `null`) stores nothing for the run,
+  which falls back on `render_block()`'s per-block entries.
+- **Live** for an editor (`site-role-editor`), while `BlockRenderContext` has the cache disabled (a
+  preview), and outside a request.
+- On a miss `BlockRepository::preloadTree()` reads the run, its medias and its slots one query per
+  level; `BlockExtension::renderNested()` lays the CSP nonce and the localized links once, outside the
+  stored html, on the hit as on the miss.
+
+### `{% cache %}` fragments share the same tags
+
+`DependencyInjection\Compiler\TwigCachePoolPass` aliases `twig.cache` (`twig/extra-bundle`) to
+`cache.app.taggable`, the pool every c975L bundle empties its tags in. A fragment tagged with the tag
+the entity behind it already empties — a collection source's `cacheTags`, `ui_reviews`,
+`ui_rating_cache_tag()`, ConfigBundle's `url_metadata` — goes stale on the same save as the blocks,
+**with no listener of its own**. `blocks_all` makes one go on a release too.
 
 ## Translating a block's content
 
@@ -386,6 +417,11 @@ On a listing, two more props turn the widget into what a catalog card has room f
   a graph: schema.org reads an `AggregateRating` as a property of the thing rated, so the bundle owning
   that thing nests the node in its own. An owner nobody voted on returns `[]`, a zeroed node being what
   Google rejects the whole rich result for.
+- **A fragment printing an average can be cached** with the tag a vote empties: `RatingCacheListener`
+  invalidates `ui_rating_cache_tag(ownerType, ownerId)` and `ui_rating_type_cache_tag(ownerType)` on
+  any vote cast, changed or withdrawn, a review's score included, once per flush. The first is for one
+  owner's tally (a product sheet, its `aggregateRating`), the second for a grid of several owners of a
+  type. The voter's own score is never in the fragment: `assets/js/rating.js` paints it from the browser.
 - **Nothing cascades.** Whichever service deletes the rated row *for good* calls
   `RatingRepository::deleteForOwner()` — on the permanent delete only, never on a trash: a restored
   entity has to find its notes where it left them. A whole set goes through
@@ -534,6 +570,9 @@ search"). What matters when touching it:
 - **The badge carries the name the site gave its assistant**: `ai_search_label()` reads
   `ui-ai-assistant-site-label`, and the template writes the translated `label.ai_search_badge`
   (`Donovan (AI)`, 975L's own) when it is empty.
+- **`AiSearchChunkRepository::currentVersion()` is cached** with no expiry (an empty string standing for
+  "never indexed"), and `replaceAll()` deletes it: the triggers ask it several times per page. Swap the
+  index through `replaceAll()` only, or the search keeps reading the old version.
 - **The index is rebuilt by `c975l:ui:ai-search:index`**, nightly through `UiMaintenanceTaskProvider`,
   which purges the answers past their retention first, even on a site whose search is switched off.
 
@@ -555,6 +594,10 @@ them** rather than writing a walk of your own. A content export never carries th
   each caller instead of in the repository.
 - **Do not write a page template per entity** when blocks would compose it.
 - **Do not cache a kind that embeds a form or reads outside data.**
+- **Do not write a listener to empty a `{% cache %}` fragment**, nor `clear()` `twig.cache` — it is
+  `cache.app.taggable`; tag the fragment with the tag its entity already empties.
+- **Do not wrap `render_owned_blocks()` in a `{% cache %}` of your own** — it already keeps its entry,
+  and knows when to stay live for an editor.
 - **Do not test `hidden` at each caller** — `render_block()` already answers with an empty string. Filter
   it only where a template counts blocks or opens a cell of its own before rendering them.
 - **Do not re-implement the block export walk.**

@@ -54,7 +54,10 @@ class FormFlashMarkupTest extends TestCase
     /** @param array<string, string[]> $flashes */
     private function render(array $flashes, bool $canHoldFlash = true): string
     {
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        // Namespaced as the bundle registers it, the template including its shared partials through it
+        $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
+        $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
+        $twig = new Environment($loader);
         // Untranslated keys come back as-is, which is enough for the flash markup read above
         $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
         // The form and routing layers play no part in the flash markup, so they are stubbed away

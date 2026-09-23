@@ -42,6 +42,7 @@ use c975L\UiBundle\DependencyInjection\Compiler\ScriptAdminRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\ScriptRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetManagementRegistryPass;
 use c975L\UiBundle\DependencyInjection\Compiler\StylesheetRegistryPass;
+use c975L\UiBundle\DependencyInjection\Compiler\TwigCachePoolPass;
 use c975L\UiBundle\DependencyInjection\Compiler\WhatsNewProviderPass;
 use c975L\UiBundle\Map\MapProvider;
 use c975L\UiBundle\Namer\UiMediaNamer;
@@ -64,6 +65,7 @@ class c975LUiBundle extends AbstractBundle
         $container->addCompilerPass(new PdfDocumentSourcePass());
         $container->addCompilerPass(new BlockOwnerResolverPass());
         $container->addCompilerPass(new BlockCacheTagProviderPass());
+        $container->addCompilerPass(new TwigCachePoolPass());
         $container->addCompilerPass(new CacheInvalidatorPass());
         $container->addCompilerPass(new CollectionSourceProviderPass());
         $container->addCompilerPass(new FavoriteItemProviderPass());

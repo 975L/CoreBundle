@@ -108,17 +108,39 @@ class MediaExtensionTest extends TestCase
         $this->assertEquals($media, $secondRequest->getSiteMedia('logo'));
     }
 
-    // "random" means a fresh pick is the whole point - getRandomSiteMedia() must never be memoized nor go through the singleton preload
-    public function testGetRandomSiteMediaDelegatesToRepositoryFindRandomByRole(): void
+    // "random" means a fresh pick is the whole point - only the role's ids are cached, the draw itself is made on every call and never goes through the singleton preload
+    public function testGetRandomSiteMediaDrawsAmongTheCachedIdsOfTheRole(): void
     {
         $media = new Media();
         $repository = $this->createMock(MediaRepository::class);
-        $repository->expects($this->once())->method('findRandomByRole')->with('error-image')->willReturn($media);
+        $repository->expects($this->once())->method('findIdsByRole')->with('error-image')->willReturn([7, 8]);
+        $repository->expects($this->exactly(2))->method('find')->with($this->logicalOr(7, 8))->willReturn($media);
         $repository->expects($this->never())->method('findBySingletonRoles');
 
-        $extension = new MediaExtension($repository, $this->createCache());
+        $cache = $this->createCache();
+        $this->assertSame($media, new MediaExtension($repository, $cache)->getRandomSiteMedia('error-image'));
+        $this->assertSame($media, new MediaExtension($repository, $cache)->getRandomSiteMedia('error-image'));
+    }
 
-        $this->assertSame($media, $extension->getRandomSiteMedia('error-image'));
+    public function testGetRandomSiteMediaOfAnEmptyRoleIsNullWithoutLookup(): void
+    {
+        $repository = $this->createMock(MediaRepository::class);
+        $repository->method('findIdsByRole')->willReturn([]);
+        $repository->expects($this->never())->method('find');
+
+        $this->assertNull(new MediaExtension($repository, $this->createCache())->getRandomSiteMedia('error-image'));
+    }
+
+    // What BlockCacheInvalidationListener relies on: a new error image joins the draw once the tag is gone
+    public function testInvalidatingTheRolesTagReloadsTheIds(): void
+    {
+        $repository = $this->createMock(MediaRepository::class);
+        $repository->expects($this->exactly(2))->method('findIdsByRole')->willReturn([]);
+
+        $cache = $this->createCache();
+        new MediaExtension($repository, $cache)->getRandomSiteMedia('error-image');
+        $cache->invalidateTags([MediaExtension::MEDIA_ROLES_CACHE_TAG]);
+        new MediaExtension($repository, $cache)->getRandomSiteMedia('error-image');
     }
 
     public function testGetFunctionsRegistersSiteMediaFunctions(): void

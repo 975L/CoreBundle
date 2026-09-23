@@ -57,6 +57,8 @@
         "symfony/yaml": "^8.0",
         "symfonycasts/reset-password-bundle": "^1.25",
         "symfonycasts/verify-email-bundle": "^1.18",
+        "twig/cache-extra": "^3.28",
+        "twig/extra-bundle": "^3.29",
         "twig/intl-extra": "^3.26",
         "twig/twig": "^3.21",
         "vich/uploader-bundle": "^3.0"

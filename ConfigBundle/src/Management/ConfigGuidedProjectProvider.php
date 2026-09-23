@@ -11,7 +11,9 @@
 namespace c975L\ConfigBundle\Management;
 
 use c975L\ConfigBundle\Controller\Management\ConfigCrudController;
+use c975L\ConfigBundle\Controller\Management\MessengerFailedController;
 use c975L\ConfigBundle\Controller\Management\NotFoundCrudController;
+use c975L\ConfigBundle\Controller\Management\RedirectCrudController;
 use c975L\ConfigBundle\Controller\Management\UrlMetadataCrudController;
 use c975L\ConfigBundle\Controller\Management\UserCrudController;
 use c975L\ConfigBundle\Service\ConfigServiceInterface;
@@ -20,7 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and four of these seven walk a screen only an admin may read. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
+// This bundle's own guided projects, running the 1000 block GuidedProjectProviderInterface reserves them - the same docblock stating every other bundle's, so a range is read there rather than recopied here. Each carries the role its own screen is gated by, so a parcours is never offered to someone its very first step turns away - the dashboard the list is started from opens to a contributor (see BackOfficeAccessVoter), and four of these nine walk a screen only an admin may read, and one a screen whose buttons only a super admin is shown. Only the opening step of each carries an url: from there the parcours walks the screen the user has been sent to, highlighting the button or the field they are meant to use next - one they click themselves, which brings the panel back on that very step (see assets/js/guided-project.js resume())
 class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
 {
     public function __construct(
@@ -38,9 +40,11 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
             $this->healthCheckProject(),
             $this->maintenanceProject(),
             $this->notFoundProject(),
+            $this->redirectProject(),
             $this->urlMetadataProject(),
             $this->userRoleProject(),
             $this->rolePreviewProject(),
+            $this->messengerFailedProject(),
         ];
     }
 
@@ -181,6 +185,104 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'label' => 'label.guided_step_config_not_found_done',
                     'description' => 'description.guided_step_config_not_found_done',
                     'narration' => 'narration.guided_step_config_not_found_done',
+                ],
+            ],
+        ];
+    }
+
+    // A redirect written by hand rather than from a dead link, the one place a whole folder is moved at once with a trailing "*"
+    private function redirectProject(): array
+    {
+        return [
+            'slug' => 'config-redirect',
+            'label' => 'label.guided_project_config_redirect',
+            'description' => 'description.guided_project_config_redirect',
+            'translation_domain' => 'config',
+            // Right after the dead links, the same screen reached from its own index rather than from a row of theirs
+            'order' => 1045,
+            // The bar RedirectCrudController sets on its index and its "new"
+            'role' => $this->configService->get('site-role-editor'),
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_redirect_open',
+                    'description' => 'description.guided_step_config_redirect_open',
+                    'narration' => 'narration.guided_step_config_redirect_open',
+                    'url' => $this->indexUrl(RedirectCrudController::class),
+                ],
+                [
+                    'label' => 'label.guided_step_config_redirect_new',
+                    'narration' => 'narration.guided_step_config_redirect_new',
+                    'highlight' => '.action-new',
+                ],
+                [
+                    // Only a row ending on "*" covers what sits below it, the others naming one url alone (see RedirectSubscriber::resolve())
+                    'label' => 'label.guided_step_config_redirect_from',
+                    'description' => 'description.guided_step_config_redirect_from',
+                    'narration' => 'narration.guided_step_config_redirect_from',
+                    'highlight' => '#Redirect_fromPath',
+                ],
+                [
+                    'label' => 'label.guided_step_config_redirect_to',
+                    'description' => 'description.guided_step_config_redirect_to',
+                    'narration' => 'narration.guided_step_config_redirect_to',
+                    'highlight' => '#Redirect_toUrl',
+                ],
+                [
+                    'label' => 'label.guided_step_config_redirect_permanent',
+                    'description' => 'description.guided_step_config_redirect_permanent',
+                    'narration' => 'narration.guided_step_config_redirect_permanent',
+                    'highlight' => '#Redirect_permanent',
+                ],
+                [
+                    'label' => 'label.guided_step_config_redirect_save',
+                    'narration' => 'narration.guided_step_config_redirect_save',
+                    'highlight' => '.action-saveAndReturn',
+                ],
+                [
+                    'label' => 'label.guided_step_config_redirect_done',
+                    'description' => 'description.guided_step_config_redirect_done',
+                    'narration' => 'narration.guided_step_config_redirect_done',
+                ],
+            ],
+        ];
+    }
+
+    // The screen the failed messages alert opens, and no menu does: what to replay, what to drop
+    private function messengerFailedProject(): array
+    {
+        return [
+            'slug' => 'config-messenger-failed',
+            'label' => 'label.guided_project_config_messenger_failed',
+            'description' => 'description.guided_project_config_messenger_failed',
+            'translation_domain' => 'config',
+            'order' => 1080,
+            // An admin opens the screen but is only told the failure is already signaled, the buttons this walks being a super admin's (see MessengerFailedController)
+            'role' => 'ROLE_SUPER_ADMIN',
+            'steps' => [
+                [
+                    'label' => 'label.guided_step_config_messenger_failed_open',
+                    'description' => 'description.guided_step_config_messenger_failed_open',
+                    'narration' => 'narration.guided_step_config_messenger_failed_open',
+                    'url' => $this->urlGenerator->generate('management_config_messenger_failed'),
+                ],
+                [
+                    'label' => 'label.guided_step_config_messenger_failed_retry',
+                    'description' => 'description.guided_step_config_messenger_failed_retry',
+                    'narration' => 'narration.guided_step_config_messenger_failed_retry',
+                    'highlight' => '[data-messenger-retry]',
+                ],
+                [
+                    'label' => 'label.guided_step_config_messenger_failed_delete',
+                    'description' => 'description.guided_step_config_messenger_failed_delete',
+                    'narration' => 'narration.guided_step_config_messenger_failed_delete',
+                    'highlight' => '[data-messenger-delete]',
+                ],
+                [
+                    // One error repeated across many messages is one cause, dropped at once from the table above the detail
+                    'label' => 'label.guided_step_config_messenger_failed_group',
+                    'description' => 'description.guided_step_config_messenger_failed_group',
+                    'narration' => 'narration.guided_step_config_messenger_failed_group',
+                    'highlight' => '[data-messenger-delete-group]',
                 ],
             ],
         ];

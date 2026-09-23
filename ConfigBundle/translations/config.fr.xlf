@@ -90,9 +90,17 @@
                 <source>description.guided_project_config_maintenance</source>
                 <target>Répéter à froid la manœuvre qu'on ne veut pas découvrir le jour où il faut la faire</target>
             </trans-unit>
+            <trans-unit id="7WezzmB">
+                <source>description.guided_project_config_messenger_failed</source>
+                <target>Un email qui n'est pas parti attend ici : le relancer, ou le supprimer.</target>
+            </trans-unit>
             <trans-unit id="wod7rWu">
                 <source>description.guided_project_config_not_found</source>
                 <target>Le site note chaque chemin demandé par un visiteur sans être trouvé. Cette liste est ce qui dit quel lien, ici ou sur un autre site, pointe encore vers une page qui a bougé.</target>
+            </trans-unit>
+            <trans-unit id="LJp0uAy">
+                <source>description.guided_project_config_redirect</source>
+                <target>Une page a changé d'adresse, ou tout un dossier : l'ancienne mène à la nouvelle, pour un visiteur comme pour un moteur de recherche.</target>
             </trans-unit>
             <trans-unit id="cVYWaeZ">
                 <source>description.guided_project_config_role_preview</source>
@@ -150,6 +158,22 @@
                 <source>description.guided_step_config_maintenance_open</source>
                 <target>Les raccourcis du tableau de bord sont des actions immédiates, sans écran intermédiaire.</target>
             </trans-unit>
+            <trans-unit id="B6XrJnL">
+                <source>description.guided_step_config_messenger_failed_delete</source>
+                <target>Pour un message qui ne vaut pas d'être renvoyé, un spam par exemple.</target>
+            </trans-unit>
+            <trans-unit id="yIRNqoQ">
+                <source>description.guided_step_config_messenger_failed_group</source>
+                <target>Le tableau du haut regroupe les messages par erreur : une même cause se supprime d'un coup.</target>
+            </trans-unit>
+            <trans-unit id="DJr3YNu">
+                <source>description.guided_step_config_messenger_failed_open</source>
+                <target>L'alerte du tableau de bord mène ici. Chaque ligne dit à qui le message était destiné et pourquoi il a échoué.</target>
+            </trans-unit>
+            <trans-unit id="7zfCw4K">
+                <source>description.guided_step_config_messenger_failed_retry</source>
+                <target>Une fois la cause corrigée, le message repart tout de suite ; s'il échoue encore, la nouvelle erreur s'affiche.</target>
+            </trans-unit>
             <trans-unit id="HKhTHza">
                 <source>description.guided_step_config_not_found_create</source>
                 <target>Le bouton ouvre une nouvelle redirection avec le chemin mort déjà rempli.</target>
@@ -173,6 +197,26 @@
             <trans-unit id="eyq1i2_">
                 <source>description.guided_step_config_not_found_to</source>
                 <target>La page qui le remplace. La seule décision qui reste.</target>
+            </trans-unit>
+            <trans-unit id="DIWeqL_">
+                <source>description.guided_step_config_redirect_done</source>
+                <target>Une adresse exacte l'emporte toujours sur un dossier, et parmi les dossiers le plus précis l'emporte.</target>
+            </trans-unit>
+            <trans-unit id="xOutN9C">
+                <source>description.guided_step_config_redirect_from</source>
+                <target>Le chemin avec son / initial. Terminé par *, il couvre tout ce qui est dessous : /ancien/* redirige /ancien/page comme /ancien/a/b.</target>
+            </trans-unit>
+            <trans-unit id="g.4_WbX">
+                <source>description.guided_step_config_redirect_open</source>
+                <target>Chaque ligne envoie une ancienne adresse vers une nouvelle.</target>
+            </trans-unit>
+            <trans-unit id="iFgDW6Z">
+                <source>description.guided_step_config_redirect_permanent</source>
+                <target>Cochée, la redirection est définitive et les moteurs de recherche retiennent la nouvelle adresse. Décochée, elle ne vaut que le temps d'un changement.</target>
+            </trans-unit>
+            <trans-unit id="pxj4XlY">
+                <source>description.guided_step_config_redirect_to</source>
+                <target>La page qui la remplace, sur ce site ou ailleurs.</target>
             </trans-unit>
             <trans-unit id="66maK2p">
                 <source>description.guided_step_config_role_preview_banner</source>
@@ -802,9 +846,17 @@
                 <source>label.guided_project_config_maintenance</source>
                 <target>Mettre le site en maintenance</target>
             </trans-unit>
+            <trans-unit id="IMtqNVf">
+                <source>label.guided_project_config_messenger_failed</source>
+                <target>Traiter les messages en échec</target>
+            </trans-unit>
             <trans-unit id="qkkr11A">
                 <source>label.guided_project_config_not_found</source>
                 <target>Transformer un lien mort en redirection</target>
+            </trans-unit>
+            <trans-unit id="65dMEYc">
+                <source>label.guided_project_config_redirect</source>
+                <target>Rediriger une ancienne adresse</target>
             </trans-unit>
             <trans-unit id="hhhb8xQ">
                 <source>label.guided_project_config_role_preview</source>
@@ -898,6 +950,22 @@
                 <source>label.guided_step_config_maintenance_open</source>
                 <target>Ouvrir le tableau de bord</target>
             </trans-unit>
+            <trans-unit id="iNVhgq5">
+                <source>label.guided_step_config_messenger_failed_delete</source>
+                <target>Supprimer un message</target>
+            </trans-unit>
+            <trans-unit id="ScK7M41">
+                <source>label.guided_step_config_messenger_failed_group</source>
+                <target>Supprimer toute une erreur</target>
+            </trans-unit>
+            <trans-unit id="jXVdfBM">
+                <source>label.guided_step_config_messenger_failed_open</source>
+                <target>Ouvrir les messages en échec</target>
+            </trans-unit>
+            <trans-unit id="sdFrKFD">
+                <source>label.guided_step_config_messenger_failed_retry</source>
+                <target>Relancer un message</target>
+            </trans-unit>
             <trans-unit id="xFx6uZf">
                 <source>label.guided_step_config_not_found_create</source>
                 <target>Créer la redirection</target>
@@ -925,6 +993,34 @@
             <trans-unit id="7lBTKQZ">
                 <source>label.guided_step_config_not_found_to</source>
                 <target>Dire où il mène</target>
+            </trans-unit>
+            <trans-unit id="iR_w4ub">
+                <source>label.guided_step_config_redirect_done</source>
+                <target>L'ancienne adresse répond</target>
+            </trans-unit>
+            <trans-unit id="smTsKNR">
+                <source>label.guided_step_config_redirect_from</source>
+                <target>L'ancienne adresse, ou tout un dossier avec *</target>
+            </trans-unit>
+            <trans-unit id="Dtd2kY3">
+                <source>label.guided_step_config_redirect_new</source>
+                <target>Créer une redirection</target>
+            </trans-unit>
+            <trans-unit id="YJdvuNb">
+                <source>label.guided_step_config_redirect_open</source>
+                <target>Ouvrir les redirections</target>
+            </trans-unit>
+            <trans-unit id="7aT6Zcr">
+                <source>label.guided_step_config_redirect_permanent</source>
+                <target>Permanente ou temporaire</target>
+            </trans-unit>
+            <trans-unit id="R9QT4EP">
+                <source>label.guided_step_config_redirect_save</source>
+                <target>Enregistrer</target>
+            </trans-unit>
+            <trans-unit id="MgMlEYG">
+                <source>label.guided_step_config_redirect_to</source>
+                <target>Dire où elle mène</target>
             </trans-unit>
             <trans-unit id=".k4QzIY">
                 <source>label.guided_step_config_role_preview_banner</source>

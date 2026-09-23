@@ -58,14 +58,33 @@ class BlockRepositoryTest extends TestCase
         $this->assertSame([[1]], $asked);
     }
 
-    // Runs preloadSlots() against a repository whose queries are answered from $levels (keyed by block id), and returns the ids each query asked for
+    // The owner's run is read with its medias first, then its slots level by level, a render of the whole run querying nothing more
+    #[AllowMockObjectsWithoutExpectations]
+    public function testPreloadTreeReadsTheRunThenItsSlots(): void
+    {
+        $root = $this->block(1);
+        $slot = $this->block(2);
+        $root->addSlot($slot);
+
+        $asked = $this->preload([$root], [1 => [$root], 2 => [$slot]], 'preloadTree');
+
+        $this->assertSame([[1], [1], [2]], $asked);
+    }
+
+    #[AllowMockObjectsWithoutExpectations]
+    public function testPreloadTreeQueriesNothingForAnEmptyRun(): void
+    {
+        $this->assertSame([], $this->preload([], [], 'preloadTree'));
+    }
+
+    // Runs preloadSlots() (or preloadTree()) against a repository whose queries are answered from $levels (keyed by block id), and returns the ids each query asked for
     /**
      * @param list<Block>             $blocks
      * @param array<int, list<Block>> $levels
      *
      * @return list<list<int>>
      */
-    private function preload(array $blocks, array $levels): array
+    private function preload(array $blocks, array $levels, string $method = 'preloadSlots'): array
     {
         $asked = [];
 
@@ -96,7 +115,7 @@ class BlockRepositoryTest extends TestCase
             return $queryBuilder;
         });
 
-        $repository->preloadSlots($blocks);
+        $repository->{$method}($blocks);
 
         return $asked;
     }

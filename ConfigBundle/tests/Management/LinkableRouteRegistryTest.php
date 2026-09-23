@@ -10,9 +10,12 @@
 
 namespace c975L\ConfigBundle\Tests\Management;
 
+use c975L\ConfigBundle\Management\LinkableRouteCacheTagsInterface;
 use c975L\ConfigBundle\Management\LinkableRouteProviderInterface;
 use c975L\ConfigBundle\Management\LinkableRouteRegistry;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LinkableRouteRegistryTest extends TestCase
@@ -192,5 +195,46 @@ class LinkableRouteRegistryTest extends TestCase
         $registry->label('contact_index');
 
         $this->assertNotNull($registry->get('contact_index'));
+    }
+
+    // A provider listing its rows says which tags its bundle empties when one is saved: its entries are then read once for every request sharing the pool, and a menu item pointing at one of them can be cached under the same tags
+    public function testAProviderDeclaringItsTagsIsReadThroughTheCache(): void
+    {
+        $provider = new class implements LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface {
+            public int $reads = 0;
+
+            public function getLinkableRoutes(): array
+            {
+                ++$this->reads;
+
+                return ['gallery_category_7' => ['label' => 'Paysages', 'translation_domain' => false, 'route' => 'gallery_category', 'params' => ['slug' => 'paysages']]];
+            }
+
+            public function getLinkableRouteCacheTags(): array
+            {
+                return ['gallery_galleries'];
+            }
+        };
+
+        $cache = new TagAwareAdapter(new ArrayAdapter());
+        $translator = $this->createStub(TranslatorInterface::class);
+        $translator->method('getLocale')->willReturn('fr');
+
+        $registry = new LinkableRouteRegistry([$provider], $translator, $cache);
+        $this->assertSame(['gallery_galleries'], $registry->cacheTags('gallery_category_7'));
+        $this->assertTrue(new LinkableRouteRegistry([$provider], $translator, $cache)->has('gallery_category_7'));
+        $this->assertSame(1, $provider->reads);
+
+        $cache->invalidateTags(['gallery_galleries']);
+        new LinkableRouteRegistry([$provider], $translator, $cache)->has('gallery_category_7');
+        $this->assertSame(2, $provider->reads);
+    }
+
+    // One declaring none cannot say when its entries change: read live, and nothing to cache a menu item under
+    public function testAProviderDeclaringNoTagsHasNone(): void
+    {
+        $registry = new LinkableRouteRegistry([$this->createProvider(['contact' => ['label' => 'label.contact', 'translation_domain' => 'contact']])], $this->createTranslator(), new TagAwareAdapter(new ArrayAdapter()));
+
+        $this->assertNull($registry->cacheTags('contact'));
     }
 }

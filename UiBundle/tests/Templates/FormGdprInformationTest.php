@@ -44,7 +44,10 @@ class FormGdprInformationTest extends TestCase
     // Renders the form component against the "ui" catalogue's own wording, the config function answering what the admin typed
     private function render(?string $privacyUrl): string
     {
-        $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        // Namespaced as the bundle registers it, the template including its shared partials through it
+        $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
+        $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
+        $twig = new Environment($loader);
         $translator = new Translator('en');
         $translator->addLoader('array', new ArrayLoader());
         // The very shape the three "ui" catalogues carry: the anchor lives in the translation, the setting only fills its href

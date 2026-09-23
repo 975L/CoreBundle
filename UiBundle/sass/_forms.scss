@@ -102,15 +102,16 @@ input[type="submit"] {
     border: none;
 }
 
+// The checkbox's own row, the input a direct child: a bare descendant match also caught the div form_widget() wraps every row in whenever it sits one level deeper - which a calculator's fields column is - and laid the whole form out on one reversed line
 form div div:has(input[type="radio"]),
-form div div:has(input[type="checkbox"]) {
+form div div:has(> input[type="checkbox"]) {
     display: flex;
     flex-direction: row-reverse;
     justify-content: left;
 }
 
 form div div:has(input[type="radio"]) label,
-form div div:has(input[type="checkbox"]) label {
+form div div:has(> input[type="checkbox"]) label {
     font-weight: normal;
     margin-left: 2px;
 }

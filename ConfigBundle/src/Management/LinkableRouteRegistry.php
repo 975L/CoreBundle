@@ -10,6 +10,8 @@
 
 namespace c975L\ConfigBundle\Management;
 
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 // Merges the routes contributed by every LinkableRouteProviderInterface (see readme)
@@ -17,11 +19,25 @@ class LinkableRouteRegistry
 {
     private ?array $routes = null;
 
+    // The tags each entry is cached under, null for an entry whose provider declares none (see LinkableRouteCacheTagsInterface)
+    /** @var array<string, string[]|null> */
+    private array $cacheTags = [];
+
     // @param iterable<LinkableRouteProviderInterface> $providers
     public function __construct(
         private readonly iterable $providers,
         private readonly TranslatorInterface $translator,
+        private readonly ?TagAwareCacheInterface $cache = null,
     ) {
+    }
+
+    // The tags a menu item pointing at this entry can be cached under, null when its provider cannot say when it changes
+    /** @return string[]|null */
+    public function cacheTags(string $key): ?array
+    {
+        $this->routes();
+
+        return $this->cacheTags[$key] ?? null;
     }
 
     public function has(string $key): bool
@@ -66,12 +82,37 @@ class LinkableRouteRegistry
         // Merged by hand rather than through ProviderMerger: a key is what a menu item stores ("route:KEY") and has to survive the merge as it was written, where array_merge() renumbers the integer ones - an entry keyed on a row's id would come out pointing at a position (see LinkableRouteProviderInterface). "Last provider wins" is kept, the same as everywhere else
         $this->routes = [];
         foreach ($this->providers as $provider) {
-            foreach ($provider->getLinkableRoutes() as $key => $entry) {
+            $tags = $provider instanceof LinkableRouteCacheTagsInterface ? $provider->getLinkableRouteCacheTags() : null;
+
+            foreach ($this->entries($provider, $tags) as $key => $entry) {
+                $this->cacheTags[$key] = $tags;
                 // Filled in once here so every consumer reads the same shape, the common case being a key that is itself a route name with nothing to fill (see LinkableRouteProviderInterface). "locales" at null rather than at the site's own languages: it says the provider did not answer, which is not the same as answering "every one of them" - and only the provider knows whether its route has a localised twin at all
                 $this->routes[$key] = $entry + ['route' => $key, 'params' => [], 'translation_domain' => false, 'locales' => null];
             }
         }
 
         return $this->routes;
+    }
+
+    // A provider declaring its tags is read through the cache, in the language being read - its labels may be the rows' own translated names; the others live, as they always were
+    /**
+     * @param string[]|null $tags
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function entries(LinkableRouteProviderInterface $provider, ?array $tags): array
+    {
+        if (null === $tags || null === $this->cache) {
+            return $provider->getLinkableRoutes();
+        }
+
+        $key = 'linkable_routes_' . hash('xxh128', $provider::class . "\0" . $this->translator->getLocale());
+
+        return $this->cache->get($key, static function (ItemInterface $item) use ($provider, $tags): array {
+            $item->expiresAfter(null);
+            $item->tag($tags);
+
+            return $provider->getLinkableRoutes();
+        });
     }
 }

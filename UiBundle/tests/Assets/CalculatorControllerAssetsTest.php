@@ -26,6 +26,8 @@ class CalculatorControllerAssetsTest extends TestCase
         $this->assertStringContainsString("'ui-calculator': () => import('./js/calculator.js'),", $this->read(self::BARREL));
         $this->assertStringContainsString('data-controller="ui-calculator"', $this->read(self::COMPONENT));
         $this->assertStringContainsString('data-ui-calculator-url-value=', $this->read(self::COMPONENT));
+        // The page's own language, so the numbers keep the format they were rendered in (see CalculatorController::compute())
+        $this->assertStringContainsString("'_locale': app.request ? app.request.locale : null", $this->read(self::COMPONENT));
     }
 
     // The results are printed by the server before the controller ever connects, so a browser running no JS reads real numbers rather than empty slots
@@ -63,6 +65,33 @@ class CalculatorControllerAssetsTest extends TestCase
         $this->assertStringNotContainsString('new Function', $controller);
     }
 
+    // A calculator given an action also carries a name, an email and a message: only the controls a formula can read ride the GET, never those
+    public function testOnlyTheControlsAFormulaReadsAreSentToTheServer(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('static COMPUTED = \'input[type="number"][name], input[type="range"][name], select[name]\';', $controller);
+        $this->assertStringContainsString('this.element.querySelectorAll(this.constructor.COMPUTED)', $controller);
+        $this->assertStringContainsString('event.target.matches(this.constructor.COMPUTED)', $controller);
+        $this->assertStringNotContainsString('querySelectorAll("input[name], select[name]")', $controller);
+    }
+
+    // Given an action, the calculator is wrapped in a form element that must not become the grid's only item
+    public function testASubmittableCalculatorKeepsItsTwoColumns(): void
+    {
+        $this->assertStringContainsString("'class': 'ui-calculator-form'", $this->read(self::COMPONENT));
+        $this->assertMatchesRegularExpression('/\.ui-calculator-form \{\s*display: contents;/', $this->read(self::STYLESHEET));
+    }
+
+    // The "receive a copy" box sits in the fields column: a checkbox row matched as any descendant also caught the div wrapping every row, laying the whole calculator on one reversed line
+    public function testTheCheckboxRowRuleOnlyMatchesTheCheckboxOwnRow(): void
+    {
+        $forms = $this->read('sass/_forms.scss');
+
+        $this->assertStringContainsString('form div div:has(> input[type="checkbox"]) {', $forms);
+        $this->assertStringNotContainsString('form div div:has(input[type="checkbox"])', $forms);
+    }
+
     // No browser shows a range input's value, so a slider with no readout is a slider nobody can set
     public function testASliderIsGivenTheReadoutNoBrowserDraws(): void
     {
@@ -82,12 +111,12 @@ class CalculatorControllerAssetsTest extends TestCase
         $this->assertStringContainsString('aria-live="polite"', $this->read(self::COMPONENT));
     }
 
-    // Nothing is posted anywhere: a <form> around it would let Enter submit the page it sits on
-    public function testTheCalculatorIsNotAFormElement(): void
+    // A form element only around a calculator given an action - with none, Enter would submit the page it sits on (rendered in CalculatorOutputsFirstTest)
+    public function testTheCalculatorIsAFormElementOnlyWhenItHasAnAction(): void
     {
         $component = $this->read(self::COMPONENT);
 
-        $this->assertStringNotContainsString('form_start(', $component);
+        $this->assertStringContainsString('{% set submittable = uiForm.action is not null %}', $component);
         $this->assertStringNotContainsString('<form', $component);
     }
 

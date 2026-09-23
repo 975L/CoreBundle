@@ -13,10 +13,12 @@ namespace c975L\UiBundle\Tests\Service;
 use c975L\UiBundle\Entity\EmailTemplate;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
+use c975L\UiBundle\Entity\FormOutput;
 use c975L\UiBundle\Model\EmailSendRequest;
 use c975L\UiBundle\Repository\EmailTemplateRepository;
 use c975L\UiBundle\Service\EmailService;
 use c975L\UiBundle\Service\EmailTemplateRenderer;
+use c975L\UiBundle\Service\ExpressionEvaluator;
 use c975L\UiBundle\Service\SendEmailFormAction;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -28,6 +30,7 @@ class SendEmailFormActionTest extends TestCase
         EmailService $emailService,
         ?EmailTemplateRepository $emailTemplateRepository = null,
         ?EmailTemplateRenderer $emailTemplateRenderer = null,
+        ?ExpressionEvaluator $expressionEvaluator = null,
     ): SendEmailFormAction {
         $emailTemplateRepository ??= $this->createConfiguredStub(EmailTemplateRepository::class, ['findOneBy' => null]);
         $emailTemplateRenderer ??= $this->createStub(EmailTemplateRenderer::class);
@@ -40,7 +43,7 @@ class SendEmailFormActionTest extends TestCase
                 : $id
         );
 
-        return new SendEmailFormAction($emailService, $emailTemplateRepository, $emailTemplateRenderer, $translator);
+        return new SendEmailFormAction($emailService, $emailTemplateRepository, $emailTemplateRenderer, $translator, $expressionEvaluator);
     }
 
     private function buildForm(string $name, ?array $actionConfig, array $fields): Form
@@ -109,6 +112,54 @@ class SendEmailFormActionTest extends TestCase
             ['Phone' => '0600000000', 'Phone (2)' => '0700000000'],
             $captured->context['fields']
         );
+    }
+
+    // A formula reads "1.6", the visitor picked "A4" - the email says what they picked
+    public function testHandleWritesAChoiceByTheLabelOfItsOption(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = new Form()->setName('estimation');
+        $form->addField(new FormField()->setName('format')->setLabel('Format')->setType(FormField::TYPE_CHOICE)->setOptions([
+            ['label' => 'Roman', 'value' => '1'],
+            ['label' => 'A4', 'value' => '1.6'],
+        ]));
+
+        $this->createAction($emailService)->handle($form, ['format' => '1.6']);
+
+        $this->assertSame(['Format' => 'A4'], $captured->context['fields']);
+    }
+
+    // A calculator given this action sends its visible results as the page showed them, after the fields - never a hidden intermediate step
+    public function testHandleAppendsTheVisibleResultsOfACalculator(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = $this->buildForm('estimation', null, ['pages' => 'Pages']);
+        $form->addOutput(new FormOutput()->setLabel('Step')->setName('step')->setExpression('pages')->setVisible(false));
+        $form->addOutput(new FormOutput()->setLabel('Total')->setName('total')->setExpression('step * 2'));
+
+        $evaluator = $this->createStub(ExpressionEvaluator::class);
+        $evaluator->method('compute')->willReturn([
+            'step' => ['value' => 100.0, 'formatted' => '100'],
+            'total' => ['value' => 200.0, 'formatted' => '200 €'],
+        ]);
+
+        $this->createAction($emailService, expressionEvaluator: $evaluator)->handle($form, ['pages' => '100']);
+
+        $this->assertSame(['Pages' => '100', 'Total' => '200 €'], $captured->context['fields']);
     }
 
     public function testHandleUsesActionConfigOverrides(): void

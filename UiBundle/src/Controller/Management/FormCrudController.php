@@ -290,7 +290,7 @@ class FormCrudController extends AbstractCrudController
                     'data-form-field-template-picker-placeholder' => $this->translator->trans('label.form_field_template_picker_placeholder', [], 'ui'),
                 ])
                 ->hideOnIndex(),
-            // A Form owning at least one of these is a calculator (see Form::isCalculator()): it computes and displays instead of submitting, so it needs no action above. Declared after "fields", whose variables its expressions read
+            // A Form owning at least one of these is a calculator (see Form::isCalculator()): it computes and displays, and needs no action above - given one, it is also sent, its results travelling with the submission. Declared after "fields", whose variables its expressions read
             CollectionField::new('outputs')
                 ->setLabel(t('label.outputs', [], 'ui'))
                 ->setEntryType(FormOutputType::class)

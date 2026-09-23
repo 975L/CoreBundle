@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="zRr_CZb">
                 <source>description.guided_project_ui_calculator</source>
-                <target>Un formulario que calcula en vez de enviarse: deslizadores, fórmulas y una cifra destacada.</target>
+                <target>Un formulario que calcula: deslizadores, fórmulas, una cifra destacada y, si lo desea, enviado con sus resultados.</target>
             </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="1Kz8Cro">
                 <source>description.guided_step_ui_ai_search_setup_entry</source>
-                <target>Empiece por el proveedor: anthropic, openai o euria. La URI base y el modelo son los que él le indica.</target>
+                <target>Empiece por el proveedor: anthropic, openai o euria. La URI base y el modelo son los que él le indica. También puede dar un nombre al asistente, que aparece en la insignia de la búsqueda.</target>
             </trans-unit>
             <trans-unit id="eOVgofH">
                 <source>description.guided_step_ui_ai_search_setup_index</source>
@@ -145,6 +145,10 @@
             <trans-unit id="R8mhTUo">
                 <source>description.guided_step_ui_ai_search_setup_value</source>
                 <target>La clave API sigue siendo suya: cada pregunta se factura en su cuenta del proveedor, dentro de los límites del sitio.</target>
+            </trans-unit>
+            <trans-unit id="r_pzF_x">
+                <source>description.guided_step_ui_calculator_action</source>
+                <target>Deje la acción vacía para un simple cálculo; elija «enviar un email» para que el visitante pida un presupuesto con sus resultados.</target>
             </trans-unit>
             <trans-unit id="f.IANyC">
                 <source>description.guided_step_ui_calculator_fields</source>
@@ -164,7 +168,7 @@
             </trans-unit>
             <trans-unit id="Urf9i7v">
                 <source>description.guided_step_ui_calculator_open</source>
-                <target>Una calculadora es un formulario como los demás. Deje su acción vacía: no envía nada.</target>
+                <target>Una calculadora es un formulario como los demás.</target>
             </trans-unit>
             <trans-unit id="SvSDo2P">
                 <source>description.guided_step_ui_calculator_outputs</source>
@@ -2446,6 +2450,10 @@
                 <source>label.guided_step_ui_ai_search_setup_value</source>
                 <target>Introducir el valor</target>
             </trans-unit>
+            <trans-unit id="zqz.Tph">
+                <source>label.guided_step_ui_calculator_action</source>
+                <target>Elegir si se envía</target>
+            </trans-unit>
             <trans-unit id="xuMz59Y">
                 <source>label.guided_step_ui_calculator_fields</source>
                 <target>Añada lo que ajusta el visitante</target>
@@ -3336,7 +3344,7 @@
             </trans-unit>
             <trans-unit id="AordYSb">
                 <source>label.outputs_help</source>
-                <target>Añadir un resultado convierte este formulario en una calculadora: calcula y muestra en lugar de enviarse. Las variables disponibles aparecen aquí una vez guardados los campos.</target>
+                <target>Añadir un resultado convierte este formulario en una calculadora: calcula y muestra; sin acción no se envía, con una acción los resultados viajan con el envío. Las variables disponibles aparecen aquí una vez guardados los campos.</target>
             </trans-unit>
             <trans-unit id="_dwvS9b">
                 <source>label.outputs_help_variables</source>

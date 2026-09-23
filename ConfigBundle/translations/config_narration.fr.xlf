@@ -50,6 +50,22 @@
                 <source>narration.guided_step_config_maintenance_open</source>
                 <target>Le panneau vous ramène au tableau de bord. Ses raccourcis sont des actions immédiates, sans écran intermédiaire.</target>
             </trans-unit>
+            <trans-unit id="xxzY7RU">
+                <source>narration.guided_step_config_messenger_failed_delete</source>
+                <target>Un message qui ne vaut pas d'être renvoyé, un spam par exemple, se supprime avec le bouton rouge de sa ligne.</target>
+            </trans-unit>
+            <trans-unit id="RLUiSBP">
+                <source>narration.guided_step_config_messenger_failed_group</source>
+                <target>En haut, le tableau regroupe les messages par erreur : une même cause se supprime d'un coup.</target>
+            </trans-unit>
+            <trans-unit id="Eh0DVqJ">
+                <source>narration.guided_step_config_messenger_failed_open</source>
+                <target>Le panneau vous emmène sur l'écran où l'alerte du tableau de bord mène : chaque ligne dit à qui le message était destiné et pourquoi il a échoué.</target>
+            </trans-unit>
+            <trans-unit id="wuNz6dq">
+                <source>narration.guided_step_config_messenger_failed_retry</source>
+                <target>Une fois la cause corrigée, cliquez sur Réessayer : le message repart tout de suite, et s'il échoue encore, la nouvelle erreur s'affiche.</target>
+            </trans-unit>
             <trans-unit id="59LPu8b">
                 <source>narration.guided_step_config_not_found_create</source>
                 <target>Sur cette ligne, cliquez sur le bouton qui crée la redirection : il ouvre un formulaire avec le chemin mort déjà rempli.</target>
@@ -77,6 +93,34 @@
             <trans-unit id="7l4ApyP">
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>Dans le champ suivant, dites où ce chemin doit mener désormais. C'est la seule décision qui vous reste.</target>
+            </trans-unit>
+            <trans-unit id="doJKRHJ">
+                <source>narration.guided_step_config_redirect_done</source>
+                <target>L'ancienne adresse répond de nouveau. Une adresse exacte l'emporte toujours sur un dossier, et parmi les dossiers le plus précis l'emporte.</target>
+            </trans-unit>
+            <trans-unit id="LuYhYI2">
+                <source>narration.guided_step_config_redirect_from</source>
+                <target>Dans le premier champ, tapez l'ancienne adresse avec sa barre oblique initiale. Terminée par une étoile, elle couvre tout le dossier qui est dessous.</target>
+            </trans-unit>
+            <trans-unit id="NN2JyrW">
+                <source>narration.guided_step_config_redirect_new</source>
+                <target>Cliquez sur le bouton de création, en haut à droite.</target>
+            </trans-unit>
+            <trans-unit id="9OWiVAx">
+                <source>narration.guided_step_config_redirect_open</source>
+                <target>Le panneau vous emmène sur l'écran des redirections : chaque ligne envoie une ancienne adresse vers une nouvelle.</target>
+            </trans-unit>
+            <trans-unit id="LdfmbOv">
+                <source>narration.guided_step_config_redirect_permanent</source>
+                <target>Laissez la case cochée si le changement est définitif : les moteurs de recherche retiendront la nouvelle adresse.</target>
+            </trans-unit>
+            <trans-unit id="nzaYhHl">
+                <source>narration.guided_step_config_redirect_save</source>
+                <target>Enregistrez avec le bouton en bas du formulaire.</target>
+            </trans-unit>
+            <trans-unit id="PNSFsTA">
+                <source>narration.guided_step_config_redirect_to</source>
+                <target>Dans le champ suivant, dites où elle mène désormais : la page qui la remplace, sur ce site ou ailleurs.</target>
             </trans-unit>
             <trans-unit id="nuohv_S">
                 <source>narration.guided_step_config_role_preview_banner</source>

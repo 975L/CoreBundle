@@ -27,7 +27,14 @@ class CalculatorController extends AbstractController
     ) {
     }
 
-    #[Route('/form/{name}/compute', name: 'ui_form_compute', methods: ['GET'])]
+    // The page's own language rides the url (see Calculator.html.twig): this is a main request of its own, which LocaleListener would otherwise answer in the language kept in session or asked by the browser - a French page read with an English browser turned "1 620 €" into "1,620 €" at the first keystroke. A route attribute, which that listener leaves alone, rather than "?_locale=", which it would write to the session as the visitor's choice. The writing language beside the others the site declares, and optional so a template overriding this one without passing it keeps working, as before
+    #[Route(
+        '/form/{name}/compute/{_locale}',
+        name: 'ui_form_compute',
+        requirements: ['_locale' => '%kernel.default_locale%|%c975l_config.locales_pattern%'],
+        defaults: ['_locale' => null],
+        methods: ['GET'],
+    )]
     public function compute(string $name, Request $request): JsonResponse
     {
         $uiForm = $this->formRepository->findOneBy(['name' => $name]);

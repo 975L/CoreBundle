@@ -21,6 +21,9 @@ class MediaExtension
     // Shared with BlockCacheInvalidationListener, which invalidates this same tag on a singleton-role Media save/removal
     public const MEDIA_SINGLETONS_CACHE_TAG = 'media_singletons';
 
+    // Same for the repeatable roles site_random_media() draws from, invalidated on any save/removal of one of their rows
+    public const MEDIA_ROLES_CACHE_TAG = 'media_roles';
+
     // Per-role memoization: a base layout typically calls site_media() for the same role (logo, favicon...) from several places (header, footer, meta tags) - keeps that to one query per role per request instead of one per call. Not applied to getRandomSiteMedia(): "random" means a fresh pick is the whole point, memoizing it would defeat that
     private array $requestCache = [];
     private bool $singletonRolesPreloaded = false;
@@ -68,9 +71,17 @@ class MediaExtension
         }
     }
 
+    // Only the ids of the role are cached, the draw is made in PHP on every call so each render still gets a fresh pick - then one lookup by primary key, the entity coming back live rather than unserialized with a Block it may be attached to
     #[AsTwigFunction('site_random_media')]
     public function getRandomSiteMedia(string $role): ?Media
     {
-        return $this->mediaRepository->findRandomByRole($role);
+        $ids = $this->cache->get('media_role_ids_' . $role, function (ItemInterface $item) use ($role): array {
+            $item->expiresAfter(null);
+            $item->tag([self::MEDIA_ROLES_CACHE_TAG]);
+
+            return $this->mediaRepository->findIdsByRole($role);
+        });
+
+        return [] === $ids ? null : $this->mediaRepository->find($ids[array_rand($ids)]);
     }
 }

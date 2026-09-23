@@ -94,6 +94,10 @@
                 <source>narration.guided_step_ui_ai_search_setup_value</source>
                 <target>Escriba su valor en este campo. La clave API sigue siendo suya: cada pregunta se factura en su cuenta del proveedor.</target>
             </trans-unit>
+            <trans-unit id="9klQ1Xs">
+                <source>narration.guided_step_ui_calculator_action</source>
+                <target>Elija después si se envía: deje la acción vacía para un simple cálculo, o elija «enviar un email» para que el visitante pida un presupuesto con sus resultados.</target>
+            </trans-unit>
             <trans-unit id="OP28253">
                 <source>narration.guided_step_ui_calculator_fields</source>
                 <target>Añada lo que el visitante ajusta: un deslizador para un ajuste, un número para un precio. Rellene el mínimo, el máximo, el paso y el valor por defecto, para que el resultado aparezca antes de tocar nada.</target>
@@ -116,7 +120,7 @@
             </trans-unit>
             <trans-unit id="9Ln0WdI">
                 <source>narration.guided_step_ui_calculator_open</source>
-                <target>Una calculadora es un formulario como los demás. El panel le lleva a la pantalla de los formularios; deje su acción vacía, no envía nada.</target>
+                <target>Una calculadora es un formulario como los demás. El panel le lleva a la pantalla de los formularios.</target>
             </trans-unit>
             <trans-unit id="sHJo_BJ">
                 <source>narration.guided_step_ui_calculator_outputs</source>

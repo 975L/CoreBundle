@@ -35,6 +35,7 @@ export default [
                 HTMLInputElement: "readonly",
                 Image: "readonly",
                 IntersectionObserver: "readonly",
+                KeyboardEvent: "readonly",
                 localStorage: "readonly",
                 MutationObserver: "readonly",
                 navigator: "readonly",

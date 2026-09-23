@@ -94,6 +94,10 @@
                 <source>narration.guided_step_ui_ai_search_setup_value</source>
                 <target>Type its value into this field. The API key stays yours: each question is billed to your account with the provider.</target>
             </trans-unit>
+            <trans-unit id="9klQ1Xs">
+                <source>narration.guided_step_ui_calculator_action</source>
+                <target>Then choose whether it is sent: leave the action empty for a plain calculation, or pick send email for the visitor to ask for a quote with their results.</target>
+            </trans-unit>
             <trans-unit id="OP28253">
                 <source>narration.guided_step_ui_calculator_fields</source>
                 <target>Add what the visitor sets: a range for a setting, a number for a price. Fill in the minimum, the maximum, the step and the default value, so the result shows before anything is touched.</target>
@@ -116,7 +120,7 @@
             </trans-unit>
             <trans-unit id="9Ln0WdI">
                 <source>narration.guided_step_ui_calculator_open</source>
-                <target>A calculator is an ordinary form. The panel takes you to the forms screen; leave its action empty, it sends nothing.</target>
+                <target>A calculator is an ordinary form. The panel takes you to the forms screen.</target>
             </trans-unit>
             <trans-unit id="sHJo_BJ">
                 <source>narration.guided_step_ui_calculator_outputs</source>

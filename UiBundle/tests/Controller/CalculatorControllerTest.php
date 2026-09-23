@@ -21,6 +21,7 @@ use c975L\UiBundle\Service\FormTranslator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CalculatorControllerTest extends TestCase
@@ -51,6 +52,16 @@ class CalculatorControllerTest extends TestCase
         $translator->method('getLocale')->willReturn('fr');
 
         return new CalculatorController($repository, new ExpressionEvaluator(new CalculatorExpressionLanguage(), $translator, new FormTranslator()));
+    }
+
+    // A main request of its own: without the page's language in its url, LocaleListener answered it in the session's or the browser's, and a French page read with an English browser printed "1,620 €" at the first keystroke
+    public function testTheRouteCarriesThePageLanguageAsAnOptionalAttribute(): void
+    {
+        $route = new \ReflectionMethod(CalculatorController::class, 'compute')->getAttributes(Route::class)[0]->newInstance();
+
+        $this->assertSame('/form/{name}/compute/{_locale}', $route->path);
+        $this->assertSame(['_locale' => null], $route->defaults);
+        $this->assertSame('%kernel.default_locale%|%c975l_config.locales_pattern%', $route->requirements['_locale']);
     }
 
     public function testComputeAnswersEveryOutputAsJson(): void

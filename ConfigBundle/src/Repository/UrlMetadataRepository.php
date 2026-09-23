@@ -29,7 +29,7 @@ class UrlMetadataRepository extends ServiceEntityRepository
         return $this->findOneBy(['path' => $path]);
     }
 
-    // Every row at once, keyed by the path it describes - what UrlMetadataResolver loads on the first lookup of a request. These rows are counted in dozens (one per listing, per filtered listing, per tool page), never in thousands: an url with an entity behind it is described by that entity and has no row here
+    // Every row at once, keyed by the path it describes - what UrlMetadataSynchronizer compares the declared urls against. These rows are counted in dozens (one per listing, per filtered listing, per tool page), never in thousands: an url with an entity behind it is described by that entity and has no row here
     /**
      * @return array<string, UrlMetadata>
      */
@@ -38,6 +38,20 @@ class UrlMetadataRepository extends ServiceEntityRepository
         $indexed = [];
         foreach ($this->findBy([], ['path' => 'ASC']) as $urlMetadata) {
             $indexed[(string) $urlMetadata->getPath()] = $urlMetadata;
+        }
+
+        return $indexed;
+    }
+
+    // The ids alone, keyed by path - what UrlMetadataResolver keeps in the cache pool: scalars survive being serialized, an entity with a lazy ogImage would come back as a detached ghost
+    /**
+     * @return array<string, int>
+     */
+    public function findIdsIndexedByPath(): array
+    {
+        $indexed = [];
+        foreach ($this->createQueryBuilder('u')->select('u.id', 'u.path')->getQuery()->getArrayResult() as $row) {
+            $indexed[(string) $row['path']] = (int) $row['id'];
         }
 
         return $indexed;

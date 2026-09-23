@@ -14,6 +14,8 @@ use c975L\ConfigBundle\Entity\Redirect;
 use c975L\ConfigBundle\EventSubscriber\RedirectSubscriber;
 use c975L\ConfigBundle\Repository\RedirectRepository;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -31,27 +33,13 @@ class RedirectSubscriberTest extends TestCase
         return new RequestEvent($kernel, Request::create($path), $requestType);
     }
 
-    // The repository hands back every candidate for the path in one query (the exact row plus every prefix one) and the subscriber decides which of them applies
-    private function createSubscriber(Redirect ...$candidates): RedirectSubscriber
+    // The repository hands back every row, through the cache, and the subscriber decides which of them applies
+    private function createSubscriber(Redirect ...$rows): RedirectSubscriber
     {
         $repository = $this->createStub(RedirectRepository::class);
-        $repository->method('findCandidatesForPath')->willReturn($candidates);
+        $repository->method('findAll')->willReturn($rows);
 
-        return new RedirectSubscriber($repository);
-    }
-
-    // The repository hands back the exact row for the very path it is given, plus every prefix one - reproduced here rather than stubbed flat, a stub answering the same rows whatever the path being what makes a trailing-slash test pass on the prefix branch instead of the fallback it means to cover
-    private function createPathAwareSubscriber(Redirect ...$rows): RedirectSubscriber
-    {
-        $repository = $this->createStub(RedirectRepository::class);
-        $repository->method('findCandidatesForPath')->willReturnCallback(
-            static fn (string $path): array => array_values(array_filter(
-                $rows,
-                static fn (Redirect $row): bool => $row->getFromPath() === $path || str_ends_with((string) $row->getFromPath(), '*'),
-            )),
-        );
-
-        return new RedirectSubscriber($repository);
+        return new RedirectSubscriber($repository, new TagAwareAdapter(new ArrayAdapter()));
     }
 
     // Runs before RouterListener (priority 33 > 32) so a redirect can short-circuit routing entirely
@@ -83,6 +71,17 @@ class RedirectSubscriberTest extends TestCase
         $subscriber->onKernelRequest($event);
 
         $this->assertSame(302, $event->getResponse()->getStatusCode());
+    }
+
+    // An exact row ignores case, as the SQL lookup under MariaDB's default collation it replaced did
+    public function testOnKernelRequestMatchesAnExactPathWhateverItsCase(): void
+    {
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/Ancienne-Page')->setToUrl('/new')->setPermanent(true));
+        $event = $this->createEvent('/ancienne-page');
+
+        $subscriber->onKernelRequest($event);
+
+        $this->assertSame('/new', $event->getResponse()->getTargetUrl());
     }
 
     // No matching redirect: no response is set, request proceeds normally
@@ -235,8 +234,8 @@ class RedirectSubscriberTest extends TestCase
     public function testOnKernelRequestSkipsHomepage(): void
     {
         $repository = $this->createMock(RedirectRepository::class);
-        $repository->expects($this->never())->method('findCandidatesForPath');
-        $subscriber = new RedirectSubscriber($repository);
+        $repository->expects($this->never())->method('findAll');
+        $subscriber = new RedirectSubscriber($repository, new TagAwareAdapter(new ArrayAdapter()));
         $event = $this->createEvent('/');
 
         $subscriber->onKernelRequest($event);
@@ -248,8 +247,8 @@ class RedirectSubscriberTest extends TestCase
     public function testOnKernelRequestIgnoresSubRequests(): void
     {
         $repository = $this->createMock(RedirectRepository::class);
-        $repository->expects($this->never())->method('findCandidatesForPath');
-        $subscriber = new RedirectSubscriber($repository);
+        $repository->expects($this->never())->method('findAll');
+        $subscriber = new RedirectSubscriber($repository, new TagAwareAdapter(new ArrayAdapter()));
         $event = $this->createEvent('/old', isMainRequest: false);
 
         $subscriber->onKernelRequest($event);
@@ -261,8 +260,8 @@ class RedirectSubscriberTest extends TestCase
     public function testOnKernelRequestSkipsAssetMapperOutput(): void
     {
         $repository = $this->createMock(RedirectRepository::class);
-        $repository->expects($this->never())->method('findCandidatesForPath');
-        $subscriber = new RedirectSubscriber($repository);
+        $repository->expects($this->never())->method('findAll');
+        $subscriber = new RedirectSubscriber($repository, new TagAwareAdapter(new ArrayAdapter()));
 
         $subscriber->onKernelRequest($this->createEvent('/assets/styles-a1b2c3.css'));
         $subscriber->onKernelRequest($this->createEvent('/bundles/c975lui/js/app.js'));
@@ -284,7 +283,7 @@ class RedirectSubscriberTest extends TestCase
     // "/contact/" and "/contact" are the same url to whoever published the link, so the row written without the slash answers both rather than being duplicated for each variant
     public function testOnKernelRequestFallsBackToThePathWithoutItsTrailingSlash(): void
     {
-        $subscriber = $this->createPathAwareSubscriber(new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true));
         $event = $this->createEvent('/contact/');
 
         $subscriber->onKernelRequest($event);
@@ -295,7 +294,7 @@ class RedirectSubscriberTest extends TestCase
     // The fallback never overrides a row that states its own trailing slash: written that way, it is the answer for that url
     public function testOnKernelRequestPrefersARowWrittenWithItsTrailingSlash(): void
     {
-        $subscriber = $this->createPathAwareSubscriber(
+        $subscriber = $this->createSubscriber(
             new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true),
             new Redirect()->setFromPath('/contact/')->setToUrl('/pages/contact-slash')->setPermanent(true),
         );
@@ -306,13 +305,36 @@ class RedirectSubscriberTest extends TestCase
         $this->assertSame('/pages/contact-slash', $event->getResponse()->getTargetUrl());
     }
 
-    // A path that matches nothing either way stays a 404, the fallback costing it one more query and no answer
+    // A path that matches nothing either way stays a 404, the fallback finding nothing more among the cached rows
     public function testOnKernelRequestLeavesATrailingSlashPathAloneWhenNothingMatches(): void
     {
-        $subscriber = $this->createPathAwareSubscriber(new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true));
+        $subscriber = $this->createSubscriber(new Redirect()->setFromPath('/contact')->setToUrl('/pages/contact')->setPermanent(true));
         $event = $this->createEvent('/unknown/');
 
         $subscriber->onKernelRequest($event);
+
+        $this->assertNull($event->getResponse());
+    }
+
+    // Read once for every request sharing the pool, until a redirect written empties the tag
+    public function testTheRowsAreReadOnceUntilTheTagIsEmptied(): void
+    {
+        $repository = $this->createMock(RedirectRepository::class);
+        $repository->expects($this->exactly(2))->method('findAll')->willReturn([]);
+
+        $cache = new TagAwareAdapter(new ArrayAdapter());
+        new RedirectSubscriber($repository, $cache)->onKernelRequest($this->createEvent('/a'));
+        new RedirectSubscriber($repository, $cache)->onKernelRequest($this->createEvent('/b'));
+
+        $cache->invalidateTags([RedirectSubscriber::CACHE_TAG]);
+        new RedirectSubscriber($repository, $cache)->onKernelRequest($this->createEvent('/c'));
+    }
+
+    // A row not ending on "*" names one url alone, and never covers what sits below it
+    public function testAnExactRowDoesNotCoverTheUrlsBelowIt(): void
+    {
+        $event = $this->createEvent('/old/child');
+        $this->createSubscriber(new Redirect()->setFromPath('/old')->setToUrl('/new'))->onKernelRequest($event);
 
         $this->assertNull($event->getResponse());
     }

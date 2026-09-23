@@ -717,10 +717,21 @@ button.btn {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: start;
   }
-  .ui-calculator > p {
+  .ui-calculator > p,
+  .ui-calculator-form > p,
+  .ui-calculator-submit {
     grid-column: 1/-1;
   }
 }
+.ui-calculator-form {
+  display: contents;
+}
+
+.ui-calculator-submit {
+  display: grid;
+  gap: 1em;
+}
+
 .ui-calculator-outputs-first .ui-calculator-results {
   order: -1;
 }
@@ -1699,14 +1710,14 @@ input[type=submit] {
 }
 
 form div div:has(input[type=radio]),
-form div div:has(input[type=checkbox]) {
+form div div:has(> input[type=checkbox]) {
   display: flex;
   flex-direction: row-reverse;
   justify-content: left;
 }
 
 form div div:has(input[type=radio]) label,
-form div div:has(input[type=checkbox]) label {
+form div div:has(> input[type=checkbox]) label {
   font-weight: normal;
   margin-left: 2px;
 }

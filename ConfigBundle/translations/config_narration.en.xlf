@@ -50,6 +50,22 @@
                 <source>narration.guided_step_config_maintenance_open</source>
                 <target>The panel brings you back to the dashboard. Its shortcuts are immediate actions, with no screen in between.</target>
             </trans-unit>
+            <trans-unit id="xxzY7RU">
+                <source>narration.guided_step_config_messenger_failed_delete</source>
+                <target>A message not worth sending again, a spam for instance, is deleted with the red button of its row.</target>
+            </trans-unit>
+            <trans-unit id="RLUiSBP">
+                <source>narration.guided_step_config_messenger_failed_group</source>
+                <target>At the top, the table groups the messages by error: one cause is deleted at once.</target>
+            </trans-unit>
+            <trans-unit id="Eh0DVqJ">
+                <source>narration.guided_step_config_messenger_failed_open</source>
+                <target>The panel takes you to the screen the dashboard alert leads to: each row says who the message was for and why it failed.</target>
+            </trans-unit>
+            <trans-unit id="wuNz6dq">
+                <source>narration.guided_step_config_messenger_failed_retry</source>
+                <target>Once the cause is fixed, click Retry: the message goes out right away, and if it fails again, the new error is shown.</target>
+            </trans-unit>
             <trans-unit id="59LPu8b">
                 <source>narration.guided_step_config_not_found_create</source>
                 <target>On that row, click the button creating the redirect: it opens a form with the dead path already filled in.</target>
@@ -77,6 +93,34 @@
             <trans-unit id="7l4ApyP">
                 <source>narration.guided_step_config_not_found_to</source>
                 <target>In the next field, say where that path should lead from now on. This is the only decision left to you.</target>
+            </trans-unit>
+            <trans-unit id="doJKRHJ">
+                <source>narration.guided_step_config_redirect_done</source>
+                <target>The old address answers again. An exact address always wins over a folder, and among folders the most precise one wins.</target>
+            </trans-unit>
+            <trans-unit id="LuYhYI2">
+                <source>narration.guided_step_config_redirect_from</source>
+                <target>In the first field, type the old address with its leading slash. Ending on a star, it covers the whole folder below it.</target>
+            </trans-unit>
+            <trans-unit id="NN2JyrW">
+                <source>narration.guided_step_config_redirect_new</source>
+                <target>Click the create button, at the top right.</target>
+            </trans-unit>
+            <trans-unit id="9OWiVAx">
+                <source>narration.guided_step_config_redirect_open</source>
+                <target>The panel takes you to the redirects screen: each row sends an old address to a new one.</target>
+            </trans-unit>
+            <trans-unit id="LdfmbOv">
+                <source>narration.guided_step_config_redirect_permanent</source>
+                <target>Leave the box ticked if the change is final: search engines will keep the new address.</target>
+            </trans-unit>
+            <trans-unit id="nzaYhHl">
+                <source>narration.guided_step_config_redirect_save</source>
+                <target>Save with the button at the bottom of the form.</target>
+            </trans-unit>
+            <trans-unit id="PNSFsTA">
+                <source>narration.guided_step_config_redirect_to</source>
+                <target>In the next field, say where it leads from now on: the page replacing it, on this site or elsewhere.</target>
             </trans-unit>
             <trans-unit id="nuohv_S">
                 <source>narration.guided_step_config_role_preview_banner</source>

@@ -1,6 +1,6 @@
 ---
 name: c975l-forms-emails
-description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: FormTranslator, ui_form_label, translation_locale, FormTranslationBuilder, SeededTranslationWriteListener, translate a form, EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, label.form_registered, label.form_submitted, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, no_limit, ui_rating, ui_favorite, ui_review, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, TYPE_HTML, html block, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
+description: "Use this skill when building a form or sending an email in a Symfony application built on the c975L ecosystem — the admin-editable Form and FormField entities, the form block, form actions, the shared anti-spam layers and reCAPTCHA, the EmailTemplate builder, EmailService and the email layout registry. Covers why a contact form needs no controller and why a bundle never writes an email layout. Triggers on: FormTranslator, ui_form_label, translation_locale, FormTranslationBuilder, SeededTranslationWriteListener, translate a form, EmailAttachment, EmailAttachmentProviderInterface, EmailAttachmentRegistry, attachmentsFor, LegalDocumentAttachmentProvider, attachments, attaching a PDF, durable medium, Form entity, FormField, FormFieldTemplate, FormOutput, calculator, calculateur, ExpressionEvaluator, CalculatorExpressionLanguage, CalculatorController, ui_form_compute, isComputeOnly, submittable calculator, quote simulator, ui-calculator-form, ui-calculator-submit, _submit.html.twig, _flashes.html.twig, COMPUTED, ValidExpressions, FormOutputType, ui-calculator, TYPE_RANGE, TYPE_CHOICE, outputsFirst, outputs_first, formulaVariables, formula-variables, FormExportProvider, FormImportProvider, site_form, exportSelection, FormController, form block, label.form_registered, label.form_submitted, FormActionInterface, FormActionRegistry, SendEmailFormAction, FormSeeder, form_url, FormPageUrlProviderInterface, FormBotProtection, honeypot, no_limit, ui_rating, ui_favorite, ui_review, CaptchaType, recaptcha3-site-key, site-form-delay, url-privacy-policy, text.gdpr_information, EmailTemplateProviderInterface, EmailTemplateProviderRegistry, EmailTemplateProviderPass, EmailTemplateFactory, EmailTemplateHealthCheckProvider, EmailTemplateRepository, findForRendering, renderNamed, c975l:ui:email-templates:ensure, EmailTemplateEnsureCommand, seededBlocks, locale, TYPE_SLOT, TYPE_HTML, html block, slot, DATA_TYPES, isDataBlock, data block, backfill, FormEditUrl, EmailTemplate, EmailBlock, EmailService, EmailSendRequest, wrapLayout, EmailLayoutProviderInterface, email_template_body, email-debug, EmailDebugShortcutController, consumeDebugPreviews, EmailDebugExtension, ui_email_debug_previews, Email:DebugPreview, absolute_urls, AbsoluteUrlsExtension."
 ---
 
 # c975L UiBundle — forms and emails
@@ -59,8 +59,12 @@ linking to a form never has to know which bundles are installed.
 ### A form that computes instead of being sent
 
 A `Form` owning at least one `Entity\FormOutput` (`site_form_output`) is a **calculator**:
-`Form::isCalculator()` is what every path branches on, and it has **no action** — it computes and
-displays, it never submits. The `form` block embeds it like any other form.
+`Form::isCalculator()` is what every path branches on. Left **without an action** it computes and
+displays and never submits; **given one** (`send_email`, any `FormActionInterface`) it is also sent — a
+quote simulator, the visitor reading the estimate then asking for the quote without typing anything
+twice. `FormController::isComputeOnly()` (`isCalculator()` and no action) is the one discriminant: the
+outputs decide that it computes, the action decides that it is sent. The `form` block embeds it like
+any other form.
 
 - An output is a **formula an admin types** (`km_an / 100 * conso * prix_e85`) plus its format, unit
   and decimals. The unit is trimmed and set off from the figure by a **non-breaking space**, as the
@@ -83,11 +87,28 @@ displays, it never submits. The `form` block embeds it like any other form.
 - `Form::$outputsFirst` (`site_form.outputs_first`) is the admin's call on which column is read first
   — the results or the controls that move them. The template carries it as a class, the stylesheet
   reorders the same DOM, so nothing focusable is reached out of the order it is read in.
-- `Controller\CalculatorController` (`ui_form_compute`) answers a recomputation as JSON: a read, so
-  no CSRF, no session, and **outside** `limiter.ui_form` — a dragged slider would exhaust it.
+- `Controller\CalculatorController` (`ui_form_compute`, `/form/{name}/compute/{_locale}`) answers a
+  recomputation as JSON: a read, so no CSRF, no session, and **outside** `limiter.ui_form` — a dragged
+  slider would exhaust it. The page's language rides the url as a route attribute, which
+  `LocaleListener` leaves alone: the recomputation is a main request of its own, and would otherwise
+  print `1,620 €` on a French page read with an English browser. Never pass it as `?_locale=`, which
+  that listener keeps in session as the visitor's choice.
 - The results are rendered **server-side** before any script runs; `assets/js/calculator.js` only
-  keeps them in step, debounced.
-- A calculator gets **none** of the protections below: nothing is submitted.
+  keeps them in step, debounced, sending the number, range and select controls alone (`COMPUTED`) — a
+  name, an email or a message never rides the query string of that GET.
+- A compute-only calculator gets **none** of the protections below: nothing is submitted, and no CSRF
+  token or bot timer starts a session on a cached page. A calculator given an action gets **all** of
+  them, exactly as any form.
+- A submittable calculator is still drawn by `Calculator.html.twig`, wrapped in a
+  `<form class="ui-calculator-form">` set to `display: contents` so the two columns stay the grid's
+  items, its button under both (`.ui-calculator-submit`). The button and its notes are the
+  `templates/components/Form/_submit.html.twig` partial, the flashes
+  `templates/components/Form/_flashes.html.twig`, both included by `Form.html.twig` too — override
+  them once for both. A failed validation re-renders the results of what the visitor typed.
+- `SendEmailFormAction` writes a `choice` by its option's **label** (for every form), and appends each
+  visible output of a calculator, formatted as the page showed it, after the fields — through an
+  optional `ExpressionEvaluator` constructor argument, so a subclass wiring it by hand still works and
+  simply sends no results.
 - A calculator **travels**: `Management\FormExportProvider`/`FormImportProvider` (kind `site_form`)
   plug Forms into the **Export sync (everything)** shortcut and the **Import content** screen, and the
   Form index carries an "Export selection" batch action. A `Form`, its fields and its outputs are all
@@ -315,6 +336,9 @@ class InvoiceAttachmentProvider implements EmailAttachmentProviderInterface
 - **Do not write a controller for a form.** It is a `Form` row and a `FormActionInterface`.
 - **Do not create a fields table for your bundle's form.** Use `Form` / `FormField`.
 - **Do not add your own honeypot, delay, captcha or rate limiter** — they are already on every form.
+- **Do not build a second form to send a calculator's estimate** — give the calculator an action.
+- **Do not test `isCalculator()` alone to decide whether a form is sent** — a calculator with an action
+  is; the branch is `isComputeOnly()`.
 - **Do not overwrite an admin's edit when seeding.** `FormSeeder` only ever fills what is unset.
 - **Do not translate a field's `name`** — an expression and the HTML input read it, and both break the day a language changes one.
 - **Do not write an email layout in a satellite bundle**, and do not `extends` a layout from an email

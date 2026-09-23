@@ -1,6 +1,6 @@
 ---
 name: c975l-operations
-description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, issuesTruncated, checker errors, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, BATCH_SIZE, HealthCheckErrorRow, STATUS_WARNING, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, c975l:skills:install, SkillsInstaller, agent skills, SKILL.md, .claude/skills, easyadmin:ai:install, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, UrlMetadata, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter, site-rate-limit, RateLimitListener, c975l_front_request, HealthCheck::USER_AGENT, isProbe, 429, Too Many Requests, no_limit, SYMFONY_TRUSTED_PROXIES, trusted_proxies, getClientIp, rate limiting."
+description: "Use this skill when running, monitoring or backing up a Symfony application built on the c975L ecosystem — sitemaps and the SEO files, redirects, url metadata, the health-check dashboard, the backup and its offsite copy, the status report, scheduled maintenance tasks, the dev profile and the deprecations report. Covers which command writes what, which database it must run against, and what belongs in a static file rather than a route. Triggers on: NotFound, site_not_found, NotFoundSubscriber, NotFoundCrudController, NotFoundAlertProvider, NotFoundRepository, NotFoundCleanupCommand, c975l:config:not-found-cleanup, site-not-found-retention-days, broken link, dead link, referer, config-not-found, c975l:sitemaps:create, c975l:seo:files:create, c975l:url-metadata:sync, c975l:health-check:run, HealthCheckResult, acknowledgedAt, setAcknowledgedAt, health_check_acknowledge, STATUS_SKIPPED, c975l:config:backup, c975l:config:backup:offsite, c975l:config:backup:digest, c975l:status:dump, StatusReportBuilder, dependencies, issuesTruncated, checker errors, AccessibilityHealthCheckProvider, AccessibilityClient, HtmlDocument, accessibility, RGAA, RGAA_VERSION, MAX_URLS_PER_SOURCE, BATCH_SIZE, HealthCheckErrorRow, STATUS_WARNING, c975l:dev-profile:run, c975l:deprecations:check, CheckDeprecationsCommand, c975l:skills:install, SkillsInstaller, agent skills, SKILL.md, .claude/skills, easyadmin:ai:install, PACKAGE_PATTERN, deprecation log, c975l:config:sessions-cleanup, Redirect entity, STATIC_PATH_PATTERN, RedirectSubscriber, CACHE_TAG, config_redirects, CacheTagListener, case-insensitive redirect, config-redirect, config-messenger-failed, UrlMetadata, UrlMetadataResolver, findIdsIndexedByPath, url_metadata tag, robots.txt, humans.txt, llms.txt, site-status-key, BackupPathProviderInterface, MaintenanceTaskProviderInterface, ExternalLinkCheckSchedule, externalLinksCheckedAt, FILTERED_STATUSES, LINK_FILTERED, HealthCheckReportBuilder, health_check_report, findLatestPerUrlAndKindIn, OffsiteState, FileCounter, MAX_DELETE_PERCENT, --max-delete, trailing slash, alternates, hreflang, xhtml:link, SitemapWriter, site-rate-limit, RateLimitListener, c975l_front_request, HealthCheck::USER_AGENT, isProbe, 429, Too Many Requests, no_limit, SYMFONY_TRUSTED_PROXIES, trusted_proxies, getClientIp, rate limiting."
 ---
 
 # c975L ConfigBundle — operating a site
@@ -10,7 +10,7 @@ description: "Use this skill when running, monitoring or backing up a Symfony ap
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\ConfigBundle\`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Command/`, `src/Entity/Redirect.php`, `src/Entity/NotFound.php`, `src/Entity/UrlMetadata.php`, `src/Repository/NotFoundRepository.php`, `src/Management/NotFoundAlertProvider.php`, `src/EventSubscriber/`, `src/Management/`, `src/Scheduler/`, `src/Service/`, `templates/management/`
+`src/Command/`, `src/Entity/Redirect.php`, `src/EventSubscriber/RedirectSubscriber.php`, `src/Listener/CacheTagListener.php`, `src/Service/UrlMetadataResolver.php`, `src/Entity/NotFound.php`, `src/Entity/UrlMetadata.php`, `src/Repository/NotFoundRepository.php`, `src/Management/NotFoundAlertProvider.php`, `src/EventSubscriber/`, `src/Management/`, `src/Scheduler/`, `src/Service/`, `templates/management/`
 
 **Related skills:** `c975l-config`, `c975l-management`, `c975l-users` in this same bundle, and `c975l-media` in UiBundle beside it.
 
@@ -66,6 +66,13 @@ url that changed needs a redirect whether it was a page's or a product's.
   under `/assets` or `/bundles` carrying a file extension, and `RedirectSubscriber` returns on those
   without querying — a missing asset would otherwise turn a 404 into a database connection. Uploads
   under `/medias` stay redirectable.
+- **Only a row ending on `*` is a prefix**; every other row names one url alone. **An exact `fromPath`
+  matches whatever its case** (`strcasecmp()`), a prefix stays case-sensitive.
+- **The rows are read through the cache, never queried per request**: `RedirectSubscriber` keeps the
+  whole table in `cache.app.taggable` under `RedirectSubscriber::CACHE_TAG` (`config_redirects`) and
+  filters it in PHP. `Listener\CacheTagListener` empties that tag once per flush on any `Redirect`
+  written or removed through Doctrine — a row written in raw SQL is only seen after `cache:clear`.
+- The `config-redirect` guided project walks a redirect written by hand, a trailing `*` included.
 
 **Never deploy a redirecting route per old url.** A renamed tree is a handful of rows.
 
@@ -106,6 +113,13 @@ A bundle declares **which urls exist, never what they say** — the paths are st
 code, the sentences are content and live in the database — through `UrlMetadataProviderInterface`,
 then `c975l:url-metadata:sync` creates the empty rows. It only ever creates: a row whose url no longer
 appears is reported, never deleted.
+
+**An url with no row costs no query**: `UrlMetadataResolver` caches the path ⇒ id map alone
+(`UrlMetadataRepository::findIdsIndexedByPath()`) under `UrlMetadataResolver::CACHE_TAG`
+(`url_metadata`), then loads the one row asked for by its id, live. `CacheTagListener` empties the tag
+once per flush when an `UrlMetadata` changes, so a `{% cache %}` fragment printing `url_metadata()`
+carries that same tag and needs no listener of its own. A missing table answers nothing and is not
+cached.
 
 ```twig
 {{ url_metadata().title }}
@@ -265,6 +279,11 @@ what has failed for good sits in the failure transport, what was never tried pil
 ones, so a console reading only the failure count reads a dead worker as healthy. Transports that
 cannot count themselves (the scheduler's) are left out rather than reported as zero.
 
+What sits in the failure transport is replayed or dropped from `management_config_messenger_failed`,
+the screen the failed-messages alert opens: the `config-messenger-failed` guided project walks it, held
+at `ROLE_SUPER_ADMIN` because an admin is only shown the failure there — the buttons its steps point at
+carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group`.
+
 ## Scheduler, dev profile and deprecations
 
 `c975l:config:sessions-cleanup` deletes the expired rows of `PdoSessionHandler`'s `sessions` table —
@@ -341,6 +360,9 @@ usually hands the real address over untouched, and nothing has to be declared.
   points at production.
 - **Do not back up code, templates or asset sources.**
 - **Do not tar a mirror path.**
+- **Do not query `site_redirect` or `site_url_metadata` on the request path** — both are cached, and
+  `CacheTagListener` empties them on a write through Doctrine. Do not add a `Redirect` row per casing
+  of a path either: an exact row already matches whatever its case.
 - **Do not add a `Redirect` row for the trailing-slash variant of a path** — the subscriber falls back
   to the path without it.
 - **Do not report a figure in the status `extra` section that calls for no action.**

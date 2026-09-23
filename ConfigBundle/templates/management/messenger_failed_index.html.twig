@@ -38,7 +38,7 @@
                                     {% for id in group.ids %}
                                         <input type="hidden" name="ids[]" value="{{ id }}">
                                     {% endfor %}
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" data-messenger-delete-group>
                                         {{ ('label.messenger_delete_group'|trans({'%count%': group.count}, 'config')) }}
                                     </button>
                                 </form>
@@ -101,14 +101,14 @@
                             <td class="text-nowrap">
                                 <form method="post" action="{{ path('management_config_messenger_failed_retry', {id: message.id}) }}" class="d-inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('management_config_messenger_failed_retry') }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary" data-messenger-retry>
                                         {{ ('label.messenger_retry'|trans({}, 'config')) }}
                                     </button>
                                 </form>
                                 <form method="post" action="{{ path('management_config_messenger_failed_delete', {id: message.id}) }}" class="d-inline"
                                       onsubmit="return confirm('{{ ('label.messenger_delete_confirm'|trans({}, 'config'))|e('js') }}')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('management_config_messenger_failed_delete') }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" data-messenger-delete>
                                         {{ ('label.messenger_delete'|trans({}, 'config')) }}
                                     </button>
                                 </form>

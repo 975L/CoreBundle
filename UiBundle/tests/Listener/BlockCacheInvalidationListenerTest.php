@@ -35,6 +35,20 @@ class BlockCacheInvalidationListenerTest extends TestCase
         return $em;
     }
 
+    // Every invalidateTags() call in order: a media empties the role tags before its block's
+    /** @param list<string[]> $calls */
+    private function createRecordingCache(array &$calls): TagAwareCacheInterface
+    {
+        $cache = $this->createStub(TagAwareCacheInterface::class);
+        $cache->method('invalidateTags')->willReturnCallback(static function (array $tags) use (&$calls): bool {
+            $calls[] = $tags;
+
+            return true;
+        });
+
+        return $cache;
+    }
+
     // A brand new Media attached to an already-cached Block (e.g. adding a slide to an existing Slider) is an INSERT - postPersist is the only Doctrine event that fires for it, postUpdate never does, which used to leave the block's cached render silently missing it
     public function testPostPersistInvalidatesTheOwningBlockTagForANewMedia(): void
     {
@@ -42,11 +56,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $media = new Media();
         $media->setBlock($block);
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->once())->method('invalidateTags')->with(['block_9']);
-
-        new BlockCacheInvalidationListener($cache)
+        $calls = [];
+        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
             ->postPersist(new PostPersistEventArgs($media, $this->createEntityManager()));
+
+        $this->assertSame([['media_singletons', 'media_roles'], ['block_9']], $calls);
     }
 
     // A translation is a row of another table: nothing touches the block, whose render in that language would go on being served as it stands
@@ -137,11 +151,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $unitOfWork = $this->createStub(UnitOfWork::class);
         $unitOfWork->method('getOriginalEntityData')->willReturn(['block' => $block]);
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->once())->method('invalidateTags')->with(['block_7']);
-
-        new BlockCacheInvalidationListener($cache)
+        $calls = [];
+        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
             ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+
+        $this->assertSame([['media_singletons', 'media_roles'], ['block_7']], $calls);
     }
 
     // What actually happens on an orphan removal: computeChangeSets() has already overwritten the snapshot with the null the collection removal wrote, and only the change set still holds the block the media was taken out of
@@ -154,11 +168,11 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $unitOfWork->method('getEntityChangeSet')->willReturn(['block' => [$block, null]]);
         $unitOfWork->method('getOriginalEntityData')->willReturn(['block' => null]);
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->once())->method('invalidateTags')->with(['block_24']);
-
-        new BlockCacheInvalidationListener($cache)
+        $calls = [];
+        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
             ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+
+        $this->assertSame([['media_singletons', 'media_roles'], ['block_24']], $calls);
     }
 
     // Same overwriting, one level up: a slot dropped from its container leaves that container's html holding it verbatim
@@ -185,25 +199,26 @@ class BlockCacheInvalidationListenerTest extends TestCase
         $media = new Media();
         $media->setBlock($block);
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->once())->method('invalidateTags')->with(['block_3']);
-
-        new BlockCacheInvalidationListener($cache)
+        $calls = [];
+        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
             ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager()));
+
+        $this->assertSame([['media_singletons', 'media_roles'], ['block_3']], $calls);
     }
 
-    public function testInvalidateIsSkippedWhenNoBlockCanBeResolved(): void
+    // No block to reach, only the role tags: the media may have just left a role, which it no longer shows
+    public function testAMediaWithNoBlockEmptiesOnlyTheRoleTags(): void
     {
         $media = new Media();
 
         $unitOfWork = $this->createStub(UnitOfWork::class);
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->never())->method('invalidateTags');
+        $calls = [];
+        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
+            ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
 
-        new BlockCacheInvalidationListener($cache)
-            ->preRemove(new PreRemoveEventArgs($media, $this->createEntityManager($unitOfWork)));
+        $this->assertSame([['media_singletons', 'media_roles']], $calls);
     }
 
     public function testInvalidateIsSkippedForEntitiesThatAreNeitherBlockNorMedia(): void
@@ -215,34 +230,34 @@ class BlockCacheInvalidationListenerTest extends TestCase
             ->postUpdate(new PostUpdateEventArgs(new \stdClass(), $this->createEntityManager()));
     }
 
-    // Singleton-role Media (logo, favicon...) is never attached to a Block (see Media::$block's own comment) - it needs its own "media_singletons" tag instead of "block_{id}", since MediaExtension caches these across requests separately (see MediaExtension::preloadSingletonRoles())
-    public function testPostUpdateInvalidatesMediaSingletonsTagForASingletonRoleMedia(): void
+    // Singleton-role Media (logo, favicon...) is never attached to a Block (see Media::$block's own comment) - it needs the role tags instead of "block_{id}", since MediaExtension caches these across requests separately (see MediaExtension::preloadSingletonRoles())
+    public function testPostUpdateInvalidatesTheRoleTagsForASingletonRoleMedia(): void
     {
         $media = new Media()->setRole('logo');
 
         $unitOfWork = $this->createStub(UnitOfWork::class);
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->once())->method('invalidateTags')->with(['media_singletons']);
-
-        new BlockCacheInvalidationListener($cache)
+        $calls = [];
+        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
             ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+
+        $this->assertSame([['media_singletons', 'media_roles']], $calls);
     }
 
-    // A repeatable role (e.g. "error-image") isn't a singleton role (see Media::SINGLETON_ROLES) and isn't attached to a Block either - nothing to invalidate for it here
-    public function testInvalidateSkipsMediaSingletonsTagForARepeatableRole(): void
+    // A repeatable role (e.g. "error-image") isn't a singleton role (see Media::SINGLETON_ROLES) and isn't attached to a Block either - only the role tags go, the ids site_random_media() draws from among them (see MediaExtension::getRandomSiteMedia())
+    public function testPostUpdateInvalidatesTheRoleTagsForARepeatableRole(): void
     {
         $media = new Media()->setRole('error-image');
 
         $unitOfWork = $this->createStub(UnitOfWork::class);
         $unitOfWork->method('getOriginalEntityData')->willReturn([]);
 
-        $cache = $this->createMock(TagAwareCacheInterface::class);
-        $cache->expects($this->never())->method('invalidateTags');
-
-        new BlockCacheInvalidationListener($cache)
+        $calls = [];
+        new BlockCacheInvalidationListener($this->createRecordingCache($calls))
             ->postUpdate(new PostUpdateEventArgs($media, $this->createEntityManager($unitOfWork)));
+
+        $this->assertSame([['media_singletons', 'media_roles']], $calls);
     }
 
     // A container's cached html holds its slots' verbatim (see BlockCacheTagResolver), so a slot that changed leaves every container above it holding stale output

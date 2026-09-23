@@ -267,7 +267,7 @@ class Form implements \Stringable
         return $this;
     }
 
-    // A calculator computes and displays, it never submits: no action to run, no rate limiter, no honeypot, no flash - see FormController, which renders it through the very same field types all the same, so it wears the site's form theme like any other
+    // A calculator computes and displays; left without an action it never submits - no rate limiter, no honeypot, no flash - and given one it is sent like any other Form, its results travelling with it (see SendEmailFormAction). See FormController, which renders it through the very same field types all the same, so it wears the site's form theme like any other
     public function isCalculator(): bool
     {
         return !$this->outputs->isEmpty();

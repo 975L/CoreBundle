@@ -26,7 +26,7 @@ class RatingRuntimeTest extends TestCase
         $this->assertSame([], new \ReflectionClass(RatingExtension::class)->getConstructor()?->getParameters() ?? []);
 
         $names = array_map(static fn (object $function): string => $function->getName(), new RatingExtension()->getFunctions());
-        $this->assertSame(['ui_rating', 'ui_ratings'], $names);
+        $this->assertSame(['ui_rating', 'ui_ratings', 'ui_rating_cache_tag', 'ui_rating_type_cache_tag'], $names);
     }
 
     // What the component draws itself from: the public tally, and the shape the site chose for it

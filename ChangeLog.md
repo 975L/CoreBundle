@@ -1,5 +1,44 @@
 # ChangeLog
 
+## v1.33.0
+
+Every public page served from the cache reads its own row and little else
+
+### ConfigBundle
+
+- **`url_metadata()` reads the table through the cache**: only the path => id map is kept, under `UrlMetadataResolver::CACHE_TAG`, so an url with no row costs no query and one with a row a lookup by id (23/09/2026)
+- `CacheTagListener` empties that tag when an `UrlMetadata` is written or removed, once per flush - a `{% cache %}` fragment printing `url_metadata()` carries the same tag (23/09/2026)
+- **`RedirectSubscriber` reads the redirects through the cache**, every row under `RedirectSubscriber::CACHE_TAG`, emptied by `CacheTagListener` - a page no longer costs a `site_redirect` query (23/09/2026)
+- `RedirectRepository::findCandidatesForPath()` is removed, the subscriber filtering the cached rows itself (23/09/2026)
+- An exact redirect matches its path whatever the case, as the SQL lookup did (23/09/2026)
+- **`LinkableRouteCacheTagsInterface`**: a route provider listing its own rows declares the tags its bundle empties when one is saved, and `LinkableRouteRegistry` keeps its entries in the cache under them; `cacheTags()` hands them to a menu item pointing at one (23/09/2026)
+- Guided projects `config-redirect` and `config-messenger-failed`, the failed messages' buttons carrying `data-messenger-*` markers (23/09/2026)
+
+### UiBundle
+
+- `site_random_media()` keeps the ids of the role cached under `media_roles` and draws among them in PHP, `BlockCacheInvalidationListener` emptying it with `media_singletons` on any media saved, one leaving its role included (23/09/2026)
+- `MediaRepository::findRandomByRole()` gives way to `findIdsByRole()` (23/09/2026)
+- An item drawn by its source's own `itemTemplate` goes through the entry cache like any other, included by `CollectionItem.html.twig` and keyed on the template too; a source naming a template declares the tag its entity invalidates (23/09/2026)
+- An item with no slug is keyed on its `data["id"]`, so a review has its entry (23/09/2026)
+- `CollectionRuntime` no longer takes the Twig environment (23/09/2026)
+- `Paginator::paginateSlice()` hands over a page and a total read in SQL, `paginate()` cutting an array through it (23/09/2026)
+- **`render_owned_blocks()`** renders an owner's whole run of blocks (a page, a product sheet) as one cache entry, tagged with every block's tags and the owner's (`OwnedBlocksExtension::ownerTag()`): a hit reads neither the blocks, their medias nor their slots. Live for an editor and in a preview (23/09/2026)
+- `OwnedBlocksCacheListener` empties an owner's tag when a block is added, removed or moved, the join table being the one trace of it (23/09/2026)
+- `BlockRepository::preloadTree()` reads a run of blocks with their medias and their slots, `BlockExtension::renderNested()` lays the nonce and the links on a run stored whole (23/09/2026)
+- A random `collection` renders its whole source once and keeps the html under the source's tags, the draw made in PHP at each render (23/09/2026)
+- `RatingCacheListener` empties `ui_rating_cache_tag(type, id)` and `ui_rating_type_cache_tag(type)` on any vote, so a fragment printing an average can be cached (23/09/2026)
+- `AiSearchChunkRepository::currentVersion()` is cached, emptied by `replaceAll()` - the search asked it three times per page (23/09/2026)
+- **Requires `twig/cache-extra` and `twig/extra-bundle`**, for `{% cache %}`; `TwigCachePoolPass` points its `twig.cache` pool at `cache.app.taggable`, so every tag a bundle empties reaches the fragments too (23/09/2026)
+- `SocialContentSourceInterface` and its `SocialContent` hand the contents to post to SocialBundle's scheduled publication (23/09/2026)
+- **A calculator given an action is sent**, protected, timed, rate-limited and flashed like any Form; `FormController::isComputeOnly()` keeps the compute-only path for one with no action (23/09/2026)
+- `Calculator.html.twig` wraps a submittable calculator in a `<form class="ui-calculator-form">` set to `display: contents`, its button under both columns (`.ui-calculator-submit`); the button and its notes are the `_submit.html.twig` partial, the flashes `_flashes.html.twig`, both shared with `Form.html.twig` (23/09/2026)
+- `calculator.js` sends `ui_form_compute` the number, range and select controls alone (`COMPUTED`), a name, an email or a message never riding the query string (23/09/2026)
+- `SendEmailFormAction` writes a choice by its option's label rather than its value, and appends a calculator's visible results to the fields, through an optional `ExpressionEvaluator` (23/09/2026)
+- Added tests for a submittable calculator in `FormControllerTest`, `SendEmailFormActionTest`, `CalculatorOutputsFirstTest` and `CalculatorControllerAssetsTest` (23/09/2026)
+- **A calculator keeps the number format of its page**: `ui_form_compute` becomes `/form/{name}/compute/{_locale}`, the template passing the page's language (23/09/2026)
+- A checkbox's row is matched by its direct child in `_forms.scss`, the wrapper of a calculator's fields being laid out on one reversed line otherwise (23/09/2026)
+- The `ui-calculator` guided project walks the action field, and its texts no longer say a calculator is never sent (23/09/2026)
+
 ## v1.32.2
 
 The (AI) mention follows the name the site gave its assistant

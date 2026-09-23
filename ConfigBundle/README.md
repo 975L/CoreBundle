@@ -1020,6 +1020,24 @@ foreach ($this->categoryRepository->findAllOrdered() as $category) {
 
 Keying on the id is what makes a renamed row keep its menu items: the slug and the title are both read again at each render, and the url is generated, never stored. Providers are only walked when the registry is actually read, so listing rows this way costs a query on the pages that render such a link, none on the others.
 
+That query can be spared too. A provider listing its own rows also implements `LinkableRouteCacheTagsInterface`, whose `getLinkableRouteCacheTags()` names the tags its bundle **already empties** when one of those rows is saved:
+
+```php
+use c975L\ConfigBundle\Management\LinkableRouteCacheTagsInterface;
+use c975L\ConfigBundle\Management\LinkableRouteProviderInterface;
+
+class LinkableRouteProvider implements LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface
+{
+    // The entries stand for rows of this bundle, emptied with them by a category saved
+    public function getLinkableRouteCacheTags(): array
+    {
+        return ['gallery_galleries'];
+    }
+}
+```
+
+`LinkableRouteRegistry` then keeps that provider's entries in `cache.app.taggable` under those tags, one entry per provider and per language being read (its labels may be the rows' own translated titles), and `LinkableRouteRegistry::cacheTags($key)` hands them to whatever renders a link to one of them — SiteBundle's `MenuExtension::getMenuLinkCacheTags()`, which lets a menu item pointing at a gallery be cached with the rest of the menu. A provider not implementing it is read live on every call, as before, and `cacheTags()` answers `null` for its entries: a caller then has no tag to invalidate on and must not cache what it renders from them.
+
 ### Saying which languages an entry answers in
 
 A route your bundle answers both bare and localised (`/shop` and `/{_locale}/shop`, see *Answering both `/shop` and `/en/shop`*) is written in the language the visitor is reading in, so a menu item never sends them back into the writing language at the first click. Add `locales` to say where that holds:
@@ -1423,7 +1441,7 @@ Make sure your bundle's `services.yaml` includes the `Management/` folder in its
 
 The `/management` dashboard shows a "Guided projects" button next to the guided tour. Where the tour *shows* the back office, a project puts the user to work in it: a real task to carry out — create a page, add a block to it, put it in a menu — with a panel following them from screen to screen.
 
-`ConfigGuidedProjectProvider` ships this bundle's own seven, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn a missing page into a redirect, describe an url no entity carries, give an account its roles, and see the back office as another role.
+`ConfigGuidedProjectProvider` ships this bundle's own nine, in the 1000 block `GuidedProjectProviderInterface` reserves it: find and change a setting, run the health check, rehearse the maintenance switch, turn a missing page into a redirect, write a redirect by hand (`config-redirect`, a whole folder moved at once with a trailing `*`), describe an url no entity carries, give an account its roles, see the back office as another role, and replay or drop the messages that failed for good (`config-messenger-failed`, held at `ROLE_SUPER_ADMIN`: an admin opens that screen but is only shown the failure, the buttons it walks being a super admin's — they carry `data-messenger-retry`, `data-messenger-delete` and `data-messenger-delete-group` for its steps to point at).
 
 A project is a **replayable exercise**, not a wizard to get through once. Nothing is derived from the site's own data, so a project is still worth following on a site already full of pages, and still worth replaying once done. Consequently it carries no `isDone`: nothing is ever detected server-side, the user says when a step is done. Whatever they create along the way stays on the site — deleting the practice page is their call.
 
@@ -1578,11 +1596,13 @@ A url that changed needs a redirect whether it was a page's or a product's, and 
 `Entity\Redirect` (table `site_redirect`) carries `fromPath`, `toUrl`, `permanent` and `gone`; `EventSubscriber\RedirectSubscriber` resolves it on `kernel.request` at priority 33, just above `RouterListener`. Managed from *Management → Advanced → Redirects*, exported/imported through the **Export sync (everything)** shortcut and the **Import content** screen (matched by `fromPath`, its own unique constraint).
 
 - **`gone`** answers `410 Gone` instead of redirecting — for content removed with no equivalent to send anyone to. Search engines drop a 410 far faster than the plain 404 the same url would otherwise return. `toUrl` is required on every other row, a conditional constraint on the entity rather than a form-level one.
-- **`fromPath` accepts a trailing `*`**: `/apidoc/*` covers every url below it, however deep. An exact row always wins over a prefix covering it, and among prefixes the longest one wins — so `/apidoc/c975L/*` still beats a broader `/apidoc/*`. A convention resolved in `RedirectSubscriber`, not a SQL wildcard.
+- **`fromPath` accepts a trailing `*`**: `/apidoc/*` covers every url below it, however deep. An exact row always wins over a prefix covering it, and among prefixes the longest one wins — so `/apidoc/c975L/*` still beats a broader `/apidoc/*`. Only a row ending on `*` covers what sits below it, every other row naming one url alone. A convention resolved in `RedirectSubscriber`, not a SQL wildcard.
+- **An exact `fromPath` ignores case**: `/Contact` written in a link somewhere is answered by the row written `/contact` (`strcasecmp()`). A prefix ending on `*` stays case-sensitive.
 - **A trailing slash is not another url**: nothing matching `/contact/`, the row written `/contact` answers it. Tried only once an exact and a prefix lookup both came up empty, so a row that states its own trailing slash still answers for itself.
 - **`toUrl` accepts one too, and that pairing is what renames a tree**: `/character/*` → `/personnages/*` carries the tail over, sending `/character/tuor` to `/personnages/tuor`. A destination *without* the `*` keeps folding the whole tree onto that single url, which is what a tree removed rather than renamed needs — both are wanted, and the `*` is what tells them apart. So a renamed url tree is a handful of rows edited in the back office, not a redirecting route per old url deployed with the code. A `*` on the destination of an exact row means nothing and is left alone.
 - **A path the web server answers itself is refused**: `fromPath` rejects anything under `/assets` or `/bundles` carrying a file extension (`Redirect::STATIC_PATH_PATTERN`), and `RedirectSubscriber` returns on those without querying at all - a missing asset would otherwise be the one thing turning a 404 into a database connection, and a page full of stale image urls into a burst of them. Uploads under `/medias` are deliberately left out: a removed file there is a url someone did publish, and stays redirectable.
 - **The site root is left alone** by design.
+- **A page costs no `site_redirect` query.** The subscriber runs on every request, so it reads the whole table through `cache.app.taggable` — tens of rows, not thousands — under `RedirectSubscriber::CACHE_TAG` (`config_redirects`), and filters it in PHP. `Listener\CacheTagListener` empties that tag once per flush whenever a `Redirect` is written or removed, whatever wrote it (the back office, an import, hand-made code going through Doctrine); a row written in raw SQL is only seen after `cache:clear`.
 
 `RedirectChainHealthCheckProvider` walks the rows for chains and loops, from the database alone.
 
@@ -1609,7 +1629,8 @@ A book, a product, a photo, a page each states its own title and summary from it
 - **Keyed by the path, not by the route name.** `/caste/{caste}` is one route and twelve listings with twelve different things to say, so each of them gets its own row — same shape, and same reason, as `Redirect::$fromPath`. Paths are normalised on the way in and on lookup (`/animaux/` and `animaux` both being `/animaux`).
 - **A row only ever fills a silence.** Both layouts (`@c975LUi/layout.html.twig` and SiteBundle's) read it last, for whatever the rendering template left unset — an entity always speaks first.
 - **Every field is nullable.** A site describes its listings as it writes them, and an url with no row emits exactly what it emitted before.
-- **The table is created by the app**, like `site_redirect` (`doctrine:migrations:diff` then `migrate`). A site that updates without migrating keeps its pages: the rows resolve to nothing rather than failing.
+- **The table is created by the app**, like `site_redirect` (`doctrine:migrations:diff` then `migrate`). A site that updates without migrating keeps its pages: the rows resolve to nothing rather than failing, and that empty answer is not cached, so the migration is seen on the next request.
+- **An url with no row costs no query.** `UrlMetadataResolver` keeps only the path ⇒ id map in the cache (`UrlMetadataRepository::findIdsIndexedByPath()`), under `UrlMetadataResolver::CACHE_TAG` (`url_metadata`), and loads the one row a page asks for by its id — live, its `ogImage` included, rather than as an entity unserialized from the pool. `Listener\CacheTagListener` empties the tag once per flush when an `UrlMetadata` is written or removed, which `c975l:url-metadata:sync` writing many rows at once invalidates a single time.
 
 In a template needing the text itself, `url_metadata()` hands back the row of the page being rendered, or of the path given to it — for a template serving several urls where only one is described:
 
@@ -1626,6 +1647,14 @@ A listing setting its own `title` and `summarySocialNetwork` — a translated la
 ```
 
 Both take an optional second argument, the path, exactly as `url_metadata()` does. A missing row, or a row left half-written, gives the label back.
+
+A `{% cache %}` fragment printing any of the three carries the same tag, so an edited description reaches it with nothing else to invalidate — UiBundle points Twig's `twig.cache` pool at `cache.app.taggable`, the pool `CacheTagListener` empties:
+
+```twig
+{% cache 'listing_head_' ~ app.request.locale tags(['url_metadata']) %}
+    <h1>{{ url_metadata_title('label.series'|trans) }}</h1>
+{% endcache %}
+```
 
 Nothing is ever typed by hand there: the rows come from what the bundles declare, so `Action::NEW` is disabled and the path is shown read-only.
 

@@ -40,8 +40,31 @@ class BlockRepository extends ServiceEntityRepository
         return $this->findBy(['kind' => $kind], ['id' => 'ASC']);
     }
 
-    // Initializes the nested blocks of a whole tree, and their medias, in one query per level of depth - what every owner of blocks (a Page, a Menu) calls right after reading them
-    // A container's slots are a lazy collection, so a render walking the tree (the templates themselves, BlockCacheTagResolver, MenuExtension) reads one query per block otherwise, the leaves included: a collection nobody joined is queried to be found empty. Joining one level in the owner's own query only moves the problem one step down, a slot's slots being lazy in their turn
+    // A run of blocks with their medias and, level by level, their slots - what a render of an owner's whole run reads, in one query per level rather than one per block (see OwnedBlocksExtension)
+    /** @param iterable<Block> $blocks */
+    public function preloadTree(iterable $blocks): void
+    {
+        $ids = [];
+        foreach ($blocks as $block) {
+            $ids[] = $block->getId();
+        }
+
+        if ([] === $ids) {
+            return;
+        }
+
+        $this->createQueryBuilder('b')
+            ->select('b, m')
+            ->leftJoin('b.medias', 'm')
+            ->andWhere('b.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        $this->preloadSlots($blocks);
+    }
+
+    // Initializes the nested blocks of a whole tree, and their medias, in one query per level of depth - what every owner of blocks (a Page, a Menu) calls right after reading them. A container's slots are a lazy collection, so a render walking the tree (the templates themselves, BlockCacheTagResolver, MenuExtension) reads one query per block otherwise, the leaves included: a collection nobody joined is queried to be found empty. Joining one level in the owner's own query only moves the problem one step down, a slot's slots being lazy in their turn
     /** @param iterable<Block> $blocks */
     public function preloadSlots(iterable $blocks): void
     {

@@ -59,22 +59,15 @@ class MediaRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // Picks one row at random among all sharing a repeatable role (e.g. a pool of error images)
-    public function findRandomByRole(string $role): ?Media
+    // @return int[] The ids of a repeatable role's rows (error-image...), what MediaExtension caches to pick one at random without querying the pool on every call
+    public function findIdsByRole(string $role): array
     {
-        $ids = $this->createQueryBuilder('m')
+        return array_map(intval(...), $this->createQueryBuilder('m')
             ->select('m.id')
             ->where('m.role = :role')
             ->setParameter('role', $role)
             ->getQuery()
-            ->getSingleColumnResult()
-        ;
-
-        if ([] === $ids) {
-            return null;
-        }
-
-        return $this->find($ids[array_rand($ids)]);
+            ->getSingleColumnResult());
     }
 
     // @return Media[] Rows naming a file, for the check that then looks for each one on disk (see MediaFilesHealthCheckProvider). An empty string counts as naming none, a row created for its caption alone never having held a file

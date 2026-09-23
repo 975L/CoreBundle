@@ -1,5 +1,25 @@
 [
     {
+        "date": "2026-09-23",
+        "description": [
+            {
+                "en": "A calculator can now be sent: give it an action such as \"send email\" and your visitor reads their estimate, then asks for a quote with the results attached, without typing anything twice.",
+                "fr": "Un calculateur peut désormais être envoyé : donnez-lui une action comme « envoyer un email » et votre visiteur lit son estimation, puis demande un devis avec les résultats joints, sans rien retaper.",
+                "es": "Una calculadora puede ahora enviarse: dele una acción como «enviar un email» y su visitante lee su estimación y luego pide un presupuesto con los resultados adjuntos, sin volver a escribir nada."
+            },
+            {
+                "en": "A calculator keeps the number format of the page it sits on, whatever language the visitor's browser speaks.",
+                "fr": "Un calculateur garde le format des nombres de la page où il se trouve, quelle que soit la langue du navigateur du visiteur.",
+                "es": "Una calculadora conserva el formato de los números de la página en la que está, sea cual sea el idioma del navegador del visitante."
+            },
+            {
+                "en": "Your public pages load faster: they are kept ready and refreshed as soon as you change their content.",
+                "fr": "Vos pages publiques s'affichent plus vite : elles sont gardées prêtes et rafraîchies dès que vous modifiez leur contenu.",
+                "es": "Sus páginas públicas se muestran más rápido: se mantienen listas y se actualizan en cuanto modifica su contenido."
+            }
+        ]
+    },
+    {
         "date": "2026-09-22",
         "description": [
             {

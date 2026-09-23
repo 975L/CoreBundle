@@ -39,7 +39,7 @@ use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot, captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy") - all three switched off by the "protections" option for a calculator, which submits nothing
+// Builds a plain Symfony form from a c975L\UiBundle\Entity\Form's FormField collection - one input per field, keyed by FormField::getName(), unmapped to any entity (see FormController, which hands the submitted array straight to FormActionRegistry). Also adds the same protections every c975L bundle's own public forms already share: honeypot, captcha (site-wide config, same keys contact/register/reset already read - see CaptchaType), receive-copy (per-Form, see Form::$actionConfig's "offerReceiveCopy") - all three switched off by the "protections" option for a calculator given no action, which submits nothing
 class FormSubmissionType extends AbstractType
 {
     public function __construct(
@@ -53,7 +53,7 @@ class FormSubmissionType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // A calculator posts nothing and reaches no action (see Form::isCalculator()), so it gets none of the three: a honeypot to trap a submission that never happens, a captcha to score a visitor who only moved a slider, and a "receive a copy" box with no email to copy
+        // A calculator given no action posts nothing (see Form::isCalculator()), so it gets none of the three: a honeypot to trap a submission that never happens, a captcha to score a visitor who only moved a slider, and a "receive a copy" box with no email to copy
         if ($options['protections']) {
             $this->botProtection->addHoneypotField($builder, $this->requestStack->getCurrentRequest());
         }

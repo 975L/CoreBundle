@@ -35,13 +35,21 @@ class Paginator
     public function paginate(array $items, int $page, int $perPage): Pagination
     {
         $page = max(1, $page);
+
+        return $this->paginateSlice(array_slice($items, ($page - 1) * $perPage, $perPage), $page, $perPage, count($items));
+    }
+
+    // The same, for a listing that read its page and its total in SQL rather than loading every row to cut one page out of them
+    public function paginateSlice(array $pageItems, int $page, int $perPage, int $total): Pagination
+    {
+        $page = max(1, $page);
         $request = $this->requestStack->getCurrentRequest();
 
         return new Pagination(
-            array_slice($items, ($page - 1) * $perPage, $perPage),
+            $pageItems,
             $page,
             $perPage,
-            count($items),
+            $total,
             (string) $request?->attributes->get('_route', ''),
             // The route's own parameters as well as the query: a listing served under "/serie/{slug}" would otherwise rebuild its next page's url without the slug it is read under, and path() would refuse to generate it
             array_merge(

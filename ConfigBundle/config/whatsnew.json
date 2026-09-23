@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-23",
+        "description": [
+            {
+                "en": "Two new guided projects: redirecting an old address, or a whole folder, to its new page; and replaying or deleting the emails that failed to go out.",
+                "fr": "Deux nouveaux projets guidés : rediriger une ancienne adresse, ou tout un dossier, vers sa nouvelle page ; et relancer ou supprimer les emails qui ne sont pas partis.",
+                "es": "Dos nuevos proyectos guiados: redirigir una dirección antigua, o toda una carpeta, hacia su nueva página; y reenviar o eliminar los emails que no se enviaron."
+            },
+            {
+                "en": "A redirect written with capital letters answers again whatever case the visitor types the address in.",
+                "fr": "Une redirection écrite avec des majuscules répond de nouveau, quelle que soit la casse dans laquelle le visiteur tape l'adresse.",
+                "es": "Una redirección escrita con mayúsculas vuelve a responder, sea cual sea la forma en que el visitante escriba la dirección."
+            }
+        ]
+    },
+    {
         "date": "2026-09-12",
         "description": [
             {

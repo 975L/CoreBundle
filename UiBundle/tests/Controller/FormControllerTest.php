@@ -248,6 +248,89 @@ class FormControllerTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
+    private function createSubmittableCalculatorRepository(): FormRepository
+    {
+        $uiForm = new Form()->setName('estimation')->setAction('send_email');
+        $uiForm->addOutput(new FormOutput()->setLabel('Total')->setName('total')->setExpression('1'));
+
+        $repository = $this->createStub(FormRepository::class);
+        $repository->method('findOneBy')->willReturn($uiForm);
+
+        return $repository;
+    }
+
+    // Given an action, a calculator is sent like any other Form, so it carries the same honeypot, captcha and token as one
+    public function testACalculatorGivenAnActionIsBuiltWithItsProtectionsAndACsrfToken(): void
+    {
+        $captured = [];
+        $factory = $this->createStub(\Symfony\Component\Form\FormFactoryInterface::class);
+        $factory->method('create')->willReturnCallback(
+            function (string $type, mixed $data, array $options) use (&$captured): FormInterface {
+                $captured = $options;
+
+                return $this->createSubmittedForm(false, false);
+            }
+        );
+
+        $controller = $this->createController($this->createSubmittedForm(false, false), $this->createSubmittableCalculatorRepository());
+        $controller->setContainer($this->createContainer([
+            'twig' => $this->createConfiguredStub(Environment::class, ['render' => '<div></div>']),
+            'form.factory' => $factory,
+        ]));
+
+        $controller->fragment('estimation', $this->createRequest());
+
+        $this->assertTrue($captured['protections']);
+        $this->assertTrue($captured['csrf_protection']);
+    }
+
+    // Still rendered as a calculator - the numbers beside the fields - but timed like any Form a bot could post
+    public function testFragmentTimesACalculatorGivenAnActionAndRendersItAsACalculator(): void
+    {
+        $botProtection = $this->createMock(FormBotProtection::class);
+        $botProtection->expects($this->once())->method('startTimer');
+
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())
+            ->method('render')
+            ->with('@c975LUi/components/Form/Calculator.html.twig', $this->callback(static fn (array $parameters): bool => isset($parameters['form'], $parameters['results'])))
+            ->willReturn('<div class="ui-calculator"></div>');
+
+        $this->createController($this->createSubmittedForm(false, false), $this->createSubmittableCalculatorRepository(), botProtection: $botProtection, twig: $twig)
+            ->fragment('estimation', $this->createRequest());
+    }
+
+    public function testSubmitRunsTheActionOfACalculatorGivenOne(): void
+    {
+        $action = $this->createMock(FormActionInterface::class);
+        $action->method('getKey')->willReturn('send_email');
+        $action->expects($this->once())->method('handle')->willReturn(true);
+        $actionRegistry = $this->createStub(FormActionRegistry::class);
+        $actionRegistry->method('get')->willReturn($action);
+
+        $request = $this->createRequest('POST', 'http://localhost/page');
+        $response = $this->createController($this->createSubmittedForm(true, true), $this->createSubmittableCalculatorRepository(), actionRegistry: $actionRegistry)
+            ->submit('estimation', $request);
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertTrue($request->getSession()->getFlashBag()->has('success'));
+    }
+
+    // A failed validation lands on the standalone page, which must show the calculator again rather than a plain form stripped of its results
+    public function testSubmitReRendersAnInvalidCalculatorAsACalculator(): void
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())
+            ->method('render')
+            ->with('@c975LUi/form/page.html.twig', $this->callback(static fn (array $parameters): bool => '@c975LUi/components/Form/Calculator.html.twig' === $parameters['innerTemplate'] && isset($parameters['results'])))
+            ->willReturn('<html></html>');
+
+        $response = $this->createController($this->createSubmittedForm(true, false), $this->createSubmittableCalculatorRepository(), twig: $twig)
+            ->submit('estimation', $this->createRequest('POST'));
+
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
     // A disabled Form (see Form::$enabled - lets an admin pause it without unpublishing its Page or clearing "action") shows a notice instead of the form, on both the Block-embedded fragment and the bare submit route
     public function testFragmentRendersDisabledNoticeWhenFormIsDisabled(): void
     {

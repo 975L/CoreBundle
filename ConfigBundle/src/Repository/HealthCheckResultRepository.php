@@ -24,24 +24,21 @@ class HealthCheckResultRepository extends ServiceEntityRepository
         parent::__construct($registry, HealthCheckResult::class);
     }
 
-    // One row per (url, kind), keeping only the most recent checkedAt - backs the "Health check" dashboard table, which shows the current state, not the full history. Deduped in PHP (dataset stays small, see HealthCheckResult's class comment) then re-sorted by url/kind for a stable display order
+    // One row per (url, kind), the most recent one only, sorted by url/kind for a stable display order - backs the "Health check" dashboard table, which shows the current state, not the full history. Bounded in SQL through findLatestIdPerUrlAndKind() rather than deduped in PHP: the history holds some thirteen runs of every page, and hydrating it whole exhausted the memory limit of /management
     public function findLatestPerUrlAndKind(): array
     {
-        $rows = $this->createQueryBuilder('h')
-            ->orderBy('h.checkedAt', \SortDirection::Descending)
+        $ids = $this->findLatestIdPerUrlAndKind();
+        if ([] === $ids) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('h')
+            ->andWhere('h.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->orderBy('h.url', \SortDirection::Ascending)
+            ->addOrderBy('h.kind', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
-
-        $latest = [];
-        foreach ($rows as $row) {
-            $key = $row->getUrl() . '|' . $row->getKind();
-            $latest[$key] ??= $row;
-        }
-        $latest = array_values($latest);
-
-        usort($latest, static fn (HealthCheckResult $a, HealthCheckResult $b) => [$a->getUrl(), $a->getKind()] <=> [$b->getUrl(), $b->getKind()]);
-
-        return $latest;
     }
 
     // One row per kind for a single url, most recent checkedAt only - backs a per-page health check panel (e.g. c975l/site-bundle's Page edit screen), the same dedup rule as findLatestPerUrlAndKind() but scoped to one page instead of every page
@@ -191,26 +188,22 @@ class HealthCheckResultRepository extends ServiceEntityRepository
             ->getSingleColumnResult();
     }
 
-    // Status counts (ok/warning/error) grouped by calendar day, across every kind/url - the "is our site's health improving or degrading" trend chart on the Health check page (see HealthCheckController), not a per-page breakdown. Capped to the last $maxDates distinct days so the chart stays readable as history accumulates (see HealthCheckResult's own class comment on why history isn't pruned)
+    // Status counts (ok/warning/error) grouped by calendar day, across every kind/url - the "is our site's health improving or degrading" trend chart on the Health check page (see HealthCheckController), not a per-page breakdown. Capped to the last $maxDates distinct days so the chart stays readable as history accumulates. Aggregated in SQL rather than in PHP: the retention window holds hundreds of thousands of rows, and reading them all exhausted the memory limit
     public function findStatusCountsByDate(int $maxDates = 12): array
     {
-        $rows = $this->createQueryBuilder('h')
-            ->select('h.url', 'h.kind', 'h.status', 'h.checkedAt')
-            ->orderBy('h.checkedAt', \SortDirection::Ascending)
-            ->getQuery()
-            ->getArrayResult();
-
-        // Dedupe to the latest run per (day, url, kind) before counting - a check re-run several times the same day (manual click + cron, or repeated testing) must not inflate that day's counts, same rule as findLatestPerUrlAndKind() applied per day instead of overall
-        $latestPerDayAndCheck = [];
-        foreach ($rows as $row) {
-            $key = $row['checkedAt']->format('Y-m-d') . '|' . $row['url'] . '|' . $row['kind'];
-            $latestPerDayAndCheck[$key] = $row;
-        }
+        // Only the latest run per (day, url, kind) is counted - a check re-run several times the same day (manual click + cron, or repeated testing) must not inflate that day's counts, same MAX(id) rule as findLatestIdPerUrlAndKind() applied per day. Native SQL because DQL has no DATE()
+        $table = $this->getClassMetadata()->getTableName();
+        $rows = $this->getEntityManager()->getConnection()->fetchAllAssociative(
+            "SELECT DATE(h.checked_at) AS day, h.status, COUNT(*) AS total
+            FROM {$table} h
+            INNER JOIN (SELECT MAX(id) AS id FROM {$table} GROUP BY DATE(checked_at), url, kind) latest ON latest.id = h.id
+            GROUP BY day, h.status
+            ORDER BY day ASC"
+        );
 
         $byDate = [];
-        foreach ($latestPerDayAndCheck as $row) {
-            $day = $row['checkedAt']->format('Y-m-d');
-            $byDate[$day][$row['status']] = ($byDate[$day][$row['status']] ?? 0) + 1;
+        foreach ($rows as $row) {
+            $byDate[$row['day']][$row['status']] = (int) $row['total'];
         }
 
         $dates = \array_slice(array_keys($byDate), -$maxDates);

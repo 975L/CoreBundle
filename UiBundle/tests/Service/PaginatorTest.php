@@ -87,6 +87,16 @@ class PaginatorTest extends TestCase
         $this->assertSame(1, $paginator->getPage(new InputBag(['p' => '-2'])));
     }
 
+    // A listing that read its page and its total in SQL hands both over as they are - nothing is cut again
+    public function testASliceReadInSqlKeepsItsItemsAndItsTotal(): void
+    {
+        $pagination = $this->paginator()->paginateSlice([11, 12], 2, 10, 12);
+
+        $this->assertSame([11, 12], iterator_to_array($pagination));
+        $this->assertSame(12, $pagination->getTotalItemCount());
+        $this->assertSame(2, $pagination->getCurrentPageNumber());
+    }
+
     private function paginator(): Paginator
     {
         return new Paginator(new RequestStack([new Request()]));

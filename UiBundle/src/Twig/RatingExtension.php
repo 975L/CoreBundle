@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Twig;
 
+use c975L\UiBundle\Listener\RatingCacheListener;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -22,6 +23,8 @@ class RatingExtension extends AbstractExtension
         return [
             new TwigFunction('ui_rating', [RatingRuntime::class, 'rating']),
             new TwigFunction('ui_ratings', [RatingRuntime::class, 'ratings']),
+            new TwigFunction('ui_rating_cache_tag', RatingCacheListener::cacheTag(...)),
+            new TwigFunction('ui_rating_type_cache_tag', RatingCacheListener::typeCacheTag(...)),
         ];
     }
 }

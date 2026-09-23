@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="zRr_CZb">
                 <source>description.guided_project_ui_calculator</source>
-                <target>Un formulaire qui calcule au lieu d'être envoyé : des curseurs, des formules, un chiffre mis en avant.</target>
+                <target>Un formulaire qui calcule : des curseurs, des formules, un chiffre mis en avant, et si vous le voulez, envoyé avec ses résultats.</target>
             </trans-unit>
             <trans-unit id="QAAW6KH">
                 <source>description.guided_project_ui_email_template</source>
@@ -128,7 +128,7 @@
             </trans-unit>
             <trans-unit id="1Kz8Cro">
                 <source>description.guided_step_ui_ai_search_setup_entry</source>
-                <target>Commencez par le fournisseur : anthropic, openai ou euria. L'URI de base et le modèle sont ceux qu'il vous donne.</target>
+                <target>Commencez par le fournisseur : anthropic, openai ou euria. L'URI de base et le modèle sont ceux qu'il vous donne. Vous pouvez aussi donner un nom à l'assistant, affiché sur le badge de la recherche.</target>
             </trans-unit>
             <trans-unit id="eOVgofH">
                 <source>description.guided_step_ui_ai_search_setup_index</source>
@@ -145,6 +145,10 @@
             <trans-unit id="R8mhTUo">
                 <source>description.guided_step_ui_ai_search_setup_value</source>
                 <target>La clé API reste la vôtre : chaque question est facturée sur votre compte chez le fournisseur, dans la limite des plafonds du site.</target>
+            </trans-unit>
+            <trans-unit id="r_pzF_x">
+                <source>description.guided_step_ui_calculator_action</source>
+                <target>Laissez l'action vide pour un simple calcul ; choisissez « envoyer un email » pour que le visiteur demande un devis avec ses résultats.</target>
             </trans-unit>
             <trans-unit id="f.IANyC">
                 <source>description.guided_step_ui_calculator_fields</source>
@@ -164,7 +168,7 @@
             </trans-unit>
             <trans-unit id="Urf9i7v">
                 <source>description.guided_step_ui_calculator_open</source>
-                <target>Un calculateur est un formulaire comme les autres. Laissez son action vide : il n'envoie rien.</target>
+                <target>Un calculateur est un formulaire comme les autres.</target>
             </trans-unit>
             <trans-unit id="SvSDo2P">
                 <source>description.guided_step_ui_calculator_outputs</source>
@@ -2446,6 +2450,10 @@
                 <source>label.guided_step_ui_ai_search_setup_value</source>
                 <target>Saisir la valeur</target>
             </trans-unit>
+            <trans-unit id="zqz.Tph">
+                <source>label.guided_step_ui_calculator_action</source>
+                <target>Choisir s'il est envoyé</target>
+            </trans-unit>
             <trans-unit id="xuMz59Y">
                 <source>label.guided_step_ui_calculator_fields</source>
                 <target>Ajoutez ce que le visiteur règle</target>
@@ -3336,7 +3344,7 @@
             </trans-unit>
             <trans-unit id="AordYSb">
                 <source>label.outputs_help</source>
-                <target>Ajouter un résultat transforme ce formulaire en calculateur : il calcule et affiche au lieu d'être envoyé. Les variables disponibles apparaissent ici une fois les champs enregistrés.</target>
+                <target>Ajouter un résultat transforme ce formulaire en calculateur : il calcule et affiche ; sans action il n'est pas envoyé, avec une action ses résultats partent avec l'envoi. Les variables disponibles apparaissent ici une fois les champs enregistrés.</target>
             </trans-unit>
             <trans-unit id="_dwvS9b">
                 <source>label.outputs_help_variables</source>

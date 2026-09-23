@@ -79,6 +79,20 @@ class BlockExtension
         return 0 === $this->renderDepth ? $this->localizeLinks($this->applyNonce($html)) : $html;
     }
 
+    // Renders a run of blocks the caller keeps in a cache entry of its own (see OwnedBlocksExtension): opened as one more level, so each block hands back raw html fit to be stored, and the nonce and the links laid on once the outermost render closes, on the hit as on the miss
+    public function renderNested(callable $render): string
+    {
+        ++$this->renderDepth;
+
+        try {
+            $html = $render();
+        } finally {
+            --$this->renderDepth;
+        }
+
+        return 0 === $this->renderDepth ? $this->localizeLinks($this->applyNonce($html)) : $html;
+    }
+
     // The entrance effect belongs to the block, not to the place it happens to be rendered from - hence here rather than in components/Blocks/Block.html.twig, which only ever wraps the blocks of a page's own run. A slot of a container kind (a card in a "section_cards", a block in a "flex_column", a video in a "video_grid") goes through render_block() straight, so its animation was stored, offered on the edit screen, and read by nothing at all.
     // Outside the cache renderHtml() writes to: the wrapper is two attributes computed from the block itself, where the cache entry is the kind's whole template
     private function wrapInAnimation(Block $block, string $html): string

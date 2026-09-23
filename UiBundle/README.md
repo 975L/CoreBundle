@@ -80,6 +80,7 @@ See it in action at [bundles.975l.com/pages/ui-bundle](https://bundles.975l.com/
 - Doctrine ORM
 - EasyAdmin
 - VichUploader Bundle
+- `twig/cache-extra` and `twig/extra-bundle`, both required by the package, for Twig's `{% cache %}` tag. `TwigCachePoolPass` points the `twig.cache` pool the extra bundle declares at `cache.app.taggable`, the pool every c975L bundle empties its tags in — so a fragment tagged `shop_products` or `ui_reviews` goes stale on the very save that empties a block, with no second invalidation to write (see [Block render cache](#block-render-cache)).
 - The application's `App\Entity\User` must implement `c975L\ConfigBundle\Contract\UserInterface` — `Block::$user` and `Media::$user` are typed on that contract rather than on the app's own class, which lives in app-space and a bundle cannot reference. ConfigBundle's `prependExtension()` maps the two together through Doctrine's `resolve_target_entities`, so there is nothing else to declare; but a `User` not implementing it makes both stop recording who last edited a row, silently.
 - [Ghostscript](https://www.ghostscript.com/) (`gs` binary) installed on the server — required for automatic PDF thumbnail generation (see [PDF thumbnails](#pdf-thumbnails)). Optional otherwise: without it, PDF uploads still work, but no `.webp` thumbnail is generated.
 - `chrome-php/chrome` and a local Chrome — only for `c975l:ui:layout-audit` (see [Checking a page's layout](#checking-a-pages-layout)), a development tool. Nothing else needs them, and the command exits cleanly saying so when they're missing.
@@ -111,7 +112,7 @@ The `confetti` controller loads its `canvas-confetti` library from the copy vend
 
 The `infiniteScroll` controller grows a paginated listing as the visitor scrolls, with no route and no partial template of its own: it fetches the page the listing's own "next" link points to, appends the items found there, and reads that page's own link to know where to go next - or that there is nowhere left. A template opts in with `data-controller="infiniteScroll"` around the whole thing, `data-infiniteScroll-target="list"` on the element holding the items, and `data-infiniteScroll-target="next"` plus `data-action="click->infiniteScroll#load"` on the link to the next page; an optional `data-infiniteScroll-target="count"` is filled with the number of items loaded. Nothing is hidden by any of it: without javascript, and for a crawler, that link is the ordinary link to the next page it looks like, and a failed fetch leaves it clickable. ShopBundle's shop index and BookBundle's three listings use it, and no listing in the c975L bundles renders page links any more.
 
-The pages it walks are cut by `Paginator`, this bundle's own: `paginate(array $items, int $page, int $perPage)` returns a `Pagination`, which holds the items of that page and answers `getCurrentPageNumber()`, `getPageCount()`, `getTotalItemCount()`, `getItemNumberPerPage()`, `getRoute()` and `query()` - what a template builds the "next" link with (`path(books.route, books.query({'p': books.getCurrentPageNumber + 1}))`). It is countable and iterable, so `|length` and a `for` read it as an array. `query()` carries the route's own parameters as well as the request's query, so a listing served under `/serie/{slug}` keeps its slug, and a search or a filter survives the jump; `getPage()` reads the page number from a query bag, `p` being the parameter every listing uses. A listing is handed over as a plain array - the callers read their rows whole and sort them in php - and there is no query-level pagination here. It replaced KnpPaginatorBundle, which the bundles no longer depend on.
+The pages it walks are cut by `Paginator`, this bundle's own: `paginate(array $items, int $page, int $perPage)` returns a `Pagination`, which holds the items of that page and answers `getCurrentPageNumber()`, `getPageCount()`, `getTotalItemCount()`, `getItemNumberPerPage()`, `getRoute()` and `query()` - what a template builds the "next" link with (`path(books.route, books.query({'p': books.getCurrentPageNumber + 1}))`). It is countable and iterable, so `|length` and a `for` read it as an array. `query()` carries the route's own parameters as well as the request's query, so a listing served under `/serie/{slug}` keeps its slug, and a search or a filter survives the jump; `getPage()` reads the page number from a query bag, `p` being the parameter every listing uses. `paginate()` is handed the listing as a plain array and cuts the page out of it, for a caller that reads its rows whole and sorts them in php. A listing too long for that reads its page and its total in SQL itself and hands both to `paginateSlice(array $pageItems, int $page, int $perPage, int $total)`, which builds the very same `Pagination` - `paginate()` being nothing but `array_slice()` in front of it. It replaced KnpPaginatorBundle, which the bundles no longer depend on.
 
 The listing stops growing while a scroll heading for an anchor is under way: the `scrollButtons` controller below dispatches an `anchor:scroll` event on the document before scrolling, and `infiniteScroll` disconnects its observer until the visitor scrolls by themselves - a wheel, a touch or a key. Without it, the button pulling to the bottom of the page landed in the middle of a listing that kept loading under it, the bottom moving away as it was reached. Anything else scrolling to an anchor - an app's own code, another bundle - gets the same pause by dispatching that event.
 
@@ -1311,7 +1312,7 @@ A generic, shared "form definition" system (`Entity\Form`/`Entity\FormField`, ta
 
 ### Calculators (a form that computes instead of submitting)
 
-A `Form` owning at least one **`Entity\FormOutput`** (table `site_form_output`) is a **calculator**: it computes and displays, it never submits. `Form::isCalculator()` is what every path branches on, and that single fact replaces a mode, an action key and a second block kind - the `form` block embeds it exactly like any other form, and the two admin screens are the ones already there.
+A `Form` owning at least one **`Entity\FormOutput`** (table `site_form_output`) is a **calculator**: it computes and displays, and submits only when it is also given an action (see [A calculator that is also sent](#a-calculator-that-is-also-sent) below). `Form::isCalculator()` is what every path branches on, and that single fact replaces a mode, an action key and a second block kind - the `form` block embeds it exactly like any other form, and the two admin screens are the ones already there.
 
 The fuel-savings simulators sold with an E85 conversion box are the shape this was built against: a handful of sliders, six or seven named results derived from one another, nothing stored, nothing e-mailed.
 
@@ -1322,11 +1323,20 @@ The fuel-savings simulators sold with an E85 conversion box are the shape this w
 - **A rejected formula says what to fix**, in the language the admin is working in: `ExpressionEvaluator::lint()` counts the brackets itself and says which way they fail to match, names a variable that does not exist with the closest declared one beside it (a Levenshtein distance of at most a third of the name's length), and falls back to its own wording with the parser's message kept behind it - which is the only one able to name a position.
 - **The rendering is right before any JavaScript runs.** `FormController::fragment()` renders `components/Form/Calculator.html.twig` with the results the fields' own `defaultValue`s already give, so a browser running no JS reads real numbers - frozen on those defaults. The `ui-calculator` Stimulus controller (`assets/js/calculator.js`) only keeps them in step: it debounces 200 ms, aborts the answer to a value already typed over, and prints what the server formatted. **No expression is ever evaluated in the browser** - one formula, one implementation. A hand-written JS evaluator would be a legitimate optimization later, which is exactly why the grammar is kept this small.
 - **Which column is read first** is the admin's, from the `outputs first` switch on the `Form` (`Form::isOutputsFirst()`, column `site_form.outputs_first`): the numbers above the controls that move them on a phone, in the left column once the two sit side by side. Neither collection's own ordering could say it, an output's position being the calculation's own. The template carries it as a class and `sass/_calculator.scss` reorders the same DOM, so nothing focusable is ever reached out of the order it is read in.
-- **`Controller\CalculatorController`** (route `ui_form_compute`, `GET /form/{name}/compute`) answers the recomputation as JSON. Deliberately apart from `FormController`: this is a read, with no CSRF token, no session and **outside** `limiter.ui_form` - a dragged slider would exhaust that limiter in seconds. It answers `Cache-Control: private, no-store`, the numbers being whoever typed them. An output that cannot be evaluated - a slider at zero making a division by zero, a half-typed formula - degrades to `—` for that output alone, never a 500, and the outputs after it still compute.
-- **None of the three protections apply**: `FormSubmissionType`'s `protections` option is `false` for a calculator, so there is no honeypot trapping a submission that never happens, no captcha scoring a visitor who only moved a slider, and no "receive a copy" box with no e-mail to copy. `fragment()` also skips `startTimer()`, which writes to the session - every visitor of a cached page would otherwise pay a session cookie for nothing.
+- **`Controller\CalculatorController`** (route `ui_form_compute`, `GET /form/{name}/compute/{_locale}`) answers the recomputation as JSON. The page's own language rides the url, the template passing `app.request.locale`: the recomputation is a main request of its own, which `LocaleListener` would otherwise answer in the language kept in session or asked by the browser, a French page read with an English browser then printing `1,620 €` at the first keystroke. A route attribute, which that listener leaves alone, rather than `?_locale=`, which it would keep in session as the visitor's choice; optional, so a template overriding this one without it keeps working. Deliberately apart from `FormController`: this is a read, with no CSRF token, no session and **outside** `limiter.ui_form` - a dragged slider would exhaust that limiter in seconds. It answers `Cache-Control: private, no-store`, the numbers being whoever typed them. An output that cannot be evaluated - a slider at zero making a division by zero, a half-typed formula - degrades to `—` for that output alone, never a 500, and the outputs after it still compute.
+- **None of the three protections apply** to a calculator given no action: `FormSubmissionType`'s `protections` option is `false` for it, so there is no honeypot trapping a submission that never happens, no captcha scoring a visitor who only moved a slider, and no "receive a copy" box with no e-mail to copy. `fragment()` also skips `startTimer()`, which writes to the session - every visitor of a cached page would otherwise pay a session cookie for nothing.
 - **The two field types it takes**: `range` (a slider) and `choice` (a list whose **value** is what the expression sees, the label only what the visitor reads - `Véhicule léger|1.15`, one option per line in the `optionsText` textarea). Both come with `minValue`/`maxValue`/`stepValue`/`defaultValue` on `FormField`, which are HTML attributes on the input rather than constraints - a slider with no bounds goes nowhere. Those four are useful well beyond a calculator: a bounded `number`, a `select` in a contact form.
 - **Currency**: a `currency`-formatted output prints the currency the request locale names, falling back to the euro - a plain `fr` locale (no region, which is what a c975L site runs on) answers `XXX`, the code for "no currency". A calculator quoting anything else states a plain `number` with its own `unit`, printed after the figure and set off from it by a non-breaking space the admin never types - the field trims one away, so `t` comes out as `1,52 t`.
 - **Where the line is.** A `FormOutput` computes and displays, full stop. Anything needing real business logic - conditions in cascade, a third-party API, a database lookup, the vehicle-eligibility test those same sites also carry - stays a coded `Contract\FormActionInterface` in the app. The expression language does not replace that escape hatch; it saves opening it for three multiplications.
+
+#### A calculator that is also sent
+
+A calculator **given an action** (`send_email`, or any `FormActionInterface`) is sent like any other `Form`: a quote simulator where the visitor reads their estimate, then adds a name, an email and a message and asks for the real quote — one form, nothing typed twice. The discriminant is the action, not the outputs: `FormController::isComputeOnly()` is `isCalculator() && null === getAction()`, and only that case keeps the compute-only behaviour described above.
+
+- **It is protected like a form**: honeypot, captcha, CSRF token, bot timer, rate limiter and flash, exactly as `Form.html.twig` gets them.
+- **It is still rendered as a calculator**: `Calculator.html.twig` wraps the same two columns in a `<form class="ui-calculator-form">`, which `sass/_calculator.scss` sets to `display: contents` so the fields and the results remain the grid's two items, and puts the button and its notes under both (`.ui-calculator-submit`). The button, the admin's links, the required note and the GDPR line are the `_submit.html.twig` partial `Form.html.twig` includes as well, the flashes `_flashes.html.twig`. A failed validation re-renders the calculator with the results of what the visitor typed, not of the defaults.
+- **Only the controls a formula reads are sent to `ui_form_compute`**: `assets/js/calculator.js` reads `input[type=number]`, `input[type=range]` and `select` alone (`COMPUTED`), so a name, an email or a message never rides the query string of a GET into the server logs, and typing them sends no request.
+- **The email says what the visitor read**: `SendEmailFormAction` writes a `choice` by the label of its option ("A4", not the "1.6" the formula reads) — for every form, calculator or not — and appends each **visible** output of a calculator, formatted as the page showed it, after the fields. The `ExpressionEvaluator` it computes them with is an optional constructor argument, so a subclass wiring the action by hand keeps working and simply sends no results.
 
 A calculator **travels between environments**: it is built and checked on one and read by visitors on another, and its formulas are the one kind of content no deployment carries. `Management\FormExportProvider`/`Management\FormImportProvider` (kind `site_form`) plug Forms into ConfigBundle's **Export sync (everything)** shortcut and **Import content** screen, and the Form index gains an "Export selection" batch action, `site-role-admin`-gated like the rest of the screen. A `Form` is matched by its `name`, its fields and its outputs by theirs - the column each table keeps unique and the one every expression reads them by - so ids never have to line up and a relabelled row travels without being rebuilt. A row the payload no longer carries is dropped, except a **restricted** field, which its own bundle seeded and the application reads by name; `restricted` itself is only ever applied to a row the import creates, so a dev database can never unmark what production's seeder maintains.
 
@@ -1404,6 +1414,16 @@ still paints the rest of the row.
 `compact` prints the score and nothing else — the "37 avis" a product page spells out is dropped, and a thing nobody voted on says nothing at all rather than "pas encore noté", the empty row of icons saying it already. Except on a scale of 1, where the count *is* the reading and there is no average to drop it for. `aggregate` hands the widget the tally the listing already read, so thirty cards run **no query of their own**; leave it out and each one reads its own.
 
 Only a listing rendered **outside the block cache** should ask for it: the html of a cached block is shared by every visitor, and its averages would be frozen with it. That is why `Book:Books`, `Strip:Cards` and ShopBundle's `Product:Products` all take the widget as an opt-in prop, which only the index pages pass.
+
+**Caching a fragment that prints an average** is possible all the same, with the tag a vote empties. `RatingCacheListener` invalidates two tags on every vote cast, changed or withdrawn — a published review's score included, once per flush — and two Twig functions name them: `ui_rating_cache_tag(ownerType, ownerId)` for a fragment showing one owner's tally (a product sheet, a rich result's `aggregateRating`), `ui_rating_type_cache_tag(ownerType)` for one showing several owners of a type, whose ids are only known once it is drawn (a grid of cards):
+
+```twig
+{% cache 'book_rating_' ~ book.id ~ '_' ~ app.request.locale tags([ui_rating_cache_tag('book', book.id)]) %}
+    <twig:c975LUi:Rating:Rating ownerType="book" ownerId="{{ book.id }}"/>
+{% endcache %}
+```
+
+What such a fragment freezes is the average and the count, never the visitor's own score, which `assets/js/rating.js` paints from their browser over whatever the server rendered.
 
 `locale` names the language the rated thing is written in - a book's page reading in French whatever language the visitor arrived in. It carries both the words of the tally rendered here and the ones handed to `assets/js/rating.js`, so a vote cast reads in the language of the page it was cast on; left out, the widget speaks the visitor's own.
 
@@ -1642,7 +1662,7 @@ A visitor asks a question in the `ai_search` block and the site answers **from i
 
 **What was asked** is listed in the back office (`AiSearchAnswerCrudController`, in the sidebar once the search is configured, `site-role-editor`): filter on *Found* = no to see what the site doesn't cover yet - the content to write. **The privacy policy model** gains a "site search" section (`data-legal-id="site-search"`) as soon as the search is configured, stating that questions are sent to the provider with excerpts of public pages, kept without anything identifying the visitor, and deleted after the retention - `ui-ai-assistant-site-retention-days` being one of its `legal_var()` values, printed as the purge reads it (`AiSiteSearch::retentionDays()`). The four entries switching the search on are watched by `LegalPlaceholderCacheListener` like `site-has-accounts` is. Two guided projects walk it: `ui-ai-search-setup` (the settings) and `ui-ai-search-answers` (the questions, once the search is configured).
 
-**Nothing to place**: once the search is configured, the layout writes it in a `<dialog>` on every page (`<twig:c975LUi:AiSearch:Dialog/>`), opened by anything marked `data-ai-search-open` - the magnifier `<twig:c975LUi:AiSearch:Trigger [class="..."]/>`, which SiteBundle's navbar carries - or by Ctrl/Cmd+K. Both write nothing while the search is off. The block stays for a page that wants the search in its content, with a title and suggestions of its own.
+**Nothing to place**: once the search is configured, the layout writes it in a `<dialog>` on every page (`<twig:c975LUi:AiSearch:Dialog/>`), opened by anything marked `data-ai-search-open` - the magnifier `<twig:c975LUi:AiSearch:Trigger [class="..."]/>`, which SiteBundle's navbar carries - or by Ctrl/Cmd+K. Both write nothing while the search is off. The block stays for a page that wants the search in its content, with a title and suggestions of its own. Whether the index holds anything is asked several times per page (the trigger in the navbar, the one in the footer, the dialog), so `AiSearchChunkRepository::currentVersion()` is read once per request and kept in the cache with no expiry, an empty string standing for "never indexed"; `replaceAll()` deletes it once a new index is swapped in, so a page costs no query on the index table.
 
 **A source can be drawn as a card** by the bundle owning it: implement `Contract\AiSearchCardProviderInterface` (auto-discovered, no tag) and return, for the urls you own, the html of your own card - ShopBundle draws a product with its price and its basket button. `AiSearchController` renders them on each answer, never stores them (price and stock are read when the answer is), and takes those urls out of the plain links. The front injects that html as is - it comes from the site's own templates - then dispatches `c975l:content-loaded`, on which `controllers.js` registers the lazy controllers the cards carry.
 
@@ -1749,6 +1769,35 @@ A resolver may also return **`null`**, which means "don't cache *this* block at 
 
 The other half is in `BlockCacheInvalidationListener`, which walks the other way: a changed block invalidates its own `block_{id}` **and** every container above it (`Block::$parentBlock`, falling back to the unit-of-work snapshot when the PHP-side relation was already nulled by `Block::removeSlot()`). Adding a slot is what makes that necessary rather than merely tidy - the new row's id was never a tag of its container's entry, so nothing else would ever reach it.
 
+### An owner's whole run as one entry
+
+`render_block()` keeps one entry per block, which still leaves a page reading its blocks, their medias and their slots before the first hit. **`render_owned_blocks(owner)`** (`Twig\OwnedBlocksExtension`) keeps the whole run of an owner — a page, a product sheet, any `HasBlocksInterface` — as a single entry, keyed on the owner and the locale:
+
+```twig
+{{ render_owned_blocks(product) }}
+```
+
+It renders exactly what `<twig:c975LUi:Blocks:Blocks blocks="{{ product.blocks }}"/>` renders (`components/Blocks/_owned.html.twig`), so a hit reads nothing but the owner's own row. The entry is tagged with every block's `block_{id}` and whatever its kind adds, `blocks_all`, and the owner's own tag, `OwnedBlocksExtension::ownerTag()` (`owned_blocks_<short class name>_<id>`, so any owner has one without declaring it):
+
+- **A block edited in place** reaches the entry through its own `block_{id}`, as it reaches its own entry.
+- **A block added, removed or moved** only writes the join table, which neither the owner nor the `Block` reports. `Listener\OwnedBlocksCacheListener` reads it off the unit of work — the owner's blocks collection scheduled for update is the one trace of it — and empties the owner's tag once the flush is written; the owner itself saved empties it too.
+- **One block refusing the cache** — an uncacheable kind, an instance veto (a form and its CSRF token) — stores nothing for the run, which then falls back on `render_block()`'s own entries, block by block.
+- **Rendered live** for an editor (`site-role-editor`), whose run carries the edit overlay and its urls, while `BlockRenderContext` has the cache disabled, and outside any request — the same cases a single block stores nothing for.
+
+On a miss, `BlockRepository::preloadTree()` reads the run with its medias, then its slots level by level, in one query per level rather than one per block. `BlockExtension::renderNested()` opens the render as one more level, so each block hands back raw html fit to be stored, and lays the CSP nonce and the localized links on the run once, on the hit as on the miss.
+
+### An app's own fragments
+
+Twig's `{% cache %}` (`twig/cache-extra`) writes into the `twig.cache` pool `twig/extra-bundle` declares, which would never hear any of the tags this bundle and its satellites empty in `cache.app.taggable`. `DependencyInjection\Compiler\TwigCachePoolPass` removes that pool and aliases `twig.cache` to `cache.app.taggable`, so **one invalidation reaches the blocks and an app's fragments alike**: tag a fragment with the tag the entity behind it already empties, and there is no listener of your own to write.
+
+```twig
+{% cache 'book_card_' ~ book.id ~ '_' ~ app.request.locale tags(['book_books']) %}
+    <twig:Book:Card book="{{ book }}"/>
+{% endcache %}
+```
+
+The tags worth knowing: a source's `cacheTags` (see [Letting a source be cached](#letting-a-source-be-cached)), `ui_rating_cache_tag()` / `ui_rating_type_cache_tag()` for an average (see [Visitor ratings](#visitor-ratings)), ConfigBundle's `url_metadata` for what `url_metadata()` prints, and `blocks_all` for a fragment that has to go on a release too.
+
 ### Emptying a cache of your own along with the blocks
 
 The dashboard's **"Clear the render cache"** tile, a legal model being customized, and every `bin/console cache:clear` all funnel through `BlockCacheInvalidator::invalidateAll()`. An app or a satellite bundle plugs its own caches into that one gesture by implementing `CacheInvalidatorInterface` — auto-discovered like every other provider here, no tag needed:
@@ -1759,19 +1808,19 @@ use c975L\UiBundle\Contract\CacheInvalidatorInterface;
 class SheetCacheInvalidator implements CacheInvalidatorInterface
 {
     public function __construct(
-        private CacheItemPoolInterface $twigCache,
         private EntityManagerInterface $entityManager,
     ) {}
 
     public function invalidate(): void
     {
-        $this->twigCache->clear();
         $this->entityManager->getConfiguration()->getResultCache()?->clear();
     }
 }
 ```
 
-What belongs here is any cache holding rendered output or query results whose key carries **no version of the code that produced it** — a Twig `{% cache %}` fragment around an app's own component, a Doctrine result cache on the lists an index shows. Those go stale on a release that changed nothing in the database, which is exactly what the tile and `cache:clear` exist to settle. Per-entity invalidation is a different job and stays where it belongs, on the Doctrine events.
+What belongs here is any cache holding rendered output or query results whose key carries **no version of the code that produced it** — a Doctrine result cache on the lists an index shows, a pool of your own. Those go stale on a release that changed nothing in the database, which is exactly what the tile and `cache:clear` exist to settle. Per-entity invalidation is a different job and stays where it belongs, on the Doctrine events.
+
+A Twig `{% cache %}` fragment needs no invalidator: `twig.cache` **is** `cache.app.taggable` (see [An app's own fragments](#an-apps-own-fragments) below), so a fragment tagged `blocks_all` (`BlockCacheInvalidator::CACHE_TAG_ALL`) is emptied by the tile and by `cache:clear` with the blocks. Never `clear()` that pool from an invalidator — it would empty every entry of the application, not the fragments alone.
 
 The blocks are emptied first, so the tile does what it is named after even if a satellite's invalidator throws; the failures are collected and raised once every invalidator has had its turn. An implementation must not reach back into `BlockCacheInvalidator`, which is the service calling it.
 
@@ -2145,8 +2194,11 @@ Two things are cached, on the same tags:
 Set it to **random** and the block draws its items over the *whole* source before applying `limit`, so
 a page putting three of twenty characters forward shows a different three on each visit rather than the
 same three forever. The draw is made at render time, which means the block itself is no longer cached
-(a cached entry would freeze one single draw until the source changed); its **items** keep their own
-entries all the same, each keyed on the item and not on the draw, so only the grid wrapper is rebuilt.
+(a cached entry would freeze one single draw until the source changed). What is cached instead is the
+**whole source, rendered once**: `CollectionRuntime` keeps the html of every item as a list under the
+source's own `cacheTags` — keyed on the source, the detail page, the variant, the heading level, the
+language and the page being rendered — and shuffles that list in PHP at each render before applying
+`limit`, so a hit reads neither the source nor a single item's entry.
 
 The section head — eyebrow, title and the "see all" link (`linkLabel`/`linkUrl`) — is rendered the same
 way in every presentation (`variant`), the portfolio one only borrowing `portfolio-grid`'s markup so it
@@ -2228,9 +2280,9 @@ normally should: a "books" source and a "books of one series" source go stale on
 
 Reuse that tag for anything else your app renders from the same entity — a Twig `{% cache %}` around
 your own card component, keyed by the entity and tagged the same way, makes one listener invalidate
-both the site's own cards and the ones this block draws. Watch the pool, though: `{% cache %}` writes
-to `twig.cache`, which `twig/extra-bundle` declares apart from the `cache.app.taggable` this bundle
-uses — invalidate both, or the other one keeps serving the previous version.
+both the site's own cards and the ones this block draws. There is one pool to empty, not two:
+`TwigCachePoolPass` points the `twig.cache` pool `{% cache %}` writes to at the very
+`cache.app.taggable` this bundle uses (see [An app's own fragments](#an-apps-own-fragments)).
 
 `CollectionItem` also takes `buttonLabel` (defaults to the raw `url` when empty) and `buttonIcon` (a
 `c975L\UiBundle\Image\Icon` component `src`, e.g. an icon path from `social_link_icon()`) — both flow
@@ -2330,8 +2382,12 @@ The template is included with the item's whole data (its own `data` keys first, 
 which is what lets a back-office page hold a rendering this bundle knows nothing about. Declaring no
 `itemTemplate` keeps the `collection_item` card every source has always been drawn by.
 
-A source naming a template answers for its caching too: that path bypasses the per-item cache entry,
-the template being free to hold its own `{% cache %}` against the very entity it draws.
+Its items go through the per-item cache entry like any other: `CollectionItem.html.twig` includes the
+named template in place of the built-in card, and the entry's key holds the template too, so the same
+item drawn by two templates never serves one's html for the other. Only the html is stored, never the
+entity the template reads. A source naming a template therefore declares the `cacheTags` its entity
+empties, like any source; one declaring none is rendered live. An item carrying no slug — a review,
+which has no page of its own — is keyed on its `data['id']` instead, and one with neither is rendered live.
 
 #### One item rather than a listing
 
@@ -2775,6 +2831,8 @@ Media::ROLE_WATERMARK_ON_DARK;  // 'watermark-on-dark'
 `logo-on-dark` is the same logo drawn for a dark page, and the one role of the set a site is expected to leave empty: a logo whose lettering is black disappears into a dark navbar, and no filter lightens it without flattening the colours around that lettering. It is resized to the same 600px as `logo` and read through `site_media('logo-on-dark')`; a consumer falls back to `logo` when none was uploaded (see SiteBundle's navbar, which paints one or the other by theme).
 
 `role` is unique per value, so there is at most one `Media` for each. Create/replace one the same way as any other `Media` (e.g. from your own app's settings form or a fixture), setting `setRole(Media::ROLE_FAVICON)` — `UiMediaNamer` then stores it under a fixed, predictable filename at the root of `public/` instead of the usual per-block path.
+
+**Reading them costs no query per call.** `site_media(role)` answers the singleton roles from one preload kept in the cache under `MediaExtension::MEDIA_SINGLETONS_CACHE_TAG` (`media_singletons`). `site_random_media(role)` draws one row of a repeatable role (`error-image`): the ids of the role are cached under `MediaExtension::MEDIA_ROLES_CACHE_TAG` (`media_roles`, filled by `MediaRepository::findIdsByRole()`), the draw is made in PHP on every call so each render still gets a fresh pick, and only the row drawn is loaded, by its id. `BlockCacheInvalidationListener` empties **both** tags on any `Media` written or removed, whatever its role — a media leaving a role is as stale as one entering it, and the role it had is gone from it by the time the listener runs.
 
 `favicon` and `apple-touch-icon` are the two roles with a *fixed* spec (48×48 `.ico`, 114×114 `.png`, see `Media::FIXED_ICON_SPECS`): whatever is uploaded is fitted whole inside that exact size, never cropped, converted to that format, and stored under the role's own filename. A non-square upload is centered on padding, transparent on the `.ico` and opaque white on the `.png`, whose transparency iOS paints black on a home screen. Both accept an **SVG** on top of the usual PNG/JPG/GIF/WEBP, `Service\SvgRasterizer` rendering it to a 512px PNG the pipeline then downscales — a vector source giving a visibly cleaner icon than a small raster one blown up.
 
@@ -3267,6 +3325,17 @@ A set of small, dependency-free helpers every c975L bundle attaching blocks or u
 One more applies on its own rather than being called: **`Form\Extension\VichTranslationDomainExtension`** pins the two labels VichUploader ships translations for — the "delete?" checkbox and the "download" link — to the domain those translations live in. Left to their default both inherit the surrounding form's domain, which inside the admin is EasyAdmin's, so every upload field rendered `vich_uploader.form_label.delete_confirm` as-is. Written as a type extension rather than as two more entries in `VichImageOptions` because half the ecosystem's upload fields pass hand-written options and would each have had to remember them; a field naming its own domain still wins.
 
 One of them is JavaScript rather than PHP: **`assets/js/pointer-sort.js`**' `addSortGesture()` is the drag gesture the block sortable runs on, mouse and finger alike, with no idea what it is dragging - see [Reusing the gesture elsewhere](#reusing-the-gesture-elsewhere). Reach for it rather than re-hand-rolling a drag in your own bundle: a grid of thumbnails or a table of rows only has to answer where the dragged element should land, which is the part that genuinely differs.
+
+One is a contract rather than a helper: **`Contract\SocialContentSourceInterface`** hands [SocialBundle](https://github.com/975L/SocialBundle)'s scheduled publication the contents to post on the site's networks — a photo, a story, a product. It is declared here so the bundle owning the content implements it without requiring SocialBundle, which keeps track of what went out where (auto-discovered by interface, no tag needed):
+
+| Method | Answers |
+| --- | --- |
+| `getSourceType()` | the name stored beside each posted id (`gallery_media`), so two sources may hand out the same numeric id |
+| `getRepeatAfterDays()` | the days after which a posted content may be offered again, `null` for never |
+| `getNextContent(array $excludedIds)` | the next content to post among those not posted yet, `null` when none is left — the ids already posted are the publisher's to know |
+| `getContent(string $sourceId)` | one content read again, `null` once it is gone — a post reviewed tomorrow goes out with the image as it then is |
+
+Each content is a **`Model\SocialContent`**: `sourceId`, `title`, `url`, the image both ways because the networks differ — `imagePath` read from disk for Bluesky, which wants the bytes uploaded, and `imageUrl` for Meta, which downloads a public url itself — its `imageAlt`, and `variables`, the other `{name}` placeholders the site's post template may carry (`category`, `description`…).
 
 ### Exporting and importing blocks
 

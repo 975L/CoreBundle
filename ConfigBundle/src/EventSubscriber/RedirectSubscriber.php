@@ -17,11 +17,17 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class RedirectSubscriber implements EventSubscriberInterface
 {
+    // The tag the rows are cached under, emptied by CacheTagListener when one is written or removed
+    public const string CACHE_TAG = 'config_redirects';
+
     public function __construct(
         private readonly RedirectRepository $redirectRepository,
+        private readonly TagAwareCacheInterface $cache,
     ) {
     }
 
@@ -93,11 +99,16 @@ class RedirectSubscriber implements EventSubscriberInterface
         $prefixMatch = null;
         $prefixMatchLength = -1;
 
-        foreach ($this->redirectRepository->findCandidatesForPath($path) as $redirect) {
+        foreach ($this->rows() as $redirect) {
             $fromPath = (string) $redirect->getFromPath();
 
-            if ($fromPath === $path) {
+            if (0 === strcasecmp($fromPath, $path)) {
                 return $redirect;
+            }
+
+            // Only a row ending on "*" covers what sits below it, the others naming one url alone
+            if (!str_ends_with($fromPath, '*')) {
+                continue;
             }
 
             $prefix = rtrim($fromPath, '*');
@@ -108,5 +119,17 @@ class RedirectSubscriber implements EventSubscriberInterface
         }
 
         return $prefixMatch;
+    }
+
+    // Every row, read through the cache: this runs on every request of the site and the table holds tens of rows, not thousands. Cached whole, a Redirect carrying no relation to come back detached
+    /** @return list<Redirect> */
+    private function rows(): array
+    {
+        return $this->cache->get('config_redirect_rows', function (ItemInterface $item): array {
+            $item->expiresAfter(null);
+            $item->tag([self::CACHE_TAG]);
+
+            return $this->redirectRepository->findAll();
+        });
     }
 }

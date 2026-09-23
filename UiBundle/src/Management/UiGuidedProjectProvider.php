@@ -608,6 +608,12 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'highlight' => '#Form_name',
                 ],
                 [
+                    'label' => 'label.guided_step_ui_calculator_action',
+                    'description' => 'description.guided_step_ui_calculator_action',
+                    'narration' => 'narration.guided_step_ui_calculator_action',
+                    'highlight' => '#Form_action',
+                ],
+                [
                     'label' => 'label.guided_step_ui_calculator_fields',
                     'description' => 'description.guided_step_ui_calculator_fields',
                     'narration' => 'narration.guided_step_ui_calculator_fields',

@@ -1,6 +1,6 @@
 ---
 name: c975l-management
-description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, EssentialActionProviderInterface, narration, highlight selector, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
+description: "Use this skill when a bundle or an application has to add anything to the /management dashboard of a c975L site — a menu entry, an alert, a shortcut, a widget, a guided project, a what's new note, an importmap entry, an admin procedure, an export or an import, a linkable route. Lists every contribution interface, the one wiring rule that makes them work, and the test that proves their targets still exist. Triggers on: MenuProviderInterface, getMenuSection, section icon, internal link, leavesTheAdmin, AlertProviderInterface, ShortcutProviderInterface, DashboardWidgetProviderInterface, GuidedProjectProviderInterface, WhatsNewProviderInterface, ImportmapProviderInterface, ProcedureProviderInterface, ExportProviderInterface, ImportProviderInterface, LinkableRouteProviderInterface, LinkableRouteCacheTagsInterface, getLinkableRouteCacheTags, LinkableRouteRegistry, cacheTags, EssentialActionProviderInterface, narration, highlight selector, BackOfficeAccessVoter, TaggedInterfacePass, TableExporter, ManagementTargetsTestCase, EasyAdmin dashboard, AbstractDashboardController, configureMenuItems, DashboardController, whatsnew.json."
 ---
 
 # c975L ConfigBundle — contributing to /management
@@ -61,6 +61,7 @@ class MyUrlMetadataProvider implements UrlMetadataProviderInterface
 | `ProcedureProviderInterface` | `getProcedures()` | admin workflows for the dashboard AI assistant |
 | `ImportmapProviderInterface` | `getImportmapEntries()`, `getAdminImportmapEntries()` | AssetMapper importmap entries, written on `composer update` |
 | `LinkableRouteProviderInterface` | `getLinkableRoutes()` | routes offered as SiteBundle menu targets |
+| `LinkableRouteCacheTagsInterface` | `getLinkableRouteCacheTags()` | beside the one above, for a provider listing one entry per row: the tags its bundle already empties when a row is saved, so its entries are cached under them |
 | `UrlMetadataProviderInterface` | `getUrlMetadataPaths()` | urls that have no entity to describe themselves |
 | `SitemapProviderInterface` | `getSitemapName()`, `getUrls()` | a sitemap of your own |
 | `HealthCheckProviderInterface` | `getKind()`, `runChecks()` | health checks |
@@ -108,6 +109,13 @@ Two nuances that get lost:
   read by the films of the back office and drawn nowhere; without one, the label and the description
   stand in. It resolves in a domain of its own — the item's `translation_domain` suffixed `_narration`
   (`site` reads `site_narration`) — and is written in every language the bundle speaks.
+- A linkable route provider listing its own rows (`/galerie/{category}`, one entry per category) costs
+  a query on every page rendering such a link, unless it also implements
+  `LinkableRouteCacheTagsInterface`: `LinkableRouteRegistry` then keeps its entries in the cache, per
+  provider and per language, under the tags `getLinkableRouteCacheTags()` names, and
+  `LinkableRouteRegistry::cacheTags()` hands them to a menu item pointing at one — SiteBundle caching
+  that item with the rest of the menu. **Name only tags your bundle already empties on that row's save**;
+  a provider declaring none is read live, and `cacheTags()` answering `null` means "do not cache".
 - `whatsnew.json` is a marketing thread for non-developer users — no `version`, no `bundle` field,
   describe a benefit. The developer changelog is `ChangeLog.md`.
 
@@ -164,6 +172,8 @@ and the container compilation of every production site breaks otherwise.
 - **Do not write a service tag** for a contribution class — the compiler pass finds it.
 - **Do not leave a menu entry on the admin default** when its own screen opens to an editor.
 - **Do not leave `Management/` out of the `src/` resource** in `services.yaml`.
+- **Do not declare a linkable route cache tag nothing empties** — the menu would keep a renamed row's
+  old title until the next `cache:clear`.
 - **Do not write your own export.** Reuse `TableExporter` or `ContentExporter`.
 - **Do not match on ids when importing.** Use the natural key.
 - **Do not put a technical changelog entry in `whatsnew.json`** — it is read by the site's owner.

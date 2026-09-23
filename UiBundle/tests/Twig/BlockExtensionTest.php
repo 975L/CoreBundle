@@ -340,6 +340,26 @@ class BlockExtensionTest extends TestCase
         return new BlockExtension($registry, $twig, $this->createStub(TagAwareCacheInterface::class), new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $this->createStub(CspNonceProvider::class), new BlockRenderContext(), $this->createContentTranslator(), $this->createMediaTranslator());
     }
 
+    // A run stored whole by its caller keeps the marker, and the response's own nonce is laid on once the outermost render closes - on the hit as on the miss
+    public function testRenderNestedLaysTheNonceOnTheOutermostRenderOnly(): void
+    {
+        $nonceProvider = $this->createStub(CspNonceProvider::class);
+        $nonceProvider->method('styleNonce')->willReturn('abc');
+
+        $registry = $this->createStub(BlockRegistry::class);
+        $extension = new BlockExtension($registry, $this->createStub(Environment::class), $this->createStub(TagAwareCacheInterface::class), new RequestStack(), new BlockCacheTagResolver($registry, new BlockCacheTagRegistry()), new BlockEditUrlRegistry(), $nonceProvider, new BlockRenderContext(), $this->createContentTranslator(), $this->createMediaTranslator());
+
+        $inner = null;
+        $html = $extension->renderNested(function () use ($extension, &$inner): string {
+            $inner = $extension->renderNested(static fn (): string => '<style data-ui-nonce>');
+
+            return $inner;
+        });
+
+        $this->assertSame('<style data-ui-nonce>', $inner);
+        $this->assertSame('<style nonce="abc">', $html);
+    }
+
     // anchor_id is computed once here instead of every "Page sections" adapter template repeating its own "{{ anchor ~ '-' ~ block.id }}" - the trailing block id keeps two blocks of the same kind (or the same title/anchor reused elsewhere) on the same page from colliding on the same HTML id
     public function testRenderBlockComputesAnchorIdFromTheBlocksAnchorAndId(): void
     {
