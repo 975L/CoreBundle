@@ -1956,7 +1956,7 @@
             </trans-unit>
             <trans-unit id="AQ3XdTC">
                 <source>label.field_price_help</source>
-                <target>Shown after the label and multiplied by the field's value in formulas: a ticked box is worth its price, a number is quantity × price.</target>
+                <target>Shown after the label and multiplied by the field's value in formulas: a ticked box is worth its price, a number is quantity × price. For a choice, each option shows value × price: set 1 when its values already are prices.</target>
             </trans-unit>
             <trans-unit id="GvBwpCn">
                 <source>label.field_required</source>

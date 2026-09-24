@@ -354,6 +354,13 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertSame("Logo (400\u{00A0}€)", $this->buildAddedFields([$field])['logo']['options']['label']);
     }
 
+    public function testAPricedChoiceShowsWhatEachOptionAdds(): void
+    {
+        $field = $this->buildField('type', FormField::TYPE_CHOICE, false)->setPrice(1.0)->setOptions([['label' => 'Vitrine', 'value' => '1490']]);
+
+        $this->assertSame(["Vitrine (1\u{202F}490\u{00A0}€)" => '1490'], $this->buildAddedFields([$field])['type']['options']['choices']);
+    }
+
     // A field carrying a "url" (e.g. a CGU checkbox) gets an escaped <a> appended to its label instead of plain text
     public function testFieldWithUrlGetsHtmlLabelWithLink(): void
     {

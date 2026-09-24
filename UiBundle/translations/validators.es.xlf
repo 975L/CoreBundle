@@ -34,6 +34,10 @@
                 <source>text.feature_bar_items_max</source>
                 <target>Una barra de argumentos puede tener como máximo {{ limit }} elementos.</target>
             </trans-unit>
+            <trans-unit id="N7F.itZ">
+                <source>text.field_options_duplicate_value</source>
+                <target>Dos opciones no pueden tener el mismo valor (%values%): las fórmulas no sabrían cuál leer. Escriba por ejemplo «1.0» en lugar de «1».</target>
+            </trans-unit>
             <trans-unit id="bQpc9FG">
                 <source>text.hero_media_max</source>
                 <target>Una sección hero puede tener como máximo {{ limit }} imágenes.</target>

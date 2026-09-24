@@ -3,6 +3,16 @@
         "date": "2026-09-24",
         "description": [
             {
+                "en": "A priced list field now shows the amount of each of its options, on the page and in the email.",
+                "fr": "Un champ liste avec un prix affiche désormais le montant de chacune de ses options, sur la page comme dans l'e-mail.",
+                "es": "Un campo de lista con precio muestra ahora el importe de cada una de sus opciones, en la página y en el correo."
+            },
+            {
+                "en": "A list field now warns you when two of its options share the same value, which would otherwise make a calculator read the wrong one.",
+                "fr": "Un champ liste vous prévient désormais quand deux de ses options ont la même valeur, ce qui ferait sinon lire la mauvaise à un calculateur.",
+                "es": "Un campo de lista le avisa ahora cuando dos de sus opciones tienen el mismo valor, lo que haría que una calculadora leyera la equivocada."
+            },
+            {
                 "en": "A form field can now carry a price, shown next to its label and counted automatically in a calculator's estimate, so you type it once instead of in every formula.",
                 "fr": "Un champ de formulaire peut désormais porter un prix, affiché à côté de son libellé et compté automatiquement dans l'estimation d'un calculateur, pour ne le saisir qu'une fois au lieu de le répéter dans chaque formule.",
                 "es": "Un campo de formulario puede ahora llevar un precio, mostrado junto a su etiqueta y contado automáticamente en la estimación de una calculadora, para escribirlo una sola vez en lugar de en cada fórmula."

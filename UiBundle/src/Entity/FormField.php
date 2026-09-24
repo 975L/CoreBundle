@@ -15,6 +15,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: FormFieldRepository::class)]
 #[ORM\Table(name: 'site_form_field')]
@@ -308,6 +309,20 @@ class FormField implements \Stringable
         $this->options = [] === $options ? null : $options;
 
         return $this;
+    }
+
+    // Two options sharing a value can't be told apart: Symfony's ChoiceType then numbers every option 0, 1, 2... instead, and a formula reads those numbers rather than the values typed - "2 mois|1" and "Autre|1" have to become "Autre|1.0"
+    #[Assert\Callback]
+    public function validateOptionValues(ExecutionContextInterface $context): void
+    {
+        $values = array_map(static fn (array $option): string => (string) $option['value'], $this->getOptions());
+        $duplicates = array_unique(array_diff_assoc($values, array_unique($values)));
+        if ([] !== $duplicates) {
+            $context->buildViolation('text.field_options_duplicate_value')
+                ->setParameter('%values%', implode(', ', $duplicates))
+                ->atPath('optionsText')
+                ->addViolation();
+        }
     }
 
     // Virtual, not persisted - the options edited as one line per option, "Véhicule léger|1.15", rather than through a third level of nested collection in an admin screen that already holds two

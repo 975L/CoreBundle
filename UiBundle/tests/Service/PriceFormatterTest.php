@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Tests\Service;
 
+use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Service\PriceFormatter;
 use PHPUnit\Framework\TestCase;
 
@@ -41,11 +42,26 @@ class PriceFormatterTest extends TestCase
 
     public function testALabelIsFollowedByItsPrice(): void
     {
-        $this->assertSame("Création du logo (400\u{00A0}€)", new PriceFormatter()->label('Création du logo', 400, 'fr'));
+        $field = new FormField()->setType(FormField::TYPE_CHECKBOX)->setPrice(400);
+
+        $this->assertSame("Création du logo (400\u{00A0}€)", new PriceFormatter()->label($field, 'Création du logo', 'fr'));
     }
 
     public function testALabelWithoutPriceIsLeftAlone(): void
     {
-        $this->assertSame('Création du logo', new PriceFormatter()->label('Création du logo', null, 'fr'));
+        $this->assertSame('Création du logo', new PriceFormatter()->label(new FormField(), 'Création du logo', 'fr'));
+    }
+
+    // A priced choice shows its amounts on its options, never a "(1 €)" after its own label
+    public function testAPricedChoiceShowsWhatEachOptionAdds(): void
+    {
+        $field = new FormField()->setType(FormField::TYPE_CHOICE)->setPrice(1);
+        $formatter = new PriceFormatter();
+
+        $this->assertSame('Type de site', $formatter->label($field, 'Type de site', 'fr'));
+        $this->assertSame("Site vitrine (1\u{202F}490\u{00A0}€)", $formatter->optionLabel($field, 'Site vitrine', '1490', 'fr'));
+        $this->assertSame('Autre', $formatter->optionLabel($field, 'Autre', 'Autre', 'fr'));
+        $this->assertSame('Thème adapté', $formatter->optionLabel($field, 'Thème adapté', '0', 'fr'));
+        $this->assertSame('2 mois', $formatter->optionLabel(new FormField()->setType(FormField::TYPE_CHOICE), '2 mois', '1', 'fr'));
     }
 }

@@ -174,7 +174,11 @@ class FormSubmissionType extends AbstractType
 
         // A choice field's options are pairs the admin typed, the value being what an expression sees (e.g. 1.15 for "+15 %") - "choices" wants them the other way round
         if (FormField::TYPE_CHOICE === $field->getType()) {
-            $fieldOptions['choices'] = array_column($field->getOptions(), 'value', 'label');
+            // A priced choice shows what each option adds after its label
+            $fieldOptions['choices'] = [];
+            foreach ($field->getOptions() as $option) {
+                $fieldOptions['choices'][$this->priceFormatter->optionLabel($field, (string) $option['label'], (string) $option['value'], $this->translator->getLocale())] = $option['value'];
+            }
             $fieldOptions['placeholder'] = false;
         }
 
@@ -218,7 +222,7 @@ class FormSubmissionType extends AbstractType
     private function buildLabel(FormField $field): string
     {
         // Followed by the field's price when it has one, which then also sits inside the escaped text of a label carrying a link
-        $label = $this->priceFormatter->label((string) $this->formTranslator->getLabel($field), $field->getPrice(), $this->translator->getLocale());
+        $label = $this->priceFormatter->label($field, (string) $this->formTranslator->getLabel($field), $this->translator->getLocale());
 
         if (null === $field->getUrl()) {
             return $label;

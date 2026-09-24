@@ -176,6 +176,27 @@ class SendEmailFormActionTest extends TestCase
         $this->assertSame(['Format' => 'A4'], $captured->context['fields']);
     }
 
+    // A priced choice's option is written as the page showed it, amount included
+    public function testHandleWritesAPricedChoiceWithItsAmount(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = new Form()->setName('estimation');
+        $form->addField(new FormField()->setName('type')->setLabel('Type')->setType(FormField::TYPE_CHOICE)->setPrice(1.0)->setOptions([
+            ['label' => 'Vitrine', 'value' => '1490'],
+        ]));
+
+        $this->createAction($emailService)->handle($form, ['type' => '1490']);
+
+        $this->assertSame(['Type' => "Vitrine (1\u{202F}490\u{00A0}€)"], $captured->context['fields']);
+    }
+
     // A calculator given this action sends its visible results as the page showed them, after the fields - never a hidden intermediate step
     public function testHandleAppendsTheVisibleResultsOfACalculator(): void
     {

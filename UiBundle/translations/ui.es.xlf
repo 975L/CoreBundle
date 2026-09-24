@@ -1956,7 +1956,7 @@
             </trans-unit>
             <trans-unit id="AQ3XdTC">
                 <source>label.field_price_help</source>
-                <target>Se muestra tras la etiqueta y se multiplica por el valor del campo en las fórmulas: una casilla marcada vale su precio, un número vale cantidad × precio.</target>
+                <target>Se muestra tras la etiqueta y se multiplica por el valor del campo en las fórmulas: una casilla marcada vale su precio, un número vale cantidad × precio. En una lista, cada opción muestra valor × precio: ponga 1 si sus valores ya son precios.</target>
             </trans-unit>
             <trans-unit id="GvBwpCn">
                 <source>label.field_required</source>

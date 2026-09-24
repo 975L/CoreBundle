@@ -34,6 +34,10 @@
                 <source>text.feature_bar_items_max</source>
                 <target>Une bande de réassurance peut contenir au maximum {{ limit }} arguments.</target>
             </trans-unit>
+            <trans-unit id="N7F.itZ">
+                <source>text.field_options_duplicate_value</source>
+                <target>Deux options ne peuvent pas avoir la même valeur (%values%) : les formules ne sauraient pas laquelle lire. Écrivez par exemple « 1.0 » au lieu de « 1 ».</target>
+            </trans-unit>
             <trans-unit id="bQpc9FG">
                 <source>text.hero_media_max</source>
                 <target>Une section hero peut contenir au maximum {{ limit }} images.</target>

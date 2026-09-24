@@ -10,6 +10,8 @@
 
 namespace c975L\UiBundle\Service;
 
+use c975L\UiBundle\Entity\FormField;
+
 // The one place an amount of money is written, so a calculator's results and the prices shown in its fields' labels read the same "1 490 €" - see ExpressionEvaluator and FormField::$price
 class PriceFormatter
 {
@@ -26,9 +28,22 @@ class PriceFormatter
         return $formatter->formatCurrency($value, in_array($currency, ['', 'XXX', false], true) ? 'EUR' : $currency);
     }
 
-    // A field's label followed by its price, "Création du logo (400 €)" - the label alone when the field has none
-    public function label(string $label, ?float $price, string $locale): string
+    // A field's label followed by its price, "Création du logo (400 €)" - the label alone when the field has none, and for a choice, whose options carry the amounts instead (see optionLabel())
+    public function label(FormField $field, string $label, string $locale): string
     {
-        return null === $price ? $label : sprintf('%s (%s)', $label, $this->format($price, $locale));
+        return null === $field->getPrice() || FormField::TYPE_CHOICE === $field->getType() ? $label : $this->withAmount($label, $field->getPrice(), $locale);
+    }
+
+    // An option of a priced choice followed by what it adds, its value times the field's price - "Site vitrine (1 490 €)" for a price of 1. The label alone when the field has no price, the option no number, or when it adds nothing: "Thème adapté (0 €)" reads as a mistake
+    public function optionLabel(FormField $field, string $label, string $value, string $locale): string
+    {
+        $amount = null === $field->getPrice() || !is_numeric($value) ? 0.0 : (float) $value * $field->getPrice();
+
+        return 0.0 === $amount ? $label : $this->withAmount($label, $amount, $locale);
+    }
+
+    private function withAmount(string $label, float $amount, string $locale): string
+    {
+        return sprintf('%s (%s)', $label, $this->format($amount, $locale));
     }
 }

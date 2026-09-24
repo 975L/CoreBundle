@@ -102,7 +102,7 @@ class SendEmailFormAction implements FormActionInterface
         $pairs = [];
         foreach ($form->getFields() as $field) {
             // Labelled as the page showed it, price included
-            $label = $this->priceFormatter->label((string) $field->getLabel(), $field->getPrice(), $this->translator->getLocale());
+            $label = $this->priceFormatter->label($field, (string) $field->getLabel(), $this->translator->getLocale());
             $pairs[] = [$label, $this->readableValue($field, $submittedData[$field->getName()] ?? null)];
         }
 
@@ -154,7 +154,7 @@ class SendEmailFormAction implements FormActionInterface
 
         foreach ($field->getOptions() as $option) {
             if ((string) $option['value'] === (string) $value) {
-                return $option['label'];
+                return $this->priceFormatter->optionLabel($field, (string) $option['label'], (string) $option['value'], $this->translator->getLocale());
             }
         }
 

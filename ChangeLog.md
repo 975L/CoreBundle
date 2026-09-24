@@ -1,5 +1,16 @@
 # ChangeLog
 
+## v1.35.1
+
+A priced choice shows each option's amount, options unique by value
+
+### UiBundle
+
+- `FormField::validateOptionValues()` refuses two options sharing a value (24/09/2026)
+- `PriceFormatter::optionLabel()` shows a priced choice's value × price after each option (24/09/2026)
+- `PriceFormatter::label()` takes the `FormField` and skips a choice's own label (24/09/2026)
+- `SendEmailFormAction` writes a priced choice's option with its amount (24/09/2026)
+
 ## v1.35.0
 
 A priced form field feeds formulas, its quote line hidden at zero

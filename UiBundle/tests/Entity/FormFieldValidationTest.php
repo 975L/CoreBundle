@@ -13,6 +13,8 @@ namespace c975L\UiBundle\Tests\Entity;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormField;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Mapping\CascadingStrategy;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -42,5 +44,21 @@ class FormFieldValidationTest extends TestCase
 
         $this->assertNotEmpty($fields);
         $this->assertSame(CascadingStrategy::CASCADE, $fields[0]->getCascadingStrategy());
+    }
+
+    // Two options sharing a value are numbered 0, 1, 2... by Symfony, which a formula then reads instead of the values typed
+    public function testTwoOptionsCannotShareAValue(): void
+    {
+        // The callback alone, for the same reason as above: the entity's UniqueEntity wants a Doctrine registry
+        $callback = new Assert\Callback(static fn (FormField $field, ExecutionContextInterface $context) => $field->validateOptionValues($context));
+        $field = new FormField()->setOptions([['label' => '2 mois', 'value' => '1'], ['label' => 'Autre', 'value' => '1']]);
+
+        $violations = $this->validator()->validate($field, $callback);
+        $this->assertCount(1, $violations);
+        $this->assertSame('optionsText', $violations->get(0)->getPropertyPath());
+        $this->assertSame(['%values%' => '1'], $violations->get(0)->getParameters());
+
+        $field->setOptions([['label' => '2 mois', 'value' => '1'], ['label' => 'Autre', 'value' => '1.0']]);
+        $this->assertCount(0, $this->validator()->validate($field, $callback));
     }
 }

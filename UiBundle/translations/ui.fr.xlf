@@ -1956,7 +1956,7 @@
             </trans-unit>
             <trans-unit id="AQ3XdTC">
                 <source>label.field_price_help</source>
-                <target>Affiché après le libellé et multiplié par la valeur du champ dans les formules : une case cochée vaut son prix, un nombre vaut quantité × prix.</target>
+                <target>Affiché après le libellé et multiplié par la valeur du champ dans les formules : une case cochée vaut son prix, un nombre vaut quantité × prix. Pour une liste, chaque option affiche valeur × prix : mettez 1 si ses valeurs sont déjà des prix.</target>
             </trans-unit>
             <trans-unit id="GvBwpCn">
                 <source>label.field_required</source>
