@@ -35,11 +35,12 @@ class FormField implements \Stringable
     public const TYPE_RANGE = 'range';
     public const TYPE_CHOICE = 'choice';
 
-    // Types carrying a numeric value, hence usable as a variable in a FormOutput expression - see ExpressionEvaluator/CalculatorController
+    // Types carrying a numeric value, hence usable as a variable in a FormOutput expression - see ExpressionEvaluator/CalculatorController. A checkbox reads 1 when ticked and 0 otherwise, a yes/no switch where a two-option choice used to stand
     public const NUMERIC_TYPES = [
         self::TYPE_NUMBER,
         self::TYPE_RANGE,
         self::TYPE_CHOICE,
+        self::TYPE_CHECKBOX,
     ];
 
     public const TYPES = [

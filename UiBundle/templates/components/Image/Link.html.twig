@@ -3,6 +3,12 @@
 {% set above = above | default(false) | to_bool %}
 {# "priority": set it on an above-the-fold image, so it is not lazy-loaded (see Image.html.twig) #}
 {% set priority = priority | default(false) | to_bool %}
+{# No size given: the file's own, so the browser reserves the box before the image lands #}
+{% if width|default('') == '' and height|default('') == '' %}
+    {% set size = ui_image_size(src) %}
+    {% set width = size.width|default('') %}
+    {% set height = size.height|default('') %}
+{% endif %}
 {# Same rule as Image.html.twig: "img-responsive" and explicit dimensions are combined, except for a height with no width, where "height: auto" would override it #}
 {% set heightOnly = height is defined and height != "" and (width is not defined or width == "") %}
 {% set imgResponsive = heightOnly ? "" : "img-responsive" %}

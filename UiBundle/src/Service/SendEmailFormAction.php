@@ -121,9 +121,13 @@ class SendEmailFormAction implements FormActionInterface
         return $labelled;
     }
 
-    // A choice's submitted value is what a formula reads, its label what the visitor picked - the value itself when no option matches it any more
+    // A choice's submitted value is what a formula reads, its label what the visitor picked - the value itself when no option matches it any more. A checkbox reads as a translated yes/no rather than a bare 1 or nothing
     private function readableValue(FormField $field, mixed $value): mixed
     {
+        if (FormField::TYPE_CHECKBOX === $field->getType()) {
+            return $this->translator->trans(filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'label.yes' : 'label.no', [], 'ui');
+        }
+
         if (FormField::TYPE_CHOICE !== $field->getType() || null === $value) {
             return $value;
         }

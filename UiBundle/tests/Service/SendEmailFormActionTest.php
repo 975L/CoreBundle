@@ -114,6 +114,26 @@ class SendEmailFormActionTest extends TestCase
         );
     }
 
+    // A switch arrives as a bool, which the email would print as "1" or nothing at all
+    public function testHandleWritesACheckboxAsYesOrNo(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = new Form()->setName('estimation');
+        $form->addField(new FormField()->setName('logo')->setLabel('Logo')->setType(FormField::TYPE_CHECKBOX));
+        $form->addField(new FormField()->setName('photos')->setLabel('Photos')->setType(FormField::TYPE_CHECKBOX));
+
+        $this->createAction($emailService)->handle($form, ['logo' => true, 'photos' => false]);
+
+        $this->assertSame(['Logo' => 'label.yes', 'Photos' => 'label.no'], $captured->context['fields']);
+    }
+
     // A formula reads "1.6", the visitor picked "A4" - the email says what they picked
     public function testHandleWritesAChoiceByTheLabelOfItsOption(): void
     {

@@ -46,7 +46,7 @@ class CheckImportmapCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $this->warnOnEagerChartjs($io);
+        $this->warnOnControllersJson($io);
         $entries = $this->configReader->getEntries();
 
         $added = [];
@@ -159,8 +159,8 @@ class CheckImportmapCommand extends Command
         return $added;
     }
 
-    // symfony/ux-chartjs' Flex recipe enables its chart controller eagerly in assets/controllers.json, which makes startStimulusApp() import chart.js on every front-end page and makes the page's Stimulus app register the controller a second time (see readme). Only warns - rewriting the app's controllers.json isn't this command's job
-    private function warnOnEagerChartjs(SymfonyStyle $io): void
+    // Two Flex recipes enable their controller in assets/controllers.json in a way that costs every front-end page. Only warns - rewriting the app's controllers.json isn't this command's job
+    private function warnOnControllersJson(SymfonyStyle $io): void
     {
         $file = $this->projectDir . '/assets/controllers.json';
         if (!is_file($file)) {
@@ -168,10 +168,19 @@ class CheckImportmapCommand extends Command
         }
 
         $config = json_decode((string) file_get_contents($file), true);
-        if (!is_array($config) || true !== ($config['controllers']['@symfony/ux-chartjs']['chart']['enabled'] ?? false)) {
+        if (!is_array($config)) {
             return;
         }
 
-        $io->warning('assets/controllers.json enables "@symfony/ux-chartjs": chart.js is loaded on every page of the site and registered several times on the dashboard. Set "enabled" to false - ConfigBundle registers that controller itself (see readme).');
+        // symfony/ux-chartjs' makes startStimulusApp() import chart.js on every page and the dashboard register the controller a second time (see readme)
+        if (true === ($config['controllers']['@symfony/ux-chartjs']['chart']['enabled'] ?? false)) {
+            $io->warning('assets/controllers.json enables "@symfony/ux-chartjs": chart.js is loaded on every page of the site and registered several times on the dashboard. Set "enabled" to false - ConfigBundle registers that controller itself (see readme).');
+        }
+
+        // symfony/ux-live-component's is fetched eagerly, 16 kB of script on every page when only a search form uses it
+        $live = $config['controllers']['@symfony/ux-live-component']['live'] ?? [];
+        if (true === ($live['enabled'] ?? false) && 'lazy' !== ($live['fetch'] ?? 'eager')) {
+            $io->warning('assets/controllers.json fetches "@symfony/ux-live-component" eagerly: its controller is loaded on every page of the site. Set "fetch" to "lazy" - it is then loaded on the pages holding a live component only.');
+        }
     }
 }

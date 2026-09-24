@@ -1,5 +1,22 @@
 # ChangeLog
 
+## v1.34.1
+
+A calculator reads a checkbox as a yes/no switch
+
+### ConfigBundle
+
+- `c975l:config:check-importmap` warns when `controllers.json` fetches `@symfony/ux-live-component` eagerly (24/09/2026)
+
+### UiBundle
+
+- **A `checkbox` field feeds a calculator's formulas**, reading 1 ticked and 0 otherwise (24/09/2026)
+- The calculator sends a checkbox by its state, unticked included (24/09/2026)
+- A calculator checkbox is drawn as the back office's switch (24/09/2026)
+- `SendEmailFormAction` writes a checkbox as a translated yes/no (24/09/2026)
+- **`ui_image_size()`** Twig function reads the pixel size of an image under `public/` (24/09/2026)
+- `Image:Link` given no size emits the file's own `width`/`height` (24/09/2026)
+
 ## v1.34.0
 
 A block's link field picks a page or a section, as a menu link does

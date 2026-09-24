@@ -325,6 +325,23 @@ class CheckImportmapCommandTest extends TestCase
         $this->assertStringNotContainsString('@symfony/ux-chartjs', $tester->getDisplay());
     }
 
+    // The live controller fetched eagerly loads on every page, fetched lazily only where a live component sits
+    public function testExecuteWarnsWhenControllersJsonFetchesLiveEagerly(): void
+    {
+        new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");
+
+        foreach (['eager' => true, 'lazy' => false] as $fetch => $warns) {
+            new Filesystem()->dumpFile($this->projectDir . '/assets/controllers.json', json_encode([
+                'controllers' => ['@symfony/ux-live-component' => ['live' => ['enabled' => true, 'fetch' => $fetch]]],
+            ]));
+
+            $tester = $this->createTester([]);
+            $tester->execute([]);
+
+            $this->assertSame($warns, str_contains($tester->getDisplay(), '@symfony/ux-live-component'), $fetch);
+        }
+    }
+
     public function testExecuteDoesNotWarnWhenControllersJsonIsMissing(): void
     {
         new Filesystem()->dumpFile($this->importmapFile, "<?php\n\nreturn [];\n");

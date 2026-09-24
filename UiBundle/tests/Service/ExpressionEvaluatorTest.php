@@ -85,6 +85,31 @@ class ExpressionEvaluatorTest extends TestCase
         $this->assertSame(7.0, $this->createEvaluator()->compute($form, [])['total']['value']);
     }
 
+    // A yes/no switch reads 1 or 0: ticked from a POST (true) or the calculator's GET ("1"), unticked the same way, and its default only when nothing was sent at all - an unticked box falling back to a ticked default would bill an option the visitor turned off
+    public function testACheckboxReadsOneWhenTickedAndZeroOtherwise(): void
+    {
+        $form = new Form();
+        $form->addField($this->createField('logo', FormField::TYPE_CHECKBOX, '1'));
+        $form->addOutput($this->createOutput('total', 'logo * 400'));
+        $evaluator = $this->createEvaluator();
+
+        $this->assertSame(400.0, $evaluator->compute($form, [])['total']['value']);
+        $this->assertSame(400.0, $evaluator->compute($form, ['logo' => true])['total']['value']);
+        $this->assertSame(400.0, $evaluator->compute($form, ['logo' => '1'])['total']['value']);
+        $this->assertSame(0.0, $evaluator->compute($form, ['logo' => false])['total']['value']);
+        $this->assertSame(0.0, $evaluator->compute($form, ['logo' => '0'])['total']['value']);
+    }
+
+    public function testACheckboxWithoutDefaultStartsUnticked(): void
+    {
+        $form = new Form();
+        $form->addField($this->createField('logo', FormField::TYPE_CHECKBOX));
+        $form->addOutput($this->createOutput('total', 'logo * 400'));
+
+        $this->assertSame(['logo', 'total'], $this->createEvaluator()->variableNames($form));
+        $this->assertSame(0.0, $this->createEvaluator()->compute($form, [])['total']['value']);
+    }
+
     // A range with no default renders at the middle of its span and a choice on its first option, so the first render has to compute on those rather than on 0 - a visitor without JavaScript never gets a second chance to correct the figures
     public function testComputeStartsARangeAtItsMiddleAndAChoiceOnItsFirstOption(): void
     {

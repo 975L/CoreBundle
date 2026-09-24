@@ -14,7 +14,7 @@ export default class extends Controller {
     static values = { url: String };
 
     // The only controls a formula can read (see ExpressionEvaluator) - a calculator given an action also carries a name, an email and a message, which must never ride the query string of a GET into the server's logs, nor send a request per keystroke typed in them
-    static COMPUTED = 'input[type="number"][name], input[type="range"][name], select[name]';
+    static COMPUTED = 'input[type="number"][name], input[type="range"][name], input[type="checkbox"][name], select[name]';
 
     // Long enough that dragging a slider sends a handful of requests rather than one per pixel, short enough to read as immediate
     static DEBOUNCE = 200;
@@ -98,7 +98,8 @@ export default class extends Controller {
         this.element.querySelectorAll(this.constructor.COMPUTED).forEach((input) => {
             const name = input.name.match(/\[([^\]]+)\]$/);
             if (name) {
-                parameters.set(name[1], input.value);
+                // A checkbox's value is "1" whether ticked or not: its state is what a formula reads, and an unticked one must still be sent, or the server would take its default
+                parameters.set(name[1], "checkbox" === input.type ? (input.checked ? "1" : "0") : input.value);
             }
         });
 

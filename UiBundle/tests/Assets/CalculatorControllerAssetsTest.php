@@ -70,10 +70,25 @@ class CalculatorControllerAssetsTest extends TestCase
     {
         $controller = $this->read(self::CONTROLLER_JS);
 
-        $this->assertStringContainsString('static COMPUTED = \'input[type="number"][name], input[type="range"][name], select[name]\';', $controller);
+        $this->assertStringContainsString('static COMPUTED = \'input[type="number"][name], input[type="range"][name], input[type="checkbox"][name], select[name]\';', $controller);
         $this->assertStringContainsString('this.element.querySelectorAll(this.constructor.COMPUTED)', $controller);
         $this->assertStringContainsString('event.target.matches(this.constructor.COMPUTED)', $controller);
         $this->assertStringNotContainsString('querySelectorAll("input[name], select[name]")', $controller);
+    }
+
+    // A checkbox's value is "1" ticked or not: sending it as is would bill every switch, and leaving an unticked one out would bring its default back
+    public function testASwitchIsSentByItsStateAndAlwaysSent(): void
+    {
+        $this->assertStringContainsString('"checkbox" === input.type ? (input.checked ? "1" : "0") : input.value', $this->read(self::CONTROLLER_JS));
+    }
+
+    // A yes/no field is drawn as the back office's switch, only inside a calculator
+    public function testACalculatorCheckboxIsDrawnAsASwitch(): void
+    {
+        $stylesheet = $this->read(self::STYLESHEET);
+
+        $this->assertMatchesRegularExpression('/\.ui-calculator input\[type="checkbox"\] \{[^}]*appearance: none;/', $stylesheet);
+        $this->assertStringContainsString('.ui-calculator input[type="checkbox"]:checked::before', $stylesheet);
     }
 
     // Given an action, the calculator is wrapped in a form element that must not become the grid's only item

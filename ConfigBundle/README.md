@@ -481,6 +481,8 @@ That same Flex recipe also writes an **eager** entry into your app's `assets/con
 
 On the dashboard, disabling it costs nothing: `controllers-admin.js` registers the chart controller explicitly, once. Use `"enabled": false` rather than `"fetch": "lazy"` — lazy fixes the front-end bytes but still has the shared application register the controller from `controllers.json` as well. `c975l:config:check-importmap` warns when it finds the entry still enabled — the warning is about the dashboard, so ignore it if your app calls `render_chart()` on a public page too (that page does need the front-end controller, and `"fetch": "lazy"` is then the right trade-off).
 
+`symfony/ux-live-component`'s recipe writes its `live` controller with `"fetch": "eager"` too: 16 kB of script on every page, when only the pages holding a live component need it. Set its `"fetch"` to `"lazy"` — the controller is then loaded where a live component sits, and nowhere else. `c975l:config:check-importmap` warns about that one as well.
+
 ### Deploying to production — Export
 
 On the config list page, click the **Export** dropdown and pick **SQL**, **CSV**, or **JSON**. The browser downloads a `site_config_YYYYMMDD_HHMMSS.{sql,csv,json}` file — nothing is written to disk or version control.

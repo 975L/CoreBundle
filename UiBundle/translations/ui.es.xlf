@@ -3266,6 +3266,10 @@
                 <source>label.next_slide</source>
                 <target>Diapositiva siguiente</target>
             </trans-unit>
+            <trans-unit id="Ud7Ia8C">
+                <source>label.no</source>
+                <target>No</target>
+            </trans-unit>
             <trans-unit id="xOMkNTu">
                 <source>label.no_collection_source_available</source>
                 <target>Todavía no hay ninguna fuente de colección disponible</target>
@@ -4173,6 +4177,10 @@
             <trans-unit id="6BAKM_y">
                 <source>label.width_help</source>
                 <target>Detectada automáticamente al subir, en píxeles</target>
+            </trans-unit>
+            <trans-unit id="RSovaRz">
+                <source>label.yes</source>
+                <target>Sí</target>
             </trans-unit>
             <trans-unit id="WLPk5w2">
                 <source>review.anonymous_author</source>

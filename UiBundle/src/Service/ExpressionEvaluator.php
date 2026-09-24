@@ -198,6 +198,11 @@ class ExpressionEvaluator
     // The field's own value, its default when the visitor hasn't touched it, then the value the control itself shows when neither is set - a calculator always has a number to work with, and one that matches what is on screen: a range with no default sits at the middle of its span and a choice on its first option, so falling straight back to 0 printed a result contradicting the controls until the first keystroke, and forever without JavaScript
     private function numeric(FormField $field, mixed $submitted): float
     {
+        // A ticked box arrives as true from a POST and as "1" from the calculator's GET, an unticked one as false or "0" - only an absent one falls back to its default
+        if (FormField::TYPE_CHECKBOX === $field->getType()) {
+            return filter_var($submitted ?? $field->getDefaultValue(), FILTER_VALIDATE_BOOLEAN) ? 1.0 : 0.0;
+        }
+
         foreach ([$submitted, $field->getDefaultValue(), $this->initial($field)] as $candidate) {
             if (is_numeric($candidate)) {
                 return (float) $candidate;

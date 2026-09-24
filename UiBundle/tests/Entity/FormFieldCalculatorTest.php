@@ -18,11 +18,11 @@ class FormFieldCalculatorTest extends TestCase
 {
     public function testOnlyTheNumericTypesCanFeedAnExpression(): void
     {
-        foreach ([FormField::TYPE_NUMBER, FormField::TYPE_RANGE, FormField::TYPE_CHOICE] as $type) {
+        foreach ([FormField::TYPE_NUMBER, FormField::TYPE_RANGE, FormField::TYPE_CHOICE, FormField::TYPE_CHECKBOX] as $type) {
             $this->assertTrue(new FormField()->setType($type)->isNumeric(), $type);
         }
 
-        foreach ([FormField::TYPE_TEXT, FormField::TYPE_EMAIL, FormField::TYPE_CHECKBOX, FormField::TYPE_DATE] as $type) {
+        foreach ([FormField::TYPE_TEXT, FormField::TYPE_EMAIL, FormField::TYPE_DATE] as $type) {
             $this->assertFalse(new FormField()->setType($type)->isNumeric(), $type);
         }
     }

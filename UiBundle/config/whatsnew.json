@@ -11,6 +11,11 @@
                 "en": "Cards you drag into a new order now keep that order when you save, along with their translations.",
                 "fr": "Les cartes que vous réordonnez par glisser-déposer gardent désormais cet ordre à l'enregistrement, avec leurs traductions.",
                 "es": "Las tarjetas que reordena arrastrándolas conservan ahora ese orden al guardar, junto con sus traducciones."
+            },
+            {
+                "en": "A calculator can now hold yes/no switches, each option ticked adding its own amount to the estimate, and the email tells which ones the visitor chose.",
+                "fr": "Un calculateur peut désormais contenir des interrupteurs oui/non, chaque option cochée ajoutant son propre montant à l'estimation, et l'email indique celles que le visiteur a choisies.",
+                "es": "Una calculadora puede ahora contener interruptores sí/no, cada opción marcada sumando su propio importe a la estimación, y el email indica cuáles eligió el visitante."
             }
         ]
     },
