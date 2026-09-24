@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.35.5
+
+A calculator offers a link back to its defaults
+
+### UiBundle
+
+- `calculator.js` shows a reset link once a control leaves its default (24/09/2026)
+- `calculator.js` puts every control and the query string back on reset (24/09/2026)
+- `Calculator.html.twig` renders the reset link beside the estimate note (24/09/2026)
+- `--button-background-primary-dark`/`-secondary-dark` mix towards the label's inverse (24/09/2026)
+- `.section-btn--ghost:hover` takes the section's accent colour (24/09/2026)
+
 ## v1.35.4
 
 A calculator's select options stay readable on a dark theme

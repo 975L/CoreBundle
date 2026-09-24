@@ -22,6 +22,7 @@ class CalculatorUrlBehaviourTest extends JsCase
         <input type="checkbox" name="form_submission[logo]" value="1">
         <input type="text" name="form_submission[email]" value="">
         <div data-ui-calculator-target="results"></div>
+        <button type="button" data-ui-calculator-target="reset" data-action="ui-calculator#reset" hidden>Reset</button>
     </div>';
 
     // Only what differs from the defaults is written, and a control put back to its default leaves the address again
@@ -62,6 +63,28 @@ class CalculatorUrlBehaviourTest extends JsCase
             return value;', '?type=12345');
 
         $this->assertSame('990', $type, 'An unknown value from the address blanked the choice.');
+    }
+
+    // A shared link shows the way back to the defaults, which puts every control back, empties the address and hides itself again
+    public function testTheResetLinkPutsTheDefaultsBack(): void
+    {
+        $state = $this->calculator('const reset = root.querySelector("button");
+            const shown = !reset.hidden;
+            reset.click();
+            const state = { shown, hidden: reset.hidden, type: root.querySelector("select").value, logo: root.querySelector("input[type=checkbox]").checked, search: window.location.search };
+            window.history.replaceState(null, "", window.location.pathname);
+
+            return state;', '?type=3000&logo=1');
+
+        $this->assertSame(['shown' => true, 'hidden' => true, 'type' => '990', 'logo' => false, 'search' => ''], $state, 'The reset link does not bring a shared estimate back to the defaults.');
+    }
+
+    // Nothing to come back from on a page opened at its defaults
+    public function testTheResetLinkIsHiddenOnTheDefaults(): void
+    {
+        $hidden = $this->calculator('return root.querySelector("button").hidden;');
+
+        $this->assertTrue($hidden, 'The reset link shows although every control is at its default.');
     }
 
     private function calculator(string $probe, string $query = ''): mixed

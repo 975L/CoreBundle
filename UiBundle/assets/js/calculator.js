@@ -9,7 +9,7 @@ import { Controller } from "@hotwired/stimulus";
 
 // Keeps a calculator Form's results in step with its inputs. The arithmetic itself stays in PHP (see CalculatorController/ExpressionEvaluator): a formula an admin typed has one implementation, and this controller only carries values there and answers back. The page already renders correct results server-side, so nothing here is needed for the calculator to be right - only for it to follow along
 export default class extends Controller {
-    static targets = ["results"];
+    static targets = ["results", "reset"];
 
     static values = { url: String };
 
@@ -29,6 +29,7 @@ export default class extends Controller {
             }
             this.readout(event.target);
             this.writeUrl();
+            this.toggleReset();
             this.schedule();
         };
         this.element.addEventListener("input", this.onInput);
@@ -41,6 +42,31 @@ export default class extends Controller {
         if (this.restored()) {
             this.refresh();
         }
+        this.toggleReset();
+    }
+
+    // The way back to the defaults is offered only once there is somewhere to come back from
+    toggleReset() {
+        if (this.hasResetTarget) {
+            this.resetTarget.hidden = !this.restored();
+        }
+    }
+
+    // Puts every control back to what the page was rendered with, clears the address and asks the results again: a shared link otherwise leaves no way back but retyping it
+    reset() {
+        this.element.querySelectorAll(this.constructor.COMPUTED).forEach((input) => {
+            if ("checkbox" === input.type) {
+                input.checked = input.defaultChecked;
+            } else if ("SELECT" === input.tagName) {
+                [...input.options].forEach((option) => { option.selected = option.defaultSelected; });
+            } else {
+                input.value = input.defaultValue;
+            }
+            this.readout(input);
+        });
+        this.writeUrl();
+        this.toggleReset();
+        this.refresh();
     }
 
     // The name the server knows a control by, what sits inside the brackets of "form_submission[prix-de-l-essence]"

@@ -1338,6 +1338,10 @@
                 <source>label.button_label_help</source>
                 <target>If empty, shows the URL</target>
             </trans-unit>
+            <trans-unit id="HOwyxsZ">
+                <source>label.calculator_reset</source>
+                <target>Reset</target>
+            </trans-unit>
             <trans-unit id="hf84S_z">
                 <source>label.caption</source>
                 <target>Caption</target>

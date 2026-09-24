@@ -240,7 +240,8 @@ main :is(.blocks, .block-animation, .block-editable) > :is(
 
 // Else the theme's global "a:hover" wins, this class having no :hover of its own
 .section-btn--ghost:hover {
-    color: var(--section-text, var(--text));
+    // Taking the accent its underline is drawn in: left the colour it rests in, the button gave the pointer no answer at all
+    color: var(--section-accent, var(--primary-ink));
     text-decoration: none;
 }
 

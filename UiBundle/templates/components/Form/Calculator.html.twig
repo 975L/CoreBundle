@@ -32,6 +32,8 @@
 
     <p class="text-muted small">
         {{ 'text.calculator_estimate'|trans }}
+        {# Hidden until a control differs from its default, from a click or a shared link's address - calculator.js shows it and puts the defaults back #}
+        <button type="button" class="ui-calculator-reset" data-ui-calculator-target="reset" data-action="ui-calculator#reset" hidden>{{ 'label.calculator_reset'|trans }}</button>
     </p>
 
     {% if submittable %}

@@ -242,3 +242,18 @@ $row: '.ui-calculator-fields div:has(> input, > select, > textarea)';
 .ui-calculator-result[hidden] {
     display: none;
 }
+
+// A link rather than a button: a way back offered beside the note, not an action competing with the submit
+.ui-calculator-reset {
+    margin-left: 0.5em;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ui-calculator-reset[hidden] {
+    display: none;
+}

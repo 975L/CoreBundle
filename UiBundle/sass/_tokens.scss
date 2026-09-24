@@ -56,10 +56,12 @@
         --button-background-danger: rgb(220, 53, 69);
         --button-background-danger-dark: rgb(220, 53, 69, 0.9);
         --button-background-primary: rgb(11, 55, 178);
-        --button-background-primary-dark: color-mix(in srgb, var(--primary) 85%, black);
+        // The hover moves the flat away from the label written on it - darker under a white label, lighter under a black one: a pale brand colour darkened towards its own black label turns muddy and loses contrast instead of answering the pointer. The label's inverse is what the flat is mixed with, so the one rule serves both
+        --button-background-primary-dark: color-mix(in srgb, var(--primary) 85%, rgb(from var(--button-color) calc(255 - r) calc(255 - g) calc(255 - b)));
         --button-background-primary-light: color-mix(in srgb, var(--primary) 50%, white);
         --button-background-secondary: rgb(218, 126, 57);
-        --button-background-secondary-dark: color-mix(in srgb, var(--secondary) 85%, black);
+        // Same reason as --button-background-primary-dark
+        --button-background-secondary-dark: color-mix(in srgb, var(--secondary) 85%, rgb(from var(--button-secondary-color) calc(255 - r) calc(255 - g) calc(255 - b)));
         --button-background-success: rgb(40, 167, 69);
         --button-background-success-dark: rgb(40, 167, 69, 0.9);
         --button-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.5);

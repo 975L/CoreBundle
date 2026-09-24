@@ -8,6 +8,16 @@
                 "es": "La dirección de una calculadora recoge ahora las elecciones del visitante: una estimación se comparte por su enlace y se abre tal como se hizo."
             },
             {
+                "en": "A calculator now offers a Reset link as soon as a choice has changed, bringing every value back to its default in one click.",
+                "fr": "Un calculateur propose désormais un lien Réinitialiser dès qu'un choix a changé, pour revenir à toutes les valeurs par défaut en un clic.",
+                "es": "Una calculadora ofrece ahora un enlace Restablecer en cuanto cambia una elección, para volver a todos los valores por defecto con un clic."
+            },
+            {
+                "en": "Buttons now answer the pointer more clearly, including on pale brand colours.",
+                "fr": "Les boutons réagissent désormais plus nettement au survol, y compris sur une couleur de marque claire.",
+                "es": "Los botones reaccionan ahora con más claridad al pasar el puntero, incluso sobre un color de marca claro."
+            },
+            {
                 "en": "A priced list field now shows the amount of each of its options, on the page and in the email.",
                 "fr": "Un champ liste avec un prix affiche désormais le montant de chacune de ses options, sur la page comme dans l'e-mail.",
                 "es": "Un campo de lista con precio muestra ahora el importe de cada una de sus opciones, en la página y en el correo."
