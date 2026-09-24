@@ -33,7 +33,7 @@
 }
 
 .faq__item[open] .faq__question::after {
-    content: "\2212";
+    content: #{"\"\\2212\""};
 }
 
 .faq__answer {

@@ -123,7 +123,7 @@ tr.health-check-row-first > td {
 
 // A sidebar link leaving the admin gets a Unicode glyph, so it depends on no icon set or version
 a.ea-sidebar-item-link[target="_blank"]::after {
-    content: '\2197';
+    content: #{"\"\\2197\""};
     margin-left: .35em;
     opacity: .6;
 }

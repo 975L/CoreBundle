@@ -1,5 +1,14 @@
 # ChangeLog
 
+## v1.35.6
+
+The compiled stylesheets catch up with the sass
+
+### UiBundle
+
+- `public/css/styles` and `emails` recompiled from the v1.35.4-v1.35.5 sass (24/09/2026)
+- Scaffolded `ui.css` mirrors the new `--button-background-*-dark` defaults (24/09/2026)
+
 ## v1.35.5
 
 A calculator offers a link back to its defaults

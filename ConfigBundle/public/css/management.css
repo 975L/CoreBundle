@@ -113,7 +113,7 @@ tr.health-check-row-first > td {
 }
 
 a.ea-sidebar-item-link[target=_blank]::after {
-  content: "↗";
+  content: "\2197";
   margin-left: 0.35em;
   opacity: 0.6;
 }

@@ -77,7 +77,7 @@
 }
 
 .review-item-verified::before {
-    content: '✓';
+    content: #{"\"\\2713\""};
     margin-inline-end: 0.25em;
 }
 
