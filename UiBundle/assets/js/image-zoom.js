@@ -9,7 +9,7 @@ import { Controller } from "@hotwired/stimulus";
 
 // Opens the high resolution over the page instead of on a page of its own: a listing stays on the stored (medium) files, and the heavy one is only ever fetched for the picture the visitor actually asks to see
 export default class extends Controller {
-    static targets = ["dialog", "image"];
+    static targets = ["dialog"];
 
     open(event) {
         // A modified click asks for a new tab or a new window: the browser keeps the link, and the lightbox stays out of the way
@@ -18,16 +18,20 @@ export default class extends Controller {
         }
 
         // <dialog> closes an open <p> implicitly, so a component placed in one has its dialog hoisted out of the controller's element: the link is left to do what it already promises rather than dying on a missing target
-        if (!this.hasDialogTarget || !this.hasImageTarget) {
+        if (!this.hasDialogTarget) {
             return;
         }
 
         // The link is a real one, pointing at the file itself, so it still opens the high resolution when this script doesn't run
         event.preventDefault();
 
-        // Assigned on the first opening only, the browser cache serving the next ones
-        if (!this.imageTarget.getAttribute("src")) {
-            this.imageTarget.src = event.currentTarget.href;
+        // Built on the first opening only, the browser cache serving the next ones: an <img> written without a src would be invalid HTML, and an empty one would have the browser re-request the page itself
+        if (!this.dialogTarget.querySelector(".image-zoom__image")) {
+            const image = document.createElement("img");
+            image.className = "image-zoom__image";
+            image.alt = event.currentTarget.querySelector("img")?.alt ?? "";
+            image.src = event.currentTarget.href;
+            this.dialogTarget.append(image);
         }
 
         this.dialogTarget.showModal();

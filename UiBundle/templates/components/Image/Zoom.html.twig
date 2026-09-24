@@ -20,9 +20,6 @@
         <img src="{{ asset(src) }}" class="img img-responsive {{ class|default('') }}" alt="{{ alt }}"{% if alt is empty %} aria-hidden="true"{% endif %}{% if width|default('') %} width="{{ width }}"{% endif %}{% if height|default('') %} height="{{ height }}"{% endif %}{% if priority %} loading="eager" fetchpriority="high"{% else %} loading="lazy"{% endif %}>
     {% if zoomable %}</a>
 
-    {# A native <dialog>: the backdrop, the escape key and the focus trap come with it, no library involved. The image carries no src at all until it is opened - an empty one would have the browser re-request the page itself #}
-    {# No close button: a click anywhere inside closes, and the escape key does too, so a cross in the corner would only cover a part of the very image it was opened to show #}
-    <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close">
-        <img class="image-zoom__image" data-imageZoom-target="image" alt="{{ alt }}">
-    </dialog>
+    {# A native <dialog> (backdrop, escape key and focus trap included), left empty until opened since an <img> without a src is invalid HTML. No close button: a click anywhere inside closes, so a cross would only cover the image #}
+    <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close"></dialog>
 </div>{% endif %}

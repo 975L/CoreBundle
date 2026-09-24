@@ -23,9 +23,7 @@ class ImageZoomBehaviourTest extends JsCase
             <a href="/medias/photo-highres.webp" class="image-zoom__link" data-action="imageZoom#open" aria-label="Voir en haute résolution">
                 <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Une photo">
             </a>
-            <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close">
-                <img class="image-zoom__image" data-imageZoom-target="image" alt="Une photo">
-            </dialog>
+            <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close"></dialog>
         </div>';
 
     // What a browser makes of the component written inside a <p>: <dialog> closes the paragraph implicitly, and both the dialog and everything after it are lifted out of the element carrying the controller
@@ -34,22 +32,21 @@ class ImageZoomBehaviourTest extends JsCase
                 <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="Une photo">
             </a>
         </div>
-        <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close">
-            <img class="image-zoom__image" data-imageZoom-target="image" alt="Une photo">
-        </dialog>';
+        <dialog class="image-zoom__dialog" data-imageZoom-target="dialog" data-action="click->imageZoom#close"></dialog>';
 
     // A page showing a dozen pictures would otherwise fetch a dozen heavy files nobody asked for
     public function testTheHighResolutionIsOnlyFetchedWhenItIsAskedFor(): void
     {
         $opened = $this->zoom(
-            'const before = image().getAttribute("src");
+            'const before = null !== image();
              link().click();
 
-             return { before, after: image().getAttribute("src"), open: dialog().open };'
+             return { before, after: image().getAttribute("src"), alt: image().alt, open: dialog().open };'
         );
 
-        $this->assertNull($opened['before'], 'The high resolution is fetched for a picture nobody has asked to enlarge, over a page already carrying its medium file.');
+        $this->assertFalse($opened['before'], 'The high resolution is fetched for a picture nobody has asked to enlarge, over a page already carrying its medium file.');
         $this->assertStringEndsWith('/photo-highres.webp', (string) $opened['after'], 'Opening the zoom does not put the high resolution in it.');
+        $this->assertSame('Une photo', $opened['alt'], 'The enlarged image loses the alternative text of the picture it enlarges.');
         $this->assertTrue($opened['open'], 'The dialog was never opened.');
     }
 
@@ -143,7 +140,7 @@ class ImageZoomBehaviourTest extends JsCase
             ['imageZoom' => 'image-zoom'],
             'const link = () => root.querySelector("a.image-zoom__link");
              const dialog = () => root.querySelector("[data-imageZoom-target=dialog]");
-             const image = () => root.querySelector("[data-imageZoom-target=image]");
+             const image = () => root.querySelector(".image-zoom__image");
              ' . $probe
         );
     }

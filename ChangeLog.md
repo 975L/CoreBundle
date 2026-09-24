@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.33.1
+
+Image:Zoom builds its enlarged image on first opening
+
+### UiBundle
+
+- `Image:Zoom` renders an empty `<dialog>`, no longer an `<img>` without a src (24/09/2026)
+- The `imageZoom` controller creates the enlarged image on first opening, with the picture's alt (24/09/2026)
+- The `image` target of `imageZoom` is removed (24/09/2026)
+
 ## v1.33.0
 
 Every public page served from the cache reads its own row and little else
