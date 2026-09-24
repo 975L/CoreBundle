@@ -106,6 +106,10 @@ class FormField implements \Stringable
     #[ORM\Column(nullable: true)]
     private ?float $stepValue = null;
 
+    // What one unit of this field costs, typed once: shown after its label ("Création du logo (400 €)", see PriceFormatter) and multiplied into the value a formula reads - a ticked box then reads 400, three illustrations at 40 € read 120
+    #[ORM\Column(nullable: true)]
+    private ?float $price = null;
+
     // Value the field starts with, so a calculator shows a meaningful result before the visitor touches anything - kept as text, a choice field's default being one of its own option values
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $defaultValue = null;
@@ -252,6 +256,18 @@ class FormField implements \Stringable
     public function setMaxValue(?float $maxValue): static
     {
         $this->maxValue = $maxValue;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?float $price): static
+    {
+        $this->price = $price;
 
         return $this;
     }

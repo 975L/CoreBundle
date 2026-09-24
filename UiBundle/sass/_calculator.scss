@@ -231,3 +231,8 @@ $row: '.ui-calculator-fields div:has(> input, > select, > textarea)';
     outline: 2px solid var(--input-focus-border-color);
     outline-offset: 2px;
 }
+
+// A detail line worth nothing (see FormOutput::$hiddenWhenZero): the row's own display would otherwise win over the hidden attribute
+.ui-calculator-result[hidden] {
+    display: none;
+}

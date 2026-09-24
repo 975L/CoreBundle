@@ -1,5 +1,17 @@
 # ChangeLog
 
+## v1.35.0
+
+A priced form field feeds formulas, its quote line hidden at zero
+
+### UiBundle
+
+- **`FormField::$price`**, shown after the field's label and multiplied into a formula's variable (24/09/2026) [DB-Migration]
+- **`PriceFormatter`** writes every amount, calculator results and field prices alike (24/09/2026)
+- **`FormOutput::$hiddenWhenZero`** hides a quote line worth nothing, on the page and in the email (24/09/2026) [DB-Migration]
+- `SendEmailFormAction` labels a priced field with its price (24/09/2026)
+- `FormExportProvider`/`FormImportProvider` carry a field's price and an output's `hiddenWhenZero` (24/09/2026)
+
 ## v1.34.1
 
 A calculator reads a checkbox as a yes/no switch

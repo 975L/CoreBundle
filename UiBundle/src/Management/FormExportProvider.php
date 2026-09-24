@@ -75,6 +75,7 @@ class FormExportProvider implements ExportProviderInterface
             'minValue' => $field->getMinValue(),
             'maxValue' => $field->getMaxValue(),
             'stepValue' => $field->getStepValue(),
+            'price' => $field->getPrice(),
             'defaultValue' => $field->getDefaultValue(),
             'options' => $field->getOptions(),
         ];
@@ -91,6 +92,7 @@ class FormExportProvider implements ExportProviderInterface
             'decimals' => $output->getDecimals(),
             'unit' => $output->getUnit(),
             'visible' => $output->isVisible(),
+            'hiddenWhenZero' => $output->isHiddenWhenZero(),
             'highlighted' => $output->isHighlighted(),
             // An output only reads the outputs above it, so the order is the calculation itself and not a presentation detail
             'position' => $output->getPosition(),

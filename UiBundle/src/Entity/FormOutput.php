@@ -65,6 +65,10 @@ class FormOutput implements \Stringable
     #[ORM\Column(options: ['default' => true])]
     private bool $visible = true;
 
+    // A line of a detailed quote, e.g. "Création du logo" reading the priced field of the same name: shown only once it is worth something, so an option left unticked adds no "0 €" line - see Calculator.html.twig, calculator.js and SendEmailFormAction
+    #[ORM\Column(options: ['default' => false])]
+    private bool $hiddenWhenZero = false;
+
     // The one result the visitor came for, rendered big - purely presentational, several highlighted outputs simply all get the treatment
     #[ORM\Column(options: ['default' => false])]
     private bool $highlighted = false;
@@ -174,6 +178,18 @@ class FormOutput implements \Stringable
     public function setVisible(bool $visible): static
     {
         $this->visible = $visible;
+
+        return $this;
+    }
+
+    public function isHiddenWhenZero(): bool
+    {
+        return $this->hiddenWhenZero;
+    }
+
+    public function setHiddenWhenZero(bool $hiddenWhenZero): static
+    {
+        $this->hiddenWhenZero = $hiddenWhenZero;
 
         return $this;
     }

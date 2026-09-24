@@ -1,5 +1,18 @@
 # UPGRADE
 
+## v1.35.0
+
+**A migration is needed**, for the `price` column `site_form_field` gains (float, nullable) and the `hidden_when_zero` column `site_form_output` gains (boolean, default `false`):
+
+```bash
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
+```
+
+A priced field shows its price after its label ("Création du logo (400 €)") and reads as its value times its price in a formula: a ticked box reads its price, a number its quantity times its price. A field left without a price behaves exactly as before, so nothing changes until an admin fills one in. **If you give a price to a field a formula already multiplies by that amount**, take the amount out of the formula, or it is counted twice.
+
+An output ticked "Hide when 0" is a line of a detailed quote: its formula names one priced field (`creation_du_logo`), and the line only shows, on the page and in the email, once that option is chosen.
+
 ## v1.32.0
 
 **A migration is needed**, for the site search's two tables and for the `feature` column `site_ai_usage` gains:

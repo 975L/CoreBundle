@@ -20,7 +20,8 @@
 
     <div class="ui-calculator-results" data-ui-calculator-target="results" aria-live="polite">
         {% for output in uiForm.visibleOutputs %}
-            <div class="ui-calculator-result{{ output.highlighted ? ' ui-calculator-result-highlighted' }}">
+            {# A detail line worth nothing is left in the markup, hidden, so calculator.js can show it again once an option is ticked #}
+            <div class="ui-calculator-result{{ output.highlighted ? ' ui-calculator-result-highlighted' }}"{% if output.hiddenWhenZero %} data-ui-calculator-hide-zero{% if 0 == (results[output.name].value ?? 0) %} hidden{% endif %}{% endif %}>
                 <span class="ui-calculator-result-label">{{ ui_form_label(output) }}</span>
                 <span class="ui-calculator-result-value" data-ui-calculator-output="{{ output.name }}">
                     {{ results[output.name].formatted ?? '—' }}

@@ -100,6 +100,23 @@ class ExpressionEvaluatorTest extends TestCase
         $this->assertSame(0.0, $evaluator->compute($form, ['logo' => '0'])['total']['value']);
     }
 
+    // A price is typed once, on the field: a ticked box reads its price, a number its quantity times its price, and a field without one is left as it is
+    public function testAPricedFieldReadsItsValueTimesItsPrice(): void
+    {
+        $logo = $this->createField('logo', FormField::TYPE_CHECKBOX, '1')->setPrice(400.0);
+        $illustrations = $this->createField('illustrations', FormField::TYPE_NUMBER, '3')->setPrice(40.0);
+        $pages = $this->createField('pages', FormField::TYPE_NUMBER, '100');
+
+        $form = new Form();
+        $form->addField($logo);
+        $form->addField($illustrations);
+        $form->addField($pages);
+        $form->addOutput($this->createOutput('total', 'logo + illustrations + pages'));
+
+        $this->assertSame(620.0, $this->createEvaluator()->compute($form, [])['total']['value']);
+        $this->assertSame(220.0, $this->createEvaluator()->compute($form, ['logo' => '0'])['total']['value']);
+    }
+
     public function testACheckboxWithoutDefaultStartsUnticked(): void
     {
         $form = new Form();

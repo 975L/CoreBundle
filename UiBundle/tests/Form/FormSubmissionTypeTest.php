@@ -82,6 +82,7 @@ class FormSubmissionTypeTest extends TestCase
 
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturn('read');
+        $translator->method('getLocale')->willReturn('fr');
 
         $captchaVerifier = new CaptchaVerifier($this->createStub(HttpClientInterface::class), $configService, $requestStack);
 
@@ -343,6 +344,14 @@ class FormSubmissionTypeTest extends TestCase
         $this->assertFalse($added['phone']['options']['translation_domain']);
         $this->assertSame('Phone', $added['phone']['options']['label']);
         $this->assertFalse($added['phone']['options']['label_html']);
+    }
+
+    // A priced field shows its price after its label, the visitor then reading what each option adds
+    public function testAPricedFieldShowsItsPriceAfterItsLabel(): void
+    {
+        $field = $this->buildField('logo', FormField::TYPE_CHECKBOX, false)->setPrice(400.0);
+
+        $this->assertSame("Logo (400\u{00A0}€)", $this->buildAddedFields([$field])['logo']['options']['label']);
     }
 
     // A field carrying a "url" (e.g. a CGU checkbox) gets an escaped <a> appended to its label instead of plain text

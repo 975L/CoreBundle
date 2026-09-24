@@ -91,6 +91,18 @@ class CalculatorControllerAssetsTest extends TestCase
         $this->assertStringContainsString('.ui-calculator input[type="checkbox"]:checked::before', $stylesheet);
     }
 
+    // A detail line worth nothing is rendered hidden and shown again by the controller once its option is chosen, rather than left out of the markup it would then have to be rebuilt into
+    public function testADetailLineWorthNothingIsHiddenAndShownAgainWhenItCounts(): void
+    {
+        $component = $this->read(self::COMPONENT);
+        $this->assertStringContainsString('{% if output.hiddenWhenZero %} data-ui-calculator-hide-zero{% if 0 == (results[output.name].value ?? 0) %} hidden{% endif %}{% endif %}', $component);
+
+        $controller = $this->read(self::CONTROLLER_JS);
+        $this->assertStringContainsString('cell.closest("[data-ui-calculator-hide-zero]")', $controller);
+        $this->assertStringContainsString('row.hidden = !result?.value;', $controller);
+        $this->assertMatchesRegularExpression('/\.ui-calculator-result\[hidden\] \{\s*display: none;/', $this->read(self::STYLESHEET));
+    }
+
     // Given an action, the calculator is wrapped in a form element that must not become the grid's only item
     public function testASubmittableCalculatorKeepsItsTwoColumns(): void
     {

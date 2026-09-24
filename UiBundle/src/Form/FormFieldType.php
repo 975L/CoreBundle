@@ -65,7 +65,7 @@ class FormFieldType extends AbstractType
                 'label' => 'label.field_required',
                 'required' => false,
             ])
-            // The four below only ever mean something to a number/range/choice field, and are left blank on every other one rather than shown conditionally: a per-row dynamic sub-form for four optional inputs would cost more than it saves
+            // The ones below only ever mean something to a number/range/choice/checkbox field, and are left blank on every other one rather than shown conditionally: a per-row dynamic sub-form for a handful of optional inputs would cost more than it saves
             ->add('minValue', NumberType::class, [
                 'label' => 'label.field_min',
                 'required' => false,
@@ -83,6 +83,13 @@ class FormFieldType extends AbstractType
                 'required' => false,
                 'html5' => true,
                 'scale' => 4,
+            ])
+            ->add('price', NumberType::class, [
+                'label' => 'label.field_price',
+                'required' => false,
+                'help' => 'label.field_price_help',
+                'html5' => true,
+                'scale' => 2,
             ])
             ->add('defaultValue', TextType::class, [
                 'label' => 'label.field_default',

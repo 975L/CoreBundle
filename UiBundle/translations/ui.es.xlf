@@ -1950,6 +1950,14 @@
                 <source>label.field_placeholder</source>
                 <target>Marcador de posición</target>
             </trans-unit>
+            <trans-unit id="_TguLMR">
+                <source>label.field_price</source>
+                <target>Precio</target>
+            </trans-unit>
+            <trans-unit id="AQ3XdTC">
+                <source>label.field_price_help</source>
+                <target>Se muestra tras la etiqueta y se multiplica por el valor del campo en las fórmulas: una casilla marcada vale su precio, un número vale cantidad × precio.</target>
+            </trans-unit>
             <trans-unit id="GvBwpCn">
                 <source>label.field_required</source>
                 <target>Obligatorio</target>
@@ -3325,6 +3333,14 @@
             <trans-unit id="s9SzZHy">
                 <source>label.output_format_percent</source>
                 <target>Porcentaje</target>
+            </trans-unit>
+            <trans-unit id="jYU2v7C">
+                <source>label.output_hidden_when_zero</source>
+                <target>Ocultar si es 0</target>
+            </trans-unit>
+            <trans-unit id="_htZBZj">
+                <source>label.output_hidden_when_zero_help</source>
+                <target>Para una línea de detalle: solo aparece cuando se elige la opción que lee.</target>
             </trans-unit>
             <trans-unit id="370c.KT">
                 <source>label.output_highlighted</source>

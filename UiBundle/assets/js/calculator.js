@@ -111,6 +111,11 @@ export default class extends Controller {
         this.resultsTarget.querySelectorAll("[data-ui-calculator-output]").forEach((cell) => {
             const result = results[cell.dataset.uiCalculatorOutput];
             cell.textContent = result?.formatted ?? "—";
+            // A detail line of an option left unticked is worth nothing and says nothing - see FormOutput::$hiddenWhenZero
+            const row = cell.closest("[data-ui-calculator-hide-zero]");
+            if (row) {
+                row.hidden = !result?.value;
+            }
         });
     }
 }

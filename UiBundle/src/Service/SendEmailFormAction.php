@@ -29,6 +29,7 @@ class SendEmailFormAction implements FormActionInterface
         private readonly TranslatorInterface $translator,
         // Optional so a subclass or an app wiring this by hand keeps working - without it, a calculator's results are simply left out of the email
         private readonly ?ExpressionEvaluator $expressionEvaluator = null,
+        private readonly PriceFormatter $priceFormatter = new PriceFormatter(),
     ) {
     }
 
@@ -100,15 +101,12 @@ class SendEmailFormAction implements FormActionInterface
     {
         $pairs = [];
         foreach ($form->getFields() as $field) {
-            $pairs[] = [(string) $field->getLabel(), $this->readableValue($field, $submittedData[$field->getName()] ?? null)];
+            // Labelled as the page showed it, price included
+            $label = $this->priceFormatter->label((string) $field->getLabel(), $field->getPrice(), $this->translator->getLocale());
+            $pairs[] = [$label, $this->readableValue($field, $submittedData[$field->getName()] ?? null)];
         }
 
-        if ($form->isCalculator() && null !== $this->expressionEvaluator) {
-            $results = $this->expressionEvaluator->compute($form, $submittedData);
-            foreach ($form->getVisibleOutputs() as $output) {
-                $pairs[] = [(string) $output->getLabel(), $results[(string) $output->getName()]['formatted'] ?? null];
-            }
-        }
+        $pairs = [...$pairs, ...$this->resultPairs($form, $submittedData)];
 
         $labelled = [];
         $labelCounts = [];
@@ -119,6 +117,28 @@ class SendEmailFormAction implements FormActionInterface
         }
 
         return $labelled;
+    }
+
+    // A calculator's visible results as the page showed them, none for a plain form or without an evaluator
+    private function resultPairs(Form $form, array $submittedData): array
+    {
+        if (!$form->isCalculator() || null === $this->expressionEvaluator) {
+            return [];
+        }
+
+        $pairs = [];
+        $results = $this->expressionEvaluator->compute($form, $submittedData);
+        foreach ($form->getVisibleOutputs() as $output) {
+            $result = $results[(string) $output->getName()] ?? null;
+
+            // A detail line of an option left unticked is left out, as the page left it out
+            if ($output->isHiddenWhenZero() && empty($result['value'])) {
+                continue;
+            }
+            $pairs[] = [(string) $output->getLabel(), $result['formatted'] ?? null];
+        }
+
+        return $pairs;
     }
 
     // A choice's submitted value is what a formula reads, its label what the visitor picked - the value itself when no option matches it any more. A checkbox reads as a translated yes/no rather than a bare 1 or nothing

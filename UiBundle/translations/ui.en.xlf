@@ -1950,6 +1950,14 @@
                 <source>label.field_placeholder</source>
                 <target>Placeholder</target>
             </trans-unit>
+            <trans-unit id="_TguLMR">
+                <source>label.field_price</source>
+                <target>Price</target>
+            </trans-unit>
+            <trans-unit id="AQ3XdTC">
+                <source>label.field_price_help</source>
+                <target>Shown after the label and multiplied by the field's value in formulas: a ticked box is worth its price, a number is quantity × price.</target>
+            </trans-unit>
             <trans-unit id="GvBwpCn">
                 <source>label.field_required</source>
                 <target>Required</target>
@@ -3325,6 +3333,14 @@
             <trans-unit id="s9SzZHy">
                 <source>label.output_format_percent</source>
                 <target>Percentage</target>
+            </trans-unit>
+            <trans-unit id="jYU2v7C">
+                <source>label.output_hidden_when_zero</source>
+                <target>Hide when 0</target>
+            </trans-unit>
+            <trans-unit id="_htZBZj">
+                <source>label.output_hidden_when_zero_help</source>
+                <target>For a detail line: it only shows once the option it reads is chosen.</target>
             </trans-unit>
             <trans-unit id="370c.KT">
                 <source>label.output_highlighted</source>

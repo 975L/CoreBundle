@@ -3,6 +3,16 @@
         "date": "2026-09-24",
         "description": [
             {
+                "en": "A form field can now carry a price, shown next to its label and counted automatically in a calculator's estimate, so you type it once instead of in every formula.",
+                "fr": "Un champ de formulaire peut désormais porter un prix, affiché à côté de son libellé et compté automatiquement dans l'estimation d'un calculateur, pour ne le saisir qu'une fois au lieu de le répéter dans chaque formule.",
+                "es": "Un campo de formulario puede ahora llevar un precio, mostrado junto a su etiqueta y contado automáticamente en la estimación de una calculadora, para escribirlo una sola vez en lugar de en cada fórmula."
+            },
+            {
+                "en": "A calculator's result can now be hidden while it is 0, so a detailed quote only lists the options your visitor actually picked, on the page and in the email.",
+                "fr": "Un résultat de calculateur peut désormais être masqué tant qu'il vaut 0, pour qu'un devis détaillé ne liste que les options réellement choisies par le visiteur, sur la page comme dans l'e-mail.",
+                "es": "Un resultado de calculadora puede ahora ocultarse mientras vale 0, para que un presupuesto detallado solo muestre las opciones realmente elegidas por el visitante, en la página y en el correo."
+            },
+            {
                 "en": "A block's link can now point at one of your pages or sections picked from a list, as a menu link does, and you can still type any address.",
                 "fr": "Le lien d'un block peut désormais pointer vers une de vos pages ou sections choisie dans une liste, comme un lien de menu, et vous pouvez toujours taper n'importe quelle adresse.",
                 "es": "El enlace de un bloque puede ahora apuntar a una de sus páginas o secciones elegida en una lista, como un enlace de menú, y siempre puede escribir cualquier dirección."

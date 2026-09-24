@@ -32,10 +32,12 @@ class FormExportImportTest extends TestCase
         $this->assertTrue($items[0]['outputsFirst']);
         $this->assertSame(['kilometres-par-an', 'type-de-vehicule'], array_column($items[0]['fields'], 'name'));
         $this->assertSame([5000.0, null], array_column($items[0]['fields'], 'minValue'));
+        $this->assertSame([0.5, null], array_column($items[0]['fields'], 'price'));
         $this->assertSame([['label' => 'Léger', 'value' => '1.15']], $items[0]['fields'][1]['options']);
         $this->assertSame(['litres', 'economies'], array_column($items[0]['outputs'], 'name'));
         $this->assertSame('litres * 1.5', $items[0]['outputs'][1]['expression']);
         $this->assertSame([0, 1], array_column($items[0]['outputs'], 'position'));
+        $this->assertSame([false, false], array_column($items[0]['outputs'], 'hiddenWhenZero'));
     }
 
     // The variable name travels rather than being derived again on arrival: it is what the formulas read, and a slugger answering a shade differently on the other environment would break every one of them
@@ -58,6 +60,7 @@ class FormExportImportTest extends TestCase
         $this->assertCount(2, $created->getOutputs());
         $this->assertSame('litres * 1.5', $created->getOutputs()->get(1)?->getExpression());
         $this->assertTrue($created->isOutputsFirst());
+        $this->assertSame(0.5, $created->getFields()->first()?->getPrice());
     }
 
     // A field the export no longer carries goes, an output too: a formula reads its fields by name, so a Form left half-updated is one whose outputs no longer resolve
@@ -156,6 +159,7 @@ class FormExportImportTest extends TestCase
                 ->setMaxValue(40000)
                 ->setStepValue(500)
                 ->setDefaultValue('15000')
+                ->setPrice(0.5)
                 ->setPosition(0))
             ->addField(new FormField()
                 ->setName('type-de-vehicule')

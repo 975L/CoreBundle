@@ -77,6 +77,11 @@ class FormOutputType extends AbstractType
                 'required' => false,
                 'help' => 'label.output_visible_help',
             ])
+            ->add('hiddenWhenZero', CheckboxType::class, [
+                'label' => 'label.output_hidden_when_zero',
+                'required' => false,
+                'help' => 'label.output_hidden_when_zero_help',
+            ])
             ->add('highlighted', CheckboxType::class, [
                 'label' => 'label.output_highlighted',
                 'required' => false,

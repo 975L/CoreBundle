@@ -26,6 +26,7 @@ class ExpressionEvaluator
         private readonly CalculatorExpressionLanguage $expressionLanguage,
         private readonly TranslatorInterface $translator,
         private readonly FormTranslator $formTranslator,
+        private readonly PriceFormatter $priceFormatter = new PriceFormatter(),
     ) {
     }
 
@@ -164,7 +165,8 @@ class ExpressionEvaluator
         $variables = [];
         foreach ($form->getFields() as $field) {
             if ($field->isNumeric()) {
-                $variables[$field->getVariableName()] = $this->numeric($field, $inputs[(string) $field->getName()] ?? null);
+                // A priced field reads as its value times its price, the price being typed once on the field rather than again in every formula
+                $variables[$field->getVariableName()] = $this->numeric($field, $inputs[(string) $field->getName()] ?? null) * ($field->getPrice() ?? 1.0);
             }
         }
 
@@ -225,17 +227,12 @@ class ExpressionEvaluator
     // Formatted server-side and handed to the browser ready to print, so the same formula shows the same number whether the page was rendered or refreshed by fetch
     private function format(FormOutput $output, float $value): string
     {
-        $formatter = new \NumberFormatter(
-            $this->translator->getLocale(),
-            FormOutput::FORMAT_CURRENCY === $output->getFormat() ? \NumberFormatter::CURRENCY : \NumberFormatter::DECIMAL
-        );
-        $formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, $output->getDecimals());
-
+        // A currency is written by PriceFormatter, the same one that prints the prices in the fields' labels
         if (FormOutput::FORMAT_CURRENCY === $output->getFormat()) {
-            // The currency the locale itself names when it names one - a plain "fr" (no region, which is what a c975L site runs on) answers "XXX", the code for "no currency", and would print an "¤" placeholder. Euro is the fallback rather than a site-wide setting nobody would change; a calculator quoting anything else states it as a plain number with its own unit
-            $currency = $formatter->getTextAttribute(\NumberFormatter::CURRENCY_CODE);
-            $formatted = $formatter->formatCurrency($value, in_array($currency, ['', 'XXX', false], true) ? 'EUR' : $currency);
+            $formatted = $this->priceFormatter->format($value, $this->translator->getLocale(), $output->getDecimals());
         } else {
+            $formatter = new \NumberFormatter($this->translator->getLocale(), \NumberFormatter::DECIMAL);
+            $formatter->setAttribute(\NumberFormatter::FRACTION_DIGITS, $output->getDecimals());
             $formatted = $formatter->format($value);
             if (FormOutput::FORMAT_PERCENT === $output->getFormat()) {
                 $formatted .= "\u{00A0}%";

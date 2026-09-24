@@ -42,6 +42,7 @@ class SendEmailFormActionTest extends TestCase
                 ? strtr('New message via %form%', $parameters)
                 : $id
         );
+        $translator->method('getLocale')->willReturn('fr');
 
         return new SendEmailFormAction($emailService, $emailTemplateRepository, $emailTemplateRenderer, $translator, $expressionEvaluator);
     }
@@ -134,6 +135,25 @@ class SendEmailFormActionTest extends TestCase
         $this->assertSame(['Logo' => 'label.yes', 'Photos' => 'label.no'], $captured->context['fields']);
     }
 
+    // The email names a field the way the page did, price included
+    public function testHandleLabelsAPricedFieldWithItsPrice(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = new Form()->setName('estimation');
+        $form->addField(new FormField()->setName('logo')->setLabel('Logo')->setType(FormField::TYPE_CHECKBOX)->setPrice(400.0));
+
+        $this->createAction($emailService)->handle($form, ['logo' => true]);
+
+        $this->assertSame(["Logo (400\u{00A0}€)" => 'label.yes'], $captured->context['fields']);
+    }
+
     // A formula reads "1.6", the visitor picked "A4" - the email says what they picked
     public function testHandleWritesAChoiceByTheLabelOfItsOption(): void
     {
@@ -180,6 +200,32 @@ class SendEmailFormActionTest extends TestCase
         $this->createAction($emailService, expressionEvaluator: $evaluator)->handle($form, ['pages' => '100']);
 
         $this->assertSame(['Pages' => '100', 'Total' => '200 €'], $captured->context['fields']);
+    }
+
+    // A detail line of an option left unticked is left out of the email, as it was left off the page
+    public function testHandleLeavesOutADetailLineWorthNothing(): void
+    {
+        $captured = null;
+        $emailService = $this->createStub(EmailService::class);
+        $emailService->method('send')->willReturnCallback(function (EmailSendRequest $request) use (&$captured): bool {
+            $captured = $request;
+
+            return true;
+        });
+
+        $form = $this->buildForm('estimation', null, ['pages' => 'Pages']);
+        $form->addOutput(new FormOutput()->setLabel('Logo')->setName('logo')->setExpression('0')->setHiddenWhenZero(true));
+        $form->addOutput(new FormOutput()->setLabel('Photos')->setName('photos')->setExpression('250')->setHiddenWhenZero(true));
+
+        $evaluator = $this->createStub(ExpressionEvaluator::class);
+        $evaluator->method('compute')->willReturn([
+            'logo' => ['value' => 0.0, 'formatted' => '0 €'],
+            'photos' => ['value' => 250.0, 'formatted' => '250 €'],
+        ]);
+
+        $this->createAction($emailService, expressionEvaluator: $evaluator)->handle($form, ['pages' => '100']);
+
+        $this->assertSame(['Pages' => '100', 'Photos' => '250 €'], $captured->context['fields']);
     }
 
     public function testHandleUsesActionConfigOverrides(): void

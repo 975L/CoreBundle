@@ -894,6 +894,10 @@ button.btn {
   outline-offset: 2px;
 }
 
+.ui-calculator-result[hidden] {
+  display: none;
+}
+
 /* CARDS */
 .cards {
   display: flex;

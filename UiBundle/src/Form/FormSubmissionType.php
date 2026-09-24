@@ -14,6 +14,7 @@ use c975L\UiBundle\Entity\FormField;
 use c975L\UiBundle\Service\CaptchaVerifier;
 use c975L\UiBundle\Service\FormBotProtection;
 use c975L\UiBundle\Service\FormTranslator;
+use c975L\UiBundle\Service\PriceFormatter;
 use c975L\UiBundle\Validator\Constraints\DnsEmail;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -48,6 +49,7 @@ class FormSubmissionType extends AbstractType
         private readonly TranslatorInterface $translator,
         private readonly CaptchaVerifier $captchaVerifier,
         private readonly FormTranslator $formTranslator,
+        private readonly PriceFormatter $priceFormatter = new PriceFormatter(),
     ) {
     }
 
@@ -215,7 +217,8 @@ class FormSubmissionType extends AbstractType
     // Plain admin-typed text by default; with a "url" set, the label text stays exactly as typed but gains a translated, escaped "(label.field_url_link)" <a> - the surrounding label itself never becomes a link so clicking the rest of it still toggles a checkbox field as expected
     private function buildLabel(FormField $field): string
     {
-        $label = (string) $this->formTranslator->getLabel($field);
+        // Followed by the field's price when it has one, which then also sits inside the escaped text of a label carrying a link
+        $label = $this->priceFormatter->label((string) $this->formTranslator->getLabel($field), $field->getPrice(), $this->translator->getLocale());
 
         if (null === $field->getUrl()) {
             return $label;

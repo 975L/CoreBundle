@@ -158,13 +158,14 @@ class FormImportProvider implements ImportProviderInterface
             ->setPosition($data['position'] ?? null);
     }
 
-    // What a numeric or a choice field is bounded by, all four optional: a plain text field carries none of them
+    // What a numeric or a choice field is bounded by and costs, all optional: a plain text field carries none of them
     private function writeFieldRange(FormField $field, array $data): void
     {
         $field
             ->setMinValue($data['minValue'] ?? null)
             ->setMaxValue($data['maxValue'] ?? null)
             ->setStepValue($data['stepValue'] ?? null)
+            ->setPrice($data['price'] ?? null)
             ->setDefaultValue($data['defaultValue'] ?? null)
             ->setOptions($data['options'] ?? null);
     }
@@ -194,6 +195,7 @@ class FormImportProvider implements ImportProviderInterface
             ->setDecimals((int) ($data['decimals'] ?? 0))
             ->setUnit($data['unit'] ?? null)
             ->setVisible((bool) ($data['visible'] ?? true))
+            ->setHiddenWhenZero((bool) ($data['hiddenWhenZero'] ?? false))
             ->setHighlighted((bool) ($data['highlighted'] ?? false));
     }
 }
