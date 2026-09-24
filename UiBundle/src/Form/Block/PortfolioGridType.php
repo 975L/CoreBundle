@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Form\Block;
 
+use c975L\UiBundle\Form\LinkTargetType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -58,7 +59,7 @@ class PortfolioGridType extends AbstractType
                 'label' => 'label.link_label',
                 'required' => false,
             ])
-            ->add('linkUrl', TextType::class, [
+            ->add('linkUrl', LinkTargetType::class, [
                 'label' => 'label.url',
                 'required' => false,
             ])

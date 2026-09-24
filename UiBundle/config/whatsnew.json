@@ -1,5 +1,20 @@
 [
     {
+        "date": "2026-09-24",
+        "description": [
+            {
+                "en": "A block's link can now point at one of your pages or sections picked from a list, as a menu link does, and you can still type any address.",
+                "fr": "Le lien d'un block peut désormais pointer vers une de vos pages ou sections choisie dans une liste, comme un lien de menu, et vous pouvez toujours taper n'importe quelle adresse.",
+                "es": "El enlace de un bloque puede ahora apuntar a una de sus páginas o secciones elegida en una lista, como un enlace de menú, y siempre puede escribir cualquier dirección."
+            },
+            {
+                "en": "Cards you drag into a new order now keep that order when you save, along with their translations.",
+                "fr": "Les cartes que vous réordonnez par glisser-déposer gardent désormais cet ordre à l'enregistrement, avec leurs traductions.",
+                "es": "Las tarjetas que reordena arrastrándolas conservan ahora ese orden al guardar, junto con sus traducciones."
+            }
+        ]
+    },
+    {
         "date": "2026-09-23",
         "description": [
             {

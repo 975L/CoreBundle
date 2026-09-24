@@ -12,7 +12,8 @@ services:
         # Testing/ excluded: test utilities that ship so the bundles depending on this one can run the same stylesheet analysis over their own sheets, never instantiated by the application itself
         # Video/ excluded: an enum and the value object it builds, read statically by whoever needs them - autowiring ResolvedVideo fails on the enum the container refuses to instantiate
         # Map/ excluded: an enum, read statically for the same reason - the container refuses to instantiate one
-        exclude: '../src/{DependencyInjection,Entity,Field,Map,Maker,Model,Testing,Video}'
+        # Form/ChoiceList/ excluded: choice loaders built by their form type for one field at a time, over the list it hands them - autowiring one fails on that list
+        exclude: '../src/{DependencyInjection,Entity,Field,Form/ChoiceList,Map,Maker,Model,Testing,Video}'
 
     # Not shared: each provider staging its rows gets an instance of its own, so a linker never yields what another bundle staged - those rows would be recorded under the wrong bundle, and taken back with it (see DemoFixtureTranslator)
     c975L\UiBundle\Service\DemoFixtureTranslator:

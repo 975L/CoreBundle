@@ -1,5 +1,19 @@
 # ChangeLog
 
+## v1.34.0
+
+A block's link field picks a page or a section, as a menu link does
+
+### UiBundle
+
+- **`LinkTargetType`**: every block link field lists the site's pages and sections, and still takes an address typed by hand (24/09/2026)
+- **`LinkTargetProviderInterface`**, auto-discovered by `LinkTargetProviderPass` into `LinkTargetRegistry` (24/09/2026)
+- `ChoiceAutocompleteExtension` keeps the autocomplete on a list taking typed values, whatever its length (24/09/2026)
+- A card button with no label reads `label.learn_more` rather than its target (24/09/2026)
+- The cards of a collection are saved in the order they were dragged to (24/09/2026)
+- A card's translations follow it when it moves, instead of being dropped (24/09/2026)
+- The calculator's highlighted figure reads `--primary-ink` (24/09/2026)
+
 ## v1.33.1
 
 Image:Zoom builds its enlarged image on first opening

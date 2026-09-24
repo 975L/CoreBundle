@@ -15,6 +15,7 @@ use c975L\UiBundle\Form\BlockCardSizeChoiceType;
 use c975L\UiBundle\Form\BlockClassChoiceType;
 use c975L\UiBundle\Form\BlockRadiusChoiceType;
 use c975L\UiBundle\Form\BlockShadowChoiceType;
+use c975L\UiBundle\Form\LinkTargetType;
 use c975L\UiBundle\Form\TrixEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -49,7 +50,7 @@ class CardType extends AbstractType
                 'label' => 'label.content',
             ])
             // Optional teaser fields: when a media (see media_types on this block's tag) and/or a url is set, blocks/Card.html.twig renders an image + button teaser instead of the plain content box - several such cards placed next to each other on a page (e.g. a "our sites" listing) are auto-wrapped in a ".cards" flex row by templates/components/Blocks/Blocks.html.twig
-            ->add('url', TextType::class, [
+            ->add('url', LinkTargetType::class, [
                 'label' => 'label.url',
                 'required' => false,
             ])

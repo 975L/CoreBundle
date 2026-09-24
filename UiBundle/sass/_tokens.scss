@@ -76,9 +76,9 @@
         --button-grey-background: lightgrey;
         --button-grey-color: #000;
         --button-status-color: #fff;
-        // The calculator's own decisions (sass/_calculator.scss): the panel its results are read in, and the card carrying the one figure the visitor came for. Their own tokens rather than --surface-accent and --primary read directly, which is what lets a site whose brand colour is its ink - a near-black --primary mixes a highlight indistinguishable from the panel around it - point the card at its secondary and move nothing else on the page
+        // The calculator's own decisions (sass/_calculator.scss): the panel its results are read in, and the card carrying the one figure the visitor came for. The figure reads through --primary-ink, being an ink laid on the page and not a flat painted with --primary: SiteBundle's dark palette lightens that one alone, and a deep brand colour read on a dark ground otherwise vanishes into the tinted card. Their own tokens rather than --surface-accent and --primary read directly, which is what lets a site whose brand colour is its ink - a near-black --primary mixes a highlight indistinguishable from the panel around it - point the card at its secondary and move nothing else on the page
         --calculator-highlight-background: var(--surface-accent);
-        --calculator-highlight-color: var(--primary);
+        --calculator-highlight-color: var(--primary-ink);
         --calculator-highlight-size: 2.6em;
         --calculator-panel-background: var(--surface-alt);
         --calculator-panel-radius: var(--radius-panel);

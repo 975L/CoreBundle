@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Form\Block;
 
+use c975L\UiBundle\Form\LinkTargetType;
 use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
@@ -44,7 +45,7 @@ class CtaBandType extends AbstractType
             ->add('ctaLabel', TextType::class, [
                 'label' => 'label.cta_label',
             ])
-            ->add('ctaUrl', TextType::class, [
+            ->add('ctaUrl', LinkTargetType::class, [
                 'label' => 'label.url',
             ]);
 

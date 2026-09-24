@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Form\Block;
 
+use c975L\UiBundle\Form\LinkTargetType;
 use c975L\UiBundle\Form\TrixEditorType;
 use c975L\UiBundle\Service\BlockAnchorSlugger;
 use Symfony\Component\Form\AbstractType;
@@ -83,7 +84,7 @@ class HeroType extends AbstractType
                 'label' => 'label.primary_label',
                 'required' => false,
             ])
-            ->add('primaryUrl', TextType::class, [
+            ->add('primaryUrl', LinkTargetType::class, [
                 'label' => 'label.primary_url',
                 'required' => false,
             ])
@@ -91,7 +92,7 @@ class HeroType extends AbstractType
                 'label' => 'label.secondary_label',
                 'required' => false,
             ])
-            ->add('secondaryUrl', TextType::class, [
+            ->add('secondaryUrl', LinkTargetType::class, [
                 'label' => 'label.secondary_url',
                 'required' => false,
             ])

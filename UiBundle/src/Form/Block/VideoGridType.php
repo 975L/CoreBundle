@@ -10,6 +10,7 @@
 
 namespace c975L\UiBundle\Form\Block;
 
+use c975L\UiBundle\Form\LinkTargetType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -28,7 +29,7 @@ class VideoGridType extends AbstractSectionHeadContainerType
                 'label' => 'label.link_label',
                 'required' => false,
             ])
-            ->add('linkUrl', TextType::class, [
+            ->add('linkUrl', LinkTargetType::class, [
                 'label' => 'label.url',
                 'required' => false,
             ]);

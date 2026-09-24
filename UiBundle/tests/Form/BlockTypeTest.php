@@ -638,6 +638,28 @@ class BlockTypeTest extends TestCase
         $this->invokePurge($translator, ['cards.0.title' => 'Hello world'], [['title' => 'Goodbye world']]);
     }
 
+    // Two cards swapping places each take the translations the other held: a translation is of words, not of a place, and a reordered grid is not one to translate again
+    public function testCardsSwappingPlacesTakeTheirTranslationsAlong(): void
+    {
+        $translator = $this->createMock(ContentTranslator::class);
+        $translator->method('getTranslatableLocales')->willReturn(['en']);
+        $translator->method('values')->willReturn(['cards.0.title' => 'First', 'cards.1.title' => 'Second']);
+        $translator->expects($this->once())->method('stage')->with(Translation::OWNER_BLOCK, 7, 'en', ['cards.0.title' => 'Second', 'cards.1.title' => 'First']);
+
+        $this->invokePurge($translator, ['cards.0.title' => 'Premier', 'cards.1.title' => 'Second'], [['title' => 'Second'], ['title' => 'Premier']]);
+    }
+
+    // A card taken out ahead of another: the one moving up keeps its translations, the place left empty at the end loses its own
+    public function testARemovedCardLeavesTheNextOneItsTranslations(): void
+    {
+        $translator = $this->createMock(ContentTranslator::class);
+        $translator->method('getTranslatableLocales')->willReturn(['en']);
+        $translator->method('values')->willReturn(['cards.0.title' => 'First', 'cards.1.title' => 'Second']);
+        $translator->expects($this->once())->method('stage')->with(Translation::OWNER_BLOCK, 7, 'en', ['cards.0.title' => 'Second', 'cards.1.title' => null]);
+
+        $this->invokePurge($translator, ['cards.0.title' => 'Premier', 'cards.1.title' => 'Second'], [['title' => 'Second']]);
+    }
+
     // Fires the purge on a block whose cards held $before and now hold $cards
     private function invokePurge(ContentTranslator $translator, array $before, array $cards): void
     {
@@ -647,7 +669,7 @@ class BlockTypeTest extends TestCase
         $type = new BlockType($registry, $this->createRouter(), null, null, $translator);
         new \ReflectionProperty(BlockType::class, 'sourceBeforeSubmit')->setValue($type, [7 => $before]);
 
-        new \ReflectionMethod(BlockType::class, 'purgeMovedCollectionTranslations')
+        new \ReflectionMethod(BlockType::class, 'followMovedCollectionTranslations')
             ->invoke($type, $this->createBlockWithId(7, ['cards' => $cards]));
     }
 

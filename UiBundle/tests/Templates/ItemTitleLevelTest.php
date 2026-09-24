@@ -11,6 +11,8 @@
 namespace c975L\UiBundle\Tests\Templates;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Symfony\Component\Translation\IdentityTranslator;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
@@ -153,6 +155,8 @@ class ItemTitleLevelTest extends TestCase
         $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '/templates');
         $loader->addPath(\dirname(__DIR__, 2) . '/templates', 'c975LUi');
         $twig = new Environment($loader);
+        // Untranslated keys come back as-is, which is enough for the button's generic label
+        $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
 
         // The bundle's own filter, which a bare Environment knows nothing of - the same rule BoolExtension applies, so "false" spelled out stays false here too
         $twig->addFilter(new TwigFilter('to_bool', static fn (mixed $value): bool => !\in_array($value, [false, 'false', '0', 0, ''], true)));

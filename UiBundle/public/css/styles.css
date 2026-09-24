@@ -66,7 +66,7 @@
     --button-grey-color: #000;
     --button-status-color: #fff;
     --calculator-highlight-background: var(--surface-accent);
-    --calculator-highlight-color: var(--primary);
+    --calculator-highlight-color: var(--primary-ink);
     --calculator-highlight-size: 2.6em;
     --calculator-panel-background: var(--surface-alt);
     --calculator-panel-radius: var(--radius-panel);

@@ -199,7 +199,7 @@ class ContentTranslator
         return $value;
     }
 
-    // Lays one value over the data, "cards.0.title" reaching into the collection the block holds as json: an entry the source no longer has is never brought back, or a deleted card would reappear in one language alone (see BlockType, which purges those rows when the source moves)
+    // Lays one value over the data, "cards.0.title" reaching into the collection the block holds as json: an entry the source no longer has is never brought back, or a deleted card would reappear in one language alone (see BlockType, which carries those rows along when the source moves and drops them when its words are gone)
     /**
      * @param array<string, mixed> $values
      */

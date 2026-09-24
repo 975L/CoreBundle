@@ -11,6 +11,8 @@
 namespace c975L\UiBundle\Tests\Templates;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Symfony\Component\Translation\IdentityTranslator;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
@@ -131,6 +133,8 @@ class PortfolioLinkTargetTest extends TestCase
     private function twig(): Environment
     {
         $twig = new Environment(new FilesystemLoader(\dirname(__DIR__, 2) . '/templates'));
+        // Untranslated keys come back as-is, which is enough for the button's generic label
+        $twig->addExtension(new TranslationExtension(new IdentityTranslator()));
         $twig->addFunction(new TwigFunction('vich_uploader_asset', static fn (): string => '/uploads/project.jpg'));
 
         // The bundle's own filter, which a bare Environment knows nothing of - the same rule BoolExtension applies

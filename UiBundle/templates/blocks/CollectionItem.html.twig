@@ -52,7 +52,7 @@
             {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split. No ".text-center" beside it, unlike the plain card below: this card centers everything it holds, and the alignment is declared there once (see sass/_cards.scss) #}
             {% if content|default('') %}<div>{{ content|raw|nl2br }}</div>{% endif %}
             {# Wrapped in the very ".card-data" the other variants use, so a row of portraits of unequal lengths still lines its buttons up - the text above it is left in plain flow, where a name is read right under its face #}
-            {% if url|default('') %}<div class="card-data"><twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/></div>{% endif %}
+            {% if url|default('') %}<div class="card-data"><twig:c975LUi:Button:Button label="{{ buttonLabel|default('label.learn_more'|trans({}, 'ui')) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/></div>{% endif %}
         </div>
     </article>
 {% else %}
@@ -91,7 +91,7 @@
             <div class="card-data">
                 {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
                 {% if itemContent %}<div class="text-center">{{ itemContent|raw|nl2br }}</div>{% endif %}
-                {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
+                {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default('label.learn_more'|trans({}, 'ui')) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
             </div>
         </twig:c975LUi:Card:Card>
     {% else %}

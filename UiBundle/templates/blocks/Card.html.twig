@@ -20,7 +20,7 @@
         <div class="card-data">
             {# A <div>, not a <p>: raw Trix HTML is already block-level and a <p> would be split #}
             {% if blockContent %}<div class="text-center">{{ blockContent|raw|nl2br }}</div>{% endif %}
-            {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default(url) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
+            {% if url %}<twig:c975LUi:Button:Button label="{{ buttonLabel|default('label.learn_more'|trans({}, 'ui')) }}" url="{{ url }}" target="{{ target|default('') }}" icon="{{ buttonIcon|default('') }}"/>{% endif %}
         </div>
     </twig:c975LUi:Card:Card>
 {% else %}

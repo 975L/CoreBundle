@@ -58,6 +58,14 @@ class ChoiceAutocompleteExtensionTest extends TestCase
         $this->assertSame('ea-autocomplete', $view->vars['attr']['data-ea-widget'] ?? null);
     }
 
+    // A list taking typed values (LinkTargetType) needs the search box to type one in, however short
+    public function testAShortListTakingTypedValuesIsSearchable(): void
+    {
+        $view = $this->view(['choices' => ['a' => 'a'], 'attr' => ['data-ea-autocomplete-allow-item-create' => 'true']]);
+
+        $this->assertSame('ea-autocomplete', $view->vars['attr']['data-ea-widget'] ?? null);
+    }
+
     // Radios and checkboxes hold no select to turn into anything
     public function testExpandedChoicesAreLeftAlone(): void
     {

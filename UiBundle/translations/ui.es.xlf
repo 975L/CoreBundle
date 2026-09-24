@@ -2958,6 +2958,10 @@
                 <source>label.layout_help</source>
                 <target>Estándar: una diapositiva a la vez. Desbordamiento: todas una junto a otra, fuera de pantalla.</target>
             </trans-unit>
+            <trans-unit id="Vk2lno7">
+                <source>label.learn_more</source>
+                <target>Más información</target>
+            </trans-unit>
             <trans-unit id="xeLDFrp">
                 <source>label.legal_customize</source>
                 <target>Personalizar</target>
@@ -3041,6 +3045,10 @@
             <trans-unit id="c7Md7WI">
                 <source>label.link_label</source>
                 <target>Texto del enlace</target>
+            </trans-unit>
+            <trans-unit id="twIxSKQ">
+                <source>label.link_target_help</source>
+                <target>Elija una página o una sección de la lista, o escriba una dirección (/shop, https://…).</target>
             </trans-unit>
             <trans-unit id="V3mBDm2">
                 <source>label.locale</source>

@@ -35,6 +35,13 @@ class ChoiceAutocompleteExtension extends AbstractTypeExtension
             return;
         }
 
+        // A list taking typed values too always gets it, however short: a native select has nowhere to type one (see LinkTargetType)
+        if ('true' === ($view->vars['attr']['data-ea-autocomplete-allow-item-create'] ?? null)) {
+            $view->vars['attr']['data-ea-widget'] = 'ea-autocomplete';
+
+            return;
+        }
+
         // A multiple choice always gets it, however short: the widget renders removable tags, where a native multi-select asks for ctrl+click and shows one cramped scrolling box
         if (true !== ($view->vars['multiple'] ?? false) && $this->countChoices($view->vars['choices'] ?? []) < self::AUTOCOMPLETE_THRESHOLD) {
             // Removed, not merely left unset: below the threshold the rule is that there is no search box, and EasyAdmin has already put one there

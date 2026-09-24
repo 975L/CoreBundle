@@ -2958,6 +2958,10 @@
                 <source>label.layout_help</source>
                 <target>Standard : une slide à la fois. Débordement : toutes côte à côte, hors écran.</target>
             </trans-unit>
+            <trans-unit id="Vk2lno7">
+                <source>label.learn_more</source>
+                <target>En savoir plus</target>
+            </trans-unit>
             <trans-unit id="xeLDFrp">
                 <source>label.legal_customize</source>
                 <target>Personnaliser</target>
@@ -3041,6 +3045,10 @@
             <trans-unit id="c7Md7WI">
                 <source>label.link_label</source>
                 <target>Libellé du lien</target>
+            </trans-unit>
+            <trans-unit id="twIxSKQ">
+                <source>label.link_target_help</source>
+                <target>Choisissez une page ou une section, ou tapez une adresse (/shop, https://…).</target>
             </trans-unit>
             <trans-unit id="V3mBDm2">
                 <source>label.locale</source>

@@ -2958,6 +2958,10 @@
                 <source>label.layout_help</source>
                 <target>Standard: one slide at a time. Freeflow: all slides side by side, overflowing the screen.</target>
             </trans-unit>
+            <trans-unit id="Vk2lno7">
+                <source>label.learn_more</source>
+                <target>Learn more</target>
+            </trans-unit>
             <trans-unit id="xeLDFrp">
                 <source>label.legal_customize</source>
                 <target>Customize</target>
@@ -3041,6 +3045,10 @@
             <trans-unit id="c7Md7WI">
                 <source>label.link_label</source>
                 <target>Link label</target>
+            </trans-unit>
+            <trans-unit id="twIxSKQ">
+                <source>label.link_target_help</source>
+                <target>Pick a page or a section from the list, or type an address (/shop, https://…).</target>
             </trans-unit>
             <trans-unit id="V3mBDm2">
                 <source>label.locale</source>

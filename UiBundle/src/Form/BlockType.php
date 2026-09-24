@@ -53,7 +53,7 @@ class BlockType extends AbstractType
     // How a language screen names the sub-form carrying one media's texts. A name of its own, never "medias": that collection has a choreography of its own around add/remove and file uploads (see onPreSubmit), which a translation has no business crossing
     private const string MEDIA_TRANSLATION_PREFIX = 'mediaTranslation_';
 
-    // The repeated texts each block held before this submission, by block id: a translation names the place it sits at ("cards.0.title"), so a card that moved would leave its own on whatever card took its index. Read in PRE_SUBMIT, where the form still holds the row as it was
+    // The repeated texts each block held before this submission, by block id: a translation names the place it sits at ("cards.0.title"), so a card that moved has its own carried to the index it took. Read in PRE_SUBMIT, where the form still holds the row as it was
     /** @var array<int, array<string, string|null>> */
     private array $sourceBeforeSubmit = [];
 
@@ -193,11 +193,29 @@ class BlockType extends AbstractType
     private function applySubmittedWritingScreen(FormEvent $event, string $kind, ?Block $block, bool $kindChanged): void
     {
         $this->applySubmittedMedias($event, $kind, $kindChanged);
+        $this->keepSubmittedOrder($event);
 
-        // Snapshot before anything is mapped, for the purge that runs once the new data is in (see purgeMovedCollectionTranslations)
+        // Snapshot before anything is mapped, for the purge that runs once the new data is in (see followMovedCollectionTranslations)
         if (null !== $block && null !== $block->getId()) {
             $this->sourceBeforeSubmit[$block->getId()] = $this->collectionTexts($kind, $block->getData());
         }
+    }
+
+    // The rows of a kind's own collections (the cards of a grid, the questions of a FAQ) renumbered in the order they were posted: a row dragged elsewhere keeps the index its field names carry, and CollectionType binding by index would put it straight back. Plain arrays with no identity of their own, so renumbered here rather than renamed in the form, where a Trix editor's input would lose track of its own field
+    private function keepSubmittedOrder(FormEvent $event): void
+    {
+        $submitted = $event->getData();
+        if (!is_array($submitted['data'] ?? null)) {
+            return;
+        }
+
+        foreach ($event->getForm()->get('data') as $name => $child) {
+            if ($child->getConfig()->getType()->getInnerType() instanceof CollectionType && is_array($submitted['data'][$name] ?? null)) {
+                $submitted['data'][$name] = array_values($submitted['data'][$name]);
+            }
+        }
+
+        $event->setData($submitted);
     }
 
     // The medias the new kind can receive, the ones it cannot being taken off the submission and off the form
@@ -294,13 +312,13 @@ class BlockType extends AbstractType
             return;
         }
 
-        $this->purgeMovedCollectionTranslations($block);
+        $this->followMovedCollectionTranslations($block);
 
         $this->videoPosterImporter?->importIfRequested($block);
     }
 
-    // Drops the translations of a repeated text the source no longer says at that place: the text the site is written in is the msgid, and when it moves its translation goes with it - the rule untouched() applies to a single field
-    private function purgeMovedCollectionTranslations(Block $block): void
+    // The translations of a repeated text follow its words: the text the site is written in is the msgid, so a card dragged elsewhere takes its translations along, and one whose words are gone loses them - the rule untouched() applies to a single field
+    private function followMovedCollectionTranslations(Block $block): void
     {
         $id = $block->getId();
         $before = null === $id ? null : ($this->sourceBeforeSubmit[$id] ?? null);
@@ -311,32 +329,63 @@ class BlockType extends AbstractType
 
         unset($this->sourceBeforeSubmit[$id]);
 
-        $gone = $this->movedFields($before, $this->collectionTexts((string) $block->getKind(), $block->getData()));
+        $moves = $this->movedFields($before, $this->collectionTexts((string) $block->getKind(), $block->getData()));
 
-        foreach ([] === $gone ? [] : $this->contentTranslator->getTranslatableLocales() as $locale) {
-            $this->contentTranslator->stage(Translation::OWNER_BLOCK, $id, $locale, $gone);
+        // Read before anything is staged: two cards swapping places each take what the other held
+        foreach ([] === $moves ? [] : $this->contentTranslator->getTranslatableLocales() as $locale) {
+            $translations = $this->contentTranslator->values(Translation::OWNER_BLOCK, $id, $locale);
+
+            $this->contentTranslator->stage(Translation::OWNER_BLOCK, $id, $locale, array_map(
+                static fn (?string $from): ?string => null === $from ? null : ($translations[$from] ?? null),
+                $moves
+            ));
         }
     }
 
-    // The places the source no longer says what it said, staged as nothing: compared on the words alone, as every other source/translation comparison here is, a raw !== reading a card nobody touched as a rewritten one
+    // The places the source no longer says what it said, each with the place that said those words before - the same key of another entry - or null when none did: compared on the words alone, as every other source/translation comparison here is, a raw !== reading a card nobody touched as a rewritten one
     /**
      * @param array<string, string|null> $before
      * @param array<string, string|null> $after
      *
-     * @return array<string, null>
+     * @return array<string, string|null> field => field its translations come from
      */
     private function movedFields(array $before, array $after): array
     {
-        $plain = static fn (?string $text): ?string => null === $text ? null : ContentTranslator::plain($text);
+        $plain = static fn (?string $text): string => null === $text ? '' : ContentTranslator::plain($text);
 
-        $gone = [];
-        foreach ($before as $field => $text) {
-            if ($plain($after[$field] ?? null) !== $plain($text)) {
-                $gone[$field] = null;
+        $moves = [];
+        foreach (array_keys($before + $after) as $field) {
+            $text = $plain($after[$field] ?? null);
+            if ($text === $plain($before[$field] ?? null)) {
+                continue;
+            }
+
+            $from = '' === $text ? null : $this->formerField((string) $field, $text, $before, $plain);
+
+            // A place only the new source has, with words no entry said before, has no translation to drop
+            if (null !== $from || array_key_exists($field, $before)) {
+                $moves[$field] = $from;
             }
         }
 
-        return $gone;
+        return $moves;
+    }
+
+    // The place that said these words before, in the same collection and under the same key: "cards.2.title" for what "cards.0.title" now says
+    /** @param array<string, string|null> $before */
+    private function formerField(string $field, string $text, array $before, \Closure $plain): ?string
+    {
+        [$collection, , $key] = explode('.', $field, 3) + [null, null, null];
+
+        foreach ($before as $candidate => $words) {
+            [$candidateCollection, , $candidateKey] = explode('.', (string) $candidate, 3) + [null, null, null];
+
+            if ($candidateCollection === $collection && $candidateKey === $key && $plain($words) === $text) {
+                return (string) $candidate;
+            }
+        }
+
+        return null;
     }
 
     // The repeated texts of a block's data, flat: "cards.0.title" => the words it holds
