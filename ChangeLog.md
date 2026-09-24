@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.35.4
+
+A calculator's select options stay readable on a dark theme
+
+### UiBundle
+
+- `_calculator.scss` paints a select's options from the theme's text and background pair (24/09/2026)
+
 ## v1.35.3
 
 A calculator's estimate is shared by its link

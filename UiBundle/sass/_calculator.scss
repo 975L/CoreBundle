@@ -126,6 +126,12 @@ $row: '.ui-calculator-fields div:has(> input, > select, > textarea)';
     color: var(--form-input-color);
 }
 
+// The list the browser opens is painted from the option's own pair, and a colour inherited from a dark theme would leave the entries unreadable on it - see .ui-map__select option
+.ui-calculator select option {
+    color: var(--text);
+    background-color: var(--background);
+}
+
 // One panel holding the whole answer, rather than a stack of boxes: the rows inside it are told apart by a hairline, which is what lets the highlighted one read as the only object on the column
 .ui-calculator-results {
     display: grid;
