@@ -33,6 +33,25 @@ export default class extends Controller {
         this.element.addEventListener("input", this.onInput);
         this.element.addEventListener("change", this.onInput);
         this.element.querySelectorAll('input[type="range"]').forEach((slider) => { this.readout(slider); });
+
+        // A reload in Firefox restores the controls the visitor had moved, while the results were printed for the defaults: they are asked again rather than left contradicting the controls
+        if (this.restored()) {
+            this.refresh();
+        }
+    }
+
+    // Whether any control shows something other than what the page was rendered with
+    restored() {
+        return [...this.element.querySelectorAll(this.constructor.COMPUTED)].some((input) => {
+            if ("checkbox" === input.type) {
+                return input.checked !== input.defaultChecked;
+            }
+            if ("SELECT" === input.tagName) {
+                return [...input.options].some((option) => option.selected !== option.defaultSelected);
+            }
+
+            return input.value !== input.defaultValue;
+        });
     }
 
     disconnect() {

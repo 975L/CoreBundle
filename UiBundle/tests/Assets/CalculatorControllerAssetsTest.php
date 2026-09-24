@@ -103,6 +103,17 @@ class CalculatorControllerAssetsTest extends TestCase
         $this->assertMatchesRegularExpression('/\.ui-calculator-result\[hidden\] \{\s*display: none;/', $this->read(self::STYLESHEET));
     }
 
+    // Firefox restores moved controls on reload, the results being printed for the defaults: the controller asks again then, and only then
+    public function testControlsRestoredByTheBrowserAreComputedAgainOnLoad(): void
+    {
+        $controller = $this->read(self::CONTROLLER_JS);
+
+        $this->assertStringContainsString('if (this.restored()) {', $controller);
+        $this->assertStringContainsString('input.checked !== input.defaultChecked', $controller);
+        $this->assertStringContainsString('option.selected !== option.defaultSelected', $controller);
+        $this->assertStringContainsString('input.value !== input.defaultValue', $controller);
+    }
+
     // Given an action, the calculator is wrapped in a form element that must not become the grid's only item
     public function testASubmittableCalculatorKeepsItsTwoColumns(): void
     {

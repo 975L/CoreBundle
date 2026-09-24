@@ -1,5 +1,13 @@
 # ChangeLog
 
+## v1.35.2
+
+A calculator recomputes the controls a browser restored on load
+
+### UiBundle
+
+- `calculator.js` refreshes its results when the browser restored moved controls on load (24/09/2026)
+
 ## v1.35.1
 
 A priced choice shows each option's amount, options unique by value
