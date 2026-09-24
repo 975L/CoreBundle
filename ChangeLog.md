@@ -1,5 +1,15 @@
 # ChangeLog
 
+## v1.35.3
+
+A calculator's estimate is shared by its link
+
+### UiBundle
+
+- `calculator.js` writes the moved controls into the page's query string (24/09/2026)
+- `calculator.js` sets the controls back from the query string on load (24/09/2026)
+- `FormSubmissionType` turns autocomplete off on the controls a formula reads (24/09/2026)
+
 ## v1.35.2
 
 A calculator recomputes the controls a browser restored on load

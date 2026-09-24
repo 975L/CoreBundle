@@ -152,7 +152,8 @@ class FormSubmissionType extends AbstractType
             'attr' => array_filter([
                 'placeholder' => $this->formTranslator->getPlaceholder($field),
                 'readonly' => $prefilled ?: null,
-                'autocomplete' => FormField::TYPE_PASSWORD === $field->getType() ? 'new-password' : null,
+                // A control a formula reads is never restored by the browser on reload (Firefox does, silently): the page then shows its defaults or what its address carries, and the results printed for them - name and email keep their autofill
+                'autocomplete' => FormField::TYPE_PASSWORD === $field->getType() ? 'new-password' : ($field->isNumeric() ? 'off' : null),
                 'rows' => FormField::TYPE_TEXTAREA === $field->getType() ? 10 : null,
             ]),
         ];

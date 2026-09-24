@@ -28,30 +28,74 @@ export default class extends Controller {
                 return;
             }
             this.readout(event.target);
+            this.writeUrl();
             this.schedule();
         };
         this.element.addEventListener("input", this.onInput);
         this.element.addEventListener("change", this.onInput);
+        // A shared link carries the choices it was made with, set back on the controls before anything is read
+        this.applyUrl();
         this.element.querySelectorAll('input[type="range"]').forEach((slider) => { this.readout(slider); });
 
-        // A reload in Firefox restores the controls the visitor had moved, while the results were printed for the defaults: they are asked again rather than left contradicting the controls
+        // A shared link, or a reload in Firefox restoring the controls the visitor had moved, leaves results printed for the defaults: they are asked again rather than left contradicting the controls
         if (this.restored()) {
             this.refresh();
         }
     }
 
+    // The name the server knows a control by, what sits inside the brackets of "form_submission[prix-de-l-essence]"
+    key(input) {
+        return input.name.match(/\[([^\]]+)\]$/)?.[1] ?? null;
+    }
+
+    // Sets the controls from the page's own query string, "?boutique-en-ligne=1&type-de-site=3000" - a value no option offers is left alone
+    applyUrl() {
+        const url = new URLSearchParams(window.location.search);
+        this.element.querySelectorAll(this.constructor.COMPUTED).forEach((input) => {
+            const key = this.key(input);
+            if (null === key || !url.has(key)) {
+                return;
+            }
+            if ("checkbox" === input.type) {
+                input.checked = "1" === url.get(key);
+            } else if ("SELECT" !== input.tagName || [...input.options].some((option) => option.value === url.get(key))) {
+                input.value = url.get(key);
+            }
+        });
+    }
+
+    // Writes the choices that differ from the defaults into the address, so it can be shared as is and opened on the same estimate - the controls left at their default stay out of it, and whatever else the query string held is kept
+    writeUrl() {
+        const url = new URLSearchParams(window.location.search);
+        this.element.querySelectorAll(this.constructor.COMPUTED).forEach((input) => {
+            const key = this.key(input);
+            if (null === key) {
+                return;
+            }
+            url.delete(key);
+            if (this.changed(input)) {
+                url.set(key, "checkbox" === input.type ? (input.checked ? "1" : "0") : input.value);
+            }
+        });
+        const query = url.toString();
+        window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+    }
+
     // Whether any control shows something other than what the page was rendered with
     restored() {
-        return [...this.element.querySelectorAll(this.constructor.COMPUTED)].some((input) => {
-            if ("checkbox" === input.type) {
-                return input.checked !== input.defaultChecked;
-            }
-            if ("SELECT" === input.tagName) {
-                return [...input.options].some((option) => option.selected !== option.defaultSelected);
-            }
+        return [...this.element.querySelectorAll(this.constructor.COMPUTED)].some((input) => this.changed(input));
+    }
 
-            return input.value !== input.defaultValue;
-        });
+    // Whether one control shows something other than what the page was rendered with
+    changed(input) {
+        if ("checkbox" === input.type) {
+            return input.checked !== input.defaultChecked;
+        }
+        if ("SELECT" === input.tagName) {
+            return [...input.options].some((option) => option.selected !== option.defaultSelected);
+        }
+
+        return input.value !== input.defaultValue;
     }
 
     disconnect() {
@@ -115,10 +159,10 @@ export default class extends Controller {
     parameters() {
         const parameters = new URLSearchParams();
         this.element.querySelectorAll(this.constructor.COMPUTED).forEach((input) => {
-            const name = input.name.match(/\[([^\]]+)\]$/);
-            if (name) {
+            const key = this.key(input);
+            if (null !== key) {
                 // A checkbox's value is "1" whether ticked or not: its state is what a formula reads, and an unticked one must still be sent, or the server would take its default
-                parameters.set(name[1], "checkbox" === input.type ? (input.checked ? "1" : "0") : input.value);
+                parameters.set(key, "checkbox" === input.type ? (input.checked ? "1" : "0") : input.value);
             }
         });
 

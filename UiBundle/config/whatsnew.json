@@ -3,6 +3,11 @@
         "date": "2026-09-24",
         "description": [
             {
+                "en": "A calculator's address now carries the visitor's choices, so an estimate can be shared by its link and opens exactly as it was made.",
+                "fr": "L'adresse d'un calculateur reprend désormais les choix du visiteur : une estimation se partage par son lien et s'ouvre telle qu'elle a été faite.",
+                "es": "La dirección de una calculadora recoge ahora las elecciones del visitante: una estimación se comparte por su enlace y se abre tal como se hizo."
+            },
+            {
                 "en": "A priced list field now shows the amount of each of its options, on the page and in the email.",
                 "fr": "Un champ liste avec un prix affiche désormais le montant de chacune de ses options, sur la page comme dans l'e-mail.",
                 "es": "Un campo de lista con precio muestra ahora el importe de cada una de sus opciones, en la página y en el correo."
