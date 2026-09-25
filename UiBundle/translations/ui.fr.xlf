@@ -100,7 +100,11 @@
             </trans-unit>
             <trans-unit id="ZQSQTh7">
                 <source>description.guided_step_ui_ai_assistant_setup</source>
-                <target>Chaque entrée ouvre le réglage qu'elle nomme - au minimum le fournisseur et sa clé d'API. La liste disparaît dès qu'il ne manque plus rien, et c'est là que commence la suite de ce parcours</target>
+                <target>Chaque entrée ouvre le réglage qu'elle nomme - au minimum le fournisseur et sa clé d'API. La liste disparaît dès qu'il ne manque plus rien</target>
+            </trans-unit>
+            <trans-unit id="qxsS0hO">
+                <source>description.guided_step_ui_ai_assistant_setup_done</source>
+                <target>Le reste de ce parcours - le texte à essayer, le ton, la longueur - apparaît quand vous le rejouez, le réglage fait</target>
             </trans-unit>
             <trans-unit id="XjiInU0">
                 <source>description.guided_step_ui_ai_assistant_style</source>
@@ -233,6 +237,10 @@
             <trans-unit id="WdMcqav">
                 <source>description.guided_step_ui_form_action</source>
                 <target>L'action décide de ce qui se passe à la soumission : envoyer un e-mail, inscrire quelqu'un, réinitialiser un mot de passe.</target>
+            </trans-unit>
+            <trans-unit id="sTVBGBh">
+                <source>description.guided_step_ui_form_action_config</source>
+                <target>Optionnel : ses réglages, et successUrl pour mener vers une page de remerciement.</target>
             </trans-unit>
             <trans-unit id="616jVGU">
                 <source>description.guided_step_ui_form_field_template_done</source>
@@ -548,7 +556,7 @@
             </trans-unit>
             <trans-unit id="b1lgVCs">
                 <source>label.action_config_help</source>
-                <target>Optionnel, selon l'action - ex. "send_email" : to, from, subject, template, senderEmailField, receiveCopy</target>
+                <target>Optionnel, selon l'action - ex. "send_email" : to, from, subject, template, senderEmailField, receiveCopy. Pour toute action : successUrl, la page où mène un envoi réussi (ex. une page de remerciement), et minDelay, le délai anti-robots en secondes propre à ce formulaire</target>
             </trans-unit>
             <trans-unit id="3x6lvCI">
                 <source>label.action_help</source>
@@ -2410,6 +2418,10 @@
                 <source>label.guided_step_ui_ai_assistant_setup</source>
                 <target>Renseigner ce qui manque</target>
             </trans-unit>
+            <trans-unit id="0hrK.rY">
+                <source>label.guided_step_ui_ai_assistant_setup_done</source>
+                <target>Revenir une fois réglé</target>
+            </trans-unit>
             <trans-unit id="Mg1Mdko">
                 <source>label.guided_step_ui_ai_assistant_style</source>
                 <target>Choisir un ton</target>
@@ -2557,6 +2569,10 @@
             <trans-unit id="L0azB6X">
                 <source>label.guided_step_ui_form_action</source>
                 <target>Choisir ce qu'il déclenche</target>
+            </trans-unit>
+            <trans-unit id="5pheLUZ">
+                <source>label.guided_step_ui_form_action_config</source>
+                <target>Régler l'action</target>
             </trans-unit>
             <trans-unit id="ynGb_IA">
                 <source>label.guided_step_ui_form_field_template_done</source>
@@ -4002,6 +4018,14 @@
                 <source>label.total</source>
                 <target>Total</target>
             </trans-unit>
+            <trans-unit id="onsa_3p">
+                <source>label.translated_file</source>
+                <target>Fichier dans cette langue</target>
+            </trans-unit>
+            <trans-unit id="grAtxhx">
+                <source>label.translated_file_remove</source>
+                <target>Revenir au fichier d'origine</target>
+            </trans-unit>
             <trans-unit id="CooV25J">
                 <source>label.tuesday</source>
                 <target>Mardi</target>
@@ -4292,6 +4316,10 @@ Il attend d'être publié ou écarté dans l'écran « Avis » du back-office.</
             <trans-unit id="we221_t">
                 <source>text.too_many_attempts</source>
                 <target>Trop de tentatives, merci de réessayer plus tard.</target>
+            </trans-unit>
+            <trans-unit id="9l18j8P">
+                <source>text.translated_file</source>
+                <target>Pour une image qui porte du texte, comme une capture ou une bannière. Laissé vide, l'image d'origine est montrée.</target>
             </trans-unit>
         </body>
     </file>

@@ -13,13 +13,15 @@ namespace c975L\UiBundle\Form;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Service\MediaTranslator;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File as FileConstraint;
 
-// The texts of one media, said in one other language: a card's title and its text, a picture's caption, the alternative a screen reader announces.
-// The file, its link, its credits and its dimensions are not here and never will be - a media is the same media in every language, and offering them would invite an editor to set per language what a single value is read from (see BlockType, which is what puts this on a language screen).
+// One media, said in one other language: a card's title and its text, a picture's caption, the alternative a screen reader announces, and a picture of its own when the image carries words (see MediaTranslator::stageFile). Its link, its credits and its dimensions are not here, a single value being read for every language (see BlockType, which puts this on a language screen).
 class MediaTranslationType extends AbstractType
 {
     // What each of the three fields is called on the screen, the same words the media's own form uses for them (see MediaUploadType)
@@ -56,12 +58,36 @@ class MediaTranslationType extends AbstractType
                 'attr' => ['data-ai-rephrase' => true],
             ]);
         }
+
+        // A picture only: a PDF or a video is the same file in every language, and its own form is where it is replaced
+        if (!str_starts_with((string) $media->getMimeType(), 'image/')) {
+            return;
+        }
+
+        $builder->add('file', FileType::class, [
+            'label' => 'label.translated_file',
+            'help' => 'text.translated_file',
+            'translation_domain' => 'ui',
+            'required' => false,
+            'constraints' => [new FileConstraint(mimeTypes: ['image/*'])],
+            'attr' => ['accept' => 'image/*'],
+        ]);
+
+        if (null !== $options['translated_file']) {
+            $builder->add('removeFile', CheckboxType::class, [
+                'label' => 'label.translated_file_remove',
+                'translation_domain' => 'ui',
+                'required' => false,
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
-            ->setDefaults(['data_class' => null])
+            // The file this language already shows, if any: what the box taking it back is offered for
+            ->setDefaults(['data_class' => null, 'translated_file' => null])
+            ->setAllowedTypes('translated_file', ['null', 'string'])
             ->setRequired('media')
             ->setAllowedTypes('media', Media::class);
     }

@@ -149,7 +149,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    // What this media says in the language being rendered, laid over the three texts below and stored nowhere on the row: unmapped on purpose, Doctrine computing its changeset from the mapped properties and never from these getters, so a page rendered in English cannot write English over the text the media was written in (see MediaTranslator, the only thing that sets it)
+    // What this media says in the language being rendered, laid over its three texts and its file and stored nowhere on the row: unmapped on purpose, Doctrine computing its changeset from the mapped properties and never from these getters, so a page rendered in English cannot write English over the text the media was written in (see MediaTranslator, the only thing that sets it)
     /** @var array<string, string|null>|null */
     private ?array $translated = null;
 
@@ -216,9 +216,10 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
         }
     }
 
+    // The file the language being rendered shows, when one was put on the media for it (see MediaTranslator::stageFile) - read by vich_uploader_asset() through this getter, so every template follows without knowing
     public function getFilename(): ?string
     {
-        return $this->filename;
+        return $this->translated['filename'] ?? $this->filename;
     }
 
     public function setFilename(?string $filename): self
@@ -452,6 +453,7 @@ class Media implements DrawableMediaInterface, VichImageResizableInterface, Vich
             'alt' => $this->alt,
             'label' => $this->label,
             'description' => $this->description,
+            'filename' => $this->filename,
             default => null,
         };
     }

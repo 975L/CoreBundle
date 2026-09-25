@@ -12,6 +12,7 @@ namespace c975L\UiBundle\Tests\Controller;
 
 use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Contract\RequiresAnonymousInterface;
+use c975L\UiBundle\Contract\SuccessUrlFormActionInterface;
 use c975L\UiBundle\Controller\FormController;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Entity\FormOutput;
@@ -738,6 +739,111 @@ class FormControllerTest extends TestCase
             prefillHelper: $prefillHelper,
         )->submit('contact', $request);
 
+        $this->assertTrue($request->getSession()->getFlashBag()->has('danger'));
+    }
+
+    // An action whose success leads to the page of what it created - null standing for "nothing to add"
+    private function createSuccessUrlActionRegistry(?string $successUrl, bool $success = true): FormActionRegistry
+    {
+        $action = new class ($successUrl, $success) implements SuccessUrlFormActionInterface {
+            public function __construct(private ?string $successUrl, private readonly bool $success)
+            {
+            }
+
+            public function getKey(): string
+            {
+                return 'create_thing';
+            }
+
+            public function handle(Form $form, array $submittedData): bool
+            {
+                return $this->success;
+            }
+
+            public function getSuccessUrl(): ?string
+            {
+                return $this->successUrl;
+            }
+
+            public function reset(): void
+            {
+                $this->successUrl = null;
+            }
+        };
+        $actionRegistry = $this->createStub(FormActionRegistry::class);
+        $actionRegistry->method('get')->willReturn($action);
+
+        return $actionRegistry;
+    }
+
+    // The Form "contact", naming a thank-you page in its action's config
+    private function createFormRepositoryWithSuccessUrl(string $successUrl): FormRepository
+    {
+        $repository = $this->createStub(FormRepository::class);
+        $repository->method('findOneBy')->willReturn(new Form()->setName('contact')->setAction('send_email')->setActionConfig(['successUrl' => $successUrl]));
+
+        return $repository;
+    }
+
+    public function testSubmitRedirectsToTheUrlTheActionGivesWithoutASuccessFlash(): void
+    {
+        $request = $this->createRequest('POST', 'http://localhost/page');
+        $response = $this->createController(
+            $this->createSubmittedForm(true, true),
+            actionRegistry: $this->createSuccessUrlActionRegistry('/fr/preview/abc123'),
+        )->submit('contact', $request);
+
+        $this->assertSame('/fr/preview/abc123', $response->headers->get('Location'));
+        $this->assertFalse($request->getSession()->getFlashBag()->has('success'));
+    }
+
+    // The action knows better than the editor: what it has just created is the page the visitor came for
+    public function testTheActionUrlWinsOverTheFormSuccessUrl(): void
+    {
+        $response = $this->createController(
+            $this->createSubmittedForm(true, true),
+            $this->createFormRepositoryWithSuccessUrl('/pages/thanks'),
+            $this->createSuccessUrlActionRegistry('/fr/preview/abc123'),
+        )->submit('contact', $this->createRequest('POST', 'http://localhost/page'));
+
+        $this->assertSame('/fr/preview/abc123', $response->headers->get('Location'));
+    }
+
+    public function testSubmitRedirectsToTheFormSuccessUrlWhenTheActionGivesNone(): void
+    {
+        $response = $this->createController(
+            $this->createSubmittedForm(true, true),
+            $this->createFormRepositoryWithSuccessUrl('/pages/thanks'),
+            $this->createSuccessUrlActionRegistry(null),
+        )->submit('contact', $this->createRequest('POST', 'http://localhost/page'));
+
+        $this->assertSame('/pages/thanks', $response->headers->get('Location'));
+    }
+
+    // The bot check is handed the form's own delay, a single pasted url being sent well under the site-wide one
+    public function testSubmitHandsTheFormOwnDelayToTheBotCheck(): void
+    {
+        $repository = $this->createStub(FormRepository::class);
+        $repository->method('findOneBy')->willReturn(new Form()->setName('contact')->setAction('send_email')->setActionConfig(['minDelay' => 1]));
+
+        $botProtection = $this->createMock(FormBotProtection::class);
+        $botProtection->expects($this->once())->method('isSuspicious')->with($this->anything(), $this->anything(), $this->anything(), 1)->willReturn(false);
+
+        $this->createController($this->createSubmittedForm(false, false), $repository, botProtection: $botProtection)
+            ->submit('contact', $this->createRequest('POST', 'http://localhost/page'));
+    }
+
+    // A failure keeps the visitor where they are, with the danger flash - a thank-you page for a message never sent would lie
+    public function testAFailedActionNeverLeadsToTheSuccessUrl(): void
+    {
+        $request = $this->createRequest('POST', 'http://localhost/page');
+        $response = $this->createController(
+            $this->createSubmittedForm(true, true),
+            $this->createFormRepositoryWithSuccessUrl('/pages/thanks'),
+            $this->createSuccessUrlActionRegistry('/fr/preview/abc123', false),
+        )->submit('contact', $request);
+
+        $this->assertSame('http://localhost/page', $response->headers->get('Location'));
         $this->assertTrue($request->getSession()->getFlashBag()->has('danger'));
     }
 }

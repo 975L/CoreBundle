@@ -18,6 +18,7 @@ use c975L\UiBundle\Service\ContentTranslator;
 use c975L\UiBundle\Service\MediaTranslator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -140,9 +141,76 @@ class MediaTranslatorTest extends TestCase
         new MediaTranslator($contentTranslator)->stage($media, 'en', ['label' => 'The demonstration shop']);
     }
 
+    // A screenshot carries words of its own: the English page shows the English picture, through the very getter vich_uploader_asset() reads
+    public function testAMediaShowsTheFileItsLanguageWasGiven(): void
+    {
+        $media = $this->createMedia();
+        $this->createTranslator(['fr', 'en'], [
+            self::MEDIA_ID => ['filename' => 'medias/site/block-portfolio_grid-12-en.webp'],
+        ])->apply([$media]);
+
+        $this->assertSame('medias/site/block-portfolio_grid-12-en.webp', $media->getFilename());
+        $this->assertSame('medias/site/block-portfolio_grid-12.webp', $media->getUntranslated('filename'));
+    }
+
+    // Named after the file it stands in for, beside it, with the language, a hash of its content and the extension of what was uploaded added
+    public function testAFileIsStagedUnderTheNameOfTheOneItReplaces(): void
+    {
+        $file = $this->createPng();
+        $target = 'medias/site/block-portfolio_grid-12-en-' . substr((string) md5_file($file->getPathname()), 0, 8) . '.png';
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->method('values')->willReturn([]);
+        $contentTranslator->expects($this->once())->method('stage')->with(
+            Translation::OWNER_MEDIA,
+            self::MEDIA_ID,
+            'en',
+            ['filename' => $target],
+        );
+        $translator = new MediaTranslator($contentTranslator);
+
+        $translator->stageFile($this->createMedia(), 'en', $file);
+
+        $this->assertSame([[$file, $target, null, self::MEDIA_ID, 'en']], $translator->takePendingFiles());
+        $this->assertSame([], $translator->takePendingFiles(), 'A second flush wrote the same file twice.');
+    }
+
+    // The box taking a language's picture back: the translation goes, and the file it named is handed over to be taken off the disk
+    public function testTakingAFileBackStagesNothingInItsPlace(): void
+    {
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->method('values')->willReturn(['filename' => 'medias/site/block-portfolio_grid-12-en.webp']);
+        $contentTranslator->expects($this->once())->method('stage')->with(Translation::OWNER_MEDIA, self::MEDIA_ID, 'en', ['filename' => null]);
+        $translator = new MediaTranslator($contentTranslator);
+
+        $translator->stageFile($this->createMedia(), 'en', null, true);
+
+        $this->assertSame([[null, null, 'medias/site/block-portfolio_grid-12-en.webp', self::MEDIA_ID, 'en']], $translator->takePendingFiles());
+    }
+
+    // A language screen saved without touching the picture keeps the one that language already has
+    public function testNoFileAndNoRemovalStagesNothing(): void
+    {
+        $contentTranslator = $this->createMock(ContentTranslator::class);
+        $contentTranslator->expects($this->never())->method('stage');
+        $translator = new MediaTranslator($contentTranslator);
+
+        $translator->stageFile($this->createMedia(), 'en', null);
+
+        $this->assertSame([], $translator->takePendingFiles());
+    }
+
+    private function createPng(): File
+    {
+        $path = tempnam(sys_get_temp_dir(), 'c975l-media-translator-');
+        file_put_contents($path, (string) base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='));
+
+        return new File($path);
+    }
+
     private function createMedia(?int $id = self::MEDIA_ID): Media
     {
         $media = new Media()
+            ->setFilename('medias/site/block-portfolio_grid-12.webp')
             ->setLabel('La boutique de démonstration')
             ->setDescription('Un catalogue et ses filtres.')
             ->setAlt('Capture de la boutique');

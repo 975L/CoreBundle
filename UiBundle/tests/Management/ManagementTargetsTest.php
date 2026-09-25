@@ -17,6 +17,7 @@ use c975L\UiBundle\Management\LinkableRouteProvider;
 use c975L\UiBundle\Management\MenuProvider;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
 use c975L\UiBundle\Management\UiShortcutProvider;
+use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiSiteSearchClient;
 use c975L\UiBundle\Service\ReviewService;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -28,6 +29,14 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
     private function createSiteSearchClient(): AiSiteSearchClient
     {
         $client = $this->createStub(AiSiteSearchClient::class);
+        $client->method('isEnabled')->willReturn(true);
+
+        return $client;
+    }
+
+    private function createRephraseClient(): AiRephraseClient
+    {
+        $client = $this->createStub(AiRephraseClient::class);
         $client->method('isEnabled')->willReturn(true);
 
         return $client;
@@ -46,7 +55,7 @@ class ManagementTargetsTest extends ManagementTargetsTestCase
         return [
             new MenuProvider($this->createConfigService(), $this->createTranslator(), $this->createReviewService(), $this->createSiteSearchClient()),
             new UiShortcutProvider($this->createTranslator(), $this->createConfigService()),
-            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr'), $this->createSiteSearchClient()),
+            new UiGuidedProjectProvider($this->adminUrlGenerator(), $this->createConfigService(), $this->urlGenerator(), $this->createReviewService(), new SiteLocales(['fr', 'en'], 'fr'), $this->createSiteSearchClient(), $this->createRephraseClient()),
             new LinkableRouteProvider(),
         ];
     }

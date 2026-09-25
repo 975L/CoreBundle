@@ -40,7 +40,11 @@
             </trans-unit>
             <trans-unit id="uHYO1WV">
                 <source>narration.guided_step_ui_ai_assistant_setup</source>
-                <target>Renseignez ce qui manque : chaque entrée ouvre le réglage qu'elle nomme, au minimum le fournisseur et sa clé d'API. La liste disparaît dès qu'il ne manque plus rien, et c'est là que commence la suite.</target>
+                <target>Renseignez ce qui manque : chaque entrée ouvre le réglage qu'elle nomme, au minimum le fournisseur et sa clé d'API. La liste disparaît dès qu'il ne manque plus rien.</target>
+            </trans-unit>
+            <trans-unit id="mSYwDBk">
+                <source>narration.guided_step_ui_ai_assistant_setup_done</source>
+                <target>Le réglage fait, rejouez ce parcours : il vous montrera alors le texte à essayer, le ton et la longueur, avant le même bouton sous chaque champ de texte du back-office.</target>
             </trans-unit>
             <trans-unit id="a712HHa">
                 <source>narration.guided_step_ui_ai_assistant_style</source>
@@ -189,6 +193,10 @@
             <trans-unit id="y1zi798">
                 <source>narration.guided_step_ui_form_action</source>
                 <target>Choisissez ensuite ce qu'il déclenche. L'action décide de ce qui se passe à la soumission : envoyer un e-mail, inscrire quelqu'un, réinitialiser un mot de passe.</target>
+            </trans-unit>
+            <trans-unit id="Zej_em.">
+                <source>narration.guided_step_ui_form_action_config</source>
+                <target>Réglez ensuite l'action si besoin. C'est optionnel : ses réglages s'écrivent ici, et successUrl mène vers une page de remerciement après l'envoi.</target>
             </trans-unit>
             <trans-unit id="MeB2xYx">
                 <source>narration.guided_step_ui_form_field_template_done</source>

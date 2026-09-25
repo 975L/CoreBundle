@@ -1479,7 +1479,7 @@ class MyGuidedProjectProvider implements GuidedProjectProviderInterface
 
 Make sure your bundle's `services.yaml` includes the `Management/` folder in its `src/` resource so the class is registered.
 
-**`order`** decides the display order across every provider (low to high) — a deliberate sequence, the one the user is meant to follow, unlike menus/alerts which sort alphabetically. **`role`** is optional: a project needing a role the current user lacks is dropped, the screens it walks through being out of their reach anyway. **`slug`** must be unique across every bundle contributing projects.
+**`order`** decides the display order across every provider (low to high) — a deliberate sequence, the one the user is meant to follow, unlike menus/alerts which sort alphabetically. **`role`** is optional: a project needing a role the current user lacks is dropped, the screens it walks through being out of their reach anyway. It may list several roles, all required and each held outright (no `role_hierarchy` is shipped), for a parcours walking screens gated on different bars. **`slug`** must be unique across every bundle contributing projects.
 
 **Steps** set either `url` or `highlight`, never both:
 

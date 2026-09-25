@@ -29,7 +29,7 @@ class GuidedProjectBuilder
     // Every project, across every provider, sorted by "order" - one needing a role the current user lacks is dropped, the screens it walks through being out of their reach anyway (same treatment as a sidebar link, see MenuProviderInterface::getLinks())
     public function getProjects(): array
     {
-        $projects = array_filter($this->declaredProjects(), fn (array $project) => !isset($project['role']) || $this->security->isGranted($project['role']));
+        $projects = array_filter($this->declaredProjects(), $this->isGrantedRoles(...));
 
         return array_map($this->buildProject(...), array_values($projects));
     }
@@ -38,6 +38,12 @@ class GuidedProjectBuilder
     public function getAllProjects(): array
     {
         return array_map($this->buildProject(...), $this->declaredProjects());
+    }
+
+    // A "role" may list several roles, all required: no role_hierarchy is shipped, so a parcours walking screens gated on different roles needs each of them held outright
+    private function isGrantedRoles(array $project): bool
+    {
+        return array_all((array) ($project['role'] ?? []), fn (string $role): bool => $this->security->isGranted($role));
     }
 
     // Merged across every provider and sorted by "order" - a deliberate sequence, not the alphabetical merge MenuBuilder/AlertBuilder use

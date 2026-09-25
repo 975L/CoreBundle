@@ -10,7 +10,9 @@
 
 namespace c975L\UiBundle\Controller;
 
+use c975L\UiBundle\Contract\FormActionInterface;
 use c975L\UiBundle\Contract\RequiresAnonymousInterface;
+use c975L\UiBundle\Contract\SuccessUrlFormActionInterface;
 use c975L\UiBundle\Entity\Form;
 use c975L\UiBundle\Form\FormSubmissionType;
 use c975L\UiBundle\Registry\FormActionRegistry;
@@ -158,8 +160,8 @@ class FormController extends AbstractController
         ]);
     }
 
-    // What an accepted submission is worth: the action behind the form, unless the caller has already had their share of attempts
-    private function runAction(Form $uiForm, mixed $data, Request $request): void
+    // What an accepted submission is worth: the action behind the form, unless the caller has already had their share of attempts. Returns where a success sends the visitor, when the action or the Form says so - null leaves them on the page they came from
+    private function runAction(Form $uiForm, mixed $data, Request $request): ?string
     {
         // Fails open with no client IP, rather than lumping every such visitor onto one shared bucket.
         // Counted per caller and not per address, an IPv6 subscriber holding a block far larger than any ceiling could count - see RateLimiterGuard::isAcceptedForIp()
@@ -167,7 +169,7 @@ class FormController extends AbstractController
         if (null !== $clientIp && !$this->rateLimiterGuard->isAcceptedForIp($this->formLimiterFactory, $clientIp)) {
             $this->addFlashTo($request, 'warning', $this->translator->trans('text.too_many_attempts', [], 'ui'));
 
-            return;
+            return null;
         }
 
         $action = $this->actionRegistry->get($uiForm->getAction());
@@ -176,6 +178,12 @@ class FormController extends AbstractController
         // Only clear on an actual success - a failed action leaves the prefill in place, same resilience a "?s=..." query string would naturally have on a retry
         if ($success) {
             $this->prefillHelper->clear($request, $uiForm->getName());
+        }
+
+        // A page of its own says the submission went through better than a flash would, and saying it twice reads as a stutter
+        $successUrl = $success ? $this->successUrl($uiForm, $action) : null;
+        if (null !== $successUrl) {
+            return $successUrl;
         }
 
         // A form that emails its submission (contact and the like) says so - "your message has been sent"; a registration says that its confirmation email may not have left, EmailVerifier holding an address for an hour after writing to it and this flash being the only thing the visitor ever reads back; every other action keeps the generic wording, a password reset request being no message sent by the visitor
@@ -191,6 +199,31 @@ class FormController extends AbstractController
             $success ? 'success' : 'danger',
             $this->translator->trans($success ? $successKey : 'label.form_submission_failed', [], 'ui')
         );
+
+        return null;
+    }
+
+    // The seconds this form must at least take to fill in, when its action config sets its own rather than the site-wide "site-form-delay" - a form holding a single pasted field is filled in well under the default
+    private function minDelay(Form $uiForm): ?int
+    {
+        $minDelay = $uiForm->getActionConfig()['minDelay'] ?? null;
+
+        return is_int($minDelay) && $minDelay >= 0 ? $minDelay : null;
+    }
+
+    // The page a success leads to: the one the action has just created first, then the one the Form names in its "successUrl" (a thank-you page, typically), set by an editor in the action's JSON config
+    private function successUrl(Form $uiForm, FormActionInterface $action): ?string
+    {
+        if ($action instanceof SuccessUrlFormActionInterface) {
+            $url = $action->getSuccessUrl();
+            if (null !== $url) {
+                return $url;
+            }
+        }
+
+        $url = $uiForm->getActionConfig()['successUrl'] ?? null;
+
+        return is_string($url) && '' !== trim($url) ? $url : null;
     }
 
     // Where the visitor came from, when that is this very site - Referer is client-supplied, and an unchecked redirect there is an open redirect
@@ -229,7 +262,7 @@ class FormController extends AbstractController
 
         // Checked before handleRequest(), which is then skipped entirely so the bot gets the same redirect and no hint
         $suspicious = $request->isMethod('POST')
-            && $this->botProtection->isSuspicious($request, $symfonyForm->getName(), $this->sessionKeyFor($uiForm));
+            && $this->botProtection->isSuspicious($request, $symfonyForm->getName(), $this->sessionKeyFor($uiForm), $this->minDelay($uiForm));
 
         if (!$suspicious) {
             $symfonyForm->handleRequest($request);
@@ -238,7 +271,10 @@ class FormController extends AbstractController
         $accepted = $symfonyForm->isSubmitted() && $symfonyForm->isValid();
 
         if (!$suspicious && $accepted) {
-            $this->runAction($uiForm, $symfonyForm->getData(), $request);
+            $successUrl = $this->runAction($uiForm, $symfonyForm->getData(), $request);
+            if (null !== $successUrl) {
+                return $this->redirect($successUrl);
+            }
         }
 
         if ($suspicious || $accepted) {

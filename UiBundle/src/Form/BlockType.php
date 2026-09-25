@@ -35,6 +35,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -138,7 +139,7 @@ class BlockType extends AbstractType
         $this->addKindField($form, $context, $kind, null !== $translationLocale);
         $this->addDataSubForm($form, $kind, $block, $translationLocale);
 
-        // An image is the same image in every language, so a language screen never renders the rows themselves - what it does offer is the texts hanging from them, which are read by a visitor like any other prose (see addMediaTranslationSubForms)
+        // A language screen never renders the media rows themselves - what it offers is what hangs from them: the texts a visitor reads like any other prose, and a picture of its own for an image carrying words (see addMediaTranslationSubForms)
         if (null === $translationLocale && $this->registry->hasMediaTypes($kind)) {
             $this->addMediaSubForm($form, $kind);
         } elseif (null !== $translationLocale && null !== $block) {
@@ -489,8 +490,9 @@ class BlockType extends AbstractType
 
             $values = $this->mediaTranslator->promptValues($media, $locale);
 
-            // Nothing written in any of the three: a decorative image, a slider's slide, a video poster - there is no msgid to offer a language
-            if ([] === array_filter($values, static fn (?string $value): bool => null !== $value)) {
+            // Nothing written in any of the three and no picture to replace: a video, a PDF without a title - there is nothing to offer a language
+            $isImage = str_starts_with((string) $media->getMimeType(), 'image/');
+            if (!$isImage && [] === array_filter($values, static fn (?string $value): bool => null !== $value)) {
                 continue;
             }
 
@@ -503,6 +505,7 @@ class BlockType extends AbstractType
                 'required' => false,
                 'data' => $values,
                 'media' => $media,
+                'translated_file' => $isImage ? $this->mediaTranslator->translatedFile($media, $locale) : null,
                 // Named so a guided step has something to point at: the screen where a card's own texts are written (see the page translation project)
                 'attr' => ['data-media-translation' => true],
             ]);
@@ -532,6 +535,8 @@ class BlockType extends AbstractType
             $submitted = $form->get($name)->getData();
             if (is_array($submitted)) {
                 $this->mediaTranslator->stage($media, $locale, $submitted);
+                $file = $submitted['file'] ?? null;
+                $this->mediaTranslator->stageFile($media, $locale, $file instanceof File ? $file : null, true === ($submitted['removeFile'] ?? false));
             }
         }
     }

@@ -198,4 +198,53 @@ class BlockDataExporterTest extends TestCase
         rmdir($projectDir . '/public');
         rmdir($projectDir);
     }
+
+    // A media's picture in another language is a file of its own on the disk, carried in the archive beside the translation naming it
+    public function testExportMediaCarriesTheFileItShowsInAnotherLanguage(): void
+    {
+        $projectDir = sys_get_temp_dir() . '/block_data_exporter_test_' . bin2hex(random_bytes(4));
+        mkdir($projectDir . '/public/medias', 0777, true);
+        file_put_contents($projectDir . '/public/medias/hero.webp', 'fake-fr-bytes');
+        file_put_contents($projectDir . '/public/medias/hero-en.webp', 'fake-en-bytes');
+        $media = new Media()->setFilename('medias/hero.webp');
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, 12);
+        $repository = $this->createStub(TranslationRepository::class);
+        $repository->method('findByOwner')->willReturn(['en' => ['filename' => 'medias/hero-en.webp']]);
+
+        $files = [];
+        $data = new BlockDataExporter($projectDir, $repository)->exportMedia($media, $files);
+
+        $this->assertIsArray($data);
+        $this->assertSame($projectDir . '/public/medias/hero-en.webp', $files[$data['translatedFiles']['en']]);
+
+        unlink($projectDir . '/public/medias/hero.webp');
+        unlink($projectDir . '/public/medias/hero-en.webp');
+        rmdir($projectDir . '/public/medias');
+        rmdir($projectDir . '/public');
+        rmdir($projectDir);
+    }
+
+    // A language's file gone from the disk leaves no path behind, the texts of that language still going and a language left with nothing going altogether
+    public function testExportMediaDropsTheFileOfALanguageMissingFromTheDisk(): void
+    {
+        $projectDir = sys_get_temp_dir() . '/block_data_exporter_test_' . bin2hex(random_bytes(4));
+        mkdir($projectDir . '/public/medias', 0777, true);
+        file_put_contents($projectDir . '/public/medias/hero.webp', 'fake-fr-bytes');
+        $media = new Media()->setFilename('medias/hero.webp');
+        new \ReflectionProperty(Media::class, 'id')->setValue($media, 12);
+        $repository = $this->createStub(TranslationRepository::class);
+        $repository->method('findByOwner')->willReturn(['en' => ['label' => 'Shop', 'filename' => 'medias/hero-en.webp'], 'es' => ['filename' => 'medias/hero-es.webp']]);
+
+        $files = [];
+        $data = new BlockDataExporter($projectDir, $repository)->exportMedia($media, $files);
+
+        $this->assertIsArray($data);
+        $this->assertArrayNotHasKey('translatedFiles', $data);
+        $this->assertSame(['en' => ['label' => 'Shop']], $data['translations']);
+
+        unlink($projectDir . '/public/medias/hero.webp');
+        rmdir($projectDir . '/public/medias');
+        rmdir($projectDir . '/public');
+        rmdir($projectDir);
+    }
 }

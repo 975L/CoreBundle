@@ -112,8 +112,8 @@ class FormBotProtection
         }
     }
 
-    // Bot detection: honeypot field filled, or form submitted faster than a human could fill it (site-form-delay, in seconds). Reads the honeypot straight off the raw request instead of a submitted/validated FormInterface, so the caller can check this before running the Symfony form through handleRequest() - and skip that validation (DnsEmail's DNS/MX lookup included) entirely for a suspicious submission. Call once per submission, after startTimer() populated the same $sessionKey and addHoneypotField() added the honeypot field to the form built under $formName - the caller should silently redirect on true, with no hint to the bot
-    public function isSuspicious(Request $request, string $formName, string $sessionKey): bool
+    // Bot detection: honeypot field filled, or form submitted faster than a human could fill it (site-form-delay, in seconds). Reads the honeypot straight off the raw request instead of a submitted/validated FormInterface, so the caller can check this before running the Symfony form through handleRequest() - and skip that validation (DnsEmail's DNS/MX lookup included) entirely for a suspicious submission. Call once per submission, after startTimer() populated the same $sessionKey and addHoneypotField() added the honeypot field to the form built under $formName - the caller should silently redirect on true, with no hint to the bot. $minDelay overrides site-form-delay for a form filled in faster than most by design (a single url pasted in)
+    public function isSuspicious(Request $request, string $formName, string $sessionKey, ?int $minDelay = null): bool
     {
         $session = $request->getSession();
         $startedAt = (int) $session->get($sessionKey, 0);
@@ -123,8 +123,8 @@ class FormBotProtection
         $session->remove(self::SESSION_HONEYPOT_FIELD);
         $session->remove(self::SESSION_HONEYPOT_LABEL);
 
-        // Whatever "site-form-delay" holds, and nothing else: the entry ships with its own value, an empty one leaves the honeypot alone to answer
-        $formDelay = (int) $this->configService->get('site-form-delay');
+        // Whatever "site-form-delay" holds, unless the form sets its own: the entry ships with its own value, an empty one leaves the honeypot alone to answer
+        $formDelay = $minDelay ?? (int) $this->configService->get('site-form-delay');
 
         return !empty($honeypotValue)
             || (time() - $startedAt) < $formDelay;

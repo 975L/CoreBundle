@@ -1,6 +1,6 @@
 ---
 name: c975l-media
-description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, PDFs reserved to signed-in members, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: ui_image_size, ImageSizeExtension, image size from path, membersOnly, isMembersOnly, members only, reserved to members, MEMBERS_ONLY_DIRECTORY, MediaController, ui_media_file, MediaVoter, C975L_VIEW_MEDIA, media_url, PrivateDirectory, MediaMembersOnlyListener, __serialize, cached media, PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, site_random_media, MEDIA_SINGLETONS_CACHE_TAG, MEDIA_ROLES_CACHE_TAG, media_singletons, media_roles, findIdsByRole, error-image, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, markAsOgImage, isOgImage, FixedIconFormat, SvgRasterizer, SVG og-image, thumbnail, highres, Image:Zoom, imageZoom, lightbox, see_high_resolution, enlarge_image, VichPdfThumbnailListener, pdfinfo, poppler-utils, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui, MediaTranslator, ui_media, setTranslated, getUntranslated, translate a caption, translate an alt, DrawableMediaInterface, getCssClasses, isAbove, getMimeType, drawable media."
+description: "Use this skill when handling uploads or images in a Symfony application built on the c975L ecosystem — the shared Media entity, the site-wide graphics, a satellite bundle's own Vich media entity, the three-sizes derivatives, keeping the untouched original, watermarking, private files, PDFs reserved to signed-in members, generating PDFs, PDF thumbnails and the media library. Covers what is generated for you and must never be re-implemented. Triggers on: ui_image_size, ImageSizeExtension, image size from path, membersOnly, isMembersOnly, members only, reserved to members, MEMBERS_ONLY_DIRECTORY, MediaController, ui_media_file, MediaVoter, C975L_VIEW_MEDIA, media_url, PrivateDirectory, MediaMembersOnlyListener, __serialize, cached media, PdfGeneratorInterface, DompdfGenerator, WeasyPrintGenerator, PdfGenerator, ui-pdf-engine, ui-pdf-weasyprint-path, PdfEngineHealthCheckProvider, EmailAttachment, generate a PDF, print template, Media entity, VichMediaTrait, VichMediaNamableInterface, VichMultiSizeImageInterface, VichImageResizeListener, VichOriginalKeepableInterface, VichWatermarkableInterface, VichPrivateFileInterface, MediaFileRemoveListener, PrivateFileResponseFactory, createDownloadResponse, createInlineResponse, paywall, site_media, site_random_media, MEDIA_SINGLETONS_CACHE_TAG, MEDIA_ROLES_CACHE_TAG, media_singletons, media_roles, findIdsByRole, error-image, favicon, logo, logo-on-dark, ROLE_LOGO_ON_DARK, og-image, ROLE_WATERMARK, MediaUsageProviderInterface, binned, MediaUsageRegistry, getBinnedOnlyMediaIds, findAttachedToBlock, PlaceholderMediaProviderInterface, PlaceholderMediaRegistry, keyed_images, getImagesFor, placeholderImagesFor, BlockFixtureMediaAttacher, OgImageType, OgImageField, ogImage, ogImageAlt, share image, markAsOgImage, isOgImage, FixedIconFormat, SvgRasterizer, SVG og-image, thumbnail, highres, Image:Zoom, imageZoom, lightbox, see_high_resolution, enlarge_image, VichPdfThumbnailListener, pdfinfo, poppler-utils, PdfThumbnailHealthCheckProvider, pdf-thumbnail, PdfDocumentSourceInterface, PdfDocumentRegistry, PdfDocumentSourcePass, UploadProgress, upload progress bar, formAttr, NestedFileSystemStorage, listFiles, vich:cleanup, PropertyMappingInterface, declared files, directory, files-ui, QrCodeGenerator, QrCodeOptions, QrCodeImage, QR code, MediaTranslator, isTranslatedFilePath, ui_media, setTranslated, getUntranslated, translate a caption, translate an alt, DrawableMediaInterface, getCssClasses, isAbove, getMimeType, drawable media."
 ---
 
 # c975L UiBundle — media and uploads
@@ -10,7 +10,7 @@ description: "Use this skill when handling uploads or images in a Symfony applic
 **Package:** `c975l/core-bundle` · **Bundle:** `c975L\UiBundle\` · **Twig namespace:** `@c975LUi`
 
 **Key source paths** (relative to this bundle's directory inside the package):
-`src/Entity/Media.php`, `src/Twig/ImageSizeExtension.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Storage/PrivateDirectory.php`, `src/Controller/MediaController.php`, `src/Security/Voter/MediaVoter.php`, `src/Listener/MediaMembersOnlyListener.php`, `src/Twig/MediaUrlExtension.php`, `src/Twig/MediaExtension.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`, `assets/js/image-zoom.js`, `templates/components/Image/Zoom.html.twig`
+`src/Entity/Media.php`, `src/Twig/ImageSizeExtension.php`, `src/Entity/Trait/VichMediaTrait.php`, `src/Contract/`, `src/Listener/VichImageResizeListener.php`, `src/Listener/MediaFileRemoveListener.php`, `src/Listener/VichPdfThumbnailListener.php`, `src/Registry/PdfDocumentRegistry.php`, `src/Service/ImageWatermarker.php`, `src/Service/PrivateFileResponseFactory.php`, `src/Storage/PrivateDirectory.php`, `src/Controller/MediaController.php`, `src/Security/Voter/MediaVoter.php`, `src/Listener/MediaMembersOnlyListener.php`, `src/Twig/MediaUrlExtension.php`, `src/Twig/MediaExtension.php`, `src/Namer/UiMediaNamer.php`, `src/Storage/NestedFileSystemStorage.php`, `src/Service/UploadProgress.php`, `src/Controller/Management/`, `src/Form/VichImageOptions.php`, `src/Form/OgImageType.php`, `src/Field/OgImageField.php`, `assets/js/upload-progress.js`, `assets/js/image-zoom.js`, `templates/components/Image/Zoom.html.twig`, `src/Service/QrCodeGenerator.php`, `src/Model/QrCodeOptions.php`
 
 **Related skills:** `c975l-blocks`, `c975l-forms-emails`, `c975l-ui-assets`, `c975l-js-testing` in this same bundle, and `c975l-operations` in ConfigBundle beside it.
 
@@ -52,10 +52,22 @@ nothing.
 
 `label`, `description` and `alt` are prose a visitor reads, so on a site declaring several languages
 they are translated the way a block's own data is — under the `ui_media` owner, through
-`Service\MediaTranslator`, on the same `site_translation` table. The file itself is the same file in
-every language, and so are its link, its credits and its dimensions: those are never offered.
+`Service\MediaTranslator`, on the same `site_translation` table. Its link, its credits and its
+dimensions are the same in every language: those are never offered.
 
-The three getters answer the language being rendered, `MediaTranslator::apply()` having laid it on as
+**An image can have a file per language** too, for a picture carrying words (a screenshot, a banner).
+`MediaTranslator::stageFile()` names it after the media's own file with the language and a hash of
+its content added (`block-hero-12-ab-en-1a2b3c4d.webp`), beside it, so a replaced file gets a new
+URL, and stages the path as a `filename` translation.
+`Listener\MediaTranslationFileListener` writes the file once the flush saving the block goes
+through, and deletes it with the media or when another one replaces it, unless another media
+still shows it (a duplicated page). `Media::getFilename()` reads the overlay, so
+`vich_uploader_asset()` serves the right file with no template change. The Sync export carries these
+files in its archive (`translatedFiles`), dropping the path of a file gone from the disk, and the
+import puts them back only under a name `MediaTranslator::isTranslatedFilePath()` recognises (an image
+named after the media's own, with a language and a hash): anything else is neither written nor stored.
+
+The getters answer the language being rendered, `MediaTranslator::apply()` having laid it on as
 an **unmapped overlay** (`Media::setTranslated()`) Doctrine never persists. Read the row's own words
 with **`Media::getUntranslated($field)`** — what a form screen must show, and what tells a field
 nobody translated from a written one. See `c975l-blocks` for the language screen itself.
@@ -307,6 +319,14 @@ template is shipped to sites running either engine.
   a url of that markup's choosing is an SSRF.
 - **Do not write a PDF to `public/`** to serve it - answer the bytes with a `Response` and the right headers.
 
+
+## QR codes
+
+**`Service\QrCodeGenerator::generate($data, new QrCodeOptions(...), tags: [...])`** draws a code once and
+reads it back from `cache.app.taggable` afterwards: a code is derived data, never a file of its own, so there
+is nothing to store or purge. `Model\QrCodeOptions` holds plain values (`png`/`svg`, size, margin, colors,
+logo, label), and `QrCodeImage::getDataUri()` embeds it in a page or a PDF while `response()` serves it with
+cache headers. Hand over the owner's tags and invalidate them when the url a code encodes changes.
 
 ## Do not
 

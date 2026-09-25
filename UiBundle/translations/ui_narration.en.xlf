@@ -40,7 +40,11 @@
             </trans-unit>
             <trans-unit id="uHYO1WV">
                 <source>narration.guided_step_ui_ai_assistant_setup</source>
-                <target>Fill in what is missing: each entry opens the setting it names, the provider and its API key at the very least. The list is gone once nothing is left, and that is where the rest begins.</target>
+                <target>Fill in what is missing: each entry opens the setting it names, the provider and its API key at the very least. The list is gone once nothing is left.</target>
+            </trans-unit>
+            <trans-unit id="mSYwDBk">
+                <source>narration.guided_step_ui_ai_assistant_setup_done</source>
+                <target>Once the setup is done, replay this parcours: it will then show you the text to try, the tone and the length, before the same button under every text field of the back office.</target>
             </trans-unit>
             <trans-unit id="a712HHa">
                 <source>narration.guided_step_ui_ai_assistant_style</source>
@@ -189,6 +193,10 @@
             <trans-unit id="y1zi798">
                 <source>narration.guided_step_ui_form_action</source>
                 <target>Then pick what it triggers. The action decides what happens on submit: sending an e-mail, signing somebody up, resetting a password.</target>
+            </trans-unit>
+            <trans-unit id="Zej_em.">
+                <source>narration.guided_step_ui_form_action_config</source>
+                <target>Then tune the action if need be. It is optional: its settings are written here, and successUrl leads to a thank-you page once the form is sent.</target>
             </trans-unit>
             <trans-unit id="MeB2xYx">
                 <source>narration.guided_step_ui_form_field_template_done</source>

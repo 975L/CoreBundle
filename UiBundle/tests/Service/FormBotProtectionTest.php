@@ -178,6 +178,22 @@ class FormBotProtectionTest extends TestCase
         $this->assertFalse($botProtection->isSuspicious($request, 'test_form', 'test_started_at'));
     }
 
+    // A form's own delay wins over the site-wide one, both ways: a single pasted url is sent well under 7s, and a form may ask for more too
+    public function testAFormOwnDelayOverridesTheSiteWideOne(): void
+    {
+        $configService = $this->createStub(ConfigServiceInterface::class);
+        $configService->method('get')->willReturnMap([['site-form-delay', 7]]);
+        $botProtection = new FormBotProtection($configService);
+
+        $fast = $this->requestWithSession();
+        $fast->getSession()->set('test_started_at', time() - 2);
+        $this->assertFalse($botProtection->isSuspicious($fast, 'test_form', 'test_started_at', 1));
+
+        $slow = $this->requestWithSession();
+        $slow->getSession()->set('test_started_at', time() - 10);
+        $this->assertTrue($botProtection->isSuspicious($slow, 'test_form', 'test_started_at', 30));
+    }
+
     public function testIsSuspiciousRemovesTimestampAndHoneypotFromSession(): void
     {
         $configService = $this->createStub(ConfigServiceInterface::class);

@@ -92,4 +92,22 @@ class TranslationRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    // Whether another owner or another language still shows this file: a duplicated page carries its media's translations, file paths included, so the copy and the original point at the same file until one of them is given its own
+    public function isValueUsedElsewhere(string $ownerType, string $field, string $value, int $ownerId, string $locale): bool
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.ownerType = :ownerType')
+            ->andWhere('t.field = :field')
+            ->andWhere('t.value = :value')
+            ->andWhere('t.ownerId <> :ownerId OR t.locale <> :locale')
+            ->setParameter('ownerType', $ownerType)
+            ->setParameter('field', $field)
+            ->setParameter('value', $value)
+            ->setParameter('ownerId', $ownerId)
+            ->setParameter('locale', $locale)
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
+    }
 }

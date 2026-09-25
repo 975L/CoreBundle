@@ -15,6 +15,7 @@ use c975L\ConfigBundle\Service\SiteLocales;
 use c975L\UiBundle\Controller\Management\AiAssistantController;
 use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Management\UiGuidedProjectProvider;
+use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiSiteSearchClient;
 use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -82,10 +83,55 @@ class UiGuidedProjectProviderTest extends TestCase
         return $client;
     }
 
-    // Multilingual and with the site search configured unless told otherwise, so every step the provider can walk is there for the assertions below to read
-    private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true, bool $siteSearch = true): UiGuidedProjectProvider
+    private function createRephraseClient(bool $enabled): AiRephraseClient
     {
-        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'), $this->createSiteSearchClient($siteSearch));
+        $client = $this->createStub(AiRephraseClient::class);
+        $client->method('isEnabled')->willReturn($enabled);
+
+        return $client;
+    }
+
+    // Multilingual and with the site search and the rephrasing configured unless told otherwise, so every step the provider can walk is there for the assertions below to read
+    private function createProvider(array &$controllers = [], array &$routes = [], bool $multilingual = true, bool $siteSearch = true, bool $rephrase = true): UiGuidedProjectProvider
+    {
+        return new UiGuidedProjectProvider($this->createAdminUrlGenerator($controllers), $this->createConfigService(), $this->createUrlGenerator($routes), $this->createReviewService(), new SiteLocales($multilingual ? ['fr', 'en'] : [], 'fr'), $this->createSiteSearchClient($siteSearch), $this->createRephraseClient($rephrase));
+    }
+
+    // The screen draws either the list of what is missing or the textarea, so the parcours walks the one it will find and never both
+    public function testTheAiAssistantProjectWalksTheSetupListOrTheTextareaNeverBoth(): void
+    {
+        $unconfigured = array_column($this->aiAssistantSteps(false), 'highlight');
+        $configured = array_column($this->aiAssistantSteps(true), 'highlight');
+
+        $this->assertSame(['[data-ai-rephrase-setup]'], $unconfigured);
+        $this->assertSame(['#ai-rephrase-freeform', '.ai-rephrase__style', '.ai-rephrase__length', '.ai-rephrase__button'], $configured);
+    }
+
+    // The closing step speaks of the button under every field only once the button was shown, a site yet to be set up is asked to come back instead
+    public function testTheAiAssistantProjectClosesOnTheStepItsBranchEarned(): void
+    {
+        $unconfigured = array_column($this->aiAssistantSteps(false), 'label');
+        $configured = array_column($this->aiAssistantSteps(true), 'label');
+
+        $this->assertSame('label.guided_step_ui_ai_assistant_setup_done', end($unconfigured));
+        $this->assertNotContains('label.guided_step_ui_ai_assistant_done', $unconfigured);
+        $this->assertSame('label.guided_step_ui_ai_assistant_done', end($configured));
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function aiAssistantSteps(bool $rephrase): array
+    {
+        $controllers = [];
+        $routes = [];
+        foreach ($this->createProvider($controllers, $routes, rephrase: $rephrase)->getGuidedProjects() as $project) {
+            if ('ui-ai-assistant' === $project['slug']) {
+                return $project['steps'];
+            }
+        }
+
+        self::fail('The "ui-ai-assistant" guided project was not found.');
     }
 
     // No question is recorded before the search is configured, so the parcours reading them is not offered - the one setting it up is, whatever the state
@@ -108,7 +154,7 @@ class UiGuidedProjectProviderTest extends TestCase
         $this->assertSame('[data-content-locales]', $steps['label.guided_step_ui_form_translate']['highlight']);
         $this->assertSame(
             ['label.guided_step_ui_form_save', 'label.guided_step_ui_form_reopen', 'label.guided_step_ui_form_translate'],
-            \array_slice(array_keys($steps), 5, 3),
+            \array_slice(array_keys($steps), 6, 3),
         );
     }
 

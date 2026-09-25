@@ -12,10 +12,9 @@ namespace c975L\UiBundle\Service;
 
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Entity\Translation;
+use Symfony\Component\HttpFoundation\File\File;
 
-// What a media says in another language: the caption a visitor reads, the title and the text of a portfolio card, and the alternative a screen reader announces.
-// A media is the same file in every language and its texts are not - which is why a language screen offers these three and nothing else: replacing the file, its link target, its credits or its dimensions per language would be offered here and read nowhere.
-// The three texts live on the row rather than in Block::$data, so ContentTranslator cannot reach them through the block that hangs them (see BlockExtension, which lays them on just before a render).
+// What a media says in another language: the caption, the title and the text of a portfolio card, the alternative a screen reader announces, and the file itself when the picture carries words (a screenshot, a banner). Link, credits and dimensions stay one value for every language. The texts live on the row rather than in Block::$data, out of ContentTranslator's reach through the block (see BlockExtension, which lays them on before a render).
 class MediaTranslator
 {
     // The vocabulary this bundle's rows are named with, the way Block and FormField name theirs
@@ -23,6 +22,13 @@ class MediaTranslator
 
     // What a translation may cover of a media itself: what is read under it, and what is read instead of it
     public const array FIELDS = ['label', 'description', 'alt'];
+
+    // The file a language shows instead of the media's own, stored as a translation like the texts but never offered as one: its value is a path, not a sentence (see stageFile)
+    public const string FILE = 'filename';
+
+    // The files a form has just been given, written by MediaTranslationFileListener once the flush that saves their block goes through, the same wait the texts get (see ContentTranslator::stage)
+    /** @var list<array{0: File|null, 1: string|null, 2: string|null, 3: int, 4: string}> file, target, previous, media id, locale */
+    private array $pendingFiles = [];
 
     public function __construct(private readonly ContentTranslator $contentTranslator)
     {
@@ -57,7 +63,7 @@ class MediaTranslator
             }
 
             // Given nothing to lay over, translate() hands back the translated fields alone - an untranslated one is absent rather than null, which is what makes the getters fall back on the text the media was written in
-            $media->setTranslated($this->contentTranslator->translate(self::OWNER, $id, [], self::FIELDS, $locale));
+            $media->setTranslated($this->contentTranslator->translate(self::OWNER, $id, [], [...self::FIELDS, self::FILE], $locale));
         }
     }
 
@@ -131,5 +137,61 @@ class MediaTranslator
         if ([] !== $staged) {
             $this->contentTranslator->stage(self::OWNER, $id, $locale, $staged);
         }
+    }
+
+    // Whether a path read back from a row or an archive stays under public/, the only place a media's file ever lives
+    public static function isPublicPath(mixed $path): bool
+    {
+        return is_string($path) && '' !== $path && !str_contains($path, '..') && !str_starts_with($path, '/');
+    }
+
+    // Whether a path read back from a row or an archive is named the way stageFile names a language's file, an image after the media's own when $mediaFilename is known: anything else ("index.php") is never written nor removed
+    public static function isTranslatedFilePath(mixed $path, ?string $mediaFilename = null): bool
+    {
+        if (!self::isPublicPath($path) || 1 !== preg_match('/^(.+)-[a-z]{2}(?:_[A-Z]{2})?-[0-9a-f]{8}\.(?:avif|bmp|gif|ico|jpe?g|png|svg|tiff?|webp)$/', basename($path), $matches)) {
+            return false;
+        }
+
+        return null === $mediaFilename || $matches[1] === pathinfo($mediaFilename, \PATHINFO_FILENAME);
+    }
+
+    // The file a language already shows instead of the media's own, for the screen that offers to take it back
+    public function translatedFile(Media $media, string $locale): ?string
+    {
+        $id = $media->getId();
+
+        return null === $id ? null : $this->contentTranslator->values(self::OWNER, $id, $locale)[self::FILE] ?? null;
+    }
+
+    // Puts a file of its own on a media for one language, or takes it back with $remove: named after the media's own file with the language and a hash of its content added ("block-hero-12-ab-en-1a2b3c4d.webp"), beside it, so it is served from where the original is and a replaced file gets a new URL
+    public function stageFile(Media $media, string $locale, ?File $file, bool $remove = false): void
+    {
+        $id = $media->getId();
+        $source = $media->getUntranslated(self::FILE);
+        if (null === $id || null === $source || (null === $file && !$remove)) {
+            return;
+        }
+
+        $previous = $this->translatedFile($media, $locale);
+
+        $target = null;
+        if (null !== $file) {
+            $directory = pathinfo($source, \PATHINFO_DIRNAME);
+            $extension = $file->guessExtension() ?? pathinfo($source, \PATHINFO_EXTENSION);
+            $target = ('.' === $directory ? '' : $directory . '/') . pathinfo($source, \PATHINFO_FILENAME) . '-' . $locale . '-' . substr((string) md5_file($file->getPathname()), 0, 8) . '.' . $extension;
+        }
+
+        $this->contentTranslator->stage(self::OWNER, $id, $locale, [self::FILE => $target]);
+        $this->pendingFiles[] = [$file, $target, $previous, $id, $locale];
+    }
+
+    // What is waiting to be written, emptied on the way out so a second flush writes nothing twice
+    /** @return list<array{0: File|null, 1: string|null, 2: string|null, 3: int, 4: string}> */
+    public function takePendingFiles(): array
+    {
+        $pending = $this->pendingFiles;
+        $this->pendingFiles = [];
+
+        return $pending;
     }
 }

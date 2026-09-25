@@ -24,6 +24,7 @@ use c975L\UiBundle\Controller\Management\LegalModelController;
 use c975L\UiBundle\Controller\Management\MediaCrudController;
 use c975L\UiBundle\Controller\Management\ReviewCrudController;
 use c975L\UiBundle\Controller\Management\SiteGraphicCrudController;
+use c975L\UiBundle\Service\AiRephraseClient;
 use c975L\UiBundle\Service\AiSiteSearchClient;
 use c975L\UiBundle\Service\ReviewService;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -42,6 +43,7 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
         private readonly ReviewService $reviewService,
         private readonly SiteLocales $siteLocales,
         private readonly AiSiteSearchClient $aiSiteSearchClient,
+        private readonly AiRephraseClient $aiRephraseClient,
     ) {
     }
 
@@ -446,28 +448,31 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
     // Rephrasing is offered under every text field of the back office, and nobody presses a button they have never seen work once - so the parcours walks the free-standing textarea this screen holds for exactly that
     private function aiAssistantProject(): array
     {
-        return [
-            'slug' => 'ui-ai-assistant',
-            'label' => 'label.guided_project_ui_ai_assistant',
-            'description' => 'description.guided_project_ui_ai_assistant',
-            'translation_domain' => 'ui',
-            'order' => 3040,
-            // The bar index() sets on itself, and the one rephrase() answers to - the question/answer half of the screen asks for ROLE_SUPER_ADMIN and simply does not render below it, which is why no step points into it
-            'role' => $this->configService->get('site-role-admin'),
-            'steps' => [
-                [
-                    'label' => 'label.guided_step_ui_ai_assistant_open',
-                    'description' => 'description.guided_step_ui_ai_assistant_open',
-                    'narration' => 'narration.guided_step_ui_ai_assistant_open',
-                    'url' => $this->urlGenerator->generate(AiAssistantController::INDEX_ROUTE),
-                ],
-                [
-                    // The list of what is still missing, one link per setting, which the screen stops rendering once nothing is (see _ai_assistant_base.html.twig) - the two halves of this parcours are exclusive by design, a site yet to be set up seeing this step and the ones after it only later
-                    'label' => 'label.guided_step_ui_ai_assistant_setup',
-                    'description' => 'description.guided_step_ui_ai_assistant_setup',
-                    'narration' => 'narration.guided_step_ui_ai_assistant_setup',
-                    'highlight' => '[data-ai-rephrase-setup]',
-                ],
+        $steps = [
+            [
+                'label' => 'label.guided_step_ui_ai_assistant_open',
+                'description' => 'description.guided_step_ui_ai_assistant_open',
+                'narration' => 'narration.guided_step_ui_ai_assistant_open',
+                'url' => $this->urlGenerator->generate(AiAssistantController::INDEX_ROUTE),
+            ],
+        ];
+
+        // The screen draws either the list of what is still missing or the textarea, never both (see _ai_assistant_base.html.twig), so a site yet to be set up walks the list and is asked to come back, and the textarea's steps once nothing is missing
+        if (!$this->aiRephraseClient->isEnabled()) {
+            $steps[] = [
+                'label' => 'label.guided_step_ui_ai_assistant_setup',
+                'description' => 'description.guided_step_ui_ai_assistant_setup',
+                'narration' => 'narration.guided_step_ui_ai_assistant_setup',
+                'highlight' => '[data-ai-rephrase-setup]',
+            ];
+            $steps[] = [
+                'label' => 'label.guided_step_ui_ai_assistant_setup_done',
+                'description' => 'description.guided_step_ui_ai_assistant_setup_done',
+                'narration' => 'narration.guided_step_ui_ai_assistant_setup_done',
+            ];
+        } else {
+            array_push(
+                $steps,
                 [
                     // The screen's own textarea, tied to no content of the site: a text can be tried out here before the button is ever pressed on a real page
                     'label' => 'label.guided_step_ui_ai_assistant_text',
@@ -498,7 +503,18 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                     'description' => 'description.guided_step_ui_ai_assistant_done',
                     'narration' => 'narration.guided_step_ui_ai_assistant_done',
                 ],
-            ],
+            );
+        }
+
+        return [
+            'slug' => 'ui-ai-assistant',
+            'label' => 'label.guided_project_ui_ai_assistant',
+            'description' => 'description.guided_project_ui_ai_assistant',
+            'translation_domain' => 'ui',
+            'order' => 3040,
+            // The bar index() sets on itself, and the one rephrase() answers to - the question/answer half of the screen asks for ROLE_SUPER_ADMIN and simply does not render below it, which is why no step points into it
+            'role' => $this->configService->get('site-role-admin'),
+            'steps' => $steps,
         ];
     }
 
@@ -528,6 +544,12 @@ class UiGuidedProjectProvider implements GuidedProjectProviderInterface
                 'description' => 'description.guided_step_ui_form_action',
                 'narration' => 'narration.guided_step_ui_form_action',
                 'highlight' => '#Form_action',
+            ],
+            [
+                'label' => 'label.guided_step_ui_form_action_config',
+                'description' => 'description.guided_step_ui_form_action_config',
+                'narration' => 'narration.guided_step_ui_form_action_config',
+                'highlight' => '#Form_actionConfigJson',
             ],
             [
                 'label' => 'label.guided_step_ui_form_fields',

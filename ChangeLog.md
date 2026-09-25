@@ -1,5 +1,36 @@
 # ChangeLog
 
+## v1.38.0
+
+An image shows a file of its own in each language
+
+- The README opens on its bundle page, tutorials, block kinds and live demo with its back-office (25/09/2026)
+- The README shows the Codacy grade badge, as every other bundle does (25/09/2026)
+- Rector turns Symfony, Doctrine and Sensio annotations into attributes (25/09/2026)
+
+### ConfigBundle
+
+- A guided project's `role` may list several roles, all required (25/09/2026)
+- The role preview parcours highlights the desktop header's user menu (25/09/2026)
+
+### UiBundle
+
+- **An image can have a file per language**: the language screen offers an upload, and a box to go back to the original, for a picture carrying words such as a screenshot or a banner (25/09/2026)
+- `MediaTranslator::stageFile()` names that file after the media's own with the language and a content hash added, and stages its path as a `filename` translation (25/09/2026)
+- `Media::getFilename()` reads the overlay, so `vich_uploader_asset()` serves the language's file with no template change (25/09/2026)
+- New `MediaTranslationFileListener`, which writes the file on the flush saving the block and deletes it with its media or when another replaces it, unless another media still shows it (25/09/2026)
+- New `TranslationRepository::isValueUsedElsewhere()`, what tells a file a duplicated page still shows (25/09/2026)
+- The Sync export carries these files in its archive (`translatedFiles`), and the import puts them back, never outside `public/` (25/09/2026)
+- The README, the `c975l-media` and `c975l-blocks` skills document the file per language (25/09/2026)
+- The AI assistant parcours walks the setup list or the textarea, never both, the setup one ending on a come-back step (25/09/2026)
+- New `QrCodeGenerator`, drawing a QR code once then reading it from the tagged cache, with `QrCodeOptions`/`QrCodeImage` and a cacheable HTTP response (25/09/2026)
+- A form can lead to a page of its own on success: `successUrl` in its action config, or `SuccessUrlFormActionInterface` for the page its action created (25/09/2026)
+- Requires `endroid/qr-code` (25/09/2026)
+- A form may set its own anti-bot delay in `minDelay`, over `site-form-delay` (25/09/2026)
+- The Sync import writes and stores a language's file only under a name made after the media's own (25/09/2026)
+- The Sync export leaves out the path of a language's file gone from the disk (25/09/2026)
+- The form parcours points at the action's config, where `successUrl` is set (25/09/2026)
+
 ## v1.37.1
 
 The scaffold's tour test finds a highlighted step by its selector

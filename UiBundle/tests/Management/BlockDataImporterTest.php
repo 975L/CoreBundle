@@ -71,6 +71,20 @@ class BlockDataImporterTest extends TestCase
         ], null);
     }
 
+    // A language's file the archive names after anything but the media's own never reaches a row, the translated texts beside it going through
+    public function testBuildMediaDropsATranslatedFileNotNamedAfterTheMedia(): void
+    {
+        $copier = $this->createMock(TranslationCopier::class);
+        $copier->expects($this->once())
+            ->method('carry')
+            ->with('ui_media', $this->isInstanceOf(Media::class), ['en' => ['label' => 'Shop', 'filename' => 'medias/hero-en-1a2b3c4d.webp'], 'fr' => ['label' => 'Boutique']]);
+
+        new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class), $copier)->buildMedia([
+            'originalFilename' => 'hero.webp',
+            'translations' => ['en' => ['label' => 'Shop', 'filename' => 'medias/hero-en-1a2b3c4d.webp'], 'fr' => ['label' => 'Boutique', 'filename' => 'index.php']],
+        ], null);
+    }
+
     // A block set aside comes back set aside, an archive taken mid-redesign restoring the page in the very state it was exported from
     public function testBuildBlocksRestoresABlockAsHidden(): void
     {
@@ -244,5 +258,38 @@ class BlockDataImporterTest extends TestCase
         $validator->method('validate')->willReturn(new ConstraintViolationList([new ConstraintViolation('refused', null, [], null, 'file', null)]));
 
         $this->assertNull(new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $validator)->buildOgImage(['alt' => 'Share'], null));
+    }
+
+    // Put back where its translation says, the row carrying the path and the archive the bytes - and never outside public/ nor under a name the media's own file doesn't give, whatever the archive claims
+    public function testBuildMediaPutsTheFileOfAnotherLanguageBackWhereItsTranslationSays(): void
+    {
+        $root = sys_get_temp_dir() . '/block_data_importer_test_' . bin2hex(random_bytes(4));
+        mkdir($root . '/archive/files', 0777, true);
+        file_put_contents($root . '/archive/files/ab_hero-en.webp', 'fake-en-bytes');
+        $importer = new BlockDataImporter($this->createStub(EntityManagerInterface::class), $this->createStub(FormBlockDependencyRegistry::class), $this->createStub(ValidatorInterface::class), null, $root);
+
+        $importer->buildMedia([
+            'originalFilename' => 'hero.webp',
+            'translations' => [
+                'en' => ['filename' => 'public-medias/hero-en-1a2b3c4d.webp'],
+                'es' => ['filename' => '../hero-es-1a2b3c4d.webp'],
+                'fr' => ['filename' => 'index.php'],
+                'de' => ['filename' => 'public-medias/other-de-1a2b3c4d.webp'],
+            ],
+            'translatedFiles' => ['en' => 'files/ab_hero-en.webp', 'es' => 'files/ab_hero-en.webp', 'fr' => 'files/ab_hero-en.webp', 'de' => 'files/ab_hero-en.webp'],
+        ], $root . '/archive');
+
+        $this->assertStringEqualsFile($root . '/public/public-medias/hero-en-1a2b3c4d.webp', 'fake-en-bytes');
+        $this->assertFileDoesNotExist($root . '/hero-es-1a2b3c4d.webp');
+        $this->assertFileDoesNotExist($root . '/public/index.php');
+        $this->assertFileDoesNotExist($root . '/public/public-medias/other-de-1a2b3c4d.webp');
+
+        unlink($root . '/public/public-medias/hero-en-1a2b3c4d.webp');
+        rmdir($root . '/public/public-medias');
+        rmdir($root . '/public');
+        unlink($root . '/archive/files/ab_hero-en.webp');
+        rmdir($root . '/archive/files');
+        rmdir($root . '/archive');
+        rmdir($root);
     }
 }

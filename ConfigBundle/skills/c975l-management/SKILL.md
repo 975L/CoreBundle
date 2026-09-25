@@ -88,10 +88,11 @@ Two nuances that get lost:
   naming none makes it a back-office screen with no CRUD of its own (a health check, an import), drawn
   inside your own section among your menu entries and walked there by the guided tour. A link never
   inherits its section's `tier`, which applies to `getMenus()` alone.
-- A menu entry, an alert and a guided project each take an optional `role`. On a menu it defaults to
-  `site-role-admin` and must be set to the bar the entry's own screen states, `setPermission()` being
-  unreadable from here: too high and the entry goes missing from a sidebar its screen would have
-  answered, too low and it leads to a 403 the guided tour walks the user to. The dashboard itself
+- A menu entry, an alert and a guided project each take an optional `role`, a guided project's
+  possibly a list of roles all required. On a menu it defaults to `site-role-admin` and must be set
+  to the bar the entry's own screen states, `setPermission()` being unreadable from here: too high
+  and the entry goes missing from a sidebar its screen would have answered, too low and it leads to
+  a 403 the guided tour walks the user to. The dashboard itself
   opens on `BackOfficeAccessVoter::ACCESS`, not on a role, so an editor stands in it and every block
   filters itself (see `c975l-users`).
 - The dashboard's "Not used on this site yet" panel lists every sidebar CRUD still empty, read off the

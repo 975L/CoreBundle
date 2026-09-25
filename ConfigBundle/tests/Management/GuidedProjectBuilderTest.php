@@ -169,6 +169,29 @@ class GuidedProjectBuilderTest extends TestCase
         $this->assertSame(['gerer-utilisateur'], array_column($builder->getAllProjects(), 'slug'));
     }
 
+    // A listed "role" asks for every role in it: missing any one of them, the parcours is neither offered nor startable, yet still documented
+    public function testGetProjectsSkipsAProjectMissingAnyOfItsListedRoles(): void
+    {
+        $roles = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_EDITOR'];
+
+        foreach ($roles as $deniedRole) {
+            $security = $this->createStub(Security::class);
+            $security->method('isGranted')->willReturnCallback(static fn (string $role): bool => $role !== $deniedRole);
+            $builder = new GuidedProjectBuilder([$this->createProvider([$this->project('connect', 10, ['role' => $roles])])], $security, $this->createTranslator());
+
+            $this->assertSame([], $builder->getProjects(), sprintf('Offered without "%s"', $deniedRole));
+            $this->assertNull($builder->getProject('connect'), sprintf('Startable without "%s"', $deniedRole));
+            $this->assertSame(['connect'], array_column($builder->getAllProjects(), 'slug'));
+        }
+    }
+
+    public function testGetProjectsKeepsAProjectHoldingEveryListedRole(): void
+    {
+        $builder = $this->createBuilder([$this->createProvider([$this->project('connect', 10, ['role' => ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']])])]);
+
+        $this->assertSame(['connect'], array_column($builder->getProjects(), 'slug'));
+    }
+
     public function testGetProjectsKeepsAProjectWithoutARole(): void
     {
         $builder = $this->createBuilder([$this->createProvider([$this->project('creer-page', 10)])], false);

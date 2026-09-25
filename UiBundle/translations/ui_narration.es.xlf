@@ -40,7 +40,11 @@
             </trans-unit>
             <trans-unit id="uHYO1WV">
                 <source>narration.guided_step_ui_ai_assistant_setup</source>
-                <target>Rellene lo que falta: cada entrada abre el ajuste que nombra, como mínimo el proveedor y su clave de API. La lista desaparece en cuanto no falta nada, y ahí es donde empieza el resto.</target>
+                <target>Rellene lo que falta: cada entrada abre el ajuste que nombra, como mínimo el proveedor y su clave de API. La lista desaparece en cuanto no falta nada.</target>
+            </trans-unit>
+            <trans-unit id="mSYwDBk">
+                <source>narration.guided_step_ui_ai_assistant_setup_done</source>
+                <target>Una vez hecho el ajuste, vuelva a lanzar este recorrido: le mostrará entonces el texto para probar, el tono y la longitud, antes del mismo botón bajo cada campo de texto del back-office.</target>
             </trans-unit>
             <trans-unit id="a712HHa">
                 <source>narration.guided_step_ui_ai_assistant_style</source>
@@ -189,6 +193,10 @@
             <trans-unit id="y1zi798">
                 <source>narration.guided_step_ui_form_action</source>
                 <target>Elija después lo que dispara. La acción decide qué ocurre al enviarse: mandar un correo, registrar a alguien, restablecer una contraseña.</target>
+            </trans-unit>
+            <trans-unit id="Zej_em.">
+                <source>narration.guided_step_ui_form_action_config</source>
+                <target>Ajuste después la acción si hace falta. Es opcional: sus ajustes se escriben aquí, y successUrl lleva a una página de agradecimiento tras el envío.</target>
             </trans-unit>
             <trans-unit id="MeB2xYx">
                 <source>narration.guided_step_ui_form_field_template_done</source>

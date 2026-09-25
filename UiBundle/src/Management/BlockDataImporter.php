@@ -14,9 +14,11 @@ use c975L\UiBundle\Entity\Block;
 use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Registry\FormBlockDependencyRegistry;
+use c975L\UiBundle\Service\MediaTranslator;
 use c975L\UiBundle\Service\TranslationCopier;
 use c975L\UiBundle\Validator\FixedIconFormat;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
@@ -46,6 +48,9 @@ class BlockDataImporter
         private readonly ValidatorInterface $validator,
         // Optional so a construction by hand (a test) needs no copier, and then writes no translations
         private readonly ?TranslationCopier $translationCopier = null,
+        // Where the files a media shows in another language are put back, optional for the same reason
+        #[Autowire(param: 'kernel.project_dir')]
+        private readonly ?string $projectDir = null,
     ) {
     }
 
@@ -127,9 +132,52 @@ class BlockDataImporter
             $media->setImportedThumbnailPath($filesDir . '/' . $mediaData['thumbnail']);
         }
 
+        $mediaData = $this->withoutForeignTranslatedFiles($mediaData);
         $this->importTranslations(Translation::OWNER_MEDIA, $media, $mediaData);
+        $this->importTranslatedFiles($mediaData, $filesDir);
 
         return $media;
+    }
+
+    // Drops a language's file not named after the media's own the way MediaTranslator::stageFile names it, before its translation reaches a row MediaTranslationFileListener would one day remove it by: an archive is never trusted to name index.php
+    private function withoutForeignTranslatedFiles(array $mediaData): array
+    {
+        if (!isset($mediaData['translations']) || !is_array($mediaData['translations'])) {
+            return $mediaData;
+        }
+
+        $mediaFilename = is_string($mediaData['originalFilename'] ?? null) ? $mediaData['originalFilename'] : '';
+        foreach ($mediaData['translations'] as $locale => $fields) {
+            if (is_array($fields) && array_key_exists(MediaTranslator::FILE, $fields) && !MediaTranslator::isTranslatedFilePath($fields[MediaTranslator::FILE], $mediaFilename)) {
+                unset($mediaData['translations'][$locale][MediaTranslator::FILE]);
+            }
+        }
+
+        return $mediaData;
+    }
+
+    // Puts the files a media shows in another language back where their translations say, beside the site's other medias: the row carries the path, the archive the bytes (see BlockDataExporter::exportMedia)
+    private function importTranslatedFiles(array $mediaData, ?string $filesDir): void
+    {
+        if (null === $filesDir || null === $this->projectDir || !isset($mediaData['translatedFiles']) || !is_array($mediaData['translatedFiles'])) {
+            return;
+        }
+
+        foreach ($mediaData['translatedFiles'] as $locale => $archivePath) {
+            $path = $mediaData['translations'][$locale][MediaTranslator::FILE] ?? null;
+            $source = $filesDir . '/' . $archivePath;
+
+            // The path was vetted by withoutForeignTranslatedFiles, the archive's own name is not
+            if (null === $path || !MediaTranslator::isPublicPath($archivePath) || !is_file($source)) {
+                continue;
+            }
+
+            $target = $this->projectDir . '/public/' . $path;
+            if (!is_dir(dirname($target))) {
+                mkdir(dirname($target), 0o755, true);
+            }
+            copy($source, $target);
+        }
     }
 
     // Hands the archive's translations to TranslationCopier, which writes them once the flush has given the row its id. An archive written before they were exported says nothing about them, and the row keeps what it has. Public: also used for the entity owning the Blocks (eg. a Page's title)

@@ -237,8 +237,9 @@ so a single-language site holds not one row here.
   `MediaTranslationType` per media, named `mediaTranslation_<id>` and carrying
   `data-media-translation` for a guided step to point at, plus a `mediaTranslationsRendered`
   marker without which nothing is staged: an unrendered child submits null, which would otherwise take
-  the translations away on every save. Only the fields the media says something in are offered; the
-  file, its link, its credits and its dimensions never are.
+  the translations away on every save. Only the fields the media says something in are offered, plus
+  an upload for an image, which can show a file of its own in that language (see `c975l-media`); its
+  link, its credits and its dimensions never are.
 - The render cache is already keyed by locale, and `BlockCacheInvalidationListener` watches
   `Translation` too, a row of another table otherwise touching no block — a `ui_media` row resolving
   to the block its media hangs from.

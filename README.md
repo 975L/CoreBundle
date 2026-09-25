@@ -5,6 +5,9 @@ The base of the c975L ecosystem in a single package: **ConfigBundle** (database-
 [![GitHub](https://img.shields.io/github/license/975L/CoreBundle)](https://github.com/975L/CoreBundle/blob/main/LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
 [![PHP Version](https://img.shields.io/packagist/php-v/c975l/core-bundle)](https://packagist.org/packages/c975l/core-bundle)
+[![Codacy Grade](https://app.codacy.com/project/badge/Grade/2237035a504b4374a606d49bf6b02dcc)](https://app.codacy.com/gh/975L/CoreBundle/dashboard)
+
+**[Bundle page](https://bundles.975l.com/en/pages/core-bundle) · [Tutorials](https://bundles.975l.com/en/tutoriels/core-bundle) · [Block kinds](https://bundles.975l.com/en/pages/blocks/Ui) · [Live demo](https://bundles.975l.com/demo/) · [Demo back-office](https://bundles.975l.com/demo/login)**
 
 ## One package, two bundles
 

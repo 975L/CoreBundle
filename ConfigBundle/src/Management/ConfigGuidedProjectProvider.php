@@ -110,11 +110,11 @@ class ConfigGuidedProjectProvider implements GuidedProjectProviderInterface
                     'url' => $this->urlGenerator->generate('management'),
                 ],
                 [
-                    // EasyAdmin's own user menu button, where DashboardController::configureUserMenu() adds one "View as" entry per level below the account's
+                    // EasyAdmin's own user menu button, where DashboardController::configureUserMenu() adds one "View as" entry per level below the account's - the desktop header's, the responsive header drawing a hidden one first
                     'label' => 'label.guided_step_config_role_preview_menu',
                     'description' => 'description.guided_step_config_role_preview_menu',
                     'narration' => 'narration.guided_step_config_role_preview_menu',
-                    'highlight' => '.user-details',
+                    'highlight' => '.navbar-custom-menu .user-details',
                 ],
                 [
                     'label' => 'label.guided_step_config_role_preview_banner',

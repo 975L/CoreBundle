@@ -16,6 +16,7 @@ use c975L\UiBundle\Entity\Media;
 use c975L\UiBundle\Entity\Translation;
 use c975L\UiBundle\Listener\VichPdfThumbnailListener;
 use c975L\UiBundle\Repository\TranslationRepository;
+use c975L\UiBundle\Service\MediaTranslator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 // Shared Block/Media serialization for every Sync export carrying a Block collection (Page, Menu) - keeps the recursive container-slot walk in one place instead of duplicated per entity. Mirrors BlockDataImporter on the way back in
@@ -88,7 +89,7 @@ class BlockDataExporter
             $thumbnail = $registeredThumbnail['archivePath'] ?? null;
         }
 
-        return $this->withTranslations([
+        $data = $this->withTranslations([
             'role' => $media->getRole(),
             'name' => $media->getName(),
             'alt' => $media->getAlt(),
@@ -106,6 +107,33 @@ class BlockDataExporter
             'file' => $registered['archivePath'],
             'thumbnail' => $thumbnail,
         ], Translation::OWNER_MEDIA, $media->getId());
+
+        return $this->withTranslatedFiles($data, $files);
+    }
+
+    // The files a media shows in other languages travel with it, their translations naming a path the importing side has no bytes for otherwise
+    private function withTranslatedFiles(array $data, array &$files): array
+    {
+        foreach ($data['translations'] ?? [] as $locale => $fields) {
+            $translatedFile = $fields[MediaTranslator::FILE] ?? null;
+            $registeredFile = null === $translatedFile ? null : ArchiveFileRegistrar::register($this->projectDir, $translatedFile, $files);
+            if (null !== $registeredFile) {
+                $data['translatedFiles'][$locale] = $registeredFile['archivePath'];
+                continue;
+            }
+
+            // A path whose file is gone from the disk would land as a broken picture, where the media's own file still shows
+            unset($data['translations'][$locale][MediaTranslator::FILE]);
+            if ([] === $data['translations'][$locale]) {
+                unset($data['translations'][$locale]);
+            }
+        }
+
+        if ([] === ($data['translations'] ?? null)) {
+            unset($data['translations']);
+        }
+
+        return $data;
     }
 
     // Adds what a row says in the site's other languages (locale => field => value), carried in the archive since translations name their owner by an id the importing side will not share. Left out when there are none, the shape of a single-language site's archive unchanged. Public: also used for the entity owning the Blocks (eg. a Page's title)

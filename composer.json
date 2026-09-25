@@ -29,6 +29,7 @@
         "dragonmantank/cron-expression": "^3.6",
         "easycorp/easyadmin-bundle": "^5.1",
         "egulias/email-validator": "^4.0",
+        "endroid/qr-code": "^6.1",
         "imagine/imagine": "^1.5",
         "nelmio/security-bundle": "^3.9",
         "psr/log": "^3.0",
